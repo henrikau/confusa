@@ -1,7 +1,6 @@
 <?php
-/* need this for proper path */
-require_once('_include.php');
-/* SimpleSAML */
+/* get simplesaml */
+require_once('/usr/local/simplesamlphp/www/_include.php');
 require_once('SimpleSAML/Utilities.php');
 require_once('SimpleSAML/Session.php');
 

@@ -1,5 +1,4 @@
 <?php
-require_once('/usr/local/simplesamlphp/www/_include.php');
 $path = ini_get('include_path');
 $path = $path . PATH_SEPARATOR . $path_extra;
 
