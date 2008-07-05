@@ -1,6 +1,5 @@
 <?php
 include_once('framework.php');
-include_once('slcs_key.php');
 $fw = new Framework('root_cert');
 $fw->render_page();
 
@@ -14,11 +13,10 @@ function root_cert($person)
   $fd = fopen($myFile, 'r');
   $content = fread($fd, filesize($myFile));
   fclose($fd);
+  openssl_x509_export($this->signed_csr, $tmp, false);
 
-  $key = new SLCSKey();
-  $key->set_scsr($content);
   echo "<PRE>\n";
-  echo $key->cert2str();
+  echo $tmp;
   echo "</PRE>\n";
 }
 

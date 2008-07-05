@@ -1,5 +1,4 @@
 <?php
-require_once('slcs_key.php');
 require_once('mail_manager.php');
 require_once('sql_lib.php');
 require_once('pw.php');
@@ -18,7 +17,7 @@ class CertManager
    */
   function __construct($csr, $pers)
     {
-	    if (!isset($pers) || !($pers instanceof SLCSPerson)) {
+	    if (!isset($pers) || !($pers instanceof Person)) {
 		    echo __FILE__ . " Cannot function without a person!<BR>\n";
 		    exit(0);
 	    }
@@ -37,10 +36,6 @@ class CertManager
    */
   function __destruct()
     {
-      /* remove the cert-file
-       * Assume keyholder has proper destructor.
-       */
-      unset($this->keyholder);
       unset($this->person);
       unset($this->valid_csr);
       unset($this->user_cert);
@@ -85,12 +80,12 @@ class CertManager
                     $sql = get_sql_conn();
                     $sql->update($query);
 
-		    SLCSLogger::log_event(LOG_INFO, "Certificate successfully signed for " . $this->person->get_common_name());
+		    Logger::log_event(LOG_INFO, "Certificate successfully signed for " . $this->person->get_common_name());
 		    /* add to database (the hash of the pubkey) */
 		    return true;
 	    }
 	    else {
-		    SLCSLogger::log_event(LOG_INFO, "Will not sign invalid CSR for user " . $this->person->get_common_name());
+		    Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user " . $this->person->get_common_name());
 	    }
       return false;
     } /* end sign_key() */

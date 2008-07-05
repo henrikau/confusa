@@ -1,6 +1,4 @@
 <?php
-  /* class requirements */
-require_once('slcs_key.php');
 /* Person
  *
  * Person is the object describing the user in the system
@@ -26,7 +24,6 @@ class Person{
     private $given_name;
     private $common_name;
     private $email;
-    private $key_holder;
     private $db_id;
 
     /* get variables for:
@@ -46,7 +43,6 @@ class Person{
         $this->given_name = null;
         $this->common_name = null;
         $this->email = null;
-        $this->key_holder = new SLCSKey();
 
         /* we're suspicious by nature */
         $this->fed_auth = false;
