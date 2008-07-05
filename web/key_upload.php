@@ -2,7 +2,7 @@
 require_once('_include.php');	/* get path */
 require_once('sql_lib.php');
 require_once('logger.php');
-require_once('config.php');
+require_once('confusa_config.php');
 require_once('csr_lib.php');
 
 if (!isset($confusa_config)) {

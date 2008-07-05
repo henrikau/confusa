@@ -1,6 +1,6 @@
 <?php
 include_once('sql_lib.php');
-include_once('slcs_logger.php');
+include_once('logger.php');
 /* test_file_content()
  *
  * Function for testing the content of certificate-files.
@@ -46,11 +46,11 @@ function known_pubkey($csr)
 	$sql=get_sql_conn();
 	$res=$sql->execute($query);
 	if (mysql_num_rows($res) == 0) {
-		SLCSLogger::log_event(LOG_DEBUG,"New and unique key received\n");
+		Logger::log_event(LOG_DEBUG,"New and unique key received\n");
 		$issued_before=false;
 	}
 	else if (mysql_numrows($res) > 1) {
-		SLCSLogger::syslog(LOG_ERR,"Duplicate signed certificates in database!");
+		Logger::syslog(LOG_ERR,"Duplicate signed certificates in database!");
 		/* echo "<FONT COLOR=\"red\">Database inconsistent! Contact webmaster! TODO: do this automatically...</FONT><BR>\n"; */
 	}
 	mysql_free_result($res);

@@ -7,6 +7,7 @@
    * This will handle all aspects regarding layout and authentication of user.
    */
 
+
 require_once('_include.php');
 require_once('confusa_auth.php');
 require_once('menu.php');
