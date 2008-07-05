@@ -1,0 +1,49 @@
+Requirements posed upon the user:
+In this document,with user, we mean *you*, the person that downloads,
+configures and installs SLCS-Web on a server.
+You should have
+- some experience with apache configuration
+- knowledge about cryptography (i.e. what a certificate is, and how it's
+  used).
+- some, but not excessive, knowledge about php and bash-scripting, as
+  this will help both *you* and *us* to track down undiscovered bugs
+- an open and positive mind (for a more pleasent interaction with the
+  world as a whole)
+
+To install SLCS-Web
+
+1) Install php modules and php-mysql
+2) Install apache with php support.
+3) Configure apache to use SSL, use the following lines in your apache2/sites-enabled/appropriate.config.file
+
+<VirtualHost your.host.org:80>
+        Servername your.server.org
+        Redirect permanent / https://your.host.org
+</VirtualHost>
+
+<VirtualHost your.host.org:443>
+        Servername your.server.org
+        SSLEngine On
+        SSLProtocol All
+        SSLCipherSuite ALL:!ADH:!EXPORT56:!EXPORT40:RC4+RSA:!SSLv2:+HIGH:+MEDIUM:+LOW:+EXP
+        SSLVerifyClient optional_no_ca
+        SSLVerifyDepth 10
+        SSLOptions +StdEnvVars +ExportCertData
+        SSLCertificateFile /etc/apache2/ssl/slcstest.crt
+        SSLCertificateKeyFile /etc/apache2/ssl/slcstest.key
+
+	...
+</VirtualHost>
+
+Note that ServerName can be the same as the host-name in VirtualHost.
+Make sure you create the folder /etc/apache2/ssl/ as the create-ca.sh will put hostkeys there for you.
+Alternatively, if you don't want to use this script, put the
+key/certificate in the folder of your choice and configure the 2 lines
+in the given config-file.
+
+4) Install and configure SLCS-Web. The first release will contain
+SLCS-Web bundled with simplesamlphp, but this *will* be split up in the
+future.
+
+5) Test and verify that the system is operational before you allow the
+public access.

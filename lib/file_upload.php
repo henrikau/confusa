@@ -1,0 +1,148 @@
+<?php
+/* FileUpload
+ *
+ * Class for handling upload of files.
+ *
+ * parameters:
+ *	$fname:		the name of the $_FILES[..] filed, ie the name of the <FORM> file.
+ *
+ *	$mem_read:	wether or not to read the content from file, or handle it
+ *			strictly via file I/O (useful for *large* files or at systems
+ *			with restricted memory).
+ *
+ *	$file_test_func:Supplied function for testing the content of the file. This function will
+ *			either be given the content of the file, or just an opened filediscriptor
+ *			and must handle this accordingly (i.e. the use of FileUpload
+ *			must know wether or not the file shall be read from memory or not
+ *
+ *			If not set (null), this step is bypassed
+ */
+class FileUpload {
+  private $open_file;		/* the field of $_FILES which we want to read */
+  private $filename;
+  private $keep;		/* if the file should be kept after object termination or not */
+  private $fcont;		/* the content of the file (either read in from memory or
+				 * as a filedescriptor. */
+  private $mem;			/* if the content should be read into memory or kept as a file
+				   descriptor*/
+  private $file_ok;		/* if the file's content is ok or not */
+  private $parsed;		/* if the file has already been read and tested */
+  private $test_func;
+
+  function __construct($fname, $mem_read, $file_test_func) {
+    $this->open_file	= $fname;
+    $this->filename	= $_FILES[$this->open_file]['tmp_name'];
+    $this->keep		= false;
+    $this->fcont	= null;
+    $this->mem		= false;
+    $this->parsed	= false;
+    $this->file_ok	= false;
+
+    if ($mem_read === true)
+      $this->mem = true;
+
+    $this->test_func = 'trivial_test';
+    if (isset($file_test_func))
+      $this->test_func = $file_test_func;
+
+    /* test to see if file is ok */
+    $this->test_file();
+    $this->parse_file();
+  } /* end __construct */
+
+  function __destruct() {
+    if ($this->parsed) {
+      if ($this->mem) {
+	      if (!$this->keep && isset($this->open_file)) {
+		      unlink($this->filename);
+	      }
+      }
+      else {
+	flcose($this->fcont);
+      }
+    }
+    unset($this->open_file);
+    unset($this->keep);
+    unset($this->fcont);
+    unset($this->mem);
+    unset($this->file_ok);
+    unset($this->parsed);
+    unset($this->test_func);
+  } /* end __destruct */
+
+  /* returns ok if:
+   * 1) the file exists
+   * 2) it's an uploaded file
+   * 3) it has passed the supplied test-function
+   */
+  function file_ok() { return $this->file_ok; }
+
+  private function parse_file() 
+    {
+      if (!$this->parsed && $this->file_ok) {
+	      if ($this->file_ok() && isset($this->filename)) {
+	  $fd = fopen($this->filename,'r');
+	  $fsize=filesize($_FILES['user_csr']['tmp_name']);
+	  if ($this->mem) {
+	    $this->fcont = fread($fd, $fsize);
+	    fclose($fd);
+	  }
+	  else {
+	    $this->fcont = $fd;
+	  }
+	  $fuptr = $this->test_func;
+	  $this->file_ok = $fuptr($this->fcont);
+	}
+	else {
+	  $this->fcont = null;
+	}
+	$this->parsed = true;
+      }
+    } /* end parse_file() */
+
+  function get_content() {
+	  /* echo __FILE__.":".__LINE__. " " . $this->fcont . "<BR>\n"; */
+	  if ($this->file_ok() && $this->parsed)
+		  return $this->fcont;
+  }
+
+  private function test_file()
+    {
+    /* check if $fname exists */
+      if (isset($_FILES[$this->open_file]['name'])) {
+	switch($_FILES[$this->open_file]['error']) {
+	case UPLOAD_ERR_OK:
+	  break;
+	case UPLOAD_ERR_INI_SIZE:
+	case UPLOAD_ERR_FORM_SIZE:
+	  echo "Size of file exceeds maximum allowed filesize<BR>\n";
+	  $this->file_ok = false;
+	  return;
+	case UPLOAD_ERR_PARTIAL:
+	  echo "Upload did not finish properly, incomplete file. Try again<BR>\n";
+	  $this->file_ok = false;
+	  return;
+	case UPLOAD_ERR_NO_FILE:
+	  echo "No file given to upload-handler!<BR>\n";
+	  $this->open_file = null;
+	  $this->file_ok = false;
+	  return;
+	default:
+	  echo "Unknown error condition!<BR>\n";
+	  $this->file_ok = false;
+	  return;
+	}
+
+	/* other tests to avoid exploits*/
+	/* TODO */
+
+	/* if nothing bad detected, assume it's OK (we still do the supplied test-function) */
+	/* echo __FILE__.":".__LINE__." file ok<BR>\n"; */
+	$this->file_ok = true;
+      }
+    } /* end test_file */
+
+private function trivial_test($content) {return $this->file_ok(); }
+
+}
+?>

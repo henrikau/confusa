@@ -1,0 +1,27 @@
+SMSAuth: update internal to use only person, and not local copies of attribs
+
+- SLCSKey, cert2str not to include the cert, only the text (as -noout in openssl)
+
+mysql:
+- table for incoming CSRs with field:
+  * CSR
+  * approved (yes/no)
+  * time for approval
+
+- table for signed cert awaiting retrieval
+- table for previously signed certs (key-id)
+
+shell-hacks:
+- get the ca_sign to function from php..
+
+python
+- library for maintaining the database (removing expired data etc).
+
+signing certificates
+- log all certificate-requests (!)
+- verify all received certificates (compare signed CSR with CSR in database. validate signature,
+  and check CA's public key).
+- update database with signed CSR, possibly notify user (email, sms..)
+
+- update slcsweb_auth to figure out correct country for user
+- update slcs_person to contain country as an element. 
