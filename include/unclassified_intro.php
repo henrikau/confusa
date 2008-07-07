@@ -1,5 +1,10 @@
 
-<H3>SLCS-Web</H3>
+<H3>Confusa</H3>
+<P>
+Confusa is a web-service that maps a federated identity into an X.509 compatible identity.<BR>
+This specific instance of Confusa runs SLCS-Web.
+</P>
+
 <P>
 SLCS means <B>S</B>hort <B>L</B>ived <B>C</B>redential <B>S</B>ervice and is a way of
 mapping your Feide-account into credentials usable in the Grid-middleware (ARC).<BR>
@@ -9,14 +14,8 @@ mapping your Feide-account into credentials usable in the Grid-middleware (ARC).
 
 <dt>Credential Service</dt>
 <dd>
-A credential is a signe certificate where SLCS-web together with Feide guarantuees that the
+A credential is a signed certificate where SLCS-web together with Feide guarantuees that the
 holder of the certificate is who he/she says she is. 
 </dd>
 </dl>
-</P>
-
-
-<P>
-To see what SLCS-web can do for you, log into the system and generate a key. The system will tell
-     you what to do, step by step.
 </P>
