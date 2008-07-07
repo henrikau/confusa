@@ -7,7 +7,7 @@ $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/lib';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/programs';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/config';
-$path .= PATH_SEPARATOR . dirname(WEB_DIR) . 'include';
+$path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/include';
 
 /* echo __FILE__ . ": -> path: " . $path . "<br>\n"; */
 ini_set('include_path', $path);
