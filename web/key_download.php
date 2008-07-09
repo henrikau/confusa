@@ -1,5 +1,5 @@
 <?php
-require_once('_include.php');	/* get path */
+require_once('confusa_include.php');	/* get path */
 require_once('sql_lib.php');
 require_once('logger.php');
 require_once('confusa_config.php');

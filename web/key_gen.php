@@ -1,5 +1,4 @@
 <?php 
-include_once('_include.php');
 include_once('framework.php');
 include_once('cert_manager.php'); /* for handling of the key */
 include_once('mail_manager.php'); /* for sending emails */
