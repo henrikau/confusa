@@ -16,7 +16,7 @@ $session_started = false;
 
 /* authenticate_user()
  *
- * This is the main function for checking if the user is authenticated.
+n * This is the main function for checking if the user is authenticated.
  *
  * If the user is not authenticated, this function will either redirect or
  * include login-panel so that the user may log in.
@@ -157,9 +157,13 @@ function _assert_sso($person)
    *	set new header
    */
   if (!isset($session) || !$session->isValid() ) {
-    header('Location: /' . $config->getValue('baseurlpath') . 
-	   'saml2/sp/initSSO.php?RelayState=' . 
-	   urlencode(SimpleSAML_Utilities::selfURL()));
+ /*     $link_base = SimpleSAML_Utilities::selfURL() .'saml2/sp/initSLO.php?RelayState='.SimpleSAML_Utilities::selfURL() . $logout_location . "?edu_name='" . $edu_name; */
+/*     $link = '<A HREF="' . $link_base . '">' . $logout_name . '</A>'; */
+       /* $base = dirname($_SERVER['HTTP_REFERER']); */
+       $base = dirname(SimpleSAML_Utilities::selfURL());
+            header('Location: ' . $base . 
+	   '/saml2/sp/initSSO.php?RelayState=' . 
+	   urlencode($base));
     exit(0);
   }
 
@@ -239,18 +243,19 @@ function get_attributes()
  */
 function feide_logout_link($logout_location="logout.php", $logout_name="Logout Confusa") 
 {
-    
-    $attr= get_attributes();
-    $edu_name = $attr['eduPersonPrincipalName'][0];
+     $config = _get_config();
+     
+     $attr= get_attributes();
+     $edu_name = $attr['eduPersonPrincipalName'][0];
 
-    $config = _get_config();
-    $link = '<A HREF="/' . 
-        $config->getValue('baseurlpath') . 
-        'saml2/sp/initSLO.php?RelayState=/' .
-        $config->getValue('baseurlpath') . 
-        $logout_location . "?edu_name='" . $edu_name . "'" .
-        '">' . $logout_name . '</A>';
-    //printBRn($link);
+     /* need to find the url, and handle some quirks in the result from selfURL
+      * in order to get proper url-base */
+     $base = SimpleSAML_Utilities::selfURL();
+     if (strpos($base, ".php"))
+          $base = dirname($base);
+    $link_base =  $base.'/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location . "?edu_name='" . $edu_name;
+    $link = '<A HREF="' . $link_base . '">' . $logout_name . '</A>';
+
     return $link;
 } // end get_logout_link()
 

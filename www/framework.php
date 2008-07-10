@@ -61,7 +61,7 @@ class Framework {
         is_authenticated($this->person);
         /* if login, trigger SAML-redirect first */
         if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-            _assert_sso($this->person);
+             _assert_sso($this->person);
 	}
 	Logger::log_event(LOG_INFO, "displaying " . $this->f_content . " to user connecting from " . $_SERVER['REMOTE_ADDR']);
         require_once('header.php');

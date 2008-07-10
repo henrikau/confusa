@@ -56,11 +56,12 @@ class Person{
         } /* end destructor */
 
     function __tostring() {
-        $var = "";
-        $var .= "Name: " . $this->given_name . "<BR>\n";
-        $var .= "eduPersonPrincipalName: " . $this->common_name . "<BR>\n";
-        $var .= "mobile: " . $this->mobile . "<BR>\n";
-        $var .= "email: " . $this->email . "<BR>\n";
+        $var = "<table clas=\"small\">";
+        $var .= "<tr><td><b>Name:</b></td><td>" . $this->given_name . "</td></tr>\n";
+        $var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->common_name . "</td></tr>\n";
+        $var .= "<tr><td><b>mobile</b>:</td><td>" . $this->mobile . "</td></tr>\n";
+        $var .= "<tr><td><b>email:</b></td><td>" . $this->email . "</td></tr>\n";
+        $var .= "</table><br>";
         return $var;
         }
     public function is_fed_auth() {
