@@ -9,14 +9,10 @@ function welcome($person)
 {
     if ($person->is_auth())
         {
-        /* from ../text/ */
              echo "This is the information we have received about you: <BR>\n";
-             echo $person;
-        include('classified_intro.php');
+             echo $person . "<BR>\n";
         }
-    /* from ../text/ */
     include('unclassified_intro.php');
-    /* phpinfo(); */
 }
 ?>
 
