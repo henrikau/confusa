@@ -121,10 +121,7 @@ function get_cert {
 	return
     else
 	echo "Got certificate ok!"
-	fname=`echo "$uname" | cut -d '@' -f 1`
-	
-	# rename certificate to conform with ARC-middleware
-	mv tmp.cert $usercert.pem
+	mv tmp.cert usercert.pem
     fi
 }
 
