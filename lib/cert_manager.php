@@ -25,7 +25,6 @@ class CertManager
 	    $this->user_csr = $csr;
       
 	    /* read public key and create sum */
-	    /* $this->pubkey_checksum=trim(shell_exec(("openssl req -in " . $fpath . " -pubkey -noout | sha1sum | cut -d '-' -f 1"))); */
 	    $this->pubkey_checksum=trim(shell_exec("exec echo \"".$csr."\" | openssl req -pubkey -noout | sha1sum | cut -d ' ' -f 1"));
 	    /* verify */
 	    $this->verify_csr();
