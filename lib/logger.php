@@ -34,9 +34,10 @@ class Logger {
  * LOG_INFO		informational message
  * LOG_DEBUG		debug-level message
  */
-	static function log_event($pri, $message)
-	{
-		define_syslog_variables();
+     static function log_event($pri, $message)
+     {
+          global $confusa_config;
+          define_syslog_variables();
 
 		/* no need to check if confusa_config exists, if not, framework should
 		 * notify user and terminate */
@@ -91,7 +92,8 @@ class Logger {
 		$fd = fopen($confusa_config['default_log'], 'a');
 		/* assemble line */
 		$log_line = Logger::get_timestamp() . " (Confusa) " . $header . " " . $message . "\n";
-		/* echo $log_line . "<br>\n"; */
+                if ($confusa_config['debug'])
+                     echo "Logline: " . $log_line . "<br>\n";
 		fputs($fd, $log_line);
 		/* echo $log_line . "<BR>\n"; */
 		@fclose($fd);
