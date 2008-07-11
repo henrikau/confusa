@@ -51,8 +51,8 @@ if ( isset($_GET['remote_csr']) && $_GET[$confusa_config['auth_var']]) {
 				Logger::log_event(LOG_INFO, "Inserted new CSR from ".$ip." (".$common.")");
 			}
 			else {
-				ogger::log_event(LOG_WARNING, "Uploaded CSR from ".$ip." not valid, caught by test_content");
-				exit(1);
+                             Logger::log_event(LOG_WARNING, "Uploaded CSR from ".$ip." not valid, caught by test_content");
+                             exit(1);
 			}
 		}
 		else {
