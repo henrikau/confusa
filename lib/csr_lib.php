@@ -49,9 +49,14 @@ function known_pubkey($csr)
 		Logger::log_event(LOG_DEBUG,"New and unique key received\n");
 		$issued_before=false;
 	}
-	else if (mysql_numrows($res) > 1) {
+        /* update counter in database */
+        else if (mysql_numrows($res) == 1) {
+             $row = mysql_fetch_assoc($res);
+             $query = "UPDATE pubkeys SET uploaded_nr = uploaded_nr + 1 WHERE pubkey_hash='" . $row['pubkey_hash'] . "'";
+             $sql->update($query);
+        }
+	else {
 		Logger::syslog(LOG_ERR,"Duplicate signed certificates in database!");
-		/* echo "<FONT COLOR=\"red\">Database inconsistent! Contact webmaster! TODO: do this automatically...</FONT><BR>\n"; */
 	}
 	mysql_free_result($res);
 	return $issued_before;
