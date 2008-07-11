@@ -17,7 +17,7 @@ class MailManager {
 
     public function __construct($pers, $sender, $subject,  $body) 
 	{
-		if (!isset($pers) || ! ($pers instanceof SLCSPerson)) { 
+		if (!isset($pers) || ! ($pers instanceof Person)) { 
 			echo __FILE__ .":".__LINE__. " Need person in MailManager!<BR>\n";
 			echo __FILE__.":".__LINE__." Got " . $pers . "<br>\n";
 			return;
