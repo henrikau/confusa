@@ -206,7 +206,7 @@ function show_db_csr()
 {
      global $person;
      $sql = get_sql_conn();
-     $query = "SELECT csr_id, uploaded_date, from_ip, common_name, auth_key FROM csr_cache WHERE common_name='" . $person->get_common_name() . "'";
+     $query = "SELECT csr_id, uploaded_date, from_ip, common_name, auth_key FROM csr_cache WHERE common_name='" . $person->get_common_name() . "' ORDER BY uploaded_date DESC";
      $res = mysql_query($query);
 
      echo "<B>Certificate Signing Requests (CSRs)</B><BR>\n";
@@ -214,20 +214,18 @@ function show_db_csr()
 
      if (mysql_num_rows($res) > 0) {
           /* TODO: fix id to be a counter, not the id in the database */
-          echo "<tr><th>Uploaded</th><th>From IP</th><th>Owner</th><th>AuthToken</th></tr>\n";
+          echo "<tr><th>AuthToken</th><th>Uploaded</th><th>From IP</th><th>Owner</th></tr>\n";
           while($row=mysql_fetch_assoc($res)) {
                echo "<tr>\n";
-               /* echo "<td>".$row['csr_id']."</td>\n"; */
+               echo "<td>".$row['auth_key']."</td>\n";
                echo "<td>".$row['uploaded_date']."</td>\n";
                echo "<td>".$row['from_ip']."</td>\n";
                echo "<td>".$row['common_name']."</td>\n";
-               echo "<td>".$row['auth_key']."</td>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?approve_csr=".$row['csr_id']."\">Sign</A></TD>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?inspect_csr=".$row['csr_id']."\">Inspect</A></TD>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$row['csr_id']."\">Delete</A></TD>\n";
                echo "</tr>\n";
           }
-          echo "</table>\n";
      }
      else {
           echo "<tr><td>No CSRs in database awaits you</td></tr>\n";
