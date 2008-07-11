@@ -62,12 +62,17 @@ function process_file_csr()
 		$fu = new FileUpload('user_csr', true, 'test_content');
 		if ($fu->file_ok()) {
 			$cm = new CertManager($fu->get_content(), $person);
-			/* CertManager will test content of CSR before sending it off for signing */
-			if (!$cm->sign_key(create_pw($confusa_config['auth_length']))) {
-                             /* echo __FILE__.":".__LINE__." Error signing
-                              * key!<BR>\n"; */
+			/* CertManager will test content of CSR before sending it off for signing
+                         *
+                         * As we upload the key manually, the user-script won't
+                         * be called for creating a auth-token. We therefore
+                         * create a random string containing the correct amount
+                         * of characters. It will contain more letters than the
+                         * user-script (which uses sha1sum of some random text).
+                         */
+			if (!$cm->sign_key(create_pw($confusa_config['auth_length'])))
                              ;
-			}
+
                 }
         }
       else {
