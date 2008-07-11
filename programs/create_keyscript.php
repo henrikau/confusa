@@ -1,5 +1,5 @@
 <?php
-require_once('slcs_person.php');
+require_once('person.php');
 
 class KeyScript {
 	private $url;
@@ -8,8 +8,8 @@ class KeyScript {
 	private $config;
 	function __construct($pers) {
 		if (isset($pers)) {
-			global $slcs_config;
-			$this->config = $slcs_config;
+                     global $confusa_config;
+			$this->config = $confusa_config;
 
 			$this->person = $pers;
 			/* can use strstr for this, but in case common-name
