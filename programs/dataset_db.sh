@@ -30,8 +30,14 @@ if [ -z $1 ]; then
 fi
 
 # reset files
-echo "" > $inno_file
-echo "" > $myisam_file
+if [ -f $inno_file ]; then
+    rm -f $inno_file
+fi
+
+if [ -f $myisam_file ]; then
+    rm -f $myisam_file
+fi
+
 
 # run program for given rounds, using time as seed for hash-function
 insert $1
