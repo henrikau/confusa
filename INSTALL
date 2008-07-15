@@ -1,20 +1,23 @@
 Requirements posed upon the user:
+
 In this document,with user, we mean *you*, the person that downloads,
-configures and installs SLCS-Web on a server.
+configures and installs Confusa on a server.
+
 You should have
-- some experience with apache configuration
-- knowledge about cryptography (i.e. what a certificate is, and how it's
-  used).
-- some, but not excessive, knowledge about php and bash-scripting, as
-  this will help both *you* and *us* to track down undiscovered bugs
+- some experience with Apache-configuration
+- basic knowledge about cryptography (i.e. what a certificate is, and
+  how it's used) but not much more is required.
+- some, but not excessive, knowledge about PHP and bash-scripting, as
+  this will help both *you* and *us* to track down bugs
 - an open and positive mind (for a more pleasent interaction with the
-  world as a whole)
+  world as a whole). This has nothing to do with Confusa
 
-To install SLCS-Web
+To install Confusa
 
-1) Install php modules and php-mysql
-2) Install apache with php support.
-3) Configure apache to use SSL, use the following lines in your apache2/sites-enabled/appropriate.config.file
+1) Install Apache2 with PHP5 support.
+2) Install php5-mysql and php5-openssl
+3) Install mysql5.
+4) Configure Apache to use SSL, use the following lines in your apache2/sites-enabled/appropriate.config.file
 
 <VirtualHost your.host.org:80>
         Servername your.server.org
@@ -36,14 +39,56 @@ To install SLCS-Web
 </VirtualHost>
 
 Note that ServerName can be the same as the host-name in VirtualHost.
-Make sure you create the folder /etc/apache2/ssl/ as the create-ca.sh will put hostkeys there for you.
+Make sure you create the folder /etc/apache2/ssl/ as the create-ca.sh
+will put hostkeys there for you (a self-signed certificate, you should
+get a properly signed certificate for any production-grade instances of
+Confusa!).
+
 Alternatively, if you don't want to use this script, put the
 key/certificate in the folder of your choice and configure the 2 lines
 in the given config-file.
 
-4) Install and configure SLCS-Web. The first release will contain
-SLCS-Web bundled with simplesamlphp, but this *will* be split up in the
-future.
+Finally, this is a *sample* configuration. If you know your way around
+an Apache configuration, this should be more of a guideline than
+anything else. 
+
+5) Install and configure Confusa. This process is somewhat involved as
+you will need to configure simpleSAMLphp before you configure
+Confusa. Once simpleSAMLphp is configured correctly (with config,
+metadata and all that, see http://rnd.feide.no for details) do the
+following:
+
+a) Put Confusa in a directory, say /var/www/confusa/
+
+b) Configure Apache with something along the following line:
+
+             Alias /confusa "/var/www/confusa/www/"
+             <Directory /var/www/confusa/www>
+                        Options Indexes MultiViews
+                        AllowOverride None
+                        Order allow,deny
+                        Allow from all
+             </Directory>
+
+   then reload the config ( /etc/init.d/apache2 reload)
+
+   This will enable your host to show the www directory of the
+   confusa-folder.
+
+
+c) Configure the confusa_config.php file (copy the
+   confusa_config_template.php and modify that)
+   
+d) Run the create_database.sh script in confusa/init folder
+   This will create the database, the user and the tables. it will use
+   the confusa_config.php file, so make sure that this is configured
+   properly before you run this script.
+
+e) Add a cron-job of the following type:
+   */5 *   * * * /var/www/confusa/programs/clean_db.sh
+
+   This will run the clean_db script every 5 minutes and keep the
+   database nice and tidy.
 
 5) Test and verify that the system is operational before you allow the
-public access.
+   public access.
