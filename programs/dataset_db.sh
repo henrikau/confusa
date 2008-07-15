@@ -64,7 +64,6 @@ if [ -z $1 ]; then
 else
     for i in `seq 1 $1`; do 
 	if [ $(($i % $buffer)) -eq 0 ]; then
-	    echo "*"
 	    echo $inno_buffer >> $inno_file
 	    echo $myisam_buffer >> $myisam_file
 	    inno_buffer=""
@@ -75,8 +74,8 @@ else
 	fi
 	hash=`sval $hash`
 	create_entries $hash
-	echo $inno_buffer >> $inno_file
-	echo $myisam_buffer >> $myisam_file
     done
+    echo $inno_buffer >> $inno_file
+    echo $myisam_buffer >> $myisam_file
 fi
 
