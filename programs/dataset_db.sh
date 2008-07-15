@@ -46,7 +46,6 @@ function insert
 	echo "Error in getting password for database"
 	exit
     fi
-
     mysql -A -u"root" -h"localhost" -p$pass -Dtest -e "DELETE FROM hash_inno"
     mysql -A -u"root" -h"localhost" -p$pass -Dtest -e "DELETE FROM hash_myisam"
 
@@ -60,7 +59,7 @@ function insert
 
 if [ -z $1 ]; then
     echo "No argument, inserting into database"
-    # insert
+    insert
 else
     for i in `seq 1 $1`; do 
 	if [ $(($i % $buffer)) -eq 0 ]; then
