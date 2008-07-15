@@ -1,7 +1,24 @@
 -- ---------------------------------------------------------
+--
+-- This is the setup sql script for Confusa
+-- It contains the SQL syntax for creating the tables we use
+--
+-- Only edit this file if you know what you are doing as some of these
+-- tables have been more or less hard-coded in the sql-libraries etc.
+--
+-- ---------------------------------------------------------
+
+
+-- ---------------------------------------------------------
 -- 
 -- the table describing the sms_auth procedure
 -- 
+-- This is used for a double-authentication step, where, after
+-- authenticated via simplesamlphp (and some federated IdP), another,
+-- onetime password is created and sent.
+--
+-- The data used in this step, are kept here.
+--
 -- ---------------------------------------------------------
 DROP TABLE IF EXISTS sms_auth;
 CREATE TABLE sms_auth (
@@ -41,6 +58,7 @@ CREATE TABLE sms_auth (
        valid_untill DATETIME DEFAULT '0000-00-00 00:00:00'
 ) type=InnoDB;
 
+-- ---------------------------------------------------------
 --
 -- csr_cache
 --
@@ -51,6 +69,7 @@ CREATE TABLE sms_auth (
 -- however, a few fields cannot be verified before the user has logged in
 -- (i.e. the fed. attributes).
 --
+-- ---------------------------------------------------------
 DROP TABLE IF EXISTS csr_cache;
 CREATE TABLE csr_cache (
        csr_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -65,12 +84,14 @@ CREATE TABLE csr_cache (
        auth_key char(40) NOT NULL
 ) type=InnoDB;
 
+-- ---------------------------------------------------------
 --
 -- cert_cache
 --
 -- Cache for storing issued certificates. This is useful when we want
 -- the automated download of certificates
 --
+-- ---------------------------------------------------------
 DROP TABLE IF EXISTS cert_cache;
 CREATE TABLE cert_cache (
 	cert_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -82,15 +103,19 @@ CREATE TABLE cert_cache (
 	valid_untill DATETIME NOT NULL
 ) type=InnoDB;
 
+-- ---------------------------------------------------------
 --
 -- pubkeys
 --
--- This table holds the hash of *all* public-keys ever issued from this Service.
--- As it is a *requirement* to *never* re-issue a certificate (or resign
--- the same key twice, we must create this table in order to guarantee this.
+-- This table holds the hash of *all* public-keys ever issued from this
+-- Service.
 --
-DROP TABLE IF EXISTS pubkeys;
-CREATE TABLE pubkeys (
+-- As it is a *requirement* to *never* re-issue a certificate (or resign
+-- the same key twice, we must create this table in order to guarantee
+-- this. This also implies that the table should not be dropped
+--
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS pubkeys (
        -- the hash of the (signed) public key
        -- sothat we can ensure that the same key isn't signed twice (or more)
        pubkey_hash char(40) PRIMARY KEY,
