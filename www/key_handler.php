@@ -47,7 +47,7 @@ function keyhandle($pers)
   }
 } /* end keyhandle() */
 
-/* sign_csr()
+/* process_file_csr()
  *
  * Take a CSR (stored in memory, *not* file) and sign&ship it. CM will do some
  * additional checks. A common wrapper for the two ways we have for getting a
@@ -92,10 +92,9 @@ function process_db_csr()
 	if (isset($_GET['delete_csr'])) {
 		delete_csr(htmlentities($_GET['delete_csr']));
 	}
+        if (isset($_GET['auth_token']))
+             approve_csr(htmlentities($_GET['auth_token']));
 
-	if (isset($_GET['approve_csr'])) {
-		approve_csr(htmlentities($_GET['approve_csr']));
-	}
 	else if (isset($_GET['inspect_csr'])) {
 		inspect_csr(htmlentities($_GET['inspect_csr']));
 	}
@@ -149,38 +148,36 @@ function send_script()
   }
 }
 
-
-function approve_csr($id)
+/* approve_csr()
+ *
+ * This function approves a CSR for signing. It uses the auth-token as a
+ * paramenter to find the CSR in the databse.
+ */
+function approve_csr($auth_token)
 {
-	global $person;
-	$loc_id = sanitize_id($id);
-
-	$sql=get_sql_conn();
-	$query  = "SELECT csr, auth_key FROM csr_cache WHERE csr_id='" . $loc_id;
-	$query .= "' AND common_name='" . $person->get_common_name() . "'";
-	$csr_res=$sql->execute($query);
-	if(mysql_num_rows($csr_res) == 1) {
-		/* get public key */
-		$csr_array=mysql_fetch_assoc($csr_res);
-		$pubkey = openssl_csr_get_public_key($csr_array['csr']);
-		$cm = new CertManager($csr_array['csr'], $person);
-		/* CertManager will test content of CSR before sending it off
-                 * for signing.
-                 * CertManager will also push the cert to the database
-                 */
-                echo "Auth key from db is: ".$csr_array['auth_key'] . "<br>\n";
-		if (!$cm->sign_key($csr_array['auth_key'])){
-			echo __FILE__.":".__LINE__." Error signing key!<BR>\n";
-		}
-		/* remove CSR from database */
-		$update = "DELETE FROM csr_cache WHERE csr_id='".$loc_id."'";
-		$sql->update($update);
-	}
-	else {
-             echo "No CSR exists with this id for the given user (".$person->get_common_name().")<BR>\n";
-	}
-	mysql_free_result($csr_res);
-}
+     global $person;
+     $at = htmlentities($auth_token);
+     $sql = get_sql_conn();
+     $query = "SELECT csr, csr_id FROM csr_cache WHERE auth_key='".$at."' AND common_name='" . $person->get_common_name() . "'";
+     $csr_res = $sql->execute($query);
+     if (mysql_num_rows($csr_res) == 1) {
+          $db_array = mysql_fetch_assoc($csr_res);
+          $csr = $db_array['csr'];
+          $cm = new CertManager($csr, $person);
+          if (!$cm->sign_key($at)) {
+               echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
+               return;
+          }
+          else {
+               $update = "DELETE FROM csr_cache WHERE csr_id='".$db_array['csr_id']."'";
+               $sql->update($update);
+          }
+     }
+     else {
+          echo __FILE__ .":".__LINE__." error getting CSR from database<BR>\n";
+     }
+     mysql_free_result($csr_res);
+} /* end approve_csr_remote() */
 
 function send_cert($cert_id)
 {
@@ -215,7 +212,7 @@ function show_db_csr()
      $res = mysql_query($query);
 
      echo "<B>Certificate Signing Requests (CSRs)</B><BR>\n";
-     echo "<table class=\"small\" width=\"90%\">\n";
+     echo "<table class=\"small\">\n";
 
      if (mysql_num_rows($res) > 0) {
           /* TODO: fix id to be a counter, not the id in the database */
@@ -226,7 +223,7 @@ function show_db_csr()
                echo "<td>".$row['uploaded_date']."</td>\n";
                echo "<td>".$row['from_ip']."</td>\n";
                echo "<td>".$row['common_name']."</td>\n";
-               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?approve_csr=".$row['csr_id']."\">Sign</A></TD>\n";
+               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$row['auth_key']."\">Sign</A></TD>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?inspect_csr=".$row['csr_id']."\">Inspect</A></TD>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$row['csr_id']."\">Delete</A></TD>\n";
                echo "</tr>\n";
@@ -247,10 +244,9 @@ function show_db_cert()
      $query = "SELECT cert_id, auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner='".$person->get_common_name()."' AND valid_untill > current_timestamp()";
      $res = $sql->execute($query);
      /* echo __FILE__ . ":" . __LINE__ . "<br>\n" . $query . "<br><br>\n"; */
-     echo "<B>Awaiting signed Certificates:</B><BR>\n";
-     echo "<table class=\"small\" width=\"90%\">\n"; 
+     echo "<B>Certificates:</B><BR>\n";
+     echo "<table class=\"small\">\n"; 
      if (mysql_num_rows($res) > 0) {
-          echo "<B>Certificates ready for download</B><BR>\n";
           echo "<tr><th>AuthToken</th><th>owner</th></tr>\n";
           while($row=mysql_fetch_assoc($res)) {
                echo "<tr>\n";
@@ -262,17 +258,17 @@ function show_db_cert()
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['cert_id']."\">Inspect</A></td>\n";
                echo "</tr>\n";
           }
-               echo "<br>\n";
-          echo "To download the certificate with the script, use the following command at your local workstation:<BR>\n";
-          echo "<pre>./create_key.sh -get ".htmlentities("<AuthToken>")."</pre>\n";
-          echo "Where create_key.sh will remember the last used AuthToken. If the script fails, try to pass \n";
-          echo "the auth-token from the list above as a parameter to the script.<BR>\n";
-
      }
      else {
           echo "<tr><td>No Certificates</td></tr>\n";
      }
      echo "</table>\n";
+     echo "<br>\n";
+     echo "To download the certificate with the script, use the following command at your local workstation:<BR>\n";
+     echo "<pre>./create_key.sh -get ".htmlentities("<AuthToken>")."</pre>\n";
+     echo "create_key.sh will remember the last used AuthToken. If the script fails, try to pass \n";
+     echo "the auth-token from the list above as a parameter to the script as showed above.<BR>\n";
+
      mysql_free_result($res);
 
      echo "<BR><BR><BR>\n";
