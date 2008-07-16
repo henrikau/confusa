@@ -37,8 +37,7 @@ function known_pubkey($csr)
 	/* echo __FILE__ .":".__LINE__."<BR>\n".$csr . "<br>\n"; */
 	$issued_before = true;
 	/* get hash of pubkey in CSR*/
-	$cmd = "exec echo \"".$csr."\" | openssl req -pubkey -noout | sha1sum | cut -d ' ' -f 1";
-	$pubkey_checksum=trim(shell_exec($cmd));
+	$pubkey_checksum=pubkey_hash($csr);
 
 	/* search db for match on hash and the entire csr in csr_cache */
 	$query="SELECT * FROM pubkeys WHERE pubkey_hash='".$pubkey_checksum."'";
@@ -61,6 +60,17 @@ function known_pubkey($csr)
 	mysql_free_result($res);
 	return $issued_before;
 } /* end test_old */
+
+/* pubkey_hash()
+ *
+ * Calculates the sha1-hash of the public-key in the uploaded CSR
+ */
+function pubkey_hash($csr)
+{
+     $cmd = "exec echo \"".$csr."\" | openssl req -pubkey -noout | sha1sum | cut -d ' ' -f 1";
+     $pubkey_checksum=trim(shell_exec($cmd));
+     return $pubkey_checksum;
+}
 
 function csr_debug()
 {
