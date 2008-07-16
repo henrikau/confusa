@@ -69,7 +69,6 @@ class CertManager
                        | valid_untill | datetime    | NO   |     |         |                |
                        +--------------+-------------+------+-----+---------+----------------+
                     */
-                    echo "auth_key: " . $auth_key . "<br>\n";
                     $query  = "INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) ";
                     $query .= "VALUES('".$this->user_cert."',";
                     $query .= "'".$auth_key."','".$this->person->get_common_name() . "'";
