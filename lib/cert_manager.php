@@ -2,7 +2,7 @@
 require_once('mail_manager.php');
 require_once('sql_lib.php');
 require_once('pw.php');
-
+require_once('logger.php');
 class CertManager
 {
   private $person;
@@ -26,8 +26,7 @@ class CertManager
       
 	    /* read public key and create sum */
 	    $this->pubkey_checksum=trim(shell_exec("exec echo \"".$csr."\" | openssl req -pubkey -noout | sha1sum | cut -d ' ' -f 1"));
-	    /* verify */
-	    $this->verify_csr();
+
     } /* end __construct */
 
   /* this function is quite critical, as it must remove residual information
@@ -47,7 +46,7 @@ class CertManager
    */
   function sign_key($auth_key)
     {
-	    if ($this->valid_csr) {
+         if ($this->verify_csr()) {
                  $sign_days = 11;
                  $cert_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/cert/sigma_cert.pem';
                  $ca_priv_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/priv/sigma_priv_key.pem';
@@ -82,6 +81,10 @@ class CertManager
 
 		    Logger::log_event(LOG_INFO, "Certificate successfully signed for " . $this->person->get_common_name());
 		    /* add to database (the hash of the pubkey) */
+                    $update = "INSERT INTO pubkeys (pubkey_hash) VALUES('" . $this->pubkey_checksum . "')";
+                    $sql = get_sql_conn();
+                    $sql->update($update);
+
 		    return true;
 	    }
 	    else {
@@ -95,40 +98,39 @@ class CertManager
   /* strictly speaking, its a private procedure . :-) */
   private function verify_csr()
   {
+       /* by default, the CSR is valid */
 	  $this->valid_csr = true;
 	  if (!isset($this->user_csr)) {
+               echo __FILE__ . ":" . __LINE__ . " CSR not set in cert-manager<BR>\n";
 		  $this->valid_csr = false;
-		  return;
-	  }
-	  
-	  $subject= openssl_csr_get_subject($this->user_csr);
-	  /* check fields of CSR to predefined values and user-specific values */
-	  if (!($subject['C'] === "NO" &&
-		$subject['O'] === "Nordugrid" &&
-		$subject['OU'] === "Nordugrid" &&
-		$subject['CN'] === $this->person->get_common_name() &&
-		$subject['emailAddress'] === $this->person->get_email())) {
-		  echo "Error in subject! <BR/>\n";
-		  echo "The fields in your CSR was not set properly.<BR>\n";
-		  echo "To try again, please download a new version of the script, ";
-		  echo "generate a new key and upload again.<BR>\n";
-		  print_r($subject);
-		  $this->valid_csr = false;
-		  return;
-	  }
-
-	  /* match hash of pubkey to db */
-	  if (!known_pubkey($this->user_csr)) {
-		  /* add key and hash to db */
-		  $update = "INSERT INTO pubkeys (pubkey_hash) VALUES('" . $this->pubkey_checksum . "')";
-		  /* echo __FILE__.":".__LINE__." ".$query."<BR>\n"; */
-		  $sql = get_sql_conn();
-		  $sql->update($update);
 	  }
 	  else {
-               echo "Cannot sign a public key that's previously signed. Please create a new key with corresponding CSR and try again<BR>\n";
-		  $this->valid_csr = false;
-	  }
+               $subject= openssl_csr_get_subject($this->user_csr);
+               /* check fields of CSR to predefined values and user-specific values
+                * TODO: Fix these fields to read from config and country to be
+                * federate-dependent.
+                */
+               if (!($subject['C'] === "NO" &&
+                     $subject['O'] === "Nordugrid" &&
+                     $subject['OU'] === "Nordugrid" &&
+                     $subject['CN'] === $this->person->get_common_name() &&
+                     $subject['emailAddress'] === $this->person->get_email())) {
+                    echo "Error in subject! <BR/>\n";
+                    echo "The fields in your CSR was not set properly.<BR>\n";
+                    echo "To try again, please download a new version of the script, ";
+                    echo "generate a new key and upload again.<BR>\n";
+                    print_r($subject);
+                    $this->valid_csr = false;
+               }
+               else {
+                    /* match hash of pubkey to db */
+                    if (known_pubkey($this->user_csr)) {
+                         echo "Cannot sign a public key that's previously signed. Please create a new key with corresponding CSR and try again<BR>\n";
+                         $this->valid_csr = false;
+                    }
+               }
+          }
+          return $this->valid_csr;
     } /* end verify_csr */
 } /* end class CertManager */
 
