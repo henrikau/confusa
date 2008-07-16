@@ -33,12 +33,21 @@ if ( isset($_GET['remote_csr']) && $_GET[$confusa_config['auth_var']]) {
 			/* check ip to see if it's been abusive */
 			$ip_query="SELECT common_name, count(*) FROM csr_cache WHERE from_ip='".$ip."' GROUP BY common_name ORDER BY count(*) DESC";
 			$res_ip=$sql->execute($ip_query);
+                        /* has the ip tried to upload many different CSRs with
+                         * different common-names? */
 			if (mysql_numrows($res_ip) > $confusa_config['remote_ips']) {
-				echo "Your IP is temprarily disabled due to CSR-upload overflow. Please try again later<BR>\n";
+				echo "Your IP is temporarily disabled due to CSR-upload overflow. Please try again later<BR>\n";
 				Logger::log_event(LOG_WARNING, "Detected abusive client from ".$ip.". Dropping content.<BR>\n");
 				exit(1);
 			}
-
+                        while($content = mysql_fetch_assoc($res_ip)) {
+                             if ($content['count(*)'] > $confusa_config['remote_ips']) {
+                                  echo "Your IP is temporarily disabled due to excessive CSR-upload <BR>\n";
+                                  echo "You must approve the pending CSRs first, or wait for them to time out. <BR>\n";
+                                  echo "The timeout normally takes 1 day<BR>\n";
+                                  exit(1);
+                             }
+                        }
 			if (test_content($csr)) {
 				$query = "INSERT INTO csr_cache (csr, uploaded_date, from_ip, common_name, auth_key) ";
 				$query .= "VALUES ";
