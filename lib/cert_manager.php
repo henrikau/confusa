@@ -10,9 +10,9 @@ class CertManager
   private $pubkey_checksum;
   private $valid_csr;
   private $user_cert;
-  /* constructor:
-   *
-   * Should register all values so that when a create-cert request is issued,
+
+  /* 
+   * Should register all values so that when a sign_key request is issued,
    * all values are in place. 
    */
   function __construct($csr, $pers)
@@ -41,8 +41,8 @@ class CertManager
 
   /* sign_key()
    *
-   * Will invoke the system shell-script for parsing and signing the
-   * script. The script will return the signed csr if successful
+   * This is the signing routine of the system. In this release, it will use PHP
+   * for signing, using a local CA-key.
    */
   function sign_key($auth_key)
     {
@@ -78,7 +78,7 @@ class CertManager
                     $sql = get_sql_conn();
                     $sql->update($query);
 
-		    Logger::log_event(LOG_INFO, "Certificate successfully signed for " . $this->person->get_common_name());
+		    Logger::log_event(LOG_INFO, "Certificate successfully signed for " . $this->person->get_common_name() . " Contacting us from " . $_SERVER['REMOTE_ADDR']);
 		    /* add to database (the hash of the pubkey) */
                     $update = "INSERT INTO pubkeys (pubkey_hash) VALUES('" . $this->pubkey_checksum . "')";
                     $sql = get_sql_conn();
@@ -87,14 +87,19 @@ class CertManager
 		    return true;
 	    }
 	    else {
-		    Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user " . $this->person->get_common_name());
+		    Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user " . $this->person->get_common_name() . " from ip " . $_SERVER['REMOTE_ADDR']);
 	    }
       return false;
     } /* end sign_key() */
 
 
 
-  /* strictly speaking, its a private procedure . :-) */
+  /* verify_csr()
+   *
+   * This function will test the CSR against several fields.
+   * It will test the subject against the person-attributes (which in turn are
+   * gathered from simplesamlphp-attributes (Feide, surfnet etc).
+   */
   private function verify_csr()
   {
        /* by default, the CSR is valid */
