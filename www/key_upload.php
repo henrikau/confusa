@@ -65,8 +65,8 @@ if ( isset($_GET['remote_csr']) && $_GET[$confusa_config['auth_var']]) {
 			}
 		}
 		else {
-                     Logger::log_event(LOG_NOTICE, "Old key uploaded from ".$ip." - stopping transaction");
-                     echo "old key. Genereate a <B>new</B> key please<BR>\n";
+                     Logger::log_event(LOG_NOTICE, "Old key (hash: " .pubkey_hash($csr) .") uploaded from ".$ip." - stopping transaction");
+                     echo "This is an old key. Genereate a <B>new</B> key please<BR>\n";
 		}
 	}
 }
