@@ -46,7 +46,7 @@ function known_pubkey($csr)
 	$sql=get_sql_conn();
 	$res=$sql->execute($query);
 	if (mysql_num_rows($res) == 0) {
-		Logger::log_event(LOG_DEBUG,"New and unique key received\n");
+		Logger::log_event(LOG_DEBUG, __FILE__ . " New and unique key received\n");
 		$issued_before=false;
 	}
         /* update counter in database */
