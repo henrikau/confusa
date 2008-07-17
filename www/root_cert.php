@@ -9,12 +9,8 @@ function root_cert($person)
   echo "If you want the certificate, it's <A HREF=\"certs/sigma_cert.pem\">here</A><BR>\n";
 
   /* read and display the key in a nicely formatted way */
-  $myFile = "certs/sigma_cert.pem";
-  $fd = fopen($myFile, 'r');
-  $content = fread($fd, filesize($myFile));
-  fclose($fd);
-  openssl_x509_export($this->signed_csr, $tmp, false);
-
+  $content = file_get_contents("certs/sigma_cert.pem");
+  openssl_x509_export($content, $tmp, false);
   echo "<PRE>\n";
   echo $tmp;
   echo "</PRE>\n";
