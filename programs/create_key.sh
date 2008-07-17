@@ -14,6 +14,9 @@ email="/emailAddress="
 key_length=
 name=`echo $common | cut -d '=' -f 2 | cut -d '@' -f 1`
 script_folder=$HOME/.globus
+if [ ! -f $script_folder ]; then
+    mkdir -p $script_folder;
+fi
 file_location=$script_folder/$name
 priv_key_name="$file_location.pem"
 csr_name="$file_location.csr"
