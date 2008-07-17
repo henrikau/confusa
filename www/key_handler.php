@@ -283,12 +283,10 @@ function inspect_csr($csr_id) {
 	$res=$sql->execute($query);
 	if(mysql_num_rows($res) == 1) {
 		$csr_array = mysql_fetch_assoc($res);
-		$cmd = "exec echo \"".$csr_array['csr']."\" | openssl req -noout -text";
-
 		echo "<BR>Showing CSR#" . $loc_id . " from database:<BR>\n";
 		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$loc_id."\">Delete from Database</A> ]\n";
 		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$csr_array['auth_key']."\">Approve for signing</A> ]\n";
-                /* echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."\">Back</A> ]\n"; */
+		$cmd = "exec echo \"".$csr_array['csr']."\" | openssl req -noout -text";
 		echo "<PRE>".shell_exec($cmd)."</PRE>\n";
 	}
 	mysql_free_result($res);
