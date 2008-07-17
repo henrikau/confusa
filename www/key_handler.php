@@ -90,7 +90,7 @@ function process_db_csr()
 {
 	global $person;
 	if (isset($_GET['delete_csr'])) {
-		delete_csr(htmlentities($_GET['delete_csr']));
+             delete_csr(htmlentities($_GET['delete_csr']));
 	}
         if (isset($_GET['auth_token']))
              approve_csr(htmlentities($_GET['auth_token']));
@@ -324,14 +324,14 @@ function delete_csr($csr_id) {
 	$res = $sql->execute($query);
 	$hits=mysql_num_rows($res);
 	if ($hits== 1) {
-		Logger::log_event(LOG_NOTICE, "Dropping CSR with ID ".$loc_id." belonging to ".$person->get_common_name()." originating from ".$_SERVER['REMOTE_ADDR']."");
+		Logger::log_event(LOG_NOTICE, "Dropping CSR with hash ".pubkey_hash($hits['csr'])." belonging to ".$person->get_common_name()." originating from ".$_SERVER['REMOTE_ADDR']."");
 		$update="DELETE FROM csr_cache WHERE csr_id=".$loc_id." AND common_name='".$person->get_common_name()."'";
 		$sql->update($update);
 	}
 	else {
 		if ($hits==0) {
 			echo "No matching CSR found.<BR>\n";
-			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$loc_id." from ip ".$_SERVER['REMOTE_ADDR']);
+			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$loc_id." from ip ".$_SERVER['REMOTE_ADDR'] . " : " . $person->get_common_name());
 		}
 		else {
 			echo "Too many hits (".$hits.") in database<BR>\n";
