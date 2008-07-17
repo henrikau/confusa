@@ -96,7 +96,7 @@ function process_db_csr()
              approve_csr(htmlentities($_GET['auth_token']));
 
 	else if (isset($_GET['inspect_csr'])) {
-		inspect_csr(htmlentities($_GET['inspect_csr']));
+             inspect_csr(htmlentities($_GET['inspect_csr']));
 	}
         show_db_csr();
 }
@@ -287,7 +287,7 @@ function inspect_csr($csr_id) {
 
 		echo "<BR>Showing CSR#" . $loc_id . " from database:<BR>\n";
 		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$loc_id."\">Delete from Database</A> ]\n";
-		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?approve_csr=".$loc_id."\">Approve for signing</A> ]\n";
+		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$csr_array['auth_key']."\">Approve for signing</A> ]\n";
                 /* echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."\">Back</A> ]\n"; */
 		echo "<PRE>".shell_exec($cmd)."</PRE>\n";
 	}
@@ -372,7 +372,7 @@ function sanitize_id($id) {
 	 *
 	 * TODO: Do sanitize of $id here!
 	 * ================================================================= */
-	return $id;
+     return (int) $id;
 }
 ?>
 
