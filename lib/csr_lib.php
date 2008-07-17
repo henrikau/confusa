@@ -27,25 +27,21 @@ function test_content($content)
 }
 
 
-/* this function takes a valid CSR and scans the database to check if the
- * public-key has been uploaded before as part of (another) CSR.
+/* known_pubkey()
  *
- * It will also check if the csr lies in the csr_cache.
+ * this function takes a valid CSR and scans the database to check if the
+ * public-key has been uploaded before as part of (another) CSR.
  */
 function known_pubkey($csr)
 {
-	/* echo __FILE__ .":".__LINE__."<BR>\n".$csr . "<br>\n"; */
 	$issued_before = true;
-	/* get hash of pubkey in CSR*/
 	$pubkey_checksum=pubkey_hash($csr);
 
-	/* search db for match on hash and the entire csr in csr_cache */
 	$query="SELECT * FROM pubkeys WHERE pubkey_hash='".$pubkey_checksum."'";
-	/* echo __FILE__.":".__LINE__. " " . $query . "<BR>\n"; */
 	$sql=get_sql_conn();
 	$res=$sql->execute($query);
 	if (mysql_num_rows($res) == 0) {
-		Logger::log_event(LOG_DEBUG, __FILE__ . " New and unique key received\n");
+		Logger::log_event(LOG_DEBUG, __FILE__ . " CSR with previously unknown public-key (hash: $pubkey_checksum)\n");
 		$issued_before=false;
 	}
         /* update counter in database */
@@ -55,11 +51,14 @@ function known_pubkey($csr)
              $sql->update($query);
         }
 	else {
-		Logger::syslog(LOG_ERR,"Duplicate signed certificates in database!");
+		Logger::syslog(LOG_ERR,"Duplicate signed certificates in database! -> $pubkey_checkusm");
+                mysql_free_result($res);
+                exit(1);
 	}
+
 	mysql_free_result($res);
 	return $issued_before;
-} /* end test_old */
+} /* end known_pubkey */
 
 /* pubkey_hash()
  *
@@ -70,19 +69,6 @@ function pubkey_hash($csr)
      $cmd = "exec echo \"".$csr."\" | openssl req -pubkey -noout | sha1sum | cut -d ' ' -f 1";
      $pubkey_checksum=trim(shell_exec($cmd));
      return $pubkey_checksum;
-}
-
-function csr_debug()
-{
-     /* put cert in temp-file */
-     /* phpinfo(); */
-     $filename=create_pw(32).".csr";
-     $filepath = WEB_DIR."/tmp/".$filename;
-     $fileurl  = dirname($_SERVER['HTTP_REFERER'])."/tmp/".$filename;
-     $fd=fopen($filepath,'w+');
-     fwrite($fd, "Hello World!\n");
-     fclose($fd);
-     echo "you can get the file here: <a href=\"" . $fileurl ."\">Here</A><br>\n";
 }
 
 ?>
