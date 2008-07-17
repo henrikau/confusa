@@ -15,14 +15,19 @@ if (!isset($confusa_config)) {
    *
    * This page shall receive a base64-encoded get-request from a client, decode
    * to retrieve the CSR and store in db.
-   * Also, a few components shall be logged.
+   *
+   * it will sanitize the csr via 3 steps:
+   *    1) Get the subject from the CSR via openssl (this implies that
+   *       openssl_csr_get_subject() is adequately foolproof.
+   *    2) if the pubkey is known. This is done via openssl (get the public-key,
+   *       calculate the hash, compare that to the database.
+   *    3) Test the content (if it start and ends with proper syntax). See 
    */
 $ip=$_SERVER['REMOTE_ADDR'];
 global $confusa_config;
 if ( isset($_GET['remote_csr']) && $_GET[$confusa_config['auth_var']]) {
 	$csr = base64_decode($_GET['remote_csr']);
 	$auth_var = htmlentities($_GET[$confusa_config['auth_var']]);
-
 	$csr_subject=openssl_csr_get_subject($csr);
 	if ($csr_subject) {
 		$common = $csr_subject['CN'];
@@ -51,23 +56,26 @@ if ( isset($_GET['remote_csr']) && $_GET[$confusa_config['auth_var']]) {
 			if (test_content($csr)) {
 				$query = "INSERT INTO csr_cache (csr, uploaded_date, from_ip, common_name, auth_key) ";
 				$query .= "VALUES ";
-				$query .= "('". $csr . "', ";
+				$query .= "('$csr', ";
 				$query .= "current_timestamp(), ";
-				$query .= "'" . $ip . "', ";
-				$query .= "'" . $common . "',";
-				$query .= "'" .$auth_var. "')";
+				$query .= "'$ip', ";
+				$query .= "'$common',";
+				$query .= "'$auth_var')";
 				$sql->update($query);
-				Logger::log_event(LOG_INFO, "Inserted new CSR from ".$ip." (".$common.")");
+				Logger::log_event(LOG_INFO, "Inserted new CSR from $ip ($common)");
 			}
 			else {
-                             Logger::log_event(LOG_WARNING, "Uploaded CSR from ".$ip." not valid, caught by test_content");
+                             Logger::log_event(LOG_WARNING, "Uploaded CSR from $ip not valid, caught by test_content");
                              exit(1);
 			}
 		}
 		else {
-                     Logger::log_event(LOG_NOTICE, "Old key (hash: " .pubkey_hash($csr) .") uploaded from ".$ip." - stopping transaction");
+                     Logger::log_event(LOG_NOTICE, "Old key (hash: " .pubkey_hash($csr) .") uploaded from $ip - stopping transaction");
                      echo "This is an old key. Genereate a <B>new</B> key please<BR>\n";
 		}
 	}
+        else {
+             Logger::log_event(LOG_NOTICE, "Invalid CSR received from $ip, aborting");
+        }
 }
 ?>
