@@ -63,7 +63,11 @@ class Framework {
         if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
              _assert_sso($this->person);
 	}
-	Logger::log_event(LOG_INFO, "displaying " . $this->f_content . " to user connecting from " . $_SERVER['REMOTE_ADDR']);
+        $uname = "anonymous";
+        if($this->person->is_auth())
+             $uname = $this->person->get_common_name();
+
+	Logger::log_event(LOG_INFO, "displaying " . $this->f_content . " to user " . $uname . " connecting from " . $_SERVER['REMOTE_ADDR']);
         require_once('header.php');
         echo "\n<TABLE class=\"main\">\n";
         echo "\t<TR>\n";
