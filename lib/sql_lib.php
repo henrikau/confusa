@@ -1,5 +1,7 @@
 <?php
 require_once('confusa_config.php');
+require_once('logger.php');
+
 $sql_conn = null;
 function get_sql_conn() {
 	global $sql_conn;
@@ -48,9 +50,10 @@ class SqlConn {
         {
         $result = null;
         if(!empty($query)) { 
+             Logger::log_event(LOG_DEBUG, "Running query: " . $query);
 		$result = @mysql_query($query)
-			or die ("Query failed. Contact adminstrator."); 
-            }
+			or die(mysql_error() . "Query failed. Contact adminstrator.");
+        }
         else {
             die(__FILE__ . " -> Cannot execute empty query!");
             }
