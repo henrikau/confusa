@@ -209,7 +209,7 @@ function show_db_csr()
      global $person;
      $sql = get_sql_conn();
      $query = "SELECT csr_id, uploaded_date, from_ip, common_name, auth_key FROM csr_cache WHERE common_name='" . $person->get_common_name() . "' ORDER BY uploaded_date DESC";
-     $res = mysql_query($query);
+     $res = $sql->execute($query);
 
      echo "<B>Certificate Signing Requests (CSRs)</B><BR>\n";
      echo "<table class=\"small\">\n";
@@ -335,10 +335,10 @@ function delete_csr($csr_id) {
 		}
 		else {
 			echo "Too many hits (".$hits.") in database<BR>\n";
-			Logger::log_event(LOG_WARNING, "Error in deleting CSR, got several matches on query (".$hits.") with id ".$loc_id." ");
+			Logger::log_event(LOG_WARNING, "Error in deleting CSR, got several matches on query (".$hits.") with id ".$loc_id."(" . $person->get_common_name() .") Ran query " . $update);
 		}
 	}
-}
+} /* end delete_csr() */
 
 function delete_cert($cert_id)
 {
