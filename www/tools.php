@@ -44,6 +44,8 @@ function test_send_tools()
           include_once('create_keyscript.php');
           $keyscript = new KeyScript($person);
           download_file($keyscript->create_script(), "create_cert.sh");
+          Logger::log_event(LOG_NOTICE, "Sending script via file to ". $person->get_common_name());
+          exit(1);
      }
 
 } /* end test_send_tools */
