@@ -7,10 +7,9 @@ class KeyScript {
 	private $country;
 	private $config;
 	function __construct($pers) {
-		if (isset($pers)) {
+		if (isset($pers) && $pers->is_auth()) {
                      global $confusa_config;
 			$this->config = $confusa_config;
-
 			$this->person = $pers;
 			/* can use strstr for this, but in case common-name
 			 * contains more than 1 . we use substring and search
@@ -24,12 +23,7 @@ class KeyScript {
 	public function create_script()
 	{
 		/* read skeleton-script from file */
-		$fd = fopen($this->config['programs_path'], 'r');
-		$script = fread($fd, filesize($this->config['programs_path']));
-		fclose($fd);
-		$test ="hei på deg, hei";
-		/* echo __FILE__ .":".__LINE__." country: " . $this->country . "<BR>\n"; */
-
+                $script = file_get_contents($this->config['programs_path']);
 		/* set fiedls for subject in CSR */
 		$script = str_replace('="/C=','="/C='.$this->country, $script);
 		$script = str_replace('="/CN=','="/CN='.$this->person->get_common_name(), $script);

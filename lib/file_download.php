@@ -12,8 +12,7 @@ function download_file($file, $filename)
      header('Content-Length: ' . strlen($file));
 
      /* turn of caching */
-     header("Cache-control: private");
-     header('Pragma: private');
+     header("Cache-control: no-cache, must-revalidate");
      header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
      echo $file;
 }

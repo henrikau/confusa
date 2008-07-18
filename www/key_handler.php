@@ -1,7 +1,6 @@
 <?php 
 include_once('framework.php');
 include_once('cert_manager.php'); /* for handling of the key */
-include_once('mail_manager.php'); /* for sending emails */
 include_once('file_upload.php'); /* FileUpload */
 include_once('sql_lib.php');
 include_once('pw.php');
@@ -10,9 +9,6 @@ include_once('logger.php');
 $person = null;
 $fw = new Framework('keyhandle');
 $fw->force_login();
-/* handle upload of script to user */
-send_script();
-
 $fw->render_page();
 /* this function contains the main-flow in the program.
  */
@@ -107,18 +103,6 @@ function process_db_cert()
      }
      show_db_cert();
 } /* end process_db_cert */
-
-
-function send_script()
-{
-  global $person;
-  global $confusa_config;
-  if (isset($_GET['send_script']) && $person->is_auth()) {
-          include_once('file_download.php');
-	  $keyscript = new KeyScript($person);
-          download_file($keyscript->create_script(), "create_cert.sh");
-  }
-}
 
 /* approve_csr()
  *

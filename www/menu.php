@@ -9,6 +9,7 @@ function render_menu($authenticated)
 
     if ($authenticated) {
         echo "<A HREF=\"key_handler.php\">Keys</A><BR><BR>\n";
+        echo "<A HREF=\"tools.php\">Tools</A><BR><BR>\n";
         echo feide_logout_link("logout.php", "Logout") . "<BR><BR>\n";
     }
     else {

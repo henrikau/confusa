@@ -72,7 +72,7 @@ class Framework {
         /* check the authentication-thing, catch the login-hook
          * This is done via confusa_auth
          */
-        authenticate();
+         $this->authenticate();
 
         require_once('header.php');
         echo "\n<TABLE class=\"main\">\n";
