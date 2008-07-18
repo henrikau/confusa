@@ -8,6 +8,12 @@ include_once('csr_lib.php');
 include_once('logger.php');
 $person = null;
 $fw = new Framework('keyhandle');
+
+/* test for downloading of certificates */
+if (send_cert()) {
+     exit(0);
+}
+
 $fw->force_login();
 $fw->render_page();
 /* this function contains the main-flow in the program.
@@ -95,9 +101,6 @@ function process_db_cert()
      if(isset($_GET['delete_cert'])) {
           delete_cert(htmlentities($_GET['delete_cert']));
      }
-     if (isset($_GET['email_cert'])) {
-          send_cert(htmlentities($_GET['email_cert']));
-     }
      else if (isset($_GET['inspect_cert'])) {
           inspect_cert(htmlentities($_GET['inspect_cert']));
      }
@@ -135,30 +138,42 @@ function approve_csr($auth_token)
      mysql_free_result($csr_res);
 } /* end approve_csr_remote() */
 
-function send_cert($cert_id)
+function send_cert()
 {
      global $person;
+     global $fw;
      global $confusa_config;
-     $loc_id = sanitize_id($cert_id);
+     $person = $fw->authenticate();
+     $send_res = false;
+
+     if (isset($_GET['email_cert']))
+          $loc_id = sanitize_id(htmlentities($_GET['email_cert']));
+     else if (isset($_GET['file_cert']))
+          $loc_id = sanitize_id(htmlentities($_GET['file_cert']));
      $sql = get_sql_conn();
      $query = "SELECT cert FROM cert_cache WHERE cert_id='".$loc_id."' AND cert_owner='".$person->get_common_name()."'";
      $res = $sql->execute($query);
      if (mysql_num_rows($res)==1) {
           $cert_array = mysql_fetch_assoc($res);
-
-          /* Public function __construct($pers, $sender, $subject,  $body) */
-          $mm = new MailManager($person,
-                            $confusa_config['sys_from_address'], 
-                            "Here is your newly signed certificate", 
-                            "Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use");
-          $mm->add_attachment($cert_array['cert'], 'usercert.pem');
-          if (!$mm->send_mail()) {
-               echo "Could not send mail properly!<BR>\n";
-               return false;
+          if (isset($_GET['email_cert'])) {
+               $mm = new MailManager($person,
+                                     $confusa_config['sys_from_address'], 
+                                     "Here is your newly signed certificate", 
+                                     "Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use");
+               $mm->add_attachment($cert_array['cert'], 'usercert.pem');
+               if (!$mm->send_mail()) {
+                    echo "Could not send mail properly!<BR>\n";
+               }
+          }
+          else if (isset($_GET['file_cert'])) {
+               require_once('file_download.php');
+               download_file($cert_array['cert'], 'usercert.pem');
+               $send_res = true;
           }
      }
      mysql_free_result($res);
-}
+     return $send_res;
+} /* end send_cert */
 
 function show_db_csr()
 {
@@ -171,7 +186,6 @@ function show_db_csr()
      echo "<table class=\"small\">\n";
 
      if (mysql_num_rows($res) > 0) {
-          /* TODO: fix id to be a counter, not the id in the database */
           echo "<tr><th>AuthToken</th><th>Uploaded</th><th>From IP</th><th>Owner</th></tr>\n";
           while($row=mysql_fetch_assoc($res)) {
                echo "<tr>\n";
@@ -199,18 +213,17 @@ function show_db_cert()
      $sql = get_sql_conn();
      $query = "SELECT cert_id, auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner='".$person->get_common_name()."' AND valid_untill > current_timestamp()";
      $res = $sql->execute($query);
-     /* echo __FILE__ . ":" . __LINE__ . "<br>\n" . $query . "<br><br>\n"; */
      echo "<B>Certificates:</B><BR>\n";
      echo "<table class=\"small\">\n"; 
      if (mysql_num_rows($res) > 0) {
           echo "<tr><th>AuthToken</th><th>owner</th></tr>\n";
           while($row=mysql_fetch_assoc($res)) {
                echo "<tr>\n";
-               /* echo "<td>".$row['cert_id']."</td>\n"; */
                echo "<td>".$row['auth_key']."</td>\n";
                echo "<td>".$row['cert_owner']."</td>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['cert_id']."\">Delete</A></td>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['cert_id']."\">Email cert</A></td>\n";
+               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['cert_id']."\">Download cert</A></td>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['cert_id']."\">Inspect</A></td>\n";
                echo "</tr>\n";
           }
