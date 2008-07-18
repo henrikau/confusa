@@ -35,20 +35,19 @@ class Logger {
  * LOG_DEBUG		debug-level message
  */
      static function log_event($pri, $message)
-     {
-          global $confusa_config;
-          define_syslog_variables();
+          {
+               global $confusa_config;
+               define_syslog_variables();
 
 		/* no need to check if confusa_config exists, if not, framework should
 		 * notify user and terminate */
 		global $confusa_config;
 		/* add this after the pri-test, as we don't want to  */
-		if ($pri> $confusa_config['syslog_min']) {
-			openlog("Confusa: ", LOG_PID | LOG_PERROR, LOG_LOCAL0);
-			syslog($pri, $message);
-			closelog();
+		if ($pri <= $confusa_config['syslog_min']) {
+                     openlog("Confusa: ", LOG_PID | LOG_PERROR, LOG_LOCAL0);
+                     syslog($pri, $message);
+                     closelog();
 		}
-
 		/* log to normal file if within level. highest level is 0, increasing number
 		 * is lower pri */
 		if ($pri > $confusa_config['loglevel_min']) {
