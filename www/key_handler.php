@@ -7,14 +7,13 @@ include_once('sql_lib.php');
 include_once('pw.php');
 include_once('csr_lib.php');
 include_once('logger.php');
-
-$fw = new Framework('keyhandle');
-$fw->force_login();		/* this page should *never* be open to the public */
-$fw->render_page();
-
 $person = null;
+$fw = new Framework('keyhandle');
+$fw->force_login();
+/* handle upload of script to user */
+send_script();
 
-
+$fw->render_page();
 /* this function contains the main-flow in the program.
  */
 function keyhandle($pers) 
@@ -23,14 +22,6 @@ function keyhandle($pers)
   $person = $pers;
   if ($person->is_auth())
     {
-         /* CAUTION: by using the csr_debug, you can download a file directly
-          * through the browser, but the system has *no* way of remembering
-          * where this file i stored! */
-         /* csr_debug(); */
-
-         /* send script or show link for sending script */
-         send_script();
-
          /* process uploaded csr's (or show the upload form) */
          process_file_csr();
 
@@ -122,29 +113,10 @@ function send_script()
 {
   global $person;
   global $confusa_config;
-  if (isset($_GET['send_script'])) {
-	  include_once('create_keyscript.php');
+  if (isset($_GET['send_script']) && $person->is_auth()) {
+          include_once('file_download.php');
 	  $keyscript = new KeyScript($person);
-	  $eol = "\r\n";
-	  $body = "";
-	  $body .= "Attached is a custom-designed script for creating keys" . $eol;
-	  $body .= "Save script to computer, set executable (chmod u+x create_key.sh) and run" . $eol;
-	  $body .= "The script will prompt for a passphrase for the key. Read the instructions carefully!" . $eol;
-	  $subject = 'Script for creating key and certificate request for ARC';
-	  $mail = new MailManager($person,
-				  $confusa_config['sys_from_address'],
-				  $subject,
-				  $body);
-	  $mail->add_attachment($keyscript->create_script(), "create_cert.sh");
-	  $mail->send_mail();
-          echo "<BR><BR><BR><BR><BR>\n";
-	  /* echo "New and updated script sent to " . $person->get_email() . "<BR>\n"; */
-  }
-  else {
-       echo "<BR>\n";
-       echo "<FONT COLOR=\"RED\"><B>Note:</B></FONT> To use this service effectively, you should use the automated script that takes ";
-       echo "care of all the nitty-gritty details. The script is avaiable ";
-       echo "<A HREF=\"" . $_SERVER['PHP_SELF'] . "?send_script\"> -here- </A> and will be sent to <A HREF=\"mailto:".$person->get_email()."\">".$person->get_email()."</A><BR><BR><BR>\n";
+          download_file($keyscript->create_script(), "create_cert.sh");
   }
 }
 
