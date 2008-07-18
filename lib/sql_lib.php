@@ -50,9 +50,8 @@ class SqlConn {
         {
         $result = null;
         if(!empty($query)) { 
-             Logger::log_event(LOG_DEBUG, "Running query: " . $query);
 		$result = @mysql_query($query)
-                     or die(Logger::log_event(LOG_ERROR, mysql_error()) . "Query failed. Contact adminstrator.");
+                     or die(Logger::log_event(LOG_ERR, "Query failed ($query) Contact adminstrator.") . "Query failed (and logged)<br>\n");
         }
         else {
             die(__FILE__ . " -> Cannot execute empty query!");
