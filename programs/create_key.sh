@@ -18,7 +18,7 @@ if [ ! -f $script_folder ]; then
     mkdir -p $script_folder;
 fi
 file_location=$script_folder/$name
-priv_key_name="$file_location.pem"
+priv_key_name="userkey.pem"
 csr_name="$file_location.csr"
 token_file="$script_folder/slcs_token"
 # where the SLCS-service is located
