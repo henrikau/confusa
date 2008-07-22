@@ -2,6 +2,11 @@ BODY
 { 
   background-color: #FFFFFF;
 }
+FONT.exception
+{ 
+  color: red;
+  font-weight: bold;   
+}
 
 TABLE.header 
 { 
