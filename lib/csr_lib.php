@@ -1,6 +1,8 @@
 <?php
 include_once('sql_lib.php');
 include_once('logger.php');
+include_once('confusa_config.php');
+
 /* test_file_content()
  *
  * Function for testing the content of certificate-files.
@@ -11,6 +13,7 @@ include_once('logger.php');
 function test_content($content)
 {
   global $person;
+
   $testres = false;
   /* check for start */
   $start = substr($content, 0, 35);
@@ -23,6 +26,12 @@ function test_content($content)
   }
 
   /* test fields of CSR */
+  
+  /* test length of pubkey */
+  $length = Config::get_config('key_length');
+  if (csr_pubkey_length($content) < $length)
+       $testres = false;
+
   return $testres;
 }
 
@@ -71,4 +80,20 @@ function pubkey_hash($csr)
      return $pubkey_checksum;
 }
 
+function csr_pubkey_length($c)
+{
+     $length = -1;
+     $csr = text_csr($c);
+     if (preg_match("/Public Key: \([0-9]+ [a-z]+\)/i", $csr, $match)) {
+          preg_match("/[0-9]+/", $match[0], $final);
+          $length = $final[0];
+     }
+     return $length;
+}
+function text_csr($csr)
+{
+     $cmd = "exec echo \"".$csr."\" | openssl req -noout -text";
+     $exported_csr = shell_exec($cmd);
+     return $exported_csr;
+} /* end text_csr */
 ?>
