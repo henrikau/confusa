@@ -1,5 +1,5 @@
 <?php
-include('keynotfoundexception.php');
+include('key_not_found.php');
 class Config {
      private static $config;
      /* get_config()
