@@ -1,16 +1,43 @@
 <?php
 require_once('confusa_config.php');
 require_once('logger.php');
+require_once('MDB2.php');
 
 $sql_conn = null;
+$use_pear = false;
+
 function get_sql_conn() {
 	global $sql_conn;
-	if (!isset($sql_conn)) {
-		$sql_conn = new MySQLConn();
-	}
+        global $use_pear;
+        if ($use_pear) {
+             $uname     = Config::get_config('mysql_username');
+             $passwd    = Config::get_config('mysql_password');
+             $host      = Config::get_config('mysql_host');
+             $db        = Config::get_config('mysql_db');
+             $dsn = "mysql://$uname:$passwd@$host/$db";
+             $options = array(
+                  'debug' => 2,
+                  'result_buffering' => true
+                  );
+             $sql_conn =& MDB2::factory($dsn, $options);
+             if (PEAR::isError($sql_conn)){
+                  Logger::log_event($sql_conn->getMessage());
+                  die($sql_conn->getMessage());
+             }
+        }
+        else {
+             if (!isset($sql_conn)) {
+                  $sql_conn = new MySQLConn();
+             }
+        }
 	return $sql_conn;
 }
 
+function use_pear($use)
+{
+     global $use_pear;
+     $use_pear = $use;
+}
 
 class SqlConn {
     private $conn;
@@ -90,13 +117,14 @@ class SqlConn {
 class MySQLConn extends SqlConn 
     {
     function __construct()
-        {
-             global $confusa_config;
-             parent::__construct($confusa_config['mysql_username'],
-			   $confusa_config['mysql_password'],
-			   $confusa_config['mysql_host'],
-			   $confusa_config['mysql_db'],
-			   $confusa_config['mysql_default_table']);
+         {
+              require_once('config.php');
+              parent::__construct(Config::get_config('mysql_username'),
+                                  Config::get_config('mysql_password'),
+                                  Config::get_config('mysql_host'),
+                                  Config::get_config('mysql_db'),
+                                  Config::get_config('mysql_default_table'));
+              
         }
     function __destruct()
         {
