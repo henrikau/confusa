@@ -30,7 +30,7 @@ token_file="$script_folder/slcs_token"
 server_loc=""
 down_page=""
 up_page=""
-
+approve_page="key_handler.php"
 # options for downloading CSRs
 wget_options=""
 
@@ -100,6 +100,10 @@ function push_csr {
     echo $auth_token > $token_file
 
     echo "CSR uploaded to server. You should now log in to $server_loc and approve the CSR with this AuthToken: $auth_token"
+    echo "The easiest way is to use:"
+    echo ""
+    echo "$server_loc$approve_page?auth_token=$auth_token"
+    echo ""
 }
 
 function get_cert {
