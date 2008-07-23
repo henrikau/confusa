@@ -11,7 +11,6 @@ class Config {
      static function get_config($entry_name)
           {
                if (!is_object(Config::$config)) {
-                    echo "Config not set!";
                     Config::$config = new Config_Holder();
                }
                try {
