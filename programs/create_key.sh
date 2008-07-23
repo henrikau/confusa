@@ -4,6 +4,10 @@
 # for SLCS-Web
 # (c) UNINETT SIGMA A/S 2008
 #
+# A lot of the variables in this file has been set dynamically based
+# upon attributes from Feide (/other fed. instances) and
+# confusa_config.php.
+
 country="/C="
 orgname="/O=Nordugrid"
 orgunitname="/OU=Nordugrid"
@@ -17,10 +21,11 @@ script_folder=$HOME/.globus
 if [ ! -f $script_folder ]; then
     mkdir -p $script_folder;
 fi
-file_location=$script_folder/$name
 priv_key_name="userkey.pem"
-csr_name="$file_location.csr"
+csr_name="userrequest.csr"
 token_file="$script_folder/slcs_token"
+
+# The following set of variables has been set dynamically by create_keyscript.php
 # where the SLCS-service is located
 server_loc=""
 down_page=""
