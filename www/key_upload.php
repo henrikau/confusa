@@ -20,13 +20,12 @@ require_once('csr_lib.php');
 $ip=$_SERVER['REMOTE_ADDR'];
 if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
 	$csr = base64_decode($_GET['remote_csr']);
-	$auth_var = htmlentities($_GET[Config::get_config('auth_var']));
+        $auth_var = htmlentities($_GET[Config::get_config('auth_var')]);
 	$csr_subject=openssl_csr_get_subject($csr);
 	if ($csr_subject) {
 		$common = $csr_subject['CN'];
 		/* contact db */
 		$sql = get_sql_conn();
-
 		if (!known_pubkey($csr)) {
 			/* check ip to see if it's been abusive */
 			$ip_query="SELECT common_name, count(*) FROM csr_cache WHERE from_ip='".$ip."' GROUP BY common_name ORDER BY count(*) DESC";
@@ -46,6 +45,9 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
                                   exit(1);
                              }
                         }
+                        /* test to see if the IP is blocked, the uploaded $csr
+                         * is valid (starts and ends with properly) and the
+                         * public key is long enough */
 			if (test_content($csr)) {
 				$query = "INSERT INTO csr_cache (csr, uploaded_date, from_ip, common_name, auth_key) ";
 				$query .= "VALUES ";
