@@ -1,7 +1,6 @@
 <?php
 include_once('sql_lib.php');
 include_once('logger.php');
-include_once('confusa_config.php');
 
 /* test_file_content()
  *

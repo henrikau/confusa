@@ -49,7 +49,6 @@ function keyhandle($pers)
 function process_file_csr()
 {
 	global $person;
-        global $confusa_config;
 	/* process_key($person, 'user_csr'); */
 	if(isset($_FILES['user_csr']['name'])) {
 		$fu = new FileUpload('user_csr', true, 'test_content');
@@ -63,7 +62,7 @@ function process_file_csr()
                          * of characters. It will contain more letters than the
                          * user-script (which uses sha1sum of some random text).
                          */
-			if (!$cm->sign_key(create_pw($confusa_config['auth_length'])))
+			if (!$cm->sign_key(create_pw(Config::get_config('auth_length'))))
                              ;
 
                 }
@@ -142,7 +141,6 @@ function send_cert()
 {
      global $person;
      global $fw;
-     global $confusa_config;
      $person = $fw->authenticate();
      $send_res = false;
 
@@ -157,7 +155,7 @@ function send_cert()
           $cert_array = mysql_fetch_assoc($res);
           if (isset($_GET['email_cert'])) {
                $mm = new MailManager($person,
-                                     $confusa_config['sys_from_address'], 
+                                     Config::get_config('sys_from_address'),
                                      "Here is your newly signed certificate", 
                                      "Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use");
                $mm->add_attachment($cert_array['cert'], 'usercert.pem');

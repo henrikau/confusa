@@ -1,7 +1,7 @@
 <?php
   /* get name of default log-file (in addition to syslog) */
   /* require_once(dirname(WEB_DIR).'/www/_include.php'); */
-require_once("confusa_config.php");
+require_once('config.php');
 
 /* SLCSLogger
  *
@@ -36,21 +36,16 @@ class Logger {
  */
      static function log_event($pri, $message)
           {
-               global $confusa_config;
                define_syslog_variables();
-
-		/* no need to check if confusa_config exists, if not, framework should
-		 * notify user and terminate */
-		global $confusa_config;
 		/* add this after the pri-test, as we don't want to  */
-		if ($pri <= $confusa_config['syslog_min']) {
+		if ($pri <= Config::get_config('syslog_min')) {
                      openlog("Confusa: ", LOG_PID | LOG_PERROR, LOG_LOCAL0);
                      syslog($pri, $message);
                      closelog();
 		}
 		/* log to normal file if within level. highest level is 0, increasing number
 		 * is lower pri */
-		if ($pri > $confusa_config['loglevel_min']) {
+		if ($pri > Config::get_config('loglevel_min')) {
 			echo "pri lower than loglevel_min <BR>\n";
 			return;
 		}
@@ -88,10 +83,10 @@ class Logger {
   
   
 		/* enter into local logfile */
-		$fd = fopen($confusa_config['default_log'], 'a');
+		$fd = fopen(Config::get_config('default_log'), 'a');
 		/* assemble line */
 		$log_line = Logger::get_timestamp() . " (Confusa) " . $header . " " . $message . "\n";
-                if ($confusa_config['debug'])
+                if (Config::get_config('debug'))
                      echo "Logline: " . $log_line . "<br>\n";
 		fputs($fd, $log_line);
 		/* echo $log_line . "<BR>\n"; */

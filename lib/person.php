@@ -37,7 +37,6 @@ class Person{
     private $sms_auth;
 
 
-    private $config;
     function __construct() {
         $this->mobile = null;
         $this->given_name = null;
@@ -47,9 +46,6 @@ class Person{
         /* we're suspicious by nature */
         $this->fed_auth = false;
         $this->sms_auth = false;
-
-	global $confusa_config;
-	$this->config = $confusa_config;
         } /* end constructor */
     function __destruct() {
 
@@ -71,7 +67,7 @@ class Person{
         return $this->sms_auth;
         }
     public function is_auth() {
-	    if ($this->config['use_sms'])
+	    if (Config::get_config('use_sms'))
 		    return $this->is_fed_auth() && $this->is_sms_auth();
 	    return $this->is_fed_auth();
         }

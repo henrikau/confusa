@@ -2,20 +2,13 @@
 require_once('confusa_include.php');	/* get path */
 require_once('sql_lib.php');
 require_once('logger.php');
-require_once('confusa_config.php');
+require_once('config.php');
 require_once('csr_lib.php');
 
-global $confusa_config;
-
-if (!isset($confusa_config)) {
-	/* trouble detecting config, terminating gracefully as sql will also fail */
-	echo "ERROR! Cannot detect config. Terminating. <BR>\n";
-	exit(0);
-}
 /* only accept downloads from sources that specify *both* auth_var and
  * common_name (the client should know this anyway */
-if (isset($_GET[$confusa_config['auth_var']]) && $_GET['common_name']) {
-	$authvar	= htmlentities($_GET[$confusa_config['auth_var']]);
+if (isset($_GET[Config::get_config('auth_var')]) && $_GET['common_name']) {
+	$authvar	= htmlentities($_GET[Config::get_config('auth_var')]);
 	$user		= htmlentities($_GET['common_name']);
 
 	/* search db for cert, include in page if found */

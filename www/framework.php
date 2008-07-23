@@ -13,7 +13,7 @@ require_once('person.php');
 require_once('logger.php');
 
 /* global config */
-require_once('confusa_config.php');
+require_once('config.php');
 
 /* class Framework
  *
@@ -35,15 +35,10 @@ class Framework {
     private $config;
 
     public function __construct($content_page) {
-	    global $confusa_config;
-	    $this->config = $confusa_config;
-      /* check for config-file */
-      if ( !isset($this->config) || !$this->config['valid_install']) {
-	echo "confusa_config is not set! You must edit this file first and validate it.<BR>\n";
-	echo "You should have a look at confusa_config.php.template. <BR>\n";
-	exit(0);
-      }
-
+         if (!Config::get_config('valid_install')) {
+              echo "You do not have a valid configuration. Please edit the confusa_config.php properly first<BR>\n";
+              exit(0);
+         }
       $this->f_content = $content_page;
       $this->flogin = false;
       $this->person = new Person();

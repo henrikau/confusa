@@ -38,7 +38,6 @@ n * This is the main function for checking if the user is authenticated.
  */
 function authenticate_user($person)
     {
-	    global $confusa_config;
     /* check to see if the person is authenticated. If the person is
      * authenticated OK, is_authenticated will update the auth-fields of person,
      * but also fill in all the remaining fields. 
@@ -57,7 +56,7 @@ function authenticate_user($person)
          * Make sure that a proper one-time password has been sent to the user,
          * entered by the user and a valid session is in place. 
          */
-        if ($person->is_fed_auth() && $confusa_config['use_sms']) {
+        if ($person->is_fed_auth() && Config::get_config('use_sms')) {
 		_assert_sms($person);
 	}
     }
@@ -65,15 +64,13 @@ function authenticate_user($person)
 
 function deauthenticate_user($person)
 {
-	global $confusa_config;
 	if (isset($person)) {
 		$person->fed_auth(false);
 		$person->sms_auth(false);
 	}
-	$config  = _get_config();
 	$session = _get_session();
 
-	if ($confusa_config['use_sms']) {
+	if (Config::get_config('use_sms')) {
 	    /* remove edu_name from database */
 	    $name = str_replace('\\', '', $_GET['edu_name']);
 	    $name = strip_tags($name);
@@ -112,7 +109,6 @@ function deauthenticate_user($person)
  * Hence; this is the authoriative-authentication source for any person.
  */
 function is_authenticated($person = null) {
-	global $confusa_config;
 	if (!isset($person))
 		$person = new Person();
 
@@ -127,7 +123,7 @@ function is_authenticated($person = null) {
 		$person->set_email($attribs['mail'][0]);
 
 		/* push user to sms-auth */
-		if ($confusa_config['use_sms'])
+		if (Config::get_config('use_sms'))
 			$person->sms_auth(_test_sms($person));
 
 	}
@@ -157,9 +153,9 @@ function _assert_sso($person)
    *	set new header
    */
   if (!isset($session) || !$session->isValid() ) {
- /*     $link_base = SimpleSAML_Utilities::selfURL() .'saml2/sp/initSLO.php?RelayState='.SimpleSAML_Utilities::selfURL() . $logout_location . "?edu_name='" . $edu_name; */
-/*     $link = '<A HREF="' . $link_base . '">' . $logout_name . '</A>'; */
-       /* $base = dirname($_SERVER['HTTP_REFERER']); */
+        /* $link_base = SimpleSAML_Utilities::selfURL() .'saml2/sp/initSLO.php?RelayState='.SimpleSAML_Utilities::selfURL() . $logout_location . "?edu_name='" . $edu_name; */
+        /* $link = '<A HREF="' . $link_base . '">' . $logout_name . '</A>'; */
+        /* $base = dirname($_SERVER['HTTP_REFERER']); */
        $base = dirname(SimpleSAML_Utilities::selfURL());
             header('Location: ' . $base . 
 	   '/saml2/sp/initSSO.php?RelayState=' . 

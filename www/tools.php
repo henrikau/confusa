@@ -19,7 +19,6 @@ function test_send_tools()
 {
      global $person;
      global $fw;
-     global $confusa_config;
      if (!( isset($person) && $person->is_auth()  ))
           $person = $fw->authenticate();
 
@@ -33,7 +32,7 @@ function test_send_tools()
           $body .= "The script will prompt for a passphrase for the key. Read the instructions carefully!" . $eol;
           $subject = 'Script for creating key and certificate request for ARC';
           $mail = new MailManager($person,
-                                  $confusa_config['sys_from_address'],
+                                  Config::get_config('sys_from_address'),
                                   $subject,
                                   $body);
           $mail->add_attachment($keyscript->create_script(), "create_cert.sh");

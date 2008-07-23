@@ -35,15 +35,11 @@ class SMSAuth
 	    private $sql_conn;
 	    private $table_name;
 	    private $person;
-	    private $config;
 	    private $ptl;
 	    private $stl;
 
     function __construct($pers)
         {
-		global $confusa_config;
-		$this->config = $confusa_config;
-
 		if (!isset($pers)) {
 			echo __FILE__ . " This must be given a person-object!<BR>\n";
 			return;
@@ -66,8 +62,8 @@ class SMSAuth
 
 		$this->sms_gw_addr = 'sms@tyholt.uninett.no';
 
-		$this->set_pw_timeout($this->config['sms_pw_timeout']);
-		$this->set_session_timeout($this->config['sms_session_timeout'], true);
+		$this->set_pw_timeout(Config::get_config('sms_pw_timeout'));
+		$this->set_session_timeout(Config::get_config('sms_session_timeout'), true);
             
         } /* end constructor */
 

@@ -2,14 +2,8 @@
 require_once('confusa_include.php');	/* get path */
 require_once('sql_lib.php');
 require_once('logger.php');
-require_once('confusa_config.php');
+require_once('config.php');
 require_once('csr_lib.php');
-
-if (!isset($confusa_config)) {
-	/* trouble detecting config, terminating gracefully as sql will also fail */
-	echo "ERROR! Cannot detect config. Terminating. <BR>\n";
-	exit(0);
-}
 
   /* key_upload.php
    *
@@ -24,10 +18,9 @@ if (!isset($confusa_config)) {
    *    3) Test the content (if it start and ends with proper syntax). See 
    */
 $ip=$_SERVER['REMOTE_ADDR'];
-global $confusa_config;
-if ( isset($_GET['remote_csr']) && $_GET[$confusa_config['auth_var']]) {
+if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
 	$csr = base64_decode($_GET['remote_csr']);
-	$auth_var = htmlentities($_GET[$confusa_config['auth_var']]);
+	$auth_var = htmlentities($_GET[Config::get_config('auth_var']));
 	$csr_subject=openssl_csr_get_subject($csr);
 	if ($csr_subject) {
 		$common = $csr_subject['CN'];
@@ -40,13 +33,13 @@ if ( isset($_GET['remote_csr']) && $_GET[$confusa_config['auth_var']]) {
 			$res_ip=$sql->execute($ip_query);
                         /* has the ip tried to upload many different CSRs with
                          * different common-names? */
-			if (mysql_numrows($res_ip) > $confusa_config['remote_ips']) {
+			if (mysql_numrows($res_ip) > Config::get_config('remote_ips')) {
 				echo "Your IP is temporarily disabled due to CSR-upload overflow. Please try again later<BR>\n";
 				Logger::log_event(LOG_WARNING, "Detected abusive client from ".$ip.". Dropping content.<BR>\n");
 				exit(1);
 			}
                         while($content = mysql_fetch_assoc($res_ip)) {
-                             if ($content['count(*)'] > $confusa_config['remote_ips']) {
+                             if ($content['count(*)'] > Config::get_config('remote_ips')) {
                                   echo "Your IP is temporarily disabled due to excessive CSR-upload <BR>\n";
                                   echo "You must approve the pending CSRs first, or wait for them to time out. <BR>\n";
                                   echo "The timeout normally takes 1 day<BR>\n";
