@@ -42,7 +42,7 @@ function authenticate_user($person)
      * authenticated OK, is_authenticated will update the auth-fields of person,
      * but also fill in all the remaining fields. 
      */
-    is_authenticated($person);
+         $person = is_authenticated($person);
 
     if (!$person->is_auth()) {
         /* assert SSO
@@ -237,19 +237,23 @@ function get_attributes()
  *         edu_name: The unique feide name of the person we're logging out (so
  *         that the logout-form can remove info from the database). 
  */
-function feide_logout_link($logout_location="logout.php", $logout_name="Logout Confusa") 
+function feide_logout_link($logout_location="logout.php", $logout_name="Logout Confusa", $person) 
 {
      $config = _get_config();
      
-     $attr= get_attributes();
-     $edu_name = $attr['eduPersonPrincipalName'][0];
+     /* $attr= get_attributes(); */
+
+     $edu_name = $person->get_common_name();/* $attr['eduPersonPrincipalName'][0]; */
 
      /* need to find the url, and handle some quirks in the result from selfURL
       * in order to get proper url-base */
      $base = SimpleSAML_Utilities::selfURL();
      if (strpos($base, ".php"))
           $base = dirname($base);
-    $link_base =  $base.'/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location . "?edu_name='" . $edu_name;
+     $link_base =  $base.'/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
+     if (Config::get_config('use_sms'))
+          $link_base .= "?edu_name='" . $edu_name;
+
     $link = '<A HREF="' . $link_base . '">' . $logout_name . '</A>';
 
     return $link;

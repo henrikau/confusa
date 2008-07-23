@@ -76,7 +76,7 @@ class Framework {
         /* include the menu, the menu will itself sort out what to display
          * according to begin logged in or not */
         echo "\t\t<TD class=\"main\" WIDTH=\"100\" VALIGN=\"TOP\">\n";
-        render_menu($this->person->is_auth());
+        render_menu($this->person);
         echo "\t\t</TD>\n";
 
         /* include content of page with login if set*/
