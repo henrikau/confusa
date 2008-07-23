@@ -6,7 +6,7 @@ $confusa_config = array(
 	'debug'			=> true,
 
 	/* script variables, where the end-user create-keyresides */
-	'programs_path'		=> '/var/www/confusa/programs/create_key.sh',
+	'programs_path'		=> '/var/www/confusa/programs/create_cert.sh',
 
 
         /* The url to the server

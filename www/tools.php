@@ -28,7 +28,7 @@ function test_send_tools()
           $eol = "\r\n";
           $body = "";
           $body .= "Attached is a custom-designed script for creating keys" . $eol;
-          $body .= "Save script to computer, set executable (chmod u+x create_key.sh) and run" . $eol;
+          $body .= "Save script to computer, set executable (chmod u+x create_cert.sh) and run" . $eol;
           $body .= "The script will prompt for a passphrase for the key. Read the instructions carefully!" . $eol;
           $subject = 'Script for creating key and certificate request for ARC';
           $mail = new MailManager($person,

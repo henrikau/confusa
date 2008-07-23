@@ -232,8 +232,8 @@ function show_db_cert()
      echo "</table>\n";
      echo "<br>\n";
      echo "To download the certificate with the script, use the following command at your local workstation:<BR>\n";
-     echo "<pre>./create_key.sh -get ".htmlentities("<AuthToken>")."</pre>\n";
-     echo "create_key.sh will remember the last used AuthToken. If the script fails, try to pass \n";
+     echo "<pre>./create_cert.sh -get ".htmlentities("<AuthToken>")."</pre>\n";
+     echo "create_cert.sh will remember the last used AuthToken. If the script fails, try to pass \n";
      echo "the auth-token from the list above as a parameter to the script as showed above.<BR>\n";
 
      mysql_free_result($res);
