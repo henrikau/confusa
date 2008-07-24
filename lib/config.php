@@ -40,8 +40,8 @@ class Config {
 final class Config_Holder {
      function __construct()
           {
-               global $confusa_config;
                include_once('../config/confusa_config.php');
+               global $confusa_config;
                if (!isset($confusa_config)){
                     echo "Cannot load config-object when confusa_config.php does not exist!<br>\n";
                     exit(1);
