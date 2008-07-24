@@ -1,13 +1,76 @@
 <?php
-require_once('logger.php');
+/* require_once('logger.php'); */
 require_once('config.php');
 require_once('MDB2.php');
 
+/* MDB2Wrapper
+ *
+ * Simple wrapper class for the MDB2-package.
+ * The class will handle connecting to the database, retrieval of
+ * username/passwords etc and return all results in an array.
+ *
+ * Hence, the user is left with a very simple call, just
+ *
+ * $res = MDB2Wrapper::execute(...)
+ *
+ * where $res will contain the .. result.
+ */
 class MDB2Wrapper
 {
-     private $conn;
-     public function __construct() 
-          {
+     private static $conn;
+
+     /* public static execute()
+      *
+      * params:
+      * query:  prepared statement ready query. i.e. all variables you are going
+      *         to test, leave as ?
+      * types:  the type of the elements in the query.
+      * data:   the actual data to put into the query
+      *
+      * Example:
+      * To retrive the name of all users above a certain age, where the limit is
+      * supplied by a webclient (through POST etc)
+      *
+      * $res = MDB2Wrapper::execute("SELECT name FROM userdb WHERE age > ?",
+      *                                 array('int'),
+      *                                 array('$_GET['age'])");
+      */
+     public static function execute($query, $types, $data)
+     {
+          if (!isset(MDB2Wrapper::$conn))
+               MDB2Wrapper::create();
+
+          $stmnt        = MDB2Wrapper::$conn->prepare($query, $types, MDB2_PREPARE_RESULT);
+          $res          = $stmnt->execute($data);
+          if (PEAR::isError($res)) {
+               /* Logger::log_event(LOG_NOTICE, "Query failed . " . $res->getMessage()); */
+               echo "could not execute query (".$query.")<br>\n";
+               die($res->getMessage());
+          }
+          $stmnt->free();
+          while($row = $res->fetchRow(MDB2_FETCHMODE_ASSOC)) {
+               $results[] = $row;
+          }
+          return $results;
+     } /* end execute */
+
+     /* at the moment, it just uses execute, without returning anything */
+     public static function update($query, $types, $data) { MDB2Wrapper::execute($query, $types, $data); }
+
+     /* create()
+      *
+      * This is where we create the connection (do'h...)
+      *
+      * It need the config.php (found in lib/) which in turn needs
+      * confusa_config.php with the proper attributes set.
+      * In short, you need config.php, config.php needs confusa_config.php, and
+      * in confusa_config.php, you must have an array called $confusa_config,
+      * with attributes on the form
+      * 'mysql_username' => 'sample_username',
+      * 'mysql...
+      */
+     private static function create()
+     {
                $uname     = Config::get_config('mysql_username');
                $passwd    = Config::get_config('mysql_password');
                $host      = Config::get_config('mysql_host');
@@ -17,41 +80,13 @@ class MDB2Wrapper
                     'debug' => 2,
                     'result_buffering' => true
                     );
-               $this->conn =& MDB2::factory($dsn, $options);
-               if (PEAR::isError($this->conn)){
-                    Logger::log_event($this->conn->getMessage());
-                    echo "Cannot connect to database: " . $this->conn->getMessge() . "<br>\n";
-                    die($this->conn->getMessage());
+               MDB2Wrapper::$conn = MDB2::factory($dsn, $options);
+               if (PEAR::isError(MDB2Wrapper::$conn)){
+                    Logger::log_event(MDB2Wrapper::$conn->getMessage());
+                    echo "Cannot connect to database: " . MDB2Wrapper::$conn->getMessge() . "<br>\n";
+                    die(MDB2Wrapper::$conn->getMessage());
                }
 
           } /* end construct MDB2Wrapper */
-     public function __destruct()
-          {
-               ;
-          }
 
-     public function query_int($query, $in_nmb)
-          {
-               return $this->execute($query, array('integer'), array($in_nmb));
-          }
-
-     public function query_string($query, $in_string)
-          {
-               return $this->execute($query, array('text'), array($in_string));
-          }
-     private function execute($query, $types, $data)
-          {
-               $stmnt   = $this->conn->prepare($query, $types, MDB2_PREPARE_RESULT);
-               $res     = $stmnt->execute($data);
-               if (PEAR::isError($res)) {
-                    Logger::log_event(LOG_NOTICE, "Query failed . " . $res->getMessage());
-                    echo "could not execute query (".$query.")<br>\n";
-                    die($res->getMessage());
-               }
-               $stmnt->free();
-               while($row = $res->fetchRow(MDB2_FETCHMODE_ASSOC)) {
-                    $results[] = $row;
-               }
-               return $results;
-          }
-}
+} /* end MDB2Wrapper */
