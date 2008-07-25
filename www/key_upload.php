@@ -1,6 +1,6 @@
 <?php
 require_once('confusa_include.php');	/* get path */
-require_once('sql_lib.php');
+require_once('mdb2_wrapper.php');
 require_once('logger.php');
 require_once('config.php');
 require_once('csr_lib.php');
@@ -25,19 +25,24 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
 	if ($csr_subject) {
 		$common = $csr_subject['CN'];
 		/* contact db */
-		$sql = get_sql_conn();
 		if (!known_pubkey($csr)) {
 			/* check ip to see if it's been abusive */
-			$ip_query="SELECT common_name, count(*) FROM csr_cache WHERE from_ip='".$ip."' GROUP BY common_name ORDER BY count(*) DESC";
-			$res_ip=$sql->execute($ip_query);
+                        $res_ip = MDB2Wrapper::execute("SELECT common_name, count(*) FROM csr_cache WHERE from_ip=? GROUP BY common_name ORDER BY count(*) DESC",
+                                                       array('text'),
+                                                       array($ip));
+                        $length = count($res_ip);
                         /* has the ip tried to upload many different CSRs with
                          * different common-names? */
-			if (mysql_numrows($res_ip) > Config::get_config('remote_ips')) {
+			if ($length > Config::get_config('remote_ips')) {
 				echo "Your IP is temporarily disabled due to CSR-upload overflow. Please try again later<BR>\n";
 				Logger::log_event(LOG_WARNING, "Detected abusive client from ".$ip.". Dropping content.<BR>\n");
 				exit(1);
 			}
-                        while($content = mysql_fetch_assoc($res_ip)) {
+
+                        $counter = 0;
+                        while($counter < $length) {
+                             $content = $res_ip[$counter];
+                             $counter++;
                              if ($content['count(*)'] > Config::get_config('remote_ips')) {
                                   echo "Your IP is temporarily disabled due to excessive CSR-upload <BR>\n";
                                   echo "You must approve the pending CSRs first, or wait for them to time out. <BR>\n";
@@ -49,15 +54,10 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
                          * is valid (starts and ends with properly) and the
                          * public key is long enough */
 			if (test_content($csr)) {
-				$query = "INSERT INTO csr_cache (csr, uploaded_date, from_ip, common_name, auth_key) ";
-				$query .= "VALUES ";
-				$query .= "('$csr', ";
-				$query .= "current_timestamp(), ";
-				$query .= "'$ip', ";
-				$query .= "'$common',";
-				$query .= "'$auth_var')";
-				$sql->update($query);
-				Logger::log_event(LOG_INFO, "Inserted new CSR from $ip ($common)");
+                             MDB2Wrapper::update("INSERT INTO csr_cache (csr, uploaded_date, from_ip, common_name, auth_key) VALUES(?, current_timestamp(), ?, ?, ?)",
+                                                 array('text', 'text', 'text', 'text'),
+                                                 array($csr, $ip, $common, $auth_var));
+                             Logger::log_event(LOG_INFO, "Inserted new CSR from $ip ($common)");
 			}
 			else {
                              Logger::log_event(LOG_WARNING, "Uploaded CSR from $ip not valid, caught by test_content");
