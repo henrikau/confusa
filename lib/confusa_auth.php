@@ -1,6 +1,8 @@
 <?php
 /* get simplesaml */
-require_once('/usr/local/simplesamlphp/www/_include.php');
+require_once(dirname(__FILE__).'/config.php');
+/* include _include in the simplesaml-directory */
+require_once(Config::get_config('simplesaml_path'));
 require_once('SimpleSAML/Utilities.php');
 require_once('SimpleSAML/Session.php');
 

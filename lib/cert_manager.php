@@ -51,7 +51,7 @@ class CertManager
                  $cert_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/cert/sigma_cert.pem';
                  $ca_priv_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/priv/sigma_priv_key.pem';
 
-                 $tmp_cert = openssl_csr_sign($this->user_csr, $cert_path, $ca_priv_path, $sign_days);
+                 $tmp_cert = openssl_csr_sign($this->user_csr, $cert_path, $ca_priv_path, $sign_days , array('digest_alg' => 'sha1'));
                  openssl_x509_export($tmp_cert, $this->user_cert, true);
                  /* echo __FILE__ .":".__LINE__ ." Certificate successfully signed. <BR>\n"; */
                  
