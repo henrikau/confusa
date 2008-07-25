@@ -1,5 +1,5 @@
 <?php
-include_once('sql_lib.php');
+include_once('mdb2_wrapper.php');
 include_once('logger.php');
 
 /* test_file_content()
@@ -44,27 +44,23 @@ function known_pubkey($csr)
 {
 	$issued_before = true;
 	$pubkey_checksum=pubkey_hash($csr);
-
-	$query="SELECT * FROM pubkeys WHERE pubkey_hash='".$pubkey_checksum."'";
-	$sql=get_sql_conn();
-	$res=$sql->execute($query);
-	if (mysql_num_rows($res) == 0) {
+        $res = MDB2Wrapper::execute("SELECT * FROM pubkeys WHERE pubkey_hash=?",
+                                    array('text'),
+                                    array($pubkey_checksum));
+	if (count($res) == 0) {
 		Logger::log_event(LOG_DEBUG, __FILE__ . " CSR with previously unknown public-key (hash: $pubkey_checksum)\n");
 		$issued_before=false;
 	}
         /* update counter in database */
-        else if (mysql_numrows($res) == 1) {
-             $row = mysql_fetch_assoc($res);
-             $query = "UPDATE pubkeys SET uploaded_nr = uploaded_nr + 1 WHERE pubkey_hash='" . $row['pubkey_hash'] . "'";
-             $sql->update($query);
+        else if (count($res) == 1) {
+             MDB2Wrapper::update("UPDATE pubkeys SET uploaded_nr = uploaded_nr + 1 WHERE pubkey_hash=?",
+                                 array('text'),
+                                 array($res[0]['pubkey_hash']));
         }
 	else {
 		Logger::syslog(LOG_ERR,"Duplicate signed certificates in database! -> $pubkey_checkusm");
-                mysql_free_result($res);
                 exit(1);
 	}
-
-	mysql_free_result($res);
 	return $issued_before;
 } /* end known_pubkey */
 
