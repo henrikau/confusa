@@ -1,5 +1,5 @@
 <?php
-require_once('sql_lib.php');
+require_once('mdb2_wrapper.php');
 require_once('pw.php');
 require_once('sms_commons.php');
 require_once('mail_manager.php');
@@ -32,7 +32,6 @@ require_once('person.php');
 class SMSAuth
     {
 	    private $sms_debug = true;
-	    private $sql_conn;
 	    private $table_name;
 	    private $person;
 	    private $ptl;
@@ -40,7 +39,7 @@ class SMSAuth
 
     function __construct($pers)
         {
-		if (!isset($pers)) {
+             if (!isset($pers)) {
 			echo __FILE__ . " This must be given a person-object!<BR>\n";
 			return;
 		}
@@ -57,8 +56,7 @@ class SMSAuth
                 }
 		$this->edu_name                 = str_replace("'", "", $this->person->get_common_name());
 		$this->mobile                   = str_replace(" ", "", $this->person->get_mobile());
-		$this->sql_conn = get_sql_conn();
-		$this->table_name               = $this->sql_conn->get_default_table();
+		$this->table_name               = Config::get_config('mysql_default_table');
 
 		$this->sms_gw_addr = 'sms@tyholt.uninett.no';
 
@@ -66,12 +64,6 @@ class SMSAuth
 		$this->set_session_timeout(Config::get_config('sms_session_timeout'), true);
             
         } /* end constructor */
-
-    function __destruct()
-        {
-        /* TODO */
-        unset($this->SqlConn);
-        }
 
     /* set_pw_timeout()
      *
@@ -170,23 +162,25 @@ class SMSAuth
         {
 		/* only one element? */
 		$query = "SELECT id FROM " . $this->table_name . " WHERE username='" .  $this->edu_name . "'";
-		$res = $this->sql_conn->execute($query);
-		switch(mysql_numrows($res)) {
+                $res = MDB2Wrapper::execute("SELECT id FROM " . $this->table_name . " WHERE username=?", 
+                                            array('text'), 
+                                            array($this->person->get_common_name()));
+                
+		switch(count($res)) {
 		case 0:
 			/* user not found, need to be added to database. */
 			$this->add_to_db();
 			break;
 		case 1:
 			/* one and only. Do nothing */
-			$this->person->set_db_id(mysql_result($res, 0, 'id'));
-			break;
+                     $this->person->set_db_id($res[0]['id']);
+                     break;
 		default:
 			/* several instances. Remove all end create a brand new. */
 			$this->clear_from_db();
 			$this->add_to_db();
 			break;
 		} /* switch-case */
-		mysql_free_result($res);
         } /* end get_person_id() */
 
     /* add_to_db()
@@ -195,11 +189,9 @@ class SMSAuth
      */
     private function add_to_db()
         {
-        $query  = "INSERT INTO " . $this->table_name;
-        $query .= "(username) VALUES('" . $this->person->get_common_name() . "')";
-	/* echo __FILE__ . ":" . __LINE__ . " " . $query . "<br>\n"; */
-        $this->sql_conn->update($query);
-
+        MDB2Wrapper::update("INSERT INTO " . $this->table_name . "(username) VALUES(?)", 
+                            array('text'), 
+                            array($this->person->get_common_name()));
 	/* set new password in database */
 	$this->create_new_pw();
         } /* end add_to_db */
@@ -210,10 +202,11 @@ class SMSAuth
      * multiple instances are cleared.
      */
     private function clear_from_db()
- {
-	 $query = "DELETE FROM " . $this->table_name . " WHERE username='" . $this->person->get_common_name() . "'";
-        $this->sql_conn->update($query);
-        } /* end clear_from_db() */
+    {
+        MDB2Wrapper::update("DELETE FROM " . $this->table_name . " WHERE username=?", 
+                            array('text'), 
+                            array($this->person->get_common_name()));
+    } /* end clear_from_db() */
 
     /* valid_sms_session()
      *
@@ -231,22 +224,25 @@ class SMSAuth
         {
         /* is session_id set? we *know* that the user exists, and that the
          * userid is valid */
-		$query  = "SELECT id, session_id FROM " . $this->table_name . " WHERE id=" . $this->person->get_db_id();
-		$query .= " AND session_id IS NOT NULL";
-		$query .= " AND valid_untill > current_timestamp()";
-		$res = $this->sql_conn->execute($query);
+             $query  = "SELECT id, session_id FROM " . $this->table_name . " WHERE id=?";
+             $query .= " AND session_id IS NOT NULL";
+             $query .= " AND valid_untill > current_timestamp()";
+             $res = MDB2Wrapper::execute($query, 
+                                         array('integer'), 
+                                         array($this->person->get_db_id()));
         /* if we get a hit, we get more than 0 rows, and hence, we have a valid
          * session. See the SQL-query for details
          */
-        if (mysql_numrows($res) > 0)
+        if (count($res) > 0)
             {
             $this->update_session_timeout();
             return true;
             }
         
         /* remove session info, the session is clearly invalid, or one does not exist. */
-        $query = "UPDATE " . $this->table_name . " SET session_id=NULL WHERE id=" . $this->person->get_db_id();
-        $this->sql_conn->update($query);
+        MDB2Wrapper::update("UPDATE $this->table_name SET session_id=NULL WHERE id=?", 
+                            array('integer'), 
+                            array($this->person->get_db_id()));
         return false;
         }
 
@@ -261,27 +257,23 @@ class SMSAuth
      */
     private function update_session_timeout()
         {
-            $query  = "UPDATE " . $this->table_name . " SET valid_untill = ";
-            $query .= "addtime(current_timestamp(), '" . $this->stl; /* stl:
-                                                                     * session
-                                                                     * timeout limit */
-	    $query .= "') WHERE id=" . $this->person->get_db_id();
-            $this->sql_conn->update($query);
+            MDB2Wrapper::update("UPDATE $this->table_name SET valid_untill = addtime(current_timestamp(), ?) WHERE id=?",
+                                array('text', 'integer'),
+                                array($this->stl, $this->person->get_db_id()));
         } /* end update_session_timeout() */
 
     private function set_valid_session()
         {
         /* set session */
-            $query  = "UPDATE " . $this->table_name . " SET session_id='" . session_id() . "' ";
-            $query .= "WHERE id=" . $this->person->get_db_id();
-            //echo $query . "<BR>\n";
-            $this->sql_conn->update($query);
+            MDB2Wrapper::update("UPDATE $this->table_name SET session_id=? WHERE id=?",
+                                array('text', 'integer'),
+                                array(session_id(), $this->person->get_db_id()));
             $this->update_session_timeout();
             
             /* remove pw */
-            $query  = "UPDATE " . $this->table_name . " SET one_time_pass=NULL ";
-            $query .= "WHERE id=" . $this->person->get_db_id();
-            $this->sql_conn->update($query);
+            MDB2Wrapper::update("UPDATE $this->table_name SET one_time_pass=NULL WHERE id=?",
+                                array('integer'),
+                                array($this->person->get_db_id()));
         }
 
     /* validate_password
@@ -319,12 +311,11 @@ class SMSAuth
             /* the password is set, *and* valid, hence, we can check if the */
             /* user has provided it for us. */
             else if (isset($_POST['passwd'])) {
-                $user_pw = $_POST['passwd'];
-                $query  = "SELECT one_time_pass FROM " . $this->table_name;
-                $query .= " WHERE id=" . $this->person->get_db_id();
-		/* echo __FILE__ . ":" . __LINE__ . " " . $query ." <BR>\n"; */
-                $res = $this->sql_conn->execute($query);
-                $db_pw = mysql_result($res, 0, 'one_time_pass');
+                 $user_pw = htmlentities($_POST['passwd']);
+                $res = MDB2Wrapper::execute("SELECT one_time_pass FROM $this->table_name WHERE id=?",
+                                            array('integer'),
+                                            array($this->person->get_db_id()));
+                $db_pw = $res[0]['one_time_pass'];
 
                 /* if password is correct  */
                 if (scramble_passwd($user_pw) === $db_pw) {
@@ -344,18 +335,15 @@ class SMSAuth
     private function create_new_pw() {
 	    if (!$this->person->has_db_id()) {
 		    $this->get_person_id();
-		    /* echo __FILE__ .":".__LINE__." user has id (" . $this->person->get_db_id() . ")<BR>\n"; */
 	    }
 
-        $pw     = create_pw(8);
-        $query  = "UPDATE " . $this->table_name . " SET one_time_pass='" . scramble_passwd($pw) . "'";
-        $query .= ", valid_untill = addtime(current_timestamp(), '";
-        $query .= $this->ptl . "')";
-        $query .= " WHERE id=" . $this->person->get_db_id();
-	/* echo __FILE__ . ":" . __LINE__ ." ".$query."<BR>\n"; */
-        $this->sql_conn->update($query);
-        /* send to user */
-        $this->send_pw($pw);
+            $pw     = create_pw(8);
+            MDB2Wrapper::update("UPDATE $this->table_name SET one_time_pass=? , valid_untill = addtime(current_timestamp(), ?) WHERE id=?",
+                                array('text', 'text', 'integer'),
+                                array(scramble_passwd($pw), $this->ptl, $this->person->get_db_id()));
+            
+            /* send to user */
+            $this->send_pw($pw);
     }
         
     /* valid_pw()
@@ -368,14 +356,10 @@ class SMSAuth
      */
     private function isvalid_pw() 
         {
-		$query  = "SELECT * FROM " . $this->table_name. " WHERE id=" . $this->person->get_db_id() . " ";
-        $query .= "AND one_time_pass IS NOT NULL ";
-        $query .= "AND valid_untill > current_timestamp()";
-        $res    = $this->sql_conn->execute($query);
-        if (mysql_numrows($res) > 0) 
-            {
-            return true;
-            }
+        if (count(MDB2Wrapper::execute("SELECT * FROM $this->table_name WHERE id=? AND one_time_pass IS NOT NULL AND valid_untill > current_timestamp()",
+                                       array('integer'),
+                                       array($this->person->get_db_id()))) > 0)
+             return true;
         return false;
         }
     
