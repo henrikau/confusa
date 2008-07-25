@@ -1,6 +1,6 @@
 <?php
 require_once('mail_manager.php');
-require_once('sql_lib.php');
+require_once('mdb2_wrapper.php');
 require_once('pw.php');
 require_once('logger.php');
 class CertManager
@@ -69,21 +69,14 @@ class CertManager
                        | valid_untill | datetime    | NO   |     |         |                |
                        +--------------+-------------+------+-----+---------+----------------+
                     */
-                    $query  = "INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) ";
-                    $query .= "VALUES('".$this->user_cert."',";
-                    $query .= "'".$auth_key."','".$this->person->get_common_name() . "'";
-                    $query .= ", addtime(current_timestamp(), '" . $sign_days . " 0:0'))";
-                    /* echo $query ."<br>\n"; */
-
-                    $sql = get_sql_conn();
-                    $sql->update($query);
-
+                    MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) VALUES(?, ?, ?, addtime(current_timestamp(), ?))",
+                                        array('text', 'text', 'text', 'integer'),
+                                        array($this->user_cert, $auth_key, $this->person->get_common_name(), $sign_days));
 		    Logger::log_event(LOG_INFO, "Certificate successfully signed for " . $this->person->get_common_name() . " Contacting us from " . $_SERVER['REMOTE_ADDR']);
 		    /* add to database (the hash of the pubkey) */
-                    $update = "INSERT INTO pubkeys (pubkey_hash) VALUES('" . $this->pubkey_checksum . "')";
-                    $sql = get_sql_conn();
-                    $sql->update($update);
-
+                    MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash) VALUES(?)",
+                                        array('text'),
+                                        array($this->pubkey_checksum));
 		    return true;
 	    }
 	    else {
