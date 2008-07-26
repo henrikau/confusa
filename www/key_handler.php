@@ -2,10 +2,11 @@
 include_once('framework.php');
 include_once('cert_manager.php'); /* for handling of the key */
 include_once('file_upload.php'); /* FileUpload */
-include_once('sql_lib.php');
 include_once('pw.php');
 include_once('csr_lib.php');
+include_once('mdb2_wrapper.php');
 include_once('logger.php');
+
 $person = null;
 $fw = new Framework('keyhandle');
 
@@ -115,26 +116,25 @@ function approve_csr($auth_token)
 {
      global $person;
      $at = htmlentities($auth_token);
-     $sql = get_sql_conn();
-     $query = "SELECT csr, csr_id FROM csr_cache WHERE auth_key='".$at."' AND common_name='" . $person->get_common_name() . "'";
-     $csr_res = $sql->execute($query);
-     if (mysql_num_rows($csr_res) == 1) {
-          $db_array = mysql_fetch_assoc($csr_res);
-          $csr = $db_array['csr'];
+     $csr_res = MDB2Wrapper::execute("SELECT csr, csr_id FROM csr_cache WHERE auth_key=? AND common_name=?",
+                                     array('text', 'text'),
+                                     array($at, $person->get_common_name()));
+     if (count($csr_res) == 1) {
+          $csr = $csr_res[0]['csr'];
           $cm = new CertManager($csr, $person);
           if (!$cm->sign_key($at)) {
                echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
                return;
           }
           else {
-               $update = "DELETE FROM csr_cache WHERE csr_id='".$db_array['csr_id']."'";
-               $sql->update($update);
+               MDB2Wrapper::update("DELETE FROM csr_cache WHERE csr_id=?",
+                                   array('integer'),
+                                   array($csr_res[0]['csr_id']));
           }
      }
      else {
           echo __FILE__ .":".__LINE__." error getting CSR from database<BR>\n";
      }
-     mysql_free_result($csr_res);
 } /* end approve_csr_remote() */
 
 function send_cert()
@@ -148,44 +148,45 @@ function send_cert()
           $loc_id = sanitize_id(htmlentities($_GET['email_cert']));
      else if (isset($_GET['file_cert']))
           $loc_id = sanitize_id(htmlentities($_GET['file_cert']));
-     $sql = get_sql_conn();
-     $query = "SELECT cert FROM cert_cache WHERE cert_id='".$loc_id."' AND cert_owner='".$person->get_common_name()."'";
-     $res = $sql->execute($query);
-     if (mysql_num_rows($res)==1) {
-          $cert_array = mysql_fetch_assoc($res);
+
+     $res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE cert_id=? AND cert_owner=?",
+                                 array('integer', 'text'),
+                                 array($loc_id, $person->get_common_name()));
+     if (count($res)==1) {
           if (isset($_GET['email_cert'])) {
                $mm = new MailManager($person,
                                      Config::get_config('sys_from_address'),
                                      "Here is your newly signed certificate", 
                                      "Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use");
-               $mm->add_attachment($cert_array['cert'], 'usercert.pem');
+               $mm->add_attachment($res[0]['cert'], 'usercert.pem');
                if (!$mm->send_mail()) {
                     echo "Could not send mail properly!<BR>\n";
                }
           }
           else if (isset($_GET['file_cert'])) {
                require_once('file_download.php');
-               download_file($cert_array['cert'], 'usercert.pem');
+               download_file($res[0]['cert'], 'usercert.pem');
                $send_res = true;
           }
      }
-     mysql_free_result($res);
      return $send_res;
 } /* end send_cert */
 
 function show_db_csr()
 {
      global $person;
-     $sql = get_sql_conn();
-     $query = "SELECT csr_id, uploaded_date, from_ip, common_name, auth_key FROM csr_cache WHERE common_name='" . $person->get_common_name() . "' ORDER BY uploaded_date DESC";
-     $res = $sql->execute($query);
-
+     $res = MDB2Wrapper::execute("SELECT csr_id, uploaded_date, from_ip, common_name, auth_key FROM csr_cache WHERE common_name=? ORDER BY uploaded_date DESC",
+                                 array('text'),
+                                 array($person->get_common_name()));
      echo "<B>Certificate Signing Requests (CSRs)</B><BR>\n";
      echo "<table class=\"small\">\n";
 
-     if (mysql_num_rows($res) > 0) {
+     if (count($res) > 0) {
           echo "<tr><th>AuthToken</th><th>Uploaded</th><th>From IP</th><th>Owner</th></tr>\n";
-          while($row=mysql_fetch_assoc($res)) {
+          $counter = 0;
+          while($counter < count($res)) {
+               $row = $res[$counter];
+               $counter++;
                echo "<tr>\n";
                echo "<td>".$row['auth_key']."</td>\n";
                echo "<td>".$row['uploaded_date']."</td>\n";
@@ -202,20 +203,22 @@ function show_db_csr()
      }
 
      echo "</table>\n";
-     mysql_free_result($res);
      echo "<BR><BR><BR>\n";
 }
 function show_db_cert() 
 {
      global $person;
-     $sql = get_sql_conn();
-     $query = "SELECT cert_id, auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner='".$person->get_common_name()."' AND valid_untill > current_timestamp()";
-     $res = $sql->execute($query);
+     $res = MDB2Wrapper::execute("SELECT cert_id, auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=? AND valid_untill > current_timestamp()",
+                                 array('text'),
+                                 array($person->get_common_name()));
      echo "<B>Certificates:</B><BR>\n";
      echo "<table class=\"small\">\n"; 
-     if (mysql_num_rows($res) > 0) {
+     if (count($res) > 0) {
           echo "<tr><th>AuthToken</th><th>owner</th></tr>\n";
-          while($row=mysql_fetch_assoc($res)) {
+          $counter = 0;
+          while($counter < count($res)) {
+               $row = $res[$counter];
+               $counter++;
                echo "<tr>\n";
                echo "<td>".$row['auth_key']."</td>\n";
                echo "<td>".$row['cert_owner']."</td>\n";
@@ -236,66 +239,57 @@ function show_db_cert()
      echo "create_cert.sh will remember the last used AuthToken. If the script fails, try to pass \n";
      echo "the auth-token from the list above as a parameter to the script as showed above.<BR>\n";
 
-     mysql_free_result($res);
-
      echo "<BR><BR><BR>\n";
 } /* end show_db_cert() */
 
 function inspect_csr($csr_id) {
 	global $person;
 	$loc_id=sanitize_id($csr_id);
-	$sql=get_sql_conn();
-	$query  = "SELECT * FROM csr_cache WHERE csr_id='" . $loc_id;
-	$query .= "' AND common_name='" . $person->get_common_name() . "'";
-	$res=$sql->execute($query);
-	if(mysql_num_rows($res) == 1) {
-		$csr_array = mysql_fetch_assoc($res);
+        $res = MDB2Wrapper::execute("SELECT * FROM csr_cache WHERE csr_id=? AND common_name=?",
+                                    array('integer', 'text'),
+                                    array($loc_id, $person->get_common_name()));
+	if(count($res) == 1) {
+             $csr_array = $res[0];
 		echo "<BR>Showing CSR#" . $loc_id . " from database:<BR>\n";
 		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$loc_id."\">Delete from Database</A> ]\n";
 		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$csr_array['auth_key']."\">Approve for signing</A> ]\n";
                 if (test_content($csr_array['csr']))
                      echo "<PRE>" . text_csr($csr_array['csr'])."</PRE>\n";
 	}
-	mysql_free_result($res);
 }
 function inspect_cert($cert_id)
 {
 	global $person;
-
 	$loc_id=sanitize_id($cert_id);
-	$sql=get_sql_conn();
-	$query  = "SELECT * FROM cert_cache WHERE cert_id='" . $loc_id;
-	$query .= "' AND cert_owner='" . $person->get_common_name() . "'";
-        /* echo $query . "<br>\n"; */
-	$res=$sql->execute($query);
-	if(mysql_num_rows($res) == 1) {
-		$csr_array = mysql_fetch_assoc($res);
-		$cmd = "exec echo \"".$csr_array['cert']."\" | openssl x509 -noout -text";
+        $res = MDB2Wrapper::execute("SELECT * FROM cert_cache WHERE cert_id=? AND cert_owner=?",
+                                    array('integer', 'text'),
+                                    array($loc_id, $person->get_common_name()));
+	if(count($res) == 1) {
+             $cmd = "exec echo \"".$res[0]['cert']."\" | openssl x509 -noout -text";
 		echo "<BR>Showing CERT#" . $loc_id . " from database:<BR>\n";
-		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$loc_id."\">Delete from Database</A> ]\n";
-		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$loc_id."\">Send by email</A> ]\n";
+		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=$loc_id\">Delete from Database</A> ]\n";
+		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=$loc_id\">Send by email</A> ]\n";
 		echo "<PRE>".shell_exec($cmd)."</PRE>\n";
 	}
-	mysql_free_result($res);
-     
 }
 
 function delete_csr($csr_id) {
 	global $person;
 	$loc_id=sanitize_id($csr_id);
-	$query = "SELECT * FROM csr_cache WHERE csr_id='".$loc_id."' AND common_name='".$person->get_common_name()."'";
-	$sql = get_sql_conn();
-	$res = $sql->execute($query);
-	$hits=mysql_num_rows($res);
+        $res = MDB2Wrapper::execute("SELECT * FROM csr_cache WHERE csr_id=? AND common_name= ?",
+                                    array('integer', 'text'),
+                                    array($loc_id, $person->get_common_name()));
+        $hits = count($res);
 	if ($hits== 1) {
-		Logger::log_event(LOG_NOTICE, "Dropping CSR with hash ".pubkey_hash($hits['csr'])." belonging to ".$person->get_common_name()." originating from ".$_SERVER['REMOTE_ADDR']."");
-		$update="DELETE FROM csr_cache WHERE csr_id=".$loc_id." AND common_name='".$person->get_common_name()."'";
-		$sql->update($update);
+             MDB2Wrapper::update("DELETE FROM csr_cache WHERE csr_id=? AND common_name= ?",
+                                 array('integer', 'text'),
+                                 array($loc_id, $person->get_common_name()));
+             Logger::log_event(LOG_NOTICE, "Dropping CSR with hash ".pubkey_hash($hits['csr'])." belonging to ".$person->get_common_name()." originating from ".$_SERVER['REMOTE_ADDR']."");
 	}
 	else {
 		if ($hits==0) {
 			echo "No matching CSR found.<BR>\n";
-			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$loc_id." from ip ".$_SERVER['REMOTE_ADDR'] . " : " . $person->get_common_name());
+			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$loc_id." from ip ".$_SERVER['REMOTE_ADDR'] . " : " . $person->get_common_name() . " Reason: not found");
 		}
 		else {
 			echo "Too many hits (".$hits.") in database<BR>\n";
@@ -308,14 +302,15 @@ function delete_cert($cert_id)
 {
 	global $person;
 	$loc_id=sanitize_id($cert_id);
-	$query = "SELECT * FROM cert_cache WHERE cert_id='".$loc_id."' AND cert_owner='".$person->get_common_name()."'";
-	$sql = get_sql_conn();
-	$res = $sql->execute($query);
-	$hits=mysql_num_rows($res);
+        $res = MDB2Wrapper::execute("SELECT * FROM cert_cache WHERE cert_id=? AND cert_owner=?",
+                                    array('integer', 'text'),
+                                    array($loc_id, $person->get_common_name()));
+	$hits=count($res);
 	if ($hits== 1) {
-		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$loc_id." belonging to ".$person->get_common_name());
-		$update="DELETE FROM cert_cache WHERE cert_id=".$loc_id." AND cert_owner='".$person->get_common_name()."'";
-		$sql->update($update);
+             MDB2Wrapper::update("DELETE FROM cert_cache WHERE cert_id=? AND cert_owner=?",
+                                 array('integer', 'text'),
+                                 array($loc_id, $person->get_common_name()));
+             Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$loc_id." belonging to ".$person->get_common_name());
 	}
 	else {
 		if ($hits==0) {
