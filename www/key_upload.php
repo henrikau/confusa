@@ -19,58 +19,45 @@ require_once('csr_lib.php');
    */
 $ip=$_SERVER['REMOTE_ADDR'];
 if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
-	$csr = base64_decode($_GET['remote_csr']);
-        $auth_var = htmlentities($_GET[Config::get_config('auth_var')]);
-	$csr_subject=openssl_csr_get_subject($csr);
-	if ($csr_subject) {
-		$common = $csr_subject['CN'];
-		/* contact db */
-		if (!known_pubkey($csr)) {
-			/* check ip to see if it's been abusive */
-                        $res_ip = MDB2Wrapper::execute("SELECT common_name, count(*) FROM csr_cache WHERE from_ip=? GROUP BY common_name ORDER BY count(*) DESC",
-                                                       array('text'),
-                                                       array($ip));
-                        $length = count($res_ip);
-                        /* has the ip tried to upload many different CSRs with
-                         * different common-names? */
-			if ($length > Config::get_config('remote_ips')) {
-				echo "Your IP is temporarily disabled due to CSR-upload overflow. Please try again later<BR>\n";
-				Logger::log_event(LOG_WARNING, "Detected abusive client from ".$ip.". Dropping content.<BR>\n");
-				exit(1);
-			}
-
-                        $counter = 0;
-                        while($counter < $length) {
-                             $content = $res_ip[$counter];
-                             $counter++;
-                             if ($content['count(*)'] > Config::get_config('remote_ips')) {
-                                  echo "Your IP is temporarily disabled due to excessive CSR-upload <BR>\n";
-                                  echo "You must approve the pending CSRs first, or wait for them to time out. <BR>\n";
-                                  echo "The timeout normally takes 1 day<BR>\n";
-                                  exit(1);
-                             }
-                        }
-                        /* test to see if the IP is blocked, the uploaded $csr
-                         * is valid (starts and ends with properly) and the
-                         * public key is long enough */
-			if (test_content($csr)) {
-                             MDB2Wrapper::update("INSERT INTO csr_cache (csr, uploaded_date, from_ip, common_name, auth_key) VALUES(?, current_timestamp(), ?, ?, ?)",
-                                                 array('text', 'text', 'text', 'text'),
-                                                 array($csr, $ip, $common, $auth_var));
-                             Logger::log_event(LOG_INFO, "Inserted new CSR from $ip ($common)");
-			}
-			else {
-                             Logger::log_event(LOG_WARNING, "Uploaded CSR from $ip not valid, caught by test_content");
-                             exit(1);
-			}
-		}
-		else {
-                     Logger::log_event(LOG_NOTICE, "Old key (hash: " .pubkey_hash($csr) .") uploaded from $ip - stopping transaction");
-                     echo "This is an old key. Genereate a <B>new</B> key please<BR>\n";
-		}
-	}
-        else {
-             Logger::log_event(LOG_NOTICE, "Invalid CSR received from $ip, aborting");
-        }
+     $csr = base64_decode($_GET['remote_csr']);
+     $auth_var = htmlentities($_GET[Config::get_config('auth_var')]);
+     $csr_subject=openssl_csr_get_subject($csr);
+     if ($csr_subject) {
+          $common = $csr_subject['CN'];
+          /* test to see if the CSR is valid, not used before and long enough */
+          if (test_content($csr)) {
+               /* has the ip tried to upload many different CSRs with
+                * different common-names? */
+               $res_ip = MDB2Wrapper::execute("SELECT common_name, count(*) FROM csr_cache WHERE from_ip=? GROUP BY common_name ORDER BY count(*) DESC",
+                                              array('text'),
+                                              array($ip));
+               if (count($res_ip) > Config::get_config('remote_ips')) {
+                    echo "Your IP is temporarily disabled due to CSR-upload overflow. Please try again later<BR>\n";
+                    $msg = "Detected abusive client from $ip -> Has " . $res_ip[0]['count(*)'] . " entries ";
+                    $msg .= "with common_name " . $res_ip[0]['common_name'] . " -> Dropping content.<BR>\n";
+                    Logger::log_event(LOG_WARNING, $msg);
+                    exit(1);
+               }
+               $counter = 0;
+               while($counter < count($res_ip)) {
+                    $content = $res_ip[$counter];
+                    $counter++;
+                    if ($content['count(*)'] > Config::get_config('remote_ips')) {
+                         echo "Your IP is temporarily disabled due to excessive CSR-upload <BR>\n";
+                         echo "You must approve the pending CSRs first, or wait for them to time out. <BR>\n";
+                         echo "The timeout normally takes 1 day<BR>\n";
+                         Logger::log_event(LOG_WARNING, "Blocked user from entering excessive amount of CSRs. User: " . $content['common_name'] . " from IP: " . $_SERVER['REMOTE_ADDR']);
+                         exit(1);
+                    }
+               }
+               MDB2Wrapper::update("INSERT INTO csr_cache (csr, uploaded_date, from_ip, common_name, auth_key) VALUES(?, current_timestamp(), ?, ?, ?)",
+                                   array('text', 'text', 'text', 'text'),
+                                   array($csr, $ip, $common, $auth_var));
+               Logger::log_event(LOG_INFO, "Inserted new CSR from $ip ($common) with auth_key $auth_var and hash " . pubkey_hash($csr));
+          }
+     }
+     else {
+          Logger::log_event(LOG_NOTICE, "Invalid CSR received from $ip, aborting");
+     }
 }
 ?>
