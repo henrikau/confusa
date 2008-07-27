@@ -12,25 +12,50 @@ include_once('logger.php');
 function test_content($content)
 {
   global $person;
-
-  $testres = false;
+  $testres = true;
   /* check for start */
   $start = substr($content, 0, 35);
   $end = substr($content, -34, -1);
 
   /* test start and ending of certificate */
-  if (strcmp("-----BEGIN CERTIFICATE REQUEST-----", $start)===0 &&
-      strcmp("-----END CERTIFICATE REQUEST-----", $end) === 0) {
-    $testres = true;
+  if (strcmp("-----BEGIN CERTIFICATE REQUEST-----", $start)!==0 &&
+      strcmp("-----END CERTIFICATE REQUEST-----", $end) !== 0) {
+       $testres = false;
   }
 
-  /* test fields of CSR */
   
   /* test length of pubkey */
   $length = Config::get_config('key_length');
-  if (csr_pubkey_length($content) < $length)
+  if (csr_pubkey_length($content) < $length) {
+       echo "uploaded key is not long enough. Please download a proper keyscript and try again<BR>\n";
        $testres = false;
+  }
 
+
+  /* test to see if the public-key of the CSR has been part of a previously
+   * signed certificate */
+  $testres = !known_pubkey($content);
+
+  /* test to see if the CSR already exists in the database */
+  $res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE csr=?",
+                              array('text'),
+                              array($content));
+  echo "count of res: " . count($res) . "<br>\n";
+  if (count($res) > 0) {
+       foreach ($res as $key => $value) {
+            if ($value['from_ip'] == $_SERVER['REMOTE_ADDR']) {
+                 echo "You have already uploaded this CSR to the server!<BR>\n";
+                 $testres = false;
+            }
+            else {
+                 echo "Someone else has uploaded this CSR to the server<BR>\n";
+                 echo "Your ip: " . $_SERVER['REMOTE_ADDR'] . " and previous address: " . $value['from_ip'] . "<BR>\n";
+                 $testres = false;
+            }
+       }
+       Logger::log_event(LOG_WARNING, "test_content() got " . count($res) . " matches on an incoming CSR from " . $_SERVER['REMOTE_ADDR']);
+       $testres = false;
+  }
   return $testres;
 }
 
