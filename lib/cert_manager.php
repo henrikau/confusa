@@ -1,6 +1,6 @@
 <?php
 require_once('mail_manager.php');
-require_once('sql_lib.php');
+require_once('mdb2_wrapper.php');
 require_once('pw.php');
 require_once('logger.php');
 class CertManager
@@ -51,7 +51,7 @@ class CertManager
                  $cert_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/cert/sigma_cert.pem';
                  $ca_priv_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/priv/sigma_priv_key.pem';
 
-                 $tmp_cert = openssl_csr_sign($this->user_csr, $cert_path, $ca_priv_path, $sign_days);
+                 $tmp_cert = openssl_csr_sign($this->user_csr, $cert_path, $ca_priv_path, $sign_days , array('digest_alg' => 'sha1'));
                  openssl_x509_export($tmp_cert, $this->user_cert, true);
                  /* echo __FILE__ .":".__LINE__ ." Certificate successfully signed. <BR>\n"; */
                  
@@ -69,21 +69,14 @@ class CertManager
                        | valid_untill | datetime    | NO   |     |         |                |
                        +--------------+-------------+------+-----+---------+----------------+
                     */
-                    $query  = "INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) ";
-                    $query .= "VALUES('".$this->user_cert."',";
-                    $query .= "'".$auth_key."','".$this->person->get_common_name() . "'";
-                    $query .= ", addtime(current_timestamp(), '" . $sign_days . " 0:0'))";
-                    /* echo $query ."<br>\n"; */
-
-                    $sql = get_sql_conn();
-                    $sql->update($query);
-
+                    MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) VALUES(?, ?, ?, addtime(current_timestamp(), ?))",
+                                        array('text', 'text', 'text', 'text'),
+                                        array($this->user_cert, $auth_key, $this->person->get_common_name(), Config::get_config('cert_default_timeout')));
 		    Logger::log_event(LOG_INFO, "Certificate successfully signed for " . $this->person->get_common_name() . " Contacting us from " . $_SERVER['REMOTE_ADDR']);
 		    /* add to database (the hash of the pubkey) */
-                    $update = "INSERT INTO pubkeys (pubkey_hash) VALUES('" . $this->pubkey_checksum . "')";
-                    $sql = get_sql_conn();
-                    $sql->update($update);
-
+                    MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash) VALUES(?)",
+                                        array('text'),
+                                        array($this->pubkey_checksum));
 		    return true;
 	    }
 	    else {

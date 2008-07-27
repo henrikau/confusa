@@ -1,13 +1,15 @@
 <?php
 /* get simplesaml */
-require_once('/usr/local/simplesamlphp/www/_include.php');
+require_once(dirname(__FILE__).'/config.php');
+/* include _include in the simplesaml-directory */
+require_once(Config::get_config('simplesaml_path'));
 require_once('SimpleSAML/Utilities.php');
 require_once('SimpleSAML/Session.php');
 
 require_once('sms_auth.php');
 require_once('person.php');
 require_once('logger.php');
-
+require_once('mdb2_wrapper.php');
 /* global variable to check if the session has been started or not (avoid
  * multiple calls to simple_saml's session_start()
  */
@@ -70,32 +72,32 @@ function deauthenticate_user($person)
 	}
 	$session = _get_session();
 
+        /* TODO: move this to sms_auth! */
 	if (Config::get_config('use_sms')) {
 	    /* remove edu_name from database */
-	    $name = str_replace('\\', '', $_GET['edu_name']);
+             $name = str_replace('\\', '', htmlentities($_GET['edu_name']));
 	    $name = strip_tags($name);
 	    $name = str_replace("'", "", $name);
-	    $sql_conn = new MySQLConn();
     
 	    /* find user and session */
-	    $query = "SELECT username, session_id FROM sms_auth WHERE username='" . $name . "'";
-	    $res = $sql_conn->execute($query);
-
-	    if (mysql_numrows($res) > 0) {
+            $res = MDB2Wrapper::execute("SELECT username, session_id FROM sms_auth WHERE username=?",
+                                        array('text'),
+                                        array($name));
+	    if (count($res) > 0) {
 		    /* make sure we're not trying to deauthenticate a different user! */
-		    if (mysql_result($res, 0, 'session_id') == session_id() && 
-			mysql_result($res, 0, 'username') == $name) {
-			    /* echo "Dropping user from database.<BR>\n"; */
-			    $query = "DELETE FROM sms_auth WHERE username='" . $name . "'";
-			    $sql_conn->update($query);
+                 if ($res[0]['session_id'] == session_id() && $res[0]['username'] == $name) {
+                            MDB2Wrapper::update("DELETE FROM sms_auth WHERE username=?",
+                                                array('text'),
+                                                array($name));
 		    }
 		    else {
-			    echo "You cannot drop another user from the database!<BR>\n";
-			    echo "This incident <B>will</B> be reported!<BR>\n";
+                         Logger::log_event(LOG_NOTICE, "Will not drop another user from db! " . $_SERVER['REMOTE_ADDR']);
+                         echo "You cannot drop another user from the database!<BR>\n";
+                         echo "This incident <B>will</B> be reported!<BR>\n";
 		    }
 	    }
 	    else {
-		    echo "Cannot drop user - does not exist in the database<BR>\n";
+                    Logger::log_event(LOG_NOTICE, "Cannot drop nonexisting user $name from database. Connecting from " . $_SERVER['REMOTE_ADDR']);
 	    }
 	}
 }
