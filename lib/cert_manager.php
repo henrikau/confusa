@@ -70,8 +70,8 @@ class CertManager
                        +--------------+-------------+------+-----+---------+----------------+
                     */
                     MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) VALUES(?, ?, ?, addtime(current_timestamp(), ?))",
-                                        array('text', 'text', 'text', 'integer'),
-                                        array($this->user_cert, $auth_key, $this->person->get_common_name(), $sign_days));
+                                        array('text', 'text', 'text', 'text'),
+                                        array($this->user_cert, $auth_key, $this->person->get_common_name(), Config::get_config('cert_default_timeout')));
 		    Logger::log_event(LOG_INFO, "Certificate successfully signed for " . $this->person->get_common_name() . " Contacting us from " . $_SERVER['REMOTE_ADDR']);
 		    /* add to database (the hash of the pubkey) */
                     MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash) VALUES(?)",
