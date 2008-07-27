@@ -253,8 +253,7 @@ function inspect_csr($csr_id) {
 		echo "<BR>Showing CSR#" . $loc_id . " from database:<BR>\n";
 		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$loc_id."\">Delete from Database</A> ]\n";
 		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$csr_array['auth_key']."\">Approve for signing</A> ]\n";
-                if (test_content($csr_array['csr']))
-                     echo "<PRE>" . text_csr($csr_array['csr'])."</PRE>\n";
+                echo "<PRE>" . text_csr($csr_array['csr'])."</PRE>\n";
 	}
 }
 function inspect_cert($cert_id)
