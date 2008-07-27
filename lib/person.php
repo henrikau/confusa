@@ -81,31 +81,31 @@ class Person{
 
     public function set_mobile($mobile) {
         if (isset($mobile))
-            $this->mobile = $mobile;
+             $this->mobile = htmlentities($mobile);
         }
 
     public function get_mobile() { return $this->mobile; }
 
     public function set_name($given_name) {
-        if (isset($given_name)) $this->given_name = $given_name;
+         if (isset($given_name)) $this->given_name = htmlentities$given_name);
         }
     public function get_name() { return $this->given_name; }
 
     public function set_common_name($cn) {
         if (isset($cn)) 
-            $this->common_name = $cn;
+             $this->common_name = htmlentities(str_replace("'", "", $cn));
         }
     public function get_common_name() { return $this->common_name; }
 
     public function set_email($email) {
         if (isset($email)) 
-            $this->email = $email;
+            $this->email = htmlentities($email);
         }
     public function get_email() { return $this->email; }
 
     public function get_keyholder() { return $this->keyholder; }
 
-    public function set_db_id ($id) { if (isset($id)) { $this->db_id = $id; } }
+    public function set_db_id ($id) { if (isset($id)) { $this->db_id = htmlentities($id); } }
     public function get_db_id () { return $this->db_id; }
     public function has_db_id () { return isset($this->db_id); }
       } /* end class Person */
