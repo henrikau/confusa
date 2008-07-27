@@ -87,7 +87,7 @@ class Person{
     public function get_mobile() { return $this->mobile; }
 
     public function set_name($given_name) {
-         if (isset($given_name)) $this->given_name = htmlentities$given_name);
+         if (isset($given_name)) $this->given_name = htmlentities($given_name);
         }
     public function get_name() { return $this->given_name; }
 
