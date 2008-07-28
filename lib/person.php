@@ -47,9 +47,6 @@ class Person{
         $this->fed_auth = false;
         $this->sms_auth = false;
         } /* end constructor */
-    function __destruct() {
-
-        } /* end destructor */
 
     function __tostring() {
         $var = "<table clas=\"small\">";
