@@ -107,7 +107,7 @@ $confusa_config = array(
         /* how long should a certificate be valid in the cert_cache before being
          * doomed expired (to avoid that it's available for a long time for the
          * world) */
-        'cert_default_timeout'           => 15,
+        'cert_default_timeout'           => '0 0:15:0',
 
         /* how long a CSR should stay in the csr_cache before being
          * removed. Time in MySQL-format */

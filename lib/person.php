@@ -25,6 +25,7 @@ class Person{
     private $common_name;
     private $email;
     private $db_id;
+    private $country;
 
     /* get variables for:
      * Region (i.e. Sor Trondelag)
@@ -105,5 +106,12 @@ class Person{
     public function set_db_id ($id) { if (isset($id)) { $this->db_id = htmlentities($id); } }
     public function get_db_id () { return $this->db_id; }
     public function has_db_id () { return isset($this->db_id); }
+
+    public function set_country($c)
+         {
+              if (isset($c))
+                   $this->country = htmlentities($c);
+         }
+    public function get_country() { return $this->country; }
       } /* end class Person */
 ?>

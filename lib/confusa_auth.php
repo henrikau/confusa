@@ -6,6 +6,7 @@ require_once(dirname(__FILE__).'/config.php');
 require_once(Config::get_config('simplesaml_path'));
 require_once('SimpleSAML/Utilities.php');
 require_once('SimpleSAML/Session.php');
+require_once('SimpleSAML/XHTML/Template.php');
 
 require_once('sms_auth.php');
 require_once('person.php');
@@ -124,7 +125,7 @@ function is_authenticated($person = null) {
 		$person->set_name($attribs['cn'][0]);
 		$person->set_common_name($attribs['eduPersonPrincipalName'][0]);
 		$person->set_email($attribs['mail'][0]);
-
+                $person->set_country('NO');
 		/* push user to sms-auth */
 		if (Config::get_config('use_sms'))
 			$person->sms_auth(_test_sms($person));
@@ -154,16 +155,12 @@ function _assert_sso($person)
    *	session valid
    * Do:
    *	set new header
+   *
+   * http://rnd.feide.no/content/using-simplesamlphp-service-provider#id436365
    */
   if (!isset($session) || !$session->isValid() ) {
-        /* $link_base = SimpleSAML_Utilities::selfURL() .'saml2/sp/initSLO.php?RelayState='.SimpleSAML_Utilities::selfURL() . $logout_location . "?edu_name='" . $edu_name; */
-        /* $link = '<A HREF="' . $link_base . '">' . $logout_name . '</A>'; */
-        /* $base = dirname($_SERVER['HTTP_REFERER']); */
-       $base = dirname(SimpleSAML_Utilities::selfURL());
-            header('Location: ' . $base . 
-	   '/saml2/sp/initSSO.php?RelayState=' . 
-	   urlencode($base));
-    exit(0);
+       SimpleSAML_Utilities::redirect('/' . $config->getBaseURL() . 'saml2/sp/initSSO.php',array('RelayState' => SimpleSAML_Utilities::selfURL()));
+       exit(0);
   }
 
   /* update person, FIXME: update attributes as well */
