@@ -123,7 +123,7 @@ function is_authenticated($person = null) {
 		$person->set_name($attribs['cn'][0]);
 		$person->set_common_name($attribs['eduPersonPrincipalName'][0]);
 		$person->set_email($attribs['mail'][0]);
-
+                $person->set_country('NO');
 		/* push user to sms-auth */
 		if (Config::get_config('use_sms'))
 			$person->sms_auth(_test_sms($person));

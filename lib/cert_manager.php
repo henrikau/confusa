@@ -107,7 +107,7 @@ class CertManager
                 * TODO: Fix these fields to read from config and country to be
                 * federate-dependent.
                 */
-               if (!($subject['C'] === "NO" &&
+               if (!($subject['C'] === $this->person->get_country() &&
                      $subject['O'] === "Nordugrid" &&
                      $subject['OU'] === "Nordugrid" &&
                      $subject['CN'] === $this->person->get_common_name() &&
