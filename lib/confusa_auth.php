@@ -1,6 +1,7 @@
 <?php
 /* get simplesaml */
 require_once(dirname(__FILE__).'/config.php');
+
 /* include _include in the simplesaml-directory */
 require_once(Config::get_config('simplesaml_path'));
 require_once('SimpleSAML/Utilities.php');
@@ -18,7 +19,7 @@ $session_started = false;
 
 /* authenticate_user()
  *
-n * This is the main function for checking if the user is authenticated.
+ * This is the main function for checking if the user is authenticated.
  *
  * If the user is not authenticated, this function will either redirect or
  * include login-panel so that the user may log in.
@@ -194,7 +195,7 @@ function show_sso_debug($person) {
         printn("<table>");
         foreach ($attributes AS $name => $value) {
             /* several values in the field */
-            echo "\t<tr>\n\t\t<td>" . $name . "</td>\n\t\t<td>" . $value[0] . "</td>\n\t</tr>\n";
+            echo "\t<tr>\n\t\t<td>$name</td>\n\t\t<td>" . $value[0] . "</td>\n\t</tr>\n";
         }
         printn("</table>");
         printn("<HR>");
@@ -303,7 +304,6 @@ function _validate_sms($person, $assert)
     $sms->set_pw_timeout(15);
     $sms->set_session_timeout(30, true);
     $valid_sms_user = $sms->assert_user();
-    /* echo __FILE__ . ":".  __LINE__ . " done asserting user<br>\n"; */
     $person->sms_auth($valid_sms_user);
     /* if the user is not authorized via SMS, show the login-form
      * the subsystem will handle creation and distribution of the password by itself.
