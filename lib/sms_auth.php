@@ -5,6 +5,7 @@ require_once('sms_commons.php');
 require_once('mail_manager.php');
 require_once('logger.php');
 require_once('person.php');
+require_once('config.php');
 
 /* ======================================================================
  * sms_auth.php
@@ -31,7 +32,7 @@ require_once('person.php');
 
 class SMSAuth
     {
-	    private $sms_debug = true;
+	    private $sms_debug;
 	    private $table_name;
 	    private $person;
 	    private $ptl;
@@ -52,13 +53,12 @@ class SMSAuth
                     echo "Contact your local IT-administration to correct this issue<BR>\n";
                     echo "</FONT></CENTER>";
                     echo "<BR><BR><BR><BR>\n";
-                    //exit(1);
                 }
 		$this->edu_name                 = str_replace("'", "", $this->person->get_common_name());
 		$this->mobile                   = str_replace(" ", "", $this->person->get_mobile());
 		$this->table_name               = Config::get_config('mysql_default_table');
-
-		$this->sms_gw_addr = 'sms@tyholt.uninett.no';
+                $this->sms_debug                = Config::get_config('sms_debug');
+		$this->sms_gw_addr =            = Config::get_config('sms_gw_addr');
 
 		$this->set_pw_timeout(Config::get_config('sms_pw_timeout'));
 		$this->set_session_timeout(Config::get_config('sms_session_timeout'), true);
@@ -74,9 +74,7 @@ class SMSAuth
     function set_pw_timeout($timeout_min)
         {
             if ($timeout_min > 0 && $timeout_min < 60)
-                {
                 $this->ptl = sprintf("0 0:%u:0", $timeout_min);
-                }
         } /* end set_pw_timeout() */
 
     /* set_session_timeout()
@@ -89,9 +87,7 @@ class SMSAuth
     function set_session_timeout($timeout_min, $updatable)
         {
             if ($timeout_min > 0 && $timeout_min < 60)
-                {
                 $this->stl = sprintf("0 0:%u:0", $timeout_min);
-                }
         } /* end set_session_timeout */
 
     /* assert_user()
@@ -114,14 +110,12 @@ class SMSAuth
         {
 		/* find user in database. get_person_id will create a new if none exists. */
 		$this->get_person_id();
-		/* echo __FILE__ . ":" . __LINE__ . " got person_id (" . $this->person->get_db_id() . ")<BR>\n"; */
 		/* valid session? No need to check password,
 		 * session is OK, return true :-) */
 		if ($this->valid_sms_session()) {
-			/* echo __FILE__ . ":" . __LINE__ . " got valid sms_session <BR>\n"; */
 			return true;
 		}
-		/* echo __FILE__ . ":" . __LINE__ . " not valid out of the box...<br>\n"; */
+
         /* check password. If it validates, we're ok
          * If so, set a valid session and authenticate the user.
          */
@@ -203,7 +197,7 @@ class SMSAuth
      */
     private function clear_from_db()
     {
-        MDB2Wrapper::update("DELETE FROM " . $this->table_name . " WHERE username=?", 
+        MDB2Wrapper::update("DELETE FROM $this->table_name WHERE username=?", 
                             array('text'), 
                             array($this->person->get_common_name()));
     } /* end clear_from_db() */
@@ -323,7 +317,7 @@ class SMSAuth
 			return true;
                 }
                 else {
-			echo '<FONT COLOR="RED"><B>Wrong password!</B></FONT><BR>';
+			echo "<FONT COLOR="RED"><B>Wrong password!</B></FONT><BR>";
 			echo "\n";
                 }
             }
