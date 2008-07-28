@@ -58,7 +58,7 @@ class SMSAuth
 		$this->mobile                   = str_replace(" ", "", $this->person->get_mobile());
 		$this->table_name               = Config::get_config('mysql_default_table');
                 $this->sms_debug                = Config::get_config('sms_debug');
-		$this->sms_gw_addr =            = Config::get_config('sms_gw_addr');
+		$this->sms_gw_addr              = Config::get_config('sms_gw_addr');
 
 		$this->set_pw_timeout(Config::get_config('sms_pw_timeout'));
 		$this->set_session_timeout(Config::get_config('sms_session_timeout'), true);
