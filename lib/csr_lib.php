@@ -2,12 +2,15 @@
 include_once('mdb2_wrapper.php');
 include_once('logger.php');
 
-/* test_file_content()
+/* test_content()
  *
- * Function for testing the content of certificate-files.
- * Since we know that we'll receiving CSRs, we can custom-design the test here.
- *
- * Other 'lowlevel'-tests are performed by FileUpload-object.
+ * This function is to be used when testing uploaded CSRs for flaws and errors.
+ * It will test for:
+ * - common text-patterns
+ * - that the key meets the required key-length
+ * - that it is a normal CSR (previous point will fail if it is a 'bogus' CSR
+ * - that the CSR has not been uploaded before
+ * - that the public-key in the CSR does not belong to a previous
  */
 function test_content($content)
 {
