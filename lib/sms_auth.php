@@ -317,7 +317,7 @@ class SMSAuth
 			return true;
                 }
                 else {
-			echo "<FONT COLOR="RED"><B>Wrong password!</B></FONT><BR>";
+			echo "<FONT COLOR=\"RED\"><B>Wrong password!</B></FONT><BR>";
 			echo "\n";
                 }
             }
