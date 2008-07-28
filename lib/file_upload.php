@@ -133,16 +133,21 @@ class FileUpload {
 	  return;
 	}
 
-	/* other tests to avoid exploits*/
-	/* TODO */
-
 	/* if nothing bad detected, assume it's OK (we still do the supplied test-function) */
-	/* echo __FILE__.":".__LINE__." file ok<BR>\n"; */
 	$this->file_ok = true;
       }
     } /* end test_file */
 
-private function trivial_test($content) {return $this->file_ok(); }
+  /* trivial_test()
+   *
+   * This might deserve a place in somethingawful (or some such), but is
+   * a function-holder to make the file-testing easier. If the user does not
+   * supply a custom-test function, instead of testing to see if it is NULL, we
+   * use this function. As we test for negative results, this test will never
+   * affect the end-result and can be use safely (although it is rather useless
+   * from a testing point of view).
+   */
+  private function trivial_test($content) {return $this->file_ok(); }
 
 }
 ?>
