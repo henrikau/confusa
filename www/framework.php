@@ -86,7 +86,6 @@ class Framework {
 
 
         echo "</TABLE>\n";
-        echo "<BR><ADDRESS>Last updated: " . $this->get_last_mod() . "</ADDRESS><BR>\n";
         include_once('footer.php');
         } /* end render_page */
 
@@ -107,8 +106,4 @@ class Framework {
             $func($this->person);
         } /* end user-rendering */
 
-    private function get_last_mod()
-        {
-        return "14. May 2008";
-        }
     } /* end class Framewokr */
