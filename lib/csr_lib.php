@@ -99,6 +99,10 @@ function known_pubkey($csr)
 function pubkey_hash($csr)
 {
      $csr_pubkey = openssl_csr_get_public_key($csr);
+     if (!$csr_pubkey) {
+          echo __FILE__ .":".__LINE__." Could not retrieve public key from CSR<br>\n";
+          exit(1);
+     }
      $keydata = openssl_pkey_get_details($csr_pubkey);
      return sha1($keydata['key']);
 } /* end pubkey_hash */
