@@ -2,7 +2,9 @@
 /* get simplesaml */
 require_once(dirname(__FILE__).'/config.php');
 
-/* include _include in the simplesaml-directory */
+/* include _include in the simplesaml-directory
+ * simplesaml_path is the _include in the simplesaml directory
+ */
 require_once(Config::get_config('simplesaml_path'));
 require_once('SimpleSAML/Utilities.php');
 require_once('SimpleSAML/Session.php');
@@ -155,7 +157,6 @@ function _assert_sso($person)
    *	session valid
    * Do:
    *	set new header
-   *
    * http://rnd.feide.no/content/using-simplesamlphp-service-provider#id436365
    */
   if (!isset($session) || !$session->isValid() ) {
@@ -259,6 +260,31 @@ function feide_logout_link($logout_location="logout.php", $logout_name="Logout C
     return $link;
 } // end get_logout_link()
 
+
+/* compose_login_links()
+ *
+ * An entry-point for circumventing the fact that simplesamlphp doesn't handle
+ * several different IdPs pr. default very well, and in order to try to
+ * circumvent this, we tailor the login-links ourself.
+ *
+ * Not a perfect solution, and we're getting pretty dependent upon simplesamlphp internals.
+ */
+function compose_login_links()
+{
+     /* scan through simplesamlphp's saml20-idp-remote and connect
+      * the entries there to saml20-sp-hosted
+      *
+      * Finally use the key in saml20-sp-hosted as a basis for the initSSO
+      * login, i.e. bypass the host-lookup in simpelsamlphp.
+      */
+     global $metadata;
+     require_once('/var/www/simplesamlphp/metadata/saml20-idp-remote.php');
+} /* end compose_login_links() */
+
+/* _is_feide_auth()
+ *
+ * tests to see if the user is authenticated via feide.
+ */
 function _is_feide_auth()
     {
     /* check if user is sso-auth */
