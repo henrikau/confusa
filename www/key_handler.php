@@ -162,6 +162,7 @@ function send_cert()
                if (!$mm->send_mail()) {
                     echo "Could not send mail properly!<BR>\n";
                }
+               echo "Sent certificate via email!<br>\n";
           }
           else if (isset($_GET['file_cert'])) {
                require_once('file_download.php');
@@ -208,7 +209,7 @@ function show_db_csr()
 function show_db_cert() 
 {
      global $person;
-     $res = MDB2Wrapper::execute("SELECT cert_id, auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=? AND valid_untill > current_timestamp()",
+     $res = MDB2Wrapper::execute("SELECT cert_id, auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=?",
                                  array('text'),
                                  array($person->get_common_name()));
      echo "<B>Certificates:</B><BR>\n";
@@ -249,13 +250,20 @@ function inspect_csr($csr_id) {
                                     array('integer', 'text'),
                                     array($loc_id, $person->get_common_name()));
 	if(count($res) == 1) {
-             $csr_array = $res[0];
-		echo "<BR>Showing CSR#" . $loc_id . " from database:<BR>\n";
-		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$loc_id."\">Delete from Database</A> ]\n";
-		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$csr_array['auth_key']."\">Approve for signing</A> ]\n";
-                echo "<PRE>" . text_csr($csr_array['csr'])."</PRE>\n";
+             $csr = $res[0]['csr'];
+             echo "<BR>Showing CSR with auth-token " .$res[0]['auth_key'] . " from database:<BR>\n";
+             echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$loc_id."\">Delete from Database</A> ]\n";
+             echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$csr_array['auth_key']."\">Approve for signing</A> ]\n";
+
+             /* print subject */
+             $subj = openssl_csr_get_subject($csr, false);
+             echo "<table>\n";
+             foreach ($subj as $key => $value)
+                  echo "<tr><td>$key</td><td>$value</td></tr>\n";
+             echo "</table>\n";
 	}
-}
+} /* end inspect_csr() */
+
 function inspect_cert($cert_id)
 {
 	global $person;
@@ -264,11 +272,13 @@ function inspect_cert($cert_id)
                                     array('integer', 'text'),
                                     array($loc_id, $person->get_common_name()));
 	if(count($res) == 1) {
-             $cmd = "exec echo \"".$res[0]['cert']."\" | openssl x509 -noout -text";
-		echo "<BR>Showing CERT#" . $loc_id . " from database:<BR>\n";
-		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=$loc_id\">Delete from Database</A> ]\n";
-		echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=$loc_id\">Send by email</A> ]\n";
-		echo "<PRE>".shell_exec($cmd)."</PRE>\n";
+             $csr_test = openssl_x509_read($res[0]['cert']);
+             if (openssl_x509_export($csr_test, $text, false)) {
+                  echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=$cert_id\">Delete from Database</A> ]\n";
+                  echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=$cert_id\">Send by email</A> ]\n";
+                  echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=$cert_id\">Download</A> ]\n";
+                  echo "<PRE>$text</PRE>\n";
+             }
 	}
 }
 
