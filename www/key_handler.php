@@ -18,6 +18,9 @@ if (send_cert()) {
 $fw->force_login();
 $fw->render_page();
 /* this function contains the main-flow in the program.
+ *
+ * It will make sure all CSRs and Certificates stored in the database will be
+ * displayed to the user.
  */
 function keyhandle($pers) 
 {
@@ -110,7 +113,7 @@ function process_db_cert()
 /* approve_csr()
  *
  * This function approves a CSR for signing. It uses the auth-token as a
- * paramenter to find the CSR in the databse.
+ * paramenter to find the CSR in the database.
  */
 function approve_csr($auth_token)
 {
@@ -137,6 +140,10 @@ function approve_csr($auth_token)
      }
 } /* end approve_csr_remote() */
 
+/* send_cert
+ *
+ * The user can receive a certificate in 2 ways. Either via email or direct download. 
+ */
 function send_cert()
 {
      global $person;
@@ -173,6 +180,10 @@ function send_cert()
      return $send_res;
 } /* end send_cert */
 
+/* show_db_csr
+ *
+ * Retrieve all CSRs from the database and list them for the user.
+ */
 function show_db_csr()
 {
      global $person;
@@ -206,6 +217,11 @@ function show_db_csr()
      echo "</table>\n";
      echo "<BR><BR><BR>\n";
 }
+
+/* show_db_cert
+ *
+ * Retrieve certificates from the database and show them to the user
+ */
 function show_db_cert() 
 {
      global $person;
@@ -243,6 +259,11 @@ function show_db_cert()
      echo "<BR><BR><BR>\n";
 } /* end show_db_cert() */
 
+/* inspect_csr
+ *
+ * Let the user view detailed information about a CSR (belonging to the user) to
+ * help decide whether or not it should be signed.
+ */
 function inspect_csr($csr_id) {
 	global $person;
 	$loc_id=sanitize_id($csr_id);
@@ -251,19 +272,30 @@ function inspect_csr($csr_id) {
                                     array($loc_id, $person->get_common_name()));
 	if(count($res) == 1) {
              $csr = $res[0]['csr'];
-             echo "<BR>Showing CSR with auth-token " .$res[0]['auth_key'] . " from database:<BR>\n";
-             echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$loc_id."\">Delete from Database</A> ]\n";
-             echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$csr_array['auth_key']."\">Approve for signing</A> ]\n";
              /* print subject */
              $subj = openssl_csr_get_subject($csr, false);
-             echo "Details in your CSR:\n<table>\n";
+             echo "Details in your CSR:\n";
+             echo "<table class=\"small\">\n";
+             echo "<tr><td>AuthToken</td><td>".$res[0]['auth_key']."</td></tr>\n";
              foreach ($subj as $key => $value)
                   echo "<tr><td>$key</td><td>$value</td></tr>\n";
-             echo "<tr><td>Length:</td><td>".csr_pubkey_length($res[0]['csr']) . "</td></tr>\n";
+             echo "<tr><td>Length:</td><td>".csr_pubkey_length($res[0]['csr']) . " bits</td></tr>\n";
+             echo "<tr><td>Uploaded </td><td>".$res[0]['uploaded_date'] . "</td></tr>\n";
+             echo "<tr><td>From IP: </td><td>".$res[0]['from_ip'] . "</td></tr>\n";
+             echo "<tr><td></td><td></td></tr>\n";
+             echo "<tr><td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$loc_id."\">Delete from Database</A> ]</td>\n";
+             echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$csr_array['auth_key']."\">Approve for signing</A> ]</td></tr>\n";
              echo "</table>\n";
+             echo "<BR>\n";
 	}
 } /* end inspect_csr() */
 
+
+/* inspect_cert
+ *
+ * This function will 'verbosify' a certificate with given cert_id.
+ * Basically it will print it in human-readable form and let the user verify it.
+ */
 function inspect_cert($cert_id)
 {
 	global $person;
@@ -282,6 +314,11 @@ function inspect_cert($cert_id)
 	}
 }
 
+/* delete_csr
+ *
+ * Remove the csr with given id from the database.
+ * It will check that the CSR belongs to the user in question.
+ */
 function delete_csr($csr_id) {
 	global $person;
 	$loc_id=sanitize_id($csr_id);
@@ -293,7 +330,7 @@ function delete_csr($csr_id) {
              mdb2wrapper::update("delete from csr_cache where csr_id=? and common_name= ?",
                                  array('integer', 'text'),
                                  array($loc_id, $person->get_common_name()));
-             logger::log_event(log_notice, "dropping csr with hash ".pubkey_hash($hits['csr'])." belonging to ".$person->get_common_name()." originating from ".$_SERVER['REMOTE_ADDR']."");
+             logger::log_event(LOG_NOTICE, "dropping csr with hash ".pubkey_hash($hits['csr'])." belonging to ".$person->get_common_name()." originating from ".$_SERVER['REMOTE_ADDR']."");
 	}
 	else {
 		if ($hits==0) {
@@ -307,6 +344,10 @@ function delete_csr($csr_id) {
 	}
 } /* end delete_csr() */
 
+/* delete_cert
+ *
+ * Delete certificate belonging to user with given id from db.
+ */
 function delete_cert($cert_id)
 {
 	global $person;
@@ -332,15 +373,15 @@ function delete_cert($cert_id)
 		}
         }
 }
+
+/* sanitize_id
+ *
+ * Make sure that the id is an id an nothing more.
+ */
 function sanitize_id($id) {
-	/* ================================================================= *
-	 * WARNING: Possible sql-injection exploit entry-point!
-	 * This is where we add an id to the database, even though it's been
-	 * sanitized with htmlentities
-	 *
-	 * TODO: Do sanitize of $id here!
-	 * ================================================================= */
-     return (int) $id;
+     /* as PHP will fail to convert characters to an integer (will result in
+      * '0'), this is a 'safe' test */
+     return (int) htmlentities($id);
 }
 ?>
 
