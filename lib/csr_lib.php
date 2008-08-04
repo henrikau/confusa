@@ -98,21 +98,27 @@ function known_pubkey($csr)
  */
 function pubkey_hash($csr)
 {
-     $cmd = "exec echo \"".$csr."\" | openssl req -pubkey -noout | sha1sum | cut -d ' ' -f 1";
-     $pubkey_checksum=trim(shell_exec($cmd));
-     return $pubkey_checksum;
+     $csr_pubkey = openssl_csr_get_public_key($csr);
+     $keydata = openssl_pkey_get_details($csr_pubkey);
+     return sha1($keydata['key']);
+} /* end pubkey_hash */
+
+function csr_pubkey_length($csr)
+{
+     $csr_pubkey = openssl_csr_get_public_key($csr);
+     $keydata = openssl_pkey_get_details($csr_pubkey);
+     return $keydata['bits'];
 }
 
-function csr_pubkey_length($c)
-{
-     $length = -1;
-     $csr = text_csr($c);
-     if (preg_match("/Public Key: \([0-9]+ [a-z]+\)/i", $csr, $match)) {
-          preg_match("/[0-9]+/", $match[0], $final);
-          $length = $final[0];
-     }
-     return $length;
-}
+/* export the CSR as huma-readable text without the key
+ *
+ * This should be done by openssl internally, but this is no easy task.
+ * openssl_csr_export needs a CSR as a resource, and the only way of getting a
+ * CSR as a resource, is via openssl_csr_new. Hence, one cannot import an
+ * existing CSR as a CSR in php..
+ *
+ * The function is deprecated and will be removed
+ */
 function text_csr($csr)
 {
      $cmd = "exec echo \"".$csr."\" | openssl req -noout -text";

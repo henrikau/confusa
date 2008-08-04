@@ -254,12 +254,12 @@ function inspect_csr($csr_id) {
              echo "<BR>Showing CSR with auth-token " .$res[0]['auth_key'] . " from database:<BR>\n";
              echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$loc_id."\">Delete from Database</A> ]\n";
              echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$csr_array['auth_key']."\">Approve for signing</A> ]\n";
-
              /* print subject */
              $subj = openssl_csr_get_subject($csr, false);
-             echo "<table>\n";
+             echo "Details in your CSR:\n<table>\n";
              foreach ($subj as $key => $value)
                   echo "<tr><td>$key</td><td>$value</td></tr>\n";
+             echo "<tr><td>Length:</td><td>".csr_pubkey_length($res[0]['csr']) . "</td></tr>\n";
              echo "</table>\n";
 	}
 } /* end inspect_csr() */
@@ -268,16 +268,16 @@ function inspect_cert($cert_id)
 {
 	global $person;
 	$loc_id=sanitize_id($cert_id);
-        $res = MDB2Wrapper::execute("SELECT * FROM cert_cache WHERE cert_id=? AND cert_owner=?",
+        $res = mdb2wrapper::execute("select * from cert_cache where cert_id=? and cert_owner=?",
                                     array('integer', 'text'),
                                     array($loc_id, $person->get_common_name()));
 	if(count($res) == 1) {
              $csr_test = openssl_x509_read($res[0]['cert']);
              if (openssl_x509_export($csr_test, $text, false)) {
-                  echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=$cert_id\">Delete from Database</A> ]\n";
-                  echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=$cert_id\">Send by email</A> ]\n";
-                  echo "[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=$cert_id\">Download</A> ]\n";
-                  echo "<PRE>$text</PRE>\n";
+                  echo "[ <a href=\"".$_server['php_self']."?delete_cert=$cert_id\">delete from database</a> ]\n";
+                  echo "[ <a href=\"".$_server['php_self']."?email_cert=$cert_id\">send by email</a> ]\n";
+                  echo "[ <a href=\"".$_server['php_self']."?file_cert=$cert_id\">download</a> ]\n";
+                  echo "<pre>$text</pre>\n";
              }
 	}
 }
@@ -285,15 +285,15 @@ function inspect_cert($cert_id)
 function delete_csr($csr_id) {
 	global $person;
 	$loc_id=sanitize_id($csr_id);
-        $res = MDB2Wrapper::execute("SELECT * FROM csr_cache WHERE csr_id=? AND common_name= ?",
+        $res = mdb2wrapper::execute("select * from csr_cache where csr_id=? and common_name= ?",
                                     array('integer', 'text'),
                                     array($loc_id, $person->get_common_name()));
         $hits = count($res);
 	if ($hits== 1) {
-             MDB2Wrapper::update("DELETE FROM csr_cache WHERE csr_id=? AND common_name= ?",
+             mdb2wrapper::update("delete from csr_cache where csr_id=? and common_name= ?",
                                  array('integer', 'text'),
                                  array($loc_id, $person->get_common_name()));
-             Logger::log_event(LOG_NOTICE, "Dropping CSR with hash ".pubkey_hash($hits['csr'])." belonging to ".$person->get_common_name()." originating from ".$_SERVER['REMOTE_ADDR']."");
+             logger::log_event(log_notice, "dropping csr with hash ".pubkey_hash($hits['csr'])." belonging to ".$person->get_common_name()." originating from ".$_SERVER['REMOTE_ADDR']."");
 	}
 	else {
 		if ($hits==0) {

@@ -3,6 +3,7 @@ require_once('mail_manager.php');
 require_once('mdb2_wrapper.php');
 require_once('pw.php');
 require_once('logger.php');
+require_once('csr_lib.php');
 class CertManager
 {
   private $person;
@@ -25,7 +26,7 @@ class CertManager
 	    $this->user_csr = $csr;
       
 	    /* read public key and create sum */
-	    $this->pubkey_checksum=trim(shell_exec("exec echo \"".$csr."\" | openssl req -pubkey -noout | sha1sum | cut -d ' ' -f 1"));
+	    $this->pubkey_checksum=pubkey_hash($this->user_csr);
 
     } /* end __construct */
 
@@ -116,7 +117,6 @@ class CertManager
                     echo "The fields in your CSR was not set properly.<BR>\n";
                     echo "To try again, please download a new version of the script, ";
                     echo "generate a new key and upload again.<BR>\n";
-                    print_r($subject);
                     $this->valid_csr = false;
                }
                else {
