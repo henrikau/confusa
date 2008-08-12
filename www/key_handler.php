@@ -211,10 +211,17 @@ function show_db_csr()
           }
      }
      else {
-          echo "<tr><td>No CSRs in database awaits you</td></tr>\n";
+          echo "<tr><td>No CSRs in the database.<BR>Use create_cert.sh to create and upload new CSRs</td></tr>\n";
      }
 
      echo "</table>\n";
+     echo "<br>\n";
+     echo "To create and upload a new CSR, download a create_cert.sh script from the Tools-section and then, on your local machine:\n";
+     echo "<PRE>";
+     echo "chmod u+x create_cert.sh\n";
+     echo "./create_cert.sh -new\n";
+     echo "</PRE>";
+     echo "This will print an auth-url to stdout. Copy and paste this into your browser and follow the steps (you will probably be redirected for authentication) before it is signed";
      echo "<BR><BR><BR>\n";
 }
 
@@ -247,7 +254,7 @@ function show_db_cert()
           }
      }
      else {
-          echo "<tr><td>No Certificates</td></tr>\n";
+          echo "<tr><td>No Certificates in the database<BR>Use create_cert.sh to create and upload a new CSR and use this webform to approve for signing.</td></tr>\n";
      }
      echo "</table>\n";
      echo "<br>\n";
