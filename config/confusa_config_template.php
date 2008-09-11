@@ -76,8 +76,16 @@ $confusa_config = array(
 
         /* if we should use the sms-layer at all  */
 	'use_sms'                       => false,
+
+        /* should we include debug-behaviour in sms-class? */
+        'sms_debug'                     => true,
+
+
         /* pr. default we send email to an sms-server (that's the level of sms
-         * supported in this edition */
+         * supported in this edition. the system expects the sms-server to
+         * accept emails as the following oneliner will do from a cmd-line:
+         * echo "your message" | mail -s "phonenumber" "sms_gw_email@address"
+         */
 	'sms_gw_addr'                   => null,
 
         /* how long should a SMS-password be valid before a new one must be
