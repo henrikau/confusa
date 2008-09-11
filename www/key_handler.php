@@ -193,16 +193,21 @@ function show_db_csr()
      echo "<table class=\"small\">\n";
 
      if (count($res) > 0) {
-          echo "<tr><th>AuthToken</th><th>Uploaded</th><th>From IP</th><th>Owner</th></tr>\n";
+          echo "<tr>";
+          echo "<th>AuthToken</th>";
+          echo "<th>Owner</th>";
+          /* echo "<th>Uploaded</th>"; */
+          /* echo "<th>From IP</th>"; */
+          echo "</tr>\n";
           $counter = 0;
           while($counter < count($res)) {
                $row = $res[$counter];
                $counter++;
                echo "<tr>\n";
                echo "<td>".$row['auth_key']."</td>\n";
-               echo "<td>".$row['uploaded_date']."</td>\n";
-               echo "<td>".$row['from_ip']."</td>\n";
                echo "<td>".$row['common_name']."</td>\n";
+               /* echo "<td>".$row['uploaded_date']."</td>\n"; */
+               /* echo "<td>".$row['from_ip']."</td>\n"; */
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$row['auth_key']."\">Sign</A></TD>\n";
               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?inspect_csr=".$row['auth_key']."\">Inspect</A></TD>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$row['auth_key']."\">Delete</A></TD>\n";
@@ -245,10 +250,10 @@ function show_db_cert()
                echo "<tr>\n";
                echo "<td>".$row['auth_key']."</td>\n";
                echo "<td>".$row['cert_owner']."</td>\n";
-               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A></td>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email cert</A></td>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download cert</A></td>\n";
                echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A></td>\n";
+               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A></td>\n";
                echo "</tr>\n";
           }
      }
