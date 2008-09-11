@@ -41,5 +41,6 @@ if [ -z "$res" ]; then
 fi
 d=`date +%F_%T`
 fname=$backupdir$database"_backup_$d"
-echo $fname
 echo $res > $fname
+
+echo "Backup done"
