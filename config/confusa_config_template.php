@@ -5,6 +5,9 @@ $confusa_config = array(
 	 */
 	'debug'			=> true,
 
+        /* install path */
+        'install_path'                  = '/var/www/confusa/',
+
 	/* script variables, where the end-user create-keyresides */
 	'programs_path'		=> '/var/www/confusa/programs/create_cert.sh',
 
@@ -72,6 +75,10 @@ $confusa_config = array(
 
         /* the default table is semi-deprecated and will be removed in the future */
 	'mysql_default_table'           => 'sms_auth',
+
+
+        /* where should backup of the database be stored */
+        'mysql_backup_dir'              => '/var/backups',
 
 
         /* if we should use the sms-layer at all  */
