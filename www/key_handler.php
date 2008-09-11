@@ -118,21 +118,20 @@ function process_db_cert()
 function approve_csr($auth_token)
 {
      global $person;
-     $at = htmlentities($auth_token);
      $csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
                                      array('text', 'text'),
-                                     array($at, $person->get_common_name()));
+                                     array($auth_token, $person->get_common_name()));
      if (count($csr_res) == 1) {
           $csr = $csr_res[0]['csr'];
           $cm = new CertManager($csr, $person);
-          if (!$cm->sign_key($at)) {
+          if (!$cm->sign_key($auth_token)) {
                echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
                return;
           }
           else {
-               MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_token=?",
-                                   array('text'),
-                                   array($at));
+               MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
+                                   array('text', 'text'),
+                                   array($auth_key), $person->get_common_name());
           }
      }
      else {
