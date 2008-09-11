@@ -1,6 +1,7 @@
-Features of SLCS Web
+Features of Confusa
 
-- login with extra SMS-layer
+- uses simplesamlPHP for authN to federations
+- optional login with extra SMS-layer
 - custom design of script for creating, uploading and downloading
 - key-material (private key, CSR and certificate)
 - extensive use of database for storage
@@ -9,7 +10,5 @@ Features of SLCS Web
 
 Future features/changes
 - sms layer will be removed as this layer does not create any extra
-security corresponding to the extra work the user must do, in order to
-authenticate him-/herself to the site
-- add .htaccess to tmp-files sothat only a given user can retrieve the
-  information.
+  security corresponding to the extra work the user must do, in order to
+  authenticate him-/herself to the site
