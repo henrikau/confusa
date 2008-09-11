@@ -131,7 +131,7 @@ function approve_csr($auth_token)
           else {
                MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
                                    array('text', 'text'),
-                                   array($auth_key), $person->get_common_name());
+                                   array($auth_token, $person->get_common_name()));
           }
      }
      else {
