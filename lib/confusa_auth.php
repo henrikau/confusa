@@ -54,7 +54,7 @@ function authenticate_user($person)
         /* assert SSO
          * Make sure the feide-login is OK.
          */
-        _assert_sso($person);
+         _assert_sso($person);
 
 	
         /* assert SMS
@@ -121,23 +121,51 @@ function is_authenticated($person = null) {
 	/* check to see if the person is authN */
 	$person->fed_auth(_is_authN());
 	if ($person->is_fed_auth()) {
-		/* update fields of person */
-		$attribs = get_attributes();
-		$person->set_mobile($attribs['mobile'][0]);
-		$person->set_name($attribs['cn'][0]);
-		$person->set_common_name($attribs['eduPersonPrincipalName'][0]);
-		$person->set_email($attribs['mail'][0]);
-                $person->set_country('NO');
-		/* push user to sms-auth */
-		if (Config::get_config('use_sms'))
-			$person->sms_auth(_test_sms($person));
-
-	}
+             add_attributes($person);
+             /* push user to sms-auth */
+             if (Config::get_config('use_sms'))
+                  $person->sms_auth(_test_sms($person));
+        }
 	return $person;
 } /* end is_authenticated */
 
+function add_attributes($person) 
+{
+     $attributes = get_attributes();
+     if (add_feide_attribs($person, $attributes))
+          return;
+     if (add_surfnet_attribs($person, $attributes))
+          return;
+} /* end add_attributes() */
 
-function reset_sms_password($person) {
+
+function add_feide_attribs($person, $attributes)
+{
+     if (!isset($attributes['eduPersonPrincipalName'][0]))
+          return false;
+
+     /* update fields of person */
+     $person->set_mobile($attributes['mobile'][0]);
+     $person->set_name($attributes['cn'][0]);
+     $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
+     $person->set_email($attributes['mail'][0]);
+     $person->set_country('NO');
+     return true;
+}
+
+function add_surfnet_attribs($person, $attributes) 
+{
+     if (!isset($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0]))
+          return false;
+     $person->set_name($attributes['urn:mace:dir:attribute-def:cn'][0]);
+     $person->set_common_name($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0]);
+     $person->set_email($attributes['urn:mace:dir:attribute-def:mail'][0]);
+     $person->set_country('NL');
+     return true;
+}
+
+function reset_sms_password($person) 
+{
 	$sms = new SMSAuth($person);
 	$sms->reset_pw();
     }
@@ -166,7 +194,7 @@ function _assert_sso($person)
 
   /* update person, FIXME: update attributes as well */
   $person->fed_auth($session->isValid());
-  
+  add_attributes($person);
 } /* end  _assert_sso() */
 
 function show_sso_debug($person) {
@@ -244,7 +272,7 @@ function feide_logout_link($logout_location="logout.php", $logout_name="Logout C
      
      /* $attr= get_attributes(); */
 
-     $edu_name = $person->get_common_name();/* $attr['eduPersonPrincipalName'][0]; */
+     $edu_name = $person->get_common_name();
 
      /* need to find the url, and handle some quirks in the result from selfURL
       * in order to get proper url-base */
@@ -274,7 +302,7 @@ function compose_login_links()
      /* scan through simplesamlphp's saml20-idp-remote and connect
       * the entries there to saml20-sp-hosted
       *
-      * Finally use the key in saml20-sp-hosted as a basis for the initSSO
+      * Finally puse the key in saml20-sp-hosted as a basis for the initSSO
       * login, i.e. bypass the host-lookup in simpelsamlphp.
       */
      global $metadata;
@@ -283,7 +311,7 @@ function compose_login_links()
 
 /* _is_authN()
  *
- * tests to see if the user is authenticated via feide.
+ * tests to see if the user is authenticated.
  */
 function _is_authN()
     {
