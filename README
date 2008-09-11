@@ -1,6 +1,6 @@
-			     Confusa
+			       Confusa
 			Copyright (C) 2007,2008
-			 UNINETT Sigma A/S
+			   UNINETT Sigma A/S
 
 
    Confusa shall provide an easy way of creating an ARC-compatible
@@ -24,7 +24,7 @@ The automated signing-process can be split into 2 separate ways
 
 1) After the CSR has been created and uploaded, the script will present
    the user with an authentication URL. By following this URL, the user
-   will be authenticated and the signing will be authorized 
+   will be authenticated and the signing will be authorized.
 
 2) After the CSR has been created and uploaded, the user can log in to
    the system and go to the 'Key' page. Here he/she will be presented
@@ -32,11 +32,19 @@ The automated signing-process can be split into 2 separate ways
    these, the user may approve signing (which will lead to a somewhat
    cumbersome challenge-response cycle) or delete the CSR from the database.
 
-As an option, the user may create the key and CSR manually and then
-choose to upload the CSR via the web interface. Note: the system *will*
-check all attributes in the subject of the CSR and drop the CSR if any
-of these attributes does not correspond with attributes obtained from
-the federated identity.
+3) As an option, the user may create the key and CSR manually and then
+   choose to upload the CSR via the web interface. 
+
+   Note: the system *will* check all attributes in the subject of the
+   CSR and drop the CSR if any of these attributes does not correspond
+   with attributes obtained from the federated identity.
+
+   Current attributes that are checked:
+   - key lenght. Keys shorter than key_length in
+     config/confusa_config.php will be discarded and the user notified.
+   - Subject in key. CommonName *must* correspond to
+     eduPersonPrincipalName. 
+
 
 The file INSTALL contains instructions to how to install and configure
 the system. Note that Confusa depends upon simpleSAMLphp. This file
