@@ -128,9 +128,12 @@ function get_cert {
     res=`$cmd`
     # let openssl rip through the file to see if it's a valid certificate
     openssl x509 -in tmp.cert -text -noout > /dev/null
-    if [ ! $? ];then 
+    if [ $? -gt 0 ];then 
 	echo "Error in recovering certificate"
-	return
+	echo "Log in to $server_loc$approve_page and browse through the certificates stored there"
+	echo "Note the auth_token, and run "
+	echo "$0 -get <auth_token>"
+	exit
     else
 	echo "Got certificate ok!"
 	mv tmp.cert usercert.pem
