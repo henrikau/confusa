@@ -232,7 +232,7 @@ function show_db_csr()
 function show_db_cert() 
 {
      global $person;
-     $res = MDB2Wrapper::execute("SELECT cert_id, auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=?",
+     $res = MDB2Wrapper::execute("SELECT cert_id, auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=? AND valid_untill > current_timestamp()",
                                  array('text'),
                                  array($person->get_common_name()));
      echo "<B>Certificates:</B><BR>\n";
