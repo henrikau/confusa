@@ -118,8 +118,8 @@ function is_authenticated($person = null) {
 	if (!isset($person))
 		$person = new Person();
 
-	/* check to see if the person is feide-auth */
-	$person->fed_auth(_is_feide_auth());
+	/* check to see if the person is authN */
+	$person->fed_auth(_is_authN());
 	if ($person->is_fed_auth()) {
 		/* update fields of person */
 		$attribs = get_attributes();
@@ -281,11 +281,11 @@ function compose_login_links()
      require_once('/var/www/simplesamlphp/metadata/saml20-idp-remote.php');
 } /* end compose_login_links() */
 
-/* _is_feide_auth()
+/* _is_authN()
  *
  * tests to see if the user is authenticated via feide.
  */
-function _is_feide_auth()
+function _is_authN()
     {
     /* check if user is sso-auth */
     $config  = _get_config();
