@@ -37,6 +37,7 @@ function test_send_tools()
                                   $body);
           $mail->add_attachment($keyscript->create_script(), "create_cert.sh");
           $mail->send_mail();
+          echo "<i><b><center>Mail sent to " . $person->get_email() . " with new version of create_cert.sh</center></b></i><br>\n";
      }
      if (isset($_GET['send_file'])) {
           include_once('file_download.php');
