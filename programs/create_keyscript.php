@@ -12,7 +12,7 @@ class KeyScript {
 			 * contains more than 1 . we use substring and search
 			 * from the end (not head) */
 			$this->country = strtoupper(substr($this->person->get_common_name(), 1+strrpos($this->person->get_common_name(), ".", -1)));
-			$this->url = Config::get_config('server_url');
+			$this->url = dirname($_SERVER['HTTP_REFERER']);
 
 		}
 	}
@@ -28,7 +28,7 @@ class KeyScript {
 		$script = str_replace("key_length=","key_length=".Config::get_config('key_length'), $script);
 
 		/* send location and upload related variables */
-		$script = str_replace('server_loc=""','server_loc="'.Config::get_config('server_url').'"', $script);
+		$script = str_replace('server_loc=""','server_loc="'.dirname($_SERVER['HTTP_REFERER']).'"', $script);
                 $script = str_replace('down_page=""' , 'down_page="'.Config::get_config('download').'"', $script);
                 $script = str_replace('up_page=""' , 'up_page="'.Config::get_config('upload').'"', $script);
 
