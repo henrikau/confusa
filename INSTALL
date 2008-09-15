@@ -52,11 +52,20 @@ Finally, this is a *sample* configuration. If you know your way around
 an Apache configuration, this should be more of a guideline than
 anything else. 
 
-5) Install and configure Confusa. This process is somewhat involved as
-   you will need to configure simpleSAMLphp before you configure
-   Confusa. Once simpleSAMLphp is configured correctly (with config,
-   metadata and all that, see http://rnd.feide.no for details) do the
-   following:
+5) simpleSAMLphp
+   confusa uses simpleSAMLphp to handle AuthN, and thus, you should
+   configure simpleSAMLphp before venturing on.
+
+   http://rnd.feide.no contains excellent guides on how to configure
+   simpelSAMLphp, and is required reading.
+
+   When simpleSAMLphp is configured, you must do one extra step
+   add include/names.php to the attributealter/ in simplesamlphp via a
+   symlink (or hard copy if you like). This will ensure that different
+   attribute-namings will propagate through to simpleSAMLphp and then
+   confusa (it adds country among other things).
+
+6) Install and configure Confusa:
 
 a) Put Confusa in a directory, say /var/www/confusa/
 
@@ -96,5 +105,5 @@ f) Add a cron-job that takes backup of the database. The most critical
    A sample script lies in confusa/programs. Note that this is a simple
    mysqldump script that dumps the database specified in confusa_config
 
-6) Test and verify that the system is operational before you allow
+7) Test and verify that the system is operational before you allow
    public access.
