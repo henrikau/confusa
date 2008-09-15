@@ -53,16 +53,17 @@ an Apache configuration, this should be more of a guideline than
 anything else. 
 
 5) Install and configure Confusa. This process is somewhat involved as
-you will need to configure simpleSAMLphp before you configure
-Confusa. Once simpleSAMLphp is configured correctly (with config,
-metadata and all that, see http://rnd.feide.no for details) do the
-following:
+   you will need to configure simpleSAMLphp before you configure
+   Confusa. Once simpleSAMLphp is configured correctly (with config,
+   metadata and all that, see http://rnd.feide.no for details) do the
+   following:
 
 a) Put Confusa in a directory, say /var/www/confusa/
 
 b) Configure Apache with something along the following line:
 
              Alias /confusa "/var/www/confusa/www/"
+	     Alias /simplesaml "/var/www/simplesamlphp/www/"
              <Directory /var/www/confusa/www>
                         Options Indexes MultiViews
                         AllowOverride None
@@ -75,31 +76,25 @@ b) Configure Apache with something along the following line:
    This will enable your host to show the www directory of the
    confusa-folder.
 
-c) Add 2 symlinks in the confusa/www folder, namely
-	- resources
-	- saml2
-   Both of which points to the corresponding directory in the
-   simplesamlphp install directory.
-
-d) Configure the confusa_config.php file (copy the
+c) Configure the confusa_config.php file (copy the
    confusa_config_template.php and modify with values that makes sense
    to you).
    
-e) Run the create_database.sh script in confusa/init folder
+d) Run the create_database.sh script in confusa/init folder
    This will create the database, the user and the tables. it will use
    the confusa_config.php file, so make sure that this is configured
    properly before you run this script.
 
-f) Add a cron-job of the following type:
+e) Add a cron-job of the following type:
    */5 *   * * * /var/www/confusa/programs/clean_db.sh
 
    This will run the clean_db script every 5 minutes and keep the
    database nice and tidy.
 
-g) Add a cron-job that takes backup of the database. The most critical
+f) Add a cron-job that takes backup of the database. The most critical
    part is the certificate hash part.
    A sample script lies in confusa/programs. Note that this is a simple
    mysqldump script that dumps the database specified in confusa_config
 
-5) Test and verify that the system is operational before you allow
+6) Test and verify that the system is operational before you allow
    public access.
