@@ -59,11 +59,13 @@ anything else.
    http://rnd.feide.no contains excellent guides on how to configure
    simpelSAMLphp, and is required reading.
 
-   When simpleSAMLphp is configured, you must do one extra step
-   add include/names.php to the attributealter/ in simplesamlphp via a
-   symlink (or hard copy if you like). This will ensure that different
-   attribute-namings will propagate through to simpleSAMLphp and then
-   confusa (it adds country among other things).
+   IN saml20-sp-hosted.php, let the __DYNAMIC:1-entry from template
+   stay, but add 2 lines:
+	'attributealter' => 'names',
+	ForceAuthn	 => true
+
+   This passes the attributes through the file names.php (which you
+   hopefully symlinked in prevously).
 
 6) Install and configure Confusa:
 
