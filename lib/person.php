@@ -51,10 +51,21 @@ class Person{
 
     function __tostring() {
         $var = "<table clas=\"small\">";
-        $var .= "<tr><td><b>Name:</b></td><td>" . $this->given_name . "</td></tr>\n";
-        $var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->common_name . "</td></tr>\n";
-        $var .= "<tr><td><b>mobile</b>:</td><td>" . $this->mobile . "</td></tr>\n";
-        $var .= "<tr><td><b>email:</b></td><td>" . $this->email . "</td></tr>\n";
+
+        if (isset($this->given_name))
+             $var .= "<tr><td><b>Name:</b></td><td>" . $this->given_name . "</td></tr>\n";
+
+        if (isset($this->common_name))
+             $var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->common_name . "</td></tr>\n";
+
+        if (isset($this->mobile))
+             $var .= "<tr><td><b>mobile</b>:</td><td>" . $this->mobile . "</td></tr>\n";
+
+        if (isset($this->email))
+             $var .= "<tr><td><b>email:</b></td><td>" . $this->email . "</td></tr>\n";
+        if (isset($this->country))
+             $var .= "<tr><td><b>Country:</b></td><td>" . $this->country . "</td></tr>\n";
+
         $var .= "</table><br>";
         return $var;
         }
