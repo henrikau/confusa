@@ -16,15 +16,15 @@ function welcome($person)
 
      include('unclassified_intro.php');
      require_once('mdb2_wrapper.php');
-     echo "<h3>News</h3>\n";
-
-     $res = MDB2Wrapper::execute("SELECT news, issued FROM news WHERE newsid>?", array('integer'), array($val));
-
-     foreach ($res as $key => $line) {
-          echo "<P>\n";
-          echo "<ADDRESS>".htmlentities($line['issued'])."</ADDRESS>\n";
-          echo htmlentities($line['news'])."\n";
-          echo "</P>\n";
+     $res = MDB2Wrapper::execute("SELECT news, issued FROM news WHERE newsid > ?", array('integer'), array(0));
+     if (count($res > 0)) {
+          echo "<h3>News</h3>\n";
+          foreach ($res as $key => $line) {
+               echo "<P>\n";
+               echo "<ADDRESS>".htmlentities($line['issued'])."</ADDRESS>\n";
+               echo htmlentities($line['news'])."\n";
+               echo "</P>\n";
+          }
      }
 }
 ?>
