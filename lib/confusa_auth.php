@@ -255,7 +255,7 @@ function _get_session()
 }
 
 function get_attributes() 
-{
+{ 
     return _get_session()->getAttributes();
 }
 
@@ -278,8 +278,8 @@ function feide_logout_link($logout_location="logout.php", $logout_name="Logout C
       * in order to get proper url-base */
      $base = SimpleSAML_Utilities::selfURL();
      if (strpos($base, ".php"))
-          $base = dirname($base);
-     $link_base =  $base.'/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
+          $base = dirname(dirname($base));
+     $link_base =  $base.'/simplesaml/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
      if (Config::get_config('use_sms'))
           $link_base .= "?edu_name='" . $edu_name;
 
