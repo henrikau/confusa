@@ -132,37 +132,20 @@ function is_authenticated($person = null) {
 function add_attributes($person) 
 {
      $attributes = get_attributes();
-     if (add_feide_attribs($person, $attributes))
-          return;
-     if (add_surfnet_attribs($person, $attributes))
-          return;
-} /* end add_attributes() */
 
-
-function add_feide_attribs($person, $attributes)
-{
-     if (!isset($attributes['eduPersonPrincipalName'][0]))
-          return false;
-
-     /* update fields of person */
-     $person->set_mobile($attributes['mobile'][0]);
+     if (isset($attributes['mobile'][0]))
+         $person->set_mobile($attributes['mobile'][0]);
      $person->set_name($attributes['cn'][0]);
+     if (!isset($attributes['eduPersonPrincipalName'][0])) {
+          echo "eduPersonPrincipalName not set!<BR>\n";
+          $person->fed_auth(false);
+     }
      $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
      $person->set_email($attributes['mail'][0]);
-     $person->set_country('NO');
-     return true;
-}
+     $person->set_country($attributes['country'][0]);
 
-function add_surfnet_attribs($person, $attributes) 
-{
-     if (!isset($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0]))
-          return false;
-     $person->set_name($attributes['urn:mace:dir:attribute-def:cn'][0]);
-     $person->set_common_name($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0]);
-     $person->set_email($attributes['urn:mace:dir:attribute-def:mail'][0]);
-     $person->set_country('NL');
-     return true;
-}
+} /* end add_attributes() */
+
 
 function reset_sms_password($person) 
 {
@@ -278,8 +261,8 @@ function feide_logout_link($logout_location="logout.php", $logout_name="Logout C
       * in order to get proper url-base */
      $base = SimpleSAML_Utilities::selfURL();
      if (strpos($base, ".php"))
-          $base = dirname(dirname($base));
-     $link_base =  $base.'/simplesaml/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
+          $base = dirname($base);
+     $link_base =  dirname($base).'/simplesaml/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
      if (Config::get_config('use_sms'))
           $link_base .= "?edu_name='" . $edu_name;
 
