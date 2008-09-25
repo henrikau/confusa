@@ -25,7 +25,6 @@ country="/C="
 orgname="/O=Nordugrid"
 orgunitname="/OU=Nordugrid"
 common="/CN="
-email="/emailAddress="
 
 # The following set of variables has been set dynamically by create_keyscript.php
 # where the SLCS-service is located
@@ -68,7 +67,7 @@ upload_url=$server_loc$up_page
 function create_key {
     openssl req -new -newkey rsa:$key_length \
 	-keyout $priv_key_name -out $csr_name \
-	-subj "$country$orgname$orgunitname$common$email"
+	-subj "$country$orgname$orgunitname$common"
     if [ $? -eq 0 ]; then
 	echo "Key and CSR created ok"
     else
