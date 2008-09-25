@@ -124,5 +124,25 @@ class Person{
                    $this->country = htmlentities($c);
          }
     public function get_country() { return $this->country; }
-      } /* end class Person */
+
+
+    /* is_admin()
+     *
+     * Test to see if the user is part of the admin-crowd. This will allow the
+     * user to add news entries.
+     */
+    public function is_admin()
+    {
+         if (!$this->is_auth())
+              return false;
+
+         require_once('mdb2_wrapper.php');
+         $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($eppn));
+         if (count($res) != 1)
+              return false;
+
+         return true;
+    } /* end function is_admin() */
+
+  } /* end class Person */
 ?>

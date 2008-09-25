@@ -115,6 +115,18 @@ CREATE TABLE news (
 )type=InnoDB;
 
 -- ---------------------------------------------------------
+-- admins
+--
+-- List of people having admin-rights on the page (to update news,
+-- watch status of certificates etc)
+--
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS admins (
+       admin char(128) PRIMARY KEY -- eduPersonPrincipalName of admin
+) type=InnoDB;
+
+ 
+-- ---------------------------------------------------------
 --
 -- pubkeys
 --
