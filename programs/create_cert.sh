@@ -8,11 +8,45 @@
 # upon attributes from Feide (/other fed. instances) and
 # confusa_config.php.
 
+# ------------------------------------------------------------- #
+#		BEGIN AUTOMAGIC CONFIG
+#
+# If some (or all) of the variables below this point are empty
+# contact the maintaner of the site that sent you this script.
+#
+# Most likely the automatic parsing failed, and trying to download
+# the script again will solve the problem.
+# 
+# However, if the problem persists, and you *really* need a
+# certificate *right now*, and you know what you are doing - try to set
+# the fields manually with data from the site (attributes etc).
+# ------------------------------------------------------------- #
 country="/C="
 orgname="/O=Nordugrid"
 orgunitname="/OU=Nordugrid"
 common="/CN="
-email="/emailAddress="
+
+# The following set of variables has been set dynamically by create_keyscript.php
+# where the SLCS-service is located
+server_loc=""
+down_page=""
+up_page=""
+
+# options for downloading CSRs
+wget_options=""
+
+# where to send error-messages
+error_addr=""
+csr_var=""
+
+# authentication
+auth_var=""
+auth_length=""
+
+
+# ------------------------------------------------------------- #
+# END AUTOMAGIC CONFIG
+# ------------------------------------------------------------- #
 
 # default length of RSA-key to generate
 key_length=
@@ -25,22 +59,7 @@ priv_key_name="userkey.pem"
 csr_name="userrequest.csr"
 token_file="$script_folder/slcs_token"
 
-# The following set of variables has been set dynamically by create_keyscript.php
-# where the SLCS-service is located
-server_loc=""
-down_page=""
-up_page=""
 approve_page="key_handler.php"
-# options for downloading CSRs
-wget_options=""
-
-# where to send error-messages
-error_addr=""
-csr_var=""
-
-# authentication
-auth_var=""
-auth_length=""
 
 download_url=$server_loc$down_page
 upload_url=$server_loc$up_page
@@ -48,7 +67,7 @@ upload_url=$server_loc$up_page
 function create_key {
     openssl req -new -newkey rsa:$key_length \
 	-keyout $priv_key_name -out $csr_name \
-	-subj "$country$orgname$orgunitname$common$email"
+	-subj "$country$orgname$orgunitname$common"
     if [ $? -eq 0 ]; then
 	echo "Key and CSR created ok"
     else

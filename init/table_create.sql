@@ -104,6 +104,29 @@ CREATE TABLE cert_cache (
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
+-- News
+-- System should have an easy way of showing small news-snippets to users
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS news;
+CREATE TABLE news (
+    newsid INT AUTO_INCREMENT PRIMARY KEY,
+    news TEXT NOT NULL,
+    issued DATETIME DEFAULT '0000-00-00 00:00:00'
+)type=InnoDB;
+
+-- ---------------------------------------------------------
+-- admins
+--
+-- List of people having admin-rights on the page (to update news,
+-- watch status of certificates etc)
+--
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS admins (
+       admin char(128) PRIMARY KEY -- eduPersonPrincipalName of admin
+) type=InnoDB;
+
+ 
+-- ---------------------------------------------------------
 --
 -- pubkeys
 --

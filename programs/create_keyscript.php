@@ -24,7 +24,6 @@ class KeyScript {
 		/* set fiedls for subject in CSR */
 		$script = str_replace('="/C=','="/C='.$this->country, $script);
 		$script = str_replace('="/CN=','="/CN='.$this->person->get_common_name(), $script);
-		$script = str_replace('="/emailAddress=','="/emailAddress='.$this->person->get_email(), $script);
 		$script = str_replace("key_length=","key_length=".Config::get_config('key_length'), $script);
 
 		/* send location and upload related variables */

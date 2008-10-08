@@ -79,11 +79,9 @@ class CertManager
                                         array('text'),
                                         array($this->pubkey_checksum));
 		    return true;
-	    }
-	    else {
-		    Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user " . $this->person->get_common_name() . " from ip " . $_SERVER['REMOTE_ADDR']);
-	    }
-      return false;
+         }
+         Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user " . $this->person->get_common_name() . " from ip " . $_SERVER['REMOTE_ADDR']);
+         return false;
     } /* end sign_key() */
 
 
@@ -105,14 +103,17 @@ class CertManager
 	  else {
                $subject= openssl_csr_get_subject($this->user_csr);
                /* check fields of CSR to predefined values and user-specific values
-                * TODO: Fix these fields to read from config and country to be
-                * federate-dependent.
+                * Make sure that the emailAddress is not set, as this is
+                * non-compatible with ARC
                 */
-               if (!($subject['C'] === $this->person->get_country() &&
-                     $subject['O'] === "Nordugrid" &&
-                     $subject['OU'] === "Nordugrid" &&
-                     $subject['CN'] === $this->person->get_common_name() &&
-                     $subject['emailAddress'] === $this->person->get_email())) {
+               if (isset($subject['emailAddress'])) {
+                    echo "will not accept email in DN of certificate. Download latest version of script<br>\n";
+                    $this->valid_csr = false;
+               }
+               else if (!($subject['C'] === $this->person->get_country() &&
+                          $subject['O'] === "Nordugrid" &&
+                          $subject['OU'] === "Nordugrid" &&
+                          $subject['CN'] === $this->person->get_common_name())) {
                     echo "Error in subject! <BR/>\n";
                     echo "The fields in your CSR was not set properly.<BR>\n";
                     echo "To try again, please download a new version of the script, ";

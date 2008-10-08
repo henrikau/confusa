@@ -51,10 +51,21 @@ class Person{
 
     function __tostring() {
         $var = "<table clas=\"small\">";
-        $var .= "<tr><td><b>Name:</b></td><td>" . $this->given_name . "</td></tr>\n";
-        $var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->common_name . "</td></tr>\n";
-        $var .= "<tr><td><b>mobile</b>:</td><td>" . $this->mobile . "</td></tr>\n";
-        $var .= "<tr><td><b>email:</b></td><td>" . $this->email . "</td></tr>\n";
+
+        if (isset($this->given_name))
+             $var .= "<tr><td><b>Name:</b></td><td>" . $this->given_name . "</td></tr>\n";
+
+        if (isset($this->common_name))
+             $var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->common_name . "</td></tr>\n";
+
+        if (isset($this->mobile))
+             $var .= "<tr><td><b>mobile</b>:</td><td>" . $this->mobile . "</td></tr>\n";
+
+        if (isset($this->email))
+             $var .= "<tr><td><b>email:</b></td><td>" . $this->email . "</td></tr>\n";
+        if (isset($this->country))
+             $var .= "<tr><td><b>Country:</b></td><td>" . $this->country . "</td></tr>\n";
+
         $var .= "</table><br>";
         return $var;
         }
@@ -113,5 +124,25 @@ class Person{
                    $this->country = htmlentities($c);
          }
     public function get_country() { return $this->country; }
-      } /* end class Person */
+
+
+    /* is_admin()
+     *
+     * Test to see if the user is part of the admin-crowd. This will allow the
+     * user to add news entries.
+     */
+    public function is_admin()
+    {
+         if (!$this->is_auth())
+              return false;
+
+         require_once('mdb2_wrapper.php');
+         $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($eppn));
+         if (count($res) != 1)
+              return false;
+
+         return true;
+    } /* end function is_admin() */
+
+  } /* end class Person */
 ?>
