@@ -9,6 +9,7 @@ public class ConfusaAppLocal {
           
           jr.setSize(800,600);
           jr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+          jr.add(new ConfusaEngine("NO", "NorduGrid", "NorduGrid", "henrikau@uninett.no", "2048"));
           jr.setVisible(true);
      } // end main
 } // end ConfusaAppLocal()
