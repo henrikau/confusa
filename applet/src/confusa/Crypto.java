@@ -47,9 +47,4 @@ public class Crypto {
           }
           return CSR;
      }
-
-     public static void main(String[] args) {
-          KeyPair kp = Crypto.gen(512);
-          System.out.println(kp);
-     }
 } // end class Crypto
