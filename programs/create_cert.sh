@@ -59,7 +59,7 @@ priv_key_name="userkey.pem"
 csr_name="userrequest.csr"
 token_file="$script_folder/slcs_token"
 
-approve_page="key_handler.php"
+approve_page="/key_handler.php"
 
 download_url=$server_loc$down_page
 upload_url=$server_loc$up_page
@@ -118,6 +118,7 @@ function push_csr {
     # store auth_token for later usage, to ease the usage of -get
     echo $auth_token > $token_file
 
+    echo ""
     echo "CSR uploaded to server. You should now log in to $server_loc and approve the CSR with this AuthToken: $auth_token"
     echo "The easiest way is to use:"
     echo ""
