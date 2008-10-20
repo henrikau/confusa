@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class ConfusaEngine extends JPanel implements ActionListener {
-
      private String country;
      private String org;
      private String orgUnit;
@@ -15,6 +14,8 @@ public class ConfusaEngine extends JPanel implements ActionListener {
      
      private JTextArea summary;
      
+     private static final long serialVersionUID = 24321;
+
      public ConfusaEngine (String country,
                            String org, 
                            String orgUnit, 
