@@ -16,7 +16,7 @@ public class Crypto {
      * @return KeyPair
      */
      public static KeyPair gen(int keyLength) {
-          KeyPair kp = null;
+         java.security.KeyPair kp = null;
           try {
                KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
                kpg.initialize(keyLength, new SecureRandom());
@@ -29,6 +29,14 @@ public class Crypto {
           return kp;
      }
 
+     /**Convert a KeyPair to a string represantation
+      * 
+      * @param kp KeyPair to export to String
+      * @return String representation of the KeyPair
+      */
+     public static String KeyPairString(KeyPair kp) {
+         return kp.toString();
+     }
      /** create the CSR from the given keypar with suppliced subject
       * 
       * @param kp KeyPair from which to create the CSR
