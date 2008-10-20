@@ -1,11 +1,10 @@
 package confusa;
 
-import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import confusa.Crypto;
 import java.security.KeyPair;
+import confusa.Crypto;
 
 /** Main engine for the ConfusaApplet
  * 
@@ -20,7 +19,7 @@ public class ConfusaEngine extends JPanel implements ActionListener {
      
      private JTextArea summary;
      private JButton startGen;
-     private java.security.KeyPair kp;
+     private KeyPair kp;
      
      private static final long serialVersionUID = 24321;
 

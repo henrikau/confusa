@@ -1,9 +1,6 @@
 package confusa;
 
 import java.security.*;
-import java.security.spec.*;
-
-import java.io.*;
 
 public class Crypto {
     
@@ -44,11 +41,16 @@ public class Crypto {
       * @param subject the subject of the CSR
       * @return byte-array of CSR
       */
-     public static byte[] makeCSR(KeyPair kp, String subject) {
+     public static byte[] makeCSR(KeyPair kp, 
+                                  String commonName,
+                                  String orgUnit,
+                                  String org,
+                                  String country) {
           byte[] CSR = null;
-
           try {
-               PublicKey pubKey = kp.getPublic();
+               Signature sig = Signature.getInstance("RSAWithSHA1");
+               sig.initSign(kp.getPrivate());
+
           }
           catch (Exception e) {
                e.printStackTrace();
