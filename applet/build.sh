@@ -37,8 +37,6 @@ cd ../
 # make jar
 rm -f $JAR_TARGET
 cd bin/
-# jar -cfvm ../$JAR_TARGET ../confusa.manifest confusa/
-# META-INF/MANIFEST.MF
 jar cvfm ../$JAR_TARGET ../confusa.manifest *
 
 
