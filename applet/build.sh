@@ -6,7 +6,7 @@ function build  {
 	mkdir bin/
     fi
     cd src/
-    javac -classpath confusa/ -d ../bin/  confusa/*.java
+    javac -classpath confusa/ -extdirs ../lib/bcprov-jdk16-141.jar -d ../bin/  confusa/*.java
     if [ ! $? -eq 0 ]; then
 	echo "errors in build"
 	exit
@@ -26,15 +26,19 @@ if [ ! -d bin ]; then
     mkdir bin/
 fi
 cd src/
-javac -classpath confusa/ -d ../bin/  confusa/*.java
+javac -classpath confusa/ -extdirs ../lib/ confusa/*.java -d ../bin/
 if [ ! $? -eq 0 ]; then
     echo "errors in build"
     exit
 fi
 cd ../
 
-cd bin/
-jar -cfvm ../$JAR_TARGET ../confusa.manifest confusa/
 
+# make jar
+rm -f $JAR_TARGET
+cd bin/
+# jar -cfvm ../$JAR_TARGET ../confusa.manifest confusa/
+# META-INF/MANIFEST.MF
+jar cvfm ../$JAR_TARGET ../confusa.manifest *
 
 
