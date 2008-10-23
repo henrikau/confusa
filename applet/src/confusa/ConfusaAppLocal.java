@@ -26,6 +26,5 @@ public class ConfusaAppLocal {
 
      private static void startCrypto() {
           KeyPair kp = Crypto.gen(512);
-          System.out.println(kp);
      }
 } // end ConfusaAppLocal()

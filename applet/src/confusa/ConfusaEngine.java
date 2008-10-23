@@ -66,6 +66,7 @@ public class ConfusaEngine extends JPanel implements ActionListener {
             this.kp = Crypto.gen(Integer.parseInt(this.keyLength));
             this.summary.append("\n\n");
             this.summary.append("\t" + Crypto.keyPairString(this.kp));
+            System.out.println("creating key");
          }
      }
 }
