@@ -38,6 +38,12 @@ $confusa_config = array(
         'upload'                => '/key_upload.php',
         'download'              => '/key_download.php',
 
+        /* For CA handling */
+        'standalone'            => True, /* true: no extra CA, use php to sign
+                                          * key */
+        'ca_host'               => 'localhost',
+        'ca_port'               => '9443',
+
         /* this *should* be true, as you really* want wget to detect a
          * SSL-man-in-the-middle attac! However, as a workaround for testsystems
          * (which normally does not hav e properly signed SSL-certificate),
