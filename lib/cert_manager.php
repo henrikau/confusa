@@ -44,14 +44,18 @@ class CertManager
    *
    * This is the signing routine of the system. In this release, it will use PHP
    * for signing, using a local CA-key.
+   *
+   * In the future, it will sign the CSR and ship it to the CA, receive the
+   * response and notify the user
    */
   function sign_key($auth_key)
     {
          if ($this->verify_csr()) {
-                 $sign_days = 11;
-                 $cert_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/cert/sigma_cert.pem';
-                 $ca_priv_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/priv/sigma_priv_key.pem';
+              $cert_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/cert/sigma_cert.pem';
+              $ca_priv_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/priv/sigma_priv_key.pem';
 
+              if (Config::get_config('standalone')) {
+                 $sign_days = 11;
                  $tmp_cert = openssl_csr_sign($this->user_csr, $cert_path, $ca_priv_path, $sign_days , array('digest_alg' => 'sha1'));
                  openssl_x509_export($tmp_cert, $this->user_cert, true);
                  /* echo __FILE__ .":".__LINE__ ." Certificate successfully signed. <BR>\n"; */
@@ -79,6 +83,19 @@ class CertManager
                                         array('text'),
                                         array($this->pubkey_checksum));
 		    return true;
+              }
+              /* external CA */
+              else {
+                   Logger::log_event(LOG_DEBUG, "Signing key using remote CA");
+                   $ca_addr = Config::get_config('ca_host');
+                   $ca_port = Config::get_config('ca_port');
+
+                   if (openssl_sign($this->user_csr, $signed_pkcs10, $ca_priv_path)) {
+                        $tmp = chunk_split(base64_encode($signed_pkcs10));
+                        Print "<pre>\n$tmp\n</pre>\n";
+                   }
+                   return false;
+              }
          }
          Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user " . $this->person->get_common_name() . " from ip " . $_SERVER['REMOTE_ADDR']);
          return false;
@@ -94,7 +111,12 @@ class CertManager
    */
   private function verify_csr()
   {
-       /* by default, the CSR is valid */
+       /* by default, the CSR is valid, we then try to prove that it's invalid
+        *
+        * A better approach could be to distrust all CSRs and try to prove that
+        * they are OK, however this leads to messy code (as the tests becomes
+        * somewhat more involved) and I'm not convinced that it will be any safer.
+        */
 	  $this->valid_csr = true;
 	  if (!isset($this->user_csr)) {
                echo __FILE__ . ":" . __LINE__ . " CSR not set in cert-manager<BR>\n";
@@ -104,7 +126,7 @@ class CertManager
                $subject= openssl_csr_get_subject($this->user_csr);
                /* check fields of CSR to predefined values and user-specific values
                 * Make sure that the emailAddress is not set, as this is
-                * non-compatible with ARC
+                * non-compatible with ARC.
                 */
                if (isset($subject['emailAddress'])) {
                     echo "will not accept email in DN of certificate. Download latest version of script<br>\n";
