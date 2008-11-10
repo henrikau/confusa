@@ -1,4 +1,3 @@
-
 <?php
 require_once('mdb2_wrapper.php');
 require_once('logger.php');
@@ -14,7 +13,10 @@ class CertManager
 
   /* 
    * Should register all values so that when a sign_key request is issued,
-   * all values are in place. 
+   * all values are in place.
+   *
+   * @param csr : the Certificate Signing Request
+   * @param pers: object describing the person and his/hers attributes.
    */
   function __construct($csr, $pers)
     {
@@ -54,6 +56,8 @@ class CertManager
               $cert_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/cert/sigma_cert.pem';
               $ca_priv_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/priv/sigma_priv_key.pem';
 
+              /* Standalone mode, use php and local certificate/key to
+             * sign for user */
               if (Config::get_config('standalone')) {
                  $sign_days = 11;
                  $tmp_cert = openssl_csr_sign($this->user_csr, $cert_path, $ca_priv_path, $sign_days , array('digest_alg' => 'sha1'));
@@ -61,31 +65,22 @@ class CertManager
                  /* echo __FILE__ .":".__LINE__ ." Certificate successfully signed. <BR>\n"; */
                  
 
-                    /* store cert in database */
-                    /* 
-                       mysql> desc cert_cache;
-                       +--------------+-------------+------+-----+---------+----------------+
-                       | Field        | Type        | Null | Key | Default | Extra          |
-                       +--------------+-------------+------+-----+---------+----------------+
-                       | cert_id      | int(11)     | NO   | PRI | NULL    | auto_increment |
-                       | cert         | text        | NO   |     |         |                |
-                       | auth_key     | varchar(64) | NO   |     |         |                |
-                       | cert_owner   | varchar(64) | NO   |     |         |                |
-                       | valid_untill | datetime    | NO   |     |         |                |
-                       +--------------+-------------+------+-----+---------+----------------+
-                    */
                     MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) VALUES(?, ?, ?, addtime(current_timestamp(), ?))",
                                         array('text', 'text', 'text', 'text'),
                                         array($this->user_cert, $auth_key, $this->person->get_common_name(), Config::get_config('cert_default_timeout')));
-		    Logger::log_event(LOG_INFO, "Certificate successfully signed for " . $this->person->get_common_name() . " Contacting us from " . $_SERVER['REMOTE_ADDR']);
+		    Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
+                                      $this->person->get_common_name().
+                                      " Contacting us from ".
+                                      $_SERVER['REMOTE_ADDR']);
+
 		    /* add to database (the hash of the pubkey) */
                     MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash) VALUES(?)",
                                         array('text'),
                                         array($this->pubkey_checksum));
 		    return true;
               }
-              /* external CA */
               else {
+                   /* external CA, send the CSR as signed */
                    Logger::log_event(LOG_DEBUG, "Signing key using remote CA");
                    $ca_addr = Config::get_config('ca_host');
                    $ca_port = Config::get_config('ca_port');
@@ -97,7 +92,9 @@ class CertManager
                    return false;
               }
          }
-         Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user " . $this->person->get_common_name() . " from ip " . $_SERVER['REMOTE_ADDR']);
+         Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user ".
+                           $this->person->get_common_name().
+                           " from ip ".$_SERVER['REMOTE_ADDR']);
          return false;
     } /* end sign_key() */
 
