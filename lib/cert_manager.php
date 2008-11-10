@@ -1,9 +1,9 @@
+
 <?php
-require_once('mail_manager.php');
 require_once('mdb2_wrapper.php');
-require_once('pw.php');
 require_once('logger.php');
 require_once('csr_lib.php');
+
 class CertManager
 {
   private $person;
