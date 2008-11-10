@@ -26,7 +26,7 @@ user=`get_val "mysql_username"`
 pass=`get_val "mysql_password"`
 host=`get_val "mysql_host"`
 database=`get_val "mysql_db"`
-echo $user $pass $host $database
+
 db_auth="-A -u$user -h$host -p$pass -D$database"
 
 csr_timeout=`get_val "csr_default_timeout"`
