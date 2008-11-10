@@ -1,16 +1,32 @@
 #!/bin/bash
+function usage
+{
+    echo "Usage: $0 <config-file>"
+    exit
+}
+if [ ! $# -eq 1 ]; then
+    echo "Errors in parameters, need exactly 1, $# given"
+    usage
+fi
+echo $1
+if [ ! -f $1 ]; then
+    echo "config-file does not exist"
+    usage
+fi
+
+configfile=$1
 function get_val
 {
     if [ -z $1 ]; then
 	return;
     fi
-    grep "$1" ../config/confusa_config.php | cut -d '=' -f 2 | cut -d "'" -f 2
+    grep "$1" $configfile | cut -d '=' -f 2 | cut -d "'" -f 2
 }
-# user=`grep "mysql_username" ../config/confusa_config.php | cut -d '=' -f 2 | cut -d '"' -f 2`
 user=`get_val "mysql_username"`
 pass=`get_val "mysql_password"`
 host=`get_val "mysql_host"`
 database=`get_val "mysql_db"`
+echo $user $pass $host $database
 db_auth="-A -u$user -h$host -p$pass -D$database"
 
 csr_timeout=`get_val "csr_default_timeout"`
