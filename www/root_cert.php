@@ -1,10 +1,17 @@
 <?php
 include_once('framework.php');
 
+$cert_file = "certs/sigma_cert.pem";
 if (isset($_GET['send_file'])) {
      include_once('file_download.php');
-     download_file(file_get_contents("certs/sigma_cert.pem"), "sigma_cert.pem");
+     download_file(file_get_contents($cert_file), "sigma_cert.pem");
      exit(1);
+}
+
+if (isset($_GET['install_root']) && file_exists($cert_file)) {
+     $myCert = join("", file($cert_file));
+     header("Content-Type: application/x-x509-ca-cert");
+     print $myCert;
 }
 
 $fw = new Framework('root_cert');
@@ -25,7 +32,8 @@ function root_cert($person)
      echo '</form>';
      echo "</P>\n";
 
-
+     echo "Alternatively, you can install it directly into your browser: ";
+     echo "<A HREF=\"" . $_SERVER['HOST'] . $_SERVER['PHP_SELF'] . "?install_root\">here</A>\n";
   /* read and display the key in a nicely formatted way */
   $content = file_get_contents("certs/sigma_cert.pem");
   openssl_x509_export($content, $tmp, false);
