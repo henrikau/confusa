@@ -131,8 +131,11 @@ $confusa_config = array(
         'cert_default_timeout'           => '0 0:15:0',
 
         /* how long a CSR should stay in the csr_cache before being
-         * removed. Time in MySQL-format */
-        'csr_default_timeout'            => '1 0:0:0',
+         * removed. Time in MySQL-format
+         * Time should be fairly low as you don't want the database cluttered
+         * with CSRs.
+         */
+        'csr_default_timeout'            => '0 0:10:0',
 
 
 	/* this should be set to true when config is verified (or the file has
