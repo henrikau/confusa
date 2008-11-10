@@ -8,7 +8,7 @@ if [ ! $# -eq 1 ]; then
     echo "Errors in parameters, need exactly 1, $# given"
     usage
 fi
-echo $1
+
 if [ ! -f $1 ]; then
     echo "config-file does not exist"
     usage
