@@ -13,18 +13,18 @@ function attributealter_names(&$attributes, $spentityid = null, $idpentityid = n
       * means that we can only have one idp pr country, as similar keys will
       * overwrite previous entries.
       */
-/*      $known_idps = array('NO' => 'max.feide.no', */
-/*                          'NL' => 'edugain.showcase.surfnet.nl', */
-/*                          'DK' => 'https://testidp.wayf.dk'); */
      $known_idps = array('max.feide.no' => 'NO',
                          'edugain.showcase.surfnet.nl' => 'DL',
                          'https://testidp.wayf.dk' => 'DK');
+
      $attributes['country'] = array($known_idps[$idpentityid]);
      if (!$attributes['country']) {
           /* did not find in predefined array. Try to recover gracefully */
-          echo __FILE__.":".__LINE__." Did not find $idpentityid in \$known_idps<br>\n";
+          echo __FILE__.":".__LINE__." Did not find $idpentityid in \$known_idps<BR>\n";
+          echo __FILE__.":".__LINE__." Contact the site administrator with this message<BR>\n";
           $lastdot = strrpos($idpentityid, ".");
           $attributes['country'] = array(strtoupper(substr($idpentityid, $lastdot+1)));
+          echo __FILE__.":".__LINE__." Setting ". $attributes['country'] . " as country<BR>\n";
      }
 
      /* fix shortnames -> add to feide-compatible */
@@ -34,6 +34,4 @@ function attributealter_names(&$attributes, $spentityid = null, $idpentityid = n
           $attributes['mail']                   = array($attributes['urn:mace:dir:attribute-def:mail'][0]);
      }
 }
-
-
 ?>
