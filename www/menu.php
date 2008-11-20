@@ -6,6 +6,7 @@ function render_menu($person)
      * visible */
     echo "<A HREF=\"index.php\">Start</A><BR><BR>\n";
     echo "<A HREF=\"root_cert.php\">CA-Cert.</A><BR><BR>\n";
+    echo "<A HREF=\"poc.php\">PoC info</A><BR><BR>\n";
 
     if ($person->is_auth()) {
         echo "<A HREF=\"key_handler.php\">Keys</A><BR><BR>\n";
@@ -17,5 +18,6 @@ function render_menu($person)
         require_once('confusa_auth.php');
         compose_login_links();
     }
+
     } /* end render_menu */
 ?>
