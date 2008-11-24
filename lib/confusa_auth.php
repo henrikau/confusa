@@ -137,7 +137,13 @@ function add_attributes($person)
          $person->set_mobile($attributes['mobile'][0]);
      $person->set_name($attributes['cn'][0]);
      if (!isset($attributes['eduPersonPrincipalName'][0])) {
-          echo "eduPersonPrincipalName not set!<BR>\n";
+          if (Config::get_config('debug')) {
+               echo __FILE__ .":".__LINE__." -> eduPersonPrincipalName not set!<BR>\n";
+               echo "<PRE>\n";
+               print_r($attributes);
+               echo "</PRE>\n";
+               echo "<BR>\n";
+          }
           $person->fed_auth(false);
      }
      $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
