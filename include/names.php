@@ -43,5 +43,14 @@ function attributealter_names(&$attributes, $spentityid = null, $idpentityid = n
           $attributes['cn']                     = array($attributes['urn:oid:2.5.4.3'][0]);
           $attributes['mail']                   = array($attributes['urn:oid:0.9.2342.19200300.100.1.3'][0]);
      }
+
+     /* WAYF, QA base64 encode the attributes for transport */
+     else if ($idpentityid === 'https://betawayf.wayf.dk') {
+          $attributes['eduPersonPrincipalName'] = array(base64_decode($attributes[eduPersonPrincipalName][0]));
+          $attributes['mail']                   = array(base64_decode($attributes['mail'][0]));
+     }
+/*      echo "<pre>\n"; */
+/*      print_r($attributes); */
+/*      echo "</pre>\n"; */
 }
 ?>
