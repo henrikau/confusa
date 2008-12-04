@@ -285,30 +285,40 @@ function feide_logout_link($logout_location="logout.php", $logout_name="Logout C
  * circumvent this, we tailor the login-links ourself.
  *
  * Not a perfect solution, and we're getting pretty dependent upon simplesamlphp internals.
+ *
+ * NOTE: in order to handle new elements in $metadata, we're unsetting this. IOW
+ *-      this function has side-effects!
  */
 function compose_login_links()
 {
-     /* scan through simplesamlphp's saml20-idp-remote and connect
-      * the entries there to saml20-sp-hosted
-      *
-      * Finally puse the key in saml20-sp-hosted as a basis for the initSSO
-      * login, i.e. bypass the host-lookup in simpelsamlphp.
-      */
+     $saml2_file = Config::get_config('saml2_path') . "/metadata/saml20-idp-remote.php";
+     if (file_exists($saml2_file)) {
+          unset($metadata);
+          include($saml2_file);
+          $protocol = "http://";
+          if ($_SERVER['HTTPS'] == "on")
+               $protocol = "https://";
 
-     include(Config::get_config('saml2_path') . "/metadata/saml20-idp-remote.php");
-     $protocol = "http://";
-     if ($_SERVER['HTTPS'] == "on")
-          $protocol = "https://";
-
-     $server            = $protocol . $_SERVER['HTTP_HOST'];
-     $saml2_server      = $server . Config::get_config('www_saml2') . "saml2/sp/";
-     $relay_state        = urlencode($server . $_SERVER['HTTP_REFREER'] . "/" . $_SERVER['PHP_SELF']);
-     $sso_path          = $saml2_server . "initSSO.php";
-     foreach ($metadata as $key => $value) {
-          $url = "$sso_path?RelayState=$relay_state&idpentityid=$key";
-          echo "<A HREF=\"$url\">". $value['name']  ."</A><BR>\n";
+          $server            = $protocol . $_SERVER['HTTP_HOST'];
+          $saml2_server      = $server . Config::get_config('www_saml2') . "saml2/sp/";
+          $relay_state        = urlencode($server . $_SERVER['HTTP_REFREER'] . "/" . $_SERVER['PHP_SELF']);
+          $sso_path          = $saml2_server . "initSSO.php";
+          foreach ($metadata as $key => $value) {
+               $url = "$sso_path?RelayState=$relay_state&idpentityid=$key";
+               echo "<A HREF=\"$url\">". $value['name']  ."</A><BR>\n";
+          }
      }
-
+     $shib13_file = Config::get_config('saml2_path') . "/metadata/shib13-idp-remote.php";
+     if (file_exists($shib13_file)) {
+          unset($metadata);
+          include($shib13_file);
+          $shib13 = $metadata;
+          echo "<BR>\n<B>Shibboleth v1.3 IdPs</B><BR>\n";
+          echo "<I>Note</I> - this is not implemented fully yet!<BR>\n";
+          foreach ($metadata as $index => $idp) {
+               echo "[ <A HREF=\"error\">".$idp['name']."</A> ]<BR>\n";
+          }
+     }
 } /* end compose_login_links() */
 
 /* _is_authN()
