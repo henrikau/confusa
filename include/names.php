@@ -16,21 +16,21 @@ function attributealter_names(&$attributes, $spentityid = null, $idpentityid = n
      $known_idps = array('max.feide.no' => 'NO',
                          'edugain.showcase.surfnet.nl' => 'DL',
                          'https://testidp.wayf.dk' => 'DK',
+                         'https://betawayf.wayf.dk' => 'DK',
                          'https://aitta2.funet.fi/idp/shibboleth' => 'FI'
                          );
 
      $attributes['country'] = array($known_idps[$idpentityid]);
-     if (!$attributes['country']) {
+     if (!$attributes['country'][0]) {
           /* did not find in predefined array. Try to recover gracefully */
           echo __FILE__.":".__LINE__." Did not find $idpentityid in \$known_idps<BR>\n";
           echo __FILE__.":".__LINE__." Contact the site administrator with this message<BR>\n";
           $lastdot = strrpos($idpentityid, ".");
           $attributes['country'] = array(strtoupper(substr($idpentityid, $lastdot+1)));
-          echo __FILE__.":".__LINE__." Setting ". $attributes['country'] . " as country<BR>\n";
+          echo __FILE__.":".__LINE__." Setting ". $attributes['country'][0] . " as country<BR>\n";
      }
 
-     /* fix shortnames -> add to feide-compatible */
-
+     /* Fix shortnames, make attributes compatible with Feide/confusa */
      /* SurfNET */
      if (isset($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0])) {
           $attributes['eduPersonPrincipalName'] = array($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0]);
