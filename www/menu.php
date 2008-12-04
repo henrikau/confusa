@@ -17,7 +17,6 @@ function render_menu($person)
          echo "<A HREF=\"login.php\">Login</A><BR><BR>\n";
          /* include_once('login_link.html'); */
         require_once('confusa_auth.php');
-        compose_login_links();
     }
 
     } /* end render_menu */

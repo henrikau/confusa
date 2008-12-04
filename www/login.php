@@ -1,6 +1,7 @@
 <?php
 
 include_once('framework.php');
+include_once('confusa_auth.php');
 
 $fw = new Framework('login');
 $fw->render_page();
@@ -11,7 +12,8 @@ function login($person) {
           succsess($person);
      }
      else {
-          saml2_login();
+          /* saml2_login(); */
+          compose_login_links();
           shib13_login();
           
      }
@@ -38,7 +40,6 @@ function saml2_login()
 
 
      foreach ($metadata as $key => $value) {
-
           $url = "$sso_path?RelayState=$relay_state&idpentityid=$key";
           echo "<A HREF=\"$url\">". $value['name']  ."</A><BR>\n";
      }

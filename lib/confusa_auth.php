@@ -294,8 +294,21 @@ function compose_login_links()
       * Finally puse the key in saml20-sp-hosted as a basis for the initSSO
       * login, i.e. bypass the host-lookup in simpelsamlphp.
       */
-     global $metadata;
-     require_once('/var/www/simplesamlphp/metadata/saml20-idp-remote.php');
+
+     include(Config::get_config('saml2_path') . "/metadata/saml20-idp-remote.php");
+     $protocol = "http://";
+     if ($_SERVER['HTTPS'] == "on")
+          $protocol = "https://";
+
+     $server            = $protocol . $_SERVER['HTTP_HOST'];
+     $saml2_server      = $server . Config::get_config('www_saml2') . "saml2/sp/";
+     $relay_state        = urlencode($server . $_SERVER['HTTP_REFREER'] . "/" . $_SERVER['PHP_SELF']);
+     $sso_path          = $saml2_server . "initSSO.php";
+     foreach ($metadata as $key => $value) {
+          $url = "$sso_path?RelayState=$relay_state&idpentityid=$key";
+          echo "<A HREF=\"$url\">". $value['name']  ."</A><BR>\n";
+     }
+
 } /* end compose_login_links() */
 
 /* _is_authN()
