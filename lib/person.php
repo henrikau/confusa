@@ -84,9 +84,19 @@ class Person{
         $this->fed_auth = $auth;
         }
 
-    public function sms_auth($auth = true) {
-        $this->sms_auth = $auth;
+    public function sms_auth() {
+         $sms = New SMSAuth($person);
+         /* set default timeout for one-time-pass and session
+          * This can be overriden/changed.
+          *
+          * Planned in a later release.. :-)
+          */
+         $sms->set_pw_timeout(15);
+         $sms->set_session_timeout(30, true);
+
+         $this->sms_auth = $sms->assert_user();
     }
+
 
     public function set_mobile($mobile) {
         if (isset($mobile))
