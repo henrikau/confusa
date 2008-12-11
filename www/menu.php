@@ -14,9 +14,8 @@ function render_menu($person)
         echo feide_logout_link("logout.php", "Logout", $person) . "<BR><BR>\n";
     }
     else {
-         echo "<A HREF=\"login.php\">Login</A><BR><BR>\n";
-         /* include_once('login_link.html'); */
-        require_once('confusa_auth.php');
+         echo "<A HREF=\"index.php?start_login=yes\">Login</A><BR>\n";
+/*         require_once('confusa_auth.php'); */
     }
 
     } /* end render_menu */
