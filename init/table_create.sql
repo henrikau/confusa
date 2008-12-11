@@ -147,3 +147,18 @@ CREATE TABLE IF NOT EXISTS pubkeys (
        -- it should be a cause for concern (i.e. another openssl weakness)
        uploaded_nr int DEFAULT 1
 ) type=InnoDB;
+
+
+-- ---------------------------------------------------------
+--
+-- user_crls
+--
+-- Holds the list of serial-numbers for issued certificates
+-- so that the user may revoke them when needed.
+--
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_crls (
+       owner varchar(128) PRIMARY KEY, --ePPN serves as primary key
+       cert_sn INT NOT NULL,
+       valid_untill DATETIME NOT NULL
+) type=InnoD;
