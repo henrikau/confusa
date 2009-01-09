@@ -28,7 +28,7 @@ class CertManager
 	    $this->user_csr = $csr;
       
 	    /* read public key and create sum */
-	    $this->pubkey_checksum=pubkey_hash($this->user_csr);
+	    $this->pubkey_checksum=pubkey_hash($this->user_csr, true);
 
     } /* end __construct */
 

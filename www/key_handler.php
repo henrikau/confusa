@@ -339,7 +339,7 @@ function delete_csr($auth_token) {
              mdb2wrapper::update("delete from csr_cache where auth_key=? and common_name= ?",
                                  array('text', 'text'),
                                  array($auth_token, $person->get_common_name()));
-             logger::log_event(LOG_NOTICE, "dropping csr with hash ".pubkey_hash($res[0]['csr'])." belonging to ".$person->get_common_name()." originating from ".$_SERVER['REMOTE_ADDR']."");
+             logger::log_event(LOG_NOTICE, "dropping csr with hash ".pubkey_hash($res[0]['csr'], true)." belonging to ".$person->get_common_name()." originating from ".$_SERVER['REMOTE_ADDR']."");
 	}
 	else {
 		if ($hits==0) {

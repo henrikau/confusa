@@ -71,7 +71,7 @@ function test_content($content)
 function known_pubkey($csr)
 {
 	$issued_before = true;
-	$pubkey_checksum=pubkey_hash($csr);
+	$pubkey_checksum=pubkey_hash($csr, true);
         $res = MDB2Wrapper::execute("SELECT * FROM pubkeys WHERE pubkey_hash=?",
                                     array('text'),
                                     array($pubkey_checksum));
@@ -96,14 +96,19 @@ function known_pubkey($csr)
  *
  * Calculates the sha1-hash of the public-key in the uploaded CSR
  */
-function pubkey_hash($csr)
+function pubkey_hash($ssl_data, $is_csr)
 {
-     $csr_pubkey = openssl_csr_get_public_key($csr);
-     if (!$csr_pubkey) {
-          echo __FILE__ .":".__LINE__." Could not retrieve public key from CSR<br>\n";
-          exit(1);
-     }
-     $keydata = openssl_pkey_get_details($csr_pubkey);
+	if ($is_csr) {
+		$pubkey = openssl_csr_get_public_key($ssl_data);
+		if (!$csr_pubkey) {
+			echo __FILE__ .":".__LINE__." Could not retrieve public key from CSR<br>\n";
+			exit(1);
+		}
+	}
+	else {
+		$pubkey = openssl_get_publickey($ssl_data);
+	}
+     $keydata = openssl_pkey_get_details($pubkey);
      return sha1($keydata['key']);
 } /* end pubkey_hash */
 
