@@ -52,11 +52,13 @@ auth_length=""
 key_length=
 name=`echo $common | cut -d '=' -f 2 | cut -d '@' -f 1`
 script_folder=$HOME/.globus
+
 if [ ! -f $script_folder ]; then
     mkdir -p $script_folder;
 fi
-priv_key_name="userkey.pem"
-csr_name="userrequest.csr"
+priv_key_name="$script_folder/userkey.pem"
+csr_name="$script_folder/userrequest.csr"
+cert_name="$script_folder/usercert.pem"
 token_file="$script_folder/slcs_token"
 
 approve_page="/key_handler.php"
@@ -137,14 +139,12 @@ function get_cert {
     else
 	    auth_token=$1
     fi
-    echo "Token to download from server is $auth_token"
     uname=`echo $common | cut -d '=' -f 2`
-    echo "getting csr from server $download_url"
-    echo "Using username: $uname and auth_var $1"
 
     # create complete download url and download the certificate
     url="$download_url?$auth_var=$auth_token&common_name=$uname"
-    cmd="wget -O tmp.cert --no-check-certificate --html-extension $url"
+    echo "getting url: $url"
+    cmd="wget -O tmp.cert $wget_options --html-extension $url"
     res=`$cmd`
     # let openssl rip through the file to see if it's a valid certificate
     openssl x509 -in tmp.cert -text -noout > /dev/null
@@ -156,7 +156,7 @@ function get_cert {
 	exit
     else
 	echo "Got certificate ok!"
-	mv tmp.cert usercert.pem
+	mv tmp.cert $cert_name
     fi
 }
 
@@ -186,7 +186,6 @@ function main {
 	    push_csr
             ;;
         -get)
-            echo "getting certificate from server with auth_url $2"
 	    get_cert $2
             ;;
         *)
