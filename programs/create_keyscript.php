@@ -37,11 +37,11 @@ class KeyScript {
 		$script = str_replace('auth_length=""','auth_length="'.Config::get_config('auth_length').'"', $script);
 
 		/* how to download: */
-		$wget_options="-O /dev/null ";
+		$wget_options="--html-extension ";
 		if (!Config::get_config('script_check_ssl')) {
-			$wget_options.=" --no-check-certificate";
+			$wget_options.="--no-check-certificate ";
+			$script = str_replace('wget_options=""','wget_options="'.$wget_options.'"', $script);
 		}
-		$script = str_replace('wget_options=""','wget_options="'.$wget_options.'"', $script);
 
 		/* set error_addr */
 		$script = str_replace('error_addr="', 'error_addr="'.Config::get_config('error_addr'), $script);
