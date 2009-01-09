@@ -1,6 +1,6 @@
 <?php
 /* get simplesaml */
-require_once(dirname(__FILE__).'/config.php');
+require_once('config.php');
 
 /* include _include in the simplesaml-directory
  * simplesaml_path is the _include in the simplesaml directory
