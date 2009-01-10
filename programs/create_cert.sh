@@ -26,28 +26,19 @@ orgname="/O="
 orgunitname="/OU="
 common="/CN="
 key_length=
-
-# The following set of variables has been set dynamically by create_keyscript.php
-# where the SLCS-service is located
 server_loc=""
 down_page=""
 up_page=""
 approve_page=""
 ca_cert_name=""
 ca_cert_path=""
-
-# options for downloading CSRs
 wget_options=""
-
 # where to send error-messages
 error_addr=""
 csr_var=""
-
 # authentication
 auth_var=""
 auth_length=""
-
-
 # ------------------------------------------------------------- #
 # END AUTOMAGIC CONFIG
 # ------------------------------------------------------------- #
@@ -196,6 +187,7 @@ function cc_help {
     echo -e "\t\t\t\tif no token is given, `basename $0` uses $token_file"
     echo -e "\t-help\t\t\tthis help text\n"
 }
+
 function init {
     if [ $# -ge 1 ]; then 
     # check if .globus/ exists
