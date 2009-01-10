@@ -60,6 +60,46 @@ upload_url=$server_loc$up_page
 # Create full CA Cert name (locally)
 fccn=$script_folder/$ca_cert_name
 
+
+# ------------------------------------------------------------- #
+# test_cert_expired
+#
+# Test to see if a given certificate is expired
+# ------------------------------------------------------------- #
+function test_cert_expired {
+    # Make sure CA cert is present. If not obtainable, exit
+    echo "Full CA certfile name (locally): $fccn"
+    test -f $fccn || wget -O $fccn $wget_options $server_loc/$ca_cert_path$ca_cert_name || rm $fccn
+    test -f $fccn || exit_error "Unable to get CA Certificate"
+    res=`openssl verify -verbose -CAfile $fccn $1 | grep error`
+    if [ ! "$res" == "" ]; then
+	return 1
+    fi
+    return 0
+}
+
+# ------------------------------------------------------------- #
+# clean_globus
+#
+# Remove all old keys and certificates from script_folder (per def
+# $HOME/.globus/
+# ------------------------------------------------------------- #
+function clean_globus {
+    echo ""
+    echo "Cleaning up $script_folder"
+    # remove backups
+    rm -f $script_folder/*~
+    rm -f $script_folder/\#*
+    # test to see if current cert is expired:
+    tmp=$cert_name
+    test_cert_expired $tmp
+    if [ "$?" -gt 0 ]; then
+	echo "removing current private key and (expired) certificate"
+	test -f $priv_key_name && rm -f $priv_key_name
+	test -f $cert_name && rm -f $cert_name
+    fi
+}
+
 function create_key {
     openssl req -new -newkey rsa:$key_length \
 	-keyout $priv_key_name -out $csr_name \
@@ -169,6 +209,9 @@ function main {
             ;;
         -get)
 	    get_cert $2
+            ;;
+	-clean)
+	    clean_globus
             ;;
         *)
             echo "Unrecognized option!"
