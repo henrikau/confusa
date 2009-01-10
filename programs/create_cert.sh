@@ -67,16 +67,13 @@ function create_key {
     if [ $? -eq 0 ]; then
 	echo "Key and CSR created ok"
     else
-	echo -e "\n\n"
-	echo -e "\t\t***** ERROR *****"
-	echo "Errors where detected during the certificate creation process."
-	echo "The simplest solution is probably to download a new version of this script "
-	echo "from $server_loc and try again"
-	echo ""
-	echo -e "If the problem persist, please include the script and the "
-	echo -e "output from the program and mail this to $error_adr"
-	echo -e "\n\t\t***** ERROR *****"
-	exit 3
+	str=""
+	str="$str Errors where detected during the certificate creation process.\n"
+	str="$str The simplest solution is probably to download a new version of this script\n"
+	str="$str from $server_loc and try again\n\n"
+	str="$str If the problem persist, please include the script and the\n"
+	str="$str output from the program and mail this to $error_adr\n"
+	exit_error "$str"
     fi
 
 }
@@ -138,11 +135,12 @@ function get_cert {
     # let openssl rip through the file to see if it's a valid certificate
     openssl x509 -in tmp.cert -text -noout > /dev/null
     if [ $? -gt 0 ];then 
-	echo "Error in recovering certificate"
-	echo "Log in to $server_loc$approve_page and browse through the certificates stored there"
-	echo "Note the auth_token, and run "
-	echo "$0 -get <auth_token>"
-	exit
+	str=""
+	str="$str Error in recovering certificate"
+	str="$str Log in to $server_loc$approve_page and browse through the certificates stored there"
+	str="$str Note the auth_token, and run "
+	str="$str $0 -get <auth_token>"
+	exit_error "$str"
     else
 	echo "Got certificate ok!"
 	mv tmp.cert $cert_name
@@ -157,16 +155,16 @@ function main {
 	    cc_help
 	    ;;
 	-new)
-            echo "creating new key"
+            # echo "creating new key"
 	    create_key
 	    push_csr
             ;;
         -new_no_push)
-            echo "creating key, but does not push to server"
+            # echo "creating key, but does not push to server"
 	    create_key
             ;;
         -push)
-            echo "pusing existing CSR to server without creating new key"
+            # echo "pusing existing CSR to server without creating new key"
 	    push_csr
             ;;
         -get)
@@ -188,6 +186,18 @@ function cc_help {
     echo -e "\t-help\t\t\tthis help text\n"
 }
 
+# ------------------------------------------------------------- #
+# exit_error
+#
+# Simple error handler. Prints the message provided and exits
+# ------------------------------------------------------------- #
+function exit_error {
+    echo -ne "\n\t********  ERROR  ********\n\n"
+    echo -ne "\t$1\n\n"
+    echo -ne "\t********  ERROR  ********\n"
+    exit 1
+}
+
 function init {
     if [ $# -ge 1 ]; then 
     # check if .globus/ exists
@@ -196,12 +206,10 @@ function init {
 	    mkdir -p $HOME/.globus/
 	fi
 	if [ -z $common ]; then
-	    echo "Need a common-name. Please download a recent version of the script from slcsweb!"
-	    exit 2
+	    exit_error "Need a common-name. Please download a recent version of the script from slcsweb!"
 	fi
 	if [ -z $country ]; then
-	    echo "Need a country. Download a proper script from slcsweb"
-	    exit 2
+	    exit_error "Need a country. Download a proper script from slcsweb"
 	fi
 	main $@
     else 
