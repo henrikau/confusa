@@ -22,15 +22,18 @@
 # the fields manually with data from the site (attributes etc).
 # ------------------------------------------------------------- #
 country="/C="
-orgname="/O=Nordugrid"
-orgunitname="/OU=Nordugrid"
+orgname="/O="
+orgunitname="/OU="
 common="/CN="
+key_length=
 
 # The following set of variables has been set dynamically by create_keyscript.php
 # where the SLCS-service is located
 server_loc=""
 down_page=""
 up_page=""
+ca_cert_name=""
+ca_cert_path=""
 
 # options for downloading CSRs
 wget_options=""
@@ -48,8 +51,6 @@ auth_length=""
 # END AUTOMAGIC CONFIG
 # ------------------------------------------------------------- #
 
-# default length of RSA-key to generate
-key_length=
 name=`echo $common | cut -d '=' -f 2 | cut -d '@' -f 1`
 script_folder=$HOME/.globus
 
@@ -85,11 +86,6 @@ function create_key {
 	exit 3
     fi
 
-}
-
-function usage {
-    echo -n "Usage of this is: "
-    echo $0 "<key file-name>"
 }
 
 function welcome {
@@ -160,17 +156,12 @@ function get_cert {
     fi
 }
 
-function usage {
-    echo -e "Error in parameters!\n"
-    help
-}
-
 function main {
     welcome
     echo $1
     case $1 in
 	-help)
-	    help
+	    cc_help
 	    ;;
 	-new)
             echo "creating new key"
@@ -190,11 +181,11 @@ function main {
             ;;
         *)
             echo "Unrecognized option!"
-	    help
+	    cc_help
             ;;
     esac
 }
-function help {
+function cc_help {
     echo "$0 <command>"
     echo -e "\t-new\tCreates a new key, generates the CSR and uploads it to the server"
     echo -e "\t-new_no_push\tCreates the new key and CSR, but does not push it to server"
@@ -218,7 +209,7 @@ function init {
 	fi
 	main $@
     else 
-	usage
+	cc_help
     fi
 }
 

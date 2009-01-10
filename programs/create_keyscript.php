@@ -23,11 +23,19 @@ class KeyScript {
              $script = file_get_contents(Config::get_config('programs_path'));
 		/* set fiedls for subject in CSR */
 		$script = str_replace('="/C=','="/C='.$this->country, $script);
+		$script = str_replace('="/O=','="/O='.Config::get_config('cert_o'), $script);
+		$script = str_replace('="/OU=','="/OU='.Config::get_config('cert_ou'), $script);
 		$script = str_replace('="/CN=','="/CN='.$this->person->get_common_name(), $script);
 		$script = str_replace("key_length=","key_length=".Config::get_config('key_length'), $script);
 
 		/* send location and upload related variables */
 		$script = str_replace('server_loc=""','server_loc="'.dirname($_SERVER['HTTP_REFERER']).'"', $script);
+
+		/* set ca-keyfile */
+		$script = str_replace('ca_cert_name="', 'ca_cert_name="'.Config::get_config('ca_cert_name'), $script);
+		$script = str_replace('ca_cert_path="', 'ca_cert_path="'.Config::get_config('ca_cert_path'), $script);
+
+
                 $script = str_replace('down_page=""' , 'down_page="'.Config::get_config('download').'"', $script);
                 $script = str_replace('up_page=""' , 'up_page="'.Config::get_config('upload').'"', $script);
 
