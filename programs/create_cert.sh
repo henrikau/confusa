@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# created by Henrik Austad, may 2008
-# for SLCS-Web
-# (c) UNINETT SIGMA A/S 2008
+#		Henrik Austad
+#	UNINETT SIGMA A/S 2008,2009
 #
-# A lot of the variables in this file has been set dynamically based
-# upon attributes from Feide (/other fed. instances) and
-# confusa_config.php.
+# This is part of the Confusa setup. This file is released,
+# as the rest of Confusa, under GPLv3
+#
+#
 
 # ------------------------------------------------------------- #
 #		BEGIN AUTOMAGIC CONFIG
@@ -50,7 +50,6 @@ auth_length=""
 # ------------------------------------------------------------- #
 # END AUTOMAGIC CONFIG
 # ------------------------------------------------------------- #
-
 name=`echo $common | cut -d '=' -f 2 | cut -d '@' -f 1`
 script_folder=$HOME/.globus
 
