@@ -67,6 +67,9 @@ approve_page="/key_handler.php"
 download_url=$server_loc$down_page
 upload_url=$server_loc$up_page
 
+# Create full CA Cert name (locally)
+fccn=$script_folder/$ca_cert_name
+
 function create_key {
     openssl req -new -newkey rsa:$key_length \
 	-keyout $priv_key_name -out $csr_name \
@@ -187,10 +190,12 @@ function main {
 }
 function cc_help {
     echo "$0 <command>"
-    echo -e "\t-new\tCreates a new key, generates the CSR and uploads it to the server"
-    echo -e "\t-new_no_push\tCreates the new key and CSR, but does not push it to server"
-    echo -e "\t-push\tPushes an existing CSR to server"
-    echo -e "\t-get <auth_url>\t downloads a certificate from the server, identified by the given key"
+    echo -e "\t-new\t\t\tCreates a new key, generates the CSR and uploads it to the server"
+    echo -e "\t-new_no_push\t\tCreates the new key and CSR, but does not push it to server"
+    echo -e "\t-push\t\t\tPushes an existing CSR to server"
+    echo -e "\t-get \t[<auth_url>]\tdownloads a certificate from the server, identified by the given token"
+    echo -e "\t\t\t\tif no token is given, `basename $0` uses $token_file"
+    echo -e "\t-help\t\t\tthis help text\n"
 }
 function init {
     if [ $# -ge 1 ]; then 
