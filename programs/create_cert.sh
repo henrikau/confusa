@@ -32,6 +32,7 @@ key_length=
 server_loc=""
 down_page=""
 up_page=""
+approve_page=""
 ca_cert_name=""
 ca_cert_path=""
 
@@ -61,7 +62,6 @@ csr_name="$script_folder/userrequest.csr"
 cert_name="$script_folder/usercert.pem"
 token_file="$script_folder/slcs_token"
 
-approve_page="/key_handler.php"
 
 download_url=$server_loc$down_page
 upload_url=$server_loc$up_page

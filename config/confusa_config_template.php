@@ -34,9 +34,13 @@ $confusa_config = array(
          *
          * key_upload is the program that handles automatic CSR upload from the user-script.
          * key_download is the corresponding download of signed certificate
+         *
+         * Unless you are willing to recreate a lot of Confusa, you should not
+         * change this.
          */
         'upload'                => '/key_upload.php',
         'download'              => '/key_download.php',
+	'approve'		=> '/key_handler.php',
 
         /* For CA handling */
         'standalone'            => True, /* true: no extra CA, use php to sign
