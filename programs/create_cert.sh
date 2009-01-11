@@ -23,10 +23,10 @@
 # ------------------------------------------------------------- #
 
 # Fields for the certificate
-country="/C="
-orgname="/O="
-orgunitname="/OU="
-common="/CN="
+country=""
+orgname=""
+orgunitname=""
+common=""
 
 # The key must have a length, and Confusa imposes a minimum length,
 # changing this to a lower value will most likely cause the key (CSR) to
@@ -84,6 +84,73 @@ upload_url=$server_loc$up_page
 # Create full CA Cert name (locally)
 fccn=$script_folder/$ca_cert_name
 
+# ------------------------------------------------------------- #
+# test_automagic_variables
+#
+# Function for testing if all the necessary automagic variables is
+# filled in properly. If they are not, the script will abort with a
+# notification to the user as to why the execution was stopped.
+# ------------------------------------------------------------- #
+function test_automagic_variables {
+    error_tail="\nDownload a new version and try again"
+    if [ -z $country ]; then
+	exit_error "Country-attribute (C) for certificate not set $error_tail"
+    fi
+    if [ -z $orgname ]; then
+	exit_error "OrganizationalName-attribute (O) for certificate not set $error_tail"
+    fi
+    if [ -z $orgunitname ]; then
+	exit_error "OrganizationalUnitName-attribute (OU) for certificate not set $error_tail"
+    fi
+    if [ -z $common ]; then
+	exit_error "CommonName-attribute (CN) for certificate not set $error_tail"
+    fi
+    if [ -z $key_length ]; then
+	exit_error "Length for key not set $error_tail"
+    fi
+    if [ -z $server_loc ]; then
+	exit_error "No server-address provided $error_tail"
+    fi
+    if [ -z $down_page ]; then
+	exit_error "No download page for signed certificates provided $error_tail"
+    fi
+    if [ -z $up_page ]; then
+	exit_error "No upload page for CSRs provided $error_tail"
+    fi
+    if [ -z $approve_page ]; then
+	echo "No approve page provided. This is not a critical error,"
+	echo "but it means that *you* must know where to find it - this"
+	echo "script will not be able to tell you"
+	echo ""
+    fi
+    if [ -z $ca_cert_name ]; then
+	echo "Cannot verify CA-certificates - do not know the name of "
+	echo "the CA certificate"
+	echo ""
+    fi
+    if [ -z $ca_cert_path ]; then
+	echo "Cannot verify CA ertificates - do not know the path to"
+	echo "the CA certificate"
+	echo ""
+    fi
+    if [ -z $wget_options ]; then
+	echo "No wget-options set - are you sure this is intentional?"
+	echo ""
+    fi
+    if [ -z $error_addr ]; then
+	echo "No error-address set"
+	echo ""
+    fi
+    if [ -z $csr_var ]; then
+	exit_error "No name for CSR set - cannot upload CSR to server $error_tail"
+    fi
+    if [ -z $auth_var ]; then
+	exit_error "No name for auth-var - cannot upload CSR or download certificates $error_tail"
+    fi
+    if [ -z $auth_length ]; then
+	exit_error "Length of auth_var not set - cannot determine proper authentication variable $error_tail"
+    fi
+}
 
 # ------------------------------------------------------------- #
 # test_cert_expired
@@ -259,9 +326,10 @@ function cc_help {
 # Simple error handler. Prints the message provided and exits
 # ------------------------------------------------------------- #
 function exit_error {
-    echo -ne "\n\t********  ERROR  ********\n\n"
-    echo -ne "\t$1\n\n"
-    echo -ne "\t********  ERROR  ********\n"
+    echo ""
+    echo -ne "**********  ERROR  **********\n\n"
+    echo -ne "$1\n\n"
+    echo -ne "**********  ERROR  **********\n"
     exit 1
 }
 
@@ -284,4 +352,5 @@ function init {
     fi
 }
 
+test_automagic_variables
 init $@
