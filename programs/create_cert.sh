@@ -21,25 +21,51 @@
 # certificate *right now*, and you know what you are doing - try to set
 # the fields manually with data from the site (attributes etc).
 # ------------------------------------------------------------- #
+
+# Fields for the certificate
 country="/C="
 orgname="/O="
 orgunitname="/OU="
 common="/CN="
+
+# The key must have a length, and Confusa imposes a minimum length,
+# changing this to a lower value will most likely cause the key (CSR) to
+# be rejected by Confusa
 key_length=
+
+# where the Confusa instance is running, and which sites that handles
+# the respective parts of the operation
 server_loc=""
 down_page=""
 up_page=""
 approve_page=""
+
+# The CA has it's own certificate
 ca_cert_name=""
 ca_cert_path=""
+
+# For upload (GET with base64) and download, we use wget. In order to
+# make this more seamless (less noise on the user terminal) we set some
+# options from server-side. You may change this without affecting the
+# script
 wget_options=""
+
+# If something goes (seriously) wrong, this is the error-address
+# given. You will be told to contact this address
 error_addr=""
+
+# the name of the csr-var we need to supply to the upload-page so that
+# it will trigger properly
 csr_var=""
+
+# the name of the auth-token and the length of it
 auth_var=""
 auth_length=""
+
 # ------------------------------------------------------------- #
 # END AUTOMAGIC CONFIG
 # ------------------------------------------------------------- #
+
 name=`echo $common | cut -d '=' -f 2 | cut -d '@' -f 1`
 script_folder=$HOME/.globus
 
