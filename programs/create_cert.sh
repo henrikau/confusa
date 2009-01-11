@@ -33,10 +33,8 @@ approve_page=""
 ca_cert_name=""
 ca_cert_path=""
 wget_options=""
-# where to send error-messages
 error_addr=""
 csr_var=""
-# authentication
 auth_var=""
 auth_length=""
 # ------------------------------------------------------------- #
