@@ -16,7 +16,7 @@ if (isset($_GET[Config::get_config('auth_var')]) && $_GET['common_name']) {
                                     array($authvar, $user));
 	if (count($res) == 1) {
 		echo $res[0]['cert'] . "\n";
-                Logger::log_event(LOG_NOTICE, "Sending certificate with hash " . pubkey_hash($res[0]['csr']) . " and auth-token $authvar to user from ip " . $_SERVER['REMOTE_ADDR']);
+                Logger::log_event(LOG_NOTICE, "Sending certificate with hash " . pubkey_hash($res[0]['cert'], false) . " and auth-token $authvar to user from ip " . $_SERVER['REMOTE_ADDR']);
         }
         else {
              echo "Error in getting certificate, got " . count($res) . " results\n";
