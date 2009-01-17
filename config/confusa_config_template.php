@@ -90,10 +90,6 @@ $confusa_config = array(
 	'mysql_host'			=> 'localhost',
 	'mysql_db'			=> 'confusa',
 
-        /* the default table is semi-deprecated and will be removed in the future */
-	'mysql_default_table'           => 'sms_auth',
-
-
         /* where should backup of the database be stored */
         'mysql_backup_dir'              => '/var/backups',
 
