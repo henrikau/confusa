@@ -14,11 +14,20 @@ You should have
 
 To install Confusa
 
+=== Requirements: ===
+ - git (for latest checkout of confusa source code). *not* required, but handy
+ - svn (for latest simplesamlphp checkout). *not* required, but handy
+ - Apache2
+ - PHP5
+ - PEAR with MDB2.MySQL
+ - 
+=== Install process ===
 1) Install Apache2 with PHP5 support.
 2) Install php5-mysql and php5-openssl
 3) Install mysql5.
 4) Configure Apache to use SSL, use the following lines in your apache2/sites-enabled/appropriate.config.file
 
+# Redirect http to https
 <VirtualHost your.host.org:80>
         Servername your.server.org
         Redirect permanent / https://your.host.org
@@ -82,14 +91,16 @@ b) Configure Apache with something along the following line:
                         Allow from all
              </Directory>
 
-   then reload the config ( /etc/init.d/apache2 reload)
+   then reload the config: /etc/init.d/apache2 reload (or httpd (or
+   other relevant name for apache - consult your distro's documentation)
+   and reaload.
 
    This will enable your host to show the www directory of the
    confusa-folder.
 
 c) Configure the confusa_config.php file (copy the
    confusa_config_template.php and modify with values that makes sense
-   to you).
+   to you - the template explaines the attributes).
    
 d) Run the create_database.sh script in confusa/init folder
    This will create the database, the user and the tables. it will use
