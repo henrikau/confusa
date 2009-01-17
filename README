@@ -26,13 +26,13 @@ The automated signing-process can be split into 2 separate ways
    the user with an authentication URL. By following this URL, the user
    will be authenticated and the signing will be authorized.
 
-2) After the CSR has been created and uploaded, the user can log in to
+   After the CSR has been created and uploaded, the user can log in to
    the system and go to the 'Key' page. Here he/she will be presented
    with a summary of all uploaded CSRs for this user. By inspecting
-   these, the user may approve signing (which will lead to a somewhat
-   cumbersome challenge-response cycle) or delete the CSR from the database.
+   these, the user may approve signing or delete the CSR from the
+   database.
 
-3) As an option, the user may create the key and CSR manually and then
+2) As an option, the user may create the key and CSR manually and then
    choose to upload the CSR via the web interface. 
 
    Note: the system *will* check all attributes in the subject of the
@@ -40,22 +40,20 @@ The automated signing-process can be split into 2 separate ways
    with attributes obtained from the federated identity.
 
    Current attributes that are checked:
-   - key lenght. Keys shorter than key_length in
-     config/confusa_config.php will be discarded and the user notified.
+   - key length. Keys shorter than key_length in
+     config/confusa_config.php will be discarded when the key is
+     uploaded.
    - Subject in key. CommonName *must* correspond to
-     eduPersonPrincipalName. 
+     eduPersonPrincipalName.
+   - A certificate will never be reissued. For this reason, Confusa will
+     check that the public-key does not belong to a previously signed
+     certificate.
 
 
 The file INSTALL contains instructions to how to install and configure
-the system. Note that Confusa depends upon simpleSAMLphp. This file
+the system. Note that Confusa depends upon simpleSAMLphp. INSTALL
 also contains the software requirements Confusa pose on the system
 
-FEATURES contains the current implemented features, features in progress
-and planned/wanted features in future releases.
-
-For a summary of the status of the system (last update, what is
-currently under way), see STATUS.
-
-Finally, LICENSE state the license under which Confusa is
-released. Read this before you start using the system, in case it
-invokes any restrictions upon you as a user or organization.
+LICENSE state the license under which Confusa is released (GPLv3). Read
+this before you start using the system, in case it invokes any
+restrictions upon you as a user or organization.
