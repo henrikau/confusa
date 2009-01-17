@@ -6,7 +6,7 @@ $confusa_config = array(
 	'debug'			=> true,
 
         /* install path */
-        'install_path'                  = '/var/www/confusa/',
+        'install_path'                  => '/var/www/confusa/',
 
 	/* script variables, where the end-user create-keyresides */
 	'programs_path'		=> '/var/www/confusa/programs/create_cert.sh',
