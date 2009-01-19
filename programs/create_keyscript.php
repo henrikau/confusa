@@ -17,11 +17,20 @@ class KeyScript {
 		}
 	}
 
+	function preg_replace_callback($matches)
+	{
+		echo $matched[0];
+		return $matches[1].$matches[2].get_config($matches[1]).$matches[3];
+	}
+
 	public function create_script()
 	{
+
 		$script = file_get_contents(Config::get_config('programs_path'));
 
-		/* set variables for the key and CSR/cert */
+//  		$script = preg_replace_callback('/(\w+)(=")(")/', 'config_match', $script);
+
+ 		/* set variables for the key and CSR/cert */
 		$script = str_replace('country=""'	,'country="/C='	.$this->country . '"'			, $script);
 		$script = str_replace('orgname=""'	,'orgname="/O='	.Config::get_config('cert_o') . '"'	, $script);
 		$script = str_replace('orgunitname=""'	,'orgunit="/OU='.Config::get_config('cert_ou'). '"'	, $script);
