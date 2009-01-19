@@ -35,6 +35,6 @@ csr_cache="DELETE FROM csr_cache WHERE current_timestamp() > addtime(uploaded_da
 cert_cache="DELETE FROM cert_cache WHERE valid_untill < current_timestamp()"
 sms_auth="DELETE FROM sms_auth WHERE valid_untill < current_timestamp()"
 
-mysql $db_auth "-e $csr_cache"
-mysql $db_auth "-e $cert_cache"
-mysql $db_auth "-e $sms_auth"
+mysql $db_auth "-e $csr_cache"  || echo "could not clean csr_cache"
+mysql $db_auth "-e $cert_cache" || echo "could not clean cert_cache"
+mysql $db_auth "-e $sms_auth"   || echo "could not clean sms_auth"
