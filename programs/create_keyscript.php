@@ -26,7 +26,7 @@ class KeyScript {
 		$script = str_replace('orgname=""'	,'orgname="/O='	.Config::get_config('cert_o') . '"'	, $script);
 		$script = str_replace('orgunitname=""'	,'orgunit="/OU='.Config::get_config('cert_ou'). '"'	, $script);
 		$script = str_replace('common=""'	,'common="/CN='	.$this->person->get_common_name() . '"'	, $script);
-		$script = str_replace('key_length=""'	,"key_length="	.Config::get_config('key_length') . '"'	, $script);
+		$script = str_replace('key_length='	,"key_length="	.Config::get_config('key_length')	, $script);
 
 		/* send location and upload related variables */
 		$script = str_replace('server_loc=""'	,'server_loc="'.dirname($_SERVER['HTTP_REFERER']).'"'	, $script);
