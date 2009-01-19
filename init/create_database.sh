@@ -63,7 +63,7 @@ webuser=`grep "mysql_username" ../config/confusa_config.php | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
 pw=`grep "mysql_password" ../config/confusa_config.php | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
-grants="INSERT, DELETE, UPDATE, USAGE"
+grants="SELECT, INSERT, DELETE, UPDATE, USAGE"
 
 # test to see if the user is already present. If not, add
 user=`$MYSQL -Dmysql -e "SELECT user FROM user WHERE user='$webuser'"`
