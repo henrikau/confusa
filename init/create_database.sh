@@ -22,15 +22,12 @@ if [ -f /etc/mysql/debian.cnf ]; then
     echo "Using debian-sys-maintainer config"
     MYSQL="/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf"
 else 
+    user="root"
+    host="localhost"
     if [ -f /root/mysql_root.pw ]; then 
-	user="root"
-	pass="`cat /root/mysql_root.pw`"
-	host="localhost"
-	MYSQL="/usr/bin/mysql -u$user -h$host -p$pass"
-    else
-	echo "Cannot run without password - create /root/mysql_root.pw first"
-	exit
+	pass="-p`cat /root/mysql_root.pw`"
     fi
+    MYSQL="/usr/bin/mysql -u$user -h$host $pass"
 fi
 # use the database stated in the confusa_config.php. If this file is not
 # present, the script will terminate
