@@ -150,4 +150,4 @@ CREATE TABLE IF NOT EXISTS user_crls (
        owner varchar(128) PRIMARY KEY, --ePPN serves as primary key
        cert_sn INT NOT NULL,
        valid_untill DATETIME NOT NULL
-) type=InnoD;
+) type=InnoDB;
