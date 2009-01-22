@@ -19,7 +19,7 @@ require_once('csr_lib.php');
    */
 $ip=$_SERVER['REMOTE_ADDR'];
 if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
-	$csr = base64_decode(htmlentities$_GET['remote_csr']));
+	$csr = base64_decode(htmlentities($_GET['remote_csr']));
      $auth_var = htmlentities($_GET[Config::get_config('auth_var')]);
      $csr_subject=openssl_csr_get_subject($csr);
      if ($csr_subject) {
