@@ -66,6 +66,16 @@ function is_authenticated($person = null) {
 	return $person;
 } /* end is_authenticated */
 
+
+/* add_attributes
+ *
+ * This function decorates a person-object, which must be non-null in order to
+ * provide some sane abstraction away from the attributes-array.
+ *
+ * This in itself is not a good reason for using a dedicated object, but we try
+ * to tie as many strings together (like attributes, authentication status etc)
+ * and provide a sane interface to the outside world.
+ */
 function add_attributes($person) 
 {
      $attributes = get_attributes();
