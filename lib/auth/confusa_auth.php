@@ -70,9 +70,6 @@ function add_attributes($person)
 {
      $attributes = get_attributes();
 
-     if (isset($attributes['mobile'][0]))
-         $person->set_mobile($attributes['mobile'][0]);
-     $person->set_name($attributes['cn'][0]);
      if (!isset($attributes['eduPersonPrincipalName'][0])) {
           if (Config::get_config('debug')) {
                echo __FILE__ .":".__LINE__." -> eduPersonPrincipalName not set!<BR>\n";
@@ -83,10 +80,15 @@ function add_attributes($person)
           }
           $person->fed_auth(false);
      }
-     $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
-     $person->set_email($attributes['mail'][0]);
-     $person->set_country($attributes['country'][0]);
-
+     else {
+	     if (isset($attributes['mobile'][0]))
+		     $person->set_mobile($attributes['mobile'][0]);
+	     $person->set_name($attributes['cn'][0]);
+	     $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
+	     $person->set_email($attributes['mail'][0]);
+	     $person->set_country($attributes['country'][0]);
+	     $person->fed_auth(true);
+     }
 } /* end add_attributes() */
 
 /* ======================================================================
