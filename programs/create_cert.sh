@@ -73,7 +73,7 @@ if [ ! -f $script_folder ]; then
     mkdir -p $script_folder;
 fi
 priv_key_name="$script_folder/userkey.pem"
-csr_name="$script_folder/userrequest.csr"
+csr_name="$script_folder/usercert_request.pem"
 cert_name="$script_folder/usercert.pem"
 token_file="$script_folder/slcs_token"
 
@@ -192,6 +192,12 @@ function clean_globus {
 }
 
 function create_key {
+    # test to see if there's already a key in the folder
+    if [ -f $priv_key_name ]; then
+	chmod u+w $priv_key_name
+	rm -f $priv_key_name
+    fi
+
     openssl req -new -newkey rsa:$key_length \
 	-keyout $priv_key_name -out $csr_name \
 	-subj "$country$orgname$orgunit$common"
@@ -207,6 +213,8 @@ function create_key {
 	exit_error "$str"
     fi
 
+    # set R-O for priv-key
+    chmod 0400 $priv_key_name
 }
 
 function welcome {
