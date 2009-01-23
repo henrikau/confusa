@@ -99,7 +99,7 @@ function test_automagic_variables {
     if [ -z $orgname ]; then
 	exit_error "OrganizationalName-attribute (O) for certificate not set $error_tail"
     fi
-    if [ -z $orgunitname ]; then
+    if [ -z $orgunit ]; then
 	exit_error "OrganizationalUnitName-attribute (OU) for certificate not set $error_tail"
     fi
     if [ -z $common ]; then
@@ -194,7 +194,7 @@ function clean_globus {
 function create_key {
     openssl req -new -newkey rsa:$key_length \
 	-keyout $priv_key_name -out $csr_name \
-	-subj "$country$orgname$orgunitname$common"
+	-subj "$country$orgname$orgunit$common"
     if [ $? -eq 0 ]; then
 	echo "Key and CSR created ok"
     else
