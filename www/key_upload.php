@@ -53,7 +53,7 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
                MDB2Wrapper::update("INSERT INTO csr_cache (csr, uploaded_date, from_ip, common_name, auth_key) VALUES(?, current_timestamp(), ?, ?, ?)",
                                    array('text', 'text', 'text', 'text'),
                                    array($csr, $ip, $common, $auth_var));
-               Logger::log_event(LOG_INFO, "Inserted new CSR from $ip ($common) with auth_key $auth_var and hash " . pubkey_hash($csr));
+               Logger::log_event(LOG_INFO, "Inserted new CSR from $ip ($common) with auth_key $auth_var and hash " . pubkey_hash($csr, true));
           }
      }
      else {
