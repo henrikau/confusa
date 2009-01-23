@@ -100,7 +100,7 @@ function pubkey_hash($ssl_data, $is_csr)
 {
 	if ($is_csr) {
 		$pubkey = openssl_csr_get_public_key($ssl_data);
-		if (!$csr_pubkey) {
+		if (!$pubkey) {
 			echo __FILE__ .":".__LINE__." Could not retrieve public key from CSR<br>\n";
 			exit(1);
 		}
