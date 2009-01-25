@@ -1,14 +1,23 @@
 <?php
-  /* get name of default log-file (in addition to syslog) */
-  /* require_once(dirname(WEB_DIR).'/www/_include.php'); */
-require_once('config.php');
-
-/* SLCSLogger
+/* Logger
  *
- * This logs to both syslog and a user defined log (in slcs_config.php in this example)
+ * This logs to both syslog and a user defined log
+ *	This is set by the config-variable default_log in
+ *	config/confosa_config.php
+ * 
+ * By adjusting the levels to log, different levels of logging can be set for
+ * syslog and the local log. This is done by tuning
+ *	- syslog_min (for syslog)
+ *	- loglevel_min (for user-defined log)
  *
  * Henrik Austad, June 2008, Uninett Sigma A/S
  */
+
+
+  /* get name of default log-file (in addition to syslog)
+   * require_once(dirname(WEB_DIR).'/www/_include.php'); */
+require_once('config.php');
+
 class Logger {
 /* log_event
  *

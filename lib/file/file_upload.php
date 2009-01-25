@@ -16,6 +16,9 @@
  *			must know wether or not the file shall be read from memory or not
  *
  *			If not set (null), this step is bypassed
+ *
+ * Author: Henrik Austad <henrik.austad@uninett.no>
+ *
  */
 class FileUpload {
   private $open_file;		/* the field of $_FILES which we want to read */
