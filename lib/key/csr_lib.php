@@ -1,4 +1,11 @@
 <?php
+  /* csr_lib.php
+   *
+   * Small library with common functions to verify contents of CSRs, compare to
+   * config-parameters as well as person-attributes.
+   *
+   * Author: Henrik Austad <henrik.austad@uninett.no>
+   */
 include_once('mdb2_wrapper.php');
 include_once('logger.php');
 

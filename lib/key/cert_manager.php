@@ -1,4 +1,10 @@
 <?php
+  /* Certmanager
+   *
+   * Class for signing certificates, verifying CSRs and storing it in the database
+   *
+   * Author: Henrik Austad <henrik.austad@uninett.no>
+   */
 require_once('mdb2_wrapper.php');
 require_once('logger.php');
 require_once('csr_lib.php');
