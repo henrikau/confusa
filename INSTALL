@@ -23,9 +23,10 @@ To install Confusa
  - 
 === Install process ===
 1) Install Apache2 with PHP5 support.
-2) Install php5-mysql and php5-openssl
-3) Install mysql5.
-4) Configure Apache to use SSL, use the following lines in your apache2/sites-enabled/appropriate.config.file
+2) Install mysql5
+3) Install php5-mysql and PEAR::MDB2_mysql_driver
+4) Configure Apache to use SSL, use the following lines in your 
+   apache2/sites-enabled/appropriate.config.file and php5-openssl
 
 # Redirect http to https
 <VirtualHost your.host.org:80>
