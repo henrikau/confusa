@@ -14,6 +14,8 @@ require_once('MDB2.php');
  * $res = MDB2Wrapper::execute(...)
  *
  * where $res will contain the .. result.
+ *
+ * Author: Henrik Austad <henrik.austad@uninett.no>
  */
 class MDB2Wrapper
 {
