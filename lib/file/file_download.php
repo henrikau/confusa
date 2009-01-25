@@ -1,7 +1,13 @@
 <?php
 /* download_file()
  *
- * Creates a download to the user 
+ * Creates a download-page to the user that triggers the download-dialog in any
+ * normally behaved browser.
+ *
+ * Note: The output must start *before* any other headers are rewritten, and
+ * must not be called if any other part relies on header-rewriting.
+ *
+ * Author: Henrik Austad <henrik.austad@uninett.no>
  */
 function download_file($file, $filename)
 {
