@@ -16,6 +16,8 @@
  * the appropriate data *from* the user and send it off.
  *
  * Thus, Person is little more than a convenient storage pool of related data.
+ *
+ * Author: Henrik Austad <henrik.austad@uninett.no>
  */
 class Person{
 
