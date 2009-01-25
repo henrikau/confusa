@@ -5,6 +5,8 @@
  * Numbers 0 and 1 have been removed because they can be mistaken for 'O' and 'l'
  *
  * For change of characters allowed in password, edit $base
+ *
+ * Author: Henrik Austad <henrik.austad@uninett.no>
  */
 function create_pw($length) {
     $base ="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ23456789";
