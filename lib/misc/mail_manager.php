@@ -2,6 +2,9 @@
   /* mail_manager.php
    *
    * This package sends emails to the specified address.
+   * Attachments are supported
+   *
+   * Author: Henrik Austad <henrik.austad@uninett.no>
    */
 
 class MailManager {
