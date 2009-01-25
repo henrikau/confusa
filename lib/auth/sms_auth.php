@@ -1,4 +1,9 @@
 <?php
+  /* Author: Henrik Austad <henrik.austad@uninett.no>
+   *
+   * Part of confusa.
+   * This file is deprecated
+   */
 require_once('mdb2_wrapper.php');
 require_once('pw.php');
 require_once('sms_commons.php');

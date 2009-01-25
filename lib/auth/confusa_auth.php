@@ -1,4 +1,8 @@
 <?php
+  /* Author: Henrik Austad <henrik.austad@uninett.no>
+   *
+   * Part of Confusa.
+   */
 /* get simplesaml */
 require_once('config.php');
 

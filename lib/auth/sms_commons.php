@@ -2,7 +2,10 @@
   /* commons.php
    *
    * A collection of misc functions, used a lot
-   * 
+   *
+   * Author: Henrik Austad <henrik.austad@uninett.no>
+   *
+   * This file is deprecated.
    */
 $print_debug = true;
 
