@@ -1,4 +1,12 @@
 <?php
+  /* class Config
+   *
+   * Class for retrieving config-parameters from the config.
+   * This makes usage more consistent, and it is easier to avoid bugs and
+   * pitfals
+   *
+   * Author: Henrik Austad <henrik.austad@uninett.no>
+   */
 include('key_not_found.php');
 class Config {
      private static $config;
@@ -16,6 +24,9 @@ class Config {
                try {
                     return Config::$config->get_config_val($entry_name);
                }
+	       /* This exception should be propagated to the calling instance.
+		* Put it here for now to avoid breaking the entire system
+		*/
                catch (KeyNotFoundException $knfe) {
                     echo "Key not found! -> " . $knfe->getMessage() . "<br>\n";
                     /* throw $knfe; */
