@@ -1,4 +1,8 @@
 #!/bin/bash
+# Program intended as cron-job for cleaning the database in a periodic interval
+#
+# Author: Henrik Austad <henrik.austad@uninett.no>
+#
 function usage
 {
     echo "Usage: $0 <config-file>"

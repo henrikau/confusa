@@ -1,6 +1,10 @@
 <?php
 require_once('person.php');
-
+/* Class KeyScript
+ * Class for modifying the create_cert script based on config-parameters and attributes from SimpleSAMLphp
+ *
+ * Author: Henrik Austad <henrik.austad@uninett.no>
+ */
 class KeyScript {
 	private $url;
 	private $person;

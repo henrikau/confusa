@@ -1,4 +1,10 @@
 #!/bin/bash
+# Not verified!
+#
+# Script for dumping the content of database to file
+#
+# Author: Henrik Austad <henrik.austad@uninett.no>
+
 if [ ! `whoami` == "root" ]; then
     echo "Should be root"
 fi
