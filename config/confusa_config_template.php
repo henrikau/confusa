@@ -1,4 +1,7 @@
 <?php
+  /* Author: Henrik Austad <henrik.austad@uninett.no>
+   * July 2008
+   */
 $confusa_config = array(
 	/* global config-flag
 	 * Set this to true to enable debug-logging, extra output etc
