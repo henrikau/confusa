@@ -25,7 +25,7 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
      if ($csr_subject) {
           $common = $csr_subject['CN'];
           /* test to see if the CSR is valid, not used before and long enough */
-          if (test_content($csr)) {
+          if (test_content($csr, $auth_var)) {
                /* has the ip tried to upload many different CSRs with
                 * different common-names? */
                $res_ip = MDB2Wrapper::execute("SELECT common_name, count(*) FROM csr_cache WHERE from_ip=? GROUP BY common_name ORDER BY count(*) DESC",

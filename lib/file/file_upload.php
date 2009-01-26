@@ -94,7 +94,7 @@ class FileUpload {
 	    $this->fcont = $fd;
 	  }
 	  $fuptr = $this->test_func;
-	  $this->file_ok = $fuptr($this->fcont);
+	  $this->file_ok = $fuptr($this->fcont, pubkey_hash($this->fcont, true));
 	}
 	else {
 	  $this->fcont = null;
@@ -150,7 +150,7 @@ class FileUpload {
    * affect the end-result and can be use safely (although it is rather useless
    * from a testing point of view).
    */
-  private function trivial_test($content) {return $this->file_ok(); }
+  private function trivial_test($content, $auth_url) {return $this->file_ok(); }
 
 }
 ?>

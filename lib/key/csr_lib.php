@@ -19,7 +19,7 @@ include_once('logger.php');
  * - that the CSR has not been uploaded before
  * - that the public-key in the CSR does not belong to a previous
  */
-function test_content($content)
+function test_content($content, $auth_url)
 {
   global $person;
   $testres = true;
@@ -30,7 +30,8 @@ function test_content($content)
   /* test start and ending of certificate */
   if (strcmp("-----BEGIN CERTIFICATE REQUEST-----", $start)!==0 &&
       strcmp("-----END CERTIFICATE REQUEST-----", $end) !== 0) {
-       $testres = false;
+	  echo "malformed CSR. Please upload a proper CSR to the system <BR>\n";
+       return false;
   }
 
   
@@ -38,10 +39,15 @@ function test_content($content)
   $length = Config::get_config('key_length');
   if (csr_pubkey_length($content) < $length) {
        echo "uploaded key is not long enough. Please download a proper keyscript and try again<BR>\n";
-       $testres = false;
+       return false;
   }
 
-
+  /* test authenticity of auth_url */
+  $hash = pubkey_hash($csr, true);
+  if (substring($hash, 0, Config::get_config('auth_length')) != $auth_url) {
+	  echo "Uploaded key and auth_url does not match. Please download a new keyscript and try again<BR>\n";
+	  return false;
+  }
   /* test to see if the public-key of the CSR has been part of a previously
    * signed certificate */
   $testres = !known_pubkey($content);
