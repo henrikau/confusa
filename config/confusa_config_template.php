@@ -123,7 +123,6 @@ $confusa_config = array(
 	'sys_from_address'		=> 'your@system.contact.addr',
 
 
-	/* CSR upload limits. This is not strictly enforced yet */
 	'remote_retries'		=> 10, /* the number of CSRs a user can
 						* upload before he/she must log
 						* in and clean up.  */
