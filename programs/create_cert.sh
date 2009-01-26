@@ -234,8 +234,8 @@ function push_csr {
     base_csr=`cat $csr_name | openssl base64`
     base_csr=`echo $base_csr | sed s/\ //g`
 
-    # create auth-url
-    auth_url=`date +%s | sha1sum | cut -d ' ' -f 1`
+    # create auth-url based on the hash of the public-key
+    auth_url=`openssl req  -in $csr_name -noout -pubkey | sha1sum | cut -d ' ' -f 1`
     auth_token=${auth_url:0:$auth_length}
     url="$upload_url?$auth_var=$auth_token&$csr_var=$base_csr"
 
