@@ -77,6 +77,10 @@ anything else.
    This passes the attributes through the file names.php (which you
    hopefully symlinked in prevously).
 
+   Copy the path to names.php into the attribute-altar switch in 
+   simplesamlphp/metadata/saml20-sp-hosted.php to trigger dynamic 
+   mapping of attributes and countries.
+
 6) Install and configure Confusa:
 
 a) Put Confusa in a directory, say /var/www/confusa/
