@@ -10,12 +10,16 @@ require_once('csr_lib.php');
    * This page shall receive a base64-encoded get-request from a client, decode
    * to retrieve the CSR and store in db.
    *
-   * it will sanitize the csr via 3 steps:
-   *    1) Get the subject from the CSR via openssl (this implies that
-   *       openssl_csr_get_subject() is adequately foolproof.
-   *    2) if the pubkey is known. This is done via openssl (get the public-key,
-   *       calculate the hash, compare that to the database.
-   *    3) Test the content (if it start and ends with proper syntax). See 
+   * The uploaded CSR must meet the following criteria:
+   *	1) Properly formed CSR
+   *	2) Keylength of proper length (set by confusa_config.php::key_length)
+   *	3) Auth_url derived from the public key (subset of sha1sum of pubkey,
+   *	   length set by confusa_config.php::auth_length)
+   *	4) The fields of the DN must match *exactly* the appropriate namespace
+   *	5) The public key from the CSR does not belong to a previously signed certificate
+   *
+   *	A lot of this (the test of the actual CSR) is done by csr_lib. The test
+   *	to see if the key has been signed before, is done locally in this file.
    */
 $ip=$_SERVER['REMOTE_ADDR'];
 if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
@@ -24,10 +28,14 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
      $csr_subject=openssl_csr_get_subject($csr);
      if ($csr_subject) {
           $common = $csr_subject['CN'];
-          /* test to see if the CSR is valid, not used before and long enough */
+          /*
+	   * test to see if the CSR is valid, properly formed
+	   */
           if (test_content($csr, $auth_var)) {
 
-		  /* test to see if the CSR already exists in the database */
+		  /*
+		   * test to see if the CSR already exists in the database
+		   */
 		  $res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE csr=?",
 					      array('text'),
 					      array($csr));
@@ -53,30 +61,36 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
 			  exit(1);
 		  }
 
+		  /*
+		   * Abusive remote tests:
+		   */
+
 		  /* has the ip tried to upload many different CSRs with
                 * different common-names? */
-               $res_ip = MDB2Wrapper::execute("SELECT common_name, count(*) FROM csr_cache WHERE from_ip=? GROUP BY common_name ORDER BY count(*) DESC",
-                                              array('text'),
-                                              array($ip));
-               if (count($res_ip) > Config::get_config('remote_ips')) {
-                    echo "Your IP is temporarily disabled due to CSR-upload overflow. Please try again later<BR>\n";
-                    $msg = "Detected abusive client from $ip -> Has " . $res_ip[0]['count(*)'] . " entries ";
-                    $msg .= "with common_name " . $res_ip[0]['common_name'] . " -> Dropping content.<BR>\n";
-                    Logger::log_event(LOG_WARNING, $msg);
-                    exit(1);
-               }
-               $counter = 0;
-               while($counter < count($res_ip)) {
-                    $content = $res_ip[$counter];
-                    $counter++;
-                    if ($content['count(*)'] > Config::get_config('remote_ips')) {
-                         echo "Your IP is temporarily disabled due to excessive CSR-upload <BR>\n";
-                         echo "You must approve the pending CSRs first, or wait for them to time out. <BR>\n";
-                         echo "The timeout normally takes 1 day<BR>\n";
-                         Logger::log_event(LOG_WARNING, "Blocked user from entering excessive amount of CSRs. User: " . $content['common_name'] . " from IP: " . $_SERVER['REMOTE_ADDR']);
-                         exit(1);
-                    }
-               }
+		  $ip = $_SERVER['REMOTE_ADDR'];
+		  $res_ip = MDB2Wrapper::execute("SELECT count(*) FROM csr_cache WHERE from_ip=?",
+						 array('text'),
+						 array($ip));
+		  if ((int)$res_ip[0]['count(*)'] > (int)Config::get_config('remote_ips')) {
+			  echo "Your IP is temporarily disabled due to CSR-upload overflow. Please try again later<BR>\n";
+			  $msg = "Detected abusive client from $ip -> Has " . $res_ip[0]['count(*)'] . " entries ";
+			  $msg .= "with common_name " . $res_ip[0]['common_name'] . " -> Dropping content.<BR>\n";
+			  Logger::log_event(LOG_WARNING, $msg);
+			  exit(1);
+		  }
+
+		  /* Has the system received several CSRs from one (or many)
+		   * IPs with the same common_name ?*/
+		  $res_cn = MDB2Wrapper::execute("SELECT count(*) FROM csr_cache WHERE common_name=?",
+						 array('text'),
+						 array($common));
+		  if ((int)$res_cn[0]['count(*)'] > Config::get_config('remote_ips')) {
+			  echo "NOK. Too many CSRs reside in the cache with mathing common_name<BR>\n";
+			  Logger::log_event(LOG_WARNING, "Blocked user from entering excessive amount of CSRs. User: " . $content['common_name'] . " from IP: " . $_SERVER['REMOTE_ADDR']);
+			  exit(1);
+		  }
+
+		  /* No error found, CSR looks valid */
                MDB2Wrapper::update("INSERT INTO csr_cache (csr, uploaded_date, from_ip, common_name, auth_key) VALUES(?, current_timestamp(), ?, ?, ?)",
                                    array('text', 'text', 'text', 'text'),
                                    array($csr, $ip, $common, $auth_var));
