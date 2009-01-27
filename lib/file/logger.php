@@ -46,18 +46,29 @@ class Logger {
      static function log_event($pri, $message)
           {
                define_syslog_variables();
+  
 		/* add this after the pri-test, as we don't want to  */
 		if ($pri <= Config::get_config('syslog_min')) {
-                     openlog("Confusa: ", LOG_PID | LOG_PERROR, LOG_LOCAL0);
+			openlog("Confusa: ", LOG_PID | LOG_PERROR, LOG_LOCAL0);
                      syslog($pri, $message);
                      closelog();
 		}
+
+	       /* open local logfile */
+	       $fd = @fopen(Config::get_config('default_log'), 'a');
+	       if (!$fd) {
+		       openlog("Confusa: ", LOG_PID | LOG_PERROR, LOG_LOCAL0);
+		       syslog(LOG_EMERG, "Confusa: cannot open secondary logfile (" . Config::get_config('default_log') . ")");
+		       closelog();
+	       }
 		/* log to normal file if within level. highest level is 0, increasing number
 		 * is lower pri */
 		if ($pri > Config::get_config('loglevel_min')) {
 			echo "pri lower than loglevel_min <BR>\n";
+			$fclose($fd);
 			return;
 		}
+
 		switch($pri) {
 		case LOG_DEBUG:
 			$header .= "debug:";
@@ -90,17 +101,14 @@ class Logger {
 			break;
 		}
   
-  
-		/* enter into local logfile */
-		$fd = fopen(Config::get_config('default_log'), 'a');
-		/* assemble line */
+		/* assemble line and enter into local log */
 		$log_line = Logger::get_timestamp() . " (Confusa) " . $header . " " . $message . "\n";
                 if (Config::get_config('debug'))
                      echo "Logline: " . $log_line . "<br>\n";
-		fputs($fd, $log_line);
-		/* echo $log_line . "<BR>\n"; */
-		@fclose($fd);
-  
+		if ($fd) {
+			fputs($fd, $log_line);
+			@fclose($fd);
+		}
 	}
 
 	/* create a timestamp to put in the normal log */
