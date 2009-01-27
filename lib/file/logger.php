@@ -17,7 +17,7 @@
   /* get name of default log-file (in addition to syslog)
    * require_once(dirname(WEB_DIR).'/www/_include.php'); */
 require_once('config.php');
-
+require_once('debug.php');
 class Logger {
 /* log_event
  *
@@ -95,8 +95,7 @@ class Logger {
 		$fd = fopen(Config::get_config('default_log'), 'a');
 		/* assemble line */
 		$log_line = Logger::get_timestamp() . " (Confusa) " . $header . " " . $message . "\n";
-                if (Config::get_config('debug'))
-                     echo "Logline: " . $log_line . "<br>\n";
+		Debug::dump($log_line);
 		fputs($fd, $log_line);
 		/* echo $log_line . "<BR>\n"; */
 		@fclose($fd);
