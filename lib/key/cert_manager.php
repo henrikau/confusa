@@ -136,8 +136,8 @@ class CertManager
                     $this->valid_csr = false;
                }
                else if (!($subject['C'] === $this->person->get_country() &&
-                          $subject['O'] === "Nordugrid" &&
-                          $subject['OU'] === "Nordugrid" &&
+                          $subject['O'] === $this->person->get_orgname() &&
+                          $subject['OU'] === $this->person->get_orgname() &&
                           $subject['CN'] === $this->person->get_common_name())) {
                     echo "Error in subject! <BR/>\n";
                     echo "The fields in your CSR was not set properly.<BR>\n";

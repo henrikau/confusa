@@ -21,6 +21,9 @@ function attributealter_names(&$attributes, $spentityid = null, $idpentityid = n
                          );
 
      $attributes['country'] = array($known_idps[$idpentityid]);
+     $attributes['orgname'] = array('Nordugrid');
+     $attributes['orgunitname'] = array('Nordugrid');
+
      if (!$attributes['country'][0]) {
           /* did not find in predefined array. Try to recover gracefully */
           echo __FILE__.":".__LINE__." Did not find $idpentityid in \$known_idps<BR>\n";

@@ -28,6 +28,8 @@ class Person{
     private $email;
     private $db_id;
     private $country;
+    private $orgname;
+    private $orgunitname;
 
     /* get variables for:
      * Region (i.e. Sor Trondelag)
@@ -53,24 +55,17 @@ class Person{
 
     function __tostring() {
         $var = "<table clas=\"small\">";
-
-        if (isset($this->given_name))
-             $var .= "<tr><td><b>Name:</b></td><td>" . $this->given_name . "</td></tr>\n";
-
-        if (isset($this->common_name))
-             $var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->common_name . "</td></tr>\n";
-
-        if (isset($this->mobile))
-             $var .= "<tr><td><b>mobile</b>:</td><td>" . $this->mobile . "</td></tr>\n";
-
-        if (isset($this->email))
-             $var .= "<tr><td><b>email:</b></td><td>" . $this->email . "</td></tr>\n";
-        if (isset($this->country))
-             $var .= "<tr><td><b>Country:</b></td><td>" . $this->country . "</td></tr>\n";
-
+	$var .= "<tr><td><b>Name:</b></td><td>" . $this->get_name() . "</td></tr>\n";
+	$var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->get_common_name . "</td></tr>\n";
+	$var .= "<tr><td><b>mobile</b>:</td><td>" . $this->get_mobile() . "</td></tr>\n";
+	$var .= "<tr><td><b>email:</b></td><td>" . $this->get_email() . "</td></tr>\n";
+	$var .= "<tr><td><b>Country:</b></td><td>" . $this->get_country() . "</td></tr>\n";
+	$var .= "<tr><td><b>OrganizationalName:</b></td><td>" . $this->get_orgname() . "</td></tr>\n";
+	$var .= "<tr><td><b>OrganizationalUnitName:</b></td><td>" . $this->get_orgunitname() . "</td></tr>\n";
         $var .= "</table><br>";
         return $var;
-        }
+    }
+
     public function is_fed_auth() {
         return $this->fed_auth;
         }
@@ -123,6 +118,19 @@ class Person{
             $this->email = htmlentities($email);
         }
     public function get_email() { return $this->email; }
+
+
+    public function set_orgname($orgname) {
+	    if (isset($orgname))
+		    $this->orgname = $orgname;
+    }
+    public function get_orgname() { return $this->orgname; }
+
+    public function set_orgunitname($orgunitname) {
+	    if (isset($orgunitname))
+		    $this->orgunitname = $orgunitname;
+    }
+    public function get_orgunitname() { return $this->orgunitname; }
 
     public function get_keyholder() { return $this->keyholder; }
 
