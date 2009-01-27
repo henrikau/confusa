@@ -26,7 +26,34 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
           $common = $csr_subject['CN'];
           /* test to see if the CSR is valid, not used before and long enough */
           if (test_content($csr, $auth_var)) {
-               /* has the ip tried to upload many different CSRs with
+
+		  /* test to see if the CSR already exists in the database */
+		  $res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE csr=?",
+					      array('text'),
+					      array($csr));
+		  if (count($res) > 0) {
+			  foreach ($res as $key => $value) {
+				  if ($value['from_ip'] == $_SERVER['REMOTE_ADDR']) {
+					  echo "NOK, previously updated CSR. Create a new keypair, and try again.<BR>\n";
+					  exit(1);
+				  }
+				  else {
+					  echo "NOK, previously updated CSR. Create a new keypair, and try again.<BR>\n";
+					  $msg  = "test_content() identical CSR from several remote hosts (current: " . $_SERVER['REMOTE_ADDR'] . ") ";
+					  $msg .= "(previous: " . $value['from_ip'] . ")";
+					  Logger::log_event(LOG_WARNING, $msg);
+					  exit(1);
+				  }
+			  }
+			  Logger::log_event(LOG_WARNING, "test_content() got " . count($res) . " matches on an incoming CSR from " . $_SERVER['REMOTE_ADDR']);
+			  $testres = false;
+		  }
+		  else if (count($res) < 0) {
+			  echo "some undefined error<BR>\n";
+			  exit(1);
+		  }
+
+		  /* has the ip tried to upload many different CSRs with
                 * different common-names? */
                $res_ip = MDB2Wrapper::execute("SELECT common_name, count(*) FROM csr_cache WHERE from_ip=? GROUP BY common_name ORDER BY count(*) DESC",
                                               array('text'),
@@ -54,6 +81,7 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
                                    array('text', 'text', 'text', 'text'),
                                    array($csr, $ip, $common, $auth_var));
                Logger::log_event(LOG_INFO, "Inserted new CSR from $ip ($common) with auth_key $auth_var and hash " . pubkey_hash($csr, true));
+	       echo "OK<BR>\n";
           }
      }
      else {
