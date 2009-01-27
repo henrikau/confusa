@@ -52,7 +52,9 @@ $confusa_config = array(
         'ca_host'               => 'localhost',
         'ca_port'               => '9443',
 	'ca_cert_name'		=> '',
-	'ca_cert_path'		=> 'certs/',
+	'ca_cert_path'		=> 'cert_handle/certs/',
+	'ca_key_name'		=> '',
+	'ca_key_path'		=> 'cert_handle/priv/',
 
 	/* OU and O for the certificate */
 	'cert_o'		=> '',

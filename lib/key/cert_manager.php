@@ -59,8 +59,10 @@ class CertManager
   function sign_key($auth_key)
     {
          if ($this->verify_csr()) {
-              $cert_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/cert/sigma_cert.pem';
-              $ca_priv_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/priv/sigma_priv_key.pem';
+		 $cert_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
+		 echo $cert_path . "<br>\n";
+		 $ca_priv_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_key_path') . Config::get_config('ca_key_name');
+
 
               /* Standalone mode, use php and local certificate/key to
              * sign for user */
