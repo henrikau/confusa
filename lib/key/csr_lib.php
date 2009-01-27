@@ -33,7 +33,6 @@ function test_content($content, $auth_url)
 	  echo "malformed CSR. Please upload a proper CSR to the system <BR>\n";
        return false;
   }
-
   
   /* test length of pubkey */
   $length = Config::get_config('key_length');
@@ -43,8 +42,8 @@ function test_content($content, $auth_url)
   }
 
   /* test authenticity of auth_url */
-  $hash = pubkey_hash($csr, true);
-  if (substring($hash, 0, Config::get_config('auth_length')) != $auth_url) {
+  $hash = pubkey_hash($content, true);
+  if (substr($hash, 0, (int)Config::get_config('auth_length')) != $auth_url) {
 	  echo "Uploaded key and auth_url does not match. Please download a new keyscript and try again<BR>\n";
 	  return false;
   }
@@ -56,7 +55,6 @@ function test_content($content, $auth_url)
   $res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE csr=?",
                               array('text'),
                               array($content));
-  echo "count of res: " . count($res) . "<br>\n";
   if (count($res) > 0) {
        foreach ($res as $key => $value) {
             if ($value['from_ip'] == $_SERVER['REMOTE_ADDR']) {
@@ -71,6 +69,13 @@ function test_content($content, $auth_url)
        }
        Logger::log_event(LOG_WARNING, "test_content() got " . count($res) . " matches on an incoming CSR from " . $_SERVER['REMOTE_ADDR']);
        $testres = false;
+  }
+  else if (count($res) == 0) {
+	  echo "OK<BR>\n";
+  }
+  else {
+	  echo "some undefined error<BR>\n";
+	  $testres = false;
   }
   return $testres;
 }
