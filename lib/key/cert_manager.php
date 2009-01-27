@@ -82,7 +82,7 @@ class CertManager
                                       $_SERVER['REMOTE_ADDR']);
 
 		    /* add to database (the hash of the pubkey) */
-                    MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash) VALUES(?)",
+		    MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash, signed) VALUES(?, current_timestamp())",
                                         array('text'),
                                         array($this->pubkey_checksum));
 		    return true;
