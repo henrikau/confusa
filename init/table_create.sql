@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS pubkeys (
 --
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS user_crls (
-       owner varchar(128) PRIMARY KEY, --ePPN serves as primary key
+       owner varchar(128) PRIMARY KEY,
        cert_sn INT NOT NULL,
        valid_untill DATETIME NOT NULL
 ) type=InnoDB;
