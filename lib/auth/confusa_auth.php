@@ -101,8 +101,8 @@ function add_attributes($person)
 	     $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
 	     $person->set_email($attributes['mail'][0]);
 	     $person->set_country($attributes['country'][0]);
-	     $person->set_orgname($attributes['orgname'][0]);
-	     $person->set_orgunitname($attributes['orgunitname'][0]);
+	     $person->set_orgname(Config::get_config('cert_o'));
+	     $person->set_orgunitname(Config::get_config('cert_ou'));
 
 	     $person->fed_auth(true);
      }

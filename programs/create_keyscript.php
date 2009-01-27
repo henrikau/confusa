@@ -35,9 +35,9 @@ class KeyScript {
 //  		$script = preg_replace_callback('/(\w+)(=")(")/', 'config_match', $script);
 
  		/* set variables for the key and CSR/cert */
-		$script = str_replace('country=""'	,'country="/C='	.$this->country . '"'			, $script);
-		$script = str_replace('orgname=""'	,'orgname="/O='	.Config::get_config('cert_o') . '"'	, $script);
-		$script = str_replace('orgunitname=""'	,'orgunit="/OU='.Config::get_config('cert_ou'). '"'	, $script);
+		$script = str_replace('country=""'	,'country="/C='	.$this->person->get_country() . '"'			, $script);
+		$script = str_replace('orgname=""'	,'orgname="/O='	.$this->person->get_orgname() . '"'	, $script);
+		$script = str_replace('orgunitname=""'	,'orgunit="/OU='.$this->person->get_orgunitname(). '"'	, $script);
 		$script = str_replace('common=""'	,'common="/CN='	.$this->person->get_common_name() . '"'	, $script);
 		$script = str_replace('key_length='	,"key_length="	.Config::get_config('key_length')	, $script);
 

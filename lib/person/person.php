@@ -56,7 +56,7 @@ class Person{
     function __tostring() {
         $var = "<table clas=\"small\">";
 	$var .= "<tr><td><b>Name:</b></td><td>" . $this->get_name() . "</td></tr>\n";
-	$var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->get_common_name . "</td></tr>\n";
+	$var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->get_common_name() . "</td></tr>\n";
 	$var .= "<tr><td><b>mobile</b>:</td><td>" . $this->get_mobile() . "</td></tr>\n";
 	$var .= "<tr><td><b>email:</b></td><td>" . $this->get_email() . "</td></tr>\n";
 	$var .= "<tr><td><b>Country:</b></td><td>" . $this->get_country() . "</td></tr>\n";
