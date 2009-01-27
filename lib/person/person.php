@@ -9,7 +9,7 @@
  * During the authentication-phase, the user will
  * *be* authenticated, the user will never authenticate on it's own.
  *
- * When creating a certificate, the attributes will be retrieved *from* the
+n * When creating a certificate, the attributes will be retrieved *from* the
  * user, and the finished certificate will be handed *to* the user.
  *
  * Finally, when it's time to ship off the certificate, the system will retrieve
@@ -57,6 +57,7 @@ class Person{
         $var = "<table clas=\"small\">";
 	$var .= "<tr><td><b>Name:</b></td><td>" . $this->get_name() . "</td></tr>\n";
 	$var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->get_common_name() . "</td></tr>\n";
+	$var .= "<tr><td><B>CommonName in DN</b></td><td>" . $this->get_valid_cn() . "</td></tr>\n";
 	$var .= "<tr><td><b>mobile</b>:</td><td>" . $this->get_mobile() . "</td></tr>\n";
 	$var .= "<tr><td><b>email:</b></td><td>" . $this->get_email() . "</td></tr>\n";
 	$var .= "<tr><td><b>Country:</b></td><td>" . $this->get_country() . "</td></tr>\n";
@@ -103,9 +104,30 @@ class Person{
     public function get_mobile() { return $this->mobile; }
 
     public function set_name($given_name) {
-         if (isset($given_name)) $this->given_name = htmlentities($given_name);
+	    if (isset($given_name)) {
+		    $this->given_name = trim(htmlentities($given_name));
+				
+	    }
         }
+
     public function get_name() { return $this->given_name; }
+
+    /* "Safe" function
+     *
+     * THis returns a 'safe representation' of the person's name.
+     * As a user's name can contain different special characters, whitespace and
+     * other nonsense, we remove it here, sothat elements that require *very*
+     * sanitized input, can call this instead of the original get_name()
+     */
+    public function get_safe_name() {
+	    /* remove whitespace between names. This should also be used to
+	     * strip other characters once we discover the problematic ones.
+	     */
+	    $tmp_name = preg_replace('/(\w*)(\ +)(\w)/',
+					     '\1\3', $this->given_name);
+
+	    return $tmp_name;
+    }
 
     public function set_common_name($cn) {
         if (isset($cn)) 
@@ -113,6 +135,9 @@ class Person{
         }
     public function get_common_name() { return $this->common_name; }
 
+    public function get_valid_cn() {
+	    return $this->get_safe_name() . "_" . $this->get_common_name();
+    }
     public function set_email($email) {
         if (isset($email)) 
             $this->email = htmlentities($email);

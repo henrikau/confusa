@@ -75,9 +75,9 @@ class CertManager
 
                     MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) VALUES(?, ?, ?, addtime(current_timestamp(), ?))",
                                         array('text', 'text', 'text', 'text'),
-                                        array($this->user_cert, $auth_key, $this->person->get_common_name(), Config::get_config('cert_default_timeout')));
+                                        array($this->user_cert, $auth_key, $this->person->get_valid_cn(), Config::get_config('cert_default_timeout')));
 		    Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
-                                      $this->person->get_common_name().
+                                      $this->person->get_valid_cn().
                                       " Contacting us from ".
                                       $_SERVER['REMOTE_ADDR']);
 
@@ -101,7 +101,7 @@ class CertManager
               }
          }
          Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user ".
-                           $this->person->get_common_name().
+                           $this->person->get_valid_cn().
                            " from ip ".$_SERVER['REMOTE_ADDR']);
          return false;
     } /* end sign_key() */
@@ -139,8 +139,8 @@ class CertManager
                }
                else if (!($subject['C'] === $this->person->get_country() &&
                           $subject['O'] === $this->person->get_orgname() &&
-                          $subject['OU'] === $this->person->get_orgname() &&
-                          $subject['CN'] === $this->person->get_common_name())) {
+                          $subject['OU'] === $this->person->get_orgunitname() &&
+                          $subject['CN'] === $this->person->get_valid_cn())) {
                     echo "Error in subject! <BR/>\n";
                     echo "The fields in your CSR was not set properly.<BR>\n";
                     echo "To try again, please download a new version of the script, ";

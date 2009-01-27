@@ -120,7 +120,7 @@ function approve_csr($auth_token)
      global $person;
      $csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
                                      array('text', 'text'),
-                                     array($auth_token, $person->get_common_name()));
+                                     array($auth_token, $person->get_valid_cn()));
      if (count($csr_res) == 1) {
           $csr = $csr_res[0]['csr'];
           $cm = new CertManager($csr, $person);
@@ -131,7 +131,7 @@ function approve_csr($auth_token)
           else {
                MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
                                    array('text', 'text'),
-                                   array($auth_token, $person->get_common_name()));
+                                   array($auth_token, $person->get_valid_cn()));
           }
      }
      else {
@@ -157,7 +157,7 @@ function send_cert()
 
      $res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=?",
                                  array('integer', 'text'),
-                                 array($auth_key, $person->get_common_name()));
+                                 array($auth_key, $person->get_valid_cn()));
      if (count($res)==1) {
           if (isset($_GET['email_cert'])) {
                $mm = new MailManager($person,
@@ -188,7 +188,7 @@ function show_db_csr()
      global $person;
      $res = MDB2Wrapper::execute("SELECT uploaded_date, from_ip, common_name, auth_key FROM csr_cache WHERE common_name=? ORDER BY uploaded_date DESC",
                                  array('text'),
-                                 array($person->get_common_name()));
+                                 array($person->get_valid_cn()));
      echo "<B>Certificate Signing Requests (CSRs)</B><BR>\n";
      echo "<table class=\"small\">\n";
 
@@ -238,7 +238,7 @@ function show_db_cert()
      global $person;
      $res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=? AND valid_untill > current_timestamp()",
                                  array('text'),
-                                 array($person->get_common_name()));
+                                 array($person->get_valid_cn()));
      echo "<B>Certificates:</B><BR>\n";
      echo "<table class=\"small\">\n"; 
      if (count($res) > 0) {
@@ -279,7 +279,7 @@ function inspect_csr($auth_token) {
 	global $person;
         $res = MDB2Wrapper::execute("SELECT * FROM csr_cache WHERE auth_key=? AND common_name=?",
                                     array('text', 'text'),
-                                    array($auth_token, $person->get_common_name()));
+                                    array($auth_token, $person->get_valid_cn()));
         echo "count: " . count($res) . "<br>\n";
 	if(count($res) == 1) {
              $csr = $res[0]['csr'];
@@ -312,7 +312,7 @@ function inspect_cert($auth_key)
 	global $person;
         $res = mdb2wrapper::execute("select * from cert_cache where auth_key=? and cert_owner=?",
                                     array('text', 'text'),
-                                    array($auth_key, $person->get_common_name()));
+                                    array($auth_key, $person->get_valid_cn()));
 	if(count($res) == 1) {
              $csr_test = openssl_x509_read($res[0]['cert']);
              if (openssl_x509_export($csr_test, $text, false)) {
@@ -333,22 +333,22 @@ function delete_csr($auth_token) {
 	global $person;
         $res = mdb2wrapper::execute("select * from csr_cache where auth_key=? and common_name= ?",
                                     array('text', 'text'),
-                                    array($auth_token, $person->get_common_name()));
+                                    array($auth_token, $person->get_valid_cn()));
         $hits = count($res);
 	if ($hits== 1) {
              mdb2wrapper::update("delete from csr_cache where auth_key=? and common_name= ?",
                                  array('text', 'text'),
-                                 array($auth_token, $person->get_common_name()));
-             logger::log_event(LOG_NOTICE, "dropping csr with hash ".pubkey_hash($res[0]['csr'], true)." belonging to ".$person->get_common_name()." originating from ".$_SERVER['REMOTE_ADDR']."");
+                                 array($auth_token, $person->get_valid_cn()));
+             logger::log_event(LOG_NOTICE, "dropping csr with hash ".pubkey_hash($res[0]['csr'], true)." belonging to ".$person->get_valid_cn()." originating from ".$_SERVER['REMOTE_ADDR']."");
 	}
 	else {
 		if ($hits==0) {
 			echo "No matching CSR found.<BR>\n";
-			Logger::log_event(LOG_NOTICE, "Could not delete given CSR from ip ".$_SERVER['REMOTE_ADDR'] . " : " . $person->get_common_name() . " Reason: not found");
+			Logger::log_event(LOG_NOTICE, "Could not delete given CSR from ip ".$_SERVER['REMOTE_ADDR'] . " : " . $person->get_valid_cn() . " Reason: not found");
 		}
 		else {
 			echo "Too many hits (".$hits.") in database<BR>\n";
-			Logger::log_event(LOG_WARNING, "Error in deleting CSR, got several matches on query (".$hits.") with id ".$loc_id."(" . $person->get_common_name() .") Ran query " . $update);
+			Logger::log_event(LOG_WARNING, "Error in deleting CSR, got several matches on query (".$hits.") with id ".$loc_id."(" . $person->get_valid_cn() .") Ran query " . $update);
 		}
 	}
 } /* end delete_csr() */
@@ -362,13 +362,13 @@ function delete_cert($auth_key)
 	global $person;
         $res = MDB2Wrapper::execute("SELECT * FROM cert_cache WHERE auth_key=? AND cert_owner=?",
                                     array('text', 'text'),
-                                    array($auth_key, $person->get_common_name()));
+                                    array($auth_key, $person->get_valid_cn()));
 	$hits=count($res);
 	if ($hits== 1) {
              MDB2Wrapper::update("DELETE FROM cert_cache WHERE auth_key=? AND cert_owner=?",
                                  array('text', 'text'),
-                                 array($auth_key, $person->get_common_name()));
-             Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$auth_key." belonging to ".$person->get_common_name());
+                                 array($auth_key, $person->get_valid_cn()));
+             Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$auth_key." belonging to ".$person->get_valid_cn());
 	}
 	else {
 		if ($hits==0) {
