@@ -49,7 +49,7 @@ class Logger {
 		/* add this after the pri-test, as we don't want to  */
 		if ($pri <= Config::get_config('syslog_min')) {
                      openlog("Confusa: ", LOG_PID | LOG_PERROR, LOG_LOCAL0);
-                     syslog($pri, $message);
+                     syslog((int)$pri, $message);
                      closelog();
 		}
 		/* log to normal file if within level. highest level is 0, increasing number
