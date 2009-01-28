@@ -120,11 +120,9 @@ class Person{
      * sanitized input, can call this instead of the original get_name()
      */
     public function get_safe_name() {
-	    /* remove whitespace between names. This should also be used to
-	     * strip other characters once we discover the problematic ones.
-	     */
-	    $tmp_name = preg_replace('/(\w*)(\ +)(\w)/',
-					     '\1\3', $this->given_name);
+	    /* remove non-printable characters, or, only allow printable characters */
+	    $tmp_name = $this->given_name;
+	    $tmp_name = preg_replace("/[^a-z \d]/i", "", $tmp_name);
 
 	    return $tmp_name;
     }
@@ -136,7 +134,7 @@ class Person{
     public function get_common_name() { return $this->common_name; }
 
     public function get_valid_cn() {
-	    return $this->get_safe_name() . "_" . $this->get_common_name();
+	    return $this->get_safe_name() . " " . $this->get_common_name();
     }
     public function set_email($email) {
         if (isset($email)) 
