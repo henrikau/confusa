@@ -59,9 +59,6 @@ class Framework {
 	$uname = "anonymous";
 	if($this->person->is_auth())
 		$uname = $this->person->get_valid_cn();
-	$logstring  = "displaying " . $this->f_content . " to user " . $uname;
-	$logstring .= " connecting from " . $_SERVER['REMOTE_ADDR'];
-	Logger::log_event(LOG_INFO, $logstring);
         return $this->person;
     }
 
