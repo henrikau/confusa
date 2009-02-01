@@ -264,7 +264,10 @@ function get_cert {
     else
 	    auth_token=$1
     fi
+    # wrap the common_name in base64 as the name can contain special characters like space,
+    # which will break wget in interesting ways
     uname=`echo $common | cut -d '=' -f 2`
+    uname=`echo -ne $uname | openssl base64`
 
     # create complete download url and download the certificate
     url="$download_url?$auth_var=$auth_token&common_name=$uname"

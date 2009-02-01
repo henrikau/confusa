@@ -98,7 +98,7 @@ CREATE TABLE cert_cache (
 	cert TEXT NOT NULL,
 
 	-- the auth key for remote download of script
-	auth_key varchar(64) NOT NULL,
+	auth_key char(64) NOT NULL,
 	cert_owner varchar(64) NOT NULL,
 	valid_untill DATETIME NOT NULL
 ) type=InnoDB;
@@ -132,6 +132,9 @@ CREATE TABLE IF NOT EXISTS pubkeys (
        -- sothat we can ensure that the same key isn't signed twice (or more)
        pubkey_hash char(40) PRIMARY KEY,
 
+       -- The time when the certificate was first signed.
+       signed DATETIME NOT NULL,
+
        -- the number of times the key has been uploaded. If this number gets very large,
        -- it should be a cause for concern (i.e. another openssl weakness)
        uploaded_nr int DEFAULT 1
@@ -147,7 +150,7 @@ CREATE TABLE IF NOT EXISTS pubkeys (
 --
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS user_crls (
-       owner varchar(128) PRIMARY KEY, --ePPN serves as primary key
+       owner varchar(128) PRIMARY KEY,
        cert_sn INT NOT NULL,
        valid_untill DATETIME NOT NULL
 ) type=InnoDB;

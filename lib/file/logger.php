@@ -17,7 +17,7 @@
   /* get name of default log-file (in addition to syslog)
    * require_once(dirname(WEB_DIR).'/www/_include.php'); */
 require_once('config.php');
-
+require_once('debug.php');
 class Logger {
 /* log_event
  *
@@ -49,8 +49,8 @@ class Logger {
   
 		/* add this after the pri-test, as we don't want to  */
 		if ($pri <= Config::get_config('syslog_min')) {
-			openlog("Confusa: ", LOG_PID | LOG_PERROR, LOG_LOCAL0);
-                     syslog($pri, $message);
+                     openlog("Confusa: ", LOG_PID | LOG_PERROR, LOG_LOCAL0);
+                     syslog((int)$pri, $message);
                      closelog();
 		}
 
@@ -103,12 +103,10 @@ class Logger {
   
 		/* assemble line and enter into local log */
 		$log_line = Logger::get_timestamp() . " (Confusa) " . $header . " " . $message . "\n";
-                if (Config::get_config('debug'))
-                     echo "Logline: " . $log_line . "<br>\n";
-		if ($fd) {
-			fputs($fd, $log_line);
-			@fclose($fd);
-		}
+		Debug::dump($log_line);
+		fputs($fd, $log_line);
+		/* echo $log_line . "<BR>\n"; */
+		@fclose($fd);
 	}
 
 	/* create a timestamp to put in the normal log */

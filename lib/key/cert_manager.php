@@ -59,8 +59,10 @@ class CertManager
   function sign_key($auth_key)
     {
          if ($this->verify_csr()) {
-              $cert_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/cert/sigma_cert.pem';
-              $ca_priv_path = 'file://'.dirname(WEB_DIR) . '/cert_handle/priv/sigma_priv_key.pem';
+		 $cert_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
+		 echo $cert_path . "<br>\n";
+		 $ca_priv_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_key_path') . Config::get_config('ca_key_name');
+
 
               /* Standalone mode, use php and local certificate/key to
              * sign for user */
@@ -73,14 +75,14 @@ class CertManager
 
                     MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) VALUES(?, ?, ?, addtime(current_timestamp(), ?))",
                                         array('text', 'text', 'text', 'text'),
-                                        array($this->user_cert, $auth_key, $this->person->get_common_name(), Config::get_config('cert_default_timeout')));
+                                        array($this->user_cert, $auth_key, $this->person->get_valid_cn(), Config::get_config('cert_default_timeout')));
 		    Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
-                                      $this->person->get_common_name().
+                                      $this->person->get_valid_cn().
                                       " Contacting us from ".
                                       $_SERVER['REMOTE_ADDR']);
 
 		    /* add to database (the hash of the pubkey) */
-                    MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash) VALUES(?)",
+		    MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash, signed) VALUES(?, current_timestamp())",
                                         array('text'),
                                         array($this->pubkey_checksum));
 		    return true;
@@ -99,7 +101,7 @@ class CertManager
               }
          }
          Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user ".
-                           $this->person->get_common_name().
+                           $this->person->get_valid_cn().
                            " from ip ".$_SERVER['REMOTE_ADDR']);
          return false;
     } /* end sign_key() */
@@ -136,9 +138,9 @@ class CertManager
                     $this->valid_csr = false;
                }
                else if (!($subject['C'] === $this->person->get_country() &&
-                          $subject['O'] === "Nordugrid" &&
-                          $subject['OU'] === "Nordugrid" &&
-                          $subject['CN'] === $this->person->get_common_name())) {
+                          $subject['O'] === $this->person->get_orgname() &&
+                          $subject['OU'] === $this->person->get_orgunitname() &&
+                          $subject['CN'] === $this->person->get_valid_cn())) {
                     echo "Error in subject! <BR/>\n";
                     echo "The fields in your CSR was not set properly.<BR>\n";
                     echo "To try again, please download a new version of the script, ";

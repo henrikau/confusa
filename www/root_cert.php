@@ -1,7 +1,5 @@
 <?php
 include_once('framework.php');
-
-$cert_file = "certs/sigma_cert.pem";
 if (isset($_GET['send_file'])) {
      include_once('file_download.php');
      download_file(file_get_contents($cert_file), "sigma_cert.pem");
@@ -21,7 +19,7 @@ function root_cert($person)
 {
      echo "<P>\n";
      echo "This is the Certificate we use for signing the CSRs we receive.<br>\n";
-     echo "If you want the certificate, it's <A HREF=\"certs/sigma_cert.pem\">here</A><BR>\n";
+     echo "If you want the certificate, it's <A HREF=\"certs/" . Config::get_config('ca_cert_name') . "\">here</A><BR>\n";
      echo "</P>\n";
 
      echo "<P>\n";
@@ -35,7 +33,7 @@ function root_cert($person)
      echo "Alternatively, you can install it directly into your browser: ";
      echo "<A HREF=\"" . $_SERVER['HOST'] . $_SERVER['PHP_SELF'] . "?install_root\">here</A>\n";
   /* read and display the key in a nicely formatted way */
-  $content = file_get_contents("certs/sigma_cert.pem");
+     $content = file_get_contents('file://'.dirname(WEB_DIR) . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name'));
   openssl_x509_export($content, $tmp, false);
   echo "<PRE>\n";
   echo $tmp;

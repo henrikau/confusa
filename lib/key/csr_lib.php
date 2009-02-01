@@ -16,8 +16,8 @@ include_once('logger.php');
  * - common text-patterns
  * - that the key meets the required key-length
  * - that it is a normal CSR (previous point will fail if it is a 'bogus' CSR
- * - that the CSR has not been uploaded before
- * - that the public-key in the CSR does not belong to a previous
+ * - that the auth_url is derived from the supplied CSR
+ * - that the public-key in the CSR does not belong to a previously signed certificate
  */
 function test_content($content, $auth_url)
 {
@@ -33,46 +33,29 @@ function test_content($content, $auth_url)
 	  echo "malformed CSR. Please upload a proper CSR to the system <BR>\n";
        return false;
   }
-
   
-  /* test length of pubkey */
+  /*
+   * test length of pubkey
+   */
   $length = Config::get_config('key_length');
   if (csr_pubkey_length($content) < $length) {
        echo "uploaded key is not long enough. Please download a proper keyscript and try again<BR>\n";
        return false;
   }
 
-  /* test authenticity of auth_url */
-  $hash = pubkey_hash($csr, true);
-  if (substring($hash, 0, Config::get_config('auth_length')) != $auth_url) {
+  /*
+   * test authenticity of auth_url
+   */
+  $hash = pubkey_hash($content, true);
+  if (substr($hash, 0, (int)Config::get_config('auth_length')) != $auth_url) {
 	  echo "Uploaded key and auth_url does not match. Please download a new keyscript and try again<BR>\n";
 	  return false;
   }
-  /* test to see if the public-key of the CSR has been part of a previously
-   * signed certificate */
-  $testres = !known_pubkey($content);
-
-  /* test to see if the CSR already exists in the database */
-  $res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE csr=?",
-                              array('text'),
-                              array($content));
-  echo "count of res: " . count($res) . "<br>\n";
-  if (count($res) > 0) {
-       foreach ($res as $key => $value) {
-            if ($value['from_ip'] == $_SERVER['REMOTE_ADDR']) {
-                 echo "You have already uploaded this CSR to the server!<BR>\n";
-                 $testres = false;
-            }
-            else {
-                 echo "Someone else has uploaded this CSR to the server<BR>\n";
-                 echo "Your ip: " . $_SERVER['REMOTE_ADDR'] . " and previous address: " . $value['from_ip'] . "<BR>\n";
-                 $testres = false;
-            }
-       }
-       Logger::log_event(LOG_WARNING, "test_content() got " . count($res) . " matches on an incoming CSR from " . $_SERVER['REMOTE_ADDR']);
-       $testres = false;
-  }
-  return $testres;
+  /*
+   * test to see if the public-key of the CSR has been part of a previously
+   * signed certificate
+   */
+  return !known_pubkey($content);
 }
 
 

@@ -22,12 +22,16 @@ function poc($person)
 
           <dt><i> <A HREF="http://rnd.feide.no/content/cn">Full Name (cn)</A></i></dt>
           <dd>
-          The name is used mostly to "be polite". As several attributes can act as this value.
+		The MICS/SLCS-profile states that the CN in the DN must contain a name that can
+		be traced back to a specific user. In order to meet this criteria, as well as
+		having a unique CN, we use the full name concatenated with the ePPN.
           </dd>
 
           <dt><i><A HREF="http://rnd.feide.no/node/1045">mail</A></i></dt>
           <dd>
-          email-address. This is used to send confirmations, possibly the certificate itself.
+		email-address. This is used to send confirmations, possibly the certificate itself.<BR>
+		Furthermore, the MICS-profile requires the CA to send a notification to the user when a new
+		certificate has been issued.
           </dd>
           </dl>
           </P>

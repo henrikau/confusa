@@ -9,9 +9,9 @@ require_once('mdb2_wrapper.php');
  * common_name (the client should know this anyway */
 if (isset($_GET[Config::get_config('auth_var')]) && $_GET['common_name']) {
 	$authvar	= htmlentities($_GET[Config::get_config('auth_var')]);
-	$user		= htmlentities($_GET['common_name']);
+	$user		= base64_decode($_GET['common_name']);
 
-        $res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=? AND valid_untill > current_timestamp()",
+		$res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=? AND valid_untill > current_timestamp()",
                                     array('text', 'text'),
                                     array($authvar, $user));
 	if (count($res) == 1) {
@@ -20,6 +20,9 @@ if (isset($_GET[Config::get_config('auth_var')]) && $_GET['common_name']) {
         }
         else {
              echo "Error in getting certificate, got " . count($res) . " results\n";
+	     echo "<pre>\n";
+	     echo "SELECT cert FROM cert_cache WHERE auth_key='$authvar' AND cert_owner='$user' AND valid_untill > current_timestamp()";
+	     echo "</pre>\n";
         }
 }
 ?>

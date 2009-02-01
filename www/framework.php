@@ -51,15 +51,14 @@ class Framework {
     public function authenticate() {
         is_authenticated($this->person);
         if (!$this->person->is_auth()) {
-             if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-                  _assert_sso($this->person);
-             }
-             /* if login, trigger SAML-redirect first */
-             $uname = "anonymous";
-             if($this->person->is_auth())
-                  $uname = $this->person->get_common_name();
-             Logger::log_event(LOG_INFO, "displaying " . $this->f_content . " to user " . $uname . " connecting from " . $_SERVER['REMOTE_ADDR']);
+		/* if login, trigger SAML-redirect first */
+		if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
+			_assert_sso($this->person);
+		}
         }
+	$uname = "anonymous";
+	if($this->person->is_auth())
+		$uname = $this->person->get_valid_cn();
         return $this->person;
     }
 

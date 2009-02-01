@@ -16,6 +16,7 @@ require_once('SimpleSAML/XHTML/Template.php');
 
 require_once('person.php');
 require_once('logger.php');
+require_once('debug.php');
 require_once('mdb2_wrapper.php');
 /* global variable to check if the session has been started or not (avoid
  * multiple calls to simple_saml's session_start()
@@ -85,13 +86,8 @@ function add_attributes($person)
      $attributes = get_attributes();
 
      if (!isset($attributes['eduPersonPrincipalName'][0])) {
-          if (Config::get_config('debug')) {
-               echo __FILE__ .":".__LINE__." -> eduPersonPrincipalName not set!<BR>\n";
-               echo "<PRE>\n";
-               print_r($attributes);
-               echo "</PRE>\n";
-               echo "<BR>\n";
-          }
+	  $debug_string=__FILE__ .":".__LINE__." -> eduPersonPrincipalName not set!<BR>\n";
+	  Debug::dump($debug_string);
           $person->fed_auth(false);
      }
      else {
@@ -101,6 +97,9 @@ function add_attributes($person)
 	     $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
 	     $person->set_email($attributes['mail'][0]);
 	     $person->set_country($attributes['country'][0]);
+	     $person->set_orgname(Config::get_config('cert_o'));
+	     $person->set_orgunitname(Config::get_config('cert_ou'));
+
 	     $person->fed_auth(true);
      }
 } /* end add_attributes() */
