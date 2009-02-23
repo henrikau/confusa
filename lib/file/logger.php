@@ -60,6 +60,7 @@ class Logger {
 		       openlog("Confusa: ", LOG_PID | LOG_PERROR, LOG_LOCAL0);
 		       syslog(LOG_EMERG, "Confusa: cannot open secondary logfile (" . Config::get_config('default_log') . ")");
 		       closelog();
+		       return;
 	       }
 		/* log to normal file if within level. highest level is 0, increasing number
 		 * is lower pri */
