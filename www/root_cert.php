@@ -36,7 +36,13 @@ function root_cert($person)
      echo "</P>\n";
 
      echo "Alternatively, you can install it directly into your browser: ";
-     echo "<A HREF=\"" . $_SERVER['HOST'] . $_SERVER['PHP_SELF'] . "?install_root\">here</A>\n";
+     $url = "http";
+     if ($_SERVER['HTTPS'] === "on") {
+             $url .= "s";
+     }
+     $url .= "://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "?install_root";
+     echo "<A HREF=\"$url\">here</A>\n";
+
   /* read and display the key in a nicely formatted way */
      $content = file_get_contents($cert_file);
   openssl_x509_export($content, $tmp, false);
