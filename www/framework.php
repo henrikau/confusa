@@ -92,7 +92,7 @@ class Framework {
         {
         /* check to see if the user wants to log in, if so, start login-procedure */
             if (!$this->person->is_auth()) {
-                if ($this->force_login || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
+                if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
                     authenticate_user($this->person);
                     }
             else if (isset($_POST['new_pw']))
