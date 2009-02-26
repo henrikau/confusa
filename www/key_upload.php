@@ -85,7 +85,7 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
 						 array('text'),
 						 array($common));
 		  if ((int)$res_cn[0]['count(*)'] > Config::get_config('remote_ips')) {
-			  echo "NOK. Too many CSRs reside in the cache with mathing common_name<BR>\n";
+			  echo "NOK. Too many CSRs reside in the cache with matching common_name<BR>\n";
 			  Logger::log_event(LOG_WARNING, "Blocked user from entering excessive amount of CSRs. User: " . $content['common_name'] . " from IP: " . $_SERVER['REMOTE_ADDR']);
 			  exit(1);
 		  }
