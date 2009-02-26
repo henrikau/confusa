@@ -8,7 +8,7 @@ require_once('csr_lib.php');
   /* key_upload.php
    *
    * This page shall receive a base64-encoded get-request from a client, decode
-   * to retrieve the CSR and store in db.
+   * to retrieve the CSR and store in db if it conforms to a set of requirements.
    *
    * The uploaded CSR must meet the following criteria:
    *	1) Properly formed CSR
@@ -46,14 +46,18 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
 					  exit(1);
 				  }
 				  else {
-					  echo "NOK, previously updated CSR. Create a new keypair, and try again.<BR>\n";
-					  $msg  = "test_content() identical CSR from several remote hosts (current: " . $_SERVER['REMOTE_ADDR'] . ") ";
+					  echo "NOK<BR>\n";
+					  echo "previously updated CSR. Create a new keypair, and try again.<BR>\n";
+					  $msg  = "test_content() identical CSR from several remote hosts (current: ";
+					  $msg .= $_SERVER['REMOTE_ADDR'] . ") ";
 					  $msg .= "(previous: " . $value['from_ip'] . ")";
 					  Logger::log_event(LOG_WARNING, $msg);
 					  exit(1);
 				  }
 			  }
-			  Logger::log_event(LOG_WARNING, "test_content() got " . count($res) . " matches on an incoming CSR from " . $_SERVER['REMOTE_ADDR']);
+			  $logstring  = "test_content() got " . count($res);
+			  $logstring .= " matches on an incoming CSR from " . $_SERVER['REMOTE_ADDR'];
+			  Logger::log_event(LOG_WARNING, $logstring);
 			  $testres = false;
 		  }
 		  else if (count($res) < 0) {
@@ -86,15 +90,23 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
 						 array($common));
 		  if ((int)$res_cn[0]['count(*)'] > Config::get_config('remote_ips')) {
 			  echo "NOK. Too many CSRs reside in the cache with matching common_name<BR>\n";
-			  Logger::log_event(LOG_WARNING, "Blocked user from entering excessive amount of CSRs. User: " . $content['common_name'] . " from IP: " . $_SERVER['REMOTE_ADDR']);
+			  $str  = "Blocked user from entering excessive amount of CSRs. ";
+			  $str .= "User: " . $content['common_name'] . " ";
+			  $str .= "from IP: " . $_SERVER['REMOTE_ADDR'];
+			  Logger::log_event(LOG_WARNING, $str );
 			  exit(1);
 		  }
 
 		  /* No error found, CSR looks valid */
-               MDB2Wrapper::update("INSERT INTO csr_cache (csr, uploaded_date, from_ip, common_name, auth_key) VALUES(?, current_timestamp(), ?, ?, ?)",
-                                   array('text', 'text', 'text', 'text'),
-                                   array($csr, $ip, $common, $auth_var));
-               Logger::log_event(LOG_INFO, "Inserted new CSR from $ip ($common) with auth_key $auth_var and hash " . pubkey_hash($csr, true));
+		  $query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
+		  $query .= " common_name, auth_key)";
+		  $query .= " VALUES(?, current_timestamp(), ?, ?, ?)";
+		  MDB2Wrapper::update($query,
+				      array('text', 'text', 'text', 'text'),
+				      array($csr, $ip, $common, $auth_var));
+		  $logmsg  = "Inserted new CSR from $ip ($common) with auth_key $auth_var";
+		  $logmsg .= " and hash " . pubkey_hash($csr, true);
+               Logger::log_event(LOG_INFO, $logmsg);
 	       echo "OK<BR>\n";
           }
      }
