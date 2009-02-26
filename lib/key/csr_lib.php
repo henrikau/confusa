@@ -34,6 +34,12 @@ function test_content($content, $auth_url)
        return false;
   }
   
+  /* test type. IGTF will soon change the charter to *not* issue DSA
+   * certificates */
+  if (get_algorithm($content) !== "rsa") {
+	  echo "Will only accept RSA keys!<BR>\n";
+	  return false;
+  }
   /*
    * test length of pubkey
    */
@@ -57,12 +63,23 @@ function test_content($content, $auth_url)
    */
   return !known_pubkey($content);
 }
-
+function get_algorithm($csr)
+{
+	$cmd = "exec echo \"$csr\" | openssl req -noout -text |grep 'Public Key Algorithm'|sed 's/\(.*\:\)[\ ]*\([a-z]*\)Encryption/\\2/g'";
+	return exec($cmd);
+}
 
 /* known_pubkey()
  *
  * this function takes a valid CSR and scans the database to check if the
  * public-key has been uploaded before as part of (another) CSR.
+ *
+ * It will assume that the CSR belongs to a previously signed certificate, and
+ * unless it can prove that it is unique, it will claim that it has been seen
+ * before. This is due to the 'better safe-than-sorry' principle.
+ *
+ * Note: this will only test for pubkeys belonging to *signed* keys, not
+ * an identical CSR already present in the database.
  */
 function known_pubkey($csr)
 {
