@@ -92,8 +92,12 @@ function process_db_csr()
         if (isset($_GET['auth_token']))
              approve_csr(htmlentities($_GET['auth_token']));
 
-	else if (isset($_GET['inspect_csr'])) { 
+	else if (isset($_GET['inspect_csr'])) {
              inspect_csr(htmlentities($_GET['inspect_csr']));
+	}
+	else {
+		require_once('send_element.php');
+		set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
 	}
 }
 
@@ -106,6 +110,10 @@ function process_db_cert()
      }
      else if (isset($_GET['inspect_cert'])) {
           inspect_cert(htmlentities($_GET['inspect_cert']));
+     }
+     else {
+	     require_once('send_element.php');
+	     set_value($name='inspect_cert', 'index.php', 'Inspect CERT', 'GET');
      }
 } /* end process_db_cert */
 
