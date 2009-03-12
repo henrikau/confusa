@@ -95,7 +95,6 @@ function process_db_csr()
 	else if (isset($_GET['inspect_csr'])) { 
              inspect_csr(htmlentities($_GET['inspect_csr']));
 	}
-        show_db_csr();
 }
 
 function process_db_cert()
@@ -108,7 +107,6 @@ function process_db_cert()
      else if (isset($_GET['inspect_cert'])) {
           inspect_cert(htmlentities($_GET['inspect_cert']));
      }
-     show_db_cert();
 } /* end process_db_cert */
 
 /* approve_csr()
@@ -184,93 +182,6 @@ function send_cert()
  *
  * Retrieve all CSRs from the database and list them for the user.
  */
-function show_db_csr()
-{
-     global $person;
-     $res = MDB2Wrapper::execute("SELECT uploaded_date, from_ip, common_name, auth_key FROM csr_cache WHERE common_name=? ORDER BY uploaded_date DESC",
-                                 array('text'),
-                                 array($person->get_valid_cn()));
-     echo "<B>Certificate Signing Requests (CSRs)</B><BR>\n";
-     echo "<table class=\"small\">\n";
-
-     if (count($res) > 0) {
-          echo "<tr>";
-          echo "<th>AuthToken</th>";
-          echo "<th>Owner</th>";
-          /* echo "<th>Uploaded</th>"; */
-          /* echo "<th>From IP</th>"; */
-          echo "</tr>\n";
-          $counter = 0;
-          while($counter < count($res)) {
-               $row = $res[$counter];
-               $counter++;
-               echo "<tr>\n";
-               echo "<td>".$row['auth_key']."</td>\n";
-               echo "<td>".$row['common_name']."</td>\n";
-               /* echo "<td>".$row['uploaded_date']."</td>\n"; */
-               /* echo "<td>".$row['from_ip']."</td>\n"; */
-               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$row['auth_key']."\">Sign</A></TD>\n";
-              echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?inspect_csr=".$row['auth_key']."\">Inspect</A></TD>\n";
-               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$row['auth_key']."\">Delete</A></TD>\n";
-               echo "</tr>\n";
-          }
-     }
-     else {
-          echo "<tr><td>No CSRs in the database.<BR>Use create_cert.sh to create and upload new CSRs</td></tr>\n";
-     }
-
-     echo "</table>\n";
-     echo "<br>\n";
-     echo "To create and upload a new CSR, download a create_cert.sh script from the Tools-section and then, on your local machine:\n";
-     echo "<PRE>";
-     echo "chmod u+x create_cert.sh\n";
-     echo "./create_cert.sh -new\n";
-     echo "</PRE>";
-     echo "This will print an auth-url to stdout. Copy and paste this into your browser and follow the steps (you will probably be redirected for authentication) before it is signed";
-     echo "<BR><BR><BR>\n";
-}
-
-/* show_db_cert
- *
- * Retrieve certificates from the database and show them to the user
- */
-function show_db_cert() 
-{
-     global $person;
-     $res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=? AND valid_untill > current_timestamp()",
-                                 array('text'),
-                                 array($person->get_valid_cn()));
-     echo "<B>Certificates:</B><BR>\n";
-     echo "<table class=\"small\">\n"; 
-     if (count($res) > 0) {
-          echo "<tr><th>AuthToken</th><th>owner</th></tr>\n";
-          $counter = 0;
-          while($counter < count($res)) {
-               $row = $res[$counter];
-               $counter++;
-               echo "<tr>\n";
-               echo "<td>".$row['auth_key']."</td>\n";
-               echo "<td>".$row['cert_owner']."</td>\n";
-               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email cert</A></td>\n";
-               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download cert</A></td>\n";
-               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A></td>\n";
-               echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A></td>\n";
-               echo "</tr>\n";
-          }
-     }
-     else {
-          echo "<tr><td>No Certificates in the database<BR>Use create_cert.sh to create and upload a new CSR and use this webform to approve for signing.</td></tr>\n";
-     }
-     echo "</table>\n";
-     echo "<br>\n";
-     echo "To download the certificate with the script, use the following command at your local workstation:<BR>\n";
-     echo "<pre>./create_cert.sh -get ".htmlentities("<AuthToken>")."</pre>\n";
-     echo "create_cert.sh will remember the last used AuthToken. If the script fails, try to pass \n";
-     echo "the auth-token from the list above as a parameter to the script as showed above.<BR>\n";
-
-     echo "<BR><BR><BR>\n";
-} /* end show_db_cert() */
-
 /* inspect_csr
  *
  * Let the user view detailed information about a CSR (belonging to the user) to
