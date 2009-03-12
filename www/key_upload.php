@@ -105,7 +105,7 @@ if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
 				      array('text', 'text', 'text', 'text'),
 				      array($csr, $ip, $common, $auth_var));
 		  $logmsg  = __FILE__ . " Inserted new CSR from $ip ($common) with hash " . pubkey_hash($csr, true);
-               Logger::log_event(LOG_INFO, $logmsg);
+		  Logger::log_event(LOG_INFO, $logmsg);
 	       echo "OK<BR>\n";
           }
      }
