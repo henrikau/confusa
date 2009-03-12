@@ -5,7 +5,7 @@ function render_menu($person)
     /* always show the Frontpage-link (this page should always be
      * visible */
     if ($person->is_auth()) {
-        echo "<A HREF=\"index.php\">Start</A><BR><BR>\n";
+        echo "<A HREF=\"\">Start</A><BR><BR>\n";
         echo "<A HREF=\"tools.php\">Tools</A><BR><BR>\n";
 	echo "<BR>\n";
         echo feide_logout_link("logout.php", "Logout", $person) . "<BR><BR>\n";
