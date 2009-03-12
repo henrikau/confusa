@@ -43,7 +43,7 @@ $confusa_config = array(
          */
         'upload'                => '/key_upload.php',
         'download'              => '/key_download.php',
-	'approve'		=> '/key_handler.php',
+	'approve'		=> '/index.php',
 
         /* For CA handling */
         'standalone'            => True, /* true: no extra CA, use php to sign
