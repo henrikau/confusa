@@ -28,22 +28,16 @@ function keyhandle($pers)
   $person = $pers;
   if ($person->is_auth())
     {
-         /* process uploaded csr's (or show the upload form) */
-         process_file_csr();
-
-         /* look in the database and see if there's any waiting csrs
-          * (automatically uploaded). */
-         process_db_csr();
-
-         /* look in the database to see if there's any CSR awaiting retrieval
-          * */
-         process_db_cert();
+	    if (!process_db())
+		    /* process uploaded csr's (or show the upload form) */
+		    process_file_csr();
     }
   else {
 	  include('unclassified_intro.php');
 	  echo "You will have to <A HREF=\"index.php?start_login=yes\">login</A> to use this page<BR>\n";
   }
 } /* end keyhandle() */
+
 
 /* process_file_csr()
  *
@@ -76,6 +70,20 @@ function process_file_csr()
 	      include('upload_form.html');
       }
 }
+
+function process_db()
+{
+	/* look in the database and see if there's any waiting csrs
+	 * (automatically uploaded). */
+	$res = process_db_csr();
+
+	/* look in the database to see if there's any CSR awaiting retrieval
+	 * */
+	if (!$res)
+		$res = process_db_cert();
+
+	return $res;
+}
 /* process_db_csr()
  *
  * This function shall look at all the csr's in the csr_cache, and present the
@@ -86,35 +94,39 @@ function process_file_csr()
 function process_db_csr()
 {
 	global $person;
+	$res = false;
 	if (isset($_GET['delete_csr'])) {
-             delete_csr(htmlentities($_GET['delete_csr']));
+             $res = delete_csr(htmlentities($_GET['delete_csr']));
 	}
-        if (isset($_GET['auth_token']))
-             approve_csr(htmlentities($_GET['auth_token']));
-
+        if (isset($_GET['auth_token'])){
+             $res = approve_csr(htmlentities($_GET['auth_token']));
+	}
 	else if (isset($_GET['inspect_csr'])) {
-             inspect_csr(htmlentities($_GET['inspect_csr']));
+             $res = inspect_csr(htmlentities($_GET['inspect_csr']));
 	}
-	else {
+
+	if (!$res) {
 		require_once('send_element.php');
 		set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
 	}
+	return $res;
 }
 
 function process_db_cert()
 {
      global $person;
-
+     $res = false;
      if(isset($_GET['delete_cert'])) {
-          delete_cert(htmlentities($_GET['delete_cert']));
+          $res = delete_cert(htmlentities($_GET['delete_cert']));
      }
      else if (isset($_GET['inspect_cert'])) {
-          inspect_cert(htmlentities($_GET['inspect_cert']));
+          $res = inspect_cert(htmlentities($_GET['inspect_cert']));
      }
-     else {
+     if (!$res) {
 	     require_once('send_element.php');
 	     set_value($name='inspect_cert', 'index.php', 'Inspect CERT', 'GET');
      }
+     return $res;
 } /* end process_db_cert */
 
 /* approve_csr()
@@ -125,6 +137,7 @@ function process_db_cert()
 function approve_csr($auth_token)
 {
      global $person;
+     $status = false;
      $csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
                                      array('text', 'text'),
                                      array($auth_token, $person->get_valid_cn()));
@@ -139,6 +152,7 @@ function approve_csr($auth_token)
                MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
                                    array('text', 'text'),
                                    array($auth_token, $person->get_valid_cn()));
+	       $status = true;
           }
      }
      else {
@@ -197,10 +211,10 @@ function send_cert()
  */
 function inspect_csr($auth_token) {
 	global $person;
+	$status = false;
         $res = MDB2Wrapper::execute("SELECT * FROM csr_cache WHERE auth_key=? AND common_name=?",
                                     array('text', 'text'),
                                     array($auth_token, $person->get_valid_cn()));
-        echo "count: " . count($res) . "<br>\n";
 	if(count($res) == 1) {
              $csr = $res[0]['csr'];
              /* print subject */
@@ -218,7 +232,16 @@ function inspect_csr($auth_token) {
              echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$auth_token."\">Approve for signing</A> ]</td></tr>\n";
              echo "</table>\n";
              echo "<BR>\n";
+	     $status = true;
+	} else {
+		echo "<BR><FONT COLOR=\"RED\"><B>\n";
+		echo "Error with auth-token. Not found. Please verify that you have entered the correct auth-url and try again<BR>\n";
+		echo "If this problem persists, try to download a new version of the tool and try again<BR>\n";
+		echo "<BR>\n";
+		echo "</FONT></B>\n";
+
 	}
+	return $status;
 } /* end inspect_csr() */
 
 
@@ -230,6 +253,7 @@ function inspect_csr($auth_token) {
 function inspect_cert($auth_key)
 {
 	global $person;
+	$status = false;
         $res = mdb2wrapper::execute("select * from cert_cache where auth_key=? and cert_owner=?",
                                     array('text', 'text'),
                                     array($auth_key, $person->get_valid_cn()));
@@ -240,8 +264,10 @@ function inspect_cert($auth_key)
                   echo "[ <a href=\"".$_server['php_self']."?email_cert=$auth_key\">send by email</a> ]\n";
                   echo "[ <a href=\"".$_server['php_self']."?file_cert=$auth_key\">download</a> ]\n";
                   echo "<pre>$text</pre>\n";
+		  $status = true;
              }
 	}
+	return $status;
 }
 
 /* delete_csr
@@ -251,6 +277,7 @@ function inspect_cert($auth_key)
  */
 function delete_csr($auth_token) {
 	global $person;
+	$status = false;
         $res = mdb2wrapper::execute("select * from csr_cache where auth_key=? and common_name= ?",
                                     array('text', 'text'),
                                     array($auth_token, $person->get_valid_cn()));
@@ -260,6 +287,7 @@ function delete_csr($auth_token) {
                                  array('text', 'text'),
                                  array($auth_token, $person->get_valid_cn()));
              logger::log_event(LOG_NOTICE, "dropping csr with hash ".pubkey_hash($res[0]['csr'], true)." belonging to ".$person->get_valid_cn()." originating from ".$_SERVER['REMOTE_ADDR']."");
+	     $status = true;
 	}
 	else {
 		if ($hits==0) {
@@ -271,6 +299,7 @@ function delete_csr($auth_token) {
 			Logger::log_event(LOG_WARNING, "Error in deleting CSR, got several matches on query (".$hits.") with id ".$loc_id."(" . $person->get_valid_cn() .") Ran query " . $update);
 		}
 	}
+	return $status;
 } /* end delete_csr() */
 
 /* delete_cert
@@ -280,6 +309,7 @@ function delete_csr($auth_token) {
 function delete_cert($auth_key)
 {
 	global $person;
+	$status = false;
         $res = MDB2Wrapper::execute("SELECT * FROM cert_cache WHERE auth_key=? AND cert_owner=?",
                                     array('text', 'text'),
                                     array($auth_key, $person->get_valid_cn()));
@@ -289,6 +319,7 @@ function delete_cert($auth_key)
                                  array('text', 'text'),
                                  array($auth_key, $person->get_valid_cn()));
              Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$auth_key." belonging to ".$person->get_valid_cn());
+	     $status = true;
 	}
 	else {
 		if ($hits==0) {
@@ -300,6 +331,7 @@ function delete_cert($auth_key)
 			Logger::log_event(LOG_WARNING, "Error in deleting Certificate, got several matches on query (".$hits.") with id ".$auth_key." ");
 		}
         }
+	return $status;
 }
 
 /* sanitize_id
