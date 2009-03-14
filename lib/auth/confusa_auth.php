@@ -64,10 +64,14 @@ function is_authenticated($person = null) {
 		$person = new Person();
 
 	/* check to see if the person is authN */
-	$person->fed_auth(_is_authN());
-	if ($person->is_fed_auth()) {
-             add_attributes($person);
-        }
+	$config = _get_config();
+	$session = _get_session();
+	if (isset($session)) {
+		$person->fed_auth($session->isValid());
+		if ($person->fed_auth()) {
+			add_attributes($person);
+		}
+	}
 	return $person;
 } /* end is_authenticated */
 
@@ -222,21 +226,5 @@ function logout_link($logout_location="logout.php", $logout_name="Logout Confusa
 
     return $link;
 } // end get_logout_link()
-
-
-/* _is_authN()
- *
- * tests to see if the user is authenticated.
- */
-function _is_authN()
-    {
-    /* check if user is sso-auth */
-    $config  = _get_config();
-    $session = _get_session();
-    if (isset($session) && $session->isValid())
-        return true;
-    return false;
-    }
-
 
 ?>
