@@ -194,14 +194,17 @@ function get_attributes()
     return _get_session()->getAttributes();
 }
 
-/* feide_logout_link
+/** logout_link
  *
- * params: logout_location (which page should handle the logout from Feide?)
- *         logout_name (the logout-name)
- *         edu_name: The unique feide name of the person we're logging out (so
- *         that the logout-form can remove info from the database). 
+ * params:
+ * @logout_location:	If secondary logout is needed, or some logout-success
+ *			message needs to be displayed, this is the page that the user will be
+ *			redirected to.
+ * @logout_name:	Content of the logout-link
+ * @edu_name:		The unique feide name of the person we're logging out (so
+ *			that the logout-form can remove info from the database). 
  */
-function feide_logout_link($logout_location="logout.php", $logout_name="Logout Confusa", $person) 
+function logout_link($logout_location="logout.php", $logout_name="Logout Confusa", $person) 
 {
      $config = _get_config();
      

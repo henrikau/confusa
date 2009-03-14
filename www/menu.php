@@ -8,7 +8,7 @@ function render_menu($person)
         echo "<A HREF=\"index.php\">Start</A><BR><BR>\n";
         echo "<A HREF=\"tools.php\">Tools</A><BR><BR>\n";
 	echo "<BR>\n";
-        echo feide_logout_link("logout.php", "Logout", $person) . "<BR><BR>\n";
+        echo logout_link("logout.php", "Logout", $person) . "<BR><BR>\n";
     }
     else {
          echo "<A HREF=\"index.php?start_login=yes\">Login</A><BR>\n";
