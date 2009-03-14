@@ -2,6 +2,8 @@
   /* Author: Henrik Austad <henrik.austad@uninett.no>
    *
    * Part of Confusa.
+   *
+   * This is the main authentication module of Confusa.
    */
 /* get simplesaml */
 require_once('config.php');
@@ -87,7 +89,7 @@ function is_authenticated($person = null) {
  */
 function add_attributes($person) 
 {
-     $attributes = get_attributes();
+     $attributes = _get_attributes();
 
      if (!isset($attributes['eduPersonPrincipalName'][0])) {
 	  $debug_string=__FILE__ .":".__LINE__." -> eduPersonPrincipalName not set!<BR>\n";
@@ -108,33 +110,32 @@ function add_attributes($person)
      }
 } /* end add_attributes() */
 
-/* ======================================================================
- * Feide part of the auth-library
- * ====================================================================== */
-
-function _assert_sso($person) 
+/** logout_link
+ *
+ * params:
+ * @logout_location:	If secondary logout is needed, or some logout-success
+ *			message needs to be displayed, this is the page that the user will be
+ *			redirected to.
+ * @logout_name:	Content of the logout-link
+ * @edu_name:		The unique feide name of the person we're logging out (so
+ *			that the logout-form can remove info from the database).
+ */
+function logout_link($logout_location="logout.php", $logout_name="Logout Confusa", $person)
 {
-  $config  = _get_config();
-  $session = _get_session();
+     $config = _get_config();
+     $edu_name = $person->get_common_name();
 
-  /* Check if valid local session exists..
-   *
-   * If not:
-   *	session set
-   *	session valid
-   * Do:
-   *	set new header
-   * http://rnd.feide.no/content/using-simplesamlphp-service-provider#id436365
-   */
-  if (!isset($session) || !$session->isValid() ) {
-       SimpleSAML_Utilities::redirect('/' . $config->getBaseURL() . 'saml2/sp/initSSO.php',array('RelayState' => SimpleSAML_Utilities::selfURL()));
-       exit(0);
-  }
+     /* need to find the url, and handle some quirks in the result from selfURL
+      * in order to get proper url-base */
+     $base = SimpleSAML_Utilities::selfURL();
+     if (strpos($base, ".php"))
+          $base = dirname($base);
+     $link_base =  dirname($base).'/simplesaml/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
+     $link = '<A HREF="' . $link_base . '">' . $logout_name . '</A>';
 
-  /* update person, FIXME: update attributes as well */
-  $person->fed_auth($session->isValid());
-  add_attributes($person);
-} /* end  _assert_sso() */
+    return $link;
+} // end get_logout_link()
+
 
 function show_sso_debug($person) {
     if (!isset($person)) {
@@ -145,7 +146,7 @@ function show_sso_debug($person) {
     $config  = _get_config();
     $session = _get_session();
     if($person->is_auth()) {
-        $attributes = get_attributes();
+        $attributes = _get_attributes();
         $time_left = $session->remainingTime();
         $hours_left = (int)($time_left / 3600);
         $mins_left = (int)(($time_left % 3600)/60);
@@ -193,38 +194,34 @@ function _get_session()
     return SimpleSAML_Session::getInstance();
 }
 
-function get_attributes() 
+function _get_attributes()
 { 
     return _get_session()->getAttributes();
 }
 
-/** logout_link
- *
- * params:
- * @logout_location:	If secondary logout is needed, or some logout-success
- *			message needs to be displayed, this is the page that the user will be
- *			redirected to.
- * @logout_name:	Content of the logout-link
- * @edu_name:		The unique feide name of the person we're logging out (so
- *			that the logout-form can remove info from the database). 
- */
-function logout_link($logout_location="logout.php", $logout_name="Logout Confusa", $person) 
+
+function _assert_sso($person)
 {
-     $config = _get_config();
-     
-     /* $attr= get_attributes(); */
+  $config  = _get_config();
+  $session = _get_session();
 
-     $edu_name = $person->get_common_name();
+  /* Check if valid local session exists..
+   *
+   * If not:
+   *	session set
+   *	session valid
+   * Do:
+   *	set new header
+   * http://rnd.feide.no/content/using-simplesamlphp-service-provider#id436365
+   */
+  if (!isset($session) || !$session->isValid() ) {
+       SimpleSAML_Utilities::redirect('/' . $config->getBaseURL() . 'saml2/sp/initSSO.php',array('RelayState' => SimpleSAML_Utilities::selfURL()));
+       exit(0);
+  }
 
-     /* need to find the url, and handle some quirks in the result from selfURL
-      * in order to get proper url-base */
-     $base = SimpleSAML_Utilities::selfURL();
-     if (strpos($base, ".php"))
-          $base = dirname($base);
-     $link_base =  dirname($base).'/simplesaml/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
-     $link = '<A HREF="' . $link_base . '">' . $logout_name . '</A>';
-
-    return $link;
-} // end get_logout_link()
+  /* update person, FIXME: update attributes as well */
+  $person->fed_auth($session->isValid());
+  add_attributes($person);
+} /* end  _assert_sso() */
 
 ?>
