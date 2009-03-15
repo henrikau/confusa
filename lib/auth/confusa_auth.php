@@ -69,7 +69,7 @@ function is_authenticated($person = null) {
 	$config = _get_config();
 	$session = _get_session();
 	if (isset($session)) {
-		$person->fed_auth($session->isValid());
+		$person->is_fed_auth($session->isValid());
 		if ($person->fed_auth()) {
 			add_attributes($person);
 		}
