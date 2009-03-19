@@ -63,6 +63,7 @@ class Person{
 	$var .= "<tr><td><b>Country:</b></td><td>" . $this->get_country() . "</td></tr>\n";
 	$var .= "<tr><td><b>OrganizationalName:</b></td><td>" . $this->get_orgname() . "</td></tr>\n";
 	$var .= "<tr><td><b>OrganizationalUnitName:</b></td><td>" . $this->get_orgunitname() . "</td></tr>\n";
+	$var .= "<tr><td><b>IdP:</b></td><td>". $this->get_idp() . "</td></tr>\n";
         $var .= "</table><br>";
         return $var;
     }
