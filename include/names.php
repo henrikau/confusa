@@ -20,6 +20,7 @@ function attributealter_names(&$attributes, $spentityid = null, $idpentityid = n
                          'https://aitta2.funet.fi/idp/shibboleth' => 'FI'
                          );
 
+     $attributes['IdP'] = array($idpentityid);
      $attributes['country'] = array($known_idps[$idpentityid]);
      $attributes['orgname'] = array('Nordugrid');
      $attributes['orgunitname'] = array('Nordugrid');

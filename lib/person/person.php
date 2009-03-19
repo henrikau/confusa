@@ -30,7 +30,7 @@ class Person{
     private $country;
     private $orgname;
     private $orgunitname;
-
+    private $idp;
     /* get variables for:
      * Region (i.e. Sor Trondelag)
      * City (i.e. Trondheim)
@@ -168,7 +168,11 @@ class Person{
          }
     public function get_country() { return $this->country; }
 
-
+    public function set_idp($idp) {
+	    if (isset($idp))
+		    $this->idp = $idp;
+    }
+    public function get_idp() { return $this->idp; }
     /* is_admin()
      *
      * Test to see if the user is part of the admin-crowd. This will allow the

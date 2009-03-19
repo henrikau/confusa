@@ -105,7 +105,7 @@ function add_attributes($person)
 	     $person->set_country($attributes['country'][0]);
 	     $person->set_orgname(Config::get_config('cert_o'));
 	     $person->set_orgunitname(Config::get_config('cert_ou'));
-
+	     $person->set_idp($attributes['IdP'][0]);
 	     $person->fed_auth(true);
      }
 } /* end add_attributes() */
