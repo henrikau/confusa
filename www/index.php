@@ -34,7 +34,6 @@ function keyhandle($pers)
     }
   else {
 	  include('unclassified_intro.php');
-	  echo "You will have to <A HREF=\"index.php?start_login=yes\">login</A> to use this page<BR>\n";
   }
 } /* end keyhandle() */
 
