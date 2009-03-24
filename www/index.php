@@ -17,6 +17,7 @@ if (send_cert()) {
 
 /* $fw->force_login(); */
 $fw->render_page();
+echo "humm?";
 /* this function contains the main-flow in the program.
  *
  * It will make sure all CSRs and Certificates stored in the database will be
@@ -169,7 +170,7 @@ function send_cert()
      global $fw;
      $person = $fw->authenticate();
      $send_res = false;
-
+     $auth_key = "";
      if (isset($_GET['email_cert']))
           $auth_key = htmlentities($_GET['email_cert']);
      else if (isset($_GET['file_cert']))

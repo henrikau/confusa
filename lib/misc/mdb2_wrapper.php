@@ -41,6 +41,7 @@ class MDB2Wrapper
      {
           if (!isset(MDB2Wrapper::$conn))
                MDB2Wrapper::create();
+	  $results = "";
 
           $stmnt = MDB2Wrapper::$conn->prepare($query, $types, MDB2_PREPARE_RESULT);
           if (PEAR::isError($stmnt)) {
