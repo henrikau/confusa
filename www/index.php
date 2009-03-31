@@ -164,17 +164,13 @@ function approve_csr($auth_token)
                echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
                return false;
           }
-          else {
-               MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
-                                   array('text', 'text'),
-                                   array($auth_token, $person->get_valid_cn()));
-	       $status = true;
-          }
+	  MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
+			      array('text', 'text'),
+			      array($auth_token, $person->get_valid_cn()));
+	  return true;
      }
-     else {
-          echo __FILE__ .":".__LINE__." error getting CSR from database<BR>\n";
-     }
-     return $status;
+     echo __FILE__ .":".__LINE__." error getting CSR from database<BR>\n";
+     return false;
 } /* end approve_csr_remote() */
 
 /* send_cert

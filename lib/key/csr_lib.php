@@ -75,7 +75,7 @@ function get_algorithm($csr)
  * public-key has been uploaded before as part of (another) CSR.
  *
  * It will assume that the CSR belongs to a previously signed certificate, and
- * unless it can prove that it is unique, it will claim that it has been seen
+ * unless it can prove that it is ugnique, it will claim that it has been seen
  * before. This is due to the 'better safe-than-sorry' principle.
  *
  * Note: this will only test for pubkeys belonging to *signed* keys, not
@@ -97,6 +97,8 @@ function known_pubkey($csr)
              MDB2Wrapper::update("UPDATE pubkeys SET uploaded_nr = uploaded_nr + 1 WHERE pubkey_hash=?",
                                  array('text'),
                                  array($res[0]['pubkey_hash']));
+	     Logger::log_event(LOG_ERR,"User trying to upload CSR with old pubkey to database\n");
+	     return true;
         }
 	else {
 		Logger::syslog(LOG_ERR,"Duplicate signed certificates in database! -> $pubkey_checkusm");
