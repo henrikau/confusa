@@ -56,6 +56,14 @@ $confusa_config = array(
 	'ca_key_name'		=> '',
 	'ca_key_path'		=> 'cert_handle/priv/',
 
+	/* For the cmc-script and comms between Confusa and the script */
+	'cmc_script'		=> 'make_cmc.sh',
+	'cmc_tmp_dir'		=> '/tmp/',
+	'cmc_work_dir'		=> '/opt/cmc/',
+	'cmc_cert_dir'		=> '/opt/cmc/cmc_cert_store/',
+	'cmc_agent_nick'	=> 'cmcagent',
+	'cmc_agent_pw'		=> null,
+
 	/* OU and O for the certificate */
 	'cert_o'		=> '',
 	'cert_ou'		=> '',
