@@ -85,7 +85,7 @@ $confusa_config = array(
 	'csr_var'		=> 'remote_csr', /* name of the variable that
 						  * the upload-handler checks
 						  * for csr's */
-	'auth_var'		=> 'auth_key', /* the variable to pass as the
+	'auth_var'		=> 'inspect_csr', /* the variable to pass as the
 						* authentication-url we use for
 						* authenticating users' CSRs */
 
