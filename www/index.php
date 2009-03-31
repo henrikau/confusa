@@ -258,14 +258,20 @@ function inspect_cert($auth_key)
                                     array('text', 'text'),
                                     array($auth_key, $person->get_valid_cn()));
 	if(count($res) == 1) {
-             $csr_test = openssl_x509_read($res[0]['cert']);
-             if (openssl_x509_export($csr_test, $text, false)) {
-                  echo "[ <a href=\"".$_server['php_self']."?delete_cert=$auth_key\">delete from database</a> ]\n";
-                  echo "[ <a href=\"".$_server['php_self']."?email_cert=$auth_key\">send by email</a> ]\n";
-                  echo "[ <a href=\"".$_server['php_self']."?file_cert=$auth_key\">download</a> ]\n";
-                  echo "<pre>$text</pre>\n";
-		  $status = true;
-             }
+		$csr_test = openssl_x509_read($res[0]['cert']);
+		if (openssl_x509_export($csr_test, $text, false)) {
+			echo "[ <a href=\"".$_server['php_self']."?delete_cert=$auth_key\">delete from database</a> ]\n";
+			echo "[ <a href=\"".$_server['php_self']."?email_cert=$auth_key\">send by email</a> ]\n";
+			echo "[ <a href=\"".$_server['php_self']."?file_cert=$auth_key\">download</a> ]\n";
+			echo "<pre>$text</pre>\n";
+			$status = true;
+		} else {
+			/* not able to show it properly, dump content to screen */
+			echo "There were errors encountered when formatting the certificate. Here is a raw-dump.<BR>\n";
+			echo "<PRE>\n";
+			print_r ($res);
+			echo "</PRE>\n";
+		}
 	}
 	return $status;
 }
