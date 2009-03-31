@@ -63,9 +63,9 @@ function process_file_csr()
                          * of characters. It will contain more letters than the
                          * user-script (which uses sha1sum of some random text).
                          */
-			if (!$cm->sign_key(create_pw(Config::get_config('auth_length'))))
-                             ;
-
+			if (!$cm->sign_key(pubkey_hash($fu->get_content(), true)))
+				return false;
+			return true;
                 }
         }
       else {
