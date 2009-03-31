@@ -14,8 +14,10 @@ $fw = new Framework('keyhandle');
 if (send_cert()) {
      exit(0);
 }
+if (process_csr_flags_set() || process_cert_flags_set()){
+	$fw->force_login();
+}
 
-/* $fw->force_login(); */
 $fw->render_page();
 echo "humm?";
 /* this function contains the main-flow in the program.
@@ -83,6 +85,20 @@ function process_db()
 		$res = process_db_cert();
 
 	return $res;
+}
+
+/* process_[csr|cert]_flags_set()
+ *
+ * If any of the flags used for processing either CSR's or certificates are set,
+ * the user must authenticate. This gives a wrapper to simplify tests.
+ */
+function process_csr_flags_set()
+{
+	return isset($_GET['delete_csr']) || isset($_GET['auth_token']) || isset($_GET['inspect_csr']);
+}
+function process_cert_flags_set()
+{
+	return isset($_GET['delete_cert']) || isset($_GET['inspect_cert']);
 }
 /* process_db_csr()
  *
