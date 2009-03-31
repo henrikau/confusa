@@ -228,6 +228,10 @@ function show_db_cert()
 		$counter = 0;
 		echo "<table class=\"small\">\n";
 		echo "<tr>";
+		echo "<th></th>\n";
+		echo "<th></th>\n";
+		echo "<th></th>\n";
+		echo "<th></th>\n";
 		echo "<th>AuthToken</th>";
 		echo "<th>Owner</th>";
 		echo "</tr>\n";
@@ -235,12 +239,12 @@ function show_db_cert()
 			$row = $res[$counter];
 			$counter++;
 			echo "<tr>\n";
+			echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email</A> ]</td>\n";
+			echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download</A> ]</td>\n";
+			echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A> ]</td>\n";
+			echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A> ]</td>\n";
 			echo "<td>".$row['auth_key']."</td>\n";
 			echo "<td>".$row['cert_owner']."</td>\n";
-			echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email cert</A></td>\n";
-			echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download cert</A></td>\n";
-			echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A></td>\n";
-			echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A></td>\n";
 			echo "</tr>\n";
 		}
 		echo "</table>\n";
@@ -302,11 +306,14 @@ function inspect_cert($auth_key)
                                     array('text', 'text'),
                                     array($auth_key, $person->get_valid_cn()));
 	if(count($res) == 1) {
+		echo "<BR>\n";
+		echo "<BR>\n";
 		$csr_test = openssl_x509_read($res[0]['cert']);
 		if (openssl_x509_export($csr_test, $text, false)) {
-			echo "[ <a href=\"".$_server['php_self']."?delete_cert=$auth_key\">delete from database</a> ]\n";
-			echo "[ <a href=\"".$_server['php_self']."?email_cert=$auth_key\">send by email</a> ]\n";
-			echo "[ <a href=\"".$_server['php_self']."?file_cert=$auth_key\">download</a> ]\n";
+			echo "[ <a href=\"".$_server['php_self']."?email_cert=$auth_key\">Email</a> ]\n";
+			echo "[ <a href=\"".$_server['php_self']."?file_cert=$auth_key\">Download</a> ]\n";
+			echo "[ <B>Inspect</B> ]\n";
+			echo "[ <a href=\"".$_server['php_self']."?delete_cert=$auth_key\">Delete</a> ]\n";
 			echo "<pre>$text</pre>\n";
 			$status = true;
 		} else {
