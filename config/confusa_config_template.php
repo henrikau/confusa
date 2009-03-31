@@ -89,7 +89,7 @@ $confusa_config = array(
 						* authentication-url we use for
 						* authenticating users' CSRs */
 
-	'auth_length'		=> '16', /* length of auth-url token */
+	'auth_length'		=> '40', /* length of auth-url token */
 
 	/* logs */
 	'default_log'		=> '/var/log/confusa/tmp.log',
