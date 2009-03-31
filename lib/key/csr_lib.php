@@ -101,7 +101,7 @@ function known_pubkey($csr)
 	     return true;
         }
 	else {
-		Logger::syslog(LOG_ERR,"Duplicate signed certificates in database! -> $pubkey_checkusm");
+		Logger::log_event(LOG_ERR,"Duplicate signed certificates in database! -> $pubkey_checkusm");
                 exit(1);
 	}
 	return $issued_before;
