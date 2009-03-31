@@ -162,7 +162,7 @@ function approve_csr($auth_token)
           $cm = new CertManager($csr, $person);
           if (!$cm->sign_key($auth_token)) {
                echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
-               return;
+               return false;
           }
           else {
                MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
@@ -174,6 +174,7 @@ function approve_csr($auth_token)
      else {
           echo __FILE__ .":".__LINE__." error getting CSR from database<BR>\n";
      }
+     return $status;
 } /* end approve_csr_remote() */
 
 /* send_cert
