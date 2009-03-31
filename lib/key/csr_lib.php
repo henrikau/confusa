@@ -88,7 +88,13 @@ function known_pubkey($csr)
         $res = MDB2Wrapper::execute("SELECT * FROM pubkeys WHERE pubkey_hash=?",
                                     array('text'),
                                     array($pubkey_checksum));
-	if (count($res) == 0) {
+	if (Config::get_config('debug')) {
+		echo "count(\$res): " . count($res) . "<BR>\n";
+		echo "<pre>\n";
+		print_r($res);
+		echo "</PRE>\n";
+	}
+	if (count($res) <= 1 && !isset($res[0])) {
 		Logger::log_event(LOG_DEBUG, __FILE__ . " CSR with previously unknown public-key (hash: $pubkey_checksum)\n");
 		$issued_before=false;
 	}
@@ -96,7 +102,7 @@ function known_pubkey($csr)
         else if (count($res) == 1) {
              MDB2Wrapper::update("UPDATE pubkeys SET uploaded_nr = uploaded_nr + 1 WHERE pubkey_hash=?",
                                  array('text'),
-                                 array($res[0]['pubkey_hash']));
+                                 array($pubkey_checksum));
 	     Logger::log_event(LOG_ERR,"User trying to upload CSR with old pubkey to database\n");
 	     return true;
         }
