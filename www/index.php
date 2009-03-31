@@ -139,8 +139,7 @@ function process_db_cert()
           $res = inspect_cert(htmlentities($_GET['inspect_cert']));
      }
      if (!$res) {
-	     require_once('send_element.php');
-	     set_value($name='inspect_cert', 'index.php', 'Inspect CERT', 'GET');
+	     show_db_cert();
      }
      return $res;
 } /* end process_db_cert */
@@ -213,10 +212,42 @@ function send_cert()
      return $send_res;
 } /* end send_cert */
 
-/* show_db_csr
+
+/* show_db_cert
  *
- * Retrieve all CSRs from the database and list them for the user.
+ * Retrieve certificates from the database and show them to the user
  */
+function show_db_cert()
+{
+	global $person;
+	$res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=? AND valid_untill > current_timestamp()",
+				    array('text'),
+				    array($person->get_valid_cn()));
+	$num_received = count($res);
+	if ($num_received > 0 && isset($res[0]['auth_key'])) {
+		$counter = 0;
+		echo "<table class=\"small\">\n";
+		echo "<tr>";
+		echo "<th>AuthToken</th>";
+		echo "<th>Owner</th>";
+		echo "</tr>\n";
+		while($counter < $num_received) {
+			$row = $res[$counter];
+			$counter++;
+			echo "<tr>\n";
+			echo "<td>".$row['auth_key']."</td>\n";
+			echo "<td>".$row['cert_owner']."</td>\n";
+			echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email cert</A></td>\n";
+			echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download cert</A></td>\n";
+			echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A></td>\n";
+			echo "<td><A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A></td>\n";
+			echo "</tr>\n";
+		}
+		echo "</table>\n";
+	}
+	echo "<br>\n";
+} /* end show_db_cert() */
+
 /* inspect_csr
  *
  * Let the user view detailed information about a CSR (belonging to the user) to
