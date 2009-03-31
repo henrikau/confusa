@@ -51,9 +51,8 @@ class MDB2Wrapper
 
           $res = $stmnt->execute($data);
           if (PEAR::isError($res)) {
-		  $msg  = "Getting result from statment failed: " . $res->getMessage();
-		  $msg .= "Make sure the password is correct";
-		  $msg .= " and that the query is properly formatted\n";
+		  $msg = "Getting result from statment failed: " . $res->getUserInfo();
+		  echo $res->getCode() . "<br>\n";
 		  Logger::log_event(LOG_ERR, $msg);
 		  die($msg);
           }
