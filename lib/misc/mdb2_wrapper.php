@@ -45,14 +45,17 @@ class MDB2Wrapper
 
           $stmnt = MDB2Wrapper::$conn->prepare($query, $types, MDB2_PREPARE_RESULT);
           if (PEAR::isError($stmnt)) {
-               Logger::log_event(LOG_NOTICE, "query failed $res->getMessage()");
+               Logger::log_event(LOG_NOTICE, "query failed " . $res->getMessage());
                die("statement: " . $stmnt->getMessage() . "<br>\n$query");
           }
 
           $res = $stmnt->execute($data);
           if (PEAR::isError($res)) {
-               Logger::log_event(LOG_NOTICE, "Query failed: $res->getMessage()");
-               die("error in query -> " . $res->getMessage());
+		  $msg  = "Getting result from statment failed: " . $res->getMessage();
+		  $msg .= "Make sure the password is correct";
+		  $msg .= " and that the query is properly formatted\n";
+		  Logger::log_event(LOG_ERR, $msg);
+		  die($msg);
           }
           $stmnt->free();
 
