@@ -63,14 +63,16 @@ function process_file_csr()
                          * of characters. It will contain more letters than the
                          * user-script (which uses sha1sum of some random text).
                          */
-			if (!$cm->sign_key(pubkey_hash($fu->get_content(), true)))
-				return false;
-			return true;
+			if ($cm->sign_key(pubkey_hash($fu->get_content(), true)))
+				return true;
                 }
+                echo "<FONT COLOR=\"RED\"><B>\n";
+                echo "There were errors encountered when processing the file.<BR>\n";
+                echo "Please create a new keypair and upload a new CSR.<BR>\n";
+                echo "</B></FONT>\n";
         }
-      else {
-	      include('upload_form.html');
-      }
+        include('upload_form.html');
+        return false;
 }
 
 function process_db()
