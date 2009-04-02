@@ -65,7 +65,7 @@ class CertManager
 
               /* Standalone mode, use php and local certificate/key to
              * sign for user */
-              if (Config::get_config('standalone') && !known_pubkey($this->user_csr)) {
+              if (Config::get_config('standalone')) {
                  $sign_days = 11;
                  $tmp_cert = openssl_csr_sign($this->user_csr, $cert_path, $ca_priv_path, $sign_days , array('digest_alg' => 'sha1'));
                  openssl_x509_export($tmp_cert, $this->user_cert, true);
