@@ -1,3 +1,4 @@
 ca.db.*
 cert/*
 priv/*
+cmcagent/
