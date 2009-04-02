@@ -60,7 +60,6 @@ class CertManager
     {
          if ($this->verify_csr()) {
 		 $cert_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
-		 echo $cert_path . "<br>\n";
 		 $ca_priv_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_key_path') . Config::get_config('ca_key_name');
 
 
@@ -92,11 +91,18 @@ class CertManager
                    Logger::log_event(LOG_DEBUG, "Signing key using remote CA");
                    $ca_addr = Config::get_config('ca_host');
                    $ca_port = Config::get_config('ca_port');
+                   /* create temporary file and store csr in that file */
 
-                   if (openssl_sign($this->user_csr, $signed_pkcs10, $ca_priv_path)) {
-                        $tmp = chunk_split(base64_encode($signed_pkcs10));
-                        Print "<pre>\n$tmp\n</pre>\n";
-                   }
+                   $fcsr_name = tempnam("/tmp", "tmp_csr_");
+                   $fcsr = fopen($fcsr_name, "a");
+                   fwrite($fcsr, $this->user_csr);
+                   fseek($fcsr, 0);
+                   /* take the tmp-file and call make_cmc with filename as arg,
+                    * read output from stdout arg and save as CMC */
+
+                   /* close and clean */
+                   fclose($fcsr);
+                   unlink($fcsr_name);
                    return false;
               }
          }
