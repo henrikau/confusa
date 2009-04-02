@@ -371,23 +371,17 @@ function delete_cert($auth_key)
                                     array('text', 'text'),
                                     array($auth_key, $person->get_valid_cn()));
 	$hits=count($res);
-	if ($hits== 1) {
+        if ($hits==0) {
+             echo "No matching Certificate found.<BR>\n";
+             Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$auth_key." from ip ".$_SERVER['REMOTE_ADDR']);
+        }
+	else {
              MDB2Wrapper::update("DELETE FROM cert_cache WHERE auth_key=? AND cert_owner=?",
                                  array('text', 'text'),
                                  array($auth_key, $person->get_valid_cn()));
              Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$auth_key." belonging to ".$person->get_valid_cn());
 	     $status = true;
 	}
-	else {
-		if ($hits==0) {
-			echo "No matching Certificate found.<BR>\n";
-			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$auth_key." from ip ".$_SERVER['REMOTE_ADDR']);
-		}
-		else {
-			echo "Too many hits (".$hits.") in database<BR>\n";
-			Logger::log_event(LOG_WARNING, "Error in deleting Certificate, got several matches on query (".$hits.") with id ".$auth_key." ");
-		}
-        }
 	return $status;
 }
 
