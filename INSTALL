@@ -70,16 +70,18 @@ anything else.
    simpelSAMLphp, and is required reading.
 
    IN saml20-sp-hosted.php, let the __DYNAMIC:1-entry from template
-   stay, but add 2 lines:
-	'attributealter' => 'names',
+   stay, but add the custom Authentication Processing Filters for Confusa:
+        50 => 'core:IdPMap',
+        60 => 'core:ConfusaAttributeMap',
+        61 => 'core:CountryMap',
 	ForceAuthn	 => true
 
-   This passes the attributes through the file names.php (which you
-   hopefully symlinked in prevously).
-
-   Copy the path to names.php into the attribute-altar switch in 
-   simplesamlphp/metadata/saml20-sp-hosted.php to trigger dynamic 
-   mapping of attributes and countries.
+   You will have to either copy or symlink these into
+	simplesamlphp/modules/core/lib/Auth/
+   like this:
+	ln -s /var/www/confusa/include/IdPMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/IdPMap.php
+	ln -s /var/www/confusa/include/ConfusaAttributeMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/ConfusaAttributeMap.php
+	ln -s /var/www/confusa/include/CountryMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CountryMap.php
 
 6) Install and configure Confusa:
 
