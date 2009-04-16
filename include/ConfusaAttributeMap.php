@@ -24,7 +24,7 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                     $this->fix_haka($request);
                     break;
                default:
-                    echo "Unknown IdP<BR>\n";
+                    echo "Unknown IdP - $idp<BR>\n";
                }
           }
      }
