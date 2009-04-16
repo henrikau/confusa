@@ -41,25 +41,25 @@ class MDB2Wrapper
      {
           if (!isset(MDB2Wrapper::$conn))
                MDB2Wrapper::create();
-	  $results = "";
+	  $results = array();
 
           $stmnt = MDB2Wrapper::$conn->prepare($query, $types, MDB2_PREPARE_RESULT);
           if (PEAR::isError($stmnt)) {
-               Logger::log_event(LOG_NOTICE, "query failed " . $stmnt->getMessage());
+               Logger::log_event(LOG_NOTICE, "query failed $res->getMessage()");
                die("statement: " . $stmnt->getMessage() . "<br>\n$query");
           }
 
           $res = $stmnt->execute($data);
           if (PEAR::isError($res)) {
-		  $msg = "Getting result from statment failed: " . $res->getUserInfo();
-		  echo $res->getCode() . "<br>\n";
-		  Logger::log_event(LOG_ERR, $msg);
-		  die($msg);
+               Logger::log_event(LOG_NOTICE, "Query failed: $res->getMessage()");
+               die("error in query -> " . $res->getMessage());
           }
           $stmnt->free();
 
+		  $i = 0;
           while($row = $res->fetchRow(MDB2_FETCHMODE_ASSOC))
-               $results[] = $row;
+               $results[$i] = $row;
+               $i = $i+1;
 
           return $results;
      } /* end execute */
