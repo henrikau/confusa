@@ -143,10 +143,7 @@ class CertManager
                     echo "will not accept email in DN of certificate. Download latest version of script<br>\n";
                     $this->valid_csr = false;
                }
-               else if (!($subject['C'] === $this->person->get_country() &&
-                          $subject['O'] === $this->person->get_orgname() &&
-                          $subject['OU'] === $this->person->get_orgunitname() &&
-                          $subject['CN'] === $this->person->get_valid_cn())) {
+	       else if (!$this->match_dn($subject)) {
                     echo "Error in subject! <BR/>\n";
                     echo "The fields in your CSR was not set properly.<BR>\n";
                     echo "To try again, please download a new version of the script, ";
@@ -163,6 +160,34 @@ class CertManager
           }
           return $this->valid_csr;
     } /* end verify_csr */
+
+  /* match_dn
+   *
+   * This will match the associative array $subject with the constructed DN from person->get_complete_dn()
+   *
+   * The best would be to use something like what openssl supports:
+   *	openssl x509 -in usercert.pem -subject -noout
+   * which returns the subject string as we construct it below. However,
+   * php5_openssl has no obvious way of doing that.
+   *
+   * Eventually, we have to add severeal extra fields to handle all different
+   * cases, but for now, this will do.
+   */
+  private function match_dn($subject)
+  {
+	  /* Compose the DN in the 'correct' order, only use the fields set in
+	   * the subject */
+	  $composed_dn = "";
+	  if (isset($subject['C']))
+		  $composed_dn .= "/C=".$subject['C'];
+	  if (isset($subject['O']))
+		  $composed_dn .= "/O=".$subject['O'];
+	  if (isset($subject['OU']))
+		  $composed_dn .= "/OU=".$subject['OU'];
+	  if (isset($subject['C']))
+		  $composed_dn .= "/CN=".$subject['CN'];
+	  return $this->person->get_complete_dn() === $composed_dn;
+  }
 } /* end class CertManager */
 
 ?>
