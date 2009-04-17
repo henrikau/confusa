@@ -71,9 +71,12 @@ anything else.
 
    IN saml20-sp-hosted.php, let the __DYNAMIC:1-entry from template
    stay, but add the custom Authentication Processing Filters for Confusa:
+
+   'authproc' => array(
         50 => 'core:IdPMap',
         60 => 'core:ConfusaAttributeMap',
-        61 => 'core:CountryMap',
+        61 => 'core:CountryMap'
+    ),
 	ForceAuthn	 => true
 
    You will have to either copy or symlink these into
