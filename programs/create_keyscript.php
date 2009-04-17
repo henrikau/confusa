@@ -35,10 +35,8 @@ class KeyScript {
 //  		$script = preg_replace_callback('/(\w+)(=")(")/', 'config_match', $script);
 
  		/* set variables for the key and CSR/cert */
-		$script = str_replace('country=""'	,'country="/C='	.$this->person->get_country() . '"'			, $script);
-		$script = str_replace('orgname=""'	,'orgname="/O='	.$this->person->get_orgname() . '"'	, $script);
-		$script = str_replace('orgunitname=""'	,'orgunit="/OU='.$this->person->get_orgunitname(). '"'	, $script);
-		$script = str_replace('common=""'	,'common="/CN='	.$this->person->get_valid_cn() . '"'	, $script);
+		$script = str_replace('common=""'      ,'common="' .$this->person->get_valid_cn() . '"'	, $script);
+		$script = str_replace('full_dn=""'	,'full_dn="'.$this->person->get_complete_dn() . '"'	, $script);
 		$script = str_replace('key_length='	,"key_length="	.Config::get_config('key_length')	, $script);
 
 		/* send location and upload related variables */

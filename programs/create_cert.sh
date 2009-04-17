@@ -23,10 +23,8 @@
 # ------------------------------------------------------------- #
 
 # Fields for the certificate
-country=""
-orgname=""
-orgunitname=""
 common=""
+full_dn=""
 
 # The key must have a length, and Confusa imposes a minimum length,
 # changing this to a lower value will most likely cause the key (CSR) to
@@ -66,7 +64,6 @@ auth_length=""
 # END AUTOMAGIC CONFIG
 # ------------------------------------------------------------- #
 
-name=`echo $common | cut -d '=' -f 2 | cut -d '@' -f 1`
 script_folder=$HOME/.globus
 
 if [ ! -f $script_folder ]; then
@@ -93,17 +90,11 @@ fccn=$script_folder/$ca_cert_name
 # ------------------------------------------------------------- #
 function test_automagic_variables {
     error_tail="\nDownload a new version and try again"
-    if [ -z $country ]; then
-	exit_error "Country-attribute (C) for certificate not set $error_tail"
-    fi
-    if [ -z $orgname ]; then
-	exit_error "OrganizationalName-attribute (O) for certificate not set $error_tail"
-    fi
-    if [ -z $orgunit ]; then
-	exit_error "OrganizationalUnitName-attribute (OU) for certificate not set $error_tail"
-    fi
     if [ -z $common ]; then
-	exit_error "CommonName-attribute (CN) for certificate not set $error_tail"
+	exit_error "Need a common-name. Please download a recent version of the script from slcsweb!"
+    fi
+    if [ -z $full_dn ]; then
+	exit_error "Full DN (\DN) for certificate not set $error_tail"
     fi
     if [ -z $key_length ]; then
 	exit_error "Length for key not set $error_tail"
@@ -200,7 +191,7 @@ function create_key {
 
     openssl req -new -newkey rsa:$key_length \
 	-keyout $priv_key_name -out $csr_name \
-	-subj "$country$orgname$orgunit$common"
+	-subj "$full_dn"
     if [ $? -eq 0 ]; then
 	echo "Key and CSR created ok"
     else
@@ -350,12 +341,6 @@ function init {
 	if [ -d !$file_location ]; then
 	    echo "globus does not exist, creating...."
 	    mkdir -p $HOME/.globus/
-	fi
-	if [ -z $common ]; then
-	    exit_error "Need a common-name. Please download a recent version of the script from slcsweb!"
-	fi
-	if [ -z $country ]; then
-	    exit_error "Need a country. Download a proper script from slcsweb"
 	fi
 	main $@
     else 
