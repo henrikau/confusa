@@ -68,6 +68,11 @@ class Person{
         return $var;
     }
 
+    function get_complete_dn() {
+	    $dn = "/C=" . $this->get_country() . "/O=" . $this->get_orgname() . "/CN=" . $this->get_valid_cn();
+	    return $dn;
+    }
+
     public function is_fed_auth() {
         return $this->fed_auth;
         }
