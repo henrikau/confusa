@@ -5,11 +5,6 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
           parent::__construct($config, $reserved);
      }
      public function process(&$request) {
-          if (isset($request['Attributes']['urn:mace:dir:attribute-def:eduPersonPrincipalName']))
-               $this->fix_surfnet($request);
-
-          if (isset($request['Attributes']['urn:oid:1.3.6.1.4.1.5923.1.1.1.6']))
-               $this->fix_haka($request);
           if (isset($request['Attributes']['IdP'])) {
                $idp = $request['Attributes']['IdP'][0];
                switch($idp) {
