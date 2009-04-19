@@ -5,9 +5,8 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
           parent::__construct($config, $reserved);
      }
      public function process(&$request) {
-          if (isset($request['Attributes']['IdP'])) {
-               $idp = $request['Attributes']['IdP'][0];
-               switch($idp) {
+          if (isset($request['Source']['entityid']) {
+               switch($request['Source']['entityid']) {
                case "max.feide.no":
                     break;
                case "edugain.showcase.surfnet.nl":
