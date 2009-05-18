@@ -15,7 +15,10 @@ require_once(Config::get_config('simplesaml_path'));
 require_once('SimpleSAML/Utilities.php');
 require_once('SimpleSAML/Session.php');
 require_once('SimpleSAML/XHTML/Template.php');
-
+/* required for OAuth
+ */
+require_once('SimpleSAML/Module.php');
+require_once('oauth_auth.php');
 require_once('person.php');
 require_once('logger.php');
 require_once('debug.php');
@@ -24,6 +27,9 @@ require_once('mdb2_wrapper.php');
  * multiple calls to simple_saml's session_start()
  */
 $session_started = false;
+/* global variable to determine if OAuth is used for authN
+ */
+$use_oauth = false;
 
 
 /* authenticate_user()
@@ -67,13 +73,24 @@ function is_authenticated($person = null) {
 
 	/* check to see if the person is authN */
 	$config = _get_config();
-	$session = _get_session();
-	if (isset($session)) {
-		$person->fed_auth($session->isValid());
-		if ($person->is_fed_auth()) {
-			add_attributes($person);
+
+	global $use_oauth;
+	$use_oauth = (SimpleSAML_Module::isModuleEnabled('oauth') and isset($_REQUEST['oauth_consumer_key']));
+
+	if ($use_oauth) {
+		$oauth = ConfusaOAuth::getInstance();
+		$person->fed_auth($oauth->isAuthorized());
+	} else {
+		$session = _get_session();
+		if (isset($session)) {
+			$person->fed_auth($session->isValid());
 		}
 	}
+
+	if ($person->is_fed_auth()) {
+			add_attributes($person);
+	}
+
 	return $person;
 } /* end is_authenticated */
 
@@ -87,7 +104,7 @@ function is_authenticated($person = null) {
  * to tie as many strings together (like attributes, authentication status etc)
  * and provide a sane interface to the outside world.
  */
-function add_attributes($person) 
+function add_attributes($person)
 {
      $attributes = _get_attributes();
 
@@ -196,7 +213,12 @@ function _get_session()
 
 function _get_attributes()
 { 
-    return _get_session()->getAttributes();
+	global $use_oauth;
+	if ($use_oauth) {
+		return ConfusaOAuth::getInstance()->getAttributes();
+	} else {
+		return _get_session()->getAttributes();
+	}
 }
 
 
