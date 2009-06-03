@@ -60,6 +60,32 @@ CREATE TABLE sms_auth (
 
 -- ---------------------------------------------------------
 --
+-- order_cache
+--
+-- If not the standalone CA is used for signing the CSRs, they are ordered by a
+-- service provider like for instance Comodo. Usually this involves some 
+-- accounting information like order numbers as well as identifiers for 
+-- picking the certifiicate up. This information should be stored in that
+-- table
+--
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS order_store;
+CREATE TABLE order_store (
+	cert_id INT PRIMARY KEY AUTO_INCREMENT,
+	-- auth_key and owner for remote download and upload
+	auth_key CHAR(64) NOT NULL,
+	common_name VARCHAR(128) NOT NULL,
+	-- order number and collection code for bookkeeping, revocation, 
+	-- delivery
+	order_number INT NOT NULL,
+	collection_code CHAR(16) NOT NULL,
+	order_date DATETIME NOT NULL,
+	authorized BOOL NOT NULL
+) type=InnoDB;
+
+
+-- ---------------------------------------------------------
+--
 -- csr_cache
 --
 -- All CSRs uploaded to the server via the script, are put here. The
