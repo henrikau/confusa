@@ -8,6 +8,7 @@
 require_once('mdb2_wrapper.php');
 require_once('logger.php');
 require_once('csr_lib.php');
+require_once('config.php');
 
 class CertManager
 {
@@ -16,6 +17,11 @@ class CertManager
   private $pubkey_checksum;
   private $valid_csr;
   private $user_cert;
+  /* if used with the remote API, an order-number and collection code will be
+   * stored instead of a user-cert
+   */
+  private $order_number;
+  private $collection_code;
 
   /* 
    * Should register all values so that when a sign_key request is issued,
@@ -46,7 +52,10 @@ class CertManager
       unset($this->person);
       unset($this->valid_csr);
       unset($this->user_cert);
+      unset($this->order_number);
+      unset($this->collection_code);
     } /* end destructor */
+    
 
   /* sign_key()
    *
@@ -58,10 +67,9 @@ class CertManager
    */
   function sign_key($auth_key)
     {
-         if ($this->verify_csr()) {
-		 $cert_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
-		 $ca_priv_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_key_path') . Config::get_config('ca_key_name');
-
+     if ($this->verify_csr()) {
+		  $cert_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
+		  $ca_priv_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_key_path') . Config::get_config('ca_key_name');
 
               /* Standalone mode, use php and local certificate/key to
              * sign for user */
@@ -89,30 +97,141 @@ class CertManager
               else {
                    /* external CA, send the CSR as signed */
                    Logger::log_event(LOG_DEBUG, "Signing key using remote CA");
-                   $ca_addr = Config::get_config('ca_host');
-                   $ca_port = Config::get_config('ca_port');
-                   /* create temporary file and store csr in that file */
-
-                   $fcsr_name = tempnam("/tmp", "tmp_csr_");
-                   $fcsr = fopen($fcsr_name, "a");
-                   fwrite($fcsr, $this->user_csr);
-                   fseek($fcsr, 0);
-                   /* take the tmp-file and call make_cmc with filename as arg,
-                    * read output from stdout arg and save as CMC */
-
-                   /* close and clean */
-                   fclose($fcsr);
-                   unlink($fcsr_name);
-                   return false;
+                   if ($this->capi_upload_csr($auth_key)) {
+                     return $this->capi_authorize_csr();
+                   } else {
+                     return false;
+                   }
+                   
               }
          }
          Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user ".
                            $this->person->get_valid_cn().
                            " from ip ".$_SERVER['REMOTE_ADDR']);
          return false;
-    } /* end sign_key() */
+    }  /*end sign_key() */ 
 
+  /*
+   * Upload the CSR to the remote API and authorize the signing request
+   * Store the order number and the collection code in the DB, for bookkeeping purposes.
+   * It is recommended to have this information backed up and stored permanently to keep track
+   * of Comodo-issued certificates.
+   */ 
+  private function capi_upload_csr($auth_key) 
+    {
+    $sign_endpoint = Config::get_config('capi_apply_endpoint');
+    $ap = Config::get_config('capi_ap_name');
+    $ca_cert_id = Config::get_config('capi_escience_id');
+    /* Leave this hardcoded since the TCS profile states that MICS profiles are to be valid for exactly 13 months */
+    $days = 395;
+    
+    $cn_prefix = "";
+    $o_prefix = "";
+    
+    $postfields_sign_req=array();
+    
+    /* clutter TEST all over it if the certs are part of a testing process :) */
+    if (Config::get_config('capi_test')) {
+      $cn_prefix = "TEST PERSON ";
+      $o_prefix = "TEST UNIVERSITY ";
+      $postfields_sign_req["subject_domainComponent_7"] = "TEST CERTIFICATE";
+    }
+   
+    /* set all the required post parameters for upload */
+    $postfields_sign_req["ap"] = $ap;
+    $postfields_sign_req["csr"] = $this->user_csr;
+    $postfields_sign_req["days"] = $days;
+    $postfields_sign_req["successURL"] = "none";
+    $postfields_sign_req["errorURL"] = "none";
+    $postfields_sign_req["caCertificateId"] = $ca_cert_id;
+    /* manually compose the subject. Necessary, because we want to have Terena domainComponents */
+    $postfields_sign_req["subject_commonName_1"] = $cn_prefix . $this->person->get_valid_cn();
+    $postfields_sign_req["subject_organizationName_2"] = $o_prefix . $this->person->get_orgname();
+    $postfields_sign_req["subject_countryName_3"] = $this->person->get_country();
+    $postfields_sign_req["subject_domainComponent_4"] = "tcs";
+    $postfields_sign_req["subject_domainComponent_5"] = "terena";
+    $postfields_sign_req["subject_domainComponent_6"] = "org";
+    
+    $ch = curl_init($sign_endpoint);
+    curl_setopt($ch, CURLOPT_HEADER,0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2);
+    curl_setopt($ch, CURLOPT_POST,1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS,$postfields_sign_req);
+    $data=curl_exec($ch);
+    curl_close($ch);
+    
+    $params=array();
+    parse_str($data, $params);  
+    /*
+     * If something has failed, an errorCode parameter will be set in the return message
+     */
+    if (isset($params['errorCode'])) {  
+      echo "Received an error when uploading the CSR to the remote CA: " . $params['errorMessage'] . "<br />\n";
+      return false;
+    } else {
+      $this->order_number = $params['orderNumber'];
+      $this->collection_code = $params['collectionCode'];
+      
+      Logger::log_event(LOG_INFO, "Uploaded CSR to remote CA. Received order number " .
+                                  $this->order_number .
+                                  " and collection code " .
+                                  $this->collection_code .
+                                  " for user " .
+                                  $this->person->get_valid_cn() .
+                                  " Person contacted us from " .
+                                  $_SERVER['REMOTE_ADDR']);
+      
+      MDB2Wrapper::update("INSERT INTO order_store(auth_key, common_name, order_number, collection_code, order_date, authorized) VALUES(?, ?, ?, ?, now(),false)",
+                        array('text', 'text', 'text', 'text'),
+                        array($auth_key, $this->person->get_valid_cn(), $this->order_number, $this->collection_code));
+      
+      return true;
+    }
+  }
+  
+  /*
+   * After the CSR has been uploaded to the Comodo certificate apply API, it must be authorized by the user.
+   * Call the authorize endpoint and update the respective DB entry.
+   */ 
+  private function capi_authorize_csr() 
+    {
+    $authorize_endpoint = Config::get_config('capi_auth_endpoint');
+    $login_name = Config::get_config('capi_login_name');
+    $login_pw = Config::get_config('capi_login_pw');
+    
+    $ch = curl_init($authorize_endpoint);
+    $postfields_auth = array();
+    $postfields_auth["loginName"] = $login_name;
+    $postfields_auth["loginPassword"] = $login_pw;
+    $postfields_auth["orderNumber"] = $this->order_number;
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+    curl_setopt($ch, CURLOPT_POST,1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_auth);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $data = curl_exec($ch);
+    curl_close($ch);
+    
+    if ((int)$data < 0) {
+      echo "Received an error when authorizing the CSR with orderNumber $this-order_number: $data <br />\n";
+      return false;
+    } else {
+      /* update the database-entry to reflect the autorization-state */
+      MDB2Wrapper::update("UPDATE order_store SET authorized=true WHERE order_number=? AND collection_code=?",
+                          array('text', 'text'),
+                          array($this->order_number, $this->collection_code));
+      Logger::log_event(LOG_NOTICE, "Authorized remote certificate for person ".
+                                    $this->person->get_valid_cn().
+                                    " with order number " .
+                                    $this->order_number .
+                                    " Person contacted us from ".
+                                    $_SERVER['REMOTE_ADDR']);
 
+      return true;
+    }
+  } /* end upload_csr */
 
   /* verify_csr()
    *
