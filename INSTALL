@@ -20,11 +20,11 @@ To install Confusa
  - Apache2
  - PHP5
  - PEAR with MDB2.MySQL
- - 
+ - php5-curl (when using remote CA for accessing the REST API)
 === Install process ===
 1) Install Apache2 with PHP5 support.
 2) Install mysql5
-3) Install php5-mysql and PEAR::MDB2_mysql_driver
+3) Install php5-mysql, php5-curl and PEAR::MDB2_mysql_driver
 4) Configure Apache to use SSL, use the following lines in your 
    apache2/sites-enabled/appropriate.config.file and php5-openssl
 
@@ -130,3 +130,39 @@ f) Add a cron-job that takes backup of the database. The most critical
 
 7) Test and verify that the system is operational before you allow
    public access.
+
+8*) Enable OAuth authorization for third party applications. OAuth has the 
+advantage that Confusa-based non-browser applications won't need to maintain cookies any more
+and that it protects against replay attacks. Simplesamlphp supports OAuth in more recent versions.
+
+In order to enable OAuth in Confusa, it must first be enabled in simplesamlphp. chdir to the OAuth
+module directory (<simplesaml-dir>/modules/oauth/ and create a file named enable there, e.g. by executing "touch enable".
+
+OAuth uses the SAML2 AuthN module for the authentication phase. Hence, make sure that that module is enabled
+as well (see <simplesaml-dir>/modules/saml2) and add a metadata-entry for it in <simplesaml-dir>/metadata/saml2-sp.hosted.php.
+You can just copy the default one, yielding for instance:
+
+'https://slcs.example.com/simplesaml/module.php/saml2/sp/metadata.php?source=saml2' => array(
+  'host'  => '__DEFAULT__',
+  'authproc' => array(
+    50 => 'core:IdPMap',
+    60 => 'core:ConfusaAttributeMap',
+    61 => 'core:CountryMap'
+  ),
+  'ForceAuthn' => true
+)
+
+Until IdP discovery will be implemented in simplesamlphp's SAML2 module, the IdP must be hardcoded in the configuration. E.g. add/edit
+the following line to <simplesamlphp-dir>/config/authsources.php:
+
+'saml2' => array(
+            'saml2:SP',
+            'idp' => 'https://exampleidp.example.com',
+),
+
+Bear in mind that the IdP with which you wish to establish the above trust relationship needs to accept the metadata of the
+saml2 module on your side, not only your standard metadata. And OAuth may oblige you to create a directory /tmp/oauth with write
+permissions for the webserver-process, which it will use as a token store. 
+
+
+*) optional
