@@ -48,9 +48,22 @@ $confusa_config = array(
         /* For CA handling */
         'standalone'            => True, /* true: no extra CA, use php to sign
                                           * key */
-
+        /* ca_host and ca_port can be removed */
         'ca_host'               => 'localhost',
         'ca_port'               => '9443',
+                                        /* The following fields can be used when the Comodo-API is called
+                                         * for certificate creation */
+        'capi_apply_endpoint'          => 'https://secure.comodo.com/products/!applyCustomClientCert',
+        'capi_auth_endpoint'           => 'https://secure.comodo.net/products/!AutoAuthorize',
+        'capi_collect_endpoint'        => 'https://secure.comodo.net/products/download/CollectCCC',
+        'capi_ap_name'                 => '',
+        'capi_login_name'               => '',
+        'capi_login_pw'                 => '',
+        'capi_escience_id'                      => '285',
+        /* if we ever want to issue e-mail certificates */
+        'capi_personal_id'                      => '284',
+        /* will insert a 'TEST' string into the certificate subjects if set to true */
+        'capi_test'                             => true,
 	'ca_cert_name'		=> '',
 	'ca_cert_path'		=> 'cert_handle/certs/',
 	'ca_key_name'		=> '',
