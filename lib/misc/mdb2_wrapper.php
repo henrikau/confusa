@@ -57,9 +57,10 @@ class MDB2Wrapper
           $stmnt->free();
 
 		  $i = 0;
-          while($row = $res->fetchRow(MDB2_FETCHMODE_ASSOC))
+          while($row = $res->fetchRow(MDB2_FETCHMODE_ASSOC)) {
                $results[$i] = $row;
                $i = $i+1;
+          }
 
           return $results;
      } /* end execute */
