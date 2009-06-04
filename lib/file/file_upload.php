@@ -20,6 +20,8 @@
  * Author: Henrik Austad <henrik.austad@uninett.no>
  *
  */
+include_once('config.php');
+
 class FileUpload {
   private $open_file;		/* the field of $_FILES which we want to read */
   private $filename;
@@ -94,7 +96,10 @@ class FileUpload {
 	    $this->fcont = $fd;
 	  }
 	  $fuptr = $this->test_func;
-	  $this->file_ok = $fuptr($this->fcont, pubkey_hash($this->fcont, true));
+	  /* truncate the pubkey_hash to the length defined in the config script */
+	  $hash=pubkey_hash($this->fcont, true);
+	  $auth_url = substr($hash,0,(int)Config::get_config('auth_length'));
+	  $this->file_ok = $fuptr($this->fcont, $auth_url);
 	}
 	else {
 	  $this->fcont = null;
