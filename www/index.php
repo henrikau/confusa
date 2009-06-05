@@ -190,9 +190,14 @@ function send_cert()
      else if (isset($_GET['file_cert']))
           $auth_key = htmlentities($_GET['file_cert']);
 
-     $res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=?",
-                                 array('integer', 'text'),
-                                 array($auth_key, $person->get_valid_cn()));
+    if (Config::get_config('standalone')) {
+      $res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=?",
+                                     array('integer', 'text'),
+                                     array($auth_key, $person->get_valid_cn()));
+    } else {
+      $res = get_remote_cert($auth_key);
+    }
+
      if (count($res)==1) {
           if (isset($_GET['email_cert'])) {
                $mm = new MailManager($person,
@@ -214,6 +219,55 @@ function send_cert()
      return $send_res;
 } /* end send_cert */
 
+/*
+ * Get a certificate from a remote endpoint (e.g. Comodo) to send it to the user. Maybe we can think about caching the certs locally for some time, in order
+ * not to have to make remote calls all the time.
+ */
+function get_remote_cert($auth_key) {
+   global $person;
+   $return_res = array();
+   $res = MDB2Wrapper::execute("SELECT collection_code, order_number FROM order_store WHERE auth_key=? AND common_name=?",
+                                  array('text', 'text'),
+                                  array($auth_key, $person->get_valid_cn()));
+
+    //  echo "orderNumber " . $res[0]['order_number'] . " collectionCode " . $res[0]['collection_code'] . " count " . count($res) . "<br />\n";
+
+      if (count($res) >= 1) {
+
+        Logger::log_event(LOG_NOTICE, "Looked up $authvar in the order-store. Trying to retrieve certificate with order number " .
+                                      $res[0]['order_number'] .
+                                      " from the Comodo collect API. Sending to user with ip " .
+                                      $_SERVER['REMOTE_ADDR']);
+
+        $collectionCode = $res[0]['collection_code'];
+        $collect_endpoint = Config::get_config('capi_collect_endpoint') . "?collectionCode=" . $collectionCode . "&queryType=2";
+        $postfields_download["responseType"]="2";
+        $postfields_download["responseEncoding"]="0";
+        $postfields_download["responseMimeType"]="application/x-x509-user-cert";
+
+        $ch = curl_init($collect_endpoint);
+        curl_setopt($ch, CURLOPT_HEADER,0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+        $data=curl_exec($ch);
+        curl_close($ch);
+
+        /* The first character of the return message is always a status code
+         */
+        $status=(int)$data;
+
+        if ($status == 0) {
+          echo "The certificate is being processed and is not yet available<br />\n";
+        } else if ($status == 2) {
+          $return_res[0]['cert'] = substr($data,2);
+        } else {
+          echo "Received error message $data <br />\n";
+        }
+      }
+
+    return $return_res;
+}
 
 /* show_db_cert
  *
@@ -222,9 +276,15 @@ function send_cert()
 function show_db_cert()
 {
 	global $person;
-	$res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=? AND valid_untill > current_timestamp()",
-				    array('text'),
-				    array($person->get_valid_cn()));
+  if (Config::get_config('standalone')) {
+    $res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=? AND valid_untill > current_timestamp()",
+              array('text'),
+              array($person->get_valid_cn()));
+  } else {
+    $res = MDB2Wrapper::execute("SELECT auth_key, common_name AS 'cert_owner' FROM order_store WHERE common_name=?",
+              array('text'),
+              array($person->get_valid_cn()));
+  }
 	$num_received = count($res);
 	if ($num_received > 0 && isset($res[0]['auth_key'])) {
 		$counter = 0;
@@ -241,10 +301,18 @@ function show_db_cert()
 			$row = $res[$counter];
 			$counter++;
 			echo "<tr>\n";
-			echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email</A> ]</td>\n";
-			echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download</A> ]</td>\n";
-			echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A> ]</td>\n";
-			echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A> ]</td>\n";
+      if (Config::get_config('standalone')) {
+        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email</A> ]</td>\n";
+        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download</A> ]</td>\n";
+        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A> ]</td>\n";
+        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A> ]</td>\n";
+      } else {
+        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email</A> ]</td>\n";
+        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download</A> ]</td>\n";
+        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A> ]</td>\n";
+        /* deletion of a certificate won't make sense with the remote API. When we implement the remote-revocation-API we can provide a revoke link here. */
+        echo "<td></td>\n";
+      }
 			echo "<td>".$row['auth_key']."</td>\n";
 			echo "<td>".$row['cert_owner']."</td>\n";
 			echo "</tr>\n";
@@ -304,9 +372,14 @@ function inspect_cert($auth_key)
 {
 	global $person;
 	$status = false;
+  if (Config::get_config('standalone')) {
         $res = mdb2wrapper::execute("select * from cert_cache where auth_key=? and cert_owner=?",
                                     array('text', 'text'),
                                     array($auth_key, $person->get_valid_cn()));
+  } else {
+    $res = get_remote_cert($auth_key);
+  }
+
 	if(count($res) == 1) {
 		echo "<BR>\n";
 		echo "<BR>\n";
@@ -315,7 +388,9 @@ function inspect_cert($auth_key)
 			echo "[ <a href=\"".$_server['php_self']."?email_cert=$auth_key\">Email</a> ]\n";
 			echo "[ <a href=\"".$_server['php_self']."?file_cert=$auth_key\">Download</a> ]\n";
 			echo "[ <B>Inspect</B> ]\n";
-			echo "[ <a href=\"".$_server['php_self']."?delete_cert=$auth_key\">Delete</a> ]\n";
+			if (Config::get_config('standalone')) {
+			  echo "[ <a href=\"".$_server['php_self']."?delete_cert=$auth_key\">Delete</a> ]\n";
+      }
 			echo "<pre>$text</pre>\n";
 			$status = true;
 		} else {
