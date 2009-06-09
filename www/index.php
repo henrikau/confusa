@@ -189,6 +189,8 @@ function send_cert()
           $auth_key = htmlentities($_GET['email_cert']);
      else if (isset($_GET['file_cert']))
           $auth_key = htmlentities($_GET['file_cert']);
+     else
+          return $send_res;
 
     if (Config::get_config('standalone')) {
       $res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=?",
