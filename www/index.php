@@ -225,50 +225,46 @@ function send_cert()
  * Get a certificate from a remote endpoint (e.g. Comodo) to send it to the user. Maybe we can think about caching the certs locally for some time, in order
  * not to have to make remote calls all the time.
  */
-function get_remote_cert($auth_key) {
+function get_remote_cert($order_number) {
    global $person;
    $return_res = array();
-   $res = MDB2Wrapper::execute("SELECT collection_code, order_number FROM order_store WHERE auth_key=? AND common_name=?",
-                                  array('text', 'text'),
-                                  array($auth_key, $person->get_valid_cn()));
 
-    //  echo "orderNumber " . $res[0]['order_number'] . " collectionCode " . $res[0]['collection_code'] . " count " . count($res) . "<br />\n";
+   Logger::log_event(LOG_NOTICE, "Trying to retrieve certificate with order number " .
+                                  $order_number .
+                                  " from the Comodo collect API. Sending to user with ip " .
+                                  $_SERVER['REMOTE_ADDR']);
 
-      if (count($res) >= 1) {
+   $login_name = Config::get_config('capi_login_name');
+   $login_pw = Config::get_config('capi_login_pw');
+   $collect_endpoint = Config::get_config('capi_collect_endpoint') .
+                      "?loginName=" . $login_name . "&loginPassword=" . $login_pw .
+                      "&orderNumber=" . $order_number . "&queryType=2";
 
-        Logger::log_event(LOG_NOTICE, "Looked up $authvar in the order-store. Trying to retrieve certificate with order number " .
-                                      $res[0]['order_number'] .
-                                      " from the Comodo collect API. Sending to user with ip " .
-                                      $_SERVER['REMOTE_ADDR']);
+   $postfields_download["responseType"]="2";
+   $postfields_download["responseEncoding"]="0";
+   $postfields_download["responseMimeType"]="application/x-x509-user-cert";
 
-        $collectionCode = $res[0]['collection_code'];
-        $collect_endpoint = Config::get_config('capi_collect_endpoint') . "?collectionCode=" . $collectionCode . "&queryType=2";
-        $postfields_download["responseType"]="2";
-        $postfields_download["responseEncoding"]="0";
-        $postfields_download["responseMimeType"]="application/x-x509-user-cert";
+   $ch = curl_init($collect_endpoint);
+   curl_setopt($ch, CURLOPT_HEADER,0);
+   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+   curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+   $data=curl_exec($ch);
+   curl_close($ch);
 
-        $ch = curl_init($collect_endpoint);
-        curl_setopt($ch, CURLOPT_HEADER,0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-        $data=curl_exec($ch);
-        curl_close($ch);
+   /* The first character of the return message is always a status code
+   */
+   $status=(int)$data;
 
-        /* The first character of the return message is always a status code
-         */
-        $status=(int)$data;
+   if ($status == 0) {
+     echo "The certificate is being processed and is not yet available<br />\n";
+   } else if ($status == 2) {
+     $return_res[0]['cert'] = substr($data,2);
+   } else {
+     echo "Received error message $data <br />\n";
+   }
 
-        if ($status == 0) {
-          echo "The certificate is being processed and is not yet available<br />\n";
-        } else if ($status == 2) {
-          $return_res[0]['cert'] = substr($data,2);
-        } else {
-          echo "Received error message $data <br />\n";
-        }
-      }
-
-    return $return_res;
+   return $return_res;
 }
 
 /* show_db_cert
@@ -283,12 +279,11 @@ function show_db_cert()
               array('text'),
               array($person->get_valid_cn()));
   } else {
-    $res = MDB2Wrapper::execute("SELECT auth_key, common_name AS 'cert_owner' FROM order_store WHERE common_name=?",
-              array('text'),
-              array($person->get_valid_cn()));
+    $res = list_remote_certs();
   }
 	$num_received = count($res);
-	if ($num_received > 0 && isset($res[0]['auth_key'])) {
+	if ($num_received > 0 && isset($res[0]['auth_key'])
+	                      || isset($res[0]['order_number'])) {
 		$counter = 0;
 		echo "<table class=\"small\">\n";
 		echo "<tr>";
@@ -308,14 +303,15 @@ function show_db_cert()
         echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download</A> ]</td>\n";
         echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A> ]</td>\n";
         echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A> ]</td>\n";
+        echo "<td>".$row['auth_key']."</td>\n";
       } else {
         echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email</A> ]</td>\n";
         echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download</A> ]</td>\n";
         echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A> ]</td>\n";
         /* deletion of a certificate won't make sense with the remote API. When we implement the remote-revocation-API we can provide a revoke link here. */
         echo "<td></td>\n";
+        echo "<td>".$row['order_number']."</td>\n";
       }
-			echo "<td>".$row['auth_key']."</td>\n";
 			echo "<td>".$row['cert_owner']."</td>\n";
 			echo "</tr>\n";
 		}
@@ -323,6 +319,47 @@ function show_db_cert()
 	}
 	echo "<br>\n";
 } /* end show_db_cert() */
+
+function list_remote_certs()
+{
+  global $person;
+  $list_endpoint = Config::get_config('capi_listing_endpoint');
+  $postfields_list["loginName"] = Config::get_config('capi_login_name');
+  $postfields_list["loginPassword"] = Config::get_config('capi_login_pw');
+
+  $test_prefix = "";
+  if (Config::get_config('capi_test')) {
+    /* TODO: this should go into a constant. However, I don't want to put it into confusa_config, since people shouldn't directly fiddle with it */
+    $test_prefix = "TEST PERSON ";
+  }
+
+  $postfields_list["commonName"] = $test_prefix . $person->get_valid_cn();
+  $ch = curl_init($list_endpoint);
+  curl_setopt($ch, CURLOPT_HEADER,0);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+  curl_setopt($ch, CURLOPT_POST,1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_list);
+  $data=curl_exec($ch);
+  curl_close($ch);
+
+  $params=array();
+  $res = array();
+  parse_str($data, $params);
+
+  if ($params["errorCode"] == "0") {
+    for ($i = 1; $i <= $params['noOfResults']; $i = $i+1) {
+      $res[$i-1]['order_number'] = $params[$i . "_orderNumber"];
+      $res[$i-1]['cert_owner'] = $person->get_valid_cn();
+    }
+  } else {
+    echo "Errors occured when listing user certificates: " . $params["errorMessage"];
+  }
+
+  return $res;
+
+} /* end list_remote_certs() */
 
 /* inspect_csr
  *
