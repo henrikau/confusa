@@ -14,6 +14,8 @@ require_once('logger.php');
 
 /* global config */
 require_once('config.php');
+require_once('cert_manager_online.php');
+require_once('cert_manager_standalone.php');
 
 /* class Framework
  *
@@ -33,6 +35,7 @@ class Framework {
                                  * *never* available for unauthenticated users */
     private $person;
     private $config;
+    private $cert_manager;      /* cert-manager bound to the framework */
 
     public function __construct($content_page) {
          if (!Config::get_config('valid_install')) {
@@ -42,6 +45,12 @@ class Framework {
       $this->f_content = $content_page;
       $this->flogin = false;
       $this->person = new Person();
+
+      if (Config::get_config('standalone')) {
+        $this->cert_manager = new CertManager_Standalone($this->person);
+      } else {
+        $this->cert_manager = new CertManager_Online($this->person);
+      }
     }
 
     public function force_login() {
@@ -59,10 +68,17 @@ class Framework {
 	$uname = "anonymous";
 	if($this->person->is_auth())
 		$uname = $this->person->get_valid_cn();
+
+        /* let the cert_manager have a decorated person object */
+        $this->cert_manager->update_person($this->person);
         return $this->person;
     }
 
-    public function render_page() {
+   public function get_cert_manager() {
+        return $this->cert_manager;
+   }
+
+   public function render_page() {
         /* check the authentication-thing, catch the login-hook
          * This is done via confusa_auth
          */
