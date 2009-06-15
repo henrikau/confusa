@@ -140,7 +140,11 @@ class Person{
     public function get_common_name() { return $this->common_name; }
 
     public function get_valid_cn() {
-	    return $this->get_safe_name() . " " . $this->get_common_name();
+        if (isset($this->given_name)) {
+	        return $this->get_safe_name() . " " . $this->get_common_name();
+        } else {
+            return $this->get_common_name();
+        }
     }
     public function set_email($email) {
         if (isset($email)) 
