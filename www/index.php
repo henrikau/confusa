@@ -6,6 +6,9 @@ include_once('pw.php');
 include_once('csr_lib.php');
 include_once('mdb2_wrapper.php');
 include_once('logger.php');
+include_once('certificate_retrieval.php');
+include_once('certificate_query.php');
+include_once('key_sign.php');
 
 $person = null;
 $fw = new Framework('keyhandle');
@@ -49,12 +52,12 @@ function keyhandle($pers)
  */
 function process_file_csr()
 {
-	global $person;
+    global $fw;
+    $cm = $fw->get_cert_manager();
 	/* process_key($person, 'user_csr'); */
 	if(isset($_FILES['user_csr']['name'])) {
 		$fu = new FileUpload('user_csr', true, 'test_content');
 		if ($fu->file_ok()) {
-			$cm = new CertManager($fu->get_content(), $person);
 			/* CertManager will test content of CSR before sending it off for signing
                          *
                          * As we upload the key manually, the user-script won't
@@ -63,14 +66,18 @@ function process_file_csr()
                          * of characters. It will contain more letters than the
                          * user-script (which uses sha1sum of some random text).
                          */
-			if ($cm->sign_key(pubkey_hash($fu->get_content(), true)))
-				return true;
-                }
-                echo "<FONT COLOR=\"RED\"><B>\n";
-                echo "There were errors encountered when processing the file.<BR>\n";
-                echo "Please create a new keypair and upload a new CSR.<BR>\n";
-                echo "</B></FONT>\n";
+            try {
+                $cm->sign_key(pubkey_hash($fu->get_content(), true), $fu->get_content());
+            } catch (KeySignException $e) {
+                echo $e->getMessage() . "<br />\n";
+            }
+        } else {
+                    echo "<FONT COLOR=\"RED\"><B>\n";
+                    echo "There were errors encountered when processing the file.<BR>\n";
+                    echo "Please create a new keypair and upload a new CSR.<BR>\n";
+                    echo "</B></FONT>\n";
         }
+    }
         include('upload_form.html');
         return false;
 }
@@ -111,7 +118,6 @@ function process_cert_flags_set()
  */
 function process_db_csr()
 {
-	global $person;
 	$res = false;
 	if (isset($_GET['delete_csr'])) {
              $res = delete_csr(htmlentities($_GET['delete_csr']));
@@ -132,7 +138,6 @@ function process_db_csr()
 
 function process_db_cert()
 {
-     global $person;
      $res = false;
      if(isset($_GET['delete_cert'])) {
           $res = delete_cert(htmlentities($_GET['delete_cert']));
@@ -154,14 +159,17 @@ function process_db_cert()
 function approve_csr($auth_token)
 {
      global $person;
+     global $fw;
      $status = false;
      $csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
                                      array('text', 'text'),
                                      array($auth_token, $person->get_valid_cn()));
      if (count($csr_res) == 1) {
           $csr = $csr_res[0]['csr'];
-          $cm = new CertManager($csr, $person);
-          if (!$cm->sign_key($auth_token)) {
+          $cm = $fw->get_cert_manager();
+          try {
+            $cm->sign_key($auth_token, $csr);
+          } catch (KeySignException $e) {
                echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
                return false;
           }
@@ -192,21 +200,17 @@ function send_cert()
      else
           return $send_res;
 
-    if (Config::get_config('standalone')) {
-      $res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=?",
-                                     array('integer', 'text'),
-                                     array($auth_key, $person->get_valid_cn()));
-    } else {
-      $res = get_remote_cert($auth_key);
-    }
+     try {
+      $cm = $fw->get_cert_manager();
+      $cert = $cm->get_cert($auth_key);
 
-     if (count($res)==1) {
+      if (isset($cert)) {
           if (isset($_GET['email_cert'])) {
                $mm = new MailManager($person,
                                      Config::get_config('sys_from_address'),
                                      "Here is your newly signed certificate", 
                                      "Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use");
-               $mm->add_attachment($res[0]['cert'], 'usercert.pem');
+               $mm->add_attachment($cert, 'usercert.pem');
                if (!$mm->send_mail()) {
                     echo "Could not send mail properly!<BR>\n";
                }
@@ -214,58 +218,15 @@ function send_cert()
           }
           else if (isset($_GET['file_cert'])) {
                require_once('file_download.php');
-               download_file($res[0]['cert'], 'usercert.pem');
+               download_file($cert, 'usercert.pem');
                $send_res = true;
           }
+      }
+     } catch (CertificateRetrievalException $e) {
+        echo $e->getMessage();
      }
      return $send_res;
 } /* end send_cert */
-
-/*
- * Get a certificate from a remote endpoint (e.g. Comodo) to send it to the user. Maybe we can think about caching the certs locally for some time, in order
- * not to have to make remote calls all the time.
- */
-function get_remote_cert($order_number) {
-   global $person;
-   $return_res = array();
-
-   Logger::log_event(LOG_NOTICE, "Trying to retrieve certificate with order number " .
-                                  $order_number .
-                                  " from the Comodo collect API. Sending to user with ip " .
-                                  $_SERVER['REMOTE_ADDR']);
-
-   $login_name = Config::get_config('capi_login_name');
-   $login_pw = Config::get_config('capi_login_pw');
-   $collect_endpoint = Config::get_config('capi_collect_endpoint') .
-                      "?loginName=" . $login_name . "&loginPassword=" . $login_pw .
-                      "&orderNumber=" . $order_number . "&queryType=2";
-
-   $postfields_download["responseType"]="2";
-   $postfields_download["responseEncoding"]="0";
-   $postfields_download["responseMimeType"]="application/x-x509-user-cert";
-
-   $ch = curl_init($collect_endpoint);
-   curl_setopt($ch, CURLOPT_HEADER,0);
-   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-   curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-   curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-   $data=curl_exec($ch);
-   curl_close($ch);
-
-   /* The first character of the return message is always a status code
-   */
-   $status=(int)$data;
-
-   if ($status == 0) {
-     echo "The certificate is being processed and is not yet available<br />\n";
-   } else if ($status == 2) {
-     $return_res[0]['cert'] = substr($data,2);
-   } else {
-     echo "Received error message $data <br />\n";
-   }
-
-   return $return_res;
-}
 
 /* show_db_cert
  *
@@ -274,16 +235,16 @@ function get_remote_cert($order_number) {
 function show_db_cert()
 {
 	global $person;
-  if (Config::get_config('standalone')) {
-    $res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=? AND valid_untill > current_timestamp()",
-              array('text'),
-              array($person->get_valid_cn()));
-  } else {
-    $res = list_remote_certs();
-  }
+    global $fw;
+    $cm = $fw->get_cert_manager();
+    try {
+        $res = $cm->get_cert_list();
+    } catch (ConfusaGenException $e) {
+        echo $e->getMessage();
+    }
+
 	$num_received = count($res);
-	if ($num_received > 0 && isset($res[0]['auth_key'])
-	                      || isset($res[0]['order_number'])) {
+	if ($num_received > 0) {
 		$counter = 0;
 		echo "<table class=\"small\">\n";
 		echo "<tr>";
@@ -305,9 +266,9 @@ function show_db_cert()
         echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A> ]</td>\n";
         echo "<td>".$row['auth_key']."</td>\n";
       } else {
-        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email</A> ]</td>\n";
-        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download</A> ]</td>\n";
-        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A> ]</td>\n";
+        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['order_number']."\">Email</A> ]</td>\n";
+        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['order_number']."\">Download</A> ]</td>\n";
+        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['order_number']."\">Inspect</A> ]</td>\n";
         /* deletion of a certificate won't make sense with the remote API. When we implement the remote-revocation-API we can provide a revoke link here. */
         echo "<td></td>\n";
         echo "<td>".$row['order_number']."</td>\n";
@@ -319,47 +280,6 @@ function show_db_cert()
 	}
 	echo "<br>\n";
 } /* end show_db_cert() */
-
-function list_remote_certs()
-{
-  global $person;
-  $list_endpoint = Config::get_config('capi_listing_endpoint');
-  $postfields_list["loginName"] = Config::get_config('capi_login_name');
-  $postfields_list["loginPassword"] = Config::get_config('capi_login_pw');
-
-  $test_prefix = "";
-  if (Config::get_config('capi_test')) {
-    /* TODO: this should go into a constant. However, I don't want to put it into confusa_config, since people shouldn't directly fiddle with it */
-    $test_prefix = "TEST PERSON ";
-  }
-
-  $postfields_list["commonName"] = $test_prefix . $person->get_valid_cn();
-  $ch = curl_init($list_endpoint);
-  curl_setopt($ch, CURLOPT_HEADER,0);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-  curl_setopt($ch, CURLOPT_POST,1);
-  curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_list);
-  $data=curl_exec($ch);
-  curl_close($ch);
-
-  $params=array();
-  $res = array();
-  parse_str($data, $params);
-
-  if ($params["errorCode"] == "0") {
-    for ($i = 1; $i <= $params['noOfResults']; $i = $i+1) {
-      $res[$i-1]['order_number'] = $params[$i . "_orderNumber"];
-      $res[$i-1]['cert_owner'] = $person->get_valid_cn();
-    }
-  } else {
-    echo "Errors occured when listing user certificates: " . $params["errorMessage"];
-  }
-
-  return $res;
-
-} /* end list_remote_certs() */
 
 /* inspect_csr
  *
@@ -409,37 +329,36 @@ function inspect_csr($auth_token) {
  */
 function inspect_cert($auth_key)
 {
-	global $person;
+    global $fw;
 	$status = false;
-  if (Config::get_config('standalone')) {
-        $res = mdb2wrapper::execute("select * from cert_cache where auth_key=? and cert_owner=?",
-                                    array('text', 'text'),
-                                    array($auth_key, $person->get_valid_cn()));
-  } else {
-    $res = get_remote_cert($auth_key);
-  }
 
-	if(count($res) == 1) {
-		echo "<BR>\n";
-		echo "<BR>\n";
-		$csr_test = openssl_x509_read($res[0]['cert']);
-		if (openssl_x509_export($csr_test, $text, false)) {
-			echo "[ <a href=\"".$_server['php_self']."?email_cert=$auth_key\">Email</a> ]\n";
-			echo "[ <a href=\"".$_server['php_self']."?file_cert=$auth_key\">Download</a> ]\n";
-			echo "[ <B>Inspect</B> ]\n";
-			if (Config::get_config('standalone')) {
-			  echo "[ <a href=\"".$_server['php_self']."?delete_cert=$auth_key\">Delete</a> ]\n";
-      }
-			echo "<pre>$text</pre>\n";
-			$status = true;
-		} else {
-			/* not able to show it properly, dump content to screen */
-			echo "There were errors encountered when formatting the certificate. Here is a raw-dump.<BR>\n";
-			echo "<PRE>\n";
-			print_r ($res);
-			echo "</PRE>\n";
-		}
-	}
+    try {
+        $cm = $fw->get_cert_manager();
+        $cert = $cm->get_cert($auth_key);
+        if (isset($cert)) {
+            echo "<BR>\n";
+            echo "<BR>\n";
+            $csr_test = openssl_x509_read($cert);
+            if (openssl_x509_export($csr_test, $text, false)) {
+                echo "[ <a href=\"".$_server['php_self']."?email_cert=$auth_key\">Email</a> ]\n";
+                echo "[ <a href=\"".$_server['php_self']."?file_cert=$auth_key\">Download</a> ]\n";
+                echo "[ <B>Inspect</B> ]\n";
+                if (Config::get_config('standalone')) {
+                  echo "[ <a href=\"".$_server['php_self']."?delete_cert=$auth_key\">Delete</a> ]\n";
+                }
+                echo "<pre>$text</pre>\n";
+                $status = true;
+            } else {
+                /* not able to show it properly, dump content to screen */
+                echo "There were errors encountered when formatting the certificate. Here is a raw-dump.<BR>\n";
+                echo "<PRE>\n";
+                print_r ($cert);
+                echo "</PRE>\n";
+            }
+        }
+    } catch (ConfusaGenException $e) {
+        echo $e->getMessage();
+    }
 	return $status;
 }
 
