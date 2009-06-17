@@ -105,5 +105,21 @@ class CertManager_Standalone extends CertManager
             throw new CertificateRetrievalException($msg);
         }
     }
+
+    /*
+     * Revoke the certificate identified by key
+     * Key is an auth_var
+     */
+    public function revoke_cert($key, $reason)
+    {
+        /* TODO: method stub
+         *
+         * At a first glance there seems to be no revoke function in php-openssl.
+         * shell_exec('openssl ca -revoke...') would be possible but... eew...
+         * Generously leaving this decision to Henrik ;-)
+         *
+        */
+        echo "Revocation for standalone configuration is to be implemented!";
+    }
 } /* end class CertManager_Standalone */
 ?>
