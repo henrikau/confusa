@@ -63,6 +63,14 @@ abstract class CertManager
    */
   abstract function get_cert($key);
 
+   /*
+   * Revoke a certificate associated to key
+   *
+   * @param key An identifier mapping to a certificate, dependant on the implementation.
+   * @param reason The reason for revocation, as specified in RFC 5280
+   */
+  abstract function revoke_cert($key, $reason);
+
   /*
    * If the person has been changed in the framework or elsewhere, it can be updated here
    */
