@@ -56,6 +56,7 @@ $confusa_config = array(
         'capi_apply_endpoint'          => 'https://secure.comodo.com/products/!applyCustomClientCert',
         'capi_auth_endpoint'           => 'https://secure.comodo.net/products/!AutoAuthorize',
         'capi_collect_endpoint'        => 'https://secure.comodo.net/products/download/CollectCCC',
+        'capi_revoke_endpoint'              => 'https://secure.comodo.net/products/!AutoRevokeCCC',
         'capi_ap_name'                 => '',
         'capi_login_name'               => '',
         'capi_login_pw'                 => '',
