@@ -7,6 +7,7 @@ require_once('certificate_query.php');
 require_once('certificate_retrieval.php');
 require_once('db_query.php');
 require_once('mdb2_wrapper.php');
+require_once('remote_api.php');
 
 /**
  * CertManager_Online. Remote extension for CertManager.
@@ -180,6 +181,79 @@ class CertManager_Online extends CertManager
         }
 
         return $return_res;
+    }
+
+    /*
+     * Revoke certificate identified by key using Comodo's Online AutoRevoke
+     * API
+     *
+     * @param key The key identifying the certificate
+     * @param reason A reason for revocation, as specified in RFC 5280
+     *
+     * @throws RemoteAPIException if revocation fails
+     */
+    public function revoke_cert($key, $reason)
+    {
+        $key = $this->_transform_to_order_number($key);
+
+        $return_res = NULL;
+        Logger::log_event(LOG_NOTICE, "Trying to revoke certificate with order number " .
+                                      $key .
+                                      " using Comodo's auto-revoke-API. Sending to user with ip " .
+                                      $_SERVER['REMOTE_ADDR']);
+
+        $revoke_endpoint = Config::get_config('capi_revoke_endpoint');
+        $login_name = Config::get_config('capi_login_name');
+        $login_pw = Config::get_config('capi_login_pw');
+        $postfields_revoke = array();
+        $postfields_revoke["loginName"] = $login_name;
+        $postfields_revoke["loginPassword"] = $login_pw;
+        $postfields_revoke["revocationReason"] = $reason;
+        $postfields_revoke["orderNumber"] = $key;
+        $postfields_revoke["includeInCRL"] = 'Y';
+
+        /* will not revoke test certificates? */
+        if (Config::get_config('capi_test')) {
+            $postfields_revoke["test"] = 'Y';
+        }
+
+        $ch = curl_init($revoke_endpoint);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_revoke);
+        $data = curl_exec($ch);
+        curl_close($ch);
+
+        /* try to catch all kinds of errors that can happen when connecting */
+        if ($data === FALSE) {
+            throw new RemoteAPIException("Could not connect to revoke-API! " .
+                                        "Check Confusa configuration!<br />\n"
+            );
+        } else {
+            $pos = stripos($data, "\n");
+
+            if ($pos == FALSE) {
+                throw new RemoteAPIException("Response from RevokeAPI unexpected! " .
+                                             "Check Confusa configuration<br />\n."
+                );
+            } else {
+                $STATUS_OK = "0";
+
+                $status = substr($data, 0, $pos);
+
+                switch($status) {
+                    case $STATUS_OK:  echo "Certificate successfully revoked!<br />\n";
+                                      break;
+                    default: throw new RemoteAPIException("Received error message " .
+                                                          $data .
+                                                          "<br />\n"
+                            );
+                             break;
+                }
+            }
+        }
     }
 
     /**
