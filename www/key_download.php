@@ -4,8 +4,7 @@ require_once('logger.php');
 require_once('config.php');
 require_once('csr_lib.php');
 require_once('person.php');
-require_once('cert_manager_online.php');
-require_once('cert_manager_standalone.php');
+require_once('confusa_gen.php');
 
 /* only accept downloads from sources that specify *both* auth_var and
  * common_name (the client should know this anyway */
@@ -24,7 +23,7 @@ if (isset($_GET[Config::get_config('auth_var')]) && $_GET['common_name']) {
       try {
         $cert = $cm->get_cert($authvar);
         echo $cert;
-      } catch (CertificateRetrievalException $e) {
+      } catch (ConfusaGenException $e) {
         echo $e->getMessage() . "<br />\n";
       }
 }
