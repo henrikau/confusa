@@ -130,10 +130,9 @@ class CertManager_Online extends CertManager
         $collect_endpoint = Config::get_config('capi_collect_endpoint') .
                             "?loginName=" . $login_name .
                             "&loginPassword=" . $login_pw .
-                            "&orderNumber=" . $key . "&queryType=2";
-        $postfields_download["responseType"]="2";
-        $postfields_download["responseEncoding"]="0";
-        $postfields_download["responseMimeType"]="application/x-x509-user-cert";
+                            "&orderNumber=" . $key .
+                            "&queryType=2" .
+                            "&responseMimeType=application/x-x509-user-cert";
 
         $ch = curl_init($collect_endpoint);
         curl_setopt($ch, CURLOPT_HEADER,0);
