@@ -6,9 +6,7 @@ include_once('pw.php');
 include_once('csr_lib.php');
 include_once('mdb2_wrapper.php');
 include_once('logger.php');
-include_once('certificate_retrieval.php');
-include_once('certificate_query.php');
-include_once('key_sign.php');
+include_once('confusa_gen.php');
 
 $person = null;
 $fw = new Framework('keyhandle');
@@ -68,7 +66,7 @@ function process_file_csr()
                          */
             try {
                 $cm->sign_key(pubkey_hash($fu->get_content(), true), $fu->get_content());
-            } catch (KeySignException $e) {
+            } catch (ConfusaGenException $e) {
                 echo $e->getMessage() . "<br />\n";
             }
         } else {
@@ -169,7 +167,7 @@ function approve_csr($auth_token)
           $cm = $fw->get_cert_manager();
           try {
             $cm->sign_key($auth_token, $csr);
-          } catch (KeySignException $e) {
+          } catch (ConfusaGenException $e) {
                echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
                return false;
           }
@@ -222,7 +220,7 @@ function send_cert()
                $send_res = true;
           }
       }
-     } catch (CertificateRetrievalException $e) {
+     } catch (ConfusaGenException $e) {
         echo $e->getMessage();
      }
      return $send_res;
