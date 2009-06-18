@@ -3,9 +3,8 @@
 require_once('person.php');
 require_once('cert_manager.php');
 require_once('key_sign.php');
-require_once('certificate_query.php');
-require_once('certificate_retrieval.php');
 require_once('mdb2_wrapper.php');
+require_once('db_query.php');
 
 /*
  * CertManager_Standalone Standalone-CA extension for CertManager.
@@ -63,7 +62,7 @@ class CertManager_Standalone extends CertManager
      * Retrieve a list of the certificates associated with the managed person
      * from the database
      *
-     * @throws CertificateQueryException
+     * @throws DBQueryException
      */
     public function get_cert_list()
     {
@@ -76,7 +75,7 @@ class CertManager_Standalone extends CertManager
         if ($num_received > 0 && !(isset($res[0]['auth_key']))) {
             $msg = "Received an unexpected response from the database for user " .
                      $this->person->get_common_name();
-            throw new CertificateQueryException($msg);
+            throw new DBQueryException($msg);
         }
 
         return $res;
@@ -102,7 +101,7 @@ class CertManager_Standalone extends CertManager
             $msg = "Error in getting certificate, got " . count($res) . " results\n";
             $cn = $this->person->get_valid_cn();
             $msg .= "Queried for key $key and CN $cn\n";
-            throw new CertificateRetrievalException($msg);
+            throw new DBQueryException($msg);
         }
     }
 
