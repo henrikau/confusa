@@ -3,8 +3,6 @@ declare(encoding = 'utf-8');
 require_once('person.php');
 require_once('cert_manager.php');
 require_once('key_sign.php');
-require_once('certificate_query.php');
-require_once('certificate_retrieval.php');
 require_once('db_query.php');
 require_once('mdb2_wrapper.php');
 require_once('remote_api.php');
@@ -45,7 +43,7 @@ class CertManager_Online extends CertManager
 
     /**
      * Sign the CSR identified by auth_key using the Online-CA's remote API
-     * @throws CertificateSigningException
+     * @throws ConfusaGenException
     */
     public function sign_key($auth_key, $csr)
     {
@@ -62,7 +60,7 @@ class CertManager_Online extends CertManager
      * Return an array with all the certificates obtained by the person managed by this
      * CertManager.
      * TODO: Retrieve that list once per session and cache it
-     * @throws CertificateQueryException
+     * @throws RemoteAPIException
      */
     public function get_cert_list()
     {
@@ -85,7 +83,7 @@ class CertManager_Online extends CertManager
         parse_str($data, $params);
 
         if (!isset($params['errorCode'])) {
-            throw new CertificateQueryException("Unexpected response from " .
+            throw new RemoteAPIException("Unexpected response from " .
                 "remote endpoint! Maybe Confusa is improperly configured?"
             );
         }
@@ -100,7 +98,7 @@ class CertManager_Online extends CertManager
                 $res[$i-1]['cert_owner'] = $this->person->get_valid_cn();
             }
         } else {
-            throw new CertificateQueryException("Errors occured when listing " .
+            throw new RemoteAPIException("Errors occured when listing " .
                 "user certificates: " . $params['errorMessage']
             );
         }
@@ -132,10 +130,9 @@ class CertManager_Online extends CertManager
         $collect_endpoint = Config::get_config('capi_collect_endpoint') .
                             "?loginName=" . $login_name .
                             "&loginPassword=" . $login_pw .
-                            "&orderNumber=" . $key . "&queryType=2";
-        $postfields_download["responseType"]="2";
-        $postfields_download["responseEncoding"]="0";
-        $postfields_download["responseMimeType"]="application/x-x509-user-cert";
+                            "&orderNumber=" . $key .
+                            "&queryType=2" .
+                            "&responseMimeType=application/x-x509-user-cert";
 
         $ch = curl_init($collect_endpoint);
         curl_setopt($ch, CURLOPT_HEADER,0);
@@ -166,17 +163,17 @@ class CertManager_Online extends CertManager
               if ($pos === FALSE) {
                 $msg = "Received an unexpected response from the remote API!<br />\n" .
                        "Maybe Confusa is improperly configured?<br />\n";
-                throw new CertificateRetrievalException($msg);
+                throw new RemoteAPIException($msg);
               }
 
               $status = substr($data,0,$pos);
               /* potential error: response does not contain status code */
               if(is_numeric($status)) {
-                throw new CertificateRetrievalException("Received error message $data <br />\n");
+                throw new RemoteAPIException("Received error message $data <br />\n");
               } else {
                 $msg = "Received an unexpected response from the remote API!<br />\n" .
                        "Maybe Confusa is improperly configured?<br />\n";
-                throw new CertificateRetrievalException($msg);
+                throw new RemoteAPIException($msg);
               }
         }
 
@@ -263,7 +260,7 @@ class CertManager_Online extends CertManager
      * It is recommended to have this information backed up and
      * stored permanently to keep track of Comodo-issued certificates.
      *
-     * @throws KeySignException
+     * @throws ConfusaGenException
     */
     private function _capi_upload_CSR($auth_key, $csr)
     {
@@ -326,7 +323,7 @@ class CertManager_Online extends CertManager
             if (!isset($params['orderNumber']) || !isset($params['collectionCode'])) {
                 $msg = "Response looks malformed. Maybe there is a configuration " .
                        "error in Confusa's online-CA configuration!";
-                throw new KeySignException($msg);
+                throw new RemoteAPIException($msg);
             }
 
             $this->order_number = $params['orderNumber'];
@@ -357,7 +354,7 @@ class CertManager_Online extends CertManager
      * Check if key $auth_key is an order-number or an authvar.
      * If it is an authvar, retrieve the associated order-number from the DB.
      *
-     * @throws DBQueryException
+     * @throws ConfusaGenException
      */
     private function _transform_to_order_number($auth_key)
     {
@@ -424,7 +421,7 @@ class CertManager_Online extends CertManager
         } else {
             $msg = "Received an error when authorizing the CSR with orderNumber " .
                    $this->order_number . " <br />\n";
-            throw new KeySignException($msg);
+            throw new RemoteAPIException($msg);
         }
 
     } /* end _capi_authorize_csr */
