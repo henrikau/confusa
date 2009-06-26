@@ -60,7 +60,7 @@ CREATE TABLE sms_auth (
 
 -- ---------------------------------------------------------
 --
--- order_cache
+-- order_store
 --
 -- If the standalone CA is not used for signing the CSRs, the CSRs are
 -- ordered by a service provider (e.g. Comodo).
@@ -86,31 +86,76 @@ CREATE TABLE order_store (
 	authorized BOOL NOT NULL
 ) type=InnoDB;
 
+--
+-- account_map
+--
+-- Map an account with the Online CA provider.
+-- Such an account currently consists of a username and a password.
+--
+-- The password is stored in encrypted form, but the encryption should take
+-- place in the PHP application, because of flaws in MySQL's AES_ENCRYPT
+-- (see http://moncahier.canalblog.com/archives/2008/01/26/7700105.html)
+-- and because it is safer if the password is encrypted as early as possible.
+-- PHP::MCrypt also provides us with more options (block mode, etc.) and makes
+-- it easier to change to different encryption algorithms.
+--
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS organizations;
+DROP TABLE IF EXISTS nrens;
+DROP TABLE IF EXISTS account_map;
+CREATE TABLE account_map (
+    map_id INT PRIMARY KEY AUTO_INCREMENT,
+    -- the login-name for the associated sub-account,
+    login_name VARCHAR(128) UNIQUE NOT NULL,
+    -- the password with which the sub-account will be accessed.
+    -- encrypted at application layer
+    password TINYBLOB NOT NULL,
+    -- the initialization vector used for encryption
+    -- the vector must be random, but need not be confidential
+    ivector TINYBLOB NOT NULL
+) type=InnoDB;
 
 -- ---------------------------------------------------------
 --
--- order_cache
+-- nrens
 --
--- If not the standalone CA is used for signing the CSRs, they are ordered by a
--- service provider like for instance Comodo. Usually this involves some 
--- accounting information like order numbers as well as identifiers for 
--- picking the certifiicate up. This information should be stored in that
--- table
---
+-- Store the NRENs that are currently hooked up to Confusa
+-- If Confusa operates in remote-signing mode, it will also use the linked
+-- online account for requesting certificates for an organization.
 -- ---------------------------------------------------------
-DROP TABLE IF EXISTS order_store;
-CREATE TABLE order_store (
-	cert_id INT PRIMARY KEY AUTO_INCREMENT,
-	-- auth_key and owner for remote download and upload
-	auth_key CHAR(64) NOT NULL,
-	common_name VARCHAR(128) NOT NULL,
-	-- order number and collection code for bookkeeping, revocation, 
-	-- delivery
-	order_number INT NOT NULL,
-	collection_code CHAR(16) NOT NULL,
-	order_date DATETIME NOT NULL,
-	authorized BOOL NOT NULL
+DROP TABLE IF EXISTS nrens;
+CREATE TABLE nrens (
+    nren_id INT PRIMARY KEY AUTO_INCREMENT,
+    -- the name of the NREN (e.g. SUNET, UNINETT, FUNET)
+    name VARCHAR(30) UNIQUE NOT NULL,
+    -- if a remote signing CA is used, the ID of the subaccont there
+    account_id INT,
+    FOREIGN KEY(account_id) REFERENCES account_map(map_id) ON DELETE CASCADE
 ) type=InnoDB;
+
+-- ---------------------------------------------------------
+--
+-- organizations
+--
+-- Store the organizations that are currently hooked up to Confusa along with
+-- their current state (subscribed, suspended, unsubscribed)
+--
+-- If Confusa operates in remote-signing mode, it will also use the linked
+-- online account for requesting certificates for an organization.
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS organizations;
+CREATE TABLE organizations (
+    org_id INT PRIMARY KEY AUTO_INCREMENT,
+    -- the name of the organization (e.g. KTH, CSC, Univ. of Oslo,...)
+    name VARCHAR(30) UNIQUE NOT NULL,
+    -- the NREN as it is stored in the NREN table
+    nren_id INT NOT NULL,
+    -- the current subscription state to the service
+    org_state ENUM('subscribed', 'suspended', 'unsubscribed') NOT NULL,
+    FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
+) type=InnoDB;
+
+-- ---------------------------------------------------------
 
 
 -- ---------------------------------------------------------
