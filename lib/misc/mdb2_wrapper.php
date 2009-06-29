@@ -71,10 +71,11 @@ class MDB2Wrapper
 
     /*
      * MySQL/the MDB2-MySQL wrapper seems to not support prepared
-     * statements for INSERT operations. Hence we have to execute
-     * INSERT statements as a query and not as a prepared statement.
+     * statements for batch INSERT operations. Hence we have to execute
+     * such and maybe other statements as a query.
      */
-     public static function insert($query) {
+     public static function query($query)
+     {
        if (!isset(MDB2Wrapper::$conn)) {
          MDB2Wrapper::create();
        }
