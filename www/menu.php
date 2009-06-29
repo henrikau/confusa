@@ -10,6 +10,12 @@ function render_menu($person)
         echo "<A HREF=\"about_you.php\">About You</A><BR><BR>\n";
 	echo "<BR>\n";
         echo logout_link("logout.php", "Logout", $person) . "<BR><BR>\n";
+
+        if ($person->is_admin()) {
+          echo "<A HREF=\"admin.php?subscribe=manage\">Manage subscriptions</A><BR />\n";
+          echo "<A HREF=\"admin.php?account=manage\">Manage accounts</A><BR />\n";
+          echo "<A HREF=\"admin.php?nren=manage\">Manage NRENs</A><BR />\n";
+        }
     }
     else {
          echo "<A HREF=\"index.php?start_login=yes\">Login</A><BR>\n";
