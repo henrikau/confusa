@@ -27,6 +27,10 @@ class CertManager_Online extends CertManager
     private $TEST_DC = "TEST CERTIFICATE";
     private $TEST_O_PREFIX;
 
+    /* login-name and password for the remote-signing CA */
+    private $login_name;
+    private $login_pw;
+
 
     function __construct($pers)
     {
@@ -41,12 +45,48 @@ class CertManager_Online extends CertManager
         parent::__construct($pers);
     }
 
+    /*
+     * Get username and password for the remote-CA account of the
+     * (institution of) the managed person.
+     */
+    private function _get_account_information() {
+        $login_cred_query = "SELECT a.login_name, a.password, a.ivector " .
+              "FROM account_map a, nrens n, organizations o " .
+              "WHERE o.name = ? AND o.nren_id = n.nren_id " .
+              "AND n.account_id = a.map_id";
+
+        $org = $this->person->get_orgname();
+        echo "organization: " . $org . "<br />\n";
+        $res = MDB2Wrapper::execute($login_cred_query, array('text'),
+                                    array($org)
+        );
+
+        if (count($res) != 1) {
+          throw new DBQueryException("Could not extract the suitable " .
+                                     "remote CA credentials for organization $org!"
+          );
+        }
+
+        $this->login_name = $res[0]['login_name'];
+        $encrypted_pw = base64_decode($res[0]['password']);
+        $ivector = base64_decode($res[0]['ivector']);
+        $encryption_key = Config::get_config('capi_enc_pw');
+        $this->login_pw = trim(base64_decode(mcrypt_decrypt(
+                                MCRYPT_RIJNDAEL_256, $encryption_key,
+                                $encrypted_pw, MCRYPT_MODE_CFB,
+                                $ivector)));
+    }
+
     /**
      * Sign the CSR identified by auth_key using the Online-CA's remote API
      * @throws ConfusaGenException
     */
     public function sign_key($auth_key, $csr)
     {
+        if (!isset($this->login_name) || !isset($this->login_pw)) {
+            $this->_get_account_information();
+        }
+
         $this->_capi_upload_CSR($auth_key, $csr);
         $this->_capi_authorize_CSR();
          /* read public key and create sum */
@@ -64,9 +104,13 @@ class CertManager_Online extends CertManager
      */
     public function get_cert_list()
     {
+        if (!isset($this->login_name) || !isset($this->login_pw)) {
+          $this->_get_account_information();
+        }
+
         $list_endpoint = Config::get_config('capi_listing_endpoint');
-        $postfields_list["loginName"] = Config::get_config('capi_login_name');
-        $postfields_list["loginPassword"] = Config::get_config('capi_login_pw');
+        $postfields_list["loginName"] = $this->login_name;
+        $postfields_list["loginPassword"] = $this->login_pw;
 
         $postfields_list["commonName"] = $this->TEST_CN_PREFIX . $this->person->get_valid_cn();
         $ch = curl_init($list_endpoint);
@@ -120,16 +164,19 @@ class CertManager_Online extends CertManager
         $key = $this->_transform_to_order_number($key);
 
         $return_res = NULL;
+
+        if (!isset($this->login_name) || !isset($this->login_pw)) {
+          $this->_get_account_information();
+        }
+
         Logger::log_event(LOG_NOTICE, "Trying to retrieve certificate with order number " .
                                       $key .
                                       " from the Comodo collect API. Sending to user with ip " .
                                       $_SERVER['REMOTE_ADDR']);
 
-        $login_name = Config::get_config('capi_login_name');
-        $login_pw = Config::get_config('capi_login_pw');
         $collect_endpoint = Config::get_config('capi_collect_endpoint') .
-                            "?loginName=" . $login_name .
-                            "&loginPassword=" . $login_pw .
+                            "?loginName=" . $this->login_name .
+                            "&loginPassword=" . $this->login_pw .
                             "&orderNumber=" . $key .
                             "&queryType=2" .
                             "&responseMimeType=application/x-x509-user-cert";
@@ -194,17 +241,20 @@ class CertManager_Online extends CertManager
         $key = $this->_transform_to_order_number($key);
 
         $return_res = NULL;
+
+        if (!isset($this->login_name) || !isset($this->login_pw)) {
+          $this->_get_account_information();
+        }
+
         Logger::log_event(LOG_NOTICE, "Trying to revoke certificate with order number " .
                                       $key .
                                       " using Comodo's auto-revoke-API. Sending to user with ip " .
                                       $_SERVER['REMOTE_ADDR']);
 
         $revoke_endpoint = Config::get_config('capi_revoke_endpoint');
-        $login_name = Config::get_config('capi_login_name');
-        $login_pw = Config::get_config('capi_login_pw');
         $postfields_revoke = array();
-        $postfields_revoke["loginName"] = $login_name;
-        $postfields_revoke["loginPassword"] = $login_pw;
+        $postfields_revoke["loginName"] = $this->login_name;
+        $postfields_revoke["loginPassword"] = $this->login_pw;
         $postfields_revoke["revocationReason"] = $reason;
         $postfields_revoke["orderNumber"] = $key;
         $postfields_revoke["includeInCRL"] = 'Y';
