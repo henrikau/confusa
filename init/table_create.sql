@@ -204,6 +204,42 @@ CREATE TABLE cert_cache (
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
+--
+-- list_cache
+--
+-- Caching for storing the list of remote signed certificates. This is
+-- maintained in a separate table to the order store, because it is only
+-- short-lived, while the order_store is really for accounting.
+-- The list-cache has the purpose of not having to query the remote
+-- signing CA API every time for a list of the signed certificates
+--
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS list_cache;
+CREATE TABLE list_cache (
+  cache_id INT PRIMARY KEY AUTO_INCREMENT,
+  order_number INT UNIQUE NOT NULL,
+  common_name VARCHAR(128) NOT NULL
+) type=InnoDB;
+
+-- ---------------------------------------------------------
+--
+-- order_cache
+--
+-- Cache for remotely ordered certificates. Caching those certificates
+-- ensures that the certificates don't have to be downloaded from the
+-- remote-API everytime they are retrieved.
+-- ---------------------------------------------------------
+DROP TABLE IF EXISTS order_cache;
+CREATE TABLE order_cache (
+  cache_id INT PRIMARY KEY AUTO_INCREMENT,
+  order_id INT NOT NULL,
+  -- the cached cert itself
+  cert TEXT NOT NULL,
+  -- after that time the cache entry can be deleted
+  expires DATETIME NOT NULL
+) type=InnoDB;
+
+-- ---------------------------------------------------------
 -- admins
 --
 -- List of people having admin-rights on the page (to update news,
