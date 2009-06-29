@@ -39,13 +39,14 @@ class MDB2Wrapper
       */
      public static function execute($query, $types, $data)
      {
+
           if (!isset(MDB2Wrapper::$conn))
                MDB2Wrapper::create();
 	  $results = array();
 
           $stmnt = MDB2Wrapper::$conn->prepare($query, $types, MDB2_PREPARE_RESULT);
           if (PEAR::isError($stmnt)) {
-               Logger::log_event(LOG_NOTICE, "query failed $res->getMessage()");
+               Logger::log_event(LOG_NOTICE, "query failed $stmnt->getMessage()");
                die("statement: " . $stmnt->getMessage() . "<br>\n$query");
           }
 
@@ -67,6 +68,22 @@ class MDB2Wrapper
 
      /* at the moment, it just uses execute, without returning anything */
      public static function update($query, $types, $data) { MDB2Wrapper::execute($query, $types, $data); }
+
+    /*
+     * MySQL/the MDB2-MySQL wrapper seems to not support prepared
+     * statements for INSERT operations. Hence we have to execute
+     * INSERT statements as a query and not as a prepared statement.
+     */
+     public static function insert($query) {
+       if (!isset(MDB2Wrapper::$conn)) {
+         MDB2Wrapper::create();
+       }
+
+       $affected_rows = MDB2Wrapper::$conn->query($query);
+       if (PEAR::isError($affected_rows)) {
+         die("statement: " . $affected_rows->getMessage() . "<br />$query");
+       }
+     }
 
      /* create()
       *
