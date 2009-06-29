@@ -111,3 +111,28 @@ H3.info
     font-weight: bold;
     font-size: 20pt
 }
+
+DIV.admin_table
+{
+  display: table;
+  padding-left: 30px
+}
+
+DIV.admin_table_row
+{
+  display: table-row;
+  width: 200px;
+  height: 10px
+}
+
+DIV.admin_table_cell
+{
+  display: table-cell;
+  text-align: left
+}
+
+DIV.spacer
+{
+  height: 12px
+}
+
