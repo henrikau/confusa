@@ -130,7 +130,7 @@ CREATE TABLE nrens (
     name VARCHAR(30) UNIQUE NOT NULL,
     -- if a remote signing CA is used, the ID of the subaccont there
     account_id INT,
-    FOREIGN KEY(account_id) REFERENCES account_map(map_id) ON DELETE CASCADE
+    FOREIGN KEY(account_id) REFERENCES account_map(map_id) ON DELETE SET NULL
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
