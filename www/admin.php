@@ -33,14 +33,17 @@ function admin($person)
                       edit_subscriptions($_POST['org_name'],
                                          $_POST['org_state'],
                                          $_POST['nren_name']);
+                      show_subscriptions_mask();
                       break;
                 case 'add':
                       add_subscription($_POST['org_state'],
                                        $_POST['nren'],
                                        $_POST['org_name']);
+                      show_subscriptions_mask();
                       break;
                 case 'delete':
                       delete_subscription($_POST['org_name']);
+                      show_subscriptions_mask();
                       break;
                 default:
                       echo "Unknown operation!<br />\n";
@@ -53,12 +56,15 @@ function admin($person)
                     break;
                 case 'add':
                     add_account($_POST['login_name'], $_POST['login_password']);
+                    show_accounts_mask();
                     break;
                 case 'delete':
                     delete_account($_POST['login_name']);
+                    show_accounts_mask();
                     break;
                 case 'edit':
                     edit_account($_POST['login_name'], $_POST['login_password']);
+                    show_accounts_mask();
                     break;
                 default:
                    echo "Unknown operation!<br />\n";
@@ -72,13 +78,16 @@ function admin($person)
                 case 'add':
                   add_nren($_POST['nren_name'],
                            $_POST['login_name']);
+                  show_nrens_mask();
                   break;
                 case 'delete':
                   delete_nren($_POST['nren_name']);
+                  show_nrens_mask();
                   break;
                 case 'edit':
                   edit_nren($_POST['nren_name'],
                             $_POST['login_name']);
+                  show_nrens_mask();
                   break;
                 default:
                   echo "Unknown operation!<br />\n";
