@@ -227,7 +227,7 @@ class CertManager_Online extends CertManager
 
               /* potential error: no newline in response */
               if ($pos === FALSE) {
-                $msg = "Received an unexpected response from the remote API!<br />\n" .
+                $msg = "Received an unexpected response from the remote API!\n" .
                        "Maybe Confusa is improperly configured?<br />\n";
                 throw new RemoteAPIException($msg);
               }
@@ -235,10 +235,10 @@ class CertManager_Online extends CertManager
               $status = substr($data,0,$pos);
               /* potential error: response does not contain status code */
               if(is_numeric($status)) {
-                throw new RemoteAPIException("Received error message $data <br />\n");
+                throw new RemoteAPIException("Received error message $data\n");
               } else {
-                $msg = "Received an unexpected response from the remote API!<br />\n" .
-                       "Maybe Confusa is improperly configured?<br />\n";
+                $msg = "Received an unexpected response from the remote API!n" .
+                       "Maybe Confusa is improperly configured?\n";
                 throw new RemoteAPIException($msg);
               }
         }
@@ -296,14 +296,14 @@ class CertManager_Online extends CertManager
         /* try to catch all kinds of errors that can happen when connecting */
         if ($data === FALSE) {
             throw new RemoteAPIException("Could not connect to revoke-API! " .
-                                        "Check Confusa configuration!<br />\n"
+                                        "Check Confusa configuration!\n"
             );
         } else {
             $pos = stripos($data, "\n");
 
             if ($pos == FALSE) {
                 throw new RemoteAPIException("Response from RevokeAPI unexpected! " .
-                                             "Check Confusa configuration<br />\n."
+                                             "Check Confusa configuration\n."
                 );
             } else {
                 $STATUS_OK = "0";
@@ -315,8 +315,7 @@ class CertManager_Online extends CertManager
                                       $_SESSION['list_cached'] = false;
                                       break;
                     default: throw new RemoteAPIException("Received error message " .
-                                                          $data .
-                                                          "<br />\n"
+                                                          $data . "\n"
                             );
                              break;
                 }
@@ -386,7 +385,7 @@ class CertManager_Online extends CertManager
          */
         if (isset($params['errorCode'])) {
             $msg = "Received an error when uploading the CSR to the remote CA: " .
-                $params['errorMessage'] . "<br />\n";
+                $params['errorMessage'] . "\n";
             throw new KeySignException($msg);
         }
 
@@ -491,7 +490,7 @@ class CertManager_Online extends CertManager
                                         $_SERVER['REMOTE_ADDR']);
         } else {
             $msg = "Received an error when authorizing the CSR with orderNumber " .
-                   $this->order_number . " <br />\n";
+                   $this->order_number . "\n";
             throw new RemoteAPIException($msg);
         }
 

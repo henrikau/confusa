@@ -67,7 +67,7 @@ function process_file_csr()
             try {
                 $cm->sign_key(pubkey_hash($fu->get_content(), true), $fu->get_content());
             } catch (ConfusaGenException $e) {
-                echo $e->getMessage() . "<br />\n";
+                echo $e->getHTMLMessage();
             }
         } else {
                     echo "<FONT COLOR=\"RED\"><B>\n";
@@ -221,7 +221,7 @@ function send_cert()
           }
       }
      } catch (ConfusaGenException $e) {
-        echo $e->getMessage();
+        echo $e->getHTMLMessage();
      }
      return $send_res;
 } /* end send_cert */
@@ -238,7 +238,7 @@ function show_db_cert()
     try {
         $res = $cm->get_cert_list();
     } catch (ConfusaGenException $e) {
-        echo $e->getMessage();
+        echo $e->getHTMLMessage();
     }
 
 	$num_received = count($res);
@@ -396,7 +396,7 @@ function inspect_cert($auth_key)
             }
         }
     } catch (ConfusaGenException $e) {
-        echo $e->getMessage();
+        echo $e->getHTMLMessage();
     }
 
 	return $status;

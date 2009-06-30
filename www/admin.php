@@ -23,67 +23,70 @@ function admin($person)
       * check
       */
      if ($person->is_admin()) {
-
-        if (isset($_GET['subscribe'])) {
-            switch($_GET['subscribe']) {
-              case 'manage':
-                    show_subscriptions_mask();
-                    break;
-              case 'edit':
-                    edit_subscriptions($_POST['org_name'],
-                                       $_POST['org_state'],
-                                       $_POST['nren_name']);
-                    break;
-              case 'add':
-                    add_subscription($_POST['org_state'],
-                                     $_POST['nren'],
-                                     $_POST['org_name']);
-                    break;
-              case 'delete':
-                    delete_subscription($_POST['org_name']);
-                    break;
-              default:
-                    echo "Unknown operation!<br />\n";
-                    break;
-            }
-          } else if (isset($_GET['account'])) {
-            switch($_GET['account']) {
-              case 'manage':
-                  show_accounts_mask();
-                  break;
-              case 'add':
-                  add_account($_POST['login_name'], $_POST['login_password']);
-                  break;
-              case 'delete':
-                  delete_account($_POST['login_name']);
-                  break;
-              case 'edit':
-                  edit_account($_POST['login_name'], $_POST['login_password']);
-                  break;
-              default:
-                 echo "Unknown operation!<br />\n";
-                 break;
+        try {
+          if (isset($_GET['subscribe'])) {
+              switch($_GET['subscribe']) {
+                case 'manage':
+                      show_subscriptions_mask();
+                      break;
+                case 'edit':
+                      edit_subscriptions($_POST['org_name'],
+                                         $_POST['org_state'],
+                                         $_POST['nren_name']);
+                      break;
+                case 'add':
+                      add_subscription($_POST['org_state'],
+                                       $_POST['nren'],
+                                       $_POST['org_name']);
+                      break;
+                case 'delete':
+                      delete_subscription($_POST['org_name']);
+                      break;
+                default:
+                      echo "Unknown operation!<br />\n";
+                      break;
               }
-          } else if (isset($_GET['nren'])) {
-            switch($_GET['nren']) {
-              case 'manage':
-                show_nrens_mask();
-                break;
-              case 'add':
-                add_nren($_POST['nren_name'],
-                         $_POST['login_name']);
-                break;
-              case 'delete':
-                delete_nren($_POST['nren_name']);
-                break;
-              case 'edit':
-                edit_nren($_POST['nren_name'],
-                          $_POST['login_name']);
-                break;
-              default:
-                echo "Unknown operation!<br />\n";
-                break;
-            }
+            } else if (isset($_GET['account'])) {
+              switch($_GET['account']) {
+                case 'manage':
+                    show_accounts_mask();
+                    break;
+                case 'add':
+                    add_account($_POST['login_name'], $_POST['login_password']);
+                    break;
+                case 'delete':
+                    delete_account($_POST['login_name']);
+                    break;
+                case 'edit':
+                    edit_account($_POST['login_name'], $_POST['login_password']);
+                    break;
+                default:
+                   echo "Unknown operation!<br />\n";
+                   break;
+                }
+            } else if (isset($_GET['nren'])) {
+              switch($_GET['nren']) {
+                case 'manage':
+                  show_nrens_mask();
+                  break;
+                case 'add':
+                  add_nren($_POST['nren_name'],
+                           $_POST['login_name']);
+                  break;
+                case 'delete':
+                  delete_nren($_POST['nren_name']);
+                  break;
+                case 'edit':
+                  edit_nren($_POST['nren_name'],
+                            $_POST['login_name']);
+                  break;
+                default:
+                  echo "Unknown operation!<br />\n";
+                  break;
+              }
+           }
+         } catch (ConfusaGenException $e) {
+           echo $e->getHTMLMessage();
          }
     }
 }
@@ -272,7 +275,7 @@ function edit_nren($nren_name, $login_name) {
 
   if (count($res) != 1) {
     throw new DBQueryException("Could not find the account map ID for " .
-                              "login-name $login_name<br />\n"
+                              "login-name $login_name\n"
               );
   }
 
@@ -516,7 +519,7 @@ function add_nren($nren_name, $login_name) {
 
   if (count($res) != 1) {
     throw new DB2QueryException("Could not retrieve the map_id of the " .
-                                "selected account!<br />\n");
+                                "selected account!\n");
   }
 
   $map_id = $res[0]['map_id'];

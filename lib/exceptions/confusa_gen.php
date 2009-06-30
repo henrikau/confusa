@@ -21,5 +21,17 @@ class ConfusaGenException extends Exception
     {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
     }
+
+    /*
+     * Get the exception message in HTML format
+     * It would be nicer to override getMessage() for that, but that
+     * is final and seemingly PHP does not support parameter overloading
+     */
+    public function getHTMLMessage()
+    {
+      return "<p><font class=\"exception\">" .
+             parent::getMessage() .
+             "</font></p>";
+    }
 } /* end class ConfusaGenException */
 ?>
