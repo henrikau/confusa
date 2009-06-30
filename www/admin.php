@@ -516,13 +516,12 @@ function add_nren($nren_name, $login_name) {
 
   $res = MDB2Wrapper::execute($map_id_query, array('text'),
                               array($account));
+  $map_id = NULL;
 
-  if (count($res) != 1) {
-    throw new DB2QueryException("Could not retrieve the map_id of the " .
-                                "selected account!\n");
+  if (count($res) == 1) {
+      $map_id = $res[0]['map_id'];
   }
 
-  $map_id = $res[0]['map_id'];
   $query = "INSERT INTO nrens(name, account_id) VALUES(?, ?)";
 
   MDB2Wrapper::update($query, array('text','text'), array($nren, $map_id));
