@@ -2,6 +2,7 @@
 include_once('framework.php');
 include_once('mdb2_wrapper.php');
 include_once('db_query.php');
+include_once('logger.php');
 $org_states = array('','subscribed', 'suspended', 'unsubscribed');
 $fw = new Framework('admin');
 $fw->force_login();
@@ -222,8 +223,9 @@ function edit_subscriptions($org, $new_org_state, $new_nren_name)
       MDB2Wrapper::update($stmt, array('text','text', 'text'),
                                  array($new_org_state, $nren_id ,$org)
       );
-      echo "Successfully changed organization $org " .
-           "to state $new_org_state and nren_name $new_nren_name.<br />\n";
+
+      Logger::log_event(LOG_INFO, "Changed organization $org to state " .
+                                  "$new_org_state and nren_name $new_nren_name.\n");
     }
 }
 
@@ -250,6 +252,10 @@ function edit_account($login_name, $login_pw) {
     MDB2Wrapper::update($query,array('text','text','text'),
                         array($cryptpw, base64_encode($iv), $login_name));
 
+    Logger::log_event(LOG_INFO, "Updated the password of account " .
+                                "$login_name\n"
+            );
+
 }
 
 /*
@@ -275,6 +281,9 @@ function edit_nren($nren_name, $login_name) {
   $update_query = "UPDATE nrens SET account_id=? WHERE name=?";
   MDB2Wrapper::update($update_query, array('text','text'),
                       array($map_id, $nren_name));
+
+  Logger::log_event(LOG_INFO, "Updated NREN $nren_name to use new " .
+                              "account $account_id\n");
 }
 
 /*
@@ -445,6 +454,9 @@ function add_subscription($org_state, $nren, $org_name)
 
   MDB2Wrapper::update($stmt, array('text','text','text'),
                       array($org_name, $nren_id, $org_state));
+
+  Logger::log_event(LOG_INFO, "Added the organization $org_name with " .
+                    "NREN $nren and state $org_state as a subscriber ");
 }
 
 /*
@@ -483,6 +495,10 @@ function add_account($login_name, $login_password)
 
   MDB2Wrapper::update($query, array('text','text','text'),
                       array($login_name, $cryptpw, $ivector));
+
+  Logger::log_event(LOG_INFO, "Inserted new account $login_name into " .
+                              "account-map\n"
+          );
 }
 
 /*
@@ -507,6 +523,10 @@ function add_nren($nren_name, $login_name) {
   $query = "INSERT INTO nrens(name, account_id) VALUES(?, ?)";
 
   MDB2Wrapper::update($query, array('text','text'), array($nren, $map_id));
+
+  Logger::log_event(LOG_INFO, "Added NREN with name $nren_name and login " .
+                              "$login_name to the DB\n"
+          );
 }
 
 /*
@@ -519,7 +539,7 @@ function delete_subscription($org) {
                     $org
   );
 
-  echo "Delete organization $org.";
+  Logger::log_event(LOG_INFO, "Delete organization $org.\n");
 }
 
 /*
@@ -533,7 +553,7 @@ function delete_account($login_name) {
                       $login_name
   );
 
-  echo "Delete account $login_name.";
+  Logger::log_event(LOG_INFO, "Delete account $login_name.\n");
 }
 
 /*
@@ -548,7 +568,7 @@ function delete_nren($nren_name) {
                        $nren_name
   );
 
-  echo "Delete NREN $nren_name.";
+  Logger::log_event(LOG_INFO, "Delete NREN $nren_name.\n");
 }
 
 /**

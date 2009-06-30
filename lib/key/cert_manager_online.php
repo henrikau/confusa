@@ -56,7 +56,10 @@ class CertManager_Online extends CertManager
               "AND n.account_id = a.map_id";
 
         $org = $this->person->get_orgname();
-        echo "organization: " . $org . "<br />\n";
+        Logger::log_event(LOG_INFO, "Getting the remote-CA login " .
+                          "credentials for organization " .
+                          $this->person->get_orgname()
+                );
         $res = MDB2Wrapper::execute($login_cred_query, array('text'),
                                     array($org)
         );
@@ -96,7 +99,11 @@ class CertManager_Online extends CertManager
         MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash, uploaded_nr) VALUES(?, 0)",
                             array('text'),
                             array($pubkey_checksum));
-    }
+
+      Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key " .
+                        "$auth_key and added pubkey to known pubkeys"
+              );
+      }
 
     /**
      * Return an array with all the certificates obtained by the person managed by this
@@ -500,11 +507,17 @@ class CertManager_Online extends CertManager
     {
       $query = "SELECT order_number, common_name AS 'cert_owner' FROM list_cache WHERE " .
                "common_name = ?";
+      $common_name = $this->person->get_valid_cn();
       $res = MDB2Wrapper::execute($query,
                                   array('text'),
-                                  $this->person->get_valid_cn()
+                                  $common_name
              );
 
+      $num_results = count($res);
+      Logger::log_event(LOG_DEBUG, "Looked up certificate list for " .
+                        "person $common_name, received $num_results " .
+                        "results"
+              );
       return $res;
     } /* end _cert_list_from_cache */
 
@@ -528,6 +541,10 @@ class CertManager_Online extends CertManager
       $stmt = substr_replace($stmt, ";", strlen($stmt)-1,1);
 
       MDB2Wrapper::query($stmt);
+      Logger::log_event(LOG_DEBUG, "Inserted list with certificates " .
+                        "for common_name $common_name into the cache "
+              );
+
       $_SESSION['list_cached'] = true;
     } /* end _insert_list_into_cache */
 
@@ -544,6 +561,11 @@ class CertManager_Online extends CertManager
 
       $res = MDB2Wrapper::execute($query, array('text'), array($order_number));
       $num_results = count($res);
+
+      Logger::log_event(LOG_DEBUG, "Looked up the certificate with " .
+                        "order_number $order_number in the DB. Got " .
+                        "$num_results results."
+              );
 
       if ($num_results == 1) {
         /* cache hit case */
@@ -580,6 +602,10 @@ class CertManager_Online extends CertManager
       MDB2Wrapper::update($stmt, array('text','text','text'),
                                  array($order_number, $cert, $expires)
                    );
+
+      Logger::log_event(LOG_DEBUG, "Inserted certificate with order_number " .
+                      "$order_number into the order cache"
+              );
     }
 
 } /* end class OnlineCAManager */
