@@ -154,7 +154,10 @@ class CertManager_Online extends CertManager
             );
         }
 
-        $this->_insert_list_into_cache($res);
+        if (count($res) > 0) {
+            $this->_insert_list_into_cache($res);
+        }
+
         return $res;
     }
 
