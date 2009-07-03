@@ -223,7 +223,7 @@ class CertManager_Online extends CertManager
               break;
           case $STATUS_PEND:
               echo "The certificate is being processed and is not yet available<br />\n";
-              break;
+              return;
           default:
               /* extract the error status code which is longer than one character */
               $pos = stripos($data, "\n");
