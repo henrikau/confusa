@@ -1,15 +1,33 @@
-		Conventions for hacking Confusa
+	Conventions for working with the Confusa source
 
-In order to avoid unnecessary commits, this is a list over what we have
-agreed upon is the "correct" way of doing things.
+In order to keep a clean codebase and a tidy repository with browsable
+history, the following set of conventions govern the workflow in
+Confusa:
 
-1) Commits
+1) Commits.
+   A commit shall do one *change* and one change only. Several changes
+   should be split into several commits.
+
+   Each commit should have one line (less than 80 chars long) giving a
+   short outline of the commit.
+
+   Following this line, a newline will separate the header from the body
+   of the commit message. The message should be included if the header
+   does not describe the change accurately enough.
+
+   The message should explain why the commit is needed, what change is
+   introduced and the kind of impact. The text should be as complete as
+   possible, but it should not describe actual implementation. The
+   *intent* is important.
+
 2) Naming conventions
-	- Java
-	- C (the convention used so far, out of all habit)
-	- php (i.e. no particular convention, just let everything be a
-	  mess)
-	- PEAR (Several projects have adopted this)
+   The PEAR standard as several projects have
+   adopted this. The full spec can be found at:
+
+	http://pear.php.net/manual/en/standards.php
+
+   All new code is expected to follow this standard. Old code not
+   conforming to the spec should be updated 'as soon as possible'
 
 3) Return values
 
@@ -46,3 +64,10 @@ agreed upon is the "correct" way of doing things.
 5) PHP5 specific. If we break PHP4 compatibility - good! PHP4 is
    considered broken in so many ways I do not want to
    start. SimpleSAMLphp requires PHP5 anyway.
+
+6) Documentation: All functions and classes should be documented. By
+   documented we mean 'the intent and operation described as fully as
+   possible' but without adding too much text (as that will be
+   ignored). The same rule of thumb applies to documentation as it did
+   with the commits: actual code should not be described, the
+   *intention* of the code should.
