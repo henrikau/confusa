@@ -2,7 +2,6 @@
 include_once('framework.php');
 include_once('cert_manager.php'); /* for handling of the key */
 include_once('file_upload.php'); /* FileUpload */
-include_once('pw.php');
 include_once('csr_lib.php');
 include_once('mdb2_wrapper.php');
 include_once('logger.php');
