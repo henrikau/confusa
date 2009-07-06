@@ -38,9 +38,14 @@ function keyhandle($pers)
   $person = $pers;
   if ($person->is_auth())
     {
-	    if (!process_db())
-		    /* process uploaded csr's (or show the upload form) */
+	    /* start by working through the database entries */
+	    if (!process_db()) {
+		    /* Nothing happended while working through the database and
+		     * associated flags.
+		     *
+		     * Process uploaded csr's (or show the upload form) */
 		    process_file_csr();
+	    }
     }
   else {
 	  include('unclassified_intro.php');
