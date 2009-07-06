@@ -6,6 +6,7 @@ include_once('csr_lib.php');
 include_once('mdb2_wrapper.php');
 include_once('logger.php');
 include_once('confusa_gen.php');
+require_once("output.php");
 
 $person = null;
 $fw = new Framework('keyhandle');
@@ -69,10 +70,8 @@ function process_file_csr()
                 echo $e->getMessage() . "<br />\n";
             }
         } else {
-                    echo "<FONT COLOR=\"RED\"><B>\n";
-                    echo "There were errors encountered when processing the file.<BR>\n";
-                    echo "Please create a new keypair and upload a new CSR.<BR>\n";
-                    echo "</B></FONT>\n";
+			error_output("There were errors encountered when processing the file.");
+			error_output("Please create a new keypair and upload a new CSR.");
         }
     }
         include('upload_form.html');
