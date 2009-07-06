@@ -15,13 +15,19 @@ $fw = new Framework('keyhandle');
 if (send_cert()) {
      exit(0);
 }
+
+/* Test to see if any of the flags that require AuthN are set */
 if (process_csr_flags_set() || process_cert_flags_set()){
 	$fw->force_login();
 }
 
 $fw->render_page();
-echo "humm?";
-/* this function contains the main-flow in the program.
+/* The rest of this file si functions used in the preceding section. */
+
+
+
+/**
+ * keyhandle - main control function for handling the keys
  *
  * It will make sure all CSRs and Certificates stored in the database will be
  * displayed to the user.
@@ -42,11 +48,11 @@ function keyhandle($pers)
 } /* end keyhandle() */
 
 
-/* process_file_csr()
+/**
+ * process_file_csr - walk an uploaded CSR through the steps towards a certificate
  *
- * Take a CSR (stored in memory, *not* file) and sign&ship it. CM will do some
- * additional checks. A common wrapper for the two ways we have for getting a
- * key signed - automatic upload or manual.
+ * If a new CSR has been uploaded via FILE, this will retrieve it, store it in
+ * the database and pass control over to CertManager to process it. 
  */
 function process_file_csr()
 {
