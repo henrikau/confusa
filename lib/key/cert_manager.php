@@ -154,4 +154,19 @@ abstract class CertManager
   }
 } /* end class CertManager */
 
+class CertManagerHandler
+{
+	private static $cert_manager;
+	public static function getManager($person)
+	{
+		if (!isset($this->cert_manager)) {
+		      if (Config::get_config('standalone')) {
+			      $this->cert_manager = new CertManager_Standalone($person);
+		      } else {
+			      $this->cert_manager = new CertManager_Online($person);
+		      }
+		}
+	        return $this->cert_manager;
+	}
+}
 ?>
