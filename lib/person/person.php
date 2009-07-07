@@ -29,8 +29,8 @@ class Person{
     private $db_id;
     private $country;
     private $orgname;
-    private $orgunitname;
     private $idp;
+    private $entitlement;
     /* get variables for:
      * Region (i.e. Sor Trondelag)
      * City (i.e. Trondheim)
@@ -47,6 +47,7 @@ class Person{
         $this->given_name = null;
         $this->common_name = null;
         $this->email = null;
+        $this->entitlement = null;
 
         /* we're suspicious by nature */
         $this->fed_auth = false;
@@ -62,7 +63,7 @@ class Person{
 	$var .= "<tr><td><b>email:</b></td><td>" . $this->get_email() . "</td></tr>\n";
 	$var .= "<tr><td><b>Country:</b></td><td>" . $this->get_country() . "</td></tr>\n";
 	$var .= "<tr><td><b>OrganizationalName:</b></td><td>" . $this->get_orgname() . "</td></tr>\n";
-	$var .= "<tr><td><b>OrganizationalUnitName:</b></td><td>" . $this->get_orgunitname() . "</td></tr>\n";
+	$var .= "<tr><td><b>Entitlement:</b></td><td>" . $this->get_entitlement() . "</td></tr>\n";
 	$var .= "<tr><td><b>IdP:</b></td><td>". $this->get_idp() . "</td></tr>\n";
         $var .= "</table><br>";
         return $var;
@@ -159,11 +160,13 @@ class Person{
     }
     public function get_orgname() { return $this->orgname; }
 
-    public function set_orgunitname($orgunitname) {
-	    if (isset($orgunitname))
-		    $this->orgunitname = $orgunitname;
+    public function set_entitlement($entitlement) {
+      if (isset($entitlement)) {
+        $this->entitlement = $entitlement;
+      }
     }
-    public function get_orgunitname() { return $this->orgunitname; }
+
+    public function get_entitlement() { return $this->entitlement; }
 
     public function get_keyholder() { return $this->keyholder; }
 
@@ -194,12 +197,30 @@ class Person{
               return false;
 
          require_once('mdb2_wrapper.php');
-         $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($eppn));
+         $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->common_name));
          if (count($res) != 1)
               return false;
 
          return true;
     } /* end function is_admin() */
+
+    public function is_nren_admin()
+    {
+      if (!$this->is_auth())
+          return false;
+
+      /* maybe introduce an attribute map which maps from what we may get
+       * from the institutions to the entitlement as it is checked here */
+      return ($this->entitlement == "nrenAdmin");
+    }
+
+    public function is_institution_admin()
+    {
+      if (!$this->is_auth())
+          return false;
+
+      return ($this->entitlement == "institutionAdmin");
+    }
 
   } /* end class Person */
 ?>
