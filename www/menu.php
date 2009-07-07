@@ -8,6 +8,8 @@ function render_menu($person)
 	    echo get_menu_name("process_csr.php",		"Request New Certificate");
 	    echo get_menu_name("download_certificate.php",	"Download Certificate");
 	    echo get_menu_name("revoke_certificate.php",	"Revoke Certificate");
+	    echo get_menu_name("about_nren.php",		"About <NREN>");
+	    echo get_menu_name("help.php",			"Help <NREN>");
 	    echo "<BR><BR>\n";
 	    echo get_menu_name("index.php", "Start");
 	    echo get_menu_name("tools.php","Tools");
