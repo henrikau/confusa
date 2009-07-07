@@ -11,8 +11,7 @@ function render_menu($person)
 
         if ($person->is_admin()) {
           echo "<A HREF=\"admin.php?subscribe=manage\">Manage subscriptions</A><BR /><BR />\n";
-          echo "<A HREF=\"admin.php?account=manage\">Manage accounts</A><BR /><BR />\n";
-          echo "<A HREF=\"admin.php?nren=manage\">Manage NRENs</A><BR /><BR />\n";
+          echo "<A HREF=\"revocation.php?revoke=manage\">Revocation</A><BR /><BR />\n";
         }
 
         echo "<BR>\n";
