@@ -154,7 +154,6 @@ function process_db_cert()
 function approve_csr($auth_token)
 {
      global $person;
-     global $fw;
      $status = false;
      $csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
                                      array('text', 'text'),
