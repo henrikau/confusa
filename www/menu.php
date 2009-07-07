@@ -5,9 +5,9 @@ function render_menu($person)
     /* always show the Frontpage-link (this page should always be
      * visible */
     if ($person->is_auth()) {
-	    echo get_menu_name("Request New Certificate", "process_csr.php");
-	    echo get_menu_name("Download Certificate", "download_certificate.php");
-	    echo get_menu_name("Revoke Certificate", "revoke_certificate.php");
+	    echo get_menu_name("process_csr.php",		"Request New Certificate");
+	    echo get_menu_name("download_certificate.php",	"Download Certificate");
+	    echo get_menu_name("revoke_certificate.php",	"Revoke Certificate");
 	    echo "<BR><BR>\n";
 	    echo get_menu_name("index.php", "Start");
 	    echo get_menu_name("tools.php","Tools");
