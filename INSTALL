@@ -75,7 +75,8 @@ anything else.
    'authproc' => array(
         50 => 'core:IdPMap',
         60 => 'core:ConfusaAttributeMap',
-        61 => 'core:CountryMap'
+        61 => 'core:CountryMap',
+        62 => 'core:CharacterMap'
     ),
 	ForceAuthn	 => true
 
@@ -85,6 +86,7 @@ anything else.
 	ln -s /var/www/confusa/include/IdPMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/IdPMap.php
 	ln -s /var/www/confusa/include/ConfusaAttributeMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/ConfusaAttributeMap.php
 	ln -s /var/www/confusa/include/CountryMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CountryMap.php
+  ln -s /var/www/confusa/include/CharacterMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CharacterMap.php
 
 6) Install and configure Confusa:
 

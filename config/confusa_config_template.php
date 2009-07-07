@@ -58,29 +58,17 @@ $confusa_config = array(
         'capi_collect_endpoint'        => 'https://secure.comodo.net/products/download/CollectCCC',
         'capi_revoke_endpoint'              => 'https://secure.comodo.net/products/!AutoRevokeCCC',
         'capi_ap_name'                 => '',
-        'capi_login_name'               => '',
-        'capi_login_pw'                 => '',
         'capi_escience_id'                      => '285',
         /* if we ever want to issue e-mail certificates */
         'capi_personal_id'                      => '284',
         /* will insert a 'TEST' string into the certificate subjects if set to true */
         'capi_test'                             => true,
+        /* will encrypt the (sub)-account passwords in the DB with this key */
+        'capi_enc_pw'                           => '',
 	'ca_cert_name'		=> '',
 	'ca_cert_path'		=> 'cert_handle/certs/',
 	'ca_key_name'		=> '',
 	'ca_key_path'		=> 'cert_handle/priv/',
-
-	/* For the cmc-script and comms between Confusa and the script */
-	'cmc_script'		=> 'make_cmc.sh',
-	'cmc_tmp_dir'		=> '/tmp/',
-	'cmc_work_dir'		=> '/opt/cmc/',
-	'cmc_cert_dir'		=> '/opt/cmc/cmc_cert_store/',
-	'cmc_agent_nick'	=> 'cmcagent',
-	'cmc_agent_pw'		=> null,
-
-	/* OU and O for the certificate */
-	'cert_o'		=> '',
-	'cert_ou'		=> '',
 
         /* this *should* be true, as you really* want wget to detect a
          * SSL-man-in-the-middle attac! However, as a workaround for testsystems
