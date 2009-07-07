@@ -71,6 +71,7 @@ abstract class CertManager
    */
   abstract function revoke_cert($key, $reason);
 
+  abstract function get_cert_list_for_persons($common_name, $org);
   /*
    * If the person has been changed in the framework or elsewhere, it can be updated here
    */
