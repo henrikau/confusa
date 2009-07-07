@@ -128,7 +128,8 @@ DIV.admin_table_row
 DIV.admin_table_cell
 {
   display: table-cell;
-  text-align: left
+  text-align: left;
+  width: 50px
 }
 
 DIV.spacer
