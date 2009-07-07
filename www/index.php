@@ -161,7 +161,11 @@ function approve_csr($auth_token)
                                      array($auth_token, $person->get_valid_cn()));
      if (count($csr_res) == 1) {
           $csr = $csr_res[0]['csr'];
-          $cm = $fw->get_cert_manager();
+	  $cm = CertManagerHandler::getManager($person);
+	     echo "<PRE>\n";
+	     echo $csr;
+	     echo "</PRE>\n";
+
           try {
             $cm->sign_key($auth_token, $csr);
           } catch (ConfusaGenException $e) {

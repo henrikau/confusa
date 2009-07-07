@@ -159,14 +159,18 @@ class CertManagerHandler
 	private static $cert_manager;
 	public static function getManager($person)
 	{
-		if (!isset($this->cert_manager)) {
+		if (!isset(CertManagerHandler::$cert_manager)) {
 		      if (Config::get_config('standalone')) {
-			      $this->cert_manager = new CertManager_Standalone($person);
+			      if (Config::get_config('debug'))
+				  echo "Creating Standalone CertManager<BR>\n";
+			      CertManagerHandler::$cert_manager = new CertManager_Standalone($person);
 		      } else {
-			      $this->cert_manager = new CertManager_Online($person);
+			      if (Config::get_config('debug'))
+				  echo "Creating Online CertManager<BR>\n";
+			      CertManagerHandler::$cert_manager = new CertManager_Online($person);
 		      }
 		}
-	        return $this->cert_manager;
+	        return CertManagerHandler::$cert_manager;
 	}
 }
 ?>
