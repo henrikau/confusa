@@ -27,27 +27,27 @@ $fw->render_page();
 
 
 /**
- * keyhandle - main control function for handling the keys
+ * keyhandle - main control function for handling CSRs and certificates
  *
  * It will make sure all CSRs and Certificates stored in the database will be
- * displayed to the user.
+ * processed and displayed to the user properly.
+ *
+ * @pers : the person-object associated with this instance. If the person is
+ *	   non-AuthN, a unclassified version will be displayed.
  */
 function keyhandle($pers) 
 {
   global $person;
   $person = $pers;
-  if ($person->is_auth())
-    {
-	    /* start by working through the database entries */
-	    if (!process_db()) {
-		    /* Nothing happended while working through the database and
-		     * associated flags.
-		     *
-		     * Process uploaded csr's (or show the upload form) */
-		    process_file_csr();
-	    }
-    }
-  else {
+  if ($person->is_auth()) {
+	  if (process_csr_flags_set()) {
+		  process_db_csr();
+	  } elseif (process_cert_flags_set()) {
+		  process_db_cert();
+	  } else {
+		  process_file_csr();
+	  }
+  } else {
 	  include('unclassified_intro.php');
   }
 } /* end keyhandle() */
