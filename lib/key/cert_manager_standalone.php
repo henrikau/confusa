@@ -120,5 +120,52 @@ class CertManager_Standalone extends CertManager
         */
         echo "Revocation for standalone configuration is to be implemented!";
     }
+
+  /* verify_csr()
+   *
+   * This function will test the CSR against several fields.
+   * It will test the subject against the person-attributes (which in turn are
+   * gathered from simplesamlphp-attributes (Feide, surfnet etc).
+   */
+  private function verify_csr($csr)
+  {
+       /* by default, the CSR is valid, we then try to prove that it's invalid
+        *
+        * A better approach could be to distrust all CSRs and try to prove that
+        * they are OK, however this leads to messy code (as the tests becomes
+        * somewhat more involved) and I'm not convinced that it will be any safer.
+        */
+	  if (!isset($csr)) {
+		  echo __FILE__ . ":" . __LINE__ . " CSR not provided by caller!<BR>\n";
+		  return false;
+	  }
+
+	  $subject= openssl_csr_get_subject($csr);
+               /* check fields of CSR to predefined values and user-specific values
+                * Make sure that the emailAddress is not set, as this is
+                * non-compatible with ARC.
+                */
+               if (isset($subject['emailAddress'])) {
+                    echo "will not accept email in DN of certificate. Download latest version of script<br>\n";
+		    return false;
+               }
+	       else if (!$this->match_dn($subject)) {
+                    echo "Error in subject! <BR/>\n";
+                    echo "The fields in your CSR was not set properly.<BR>\n";
+                    echo "To try again, please download a new version of the script, ";
+                    echo "generate a new key and upload again.<BR>\n";
+		    return false;
+               }
+               else {
+                    /* match hash of pubkey to db */
+                    if (known_pubkey($csr)) {
+                         echo "Cannot sign a public key that's previously signed. Please create a new key with corresponding CSR and try again<BR>\n";
+			 return false;
+                    }
+               }
+	       return true;
+    } /* end verify_csr */
+
+
 } /* end class CertManager_Standalone */
 ?>
