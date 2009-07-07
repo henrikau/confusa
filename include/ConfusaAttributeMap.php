@@ -23,6 +23,7 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                     echo "Unknown IdP - $idp<BR>\n";
                }
           }
+	  $this->fix_organizations($request);
      }
 
      private function fix_surfnet(&$request) {
@@ -53,6 +54,10 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                $request['Attributes']['cn'][0] = array(base64_decode($request['Attributes']['cn'][0]));
           if (isset($request['Attributes']['mail'][0]))
                $request['Attributes']['mail'][0] = array(base64_decode($request['Attributes']['mail'][0]));
+     }
+     private function fix_organizations(&$request) {
+	     if (!isset($request['Attributes']['organization'][0]))
+		     $request['Attributes']['organization'][0] = "ConfusaBaseOrganization";
      }
 }
 ?>
