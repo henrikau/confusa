@@ -41,14 +41,11 @@ function keyhandle($pers)
   $person = $pers;
   if ($person->is_auth()) {
 
-	  /* CSR */
-	  if (!process_db_cert()) {
-		  if (!process_file_csr()) {
-			  show_db_cert();
-		  }
-	  }
+	  /* Cert */
+	  process_db_cert();
+	  show_db_cert();
 
-	  /* certificates */
+	  /* CSR */
 	  if (!process_db_csr()) {
 		  require_once('send_element.php');
 		  set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
