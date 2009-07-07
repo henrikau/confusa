@@ -89,20 +89,6 @@ function process_file_csr()
         return false;
 }
 
-function process_db()
-{
-	/* look in the database and see if there's any waiting csrs
-	 * (automatically uploaded). */
-	$res = process_db_csr();
-
-	/* look in the database to see if there's any CSR awaiting retrieval
-	 * */
-	if (!$res)
-		$res = process_db_cert();
-
-	return $res;
-}
-
 /* process_[csr|cert]_flags_set()
  *
  * If any of the flags used for processing either CSR's or certificates are set,
