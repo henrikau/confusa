@@ -191,6 +191,7 @@ class CertManager_Standalone extends CertManager
 		  $composed_dn .= "/OU=".$subject['OU'];
 	  if (isset($subject['C']))
 		  $composed_dn .= "/CN=".$subject['CN'];
+	  echo $this->person->get_complete_dn() . " vs " . $composed_dn . "<BR>\n";
 	  return $this->person->get_complete_dn() === $composed_dn;
   }
 
