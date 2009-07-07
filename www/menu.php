@@ -23,6 +23,6 @@ function render_menu($person)
 
 function get_menu_name($url, $name)
 {
-	return "<A HREF=\"".$url."\">".$name."</A><BR><BR>\n";
+	return "<A HREF=\"".htmlentities($url)."\">".htmlentities($name)."</A><BR><BR>\n";
 }
 ?>
