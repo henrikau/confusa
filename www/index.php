@@ -41,12 +41,16 @@ function keyhandle($pers)
   $person = $pers;
   if ($person->is_auth()) {
 
-	  /* Cert */
+	  /* Process awaiting CSR operations (including signing new
+	   * certificates) */
+	  $csr_process = process_db_csr();
+
+	  /* Certt */
 	  process_db_cert();
 	  show_db_cert();
 
 	  /* CSR */
-	  if (!process_db_csr()) {
+	  if (!$csr_process) {
 		  require_once('send_element.php');
 		  set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
 	  }
