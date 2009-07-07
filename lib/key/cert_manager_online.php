@@ -463,13 +463,11 @@ class CertManager_Online extends CertManager
     private function _capi_authorize_CSR()
     {
         $authorize_endpoint = Config::get_config('capi_auth_endpoint');
-        $login_name = Config::get_config('capi_login_name');
-        $login_pw = Config::get_config('capi_login_pw');
 
         $ch = curl_init($authorize_endpoint);
         $postfields_auth = array();
-        $postfields_auth["loginName"] = $login_name;
-        $postfields_auth["loginPassword"] = $login_pw;
+        $postfields_auth["loginName"] = $this->login_name;
+        $postfields_auth["loginPassword"] = $this->login_pw;
         $postfields_auth["orderNumber"] = $this->order_number;
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
@@ -493,7 +491,7 @@ class CertManager_Online extends CertManager
                                         $_SERVER['REMOTE_ADDR']);
         } else {
             $msg = "Received an error when authorizing the CSR with orderNumber " .
-                   $this->order_number . "\n";
+                   $this->order_number . $data . "\n";
             throw new RemoteAPIException($msg);
         }
 
