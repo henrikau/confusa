@@ -84,7 +84,7 @@ abstract class CertManager
    * It will test the subject against the person-attributes (which in turn are
    * gathered from simplesamlphp-attributes (Feide, surfnet etc).
    */
-  private function verify_csr()
+  protected function verify_csr()
   {
        /* by default, the CSR is valid, we then try to prove that it's invalid
         *
@@ -137,7 +137,7 @@ abstract class CertManager
    * Eventually, we have to add severeal extra fields to handle all different
    * cases, but for now, this will do.
    */
-  private function match_dn($subject)
+  protected function match_dn($subject)
   {
 	  /* Compose the DN in the 'correct' order, only use the fields set in
 	   * the subject */
