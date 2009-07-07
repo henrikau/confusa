@@ -340,16 +340,17 @@ class CertManager_Online extends CertManager
         $sign_endpoint = Config::get_config('capi_apply_endpoint');
         $ap = Config::get_config('capi_ap_name');
         $ca_cert_id = Config::get_config('capi_escience_id');
-        /* Leave this hardcoded since the TCS profile states that MICS profiles
-         * are to be valid for exactly 13 months */
-        $days = '14';
 
         $postfields_sign_req=array();
 
-        /* clutter TEST all over it if the certs are part of a testing process
+        /* clutter TEST all over it and reduce validity period
+         * if the certs are part of a testing process
          */
         if (Config::get_config('capi_test')) {
           $postfields_sign_req["subject_domainComponent_7"] = $this->TEST_DC;
+          $days = '14';
+        } else {
+          $days = '395';
         }
 
         /* set all the required post parameters for upload */
