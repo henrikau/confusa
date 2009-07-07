@@ -5,15 +5,20 @@ function render_menu($person)
     /* always show the Frontpage-link (this page should always be
      * visible */
     if ($person->is_auth()) {
-        echo "<A HREF=\"index.php\">Start</A><BR><BR>\n";
-        echo "<A HREF=\"tools.php\">Tools</A><BR><BR>\n";
-        echo "<A HREF=\"about_you.php\">About You</A><BR><BR>\n";
-	echo "<BR>\n";
-        echo logout_link("logout.php", "Logout", $person) . "<BR><BR>\n";
+	    echo get_menu_name("index.php", "Start");
+	    echo get_menu_name("tools.php","Tools");
+	    echo get_menu_name("about_you.php","About You");
+	    echo "<BR>\n";
+	    echo logout_link("logout.php", "Logout", $person) . "<BR><BR>\n";
     }
     else {
          echo "<A HREF=\"index.php?start_login=yes\">Login</A><BR>\n";
     }
 
     } /* end render_menu */
+
+function get_menu_name($url, $name)
+{
+	return "<A HREF=\"".$url."\">".$name."</A><BR><BR>\n";
+}
 ?>
