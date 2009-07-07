@@ -533,19 +533,17 @@ class CertManager_Online extends CertManager
      */
     private function _insert_list_into_cache($res)
     {
-      $stmt = "INSERT IGNORE INTO list_cache(order_number, common_name) VALUES";
+     $stmt = "INSERT IGNORE INTO list_cache(order_number, common_name) VALUES (?,?)";
 
-      foreach($res as $row) {
-        $stmt .= "('" . $row['order_number'] . "','" . $row['cert_owner'] . "'),";
+     foreach($res as $row) {
+        MDB2Wrapper::execute($stmt, array('text','text'),
+                             array($row['order_number'], $row['cert_owner'])
+        );
       }
 
-      /* replace the last comma by a semicolon */
-      $stmt = substr_replace($stmt, ";", strlen($stmt)-1,1);
-
-      MDB2Wrapper::query($stmt);
       Logger::log_event(LOG_DEBUG, "Inserted list with certificates " .
-                        "for common_name $common_name into the cache "
-              );
+                        "for common_name $common_name into the cache"
+      );
 
       $_SESSION['list_cached'] = true;
     } /* end _insert_list_into_cache */
