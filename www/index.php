@@ -40,12 +40,18 @@ function keyhandle($pers)
   global $person;
   $person = $pers;
   if ($person->is_auth()) {
-	  if (process_csr_flags_set()) {
-		  process_db_csr();
-	  } elseif (process_cert_flags_set()) {
-		  process_db_cert();
-	  } else {
-		  process_file_csr();
+
+	  /* CSR */
+	  if (!process_db_cert()) {
+		  if (!process_file_csr()) {
+			  show_db_cert();
+		  }
+	  }
+
+	  /* certificates */
+	  if (!process_db_csr()) {
+		  require_once('send_element.php');
+		  set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
 	  }
   } else {
 	  include('unclassified_intro.php');
@@ -122,10 +128,6 @@ function process_db_csr()
              $res = inspect_csr(htmlentities($_GET['inspect_csr']));
 	}
 
-	if (!$res) {
-		require_once('send_element.php');
-		set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
-	}
 	return $res;
 }
 
@@ -137,9 +139,6 @@ function process_db_cert()
      }
      else if (isset($_GET['inspect_cert'])) {
           $res = inspect_cert(htmlentities($_GET['inspect_cert']));
-     }
-     if (!$res) {
-	     show_db_cert();
      }
      return $res;
 } /* end process_db_cert */
