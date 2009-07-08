@@ -5,6 +5,12 @@ function error_output($msg) {
 	echo "</B></FONT>\n";
   }
 
+function decho($msg)
+{
+	if (Config::get_config('debug')) {
+		echo $msg . "<BR>\n";
+	}
+}
 function db_array_debug($array, $msg=null)
 {
 	if (Config::get_config('debug') && count($array) > 1) {
