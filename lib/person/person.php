@@ -204,6 +204,11 @@ class Person{
 	    if (!$this->is_admin())
 		    return NORMAL_MODE;
 	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",array('text'), array($this->get_common_name()));
+	    if (Config::get_config('debug')) {
+		    echo "<PRE>\n";
+		    print_r($res);
+		    echo "</PRE>\n";
+	    }
 	    if (count($res) != 1)
 		    return NORMAL_MODE;
 
@@ -276,11 +281,18 @@ class Person{
     }
     /**
      * get_admin_status - get the admin-level from the database
+     *
+     * This function assumes is_auth() has been verified.
      */
     private function get_admin_status()
     {
 	    require_once 'mdb2_wrapper.php';
 	    $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->common_name));
+	    if (Config::get_config('debug')) {
+		    echo "<PRE>\n";
+		    print_r($res);
+		    echo "</PRE>\n";
+	    }
 	    $size = count($res);
 	    if ($size == 1) {
 		    if ($res[0]['admin'] == $this->get_common_name())
