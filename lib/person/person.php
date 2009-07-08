@@ -187,6 +187,50 @@ class Person{
 		    $this->idp = $idp;
     }
     public function get_idp() { return $this->idp; }
+
+
+    /**
+     * get_mode() - get the current modus for the user
+     *
+     * This returns the mode the user displays the page in. Even an
+     * administrator (of any kind) can view the page as a normal user, and this
+     * will be stored in the database for the user.
+     *
+     * This function will look at the type of user and return the mode based on
+     * this and information stored in the database (if admin)
+     */
+    public function get_mode()
+    {
+	    if (!$this->is_admin())
+		    return NORMAL_MODE;
+	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",array('text'), array($this->get_common_name()));
+	    if (count($res) != 1)
+		    return NORMAL_MODE;
+
+	    /* We could just return $res['last_mode'][0] but in case the
+	     * database schema is ever updated, we do not have to worry about
+	     * potentional holes to plug.
+	     *
+	     * I.e. if new modes are to be added, this part must be updated.
+	     */
+	    if ($res['last_mode'][0] == ADMIN_MODE)
+		    return ADMIN_MODE;
+	    return NORMAL_MODE;
+    }
+
+    /**
+     * set_status() - set the mode for a given person.
+     *
+     * Enable a user to switch between normal and admin-mode.
+     */
+    public function set_mode($new_status)
+    {
+	    $new = (int)$new_status;
+	    if ($new == 0 || $new == 1) {
+		    if ($this->is_admin())
+			    MDB2Wrapper::update("UPDATE admin SET last_mode=? WHERE admin=?", array('int', 'text'), array($new, $this->get_common_name()));
+	    }
+    }
     /* is_admin()
      *
      * Test to see if the user is part of the admin-crowd. This will allow the
