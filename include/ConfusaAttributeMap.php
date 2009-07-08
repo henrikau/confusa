@@ -27,7 +27,7 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                     echo "Unknown IdP - $idp<BR>\n";
                }
 	     }
-	     fix_entitlement($request);
+	     $this->fix_entitlement($request);
      }
 
      private function fix_surfnet(&$request) {
@@ -68,7 +68,7 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
 
      private function fix_entitlement(&$request)
      {
-	     if (!set($request['Attributes']['eduPersonEntitlement'][0])) {
+	     if (!isset($request['Attributes']['eduPersonEntitlement'][0])) {
 		     $request['Attributes']['eduPersonEntitlement'][0] = "confusaAdmin";
 	     }
      }
