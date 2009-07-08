@@ -247,7 +247,18 @@ CREATE TABLE order_cache (
 --
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS admins (
-       admin char(128) PRIMARY KEY -- eduPersonPrincipalName of admin
+       admin char(128) PRIMARY KEY, -- eduPersonPrincipalName of admin
+
+       -- The level of admin privileges
+       -- 2: NREN-admin
+       -- 1: Subscriber admin
+       -- 0: Subscriber sub-admin (can only revoke for subscriber org. users)
+       admin_level ENUM('0','1','2') NOT NULL,
+
+       -- The mode currently associated with the admin
+       -- 0: normal mode
+       -- 1: administation mode
+       last_mode ENUM('0','1') DEFAULT 0
 ) type=InnoDB;
 
  
