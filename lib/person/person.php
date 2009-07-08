@@ -228,7 +228,7 @@ class Person{
 	    $new = (int)$new_status;
 	    if ($new == 0 || $new == 1) {
 		    if ($this->is_admin())
-			    MDB2Wrapper::update("UPDATE admin SET last_mode=? WHERE admin=?", array('int', 'text'), array($new, $this->get_common_name()));
+			    MDB2Wrapper::update("UPDATE admins SET last_mode=? WHERE admin=?", array('int', 'text'), array($new, $this->get_common_name()));
 	    }
     }
     /* is_admin()
