@@ -241,7 +241,7 @@ class Person{
 	    if (!$this->is_auth())
 		    return false;
 
-	    return (int)get_admin_status() != NORMAL_USER;
+	    return (int)$this->get_admin_status() != NORMAL_USER;
     } /* end function is_admin() */
 
     public function is_nren_admin()
@@ -251,10 +251,10 @@ class Person{
 
 	    if ($this->entitlement == "confusaAdmin")
 	    /* test attribute to see if the person is NREN-admin */
-	    if ((int)get_admin_status() == NREN_ADMIN)
+	    if ((int)$this->get_admin_status() == NREN_ADMIN)
 		    return true;
 	    /* add user to table of nren-admins (to save page mode for later) */
-	    return (int)get_admin_status() == NREN_ADMIN;
+	    return (int)$this->get_admin_status() == NREN_ADMIN;
     }
 
 
@@ -263,7 +263,7 @@ class Person{
 	    if (!$this->is_auth())
 		    return false;
 
-	    return (int)get_admin_status() == SUBSCRIBER_ADMIN;
+	    return (int)$this->get_admin_status() == SUBSCRIBER_ADMIN;
     }
 
     public function is_subscriber_subadmin()
@@ -271,7 +271,7 @@ class Person{
 	    if (!$this->is_auth())
 		    return false;
 
-	    return (int)get_admin_status() == SUBSCRIBER_SUB_ADMIN;
+	    return (int)$this->get_admin_status() == SUBSCRIBER_SUB_ADMIN;
     }
     /**
      * get_admin_status - get the admin-level from the database
