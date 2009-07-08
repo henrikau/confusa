@@ -8,8 +8,10 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
 	     if (isset($request['Source']['entityid'])) {
                switch($request['Source']['entityid']) {
                case "max.feide.no":
+		       $request['Attributes']['organization'][0] = "feide";
+		       break;
                case "https://openidp.feide.no":
-                    $this->fix_openidp($request);
+		    $request['Attributes']['organization'][0] = "openidp";
                     break;
                case "edugain.showcase.surfnet.nl":
                     $this->fix_surfnet($request);
@@ -26,11 +28,6 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                }
 	     }
 	     fix_entitlement($request);
-     }
-
-     private function fix_openidp(&$request) {
-         $request['Attributes']['organization'][0] = "openidp";
-         $request['Attributes']['eduPersonEntitlement'][0] = "institutionAdmin";
      }
 
      private function fix_surfnet(&$request) {
@@ -69,7 +66,7 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
           $request['Attributes']['organization'][0] = "WAYF";
      }
 
-     private fix_entitlement(&$request)
+     private function fix_entitlement(&$request)
      {
 	     if (!set($request['Attributes']['eduPersonEntitlement'][0])) {
 		     $request['Attributes']['eduPersonEntitlement'][0] = "confusaAdmin";
