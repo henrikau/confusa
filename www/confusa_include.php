@@ -2,10 +2,16 @@
 $path = ini_get('include_path');
 $path = $path . PATH_SEPARATOR;//  . $path_extra;
 
+
+/* Admin status */
 define("NREN_ADMIN", 2);
 define("SUBSCRIBER_ADMIN", 1);
 define("SUBSCRIBER_SUB_ADMIN", 0);
 define("NORMAL_USER", -1);
+
+/* Page-view modes */
+define("NORMAL_MODE", 0);
+define("ADMIN_MODE", 1);
 
 define('WEB_DIR', dirname($_SERVER['SCRIPT_FILENAME']));
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/';
