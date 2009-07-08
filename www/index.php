@@ -162,12 +162,9 @@ function approve_csr($auth_token)
      if (count($csr_res) == 1) {
           $csr = $csr_res[0]['csr'];
 	  $cm = CertManagerHandler::getManager($person);
-	  if (Config::get_config('debug')) {
-		  echo "Content of CSR:<BR>\n";
-		  echo "<PRE>\n";
-		  echo $csr;
-		  echo "</PRE>\n";
-	  }
+
+	  db_array_debug($csr,"Content of CSR:<BR>\n");
+
           try {
             $cm->sign_key($auth_token, $csr);
           } catch (ConfusaGenException $e) {

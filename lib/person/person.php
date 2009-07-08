@@ -204,11 +204,7 @@ class Person{
 	    if (!$this->is_admin())
 		    return NORMAL_MODE;
 	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",array('text'), array($this->get_common_name()));
-	    if (Config::get_config('debug')) {
-		    echo "<PRE>\n";
-		    print_r($res);
-		    echo "</PRE>\n";
-	    }
+	    db_array_debug($res);
 	    if (count($res) != 1)
 		    return NORMAL_MODE;
 
@@ -288,12 +284,8 @@ class Person{
     {
 	    require_once 'mdb2_wrapper.php';
 	    $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->common_name));
-	    if (Config::get_config('debug')) {
-		    echo "<PRE>\n";
-		    print_r($res);
-		    echo "</PRE>\n";
-	    }
 	    $size = count($res);
+	    db_array_debug($res);
 	    if ($size == 1) {
 		    if ($res[0]['admin'] == $this->get_common_name())
 			    return $res[0]['admin_level'];

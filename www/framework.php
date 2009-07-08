@@ -12,6 +12,8 @@ require_once('menu.php');
 require_once('person.php');
 require_once('logger.php');
 
+require_once('output.php');
+
 /* global config */
 require_once('config.php');
 require_once('cert_manager_online.php');
