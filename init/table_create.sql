@@ -258,6 +258,10 @@ CREATE TABLE IF NOT EXISTS admins (
        -- The mode currently associated with the admin
        -- 0: normal mode
        -- 1: administation mode
+       --
+       -- Note: as an extra injection protection, Person will cast any
+       -- updated new_mode to integer, forcing all non-integers to be
+       -- '0', i.e. Normal mode.
        last_mode ENUM('0','1') DEFAULT 0
 ) type=InnoDB;
 
