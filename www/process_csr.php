@@ -160,6 +160,7 @@ function delete_csr($auth_token, $person)
 		$msg .= "User: " . $person->get_valid_cn();
 		$msg .= "Hits: " . $hits;
 		error_output($msg);
+		Logger::log_event(LOG_NOTICE, $msg);
 		break;
 	}
 	return $status;
@@ -183,6 +184,7 @@ function approve_csr($auth_token, $person)
 	switch($hits) {
 	case 0:
 		error_output("Did not find CSR with auth_token $auth_token");
+		Logger::log_event(LOG_NOTICE, "User " . $person->get_common_name() . " tried to delete CSR with auth_token " . $auth_token . " but was unsuccessful");
 		return false;
 
 	case 1:
@@ -206,8 +208,6 @@ function approve_csr($auth_token, $person)
 	}
 } /* end approve_csr_remote() */
 
-/**
- * list_all_csr
 /* inspect_csr
  *
  * Let the user view detailed information about a CSR (belonging to the user) to
@@ -258,6 +258,8 @@ function inspect_csr($auth_token, $person) {
 } /* end inspect_csr() */
 
 
+/**
+ * list_all_csr
  *
  * List all currently active CSRs for the user. Since we will only accept upload
  * of CSRs through authenticated channels, no expiry will be enforced on CSRs.
