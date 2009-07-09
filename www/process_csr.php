@@ -111,7 +111,7 @@ function process_db_csr($person)
 {
 	$res = false;
 	if (isset($_GET['delete_csr'])) {
-             $res = delete_csr(htmlentities($_GET['delete_csr']));
+		$res = delete_csr(htmlentities($_GET['delete_csr']), $person);
 	}
         elseif (isset($_GET['auth_token'])){
              $res = approve_csr(htmlentities($_GET['auth_token']));
@@ -121,6 +121,39 @@ function process_db_csr($person)
 	}
 	return $res;
 }
+
+/**
+ * delete_csr - remove a CSR belonging to person from the database
+ *
+ * Remove the csr with given id from the database.
+ * It will check that the CSR belongs to the user ($person)
+ */
+function delete_csr($auth_token, $person)
+{
+	$status = false;
+        $res = mdb2wrapper::execute("select * from csr_cache where auth_key=? and common_name= ?",
+                                    array('text', 'text'),
+                                    array($auth_token, $person->get_valid_cn()));
+        $hits = count($res);
+	if ($hits== 1) {
+             mdb2wrapper::update("delete from csr_cache where auth_key=? and common_name= ?",
+                                 array('text', 'text'),
+                                 array($auth_token, $person->get_valid_cn()));
+             logger::log_event(LOG_NOTICE, "dropping csr with hash ".pubkey_hash($res[0]['csr'], true)." belonging to ".$person->get_valid_cn()." originating from ".$_SERVER['REMOTE_ADDR']."");
+	     $status = true;
+	}
+	{
+		if ($hits==0) {
+			echo "No matching CSR found.<BR>\n";
+			Logger::log_event(LOG_NOTICE, "Could not delete given CSR from ip ".$_SERVER['REMOTE_ADDR'] . " : " . $person->get_valid_cn() . " Reason: not found");
+		}
+		else {
+			echo "Too many hits (".$hits.") in database<BR>\n";
+			Logger::log_event(LOG_WARNING, "Error in deleting CSR, got several matches on query (".$hits.") with id ".$loc_id."(" . $person->get_valid_cn() .") Ran query " . $update);
+		}
+	}
+	return $status;
+} /* end delete_csr() */
 
 /**
  * list_all_csr
