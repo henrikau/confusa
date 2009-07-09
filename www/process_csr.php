@@ -119,8 +119,8 @@ function process_db_csr($person)
 	if (isset($_GET['delete_csr'])) {
 		$res = delete_csr(htmlentities($_GET['delete_csr']), $person);
 	}
-        elseif (isset($_GET['auth_token'])){
-		$res = approve_csr(htmlentities($_GET['auth_token']), $person);
+        elseif (isset($_GET['sign_csr'])){
+		$res = approve_csr(htmlentities($_GET['sign_csr']), $person);
 	}
 	elseif (isset($_GET['inspect_csr'])) {
 		$res = inspect_csr(htmlentities($_GET['inspect_csr']), $person);
@@ -247,7 +247,7 @@ function inspect_csr($auth_token, $person) {
              echo "<tr><td>From IP: </td><td>".$res[0]['from_ip'] . "</td></tr>\n";
              echo "<tr><td></td><td></td></tr>\n";
              echo "<tr><td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$auth_token."\">Delete from Database</A> ]</td>\n";
-             echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$auth_token."\">Approve for signing</A> ]</td></tr>\n";
+             echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?sign_csr=".$auth_token."\">Approve for signing</A> ]</td></tr>\n";
              echo "</table>\n";
              echo "<BR>\n";
 	     $status = true;
