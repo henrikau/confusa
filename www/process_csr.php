@@ -28,7 +28,7 @@ function process_csr($person)
 
 function process_csr_flags_set()
 {
-	return isset($_GET['delete_csr']) || isset($_GET['auth_token']) || isset($_GET['inspect_csr']);
+	return isset($_GET['delete_csr']) || isset($_GET['sign_csr']) || isset($_GET['inspect_csr']);
 }
 
 
