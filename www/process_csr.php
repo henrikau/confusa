@@ -15,6 +15,12 @@ function process_csr($person)
 	echo "<H3>Requesting new Certificates</H3>\n";
 	/* show upload-form. If it returns false, no uploaded CSRs were processed */
 	process_file_csr($person);
+
+	/* if flags are set, process the CSRs */
+	if (process_csr_flags_set())
+		process_db_csrs($person);
+
+	
 }
 
 
@@ -81,4 +87,8 @@ function process_file_csr($person)
         return false;
 }
 
+function process_csr_flags($person)
+{
+	decho("Processing CSRs");
+}
 ?>
