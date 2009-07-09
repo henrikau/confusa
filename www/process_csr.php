@@ -69,8 +69,8 @@ function process_file_csr($person)
 				$query .= " VALUES(?, current_timestamp(), ?, ?, ?)";
 				MDB2Wrapper::update($query,
 						    array('text', 'text', 'text', 'text'),
-						    array($csr, $ip, $person->get_common_name(), $authvar));
-				$logmsg  = __FILE__ . " Inserted new CSR from $ip (" . $person->get_common_name();
+						    array($csr, $ip, $person->get_valid_cn(), $authvar));
+				$logmsg  = __FILE__ . " Inserted new CSR from $ip (" . $person->get_valid_cn();
 				$logmsg .=") with hash " . pubkey_hash($csr, true);
 				Logger::log_event(LOG_INFO, $logmsg);
 			}
@@ -151,7 +151,7 @@ function list_all_csr($person)
 		}
 		echo "</TABLE>\n";
 	} else {
-		decho("There are no valid CSRs currently stored in the database for " . $person->get_common_name());
+		decho("There are no valid CSRs currently stored in the database for " . $person->get_valid_cn());
 	}
 }
 
