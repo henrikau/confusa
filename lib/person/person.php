@@ -187,6 +187,52 @@ class Person{
 		    $this->idp = $idp;
     }
     public function get_idp() { return $this->idp; }
+
+
+    /**
+     * get_mode() - get the current modus for the user
+     *
+     * This returns the mode the user displays the page in. Even an
+     * administrator (of any kind) can view the page as a normal user, and this
+     * will be stored in the database for the user.
+     *
+     * This function will look at the type of user and return the mode based on
+     * this and information stored in the database (if admin)
+     */
+    public function get_mode()
+    {
+	    if (!$this->is_admin())
+		    return NORMAL_MODE;
+	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",array('text'), array($this->get_common_name()));
+	    db_array_debug($res);
+	    if (count($res) != 1)
+		    return NORMAL_MODE;
+
+	    /* We could just return $res['last_mode'][0] but in case the
+	     * database schema is ever updated, we do not have to worry about
+	     * potentional holes to plug.
+	     *
+	     * I.e. if new modes are to be added, this part must be updated.
+	     */
+	    if ($res['last_mode'][0] == ADMIN_MODE)
+		    return ADMIN_MODE;
+	    return NORMAL_MODE;
+    }
+
+    /**
+     * set_status() - set the mode for a given person.
+     *
+     * Enable a user to switch between normal and admin-mode.
+     */
+    public function set_mode($new_status)
+    {
+	    $new = (int)$new_status;
+	    if ($new == 0 || $new == 1) {
+		    if ($this->is_admin()) {
+			    MDB2Wrapper::update("UPDATE admins SET last_mode=? WHERE admin=?", array('text', 'text'), array($new, $this->get_common_name()));
+		    }
+	    }
+    }
     /* is_admin()
      *
      * Test to see if the user is part of the admin-crowd. This will allow the
@@ -194,34 +240,58 @@ class Person{
      */
     public function is_admin()
     {
-         if (!$this->is_auth())
-              return false;
+	    if (!$this->is_auth())
+		    return false;
 
-         require_once('mdb2_wrapper.php');
-         $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->common_name));
-         if (count($res) != 1)
-              return false;
-
-         return true;
+	    return (int)$this->get_admin_status() != NORMAL_USER;
     } /* end function is_admin() */
 
     public function is_nren_admin()
     {
-      if (!$this->is_auth())
-          return false;
+	    if (!$this->is_auth())
+		    return false;
 
-      /* maybe introduce an attribute map which maps from what we may get
-       * from the institutions to the entitlement as it is checked here */
-      return ($this->entitlement == "nrenAdmin");
+	    if ($this->entitlement == "confusaAdmin")
+	    /* test attribute to see if the person is NREN-admin */
+	    if ((int)$this->get_admin_status() == NREN_ADMIN)
+		    return true;
+	    /* add user to table of nren-admins (to save page mode for later) */
+	    return (int)$this->get_admin_status() == NREN_ADMIN;
     }
 
-    public function is_institution_admin()
+
+    public function is_subscriber_admin()
     {
-      if (!$this->is_auth())
-          return false;
+	    if (!$this->is_auth())
+		    return false;
 
-      return ($this->entitlement == "institutionAdmin");
+	    return (int)$this->get_admin_status() == SUBSCRIBER_ADMIN;
     }
 
-  } /* end class Person */
+    public function is_subscriber_subadmin()
+    {
+	    if (!$this->is_auth())
+		    return false;
+
+	    return (int)$this->get_admin_status() == SUBSCRIBER_SUB_ADMIN;
+    }
+    /**
+     * get_admin_status - get the admin-level from the database
+     *
+     * This function assumes is_auth() has been verified.
+     */
+    private function get_admin_status()
+    {
+	    require_once 'mdb2_wrapper.php';
+	    $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->common_name));
+	    $size = count($res);
+	    db_array_debug($res);
+	    if ($size == 1) {
+		    if ($res[0]['admin'] == $this->get_common_name())
+			    return $res[0]['admin_level'];
+		    echo __FILE__ . ":" . __LINE__ . "<B>Uuuugh! Unreachable point! How did you get here?</B><BR>\n";
+	    }
+	    return NORMAL_USER;
+    }
+} /* end class Person */
 ?>

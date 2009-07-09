@@ -12,6 +12,8 @@ require_once('menu.php');
 require_once('person.php');
 require_once('logger.php');
 
+require_once('output.php');
+
 /* global config */
 require_once('config.php');
 require_once('cert_manager_online.php');
@@ -83,7 +85,17 @@ class Framework {
          * This is done via confusa_auth
          */
          $this->authenticate();
+	 /* Mode-hook, to catch mode-change regardless of target-page (not only
+	  * index) */
+	 if (isset($_GET['mode'])) {
+		 $new_mode = NORMAL_MODE;
+		 if (htmlentities($_GET['mode']) == 'admin') {
+			 $new_mode = ADMIN_MODE;
+		 }
+		 $this->person->set_mode($new_mode);
+	 }
 
+	
         require_once('header.php');
         echo "\n<TABLE class=\"main\">\n";
         echo "\t<TR>\n";

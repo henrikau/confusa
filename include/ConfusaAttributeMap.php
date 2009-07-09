@@ -8,8 +8,10 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
 	     if (isset($request['Source']['entityid'])) {
                switch($request['Source']['entityid']) {
                case "max.feide.no":
+		       $request['Attributes']['organization'][0] = "feide";
+		       break;
                case "https://openidp.feide.no":
-                    $this->fix_openidp($request);
+		    $request['Attributes']['organization'][0] = "openidp";
                     break;
                case "edugain.showcase.surfnet.nl":
                     $this->fix_surfnet($request);
@@ -24,12 +26,8 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                default:
                     echo "Unknown IdP - $idp<BR>\n";
                }
-          }
-     }
-
-     private function fix_openidp(&$request) {
-         $request['Attributes']['organization'][0] = "openidp";
-         $request['Attributes']['eduPersonEntitlement'][0] = "institutionAdmin";
+	     }
+	     $this->fix_entitlement($request);
      }
 
      private function fix_surfnet(&$request) {
@@ -44,7 +42,6 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                $request['Attributes']['mail'] = $request['Attributes']['urn:mace:dir:attribute-def:mail'];
 
           $request['Attributes']['organization'][0] = "surfnet";
-          $request['Attributes']['eduPersonEntitlement'][0] = "institutionAdmin";
      }
 
      private function fix_haka(&$request) {
@@ -56,7 +53,6 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                $request['Attributes']['mail'] = $request['Attributes']['urn:oid:0.9.2342.19200300.100.1.3'];
 
           $request['Attributes']['organization'][0] = "Haka";
-          $request['Attributes']['eduPersonEntitlement'][0] = "institutionAdmin";
      }
 
      private function fix_wayf(&$request) {
@@ -68,7 +64,13 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                $request['Attributes']['mail'][0] = array(base64_decode($request['Attributes']['mail'][0]));
 
           $request['Attributes']['organization'][0] = "WAYF";
-          $request['Attributes']['eduPersonEntitlement'][0] = "institutionAdmin";
+     }
+
+     private function fix_entitlement(&$request)
+     {
+	     if (!isset($request['Attributes']['eduPersonEntitlement'][0])) {
+		     $request['Attributes']['eduPersonEntitlement'][0] = "confusaAdmin";
+	     }
      }
 }
 ?>
