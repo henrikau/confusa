@@ -43,14 +43,15 @@ function render_menu($person)
 
     }
     echo get_menu_name("index.php", "Old Start");
-    echo "<BR /><HR />\n";
+
 
     /* Regardless of status, these should be visible */
+    echo "<BR /><B>Help</B><BR /><HR />\n";
     echo get_menu_name("about_nren.php","About");
     echo get_menu_name("help.php",	"Help");
 
 
-    echo "<BR />\n";
+    echo "<BR /><BR />\n";
     show_auth_link($person);
 
 } /* end render_menu */
