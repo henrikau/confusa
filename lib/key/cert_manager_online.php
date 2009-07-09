@@ -165,7 +165,7 @@ class CertManager_Online extends CertManager
             }
 
             $res[$i-1]['auth_key'] = $params[$i . '_orderNumber'];
-            $res[$i-1]['owner_subject'] = $subject;
+            $res[$i-1]['cert_owner'] = $subject;
         }
 
         return $res;
