@@ -22,9 +22,7 @@ function process_csr($person)
 		process_db_csr($person);
 
 
-	if (Config::get_config('debug')) {
-		list_all_csr($person);
-	}
+	list_all_csr($person);
 }
 
 
@@ -112,6 +110,12 @@ function process_db_csr($person)
 	return $res;
 }
 
+/**
+ * list_all_csr
+ *
+ * List all currently active CSRs for the user. Since we will only accept upload
+ * of CSRs through authenticated channels, no expiry will be enforced on CSRs.
+ */
 function list_all_csr($person)
 {
 	$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip FROM csr_cache WHERE common_name=?";
