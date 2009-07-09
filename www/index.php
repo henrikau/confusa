@@ -7,6 +7,7 @@ include_once('mdb2_wrapper.php');
 include_once('logger.php');
 include_once('confusa_gen.php');
 require_once("output.php");
+require_once("pw.php");
 
 $person = null;
 $fw = new Framework('keyhandle');
@@ -40,6 +41,21 @@ function keyhandle($pers)
   global $person;
   $person = $pers;
   if ($person->is_auth()) {
+	  switch($person->get_mode()) {
+	  case NORMAL_MODE:
+		  echo "Showing normal-mode splash<BR>\n";
+		  break;
+	  case ADMIN_MODE:
+		  echo "Showing admin-mode splash<BR>\n";
+		  break;
+	  default:
+		  $code = create_pw(8);
+		  error_output("Unknown mode, contact the administrator with this error code " . $code);
+		  $msg  = $code . " ";
+		  $msg .= "User " . $person->get_common_name() . " was given mode " . $person->get_mode();
+		  $msg .= ". This is not a valid mode. Verify content in admins-table";
+		  Logger::log_event(LOG_WARNING, $msg);
+	  }
 
 	  /* Process awaiting CSR operations (including signing new
 	   * certificates) */
