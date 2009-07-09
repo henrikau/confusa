@@ -125,28 +125,6 @@ function process_cert_flags_set()
 {
 	return isset($_GET['delete_cert']) || isset($_GET['inspect_cert']);
 }
-/* process_db_csr()
- *
- * This function shall look at all the csr's in the csr_cache, and present the
- * CSR belonging to the user, to the user.
- * The user can then 'approve' a CSR for signing by sending back the id of the
- * given CSR. This will then be put through a challenge-response cycle.
- */
-function process_db_csr()
-{
-	$res = false;
-	if (isset($_GET['delete_csr'])) {
-             $res = delete_csr(htmlentities($_GET['delete_csr']));
-	}
-        if (isset($_GET['auth_token'])){
-             $res = approve_csr(htmlentities($_GET['auth_token']));
-	}
-	else if (isset($_GET['inspect_csr'])) {
-             $res = inspect_csr(htmlentities($_GET['inspect_csr']));
-	}
-
-	return $res;
-}
 
 function process_db_cert()
 {

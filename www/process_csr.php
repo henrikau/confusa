@@ -17,9 +17,9 @@ function process_csr($person)
 	/* show upload-form. If it returns false, no uploaded CSRs were processed */
 	process_file_csr($person);
 
-	/* if flags are set, process the CSRs */
+	/* if flags are set, process the CSR*/
 	if (process_csr_flags_set())
-		process_db_csrs($person);
+		process_db_csr($person);
 
 
 	if (Config::get_config('debug')) {
@@ -90,9 +90,26 @@ function process_file_csr($person)
 	show_upload_form($_SERVER['PHP_SELF']);
 }
 
-function process_csr_flags($person)
+/* process_db_csr()
+ *
+ * This function shall look at all the csr's in the csr_cache, and present the
+ * CSR belonging to the user, to the user.
+ * The user can then 'approve' a CSR for signing by sending back the id of the
+ * given CSR. This will then be put through a challenge-response cycle.
+ */
+function process_db_csr($person)
 {
-	decho("Processing CSRs");
+	$res = false;
+	if (isset($_GET['delete_csr'])) {
+             $res = delete_csr(htmlentities($_GET['delete_csr']));
+	}
+        elseif (isset($_GET['auth_token'])){
+             $res = approve_csr(htmlentities($_GET['auth_token']));
+	}
+	elseif (isset($_GET['inspect_csr'])) {
+             $res = inspect_csr(htmlentities($_GET['inspect_csr']));
+	}
+	return $res;
 }
 
 function list_all_csr($person)
