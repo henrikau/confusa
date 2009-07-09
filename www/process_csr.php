@@ -40,9 +40,6 @@ function process_csr_flags_set()
  */
 function process_file_csr($person)
 {
-	global $fw;
-	$cm = $fw->get_cert_manager();
-
 	/* Testing for uploaded files */
 	if(isset($_FILES['user_csr']['name'])) {
 		decho("Found new CSR<BR>\n");
