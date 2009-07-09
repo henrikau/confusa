@@ -206,6 +206,12 @@ function approve_csr($auth_token, $person)
 		MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
 				    array('text', 'text'),
 				    array($auth_token, $person->get_valid_cn()));
+		echo "The certificate is now being provessed by the CA (Certificate Authority)<BR />\n";
+		echo "Depending on the load, this takes approximately 2 minutes.<BR />\n";
+		/* FIXME: redirect user. Problem: header already written,
+		 * cannot redirect now */
+		echo "You should now move to the certificate-download area found";
+		echo "<A HREF=\"download_certificate.php\">here</A><BR>\n";
 		return true;
 
 	default:
