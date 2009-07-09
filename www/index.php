@@ -57,11 +57,7 @@ function keyhandle($pers)
 		  Logger::log_event(LOG_WARNING, $msg);
 	  }
 
-	  /* Process awaiting CSR operations (including signing new
-	   * certificates) */
-	  $csr_process = process_db_csr();
-
-	  /* Certt */
+	  /* Cert */
 	  process_db_cert();
 	  show_db_cert();
 
