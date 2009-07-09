@@ -148,19 +148,18 @@ class CertManager_Online extends CertManager
     public function get_cert_list_for_persons($common_name, $org)
     {
         $params = $this->_capi_get_cert_list($common_name);
-
         $res = array();
         for ($i = 1; $i <= $params['noOfResults']; $i++) {
             $subject = $params[$i . '_1_subjectDN'];
             $dn_components = explode(',', $subject);
 
             if ($org != NULL) {
-                $org = "O=" . $this->TEST_O_PREFIX . $org;
+                $organization = "O=" . $this->TEST_O_PREFIX . $org;
 
                 /* don't return order number and the owner subject
                  * if the organization is not present in the DN
                  */
-                if (array_search($org, $dn_components) === FALSE) {
+                if (array_search($organization, $dn_components) === FALSE) {
                     continue;
                 }
             }
