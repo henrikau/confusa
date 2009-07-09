@@ -36,9 +36,9 @@ class CertManager_Standalone extends CertManager
             $tmp_cert = openssl_csr_sign($csr, $cert_path, $ca_priv_path, $sign_days , array('digest_alg' => 'sha1'));
             openssl_x509_export($tmp_cert, $cert, true);
 
-            MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) VALUES(?, ?, ?, addtime(current_timestamp(), ?))",
+            MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, organization, valid_untill) VALUES(?, ?, ?, ?, addtime(current_timestamp(), ?))",
                                 array('text', 'text', 'text', 'text'),
-                                array($cert, $auth_key, $this->person->get_valid_cn(), Config::get_config('cert_default_timeout')));
+                                array($cert, $auth_key, $this->person->get_valid_cn(), $this->person->get_orgname(), Config::get_config('cert_default_timeout')));
             Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
                                 $this->person->get_valid_cn() .
                                 " Contacting us from ".
@@ -80,6 +80,29 @@ class CertManager_Standalone extends CertManager
 
         return $res;
     } /* end get_cert_list */
+
+
+    /**
+     * Get a list of certificates for all the persons matched by the $common_name,
+     * which may include one or more '%' wildcard characters.
+     *
+     * @param string $common_name Query for certificate owners with a certain
+     *        common name, possibly including one or more '%' wildspace
+     *        characters
+     * @param string $org The organization to which the search is restricted
+     *
+     * @return Array with results with entries of the form
+     *          array('cert_owner','auth_key')
+     */
+    public function get_cert_list_for_persons($common_name, $org) {
+        $query = "SELECT auth_key, cert_owner FROM cert_cache WHERE " .
+                 "cert_owner LIKE ? AND organization = ?";
+        $res = MDB2Wrapper::execute($query, array('text','text'),
+                                            array($common_name, $org)
+        );
+
+        return $res;
+    }
 
     /*
      * Get the certificate bound to key $key from the database
