@@ -65,11 +65,6 @@ function keyhandle($pers)
 	  process_db_cert();
 	  show_db_cert();
 
-	  /* CSR */
-	  if (!$csr_process) {
-		  require_once('send_element.php');
-		  set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
-	  }
   } else {
 	  include('unclassified_intro.php');
   }

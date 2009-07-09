@@ -6,6 +6,7 @@ require_once 'csr_lib.php';
 require_once 'upload_form.php';
 require_once 'file_upload.php';
 require_once 'config.php';
+require_once 'send_element.php';
 
 $fw = new Framework('process_csr');
 $fw->force_login();
@@ -24,6 +25,11 @@ function process_csr($person)
 		}
 	}
 
+	/* Show the inspect-dialogue */
+	set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
+
+
+	/* List all CSRs for the person */
 	list_all_csr($person);
 }
 
