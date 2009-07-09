@@ -1,6 +1,6 @@
 <?php
 function render_menu($person)
-    {
+{
     echo "<B>Menu</B><BR/><BR>\n";
     /* always show the Frontpage-link (this page should always be
      * visible */
@@ -9,14 +9,21 @@ function render_menu($person)
 	     * have NORMAL_MODE returned regardless of datbase etc. */
 	    $mode = $person->get_mode();
 	    if ($mode == NORMAL_MODE) {
-		    echo get_menu_name("process_csr.php",		"Request New Certificate");
-		    echo get_menu_name("download_certificate.php",	"Download Certificate");
-		    echo get_menu_name("revoke_certificate.php",	"Revoke Certificate");
-		    echo get_menu_name("about_nren.php",		"About <NREN>");
-		    echo get_menu_name("help.php",			"Help <NREN>");
+		    echo "<BR /><B>Certificates:</B><BR /><HR />\n";
+		    echo get_menu_name("process_csr.php",		"Request New");
+		    echo get_menu_name("download_certificate.php",	"Download");
+		    echo get_menu_name("revoke_certificate.php",	"Revoke");
+
+		    echo "<BR />\n";
+		    echo "<B>Other</B><BR />\n";
+		    echo "<HR />\n";
+		    echo get_menu_name("about_you.php",	"About You");
+		    echo get_menu_name("tools.php",	"Tools");
+
 		    if ($person->is_admin()) {
-			    echo get_menu_name("index.php?mode=admin", "Admininstrative menu");
+			    echo get_menu_name("index.php?mode=admin", "Admin menu");
 		    }
+
 	    } else if ($mode == ADMIN_MODE) {
 		    /* Create the admin-menu based on admin privileges.
 		     * The pages common for for more than one type of admin (or
@@ -34,19 +41,24 @@ function render_menu($person)
 		    echo get_menu_name("index.php?mode=normal",	"Normal mode");
 	    }
 
-	    echo "END NEW MENU<BR>\n";
-	    echo "<BR><BR>\n";
-	    echo get_menu_name("index.php", "Start");
-	    echo get_menu_name("tools.php","Tools");
-	    echo get_menu_name("about_you.php","About You");
-	    echo "<BR>\n";
+    }
+    echo get_menu_name("index.php", "Old Start");
+    echo "<BR /><HR />\n";
+
+    /* Regardless of status, these should be visible */
+    echo get_menu_name("about_nren.php","About");
+    echo get_menu_name("help.php",	"Help");
+
+
+    /* Login/Logout */
+    echo "<BR />\n";
+    if (!$person->is_auth()) {
+	    echo "<A HREF=\"index.php?start_login=yes\">Login</A><BR>\n";
+    } else {
 	    echo logout_link("logout.php", "Logout", $person) . "<BR><BR>\n";
     }
-    else {
-         echo "<A HREF=\"index.php?start_login=yes\">Login</A><BR>\n";
-    }
 
-    } /* end render_menu */
+} /* end render_menu */
 
 function get_menu_name($url, $name)
 {
