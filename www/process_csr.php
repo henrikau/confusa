@@ -6,7 +6,6 @@ require_once 'csr_lib.php';
 require_once 'upload_form.php';
 require_once 'file_upload.php';
 
-$person = null;
 $fw = new Framework('process_csr');
 $fw->force_login();
 $fw->render_page();
@@ -15,7 +14,7 @@ function process_csr($person)
 {
 	echo "<H3>Requesting new Certificates</H3>\n";
 	/* show upload-form. If it returns false, no uploaded CSRs were processed */
-	process_file_csr();
+	process_file_csr($person);
 }
 
 
@@ -31,7 +30,7 @@ function process_csr_flags_set()
  * If a new CSR has been uploaded via FILE, this will retrieve it, store it in
  * the database and pass control over to CertManager to process it. 
  */
-function process_file_csr()
+function process_file_csr($person)
 {
 	global $fw;
 	$cm = $fw->get_cert_manager();
@@ -54,13 +53,15 @@ function process_file_csr()
 				error_output("CSR already present in the database, no need for second upload");
 			} else {
 				decho("Inserting into system");
+				$ip=$_SERVER['REMOTE_ADDR'];
 				$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
 				$query .= " common_name, auth_key)";
 				$query .= " VALUES(?, current_timestamp(), ?, ?, ?)";
 				MDB2Wrapper::update($query,
 						    array('text', 'text', 'text', 'text'),
-						    array($csr, $ip, $common, $auth_var));
-				$logmsg  = __FILE__ . " Inserted new CSR from $ip ($common) with hash " . pubkey_hash($csr, true);
+						    array($csr, $ip, $person->get_common_name(), $authvar));
+				$logmsg  = __FILE__ . " Inserted new CSR from $ip (" . $person->get_common_name();
+				$logmsg .=") with hash " . pubkey_hash($csr, true);
 				Logger::log_event(LOG_INFO, $logmsg);
 			}
 			/* CertManager will test content of CSR before sending it off for signing
