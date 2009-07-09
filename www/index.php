@@ -278,47 +278,6 @@ function list_remote_certs()
 
 } /* end list_remote_certs() */
 
-/* inspect_csr
- *
- * Let the user view detailed information about a CSR (belonging to the user) to
- * help decide whether or not it should be signed.
- */
-function inspect_csr($auth_token) {
-	global $person;
-	$status = false;
-        $res = MDB2Wrapper::execute("SELECT * FROM csr_cache WHERE auth_key=? AND common_name=?",
-                                    array('text', 'text'),
-                                    array($auth_token, $person->get_valid_cn()));
-	if(count($res) == 1) {
-             $csr = $res[0]['csr'];
-             /* print subject */
-             $subj = openssl_csr_get_subject($csr, false);
-             echo "Details in your CSR:\n";
-             echo "<table class=\"small\">\n";
-             echo "<tr><td>AuthToken</td><td>".$res[0]['auth_key']."</td></tr>\n";
-             foreach ($subj as $key => $value)
-                  echo "<tr><td>$key</td><td>$value</td></tr>\n";
-             echo "<tr><td>Length:</td><td>".csr_pubkey_length($res[0]['csr']) . " bits</td></tr>\n";
-             echo "<tr><td>Uploaded </td><td>".$res[0]['uploaded_date'] . "</td></tr>\n";
-             echo "<tr><td>From IP: </td><td>".$res[0]['from_ip'] . "</td></tr>\n";
-             echo "<tr><td></td><td></td></tr>\n";
-             echo "<tr><td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$auth_token."\">Delete from Database</A> ]</td>\n";
-             echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$auth_token."\">Approve for signing</A> ]</td></tr>\n";
-             echo "</table>\n";
-             echo "<BR>\n";
-	     $status = true;
-	} else {
-		echo "<BR><FONT COLOR=\"RED\"><B>\n";
-		echo "Error with auth-token. Not found. Please verify that you have entered the correct auth-url and try again<BR>\n";
-		echo "If this problem persists, try to download a new version of the tool and try again<BR>\n";
-		echo "<BR>\n";
-		echo "</FONT></B>\n";
-
-	}
-	return $status;
-} /* end inspect_csr() */
-
-
 /* inspect_cert
  *
  * This function will 'verbosify' a certificate with given cert_id.
