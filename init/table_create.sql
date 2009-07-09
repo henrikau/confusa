@@ -200,6 +200,9 @@ CREATE TABLE cert_cache (
 	-- the auth key for remote download of script
 	auth_key char(64) NOT NULL,
 	cert_owner varchar(64) NOT NULL,
+	-- the organization of the cert_owner. Useful for querying for certificates
+	-- to-be-revoked e.g. when operating in stand-alone mode
+	organization varchar(64) NOT NULL,
 	valid_untill DATETIME NOT NULL
 ) type=InnoDB;
 
