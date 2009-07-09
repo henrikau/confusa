@@ -70,9 +70,6 @@ function keyhandle($pers)
 		  require_once('send_element.php');
 		  set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
 	  }
-	  if (Config::get_config('debug')) {
-		  list_all_csr($pers);
-	  }
   } else {
 	  include('unclassified_intro.php');
   }
@@ -335,47 +332,6 @@ function list_remote_certs()
   return $res;
 
 } /* end list_remote_certs() */
-
-function list_all_csr($person)
-{
-	$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip FROM csr_cache WHERE common_name=?";
-	$res = MDB2Wrapper::execute($query,
-				    array('text'),
-				    $person->get_valid_cn());
-	if (count($res) > 0) {
-		/* Handle each separate instance */
-		echo "<TABLE CLASS=\"small\">\n";
-		echo "<TR>";
-		echo "<TH>Database ID</TH>";
-		echo "<TH>Uploaded date</TH>";
-		echo "<TH>Common Name</TH>";
-		echo "<TH>From IP</TH>";
-		echo "<TH>Inspect</TH>";
-		echo "<TH>Delete</TH>";
-		echo "</tr>\n";
-		foreach ($res as $key => $value) {
-			echo "<TR>";
-			echo "<TD>"	. $value['csr_id'] . "</TD>\n";
-			echo "<TD>"	. $value['uploaded_date'] . "</TD>\n";
-			echo "<TD><I>"	. $value['common_name'] . "</I></TD>\n";
-
-			echo "<TD>";
-			if ($_SERVER['REMOTE_ADDR'] != $value['from_ip']) {
-				$diff = true;
-			}
-			if ($diff)
-				echo "<FONT COLOR=\"RED\"><B><I>";
-			echo $value['from_ip'] . "</TD>\n";
-			if ($diff)
-				echo "</I></B></FONT>";
-
-			echo "<TD>[ <A HREF=\""	.$_SERVER['PHP_SELF']."?inspect_csr=".$value['auth_key']."\">Inspect</A> ]</TD>\n";
-			echo "<TD>[ <A HREF=\""	.$_SERVER['PHP_SELF']."?delete_csr=".$value['auth_key']."\">Delete</A> ]</TD>\n";
-			echo "</tr>\n";
-		}
-		echo "</TABLE>\n";
-	}
-}
 
 /* inspect_csr
  *
