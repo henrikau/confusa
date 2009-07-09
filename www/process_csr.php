@@ -130,27 +130,37 @@ function process_db_csr($person)
  */
 function delete_csr($auth_token, $person)
 {
-	$status = false;
-        $res = mdb2wrapper::execute("select * from csr_cache where auth_key=? and common_name= ?",
-                                    array('text', 'text'),
-                                    array($auth_token, $person->get_valid_cn()));
-        $hits = count($res);
-	if ($hits== 1) {
+	$status		= false;
+        $res		= mdb2wrapper::execute("select * from csr_cache where auth_key=? and common_name= ?",
+					       array('text', 'text'),
+					       array($auth_token, $person->get_valid_cn()));
+        $hits		= count($res);
+	$csr_hash	= pubkey_hash($res[0]['csr'], true);
+
+	switch($hits) {
+	case 0:
+		echo "No matching CSR found.<BR>\n";
+		$msg  = "Could not delete CSR from ip ".$_SERVER['REMOTE_ADDR'];
+		$msg .= " : " . $person->get_valid_cn() . " Reason: not found";
+		Logger::log_event(LOG_NOTICE, $msg);
+		break;
+
+	case 1:
              mdb2wrapper::update("delete from csr_cache where auth_key=? and common_name= ?",
                                  array('text', 'text'),
                                  array($auth_token, $person->get_valid_cn()));
-             logger::log_event(LOG_NOTICE, "dropping csr with hash ".pubkey_hash($res[0]['csr'], true)." belonging to ".$person->get_valid_cn()." originating from ".$_SERVER['REMOTE_ADDR']."");
+	     $msg  = "Dropping csr ". $csr_hash . " ";
+	     $msg .= "from ".$person->get_valid_cn()." (".$_SERVER['REMOTE_ADDR'] . ")";
+             logger::log_event(LOG_NOTICE, $msg);
 	     $status = true;
-	}
-	{
-		if ($hits==0) {
-			echo "No matching CSR found.<BR>\n";
-			Logger::log_event(LOG_NOTICE, "Could not delete given CSR from ip ".$_SERVER['REMOTE_ADDR'] . " : " . $person->get_valid_cn() . " Reason: not found");
-		}
-		else {
-			echo "Too many hits (".$hits.") in database<BR>\n";
-			Logger::log_event(LOG_WARNING, "Error in deleting CSR, got several matches on query (".$hits.") with id ".$loc_id."(" . $person->get_valid_cn() .") Ran query " . $update);
-		}
+	     break;
+
+	default:
+		$msg  = "Error in deleting CSR (" . $csr_hash . ")";
+		$msg .= "User: " . $person->get_valid_cn();
+		$msg .= "Hits: " . $hits;
+		error_output($msg);
+		break;
 	}
 	return $status;
 } /* end delete_csr() */
