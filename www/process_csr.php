@@ -3,6 +3,7 @@ require_once 'framework.php';
 require_once 'mdb2_wrapper.php';
 require_once 'logger.php';
 require_once 'csr_lib.php';
+require_once 'upload_form.php';
 $person = null;
 $fw = new Framework('process_csr');
 $fw->force_login();
@@ -32,6 +33,8 @@ function process_file_csr()
 {
 	global $fw;
 	$cm = $fw->get_cert_manager();
+
+	/* Testing for uploaded files */
 	if(isset($_FILES['user_csr']['name'])) {
 		decho("Found new CSR<BR>\n");
 		$fu = new FileUpload('user_csr', true, 'test_content');
@@ -71,7 +74,7 @@ function process_file_csr()
 			error_output("Please create a new keypair and upload a new CSR to the server.");
 		}
 	}
-        include('upload_form.html');
+	show_upload_form($_SERVER['PHP_SELF']);
         return false;
 }
 
