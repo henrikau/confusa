@@ -4,6 +4,8 @@ require_once 'mdb2_wrapper.php';
 require_once 'logger.php';
 require_once 'csr_lib.php';
 require_once 'upload_form.php';
+require_once 'file_upload.php';
+
 $person = null;
 $fw = new Framework('process_csr');
 $fw->force_login();
