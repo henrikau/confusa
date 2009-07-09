@@ -65,6 +65,7 @@ class Person{
 	$var .= "<tr><td><b>OrganizationalName:</b></td><td>" . $this->get_orgname() . "</td></tr>\n";
 	$var .= "<tr><td><b>Entitlement:</b></td><td>" . $this->get_entitlement() . "</td></tr>\n";
 	$var .= "<tr><td><b>IdP:</b></td><td>". $this->get_idp() . "</td></tr>\n";
+	$var .= "<tr><td><b>Complete /DN:</b></td><td>". $this->get_complete_dn() . "</td></tr>\n";
         $var .= "</table><br>";
         return $var;
     }

@@ -2,11 +2,11 @@
 include_once('framework.php');
 include_once('cert_manager.php'); /* for handling of the key */
 include_once('file_upload.php'); /* FileUpload */
-include_once('pw.php');
 include_once('csr_lib.php');
 include_once('mdb2_wrapper.php');
 include_once('logger.php');
 include_once('confusa_gen.php');
+require_once("output.php");
 
 $person = null;
 $fw = new Framework('keyhandle');
@@ -15,38 +15,59 @@ $fw = new Framework('keyhandle');
 if (send_cert()) {
      exit(0);
 }
+
+/* Test to see if any of the flags that require AuthN are set */
 if (process_csr_flags_set() || process_cert_flags_set()){
 	$fw->force_login();
 }
 
 $fw->render_page();
-echo "humm?";
-/* this function contains the main-flow in the program.
+/* The rest of this file si functions used in the preceding section. */
+
+
+
+/**
+ * keyhandle - main control function for handling CSRs and certificates
  *
  * It will make sure all CSRs and Certificates stored in the database will be
- * displayed to the user.
+ * processed and displayed to the user properly.
+ *
+ * @pers : the person-object associated with this instance. If the person is
+ *	   non-AuthN, a unclassified version will be displayed.
  */
 function keyhandle($pers) 
 {
   global $person;
   $person = $pers;
-  if ($person->is_auth())
-    {
-	    if (!process_db())
-		    /* process uploaded csr's (or show the upload form) */
-		    process_file_csr();
-    }
-  else {
+  if ($person->is_auth()) {
+
+	  /* Process awaiting CSR operations (including signing new
+	   * certificates) */
+	  $csr_process = process_db_csr();
+
+	  /* Certt */
+	  process_db_cert();
+	  show_db_cert();
+
+	  /* CSR */
+	  if (!$csr_process) {
+		  require_once('send_element.php');
+		  set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
+	  }
+	  if (Config::get_config('debug')) {
+		  list_all_csr($pers);
+	  }
+  } else {
 	  include('unclassified_intro.php');
   }
 } /* end keyhandle() */
 
 
-/* process_file_csr()
+/**
+ * process_file_csr - walk an uploaded CSR through the steps towards a certificate
  *
- * Take a CSR (stored in memory, *not* file) and sign&ship it. CM will do some
- * additional checks. A common wrapper for the two ways we have for getting a
- * key signed - automatic upload or manual.
+ * If a new CSR has been uploaded via FILE, this will retrieve it, store it in
+ * the database and pass control over to CertManager to process it. 
  */
 function process_file_csr()
 {
@@ -70,28 +91,12 @@ function process_file_csr()
                 echo $e->getHTMLMessage();
             }
         } else {
-                    echo "<FONT COLOR=\"RED\"><B>\n";
-                    echo "There were errors encountered when processing the file.<BR>\n";
-                    echo "Please create a new keypair and upload a new CSR.<BR>\n";
-                    echo "</B></FONT>\n";
+			error_output("There were errors encountered when processing the file.");
+			error_output("Please create a new keypair and upload a new CSR.");
         }
     }
         include('upload_form.html');
         return false;
-}
-
-function process_db()
-{
-	/* look in the database and see if there's any waiting csrs
-	 * (automatically uploaded). */
-	$res = process_db_csr();
-
-	/* look in the database to see if there's any CSR awaiting retrieval
-	 * */
-	if (!$res)
-		$res = process_db_cert();
-
-	return $res;
 }
 
 /* process_[csr|cert]_flags_set()
@@ -127,10 +132,6 @@ function process_db_csr()
              $res = inspect_csr(htmlentities($_GET['inspect_csr']));
 	}
 
-	if (!$res) {
-		require_once('send_element.php');
-		set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
-	}
 	return $res;
 }
 
@@ -143,9 +144,6 @@ function process_db_cert()
      else if (isset($_GET['inspect_cert'])) {
           $res = inspect_cert(htmlentities($_GET['inspect_cert']));
      }
-     if (!$res) {
-	     show_db_cert();
-     }
      return $res;
 } /* end process_db_cert */
 
@@ -157,14 +155,19 @@ function process_db_cert()
 function approve_csr($auth_token)
 {
      global $person;
-     global $fw;
      $status = false;
      $csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
                                      array('text', 'text'),
                                      array($auth_token, $person->get_valid_cn()));
      if (count($csr_res) == 1) {
           $csr = $csr_res[0]['csr'];
-          $cm = $fw->get_cert_manager();
+	  $cm = CertManagerHandler::getManager($person);
+	  if (Config::get_config('debug')) {
+		  echo "Content of CSR:<BR>\n";
+		  echo "<PRE>\n";
+		  echo $csr;
+		  echo "</PRE>\n";
+	  }
           try {
             $cm->sign_key($auth_token, $csr);
           } catch (ConfusaGenException $e) {
@@ -319,6 +322,47 @@ function list_remote_certs()
   return $res;
 
 } /* end list_remote_certs() */
+
+function list_all_csr($person)
+{
+	$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip FROM csr_cache WHERE common_name=?";
+	$res = MDB2Wrapper::execute($query,
+				    array('text'),
+				    $person->get_valid_cn());
+	if (count($res) > 0) {
+		/* Handle each separate instance */
+		echo "<TABLE CLASS=\"small\">\n";
+		echo "<TR>";
+		echo "<TH>Database ID</TH>";
+		echo "<TH>Uploaded date</TH>";
+		echo "<TH>Common Name</TH>";
+		echo "<TH>From IP</TH>";
+		echo "<TH>Inspect</TH>";
+		echo "<TH>Delete</TH>";
+		echo "</tr>\n";
+		foreach ($res as $key => $value) {
+			echo "<TR>";
+			echo "<TD>"	. $value['csr_id'] . "</TD>\n";
+			echo "<TD>"	. $value['uploaded_date'] . "</TD>\n";
+			echo "<TD><I>"	. $value['common_name'] . "</I></TD>\n";
+
+			echo "<TD>";
+			if ($_SERVER['REMOTE_ADDR'] != $value['from_ip']) {
+				$diff = true;
+			}
+			if ($diff)
+				echo "<FONT COLOR=\"RED\"><B><I>";
+			echo $value['from_ip'] . "</TD>\n";
+			if ($diff)
+				echo "</I></B></FONT>";
+
+			echo "<TD>[ <A HREF=\""	.$_SERVER['PHP_SELF']."?inspect_csr=".$value['auth_key']."\">Inspect</A> ]</TD>\n";
+			echo "<TD>[ <A HREF=\""	.$_SERVER['PHP_SELF']."?delete_csr=".$value['auth_key']."\">Delete</A> ]</TD>\n";
+			echo "</tr>\n";
+		}
+		echo "</TABLE>\n";
+	}
+}
 
 /* inspect_csr
  *

@@ -7,6 +7,7 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
      public function process(&$request) {
 	     if (isset($request['Source']['entityid'])) {
                switch($request['Source']['entityid']) {
+               case "max.feide.no":
                case "https://openidp.feide.no":
                     $this->fix_openidp($request);
                     break;
