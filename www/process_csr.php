@@ -175,29 +175,35 @@ function delete_csr($auth_token, $person)
  */
 function approve_csr($auth_token, $person)
 {
-     $status = false;
-     $csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
-                                     array('text', 'text'),
-                                     array($auth_token, $person->get_valid_cn()));
-     if (count($csr_res) == 1) {
-          $csr = $csr_res[0]['csr'];
-	  $cm = CertManagerHandler::getManager($person);
+	$status = false;
+	$csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
+					array('text', 'text'),
+					array($auth_token, $person->get_valid_cn()));
+	$hits = count($csr_res);
+	swith($hits) {
+	case 0:
+		error_output("Did not find CSR with auth_token $auth_token");
+		return false;
 
-	  db_array_debug($csr,"Content of CSR:<BR>\n");
+	case 1:
+		$csr = $csr_res[0]['csr'];
+		$cm = CertManagerHandler::getManager($person);
 
-          try {
-            $cm->sign_key($auth_token, $csr);
-          } catch (ConfusaGenException $e) {
-               echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
-               return false;
-          }
-	  MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
-			      array('text', 'text'),
-			      array($auth_token, $person->get_valid_cn()));
-	  return true;
-     }
-     echo __FILE__ .":".__LINE__." error getting CSR from database<BR>\n";
-     return false;
+		try {
+			$cm->sign_key($auth_token, $csr);
+		} catch (ConfusaGenException $e) {
+			echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
+			return false;
+		}
+		MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
+				    array('text', 'text'),
+				    array($auth_token, $person->get_valid_cn()));
+		return true;
+
+	default:
+		error_output("Too many hits. Database incosistency.");
+		return false;
+	}
 } /* end approve_csr_remote() */
 
 /**
