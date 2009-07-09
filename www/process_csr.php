@@ -34,6 +34,19 @@ function process_csr_flags_set()
 
 /**
  * process_file_csr - walk an uploaded CSR through the steps towards a certificate
+function get_actual_flag()
+{
+	$msg = "";
+	if (isset($_GET['delete_csr']))
+		$msg .= "delete_csr : " . htmlentities($_GET['delete_csr']) . " ";
+
+	if (isset($_GET['sign_csr']))
+		$msg .= "sign_csr : " . htmlentities($_GET['sign_csr']) . " ";
+
+	if (isset($_GET['inspect_csr']))
+		$msg .= "inspect_csr : " . htmlentities($_GET['inspect_csr']) . " ";
+	return $msg;
+}
  *
  * If a new CSR has been uploaded via FILE, this will retrieve it, store it in
  * the database and pass control over to CertManager to process it. 
