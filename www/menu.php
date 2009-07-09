@@ -50,18 +50,22 @@ function render_menu($person)
     echo get_menu_name("help.php",	"Help");
 
 
-    /* Login/Logout */
     echo "<BR />\n";
-    if (!$person->is_auth()) {
-	    echo "<A HREF=\"index.php?start_login=yes\">Login</A><BR>\n";
-    } else {
-	    echo logout_link("logout.php", "Logout", $person) . "<BR><BR>\n";
-    }
+    show_auth_link($person);
 
 } /* end render_menu */
 
 function get_menu_name($url, $name)
 {
 	return "<A HREF=\"".htmlentities($url)."\">".htmlentities($name)."</A><BR><BR>\n";
+}
+
+function show_auth_link($person)
+{
+    if (!$person->is_auth()) {
+	    echo "<A HREF=\"index.php?start_login=yes\">Login</A><BR>\n";
+    } else {
+	    echo logout_link("logout.php", "Logout", $person) . "<BR><BR>\n";
+    }
 }
 ?>
