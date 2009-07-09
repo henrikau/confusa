@@ -1,10 +1,10 @@
 <?php
-function error_output($msg) {
+function error_output($msg)
+{
 	echo "<FONT COLOR=\"RED\"><B>\n";
 	echo $msg . "<BR>\n";
 	echo "</B></FONT>\n";
-	Logger::log_event(LOG_WARNING, "$msg");
-  }
+}
 
 function decho($msg)
 {
