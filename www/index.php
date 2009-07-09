@@ -138,39 +138,6 @@ function process_db_cert()
      return $res;
 } /* end process_db_cert */
 
-/* approve_csr()
- *
- * This function approves a CSR for signing. It uses the auth-token as a
- * paramenter to find the CSR in the database.
- */
-function approve_csr($auth_token)
-{
-     global $person;
-     $status = false;
-     $csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
-                                     array('text', 'text'),
-                                     array($auth_token, $person->get_valid_cn()));
-     if (count($csr_res) == 1) {
-          $csr = $csr_res[0]['csr'];
-	  $cm = CertManagerHandler::getManager($person);
-
-	  db_array_debug($csr,"Content of CSR:<BR>\n");
-
-          try {
-            $cm->sign_key($auth_token, $csr);
-          } catch (ConfusaGenException $e) {
-               echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
-               return false;
-          }
-	  MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
-			      array('text', 'text'),
-			      array($auth_token, $person->get_valid_cn()));
-	  return true;
-     }
-     echo __FILE__ .":".__LINE__." error getting CSR from database<BR>\n";
-     return false;
-} /* end approve_csr_remote() */
-
 /* send_cert
  *
  * The user can receive a certificate in 2 ways. Either via email or direct download. 

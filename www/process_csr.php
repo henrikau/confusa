@@ -114,7 +114,7 @@ function process_db_csr($person)
 		$res = delete_csr(htmlentities($_GET['delete_csr']), $person);
 	}
         elseif (isset($_GET['auth_token'])){
-             $res = approve_csr(htmlentities($_GET['auth_token']));
+		$res = approve_csr(htmlentities($_GET['auth_token']), $person);
 	}
 	elseif (isset($_GET['inspect_csr'])) {
              $res = inspect_csr(htmlentities($_GET['inspect_csr']));
@@ -164,6 +164,41 @@ function delete_csr($auth_token, $person)
 	}
 	return $status;
 } /* end delete_csr() */
+
+
+/**
+ * approve_csr - send the CSR to cert-manager for signing
+ *
+ * This function approves a CSR for signing. It uses the auth-token as a
+ * paramenter to find the CSR in the database coupled with the valid CN for the
+ * user.
+ */
+function approve_csr($auth_token, $person)
+{
+     $status = false;
+     $csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
+                                     array('text', 'text'),
+                                     array($auth_token, $person->get_valid_cn()));
+     if (count($csr_res) == 1) {
+          $csr = $csr_res[0]['csr'];
+	  $cm = CertManagerHandler::getManager($person);
+
+	  db_array_debug($csr,"Content of CSR:<BR>\n");
+
+          try {
+            $cm->sign_key($auth_token, $csr);
+          } catch (ConfusaGenException $e) {
+               echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
+               return false;
+          }
+	  MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
+			      array('text', 'text'),
+			      array($auth_token, $person->get_valid_cn()));
+	  return true;
+     }
+     echo __FILE__ .":".__LINE__." error getting CSR from database<BR>\n";
+     return false;
+} /* end approve_csr_remote() */
 
 /**
  * list_all_csr
