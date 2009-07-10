@@ -18,9 +18,8 @@ require_once('remote_api.php');
  */
 class CertManager_Online extends CertManager
 {
-    /* order number and collection code for communication with the remote API */
+    /* order number for communication with the remote API */
     private $order_number;
-    private $collection_code;
 
     /* constants for the test-mode. These will go into the certificate subject */
     private $TEST_CN_PREFIX;
@@ -51,9 +50,9 @@ class CertManager_Online extends CertManager
      */
     private function _get_account_information() {
         $login_cred_query = "SELECT a.login_name, a.password, a.ivector " .
-              "FROM account_map a, nrens n, organizations o " .
-              "WHERE o.name = ? AND o.nren_id = n.nren_id " .
-              "AND n.account_id = a.map_id";
+              "FROM account_map a, nrens n, institutions i " .
+              "WHERE i.name = ? AND i.nren_name = n.name " .
+              "AND n.login_name = a.login_name";
 
         $org = $this->person->get_orgname();
         Logger::log_event(LOG_INFO, "Getting the remote-CA login " .
@@ -93,17 +92,10 @@ class CertManager_Online extends CertManager
         $this->_capi_upload_CSR($auth_key, $csr);
         $this->_capi_authorize_CSR();
 
-        $_SESSION['list_cached'] = false;
-         /* read public key and create sum */
-	    $pubkey_checksum=pubkey_hash($csr, true);
-        MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash, uploaded_nr) VALUES(?, 0)",
-                            array('text'),
-                            array($pubkey_checksum));
-
-      Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key " .
-                        "$auth_key and added pubkey to known pubkeys"
-              );
-      }
+        Logger::log_event(LOG_INFO,
+                          "Signed CSR for user with auth_key $auth_key"
+        );
+    }
 
     /**
      * Return an array with all the certificates obtained by the person managed by this
@@ -113,11 +105,6 @@ class CertManager_Online extends CertManager
      */
     public function get_cert_list()
     {
-
-        if ($_SESSION['list_cached']) {
-          return $this->_cert_list_from_cache();
-        }
-
         if (!isset($this->login_name) || !isset($this->login_pw)) {
           $this->_get_account_information();
         }
@@ -161,10 +148,6 @@ class CertManager_Online extends CertManager
             );
         }
 
-        if (count($res) > 0) {
-            $this->_insert_list_into_cache($res);
-        }
-
         return $res;
     }
 
@@ -181,11 +164,6 @@ class CertManager_Online extends CertManager
     {
 
         $key = $this->_transform_to_order_number($key);
-
-        $return_res = $this->_get_cached_cert($key);
-        if ($return_res !== NULL) {
-          return $return_res;
-        }
 
         if (!isset($this->login_name) || !isset($this->login_pw)) {
           $this->_get_account_information();
@@ -246,7 +224,6 @@ class CertManager_Online extends CertManager
               }
         }
 
-        $this->_insert_cert_into_cache($key, $return_res);
         return $return_res;
     }
 
@@ -389,10 +366,11 @@ class CertManager_Online extends CertManager
         if (isset($params['errorCode'])) {
             $msg = "Received an error when uploading the CSR to the remote CA: " .
                 $params['errorMessage'] . "\n";
-            throw new KeySignException($msg);
+            throw new RemoteAPIException($msg);
         }
 
         else {
+
             if (!isset($params['orderNumber']) || !isset($params['collectionCode'])) {
                 $msg = "Response looks malformed. Maybe there is a configuration " .
                        "error in Confusa's online-CA configuration!";
@@ -400,26 +378,24 @@ class CertManager_Online extends CertManager
             }
 
             $this->order_number = $params['orderNumber'];
-            $this->collection_code = $params['collectionCode'];
 
             Logger::log_event(LOG_INFO, "Uploaded CSR to remote CA. Received " .
                                         "order number " .
                                         $this->order_number .
-                                        " and collection code " .
-                                        $this->collection_code .
                                         " for user " .
                                         $this->person->get_valid_cn() .
                                         " Person contacted us from " .
                                         $_SERVER['REMOTE_ADDR']);
 
+          $this->touch_cert_user($days, "DAY");
           $sql_command= "INSERT INTO order_store(auth_key, common_name, " .
-                        "order_number, collection_code, order_date, authorized)" .
-                        "VALUES(?, ?, ?, ?, now(),false)";
+                        "order_number, order_date, authorized)" .
+                        "VALUES(?, ?, ?, now(),'unauthorized')";
 
           MDB2Wrapper::update($sql_command,
-                            array('text', 'text', 'text', 'text'),
+                            array('text', 'text', 'text'),
                             array($auth_key, $this->person->get_valid_cn(),
-                            $this->order_number, $this->collection_code));
+                            $this->order_number));
         } /* end _capi_upload_csr */
     }
 
@@ -463,13 +439,11 @@ class CertManager_Online extends CertManager
     private function _capi_authorize_CSR()
     {
         $authorize_endpoint = Config::get_config('capi_auth_endpoint');
-        $login_name = Config::get_config('capi_login_name');
-        $login_pw = Config::get_config('capi_login_pw');
 
         $ch = curl_init($authorize_endpoint);
         $postfields_auth = array();
-        $postfields_auth["loginName"] = $login_name;
-        $postfields_auth["loginPassword"] = $login_pw;
+        $postfields_auth["loginName"] = $this->login_name;
+        $postfields_auth["loginPassword"] = $this->login_pw;
         $postfields_auth["orderNumber"] = $this->order_number;
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
@@ -482,7 +456,7 @@ class CertManager_Online extends CertManager
         /* the only formal restriction we have is if the API returns 0 for the query */
         if (substr($data,0,1) == "0") {
           /* update the database-entry to reflect the autorization-state */
-          MDB2Wrapper::update("UPDATE order_store SET authorized=true WHERE order_number=? AND collection_code=?",
+          MDB2Wrapper::update("UPDATE order_store SET authorized='authorized' WHERE order_number=?",
                               array('text', 'text'),
                               array($this->order_number, $this->collection_code));
           Logger::log_event(LOG_NOTICE, "Authorized remote certificate for person ".
@@ -498,115 +472,6 @@ class CertManager_Online extends CertManager
         }
 
     } /* end _capi_authorize_csr */
-
-    /*
-     * Retrieve the cached certificate list from the DB. Usually the
-     * cert-list will remain cached for the duration of the session or
-     * until the user changes something, for instance by uploading a
-     * new CSR
-     */
-    private function _cert_list_from_cache()
-    {
-      $query = "SELECT order_number, common_name AS 'cert_owner' FROM list_cache WHERE " .
-               "common_name = ?";
-      $common_name = $this->person->get_valid_cn();
-      $res = MDB2Wrapper::execute($query,
-                                  array('text'),
-                                  $common_name
-             );
-
-      $num_results = count($res);
-      Logger::log_event(LOG_DEBUG, "Looked up certificate list for " .
-                        "person $common_name, received $num_results " .
-                        "results"
-              );
-      return $res;
-    } /* end _cert_list_from_cache */
-
-
-    /* Insert the list of certificates in $res into the list-cache
-     * The insert is done as a batch insert in order to minimize
-     * communication overhead.
-     *
-     * @param $res An array with order_numbers and CNs as retrieved
-     * from a remote-CA listing request
-     */
-    private function _insert_list_into_cache($res)
-    {
-     $stmt = "INSERT IGNORE INTO list_cache(order_number, common_name) VALUES (?,?)";
-
-     foreach($res as $row) {
-        MDB2Wrapper::execute($stmt, array('text','text'),
-                             array($row['order_number'], $row['cert_owner'])
-        );
-      }
-
-      Logger::log_event(LOG_DEBUG, "Inserted list with certificates " .
-                        "for common_name $common_name into the cache"
-      );
-
-      $_SESSION['list_cached'] = true;
-    } /* end _insert_list_into_cache */
-
-
-    /* Query the cache for the certificate with order_number $order_number.
-     * Return NULL if not found
-     *
-     * @param $order_number the order-number associated with the certificate
-     */
-    private function _get_cached_cert($order_number)
-    {
-      $query = "SELECT cert FROM order_cache c WHERE " .
-                "c.order_id = ?";
-
-      $res = MDB2Wrapper::execute($query, array('text'), array($order_number));
-      $num_results = count($res);
-
-      Logger::log_event(LOG_DEBUG, "Looked up the certificate with " .
-                        "order_number $order_number in the DB. Got " .
-                        "$num_results results."
-              );
-
-      if ($num_results == 1) {
-        /* cache hit case */
-        return $res[0]['cert'];
-      } else if (($num_results) == 0) {
-        /* cache miss case */
-        return NULL;
-      } else {
-        /* this case REALLY should not happen */
-        throw new DBQueryException("Database inconsistency! More than " .
-                                   "one entry with the same order-number!"
-                  );
-      }
-    }
-
-
-    /*
-     * Insert the certificate $cert into the order_cache with a default
-     * lifetime of 30 minutes.
-     *
-     * @param $order_number The order_number along with which the cert-
-     *        ificate should be stored
-     * @param cert The certificate itself
-     */
-    private function _insert_cert_into_cache($order_number, $cert) {
-      /* cache the ordered certs for 30 minutes. This could go into a
-       * configuration variable, but does the user really need to care
-       * about this? */
-      $expires = '0 0:30:0';
-
-      $stmt = "INSERT INTO order_cache(order_id,cert,expires) VALUES" .
-              "(?, ?, addtime(current_timestamp(), ?));";
-
-      MDB2Wrapper::update($stmt, array('text','text','text'),
-                                 array($order_number, $cert, $expires)
-                   );
-
-      Logger::log_event(LOG_DEBUG, "Inserted certificate with order_number " .
-                      "$order_number into the order cache"
-              );
-    }
 
 } /* end class OnlineCAManager */
 ?>
