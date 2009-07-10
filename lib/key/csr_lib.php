@@ -146,4 +146,29 @@ function text_csr($csr)
      $exported_csr = shell_exec($cmd);
      return $exported_csr;
 } /* end text_csr */
+
+function get_csr_from_db($person, $auth_key)
+{
+	$csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
+					array('text', 'text'),
+					array($auth_token, $person->get_valid_cn()));
+	$size = count($csr_res);
+	switch ($size) {
+	case 0:
+		throw new CSRNotFoundException("CSR with token " . $auth_key . " not found for " . $person->get_valid_cn());
+	case 1:
+		return $csr_res[0]['csr'];
+	}
+	throw new ConfusaGenException("Too many CSRs found in the database with token " . $auth_token);
+}
+
+function delete_csr_from_db($person, $auth_key)
+{
+	if (!$person->is_auth())
+		return false;
+	MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
+			    array('text', 'text'),
+			    array($auth_token, $person->get_valid_cn()));
+	return true;
+}
 ?>
