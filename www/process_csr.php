@@ -80,6 +80,12 @@ function process_file_csr($person)
 			} else {
 				decho("Inserting into system");
 				$ip=$_SERVER['REMOTE_ADDR'];
+				/* first, a cert_user row must exist, otherwise a constraint
+				 * violation will happen */
+				$cm = CertManagerHandler::getManager($person);
+				$expiry_array = Config::get_config('csr_default_timeout');
+				$cm->touch_cert_user($expiry_array[0], $expiry_array[1]);
+
 				$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
 				$query .= " common_name, auth_key)";
 				$query .= " VALUES(?, current_timestamp(), ?, ?, ?)";
