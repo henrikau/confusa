@@ -131,6 +131,14 @@ H3.info
     font-size: 20pt
 }
 
+DIV.message
+{ 
+  background-color : gray;
+  text-decoration: none;
+  font-weight: bold;
+  text-indent:50px;
+}
+
 DIV.admin_table
 {
   display: table;
