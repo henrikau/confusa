@@ -25,6 +25,7 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                     echo "Unknown IdP - $idp<BR>\n";
                }
           }
+	  $this->fix_organizations($request);
      }
 
      private function fix_openidp(&$request) {
@@ -69,6 +70,10 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
 
           $request['Attributes']['organization'][0] = "WAYF";
           $request['Attributes']['eduPersonEntitlement'][0] = "institutionAdmin";
+     }
+     private function fix_organizations(&$request) {
+	     if (!isset($request['Attributes']['organization'][0]))
+		     $request['Attributes']['organization'][0] = "ConfusaBaseOrganization";
      }
 }
 ?>
