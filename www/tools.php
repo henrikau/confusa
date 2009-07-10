@@ -1,8 +1,8 @@
 <?php
+require_once('confusa_include.php');
 include_once('framework.php');
 include_once('mail_manager.php');
 include_once('logger.php');
-include_once('confusa_include.php');
 
 $fw = new Framework('tools');
 $fw->force_login();
