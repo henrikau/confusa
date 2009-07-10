@@ -72,5 +72,9 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
 		     $request['Attributes']['eduPersonEntitlement'][0] = "confusaAdmin";
 	     }
      }
+     private function fix_organizations(&$request) {
+	     if (!isset($request['Attributes']['organization'][0]))
+		     $request['Attributes']['organization'][0] = "ConfusaBaseOrganization";
+     }
 }
 ?>
