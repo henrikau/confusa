@@ -8,6 +8,11 @@ $fw->render_page();
 function help($person)
 {
 	echo "<H3>Help</H3>\n";
+	if (!$person->is_auth()) {
+		open_help();
+		return;
+	}
+	auth_page($person);
 }
 
 function open_help()
