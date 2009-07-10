@@ -108,7 +108,15 @@ class Framework {
 
         /* include content of page with login if set*/
         echo "\t\t<TD class=\"main\">\n";
+
+	/* Place the rendered page in separate class, makes it easy to change
+	 * borders etc to place things *exactly* where we want it. */
+	echo "\t\t<TABLE class=\"content\">\n";
+	echo "\t\t\t<TR><TD>\n";
         $this->user_rendering();
+	echo "\t\t\t</TD></TR>\n";
+	echo "\t\t</TABLE>\n";
+
         echo "\t\t</TD>\n";
 
 
