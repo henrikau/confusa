@@ -61,7 +61,7 @@ function test_content($content, $auth_url)
    * test to see if the public-key of the CSR has been part of a previously
    * signed certificate
    */
-  return !known_pubkey($content);
+  return true; //!known_pubkey($content);
 }
 function get_algorithm($csr)
 {
