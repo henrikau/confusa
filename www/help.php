@@ -10,4 +10,17 @@ function help($person)
 	echo "<H3>Help</H3>\n";
 }
 
+function open_help()
+{
+	include 'ipso_lorem.html';
+}
+
+function auth_page($person)
+{
+	if (!$person->is_auth()) {
+		open_help();
+		return;
+	}
+	echo "<H3>Classified help</H3>\n";
+}
 ?>
