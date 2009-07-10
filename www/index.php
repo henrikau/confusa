@@ -1,4 +1,5 @@
 <?php 
+require_once('confusa_include.php');
 include_once('framework.php');
 include_once('cert_manager.php'); /* for handling of the key */
 include_once('file_upload.php'); /* FileUpload */

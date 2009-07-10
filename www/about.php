@@ -1,5 +1,5 @@
 <?php
-
+require_once('confusa_include.php');
 include_once('framework.php');
 $fw = new Framework('about_confusa');
 $fw->render_page();

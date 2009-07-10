@@ -1,4 +1,5 @@
 <?php
+require_once('confusa_include.php');
 include_once('framework.php');
 $cert_file = Config::get_config('install_path') . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
 
