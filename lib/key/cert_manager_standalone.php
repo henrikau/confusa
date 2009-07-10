@@ -88,7 +88,6 @@ class CertManager_Standalone extends CertManager
      */
     public function get_cert($key)
     {
-        echo "key " . $key . " person_cn " . $this->person->get_valid_cn() . " <br />\n";
         $res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=? AND valid_untill > current_timestamp()",
                                       array('text', 'text'),
                                       array($key, $this->person->get_valid_cn()));
