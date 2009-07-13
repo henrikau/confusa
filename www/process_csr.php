@@ -203,16 +203,7 @@ function list_all_csr($person)
 			echo "<TD>"	. $value['uploaded_date'] . "</TD>\n";
 			echo "<TD><I>"	. $value['common_name'] . "</I></TD>\n";
 
-			echo "<TD>";
-			if ($_SERVER['REMOTE_ADDR'] != $value['from_ip']) {
-				$diff = true;
-			}
-			if ($diff)
-				echo "<FONT COLOR=\"RED\"><B><I>";
-			echo $value['from_ip'] . "</TD>\n";
-			if ($diff)
-				echo "</I></B></FONT>";
-
+			echo "<TD>".format_ip($value['from_ip'], true) ."</TD>\n";
 			echo "<TD>[ <A HREF=\""	.$_SERVER['PHP_SELF']."?inspect_csr=".$value['auth_key']."\">Inspect</A> ]</TD>\n";
 			echo "<TD>[ <A HREF=\""	.$_SERVER['PHP_SELF']."?delete_csr=".$value['auth_key']."\">Delete</A> ]</TD>\n";
 			echo "</tr>\n";
