@@ -16,23 +16,19 @@ function download_cert($person)
 
 	echo "<H3>Certificate Download Area</H3>\n";
 	/* test and handle flags */
-	process_db_cert();
+	process_db_cert($person);
 	/* show all stored certificates (with links to handle) */
-	show_db_cert();
-}
-function process_cert_flags_set()
-{
-	return isset($_GET['delete_cert']) || isset($_GET['inspect_cert']);
+	show_db_cert($person);
 }
 
-function process_db_cert()
+function process_db_cert($person)
 {
      $res = false;
      if(isset($_GET['delete_cert'])) {
-          $res = delete_cert(htmlentities($_GET['delete_cert']));
+	     $res = delete_cert(htmlentities($_GET['delete_cert']), $person);
      }
      else if (isset($_GET['inspect_cert'])) {
-          $res = inspect_cert(htmlentities($_GET['inspect_cert']));
+	     $res = inspect_cert(htmlentities($_GET['inspect_cert']), $person);
      }
      return $res;
 } /* end process_db_cert */
@@ -43,7 +39,6 @@ function process_db_cert()
  */
 function send_cert()
 {
-     global $person;
      global $fw;
      $person = $fw->authenticate();
      $send_res = false;
@@ -87,9 +82,8 @@ function send_cert()
  *
  * Retrieve certificates from the database and show them to the user
  */
-function show_db_cert()
+function show_db_cert($person)
 {
-	global $person;
     global $fw;
     $cm = $fw->get_cert_manager();
     try {
@@ -136,9 +130,8 @@ function show_db_cert()
 	echo "<br>\n";
 } /* end show_db_cert() */
 
-function list_remote_certs()
+function list_remote_certs($person)
 {
-  global $person;
   $list_endpoint = Config::get_config('capi_listing_endpoint');
   $postfields_list["loginName"] = Config::get_config('capi_login_name');
   $postfields_list["loginPassword"] = Config::get_config('capi_login_pw');
@@ -223,9 +216,8 @@ function inspect_cert($auth_key)
  *
  * Delete certificate belonging to user with given id from db.
  */
-function delete_cert($auth_key)
+function delete_cert($auth_key, $person)
 {
-	global $person;
 	$status = false;
         $res = MDB2Wrapper::execute("SELECT * FROM cert_cache WHERE auth_key=? AND cert_owner=?",
                                     array('text', 'text'),
