@@ -19,6 +19,7 @@ final class Index extends ContentPage
 	public function pre_process($person)
 	{
 		decho(__FILE__ . " starting Index\n");
+		return false;
 	}
 	/**
 	 * process - main control function for handling CSRs and certificates
