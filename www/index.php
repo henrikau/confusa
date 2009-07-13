@@ -62,15 +62,5 @@ function keyhandle($pers)
   }
 } /* end keyhandle() */
 
-
-/* sanitize_id
- *
- * Make sure that the id is an id an nothing more.
- */
-function sanitize_id($id) {
-     /* as PHP will fail to convert characters to an integer (will result in
-      * '0'), this is a 'safe' test */
-     return (int) htmlentities($id);
-}
 ?>
 
