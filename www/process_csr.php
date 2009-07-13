@@ -21,10 +21,13 @@ final class ProcessCsr extends ContentPage
 
 	public function pre_process($person)
 	{
-		if (isset($_GET['sign_csr']))
-			if ($this->approve_csr(htmlentities($_GET['sign_csr']), $person))
+		$res = false;
+		if (isset($_GET['sign_csr'])) {
+			$res = $this->approve_csr(htmlentities($_GET['sign_csr']), $person);
+			if ($res)
 				$this->signing_ok = true;
-		return $this->signing_ok;
+		}
+		return $res;
 
 	}
 	
@@ -196,7 +199,8 @@ final class ProcessCsr extends ContentPage
 			$url .= "s";
 		$url .= "://" . $_SERVER['HTTP_HOST'] . "/" . dirname($_SERVER['PHP_SELF']) . "/download_cert.php?poll=$auth_token";
 
-		return "<meta HTTP-EQUIV=\"REFRESH\" content=\"0; url=$url\">\n";
+		/* <meta http-equiv="refresh" content="0; url=your new address.html"> */
+		return "<META HTTP-EQUIV=\"REFRESH\" content=\"0; url=$url\">\n";
 	} /* end approve_csr_remote() */
 
 
