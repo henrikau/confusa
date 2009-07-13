@@ -190,10 +190,11 @@ function delete_csr_from_db($person, $auth_key)
 		Logger::log_event(LOG_ALERT, $msg);
 		return false;
 	}
+
 	MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
 			    array('text', 'text'),
-			    array($auth_token, $person->get_valid_cn()));
-	$msg  = "Dropping csr ". $csr_hash . " ";
+			    array($auth_key, $person->get_valid_cn()));
+	$msg  = "Dropping csr ". $auth_key . " ";
 	$msg .= "from ".$person->get_valid_cn()." (".$_SERVER['REMOTE_ADDR'] . ")";
 	logger::log_event(LOG_NOTICE, $msg);
 	return true;
