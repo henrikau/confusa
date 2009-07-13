@@ -88,13 +88,13 @@ function send_cert()
  */
 function show_db_cert($person)
 {
-    global $fw;
-    $cm = $fw->get_cert_manager();
-    try {
-        $res = $cm->get_cert_list();
-    } catch (ConfusaGenException $e) {
-        echo $e->getMessage();
-    }
+	global $fw;
+	$cm = $fw->get_cert_manager();
+	try {
+		$res = $cm->get_cert_list();
+	} catch (ConfusaGenException $e) {
+		echo $e->getMessage();
+	}
 
 	$num_received = count($res);
 	if ($num_received > 0) {
@@ -112,21 +112,25 @@ function show_db_cert($person)
 			$row = $res[$counter];
 			$counter++;
 			echo "<tr>\n";
-      if (Config::get_config('standalone')) {
-        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email</A> ]</td>\n";
-        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download</A> ]</td>\n";
-        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A> ]</td>\n";
-        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A> ]</td>\n";
-        echo "<td>".$row['auth_key']."</td>\n";
-      } else {
-        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['order_number']."\">Email</A> ]</td>\n";
-        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['order_number']."\">Download</A> ]</td>\n";
-        echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['order_number']."\">Inspect</A> ]</td>\n";
-        /* deletion of a certificate won't make sense with the remote API. When we implement the remote-revocation-API we can provide a revoke link here. */
-        echo "<td></td>\n";
-        echo "<td>".$row['order_number']."</td>\n";
-      }
-			echo "<td>".$row['cert_owner']."</td>\n";
+			if (Config::get_config('standalone')) {
+				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email</A> ]</td>\n";
+				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download</A> ]</td>\n";
+				echo "<td>".$row['auth_key']."</td>\n";
+				echo "<td>".$row['cert_owner']."</td>\n";
+				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A> ]</td>\n";
+				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A> ]</td>\n";
+			} else {
+				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['order_number']."\">Email</A> ]</td>\n";
+				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['order_number']."\">Download</A> ]</td>\n";
+				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['order_number']."\">Inspect</A> ]</td>\n";
+				/* deletion of a certificate won't make sense
+				 * with the remote API. When we implement the
+				 * remote-revocation-API we can provide a revoke
+				 * link here. */
+				echo "<td></td>\n";
+				echo "<td>".$row['order_number']."</td>\n";
+				echo "<td>".$row['cert_owner']."</td>\n";
+			}
 			echo "</tr>\n";
 		}
 		echo "</table>\n";
