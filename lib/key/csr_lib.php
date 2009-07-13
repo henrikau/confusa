@@ -187,7 +187,7 @@ function print_csr_details($person, $auth_key)
                   echo "<tr><td>$key</td><td>$value</td></tr>\n";
 	echo "<tr><td>Length:</td><td>".csr_pubkey_length($csr['csr']) . " bits</td></tr>\n";
 	echo "<tr><td>Uploaded </td><td>".$csr['uploaded_date'] . "</td></tr>\n";
-	echo "<tr><td>From IP: </td><td>".$csr['from_ip'] . "</td></tr>\n";
+	echo "<tr><td>From IP: </td><td>".format_ip($csr['from_ip'], true) . "</td></tr>\n";
 	echo "<tr><td></td><td></td></tr>\n";
 	echo "<tr><td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=$auth_key\">Delete from Database</A> ]</td>\n";
 	echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?sign_csr=$auth_key\">Approve for signing</A> ]</td></tr>\n";
