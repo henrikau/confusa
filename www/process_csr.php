@@ -24,8 +24,6 @@ final class ProcessCsr extends ContentPage
 		$res = false;
 		if (isset($_GET['sign_csr'])) {
 			$res = $this->approve_csr(htmlentities($_GET['sign_csr']), $person);
-			if ($res)
-				$this->signing_ok = true;
 		}
 		return $res;
 
@@ -42,6 +40,17 @@ final class ProcessCsr extends ContentPage
 			if (!$this->process_db_csr($person)) {
 				error_output("Errors were encountered when processing " . $this->get_actual_flags());
 			}
+
+		}
+		if ($this->signing_ok) {
+			echo "<DIV class=\"message\">\n";
+			echo "The certificate is now being provessed by the CA (Certificate Authority)<BR />\n";
+			echo "Depending on the load, this takes approximately 2 minutes.<BR />\n";
+			echo "<BR />\n";
+			echo "You will now be redirected to the certificate-download area found ";
+			echo "<A HREF=\"download_certificate.php\">here</A><BR>\n";
+			echo "</DIV>\n";
+			echo "<BR />\n";
 		}
 
 		/* Show the inspect-dialogue */
@@ -149,16 +158,6 @@ final class ProcessCsr extends ContentPage
 		elseif (isset($_GET['inspect_csr'])) {
 			$res = print_csr_details($person, htmlentities($_GET['inspect_csr']));
 		}
-		if ($this->signing_ok) {
-			echo "<DIV class=\"message\">\n";
-			echo "The certificate is now being provessed by the CA (Certificate Authority)<BR />\n";
-			echo "Depending on the load, this takes approximately 2 minutes.<BR />\n";
-			echo "<BR />\n";
-			echo "You will now be redirected to the certificate-download area found ";
-			echo "<A HREF=\"download_certificate.php\">here</A><BR>\n";
-			echo "</DIV>\n";
-			echo "<BR />\n";
-		}
 		return $res;
 	}
 
@@ -198,7 +197,7 @@ final class ProcessCsr extends ContentPage
 		if ($_SERVER['SERVER_PORT'] == 443)
 			$url .= "s";
 		$url .= "://" . $_SERVER['HTTP_HOST'] . "/" . dirname($_SERVER['PHP_SELF']) . "/download_certificate.php?poll=$auth_token";
-
+		$this->signing_ok = true;
 		return "<META HTTP-EQUIV=\"REFRESH\" content=\"3; url=$url\">\n";
 	} /* end approve_csr_remote() */
 
