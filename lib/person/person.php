@@ -203,7 +203,9 @@ class Person{
     {
 	    if (!$this->is_admin())
 		    return NORMAL_MODE;
-	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",array('text'), array($this->get_common_name()));
+	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",
+					array('text'),
+					array($this->get_common_name()));
 	    db_array_debug($res);
 	    if (count($res) != 1)
 		    return NORMAL_MODE;
@@ -214,7 +216,7 @@ class Person{
 	     *
 	     * I.e. if new modes are to be added, this part must be updated.
 	     */
-	    if ($res['last_mode'][0] == ADMIN_MODE)
+	    if ($res[0]['last_mode'] == ADMIN_MODE)
 		    return ADMIN_MODE;
 	    return NORMAL_MODE;
     }
