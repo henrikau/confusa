@@ -9,7 +9,7 @@ final class Index extends ContentPage
 {
 	function __construct()
 	{
-		parent::__construct("Index", true);
+		parent::__construct("Index", false);
 	}
 
 	function __destruct()
@@ -60,6 +60,7 @@ final class Index extends ContentPage
 
 $ind = new Index();
 $fw  = new Framework($ind);
+$fw->start();
 unset($fw);
 unset($ind);
 
