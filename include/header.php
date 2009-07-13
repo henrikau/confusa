@@ -14,6 +14,8 @@ function add_header($extra_header)
 }
 function show_headers()
 {
+	global $title;
+	global $extra_header;
 	echo "<HTML>\n";
 	echo "<HEAD>\n";
 	echo "$extra_header\n";
