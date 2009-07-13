@@ -11,7 +11,7 @@ require_once('confusa_auth.php');
 require_once('menu.php');
 require_once('person.php');
 require_once('logger.php');
-
+require_once('content_page.php');
 require_once('output.php');
 
 /* global config */
@@ -39,7 +39,16 @@ class Framework {
     private $config;
     private $cert_manager;      /* cert-manager bound to the framework */
 
-    public function __construct($content_page) {
+    public function __construct($contentPpage) {
+	    if (!isset($contentPage)) {
+		    error_output("Error! content_page not provided to Framework constructor");
+		    exit(0);
+	    }
+	    
+	    if (!($contentPage instanceof ContentPage)) {
+		    error_output("Supplied contentPage is not of class ContentPage");
+		    exit(0);
+	    }
          if (!Config::get_config('valid_install')) {
               echo "You do not have a valid configuration. Please edit the confusa_config.php properly first<BR>\n";
               exit(0);
