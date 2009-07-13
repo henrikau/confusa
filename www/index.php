@@ -13,16 +13,6 @@ require_once("pw.php");
 $person = null;
 $fw = new Framework('keyhandle');
 
-/* test for downloading of certificates */
-if (send_cert()) {
-     exit(0);
-}
-
-/* Test to see if any of the flags that require AuthN are set */
-if (process_csr_flags_set() || process_cert_flags_set()){
-	$fw->force_login();
-}
-
 $fw->render_page();
 /* The rest of this file si functions used in the preceding section. */
 
