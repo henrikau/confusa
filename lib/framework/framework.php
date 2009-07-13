@@ -32,12 +32,9 @@ require_once('cert_manager_standalone.php');
  * the page. (see index.php for an example).
  */
 class Framework {
-    private $f_content;         /* pointer to content-rendering function */
-    private $flogin;            /* force login of user (i.e. this page is
-                                 * *never* available for unauthenticated users */
-    private $person;
-    private $config;
-    private $cert_manager;      /* cert-manager bound to the framework */
+	private $person;
+	private $cert_manager;      /* cert-manager bound to the framework */
+	private $contentPage;
 
     public function __construct($contentPage) {
 	    if (!isset($contentPage)) {
@@ -48,51 +45,48 @@ class Framework {
 		    error_output("Supplied contentPage is not of class ContentPage");
 		    exit(0);
 	    }
-         if (!Config::get_config('valid_install')) {
-              echo "You do not have a valid configuration. Please edit the confusa_config.php properly first<BR>\n";
-              exit(0);
-         }
-      $this->f_content = $content_page;
-      $this->flogin = false;
-      $this->person = new Person();
-
-      if (Config::get_config('standalone')) {
-        $this->cert_manager = new CertManager_Standalone($this->person);
-      } else {
-        $this->cert_manager = new CertManager_Online($this->person);
-      }
-    }
-
-    public function force_login() {
-      $this->flogin = true;
+	    if (!Config::get_config('valid_install')) {
+		    echo "You do not have a valid configuration. Please edit the confusa_config.php properly first<BR>\n";
+		    exit(0);
+	    }
+	    $this->contentPage = $contentPage;
+	    $this->person = new Person();
     }
 
     public function authenticate() {
         is_authenticated($this->person);
         if (!$this->person->is_auth()) {
 		/* if login, trigger SAML-redirect first */
-		if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
+		if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
 			_assert_sso($this->person);
 		}
         }
 	$uname = "anonymous";
 	if($this->person->is_auth())
 		$uname = $this->person->get_valid_cn();
-
-        /* let the cert_manager have a decorated person object */
-        $this->cert_manager->update_person($this->person);
         return $this->person;
     }
 
-   public function get_cert_manager() {
+    public function get_cert_manager() {
+	    if (!isset($this->cert_manager)) {
+		    if (Config::get_config('standalone')) {
+			    $this->cert_manager = new CertManager_Standalone($this->person);
+		    } else {
+			    $this->cert_manager = new CertManager_Online($this->person);
+		    }
+	    }
         return $this->cert_manager;
    }
 
-   public function render_page() {
+   public function start() {
         /* check the authentication-thing, catch the login-hook
          * This is done via confusa_auth
          */
          $this->authenticate();
+
+	 /* Allow content-page to do pre-process */
+	 $this->contentPage->pre_process($this->person);
+
 	 /* Mode-hook, to catch mode-change regardless of target-page (not only
 	  * index) */
 	 if (isset($_GET['mode'])) {
@@ -108,28 +102,26 @@ class Framework {
         echo "\n<TABLE class=\"main\">\n";
         echo "\t<TR>\n";
 
-        /* include the menu, the menu will itself sort out what to display
-         * according to begin logged in or not */
+        /* === MENU === */
         echo "\t\t<TD class=\"main\" WIDTH=\"100\" VALIGN=\"TOP\">\n";
         render_menu($this->person);
         echo "\t\t</TD>\n";
 
-        /* include content of page with login if set*/
+	/* === Main === */
         echo "\t\t<TD class=\"main\">\n";
-
-	/* Place the rendered page in separate class, makes it easy to change
-	 * borders etc to place things *exactly* where we want it. */
 	echo "\t\t<TABLE class=\"content\">\n";
 	echo "\t\t\t<TR><TD>\n";
-        $this->user_rendering();
+	$this->contentPage->process($this->person);
 	echo "\t\t\t</TD></TR>\n";
 	echo "\t\t</TABLE>\n";
-
         echo "\t\t</TD>\n";
 
-
+	/* === Post-amble */
         echo "</TABLE>\n";
         include_once('footer.php');
+
+
+	$this->contentPage->post_render($this->person);
         } /* end render_page */
 
     private function user_rendering()
