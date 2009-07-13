@@ -124,7 +124,7 @@ function process_db_csr($person)
 		$res = approve_csr(htmlentities($_GET['sign_csr']), $person);
 	}
 	elseif (isset($_GET['inspect_csr'])) {
-		$res = inspect_csr(htmlentities($_GET['inspect_csr']), $person);
+		$res = print_csr_details($person, htmlentities($_GET['inspect_csr']));
 	}
 	return $res;
 }
@@ -221,55 +221,6 @@ function approve_csr($auth_token, $person)
 	 * cannot redirect now */
 	return true;
 } /* end approve_csr_remote() */
-
-/* inspect_csr
- *
- * Let the user view detailed information about a CSR (belonging to the user) to
- * help decide whether or not it should be signed.
- */
-function inspect_csr($auth_token, $person) {
-	$status = false;
-
-        $res = MDB2Wrapper::execute("SELECT * FROM csr_cache WHERE auth_key=? AND common_name=?",
-                                    array('text', 'text'),
-                                    array($auth_token, $person->get_valid_cn()));
-	$hits = count($res);
-	switch($hits) {
-	case 0:
-		$msg  = "Error with auth-token ($auth_tokeN) - not found. ";
-		$msg .= "Please verify that you have entered the correct auth-url and try again.";
-		$msg .= "If this problem persists, try to upload a new CSR and inspect the fields carefully";
-		error_output($msg);
-		break;
-	case 1:
-             $csr = $res[0]['csr'];
-             /* print subject */
-             $subj = openssl_csr_get_subject($csr, false);
-             echo "Details in your CSR:\n";
-             echo "<table class=\"small\">\n";
-             echo "<tr><td>AuthToken</td><td>".$res[0]['auth_key']."</td></tr>\n";
-             foreach ($subj as $key => $value)
-                  echo "<tr><td>$key</td><td>$value</td></tr>\n";
-             echo "<tr><td>Length:</td><td>".csr_pubkey_length($res[0]['csr']) . " bits</td></tr>\n";
-             echo "<tr><td>Uploaded </td><td>".$res[0]['uploaded_date'] . "</td></tr>\n";
-             echo "<tr><td>From IP: </td><td>".$res[0]['from_ip'] . "</td></tr>\n";
-             echo "<tr><td></td><td></td></tr>\n";
-             echo "<tr><td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$auth_token."\">Delete from Database</A> ]</td>\n";
-             echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?sign_csr=".$auth_token."\">Approve for signing</A> ]</td></tr>\n";
-             echo "</table>\n";
-             echo "<BR>\n";
-	     $status = true;
-	     break;
-
-	default:
-		$msg = "Too menu returns received. This can indicate database inconsistency.";
-		error_output($msg);
-		Logger::log_event(LOG_ALERT, "Several identical CSRs (" . $auth_token . ") exists in the database for user " . $person->get_valid_cn());
-		break;
-
-	}
-	return $status;
-} /* end inspect_csr() */
 
 
 /**
