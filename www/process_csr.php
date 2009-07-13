@@ -152,7 +152,6 @@ function approve_csr($auth_token, $person)
 		return false;
 	}
 
-	$csr = $csr_res[0]['csr'];
 	$cm = CertManagerHandler::getManager($person);
 
 	try {
