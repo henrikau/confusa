@@ -8,10 +8,10 @@
 class CSRNotFoundException extends Exception
 {
      private $msg;
-     public function __construct($messag, $code = 0)
+     public function __construct($message, $code = 0)
      {
-		  $this->msg = $message;
-		  parent::__construct($message, $code);
+	     $this->msg = $message;
+	     parent::__construct($message, $code);
      }
      public function __toString() 
      {
