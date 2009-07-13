@@ -66,9 +66,9 @@ function send_cert()
                                      "Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use");
                $mm->add_attachment($cert, 'usercert.pem');
                if (!$mm->send_mail()) {
-                    echo "Could not send mail properly!<BR>\n";
+		       error_output("Could not send mail properly!");
+		       return false;
                }
-               echo "Sent certificate via email!<br>\n";
           }
           else if (isset($_GET['file_cert'])) {
                require_once('file_download.php');
