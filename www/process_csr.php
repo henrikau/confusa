@@ -197,10 +197,9 @@ final class ProcessCsr extends ContentPage
 		$url = "http";
 		if ($_SERVER['SERVER_PORT'] == 443)
 			$url .= "s";
-		$url .= "://" . $_SERVER['HTTP_HOST'] . "/" . dirname($_SERVER['PHP_SELF']) . "/download_cert.php?poll=$auth_token";
+		$url .= "://" . $_SERVER['HTTP_HOST'] . "/" . dirname($_SERVER['PHP_SELF']) . "/download_certificate.php?poll=$auth_token";
 
-		/* <meta http-equiv="refresh" content="0; url=your new address.html"> */
-		return "<META HTTP-EQUIV=\"REFRESH\" content=\"0; url=$url\">\n";
+		return "<META HTTP-EQUIV=\"REFRESH\" content=\"3; url=$url\">\n";
 	} /* end approve_csr_remote() */
 
 
