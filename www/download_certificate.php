@@ -9,7 +9,16 @@ $fw->render_page();
 
 function download_cert($person)
 {
+	if (!$person->is_auth()) {
+		error_msg("This is an impossible condition. How did you get in here?");
+		return;
+	}
+
 	echo "<H3>Certificate Download Area</H3>\n";
+	/* test and handle flags */
+	process_db_cert();
+	/* show all stored certificates (with links to handle) */
+	show_db_cert();
 }
 function process_cert_flags_set()
 {
