@@ -29,6 +29,7 @@ function render_menu($person)
 		     * The pages common for for more than one type of admin (or
 		     * normal users) will also check privileges.
 		     */
+		    echo "<BR /><B>Admin</B><BR /><HR />\n";
 		    if ($person->is_subscriber_subadmin()) {
 			    echo get_menu_name("revoke_cert.php",	"Revoke Certificates");
 		    } else if ($person->is_subscriber_subadmin()) {
@@ -38,6 +39,10 @@ function render_menu($person)
 		    } else if ($person->is_nren_admin()) {
 			    echo get_menu_name("admin.php",		"Manage Administrators");
 		    }
+
+		    echo "<BR />\n";
+		    echo "<B>Other</B><BR />\n";
+		    echo "<HR />\n";
 		    echo get_menu_name("index.php?mode=normal",	"Normal mode");
 	    }
 
