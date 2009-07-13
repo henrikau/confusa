@@ -23,16 +23,15 @@ function create_pw($length) {
     return $gen_pw;
 } // end _create_pw
 
-/* scramble_password
- *
- * This function scrambles the password stored in the database (it is used by
- * sms_auth, but it is placed here as it is more of a library function).
+/**
+ * scramble_password - make sure a password is stored safely in the database.
  *
  * Change of this function will *not* affect the use of the system as this is
  * used by all parts.
- * Change this to md5sum or some other hash-function (it *must* be
- * deterministic!) will not lead to an unfunctional system. just remember to
- * expand the space in the database if the hash is longer than 40 characters ;)
+ *
+ * Change this to md5sum, or some other hash-function (it *must* be
+ * deterministic!). This will not lead to an unfunctional system. just remember
+ * to expand the space in the database if the hash is longer than 40 characters.
  */
 function scramble_passwd($pw)
 {

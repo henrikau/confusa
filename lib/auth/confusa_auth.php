@@ -114,8 +114,6 @@ function add_attributes($person)
           $person->fed_auth(false);
      }
      else {
-	     if (isset($attributes['mobile'][0]))
-		     $person->set_mobile($attributes['mobile'][0]);
 	     $person->set_name($attributes['cn'][0]);
 	     $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
 	     $person->set_email($attributes['mail'][0]);

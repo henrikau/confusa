@@ -131,9 +131,6 @@ class Framework {
                 if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
                     authenticate_user($this->person);
                     }
-            else if (isset($_POST['new_pw']))
-                reset_sms_password($this->person);
-
             if (isset($_POST['start_login']) && $_POST['start_login'] == 'yes')
                 authenticate_user($this->person);
             }

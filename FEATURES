@@ -7,8 +7,3 @@ Features of Confusa
 - extensive use of database for storage
 - using temporary files to create download capabilities through the
   browser (or via the script).
-
-Future features/changes
-- sms layer will be removed as this layer does not create any extra
-  security corresponding to the extra work the user must do, in order to
-  authenticate him-/herself to the site

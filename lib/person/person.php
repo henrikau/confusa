@@ -22,7 +22,6 @@ n * When creating a certificate, the attributes will be retrieved *from* the
 class Person{
 
     /* instance-variables: */
-    private $mobile;
     private $given_name;
     private $common_name;
     private $email;
@@ -39,11 +38,8 @@ class Person{
 
     /* status variables (so we poll the subsystem as little as possible) */
     private $fed_auth;
-    private $sms_auth;
-
 
     function __construct() {
-        $this->mobile = null;
         $this->given_name = null;
         $this->common_name = null;
         $this->email = null;
@@ -51,7 +47,6 @@ class Person{
 
         /* we're suspicious by nature */
         $this->fed_auth = false;
-        $this->sms_auth = false;
         } /* end constructor */
 
     function __tostring() {
@@ -59,7 +54,6 @@ class Person{
 	$var .= "<tr><td><b>Name:</b></td><td>" . $this->get_name() . "</td></tr>\n";
 	$var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->get_common_name() . "</td></tr>\n";
 	$var .= "<tr><td><B>CommonName in DN</b></td><td>" . $this->get_valid_cn() . "</td></tr>\n";
-	$var .= "<tr><td><b>mobile</b>:</td><td>" . $this->get_mobile() . "</td></tr>\n";
 	$var .= "<tr><td><b>email:</b></td><td>" . $this->get_email() . "</td></tr>\n";
 	$var .= "<tr><td><b>Country:</b></td><td>" . $this->get_country() . "</td></tr>\n";
 	$var .= "<tr><td><b>OrganizationalName:</b></td><td>" . $this->get_orgname() . "</td></tr>\n";
@@ -78,38 +72,14 @@ class Person{
     public function is_fed_auth() {
         return $this->fed_auth;
         }
-    public function is_sms_auth() {
-        return $this->sms_auth;
-        }
+
     public function is_auth() {
-	    if (Config::get_config('use_sms'))
-		    return $this->is_fed_auth() && $this->is_sms_auth();
 	    return $this->is_fed_auth();
         }
     public function fed_auth($auth = true) {
         $this->fed_auth = $auth;
         }
 
-    public function sms_auth() {
-         $sms = New SMSAuth($person);
-         /* set default timeout for one-time-pass and session
-          * This can be overriden/changed.
-          *
-          * Planned in a later release.. :-)
-          */
-         $sms->set_pw_timeout(15);
-         $sms->set_session_timeout(30, true);
-
-         $this->sms_auth = $sms->assert_user();
-    }
-
-
-    public function set_mobile($mobile) {
-        if (isset($mobile))
-             $this->mobile = htmlentities($mobile);
-        }
-
-    public function get_mobile() { return $this->mobile; }
 
     public function set_name($given_name) {
 	    if (isset($given_name)) {
