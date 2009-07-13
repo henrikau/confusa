@@ -192,7 +192,6 @@ function list_all_csr($person)
 		/* Handle each separate instance */
 		echo "<TABLE CLASS=\"small\">\n";
 		echo "<TR>";
-		echo "<TH>Database ID</TH>";
 		echo "<TH>Uploaded date</TH>";
 		echo "<TH>Common Name</TH>";
 		echo "<TH>From IP</TH>";
@@ -201,7 +200,6 @@ function list_all_csr($person)
 		echo "</tr>\n";
 		foreach ($res as $key => $value) {
 			echo "<TR>";
-			echo "<TD>"	. $value['csr_id'] . "</TD>\n";
 			echo "<TD>"	. $value['uploaded_date'] . "</TD>\n";
 			echo "<TD><I>"	. $value['common_name'] . "</I></TD>\n";
 
