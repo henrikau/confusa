@@ -192,7 +192,7 @@ function delete_csr_from_db($person, $auth_key)
 			    array('text', 'text'),
 			    array($auth_key, $person->get_valid_cn()));
 	$msg  = "Dropping csr ". $auth_key . " ";
-	$msg .= "from ".$person->get_valid_cn()." (".$_SERVER['REMOTE_ADDR'] . ")";
+	$msg .= "for user ".$person->get_valid_cn()."  (".$_SERVER['REMOTE_ADDR'] . ") from csr_cache";
 	logger::log_event(LOG_NOTICE, $msg);
 	return true;
 }
