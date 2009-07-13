@@ -171,9 +171,12 @@ class Person{
      */
     public function get_mode()
     {
+	    /* If user is not admin, the mode is NORMAL_MODE either way */
 	    if (!$this->is_admin())
 		    return NORMAL_MODE;
-	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",array('text'), array($this->get_common_name()));
+	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",
+					array('text'),
+					array($this->get_common_name()));
 	    db_array_debug($res);
 	    if (count($res) != 1)
 		    return NORMAL_MODE;
@@ -194,15 +197,19 @@ class Person{
      *
      * Enable a user to switch between normal and admin-mode.
      */
-    public function set_mode($new_status)
+    public function set_mode($new_mode)
     {
-	    $new = (int)$new_status;
+	    $new = (int)$new_mode;
 	    if ($new == 0 || $new == 1) {
 		    if ($this->is_admin()) {
-			    MDB2Wrapper::update("UPDATE admins SET last_mode=? WHERE admin=?", array('text', 'text'), array($new, $this->get_common_name()));
+			    Logger::log_event(LOG_DEBUG, "Changing mode for " . $this->get_common_name());
+			    MDB2Wrapper::update("UPDATE admins SET last_mode=? WHERE admin=?",
+						array('text', 'text'),
+						array($new, $this->get_common_name()));
 		    }
 	    }
     }
+
     /* is_admin()
      *
      * Test to see if the user is part of the admin-crowd. This will allow the
