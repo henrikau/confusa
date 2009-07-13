@@ -172,9 +172,30 @@ function delete_csr_from_db($person, $auth_key)
 {
 	if (!$person->is_auth())
 		return false;
+
+	/* Verify that the CSR is present */
+	try {
+		$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
+	} catch (CSRNotFoundException $csrnfe) {
+		echo "No matching CSR found.<BR>\n";
+		$msg  = "Could not delete CSR from ip ".$_SERVER['REMOTE_ADDR'];
+		$msg .= " : " . $person->get_valid_cn() . " Reason: not found";
+		Logger::log_event(LOG_NOTICE, $msg);
+		return false;
+	} catch (ConfusaGenException $cge) {
+		$msg  = "Error in deleting CSR (" . $auth_key . ")";
+		$msg .= "for user: " . $person->get_valid_cn() . " ";
+		$msg .= "Too many hits!";
+		error_output($msg);
+		Logger::log_event(LOG_ALERT, $msg);
+		return false;
+	}
 	MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
 			    array('text', 'text'),
 			    array($auth_token, $person->get_valid_cn()));
+	$msg  = "Dropping csr ". $csr_hash . " ";
+	$msg .= "from ".$person->get_valid_cn()." (".$_SERVER['REMOTE_ADDR'] . ")";
+	logger::log_event(LOG_NOTICE, $msg);
 	return true;
 }
 
