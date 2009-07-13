@@ -13,6 +13,7 @@ require_once('person.php');
 require_once('logger.php');
 require_once('content_page.php');
 require_once('output.php');
+require_once('header.php');
 
 /* global config */
 require_once('config.php');
@@ -51,6 +52,7 @@ class Framework {
 	    }
 	    $this->contentPage = $contentPage;
 	    $this->person = new Person();
+	    set_title($this->contentPage->get_title());
     }
 
     public function authenticate() {
@@ -86,9 +88,12 @@ class Framework {
 	   $this->authenticate();
 
 	   /* Allow content-page to do pre-process */
-	   if (!$this->contentPage->pre_process($this->person))
-		   require_once('header.php');
-
+	   $res = $this->contentPage->pre_process($this->person);
+	   if ($res) {
+		   add_header($res);
+	   }
+	   show_headers();
+	   echo "<BODY>\n";
 	   echo "<CENTER>\n";
 	   echo "<TABLE class=\"header\">\n";
 	   echo "<TR>\n";
