@@ -8,9 +8,10 @@ function set_title($new_title)
 	$title = $new_title;
 }
 
-function add_header($extra_header)
+function add_header($header)
 {
-
+	global $extra_header;
+	$extra_header = $header;
 }
 function show_headers()
 {
