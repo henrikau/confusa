@@ -149,9 +149,9 @@ function text_csr($csr)
 
 function get_csr_from_db_raw($eppn, $auth_key)
 {
-	$csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
+	$csr_res = MDB2Wrapper::execute("SELECT * FROM csr_cache WHERE auth_key=? AND common_name=?",
 					array('text', 'text'),
-					array($auth_token, $eppn));
+					array($auth_key, $eppn));
 	$size = count($csr_res);
 	switch ($size) {
 	case 0:
@@ -181,9 +181,9 @@ function delete_csr_from_db($person, $auth_key)
 function print_csr_details($person, $auth_key)
 {
 	try {
-	$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
+		$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
 	} catch (CSRNotFoundException $csrnfe) {
-		$msg  = "Error with auth-token ($auth_tokeN) - not found. ";
+		$msg  = "Error with auth-token ($auth_key) - not found. ";
 		$msg .= "Please verify that you have entered the correct auth-url and try again.";
 		$msg .= "If this problem persists, try to upload a new CSR and inspect the fields carefully";
 		error_output($msg);
@@ -205,8 +205,8 @@ function print_csr_details($person, $auth_key)
 	echo "<tr><td>Uploaded </td><td>".$csr['uploaded_date'] . "</td></tr>\n";
 	echo "<tr><td>From IP: </td><td>".$csr['from_ip'] . "</td></tr>\n";
 	echo "<tr><td></td><td></td></tr>\n";
-	echo "<tr><td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$auth_token."\">Delete from Database</A> ]</td>\n";
-	echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?sign_csr=".$auth_token."\">Approve for signing</A> ]</td></tr>\n";
+	echo "<tr><td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=$auth_key\">Delete from Database</A> ]</td>\n";
+	echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?sign_csr=$auth_key\">Approve for signing</A> ]</td></tr>\n";
 	echo "</table>\n";
 	echo "<BR>\n";
 
