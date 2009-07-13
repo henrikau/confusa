@@ -78,16 +78,17 @@ class Framework {
         return $this->cert_manager;
    }
 
-   public function start() {
-        /* check the authentication-thing, catch the login-hook
-         * This is done via confusa_auth
-         */
-         $this->authenticate();
+   public function start()
+   {
+	   /* check the authentication-thing, catch the login-hook
+	    * This is done via confusa_auth
+	    */
+	   $this->authenticate();
 
-	 /* Allow content-page to do pre-process */
-	 if (!$this->contentPage->pre_process($this->person))
-		 require_once('header.php');
-	 
+	   /* Allow content-page to do pre-process */
+	   if (!$this->contentPage->pre_process($this->person))
+		   require_once('header.php');
+
 	 /* Mode-hook, to catch mode-change regardless of target-page (not only
 	  * index) */
 	 if (isset($_GET['mode'])) {
