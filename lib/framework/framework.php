@@ -89,6 +89,16 @@ class Framework {
 	   if (!$this->contentPage->pre_process($this->person))
 		   require_once('header.php');
 
+	   echo "<CENTER>\n";
+	   echo "<TABLE class=\"header\">\n";
+	   echo "<TR>\n";
+	   echo "<TD ><IMG SRC=\"graphics/logo-sigma.png\"></TD>\n";
+	   echo "<TD WIDTH=\"100\"></TD>\n";
+	   echo "<TD><FONT SIZE=\"+2\">Confusa</TD>\n";
+	   echo "</TR>\n";
+	   echo "</TABLE>\n";
+	   echo "</CENTER>\n";
+
 	 /* Mode-hook, to catch mode-change regardless of target-page (not only
 	  * index) */
 	 if (isset($_GET['mode'])) {
