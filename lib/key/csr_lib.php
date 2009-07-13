@@ -66,41 +66,6 @@ function get_algorithm($csr)
 	return exec($cmd);
 }
 
-/* known_pubkey()
- *
- * this function takes a valid CSR and scans the database to check if the
- * public-key has been uploaded before as part of (another) CSR.
- *
- * It will assume that the CSR belongs to a previously signed certificate, and
- * unless it can prove that it is unique, it will claim that it has been seen
- * before. This is due to the 'better safe-than-sorry' principle.
- *
- * Note: this will only test for pubkeys belonging to *signed* keys, not
- * an identical CSR already present in the database.
- */
-function known_pubkey($csr)
-{
-	$issued_before = true;
-	$pubkey_checksum=pubkey_hash($csr, true);
-        $res = MDB2Wrapper::execute("SELECT * FROM pubkeys WHERE pubkey_hash=?",
-                                    array('text'),
-                                    array($pubkey_checksum));
-	if (strlen($res[0]) <= 0) {
-		Logger::log_event(LOG_DEBUG, __FILE__ . " CSR with previously unknown public-key (hash: $pubkey_checksum)\n");
-		$issued_before=false;
-    }  /* update counter in database */
-        else if (count($res) == 1) {
-             MDB2Wrapper::update("UPDATE pubkeys SET uploaded_nr = uploaded_nr + 1 WHERE pubkey_hash=?",
-                                 array('text'),
-                                 array($res[0]['pubkey_hash']));
-        }
-	else {
-		Logger::syslog(LOG_ERR,"Duplicate signed certificates in database! -> $pubkey_checkusm");
-                exit(1);
-	}
-	return $issued_before;
-} /* end known_pubkey */
-
 /* pubkey_hash()
  *
  * Calculates the sha1-hash of the public-key in the uploaded CSR

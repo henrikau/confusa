@@ -50,12 +50,6 @@ class CertManager_Standalone extends CertManager
                        " from ip ".$_SERVER['REMOTE_ADDR']);
           throw new KeySignException("CSR subject verification failed!");
         }
-
-         /* read public key and create sum */
-	    $pubkey_checksum = pubkey_hash($csr, true);
-        MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash, uploaded_nr) VALUES(?, 0)",
-                            array('text'),
-                            array($pubkey_checksum));
     } /* end sign-key */
 
     /**
@@ -154,13 +148,6 @@ class CertManager_Standalone extends CertManager
                     echo "To try again, please download a new version of the script, ";
                     echo "generate a new key and upload again.<BR>\n";
 		    return false;
-               }
-               else {
-                    /* match hash of pubkey to db */
-                    if (known_pubkey($csr)) {
-                         echo "Cannot sign a public key that's previously signed. Please create a new key with corresponding CSR and try again<BR>\n";
-			 return false;
-                    }
                }
 	       return true;
     } /* end verify_csr */

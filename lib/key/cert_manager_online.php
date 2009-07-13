@@ -91,11 +91,6 @@ class CertManager_Online extends CertManager
         $this->_capi_authorize_CSR();
 
         $_SESSION['list_cached'] = false;
-         /* read public key and create sum */
-	    $pubkey_checksum=pubkey_hash($csr, true);
-        MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash, uploaded_nr) VALUES(?, 0)",
-                            array('text'),
-                            array($pubkey_checksum));
     }
 
     /**
