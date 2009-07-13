@@ -85,8 +85,9 @@ class Framework {
          $this->authenticate();
 
 	 /* Allow content-page to do pre-process */
-	 $this->contentPage->pre_process($this->person);
-
+	 if (!$this->contentPage->pre_process($this->person))
+		 require_once('header.php');
+	 
 	 /* Mode-hook, to catch mode-change regardless of target-page (not only
 	  * index) */
 	 if (isset($_GET['mode'])) {
@@ -98,7 +99,6 @@ class Framework {
 	 }
 
 	
-        require_once('header.php');
         echo "\n<TABLE class=\"main\">\n";
         echo "\t<TR>\n";
 
