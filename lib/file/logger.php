@@ -46,7 +46,7 @@ class Logger {
      static function log_event($pri, $message)
           {
                define_syslog_variables();
-  
+
 		/* add this after the pri-test, as we don't want to  */
 		if ($pri <= Config::get_config('syslog_min')) {
                      openlog("Confusa: ", LOG_PID | LOG_PERROR, LOG_LOCAL0);
@@ -69,6 +69,10 @@ class Logger {
 			$fclose($fd);
 			return;
 		}
+
+		/* The prefix for the log-messages that will be place in syslog
+		 * and confusa.log */
+		$header = "";
 
 		switch($pri) {
 		case LOG_DEBUG:
