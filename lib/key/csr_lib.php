@@ -177,4 +177,40 @@ function delete_csr_from_db($person, $auth_key)
 			    array($auth_token, $person->get_valid_cn()));
 	return true;
 }
+
+function print_csr_details($person, $auth_key)
+{
+	try {
+	$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
+	} catch (CSRNotFoundException $csrnfe) {
+		$msg  = "Error with auth-token ($auth_tokeN) - not found. ";
+		$msg .= "Please verify that you have entered the correct auth-url and try again.";
+		$msg .= "If this problem persists, try to upload a new CSR and inspect the fields carefully";
+		error_output($msg);
+		return false;
+	} catch (ConfusaGenException $cge) {
+		$msg = "Too menu returns received. This can indicate database inconsistency.";
+		error_output($msg);
+		Logger::log_event(LOG_ALERT, "Several identical CSRs (" . $auth_token . ") exists in the database for user " . $person->get_valid_cn());
+		return false;
+	}
+	$subj = openssl_csr_get_subject($csr['csr'], false);
+	echo "<table class=\"small\">\n";
+	echo "<tr><td>AuthToken</td><td>".$csr['auth_key']."</td></tr>\n";
+
+	/* Print subject-elements */
+	foreach ($subj as $key => $value)
+                  echo "<tr><td>$key</td><td>$value</td></tr>\n";
+	echo "<tr><td>Length:</td><td>".csr_pubkey_length($csr['csr']) . " bits</td></tr>\n";
+	echo "<tr><td>Uploaded </td><td>".$csr['uploaded_date'] . "</td></tr>\n";
+	echo "<tr><td>From IP: </td><td>".$csr['from_ip'] . "</td></tr>\n";
+	echo "<tr><td></td><td></td></tr>\n";
+	echo "<tr><td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$auth_token."\">Delete from Database</A> ]</td>\n";
+	echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?sign_csr=".$auth_token."\">Approve for signing</A> ]</td></tr>\n";
+	echo "</table>\n";
+	echo "<BR>\n";
+
+	return true;
+}
+
 ?>
