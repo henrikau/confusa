@@ -68,51 +68,6 @@ function keyhandle($pers)
 } /* end keyhandle() */
 
 
-/**
- * process_file_csr - walk an uploaded CSR through the steps towards a certificate
- *
- * If a new CSR has been uploaded via FILE, this will retrieve it, store it in
- * the database and pass control over to CertManager to process it. 
- */
-function process_file_csr()
-{
-    global $fw;
-    $cm = $fw->get_cert_manager();
-	/* process_key($person, 'user_csr'); */
-	if(isset($_FILES['user_csr']['name'])) {
-		$fu = new FileUpload('user_csr', true, 'test_content');
-		if ($fu->file_ok()) {
-			/* CertManager will test content of CSR before sending it off for signing
-                         *
-                         * As we upload the key manually, the user-script won't
-                         * be called for creating a auth-token. We therefore
-                         * create a random string containing the correct amount
-                         * of characters. It will contain more letters than the
-                         * user-script (which uses sha1sum of some random text).
-                         */
-            try {
-                $cm->sign_key(pubkey_hash($fu->get_content(), true), $fu->get_content());
-            } catch (ConfusaGenException $e) {
-                echo $e->getMessage() . "<br />\n";
-            }
-        } else {
-			error_output("There were errors encountered when processing the file.");
-			error_output("Please create a new keypair and upload a new CSR.");
-        }
-    }
-        include('upload_form.html');
-        return false;
-}
-
-/* process_[csr|cert]_flags_set()
- *
- * If any of the flags used for processing either CSR's or certificates are set,
- * the user must authenticate. This gives a wrapper to simplify tests.
- */
-function process_csr_flags_set()
-{
-	return isset($_GET['delete_csr']) || isset($_GET['auth_token']) || isset($_GET['inspect_csr']);
-}
 function process_cert_flags_set()
 {
 	return isset($_GET['delete_cert']) || isset($_GET['inspect_cert']);
