@@ -11,15 +11,21 @@ require_once 'send_element.php';
 
 final class ProcessCsr extends ContentPage
 {
+	private $signing_ok;
+
 	function __construct()
 	{
 		parent::__construct("Process CSR", true);
+		$this->signing_ok = false;
 	}
 
 	public function pre_process($person)
 	{
 		if (isset($_GET['sign_csr']))
-			return $this->approve_csr(htmlentities($_GET['sign_csr']), $person);
+			if ($this->approve_csr(htmlentities($_GET['sign_csr']), $person))
+				$this->signing_ok = true;
+		return $this->signing_ok;
+
 	}
 	
 	public function process($person)
@@ -140,6 +146,16 @@ final class ProcessCsr extends ContentPage
 		elseif (isset($_GET['inspect_csr'])) {
 			$res = print_csr_details($person, htmlentities($_GET['inspect_csr']));
 		}
+		if ($this->signing_ok) {
+			echo "<DIV class=\"message\">\n";
+			echo "The certificate is now being provessed by the CA (Certificate Authority)<BR />\n";
+			echo "Depending on the load, this takes approximately 2 minutes.<BR />\n";
+			echo "<BR />\n";
+			echo "You will now be redirected to the certificate-download area found ";
+			echo "<A HREF=\"download_certificate.php\">here</A><BR>\n";
+			echo "</DIV>\n";
+			echo "<BR />\n";
+		}
 		return $res;
 	}
 
@@ -175,17 +191,7 @@ final class ProcessCsr extends ContentPage
 			return false;
 		}
 		delete_csr_from_db($person, $auth_token);
-		
-		echo "<DIV class=\"message\">\n";
-		echo "The certificate is now being provessed by the CA (Certificate Authority)<BR />\n";
-		echo "Depending on the load, this takes approximately 2 minutes.<BR />\n";
-		echo "<BR />\n";
-		echo "You should now move to the certificate-download area found ";
-		echo "<A HREF=\"download_certificate.php\">here</A><BR>\n";
-		echo "</DIV>\n";
-		echo "<BR />\n";
-		/* FIXME: redirect user. Problem: header already written,
-		 * cannot redirect now */
+		header("Location download_cert.php");
 		return true;
 	} /* end approve_csr_remote() */
 
