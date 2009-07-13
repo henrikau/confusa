@@ -118,7 +118,7 @@ function process_db_csr($person)
 {
 	$res = false;
 	if (isset($_GET['delete_csr'])) {
-		$res = delete_csr(htmlentities($_GET['delete_csr']), $person);
+		$res = delete_csr_from_db($person, htmlentities($_GET['delete_csr']));
 	}
         elseif (isset($_GET['sign_csr'])){
 		$res = approve_csr(htmlentities($_GET['sign_csr']), $person);
@@ -151,7 +151,6 @@ function delete_csr($auth_token, $person)
 		$msg .= " : " . $person->get_valid_cn() . " Reason: not found";
 		Logger::log_event(LOG_NOTICE, $msg);
 		break;
-
 	case 1:
              mdb2wrapper::update("delete from csr_cache where auth_key=? and common_name= ?",
                                  array('text', 'text'),
