@@ -8,7 +8,7 @@
    */
 include_once('mdb2_wrapper.php');
 include_once('logger.php');
-
+require_once 'csr_not_found.php';
 /* test_content()
  *
  * This function is to be used when testing uploaded CSRs for flaws and errors.
