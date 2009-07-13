@@ -39,12 +39,11 @@ class Framework {
     private $config;
     private $cert_manager;      /* cert-manager bound to the framework */
 
-    public function __construct($contentPpage) {
+    public function __construct($contentPage) {
 	    if (!isset($contentPage)) {
 		    error_output("Error! content_page not provided to Framework constructor");
 		    exit(0);
 	    }
-	    
 	    if (!($contentPage instanceof ContentPage)) {
 		    error_output("Supplied contentPage is not of class ContentPage");
 		    exit(0);

@@ -1,56 +1,66 @@
 <?php 
 require_once('confusa_include.php');
 include_once('framework.php');
-include_once('cert_manager.php'); /* for handling of the key */
-include_once('file_upload.php'); /* FileUpload */
-include_once('csr_lib.php');
-include_once('mdb2_wrapper.php');
 include_once('logger.php');
-include_once('confusa_gen.php');
 require_once("output.php");
 require_once("pw.php");
 
-$person = null;
-$fw = new Framework('keyhandle');
-
-$fw->render_page();
-/* The rest of this file si functions used in the preceding section. */
-
-
-
-/**
- * keyhandle - main control function for handling CSRs and certificates
- *
- * It will make sure all CSRs and Certificates stored in the database will be
- * processed and displayed to the user properly.
- *
- * @pers : the person-object associated with this instance. If the person is
- *	   non-AuthN, a unclassified version will be displayed.
- */
-function keyhandle($pers) 
+final class Index extends ContentPage
 {
-  global $person;
-  $person = $pers;
-  if ($person->is_auth()) {
-	  switch($person->get_mode()) {
-	  case NORMAL_MODE:
-		  echo "Showing normal-mode splash<BR>\n";
-		  break;
-	  case ADMIN_MODE:
-		  echo "Showing admin-mode splash<BR>\n";
-		  break;
-	  default:
-		  $code = create_pw(8);
-		  error_output("Unknown mode, contact the administrator with this error code " . $code);
-		  $msg  = $code . " ";
-		  $msg .= "User " . $person->get_common_name() . " was given mode " . $person->get_mode();
-		  $msg .= ". This is not a valid mode. Verify content in admins-table";
-		  Logger::log_event(LOG_WARNING, $msg);
-	  }
-  } else {
-	  include('unclassified_intro.php');
-  }
-} /* end keyhandle() */
+	function __construct()
+	{
+		parent::__construct("Index", true);
+	}
+
+	function __destruct()
+	{
+		decho(__FILE__ . " aiieee, dying");
+	}
+	public function pre_process($person)
+	{
+		decho(__FILE__ . " starting Index\n");
+	}
+	/**
+	 * process - main control function for handling CSRs and certificates
+	 *
+	 * It will make sure all CSRs and Certificates stored in the database will be
+	 * processed and displayed to the user properly.
+	 *
+	 * @person : the person-object associated with this instance. If the person is
+	 *	     non-AuthN, a unclassified version will be displayed.
+	 */
+	function process($person)
+	{
+		if ($person->is_auth()) {
+			switch($person->get_mode()) {
+			case NORMAL_MODE:
+				echo "Showing normal-mode splash<BR>\n";
+				break;
+			case ADMIN_MODE:
+				echo "Showing admin-mode splash<BR>\n";
+				break;
+			default:
+				$code = create_pw(8);
+				error_output("Unknown mode, contact the administrator with this error code " . $code);
+				$msg  = $code . " ";
+				$msg .= "User " . $person->get_common_name() . " was given mode " . $person->get_mode();
+				$msg .= ". This is not a valid mode. Verify content in admins-table";
+				Logger::log_event(LOG_WARNING, $msg);
+			}
+		} else {
+			include('unclassified_intro.php');
+		}
+	} /* end process() */
+
+	public function post_render($person)
+	{
+		decho(__FILE__ . " Cleaning up..");
+	}
+}
+
+$ind = new Index();
+$fw  = new Framework($ind);
+unset($fw);
+unset($ind);
 
 ?>
-
