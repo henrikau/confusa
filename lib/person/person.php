@@ -174,6 +174,7 @@ class Person{
 	    /* If user is not admin, the mode is NORMAL_MODE either way */
 	    if (!$this->is_admin())
 		    return NORMAL_MODE;
+
 	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",
 					array('text'),
 					array($this->get_common_name()));
@@ -187,7 +188,7 @@ class Person{
 	     *
 	     * I.e. if new modes are to be added, this part must be updated.
 	     */
-	    if ($res['last_mode'][0] == ADMIN_MODE)
+	    if ($res[0]['last_mode'] == ADMIN_MODE)
 		    return ADMIN_MODE;
 	    return NORMAL_MODE;
     }
