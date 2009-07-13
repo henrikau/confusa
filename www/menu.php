@@ -32,7 +32,7 @@ function render_menu($person)
 		    echo "<BR /><B>Admin</B><BR /><HR />\n";
 		    if ($person->is_subscriber_subadmin()) {
 			    echo get_menu_name("revoke_cert.php",	"Revoke Certificates");
-		    } else if ($person->is_subscriber_subadmin()) {
+		    } else if ($person->is_subscriber_admin()) {
 			    echo get_menu_name("revoke_cert.php",	"Revoke Certificates");
 			    echo get_menu_name("admin.php",		"Manage Subscriber Administrators");
 			    echo get_menu_name("robot.php",		"Robot Interface");
