@@ -1,6 +1,23 @@
 <?php
 abstract class ContentPage
 {
+	private $title;
+	private $protected;
+
+
+	/**
+	 * Constructor - create the Content Page.
+	 *
+	 * @title	- the title to display in the header of the page.
+	 * @protected	- If the page required an AuthN' user or not.
+	 */
+	function __construct($title = "", $protected = true)
+	{
+		$this->title = $title;
+		$this->protected = $protected;
+	}
+	public function get_title() { return $this->title; }
+	public function is_protected() { return $this->protected; }
 
 	/**
 	 * pre_process()- function to call before render but *after*
