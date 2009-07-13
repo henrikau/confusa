@@ -21,7 +21,7 @@ function render_menu($person)
 		    echo get_menu_name("tools.php",	"Tools");
 
 		    if ($person->is_admin()) {
-			    echo get_menu_name("index.php?mode=admin", "Admin menu");
+			    echo get_menu_name($_SERVER['PHP_SELF'] . "?mode=admin", "Admin menu");
 		    }
 
 	    } else if ($mode == ADMIN_MODE) {
