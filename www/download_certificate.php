@@ -6,6 +6,9 @@ require_once 'mail_manager.php';
 
 $fw = new Framework('download_cert');
 $fw->force_login();
+
+if (send_cert())
+	exit(0);
 $fw->render_page();
 
 function download_cert($person)
