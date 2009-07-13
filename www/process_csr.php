@@ -183,47 +183,43 @@ function delete_csr($auth_token, $person)
  */
 function approve_csr($auth_token, $person)
 {
-	$status = false;
-	$csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
-					array('text', 'text'),
-					array($auth_token, $person->get_valid_cn()));
-	$hits = count($csr_res);
-	switch($hits) {
-	case 0:
-		error_output("Did not find CSR with auth_token $auth_token");
-		Logger::log_event(LOG_NOTICE, "User " . $person->get_common_name() . " tried to delete CSR with auth_token " . $auth_token . " but was unsuccessful");
-		return false;
-
-	case 1:
-		$csr = $csr_res[0]['csr'];
-		$cm = CertManagerHandler::getManager($person);
-
-		try {
-			$cm->sign_key($auth_token, $csr);
-		} catch (ConfusaGenException $e) {
-			echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
-			return false;
-		}
-		MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
-				    array('text', 'text'),
-				    array($auth_token, $person->get_valid_cn()));
-
-		echo "<DIV class=\"message\">\n";
-		echo "The certificate is now being provessed by the CA (Certificate Authority)<BR />\n";
-		echo "Depending on the load, this takes approximately 2 minutes.<BR />\n";
-		echo "<BR />\n";
-		echo "You should now move to the certificate-download area found ";
-		echo "<A HREF=\"download_certificate.php\">here</A><BR>\n";
-		echo "</DIV>\n";
-		echo "<BR />\n";
-		/* FIXME: redirect user. Problem: header already written,
-		 * cannot redirect now */
-		return true;
-
-	default:
+	try  {
+		$csr = get_csr_from_db($person, $auth_token);
+	} catch (ConfusaGenException $e) {
 		error_output("Too many hits. Database incosistency.");
 		return false;
 	}
+
+	if (!isset($csr)) {
+		error_output("Did not find CSR with auth_token $auth_token");
+		Logger::log_event(LOG_NOTICE, "User " . $person->get_common_name() . " tried to delete CSR with auth_token " . $auth_token . " but was unsuccessful");
+		return false;
+	}
+
+	$csr = $csr_res[0]['csr'];
+	$cm = CertManagerHandler::getManager($person);
+
+	try {
+		$cm->sign_key($auth_token, $csr);
+	} catch (ConfusaGenException $e) {
+		echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
+		return false;
+	}
+	MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
+			    array('text', 'text'),
+			    array($auth_token, $person->get_valid_cn()));
+
+	echo "<DIV class=\"message\">\n";
+	echo "The certificate is now being provessed by the CA (Certificate Authority)<BR />\n";
+	echo "Depending on the load, this takes approximately 2 minutes.<BR />\n";
+	echo "<BR />\n";
+	echo "You should now move to the certificate-download area found ";
+	echo "<A HREF=\"download_certificate.php\">here</A><BR>\n";
+	echo "</DIV>\n";
+	echo "<BR />\n";
+	/* FIXME: redirect user. Problem: header already written,
+	 * cannot redirect now */
+	return true;
 } /* end approve_csr_remote() */
 
 /* inspect_csr
