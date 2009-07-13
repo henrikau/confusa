@@ -160,9 +160,7 @@ function approve_csr($auth_token, $person)
 		echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
 		return false;
 	}
-	MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
-			    array('text', 'text'),
-			    array($auth_token, $person->get_valid_cn()));
+	delete_csr_from_db($person, $auth_token);
 
 	echo "<DIV class=\"message\">\n";
 	echo "The certificate is now being provessed by the CA (Certificate Authority)<BR />\n";
