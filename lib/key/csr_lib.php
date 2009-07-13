@@ -9,7 +9,9 @@
 include_once('mdb2_wrapper.php');
 include_once('logger.php');
 require_once 'csr_not_found.php';
-/* test_content()
+
+/**
+ * test_content - test a CSR for deficiencies
  *
  * This function is to be used when testing uploaded CSRs for flaws and errors.
  * It will test for:
@@ -17,7 +19,6 @@ require_once 'csr_not_found.php';
  * - that the key meets the required key-length
  * - that it is a normal CSR (previous point will fail if it is a 'bogus' CSR
  * - that the auth_url is derived from the supplied CSR
- * - that the public-key in the CSR does not belong to a previously signed certificate
  */
 function test_content($content, $auth_url)
 {
@@ -57,11 +58,7 @@ function test_content($content, $auth_url)
 	  echo "Uploaded key and auth_url does not match. Please download a new keyscript and try again<BR>\n";
 	  return false;
   }
-  /*
-   * test to see if the public-key of the CSR has been part of a previously
-   * signed certificate
-   */
-  return !known_pubkey($content);
+  return true;
 }
 function get_algorithm($csr)
 {
