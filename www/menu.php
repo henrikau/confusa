@@ -29,9 +29,9 @@ function render_menu($person)
 		     * The pages common for for more than one type of admin (or
 		     * normal users) will also check privileges.
 		     */
-		    if ($person->is_subscriber_sub_admin()) {
+		    if ($person->is_subscriber_subadmin()) {
 			    echo get_menu_name("revoke_cert.php",	"Revoke Certificates");
-		    } else if ($person->is_subscriber_sub_admin()) {
+		    } else if ($person->is_subscriber_subadmin()) {
 			    echo get_menu_name("revoke_cert.php",	"Revoke Certificates");
 			    echo get_menu_name("admin.php",		"Manage Subscriber Administrators");
 			    echo get_menu_name("robot.php",		"Robot Interface");
