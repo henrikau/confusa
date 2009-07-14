@@ -237,7 +237,7 @@ final class ProcessCsr extends ContentPage
 			}
 			echo "</TABLE>\n";
 		} else {
-			decho("There are no valid CSRs currently stored in the database for " . $person->get_valid_cn());
+			decho("There are no valid CSRs currently stored in the database for " . $this->person->get_valid_cn());
 		}
 	}
 
