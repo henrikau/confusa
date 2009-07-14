@@ -145,7 +145,7 @@ final class DownloadCertificate extends ContentPage
 
 		MDB2Wrapper::update("DELETE FROM cert_cache WHERE auth_key=? AND cert_owner=?",
 				    array('text', 'text'),
-				    array($auth_key, $this->person->get_valid_cn()));
+				    array($authKey, $this->person->get_valid_cn()));
 
 		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$auth_key." belonging to ".$this->person->get_valid_cn());
 		return true;
