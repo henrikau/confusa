@@ -3,140 +3,219 @@ require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'person.php';
 require_once 'mail_manager.php';
-
-$fw = new Framework('download_cert');
-$fw->force_login();
-
-if (send_cert())
-	exit(0);
-$fw->render_page();
-
-function download_cert($person)
+final class DownloadCertificate extends ContentPage
 {
-	if (!$person->is_auth()) {
-		error_msg("This is an impossible condition. How did you get in here?");
-		return;
+	public function __construct()
+	{
+		parent::__construct("Download Certificates", true);
 	}
+	public function pre_process($person)
+	{
+		$this->setPerson($person);
+		$this->setManager();
 
-	echo "<H3>Certificate Download Area</H3>\n";
-	/* test and handle flags */
-	process_db_cert($person);
-	/* show all stored certificates (with links to handle) */
-	show_db_cert($person);
-}
-
-function process_db_cert($person)
-{
-     $res = false;
-     if(isset($_GET['delete_cert'])) {
-	     $res = delete_cert(htmlentities($_GET['delete_cert']), $person);
-     }
-     else if (isset($_GET['inspect_cert'])) {
-	     $res = inspect_cert(htmlentities($_GET['inspect_cert']), $person);
-     }
-     return $res;
-} /* end process_db_cert */
-
-/* send_cert
- *
- * The user can receive a certificate in 2 ways. Either via email or direct download. 
- */
-function send_cert()
-{
-     global $fw;
-     $person = $fw->authenticate();
-     $send_res = false;
-     $auth_key = "";
-     if (isset($_GET['email_cert']))
-          $auth_key = htmlentities($_GET['email_cert']);
-     else if (isset($_GET['file_cert']))
-          $auth_key = htmlentities($_GET['file_cert']);
-     else
-          return $send_res;
-
-     try {
-      $cm = $fw->get_cert_manager();
-      $cert = $cm->get_cert($auth_key);
-
-      if (isset($cert)) {
-          if (isset($_GET['email_cert'])) {
-               $mm = new MailManager($person,
-                                     Config::get_config('sys_from_address'),
-                                     "Here is your newly signed certificate", 
-                                     "Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use");
-               $mm->add_attachment($cert, 'usercert.pem');
-               if (!$mm->send_mail()) {
-		       error_output("Could not send mail properly!");
-		       return false;
-               }
-          }
-          else if (isset($_GET['file_cert'])) {
-               require_once('file_download.php');
-               download_file($cert, 'usercert.pem');
-               $send_res = true;
-          }
-      }
-     } catch (ConfusaGenException $e) {
-        echo $e->getMessage();
-     }
-     return $send_res;
-} /* end send_cert */
-
-/* show_db_cert
- *
- * Retrieve certificates from the database and show them to the user
- */
-function show_db_cert($person)
-{
-	global $fw;
-	$cm = $fw->get_cert_manager();
-	try {
-		$res = $cm->get_cert_list();
-	} catch (ConfusaGenException $e) {
-		echo $e->getMessage();
-	}
-
-	$num_received = count($res);
-	if ($num_received > 0) {
-		$counter = 0;
-		echo "<table class=\"small\">\n";
-		echo "<tr>";
-		echo "<th></th>\n";
-		echo "<th></th>\n";
-		echo "<th></th>\n";
-		echo "<th></th>\n";
-		echo "<th>AuthToken</th>";
-		echo "<th>Owner</th>";
-		echo "</tr>\n";
-		while($counter < $num_received) {
-			$row = $res[$counter];
-			$counter++;
-			echo "<tr>\n";
-			if (Config::get_config('standalone')) {
-				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['auth_key']."\">Email</A> ]</td>\n";
-				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['auth_key']."\">Download</A> ]</td>\n";
-				echo "<td>".$row['auth_key']."</td>\n";
-				echo "<td>".$row['cert_owner']."</td>\n";
-				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['auth_key']."\">Inspect</A> ]</td>\n";
-				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert=".$row['auth_key']."\">Delete</A> ]</td>\n";
-			} else {
-				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert=".$row['order_number']."\">Email</A> ]</td>\n";
-				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert=".$row['order_number']."\">Download</A> ]</td>\n";
-				echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert=".$row['order_number']."\">Inspect</A> ]</td>\n";
-				/* deletion of a certificate won't make sense
-				 * with the remote API. When we implement the
-				 * remote-revocation-API we can provide a revoke
-				 * link here. */
-				echo "<td></td>\n";
-				echo "<td>".$row['order_number']."</td>\n";
-				echo "<td>".$row['cert_owner']."</td>\n";
+		$res = false;
+		if ($person->is_auth()){
+			if (isset($_GET['file_cert'])) {
+				$auth_key = htmlentities($_GET['file_cert']);
+				require_once 'file_download.php';
+				download_file($cert, 'usercert.pem');
+				exit(0);
 			}
-			echo "</tr>\n";
 		}
-		echo "</table>\n";
+		return false;
 	}
-	echo "<br>\n";
-} /* end show_db_cert() */
+
+	public function process($person)
+	{
+		if (!$person->is_auth()) {
+			error_msg("This is an impossible condition. How did you get in here?");
+			return;
+		}
+
+		echo "<H3>Certificate Download Area</H3>\n";
+		/* test and handle flags */
+		$this->processDBCert($person);
+		/* show all stored certificates (with links to handle) */
+		$this->showDBCert($person);
+
+	}
+
+	public function post_render($person)
+	{
+		;
+	}
+
+
+
+	private function processDBCert($person)
+	{
+		$res		= false;
+
+		if(isset($_GET['delete_cert']))
+			$res = $this->deleteCert(htmlentities($_GET['delete_cert']));
+
+		else if (isset($_GET['inspect_cert']))
+			$res = $this->inspectCert(htmlentities($_GET['inspect_cert']));
+
+		else if (isset($_GET['email_cert']))
+			$res = $this->mailCert(htmlentities($_GET['email_cert']));
+
+		return $res;
+	} /* end process_db_cert */
+
+
+
+	/* show_db_cert
+	 *
+	 * Retrieve certificates from the database and show them to the user
+	 */
+	private function showDBCert()
+	{
+		try {
+			$res = $this->certManager->get_cert_list();
+		} catch (ConfusaGenException $e) {
+			echo $e->getMessage();
+		}
+
+		$num_received = count($res);
+		if ($num_received > 0) {
+			$counter = 0;
+			echo "<TABLE CLASS=\"small\">\n";
+			echo "<TR>";
+			echo "<TH></TH>\n";
+			echo "<TH></TH>\n";
+			echo "<TH></TH>\n";
+			echo "<TH></TH>\n";
+			echo "<TH>AuthToken</TH>";
+			echo "<TH>Owner</TH>";
+			echo "</TR>\n";
+			while($counter < $num_received) {
+				$row = $res[$counter];
+				$counter++;
+				echo "<tr>\n";
+				if (Config::get_config('standalone')) {
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert="	. $row['auth_key'] . "\">Email</A> ]</TD>\n";
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert="	. $row['auth_key'] . "\">Download</A> ]</td>\n";
+					echo "<TD>"	. $row['auth_key']	. "</td>\n";
+					echo "<TD>"	. $row['cert_owner']	. "</td>\n";
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert="	. $row['auth_key'] . "\">Inspect</A> ]</TD>\n";
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert="	. $row['auth_key'] . "\">Delete</A> ]</TD>\n";
+				} else {
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert="	. $row['order_number'] . "\">Email</A> ]</TD>\n";
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert="	. $row['order_number'] . "\">Download</A> ]</TD>\n";
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert="	. $row['order_number'] . "\">Inspect</A> ]</TD>\n";
+					/* deletion of a certificate won't make sense
+					 * with the remote API. When we implement the
+					 * remote-revocation-API we can provide a revoke
+					 * link here. */
+					echo "<TD></TD>\n";
+					echo "<TD>" . $row['order_number']	. "</TD>\n";
+					echo "<TD>" . $row['cert_owner']	. "</TD>\n";
+				}
+				echo "</TR>\n";
+			}
+			echo "</TABLE>\n";
+		}
+		echo "<BR />\n";
+	}
+
+
+	/**
+	 * deleteCert - delete a certificate from cert_cache with supplied
+	 *		authKey as long as it belongs to the current user.
+	 *
+	 * @authKey : the authKey for the certificate (hash of the pubkey) also
+	 *	      found in the database.
+	 */
+	private function deleteCert($authKey)
+	{
+		try {
+			$cert = $this->certManager->get_cert($authKey);
+		} catch (ConfusaGenException $cge) {
+			error_output("Certificcate does not exist in cert_cache");
+			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$auth_key." from ip ".$_SERVER['REMOTE_ADDR']);
+			return false;
+		}
+
+		MDB2Wrapper::update("DELETE FROM cert_cache WHERE auth_key=? AND cert_owner=?",
+				    array('text', 'text'),
+				    array($auth_key, $person->get_valid_cn()));
+
+		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$auth_key." belonging to ".$person->get_valid_cn());
+		return true;
+	} /* end deleteCert */
+
+	/**
+	 * inspectCert - take a given authKey and inspect the certificate it
+	 * points to, given that the cert exists.
+	 *
+	 * This function will 'verbosify' a certificate with given cert_id.
+	 * Basically it will print it in human-readable form and let the user verify it.
+	 */
+	private function inspectCert($authKey)
+	{
+		/* FIXME */
+
+		$status = false;
+
+		try {
+			$cert = $this->certManager->get_cert($authKey);
+			if (isset($cert)) {
+				echo "<BR>\n";
+				echo "<BR>\n";
+				$csr_test = openssl_x509_read($cert);
+				if (openssl_x509_export($csr_test, $text, false)) {
+					echo "[ <a href=\"".$_server['php_self']."?email_cert=$authKey\">Email</a> ]\n";
+					echo "[ <a href=\"".$_server['php_self']."?file_cert=$authKey\">Download</a> ]\n";
+					echo "[ <B>Inspect</B> ]\n";
+					if (Config::get_config('standalone')) {
+						echo "[ <a href=\"".$_server['php_self']."?delete_cert=$authKey\">Delete</a> ]\n";
+					}
+					echo "<pre>$text</pre>\n";
+					$status = true;
+				} else {
+					/* not able to show it properly, dump content to screen */
+					echo "There were errors encountered when formatting the certificate. Here is a raw-dump.<BR>\n";
+					echo "<PRE>\n";
+					print_r ($cert);
+					echo "</PRE>\n";
+				}
+			}
+		} catch (ConfusaGenException $e) {
+			echo $e->getMessage();
+		}
+
+		return $status;
+	} /* end inspectCert */
+
+	private function mailCert($authKey)
+	{
+		$send_res = false;
+		try {
+			$cert = $this->certManager->get_cert($authKey);
+			if (isset($cert)) {
+				$mm = new MailManager($person,
+						      Config::get_config('sys_from_address'),
+						      "Signed certificate from " . Config::get_config('system_name'), 
+						      "Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use");
+				$mm->add_attachment($cert, 'usercert.pem');
+				if (!$mm->send_mail()) {
+					error_output("Could not send mail properly!");
+					return false;
+				}
+			}
+		} catch (ConfusaGenException $e) {
+			echo $e->getMessage();
+		}
+		return $send_res;
+	} /* end send_cert */
+
+} /* end class DownloadCertificate */
+
+$fw = new Framework(new DownloadCertificate());
+$fw->start();
+
 
 function list_remote_certs($person)
 {
@@ -177,73 +256,5 @@ function list_remote_certs($person)
   return $res;
 
 } /* end list_remote_certs() */
-
-/* inspect_cert
- *
- * This function will 'verbosify' a certificate with given cert_id.
- * Basically it will print it in human-readable form and let the user verify it.
- */
-function inspect_cert($auth_key)
-{
-    global $fw;
-	$status = false;
-
-    try {
-        $cm = $fw->get_cert_manager();
-        $cert = $cm->get_cert($auth_key);
-        if (isset($cert)) {
-            echo "<BR>\n";
-            echo "<BR>\n";
-            $csr_test = openssl_x509_read($cert);
-            if (openssl_x509_export($csr_test, $text, false)) {
-                echo "[ <a href=\"".$_server['php_self']."?email_cert=$auth_key\">Email</a> ]\n";
-                echo "[ <a href=\"".$_server['php_self']."?file_cert=$auth_key\">Download</a> ]\n";
-                echo "[ <B>Inspect</B> ]\n";
-                if (Config::get_config('standalone')) {
-                  echo "[ <a href=\"".$_server['php_self']."?delete_cert=$auth_key\">Delete</a> ]\n";
-                }
-                echo "<pre>$text</pre>\n";
-                $status = true;
-            } else {
-                /* not able to show it properly, dump content to screen */
-                echo "There were errors encountered when formatting the certificate. Here is a raw-dump.<BR>\n";
-                echo "<PRE>\n";
-                print_r ($cert);
-                echo "</PRE>\n";
-            }
-        }
-    } catch (ConfusaGenException $e) {
-        echo $e->getMessage();
-    }
-
-	return $status;
-}
-
-
-/* delete_cert
- *
- * Delete certificate belonging to user with given id from db.
- */
-function delete_cert($auth_key, $person)
-{
-	$status = false;
-        $res = MDB2Wrapper::execute("SELECT * FROM cert_cache WHERE auth_key=? AND cert_owner=?",
-                                    array('text', 'text'),
-                                    array($auth_key, $person->get_valid_cn()));
-	$hits=count($res);
-        if ($hits==0) {
-             echo "No matching Certificate found.<BR>\n";
-             Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$auth_key." from ip ".$_SERVER['REMOTE_ADDR']);
-        }
-	else {
-             MDB2Wrapper::update("DELETE FROM cert_cache WHERE auth_key=? AND cert_owner=?",
-                                 array('text', 'text'),
-                                 array($auth_key, $person->get_valid_cn()));
-             Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$auth_key." belonging to ".$person->get_valid_cn());
-	     $status = true;
-	}
-	return $status;
-}
-
 
 ?>
