@@ -172,6 +172,9 @@ final class ProcessCsr extends ContentPage
 			error_output("Too many hits. Database incosistency.");
 			Logger::log_event(LOG_ALERT, $this->person->get_valid_cn() . " tried to find CSR with key $authToken which resulted in multiple hits");
 			return false;
+		} catch (CSRNotFoundException $csrnfe) {
+			error_output("CSR not found, are you sure this is your CSR?\n");
+			return false;
 		}
 
 		if (!isset($csr)) {
