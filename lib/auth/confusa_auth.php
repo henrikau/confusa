@@ -8,16 +8,11 @@
 /* get simplesaml */
 require_once('config.php');
 
-/* include _include in the simplesaml-directory
- * simplesaml_path is the _include in the simplesaml directory
- */
-require_once(Config::get_config('simplesaml_path'));
-require_once('SimpleSAML/Utilities.php');
-require_once('SimpleSAML/Session.php');
-require_once('SimpleSAML/XHTML/Template.php');
-/* required for OAuth
- */
-require_once('SimpleSAML/Module.php');
+/* Use the new autoloader functionality in SimpleSAMLphp */
+$sspdir = Config::get_config('simplesaml_path');
+require_once($sspdir . '/lib/_autoload.php');
+SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
+
 require_once('oauth_auth.php');
 require_once('person.php');
 require_once('logger.php');

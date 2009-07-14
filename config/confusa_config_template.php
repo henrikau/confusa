@@ -29,9 +29,9 @@ $confusa_config = array(
          * You can use something else, but you must edit quite a few files to
          * make this possible.
          *
-         * The path whould point to where simpleSAMLphp's _include.php resides
+         * The path whould point to the root of the simpleSAMLphp install directory
          */
-	'simplesaml_path'	=> '/var/www/simplesamlphp/www/_include.php',
+	'simplesaml_path'	=> '/var/www/simplesamlphp/',
 
 	/* for script CSR/cert-handling
          *

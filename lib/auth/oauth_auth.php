@@ -1,8 +1,4 @@
 <?php
-/* for OAuth support
- */
-require_once('SimpleSAML/Module.php');
-
 /* Authorize the user with OAuth instead of a session.
  * To be able to authorize herself with OAuth, the user must have done the following:
  *
