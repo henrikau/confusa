@@ -203,7 +203,7 @@ final class DownloadCertificate extends ContentPage
 				$mm = new MailManager($this->person,
 						      Config::get_config('sys_from_address'),
 						      "Signed certificate from " . Config::get_config('system_name'), 
-						      "Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use");
+						      "Attached is your new certificate. Remember to store this in \$HOME/.globus/usercert.pem for ARC to use");
 				$mm->add_attachment($cert, 'usercert.pem');
 				if (!$mm->send_mail()) {
 					error_output("Could not send mail properly!");
