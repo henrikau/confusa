@@ -144,8 +144,7 @@ CREATE TABLE csr_cache (
        -- for the challenge-response cycle. when we ask the user to approve
        -- the system will generate a one-time password and encrypt it with the
        -- uploaded public-key.
-       auth_key char(40) NOT NULL,
-       FOREIGN KEY(common_name) REFERENCES cert_user(common_name) ON DELETE CASCADE
+       auth_key char(40) NOT NULL
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
