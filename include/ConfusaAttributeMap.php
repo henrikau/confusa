@@ -33,6 +33,11 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
          $request['Attributes']['eduPersonEntitlement'][0] = "institutionAdmin";
      }
 
+     private function fix_openidp(&$request) {
+         $request['Attributes']['organization'][0] = "openidp";
+         $request['Attributes']['eduPersonEntitlement'][0] = "institutionAdmin";
+     }
+
      private function fix_surfnet(&$request) {
 
           if (isset($request['Attributes']['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0]))
@@ -70,6 +75,7 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
 
           $request['Attributes']['organization'][0] = "WAYF";
           $request['Attributes']['eduPersonEntitlement'][0] = "institutionAdmin";
+
      }
      private function fix_organizations(&$request) {
 	     if (!isset($request['Attributes']['organization'][0]))

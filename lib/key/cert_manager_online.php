@@ -56,7 +56,10 @@ class CertManager_Online extends CertManager
               "AND n.account_id = a.map_id";
 
         $org = $this->person->get_orgname();
-        echo "organization: " . $org . "<br />\n";
+        Logger::log_event(LOG_INFO, "Getting the remote-CA login " .
+                          "credentials for organization " .
+                          $this->person->get_orgname()
+                );
         $res = MDB2Wrapper::execute($login_cred_query, array('text'),
                                     array($org)
         );
@@ -96,7 +99,11 @@ class CertManager_Online extends CertManager
         MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash, uploaded_nr) VALUES(?, 0)",
                             array('text'),
                             array($pubkey_checksum));
-    }
+
+      Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key " .
+                        "$auth_key and added pubkey to known pubkeys"
+              );
+      }
 
     /**
      * Return an array with all the certificates obtained by the person managed by this
@@ -223,7 +230,7 @@ class CertManager_Online extends CertManager
 
               /* potential error: no newline in response */
               if ($pos === FALSE) {
-                $msg = "Received an unexpected response from the remote API!<br />\n" .
+                $msg = "Received an unexpected response from the remote API!\n" .
                        "Maybe Confusa is improperly configured?<br />\n";
                 throw new RemoteAPIException($msg);
               }
@@ -231,10 +238,10 @@ class CertManager_Online extends CertManager
               $status = substr($data,0,$pos);
               /* potential error: response does not contain status code */
               if(is_numeric($status)) {
-                throw new RemoteAPIException("Received error message $data <br />\n");
+                throw new RemoteAPIException("Received error message $data\n");
               } else {
-                $msg = "Received an unexpected response from the remote API!<br />\n" .
-                       "Maybe Confusa is improperly configured?<br />\n";
+                $msg = "Received an unexpected response from the remote API!n" .
+                       "Maybe Confusa is improperly configured?\n";
                 throw new RemoteAPIException($msg);
               }
         }
@@ -292,14 +299,14 @@ class CertManager_Online extends CertManager
         /* try to catch all kinds of errors that can happen when connecting */
         if ($data === FALSE) {
             throw new RemoteAPIException("Could not connect to revoke-API! " .
-                                        "Check Confusa configuration!<br />\n"
+                                        "Check Confusa configuration!\n"
             );
         } else {
             $pos = stripos($data, "\n");
 
             if ($pos == FALSE) {
                 throw new RemoteAPIException("Response from RevokeAPI unexpected! " .
-                                             "Check Confusa configuration<br />\n."
+                                             "Check Confusa configuration\n."
                 );
             } else {
                 $STATUS_OK = "0";
@@ -311,8 +318,7 @@ class CertManager_Online extends CertManager
                                       $_SESSION['list_cached'] = false;
                                       break;
                     default: throw new RemoteAPIException("Received error message " .
-                                                          $data .
-                                                          "<br />\n"
+                                                          $data . "\n"
                             );
                              break;
                 }
@@ -334,16 +340,17 @@ class CertManager_Online extends CertManager
         $sign_endpoint = Config::get_config('capi_apply_endpoint');
         $ap = Config::get_config('capi_ap_name');
         $ca_cert_id = Config::get_config('capi_escience_id');
-        /* Leave this hardcoded since the TCS profile states that MICS profiles
-         * are to be valid for exactly 13 months */
-        $days = '14';
 
         $postfields_sign_req=array();
 
-        /* clutter TEST all over it if the certs are part of a testing process
+        /* clutter TEST all over it and reduce validity period
+         * if the certs are part of a testing process
          */
         if (Config::get_config('capi_test')) {
           $postfields_sign_req["subject_domainComponent_7"] = $this->TEST_DC;
+          $days = '14';
+        } else {
+          $days = '395';
         }
 
         /* set all the required post parameters for upload */
@@ -382,7 +389,7 @@ class CertManager_Online extends CertManager
          */
         if (isset($params['errorCode'])) {
             $msg = "Received an error when uploading the CSR to the remote CA: " .
-                $params['errorMessage'] . "<br />\n";
+                $params['errorMessage'] . "\n";
             throw new KeySignException($msg);
         }
 
@@ -457,13 +464,11 @@ class CertManager_Online extends CertManager
     private function _capi_authorize_CSR()
     {
         $authorize_endpoint = Config::get_config('capi_auth_endpoint');
-        $login_name = Config::get_config('capi_login_name');
-        $login_pw = Config::get_config('capi_login_pw');
 
         $ch = curl_init($authorize_endpoint);
         $postfields_auth = array();
-        $postfields_auth["loginName"] = $login_name;
-        $postfields_auth["loginPassword"] = $login_pw;
+        $postfields_auth["loginName"] = $this->login_name;
+        $postfields_auth["loginPassword"] = $this->login_pw;
         $postfields_auth["orderNumber"] = $this->order_number;
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
@@ -487,7 +492,7 @@ class CertManager_Online extends CertManager
                                         $_SERVER['REMOTE_ADDR']);
         } else {
             $msg = "Received an error when authorizing the CSR with orderNumber " .
-                   $this->order_number . " <br />\n";
+                   $this->order_number . $data . "\n";
             throw new RemoteAPIException($msg);
         }
 
@@ -503,11 +508,17 @@ class CertManager_Online extends CertManager
     {
       $query = "SELECT order_number, common_name AS 'cert_owner' FROM list_cache WHERE " .
                "common_name = ?";
+      $common_name = $this->person->get_valid_cn();
       $res = MDB2Wrapper::execute($query,
                                   array('text'),
-                                  $this->person->get_valid_cn()
+                                  $common_name
              );
 
+      $num_results = count($res);
+      Logger::log_event(LOG_DEBUG, "Looked up certificate list for " .
+                        "person $common_name, received $num_results " .
+                        "results"
+              );
       return $res;
     } /* end _cert_list_from_cache */
 
@@ -550,6 +561,11 @@ class CertManager_Online extends CertManager
       $res = MDB2Wrapper::execute($query, array('text'), array($order_number));
       $num_results = count($res);
 
+      Logger::log_event(LOG_DEBUG, "Looked up the certificate with " .
+                        "order_number $order_number in the DB. Got " .
+                        "$num_results results."
+              );
+
       if ($num_results == 1) {
         /* cache hit case */
         return $res[0]['cert'];
@@ -585,6 +601,10 @@ class CertManager_Online extends CertManager
       MDB2Wrapper::update($stmt, array('text','text','text'),
                                  array($order_number, $cert, $expires)
                    );
+
+      Logger::log_event(LOG_DEBUG, "Inserted certificate with order_number " .
+                      "$order_number into the order cache"
+              );
     }
 
 } /* end class OnlineCAManager */
