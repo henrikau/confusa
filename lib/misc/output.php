@@ -32,14 +32,23 @@ function format_ip($ip, $show_help=false)
 		$pre =  "<FONT COLOR=\"RED\"><B><I>";
 		$post = "</I></B></FONT>";
 		if ($show_help) {
-			$help  = " <A HREF=\"\"";
-			$help .= "onMouseOver =\"alert('The address of the machine uploading a CSR is recorded. ";
-			$help .= "If this differs from your current address, it is highlighted to notify you.')\"";
-			$help .= ">";
-			$help .= "[?]</A> \n";
+			$msg  = "The address of the machine uploading a CSR is recorded. ";
+			$msg .= "If, for any reason, the address of your current machine differs from that, a notification ";
+			$msg .= "is displayed. This may, or may not, mean anything, but you should be aware of this. ";
+			$msg .= "Your current IP is " . $ip;
+			$help = " [ " . show_window("?", $msg) . " ] ";
 		}
 	}
 	return "$pre$ip$post$help";
 
+}
+
+function show_window($url_name, $message)
+{
+	$help  = " <A HREF=\"\"";
+	$help .= "onClick =\"window.open('" . $message . "', '', 'width=400,height=300');\"";
+	$help .= ">";
+	$help .=  $url_name . "</A> \n";
+	return $help;
 }
 ?>
