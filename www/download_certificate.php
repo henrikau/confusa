@@ -171,11 +171,11 @@ final class DownloadCertificate extends ContentPage
 				echo "<BR>\n";
 				$csr_test = openssl_x509_read($cert);
 				if (openssl_x509_export($csr_test, $text, false)) {
-					echo "[ <a href=\"".$_server['php_self']."?email_cert=$authKey\">Email</a> ]\n";
-					echo "[ <a href=\"".$_server['php_self']."?file_cert=$authKey\">Download</a> ]\n";
+					echo "[ <a href=\"".$_SERVER['PHP_SELF']."?email_cert=$authKey\">Email</a> ]\n";
+					echo "[ <a href=\"".$_SERVER['PHP_SELF']."?file_cert=$authKey\">Download</a> ]\n";
 					echo "[ <B>Inspect</B> ]\n";
 					if (Config::get_config('standalone')) {
-						echo "[ <a href=\"".$_server['php_self']."?delete_cert=$authKey\">Delete</a> ]\n";
+						echo "[ <a href=\"".$_SERVER['PHP_SELF']."?delete_cert=$authKey\">Delete</a> ]\n";
 					}
 					echo "<pre>$text</pre>\n";
 					$status = true;
