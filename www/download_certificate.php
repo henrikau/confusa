@@ -90,7 +90,7 @@ final class DownloadCertificate extends ContentPage
 			echo "<TR>";
 			echo "<TH></TH>\n";
 			echo "<TH></TH>\n";
-			echo "<TH></TH>\n";
+			echo "<TH>Expires (from DB)</TH>\n";
 			echo "<TH></TH>\n";
 			echo "<TH>AuthToken</TH>";
 			echo "<TH>Owner</TH>";
@@ -102,7 +102,7 @@ final class DownloadCertificate extends ContentPage
 				if (Config::get_config('standalone')) {
 					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert="	. $row['auth_key'] . "\">Email</A> ]</TD>\n";
 					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert="	. $row['auth_key'] . "\">Download</A> ]</td>\n";
-					echo "<TD>"	. $row['auth_key']	. "</td>\n";
+					echo "<TD>"	. $row['valid_untill']	. "</td>\n";
 					echo "<TD>"	. $row['cert_owner']	. "</td>\n";
 					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert="	. $row['auth_key'] . "\">Inspect</A> ]</TD>\n";
 					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert="	. $row['auth_key'] . "\">Delete</A> ]</TD>\n";
