@@ -26,12 +26,21 @@ abstract class ContentPage
 		}
 		$this->certManager = CertManagerHandler::getManager($this->person);
 	}
+
+	public function getManager()
+	{
+		return $this->certManager;
+	}
+
 	public function setPerson($person)
 	{
-		if (isset($person)) {
-			$this->person = $person;
+		if (!isset($person)) {
+			error_output(__FILE__ . ":" . __LINE__ . " Trying to set a non-existing person!");
+			return;
 		}
+		$this->person = $person;
 	}
+
 	public function get_title() { return $this->title; }
 	public function is_protected() { return $this->protected; }
 

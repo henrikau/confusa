@@ -183,6 +183,10 @@ final class ProcessCsr extends ContentPage
 		}
 
 		try {
+			if (!isset($this->certManager)) {
+				error_output("certManager is NULL!");
+				return false;
+			}
 			$this->certManager->sign_key($authToken, $csr);
 		} catch (ConfusaGenException $e) {
 			echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
