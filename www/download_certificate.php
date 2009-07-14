@@ -17,10 +17,15 @@ final class DownloadCertificate extends ContentPage
 		$res = false;
 		if ($person->is_auth()){
 			if (isset($_GET['file_cert'])) {
-				$auth_key = htmlentities($_GET['file_cert']);
-				require_once 'file_download.php';
-				download_file($cert, 'usercert.pem');
-				exit(0);
+				$authKey = htmlentities($_GET['file_cert']);
+				try {
+					$cert = $this->certManager->get_cert($authKey);
+					require_once 'file_download.php';
+					download_file($cert, 'usercert.pem');
+					exit(0);
+				} catch(ConfusaGenException $cge) {
+					;
+				}
 			}
 		}
 		return false;
