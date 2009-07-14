@@ -34,7 +34,6 @@ require_once('cert_manager_standalone.php');
  */
 class Framework {
 	private $person;
-	private $cert_manager;      /* cert-manager bound to the framework */
 	private $contentPage;
 
     public function __construct($contentPage) {
@@ -68,17 +67,6 @@ class Framework {
 		$uname = $this->person->get_valid_cn();
         return $this->person;
     }
-
-    public function get_cert_manager() {
-	    if (!isset($this->cert_manager)) {
-		    if (Config::get_config('standalone')) {
-			    $this->cert_manager = new CertManager_Standalone($this->person);
-		    } else {
-			    $this->cert_manager = new CertManager_Online($this->person);
-		    }
-	    }
-        return $this->cert_manager;
-   }
 
    public function start()
    {
