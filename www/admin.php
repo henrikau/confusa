@@ -1,4 +1,5 @@
 <?php
+require_once('confusa_include.php');
 include_once('framework.php');
 include_once('mdb2_wrapper.php');
 include_once('db_query.php');

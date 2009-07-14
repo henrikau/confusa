@@ -92,9 +92,10 @@ class CertManager_Online extends CertManager
         $this->_capi_upload_CSR($auth_key, $csr);
         $this->_capi_authorize_CSR();
 
-        Logger::log_event(LOG_INFO,
-                          "Signed CSR for user with auth_key $auth_key"
-        );
+	/* FIXME: conflict, not sure how to resolve, do we need both? */
+        Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
+        $_SESSION['list_cached'] = false;
+	/* FIXME: <END> */
     }
 
     /**

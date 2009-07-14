@@ -25,6 +25,7 @@ $confusa_config = array(
          */
 	'server_url'		=> null,
 
+
         /* Pr. default, confusa uses simpleSAMLphp for authentication
          * You can use something else, but you must edit quite a few files to
          * make this possible.
@@ -109,27 +110,11 @@ $confusa_config = array(
         'mysql_backup_dir'              => '/var/backups',
 
 
-        /* if we should use the sms-layer at all  */
-	'use_sms'                       => false,
-
-        /* should we include debug-behaviour in sms-class? */
-        'sms_debug'                     => true,
-
-
-        /* pr. default we send email to an sms-server (that's the level of sms
-         * supported in this edition. the system expects the sms-server to
-         * accept emails as the following oneliner will do from a cmd-line:
-         * echo "your message" | mail -s "phonenumber" "sms_gw_email@address"
-         */
-	'sms_gw_addr'                   => null,
-
-        /* how long should a SMS-password be valid before a new one must be
-         * generated and sent to the user? */
-	'sms_pw_timeout'		=> 15,
-
-        /* when the user has authenticated via SMS-pw, how long should the
-         * session be valid (between page refreshes) */
-	'sms_session_timeout'           => 30,
+	/* The name of the System. This is the prefix of all titles. For
+	 * instance, process_csr.php sets this to be 'Process CSR'
+	 * The resulting title (<TITLE>) will then be: "Confusa - Process CSR"
+	 */
+	'system_name'		=> 'Confusa',
 
         /* the from-addr to show up in the emails from the system */
 	'sys_from_address'		=> 'your@system.contact.addr',

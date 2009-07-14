@@ -1,4 +1,5 @@
 <?php
+require_once('confusa_include.php');
 include_once('framework.php');
 $fw = new Framework('doc_func');
 $fw->render_page();

@@ -1,13 +1,16 @@
 -- ---------------------------------------------------------
 --
+--
 -- This is the setup sql script for Confusa
 -- It contains the SQL syntax for creating the tables we use
 --
 -- Only edit this file if you know what you are doing as some of these
 -- tables have been more or less hard-coded in the sql-libraries etc.
 --
+--
 -- ---------------------------------------------------------
 
+-- ---------------------------------------------------------
 --
 -- account_map
 --
@@ -207,3 +210,21 @@ CREATE TABLE IF NOT EXISTS admins (
        -- '0', i.e. Normal mode.
        last_mode ENUM('0','1') DEFAULT 0
 ) type=InnoDB;
+<<<<<<< HEAD:init/table_create.sql
+=======
+
+ 
+-- ---------------------------------------------------------
+--
+-- user_crls
+--
+-- Holds the list of serial-numbers for issued certificates
+-- so that the user may revoke them when needed.
+--
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_crls (
+       owner varchar(128) PRIMARY KEY,
+       cert_sn INT NOT NULL,
+       valid_untill DATETIME NOT NULL
+) type=InnoDB;
+>>>>>>> fw:init/table_create.sql

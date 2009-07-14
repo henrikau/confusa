@@ -50,7 +50,6 @@ class CertManager_Standalone extends CertManager
                        " from ip ".$_SERVER['REMOTE_ADDR']);
           throw new KeySignException("CSR subject verification failed!");
         }
-
     } /* end sign-key */
 
     /**
@@ -111,8 +110,10 @@ class CertManager_Standalone extends CertManager
                                       array($key, $this->person->get_valid_cn()));
 
         if (count($res) == 1) {
-            Logger::log_event(LOG_NOTICE, "Sending certificate with hash " . pubkey_hash($res[0]['cert'], false) . " and auth-token $authvar to user from ip " . $_SERVER['REMOTE_ADDR']);
-            return $res[0]['cert'];
+		$msg  = "Sending certificate with hash " . pubkey_hash($res[0]['cert'], false) . " ";
+		$msg .= " and auth-token $key to user from ip " . $_SERVER['REMOTE_ADDR'];
+		Logger::log_event(LOG_NOTICE, $msg);
+		return $res[0]['cert'];
         }
         else {
             $msg = "Error in getting certificate, got " . count($res) . " results\n";
