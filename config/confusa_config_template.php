@@ -25,6 +25,7 @@ $confusa_config = array(
          */
 	'server_url'		=> null,
 
+
         /* Pr. default, confusa uses simpleSAMLphp for authentication
          * You can use something else, but you must edit quite a few files to
          * make this possible.
@@ -108,6 +109,12 @@ $confusa_config = array(
         /* where should backup of the database be stored */
         'mysql_backup_dir'              => '/var/backups',
 
+
+	/* The name of the System. This is the prefix of all titles. For
+	 * instance, process_csr.php sets this to be 'Process CSR'
+	 * The resulting title (<TITLE>) will then be: "Confusa - Process CSR"
+	 */
+	'system_name'		=> 'Confusa',
 
         /* the from-addr to show up in the emails from the system */
 	'sys_from_address'		=> 'your@system.contact.addr',
