@@ -145,9 +145,9 @@ final class DownloadCertificate extends ContentPage
 
 		MDB2Wrapper::update("DELETE FROM cert_cache WHERE auth_key=? AND cert_owner=?",
 				    array('text', 'text'),
-				    array($auth_key, $person->get_valid_cn()));
+				    array($auth_key, $this->person->get_valid_cn()));
 
-		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$auth_key." belonging to ".$person->get_valid_cn());
+		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$auth_key." belonging to ".$this->person->get_valid_cn());
 		return true;
 	} /* end deleteCert */
 
@@ -200,7 +200,7 @@ final class DownloadCertificate extends ContentPage
 		try {
 			$cert = $this->certManager->get_cert($authKey);
 			if (isset($cert)) {
-				$mm = new MailManager($person,
+				$mm = new MailManager($this->person,
 						      Config::get_config('sys_from_address'),
 						      "Signed certificate from " . Config::get_config('system_name'), 
 						      "Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use");
