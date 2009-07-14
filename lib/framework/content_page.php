@@ -20,8 +20,11 @@ abstract class ContentPage
 
 	public function setManager()
 	{
-		if (isset($this->person))
-			$this->certManager = CertManagerHandler::getManager($this->person);
+		if (!isset($this->person)) {
+			error_output("You are trying to set the certManager before person is set!");
+			return;
+		}
+		$this->certManager = CertManagerHandler::getManager($this->person);
 	}
 	public function setPerson($person)
 	{
