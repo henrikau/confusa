@@ -136,28 +136,8 @@ final class ProcessCsr extends ContentPage
 				 * user-script (which uses sha1sum of some random text).
 				 */
 			} else {
-<<<<<<< HEAD:www/process_csr.php
-				decho("Inserting into system");
-				$ip=$_SERVER['REMOTE_ADDR'];
-				/* first, a cert_user row must exist, otherwise a constraint
-				 * violation will happen */
-				$cm = CertManagerHandler::getManager($person);
-				$expiry_array = Config::get_config('csr_default_timeout');
-				$cm->touch_cert_user($expiry_array[0], $expiry_array[1]);
-
-				$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
-				$query .= " common_name, auth_key)";
-				$query .= " VALUES(?, current_timestamp(), ?, ?, ?)";
-				MDB2Wrapper::update($query,
-						    array('text', 'text', 'text', 'text'),
-						    array($csr, $ip, $person->get_valid_cn(), $authvar));
-				$logmsg  = __FILE__ . " Inserted new CSR from $ip (" . $person->get_valid_cn();
-				$logmsg .=") with hash " . pubkey_hash($csr, true);
-				Logger::log_event(LOG_INFO, $logmsg);
-=======
 				error_output("There were errors encountered when processing the file.");
 				error_output("Please create a new keypair and upload a new CSR to the server.");
->>>>>>> fw:www/process_csr.php
 			}
 		}
 		show_upload_form($_SERVER['PHP_SELF']);
