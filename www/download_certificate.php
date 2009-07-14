@@ -213,6 +213,7 @@ final class DownloadCertificate extends ContentPage
 		} catch (ConfusaGenException $e) {
 			echo $e->getMessage();
 		}
+		echo "Email sent OK<BR />\n";
 		return $send_res;
 	} /* end send_cert */
 
