@@ -139,7 +139,7 @@ final class DownloadCertificate extends ContentPage
 			$cert = $this->certManager->get_cert($authKey);
 		} catch (ConfusaGenException $cge) {
 			error_output("Certificcate does not exist in cert_cache");
-			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$auth_key." from ip ".$_SERVER['REMOTE_ADDR']);
+			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$authKey." from ip ".$_SERVER['REMOTE_ADDR']);
 			return false;
 		}
 
@@ -147,7 +147,7 @@ final class DownloadCertificate extends ContentPage
 				    array('text', 'text'),
 				    array($authKey, $this->person->get_valid_cn()));
 
-		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$auth_key." belonging to ".$this->person->get_valid_cn());
+		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$authKey." belonging to ".$this->person->get_valid_cn());
 		return true;
 	} /* end deleteCert */
 
