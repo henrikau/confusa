@@ -105,49 +105,59 @@ class CertManager_Online extends CertManager
      */
     public function get_cert_list()
     {
-        if (!isset($this->login_name) || !isset($this->login_pw)) {
-          $this->_get_account_information();
+        if ($_SESSION['list_cached']) {
+          return $this->_cert_list_from_cache();
         }
 
-        $list_endpoint = Config::get_config('capi_listing_endpoint');
-        $postfields_list["loginName"] = $this->login_name;
-        $postfields_list["loginPassword"] = $this->login_pw;
+        $common_name = $this->person->get_valid_cn();
+        $params = $this->_capi_get_cert_list($common_name);
+        $res=array();
 
-        $postfields_list["commonName"] = $this->TEST_CN_PREFIX . $this->person->get_valid_cn();
-        $ch = curl_init($list_endpoint);
-        curl_setopt($ch, CURLOPT_HEADER,0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-        curl_setopt($ch, CURLOPT_POST,1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_list);
-        $data=curl_exec($ch);
-        curl_close($ch);
-
-        $params=array();
-        parse_str($data, $params);
-
-        if (!isset($params['errorCode'])) {
-            throw new RemoteAPIException("Unexpected response from " .
-                "remote endpoint! Maybe Confusa is improperly configured?"
-            );
+        for ($i = 1; $i <= $params['noOfResults']; $i = $i+1) {
+        /* transfer the orders from the string representation in the response
+         * to the array representation we use internally */
+            $res[$i-1]['order_number'] = $params[$i . '_orderNumber'];
+            $res[$i-1]['cert_owner'] = $this->person->get_valid_cn();
         }
 
-        /* this is the "correct case" */
-        if ($params['errorCode'] == "0") {
-            $res = array();
-            for ($i = 1; $i <= $params['noOfResults']; $i = $i+1) {
-                /* transfer the orders from the string representation in the response
-                 * to the array representation we use internally */
-                $res[$i-1]['order_number'] = $params[$i . '_orderNumber'];
-                $res[$i-1]['cert_owner'] = $this->person->get_valid_cn();
+        if (count($res) > 0) {
+            $this->_insert_list_into_cache($res);
+        }
+
+        return $res;
+    }
+
+    /*
+     * Search for the certificates of a person with a given common_name.
+     * Common_name may include wildcard characters.
+     *
+     * Restrict the result set to organization $org.
+     *
+     * @param $common_name The common_name to search for
+     * @param $org The organization to restrict the search to
+     */
+    public function get_cert_list_for_persons($common_name, $org)
+    {
+        $params = $this->_capi_get_cert_list($common_name);
+        $res = array();
+        for ($i = 1; $i <= $params['noOfResults']; $i++) {
+            $subject = $params[$i . '_1_subjectDN'];
+            $dn_components = explode(',', $subject);
+
+            if ($org != NULL) {
+                $organization = "O=" . $this->TEST_O_PREFIX . $org;
+
+                /* don't return order number and the owner subject
+                 * if the organization is not present in the DN
+                 */
+                if (array_search($organization, $dn_components) === FALSE) {
+                    continue;
+                }
             }
-        } else {
-            throw new RemoteAPIException("Errors occured when listing " .
-                "user certificates: " . $params['errorMessage']
-            );
-        }
 
+            $res[$i-1]['auth_key'] = $params[$i . '_orderNumber'];
+            $res[$i-1]['cert_owner'] = $subject;
+        }
         return $res;
     }
 
@@ -200,7 +210,7 @@ class CertManager_Online extends CertManager
               $return_res = substr($data,2);
               break;
           case $STATUS_PEND:
-              echo "The certificate is being processed and is not yet available<br />\n";
+              echo "The certificate is being processed and is not yet available<BR />\n";
               return;
           default:
               /* extract the error status code which is longer than one character */
@@ -300,6 +310,55 @@ class CertManager_Online extends CertManager
                              break;
                 }
             }
+        }
+    }
+
+    /*
+     * Query the remote API for the list of certificates belonging to
+     * common_name $common_name
+     *
+     * @param $common_name The common-name for which the list is retrieved
+     */
+    private function _capi_get_cert_list($common_name)
+    {
+        if (!isset($this->login_name) || !isset($this->login_pw)) {
+          $this->_get_account_information();
+        }
+
+        Logger::log_event(LOG_DEBUG, "Trying to get the list with the certificates " .
+                                    "for person $common_name");
+
+        $list_endpoint = Config::get_config('capi_listing_endpoint');
+        $postfields_list["loginName"] = $this->login_name;
+        $postfields_list["loginPassword"] = $this->login_pw;
+        $postfields_list["commonName"] = $this->TEST_CN_PREFIX . $common_name;
+        $ch = curl_init($list_endpoint);
+
+        curl_setopt($ch, CURLOPT_HEADER,0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($ch, CURLOPT_POST,1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_list);
+        $data=curl_exec($ch);
+        curl_close($ch);
+
+        $params=array();
+        parse_str($data, $params);
+
+        if (!isset($params['errorCode'])) {
+            throw new RemoteAPIException("Unexpected response from " .
+                "remote endpoint! Maybe Confusa is improperly configured?"
+            );
+        }
+
+        if ($params['errorCode'] == "0") {
+            return $params;
+        } else {
+            throw new RemoteAPIException("Received error when trying to list " .
+                                         "certificates from the remote-API: " .
+                                         $params['errorMessage']
+            );
         }
     }
 
