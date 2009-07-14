@@ -25,7 +25,7 @@ final class ProcessCsr extends ContentPage
 		$this->setManager();
 		$res = false;
 		if (isset($_GET['sign_csr'])) {
-			$res = $this->approve_csr(htmlentities($_GET['sign_csr']), $person);
+			$res = $this->approveCsr(htmlentities($_GET['sign_csr']));
 		}
 		return $res;
 
@@ -35,12 +35,12 @@ final class ProcessCsr extends ContentPage
 	{
 		echo "<H3>Requesting new Certificates</H3>\n";
 		/* show upload-form. If it returns false, no uploaded CSRs were processed */
-		$this->process_file_csr($person);
+		$this->processFileCSR($this->person);
 
 		/* if flags are set, process the CSR*/
-		if ($this->process_csr_flags_set()) {
-			if (!$this->process_db_csr($person)) {
-				error_output("Errors were encountered when processing " . $this->get_actual_flags());
+		if ($this->processCSRFlagsSet()) {
+			if (!$this->processDBCsr()) {
+				error_output("Errors were encountered when processing " . $this->getActualFlags());
 			}
 
 		}
@@ -60,7 +60,7 @@ final class ProcessCsr extends ContentPage
 
 
 		/* List all CSRs for the person */
-		$this->list_all_csr($person);
+		$this->listAllCSR($this->person);
 
 	}
 	public function post_render($person)
@@ -70,14 +70,14 @@ final class ProcessCsr extends ContentPage
 
 
 	/**
-	 * process_csr_flags_set - test to see if any of the CSR flags are set.
+	 * processCSRFlags_set - test to see if any of the CSR flags are set.
 	 */
-	private function process_csr_flags_set()
+	private function processCSRFlagsSet()
 	{
 		return isset($_GET['delete_csr']) || isset($_GET['inspect_csr']);
 	}
 
-	private function get_actual_flags()
+	private function getActualFlags()
 	{
 		$msg = "";
 		if (isset($_GET['delete_csr']))
@@ -91,51 +91,44 @@ final class ProcessCsr extends ContentPage
 		return $msg;
 	}
 	/**
-	 * process_file_csr - walk an uploaded CSR through the steps towards a certificate
+	 * processFileCSR - walk an uploaded CSR through the steps towards a certificate
 	 *
 	 * If a new CSR has been uploaded via FILE, this will retrieve it, store it in
 	 * the database and pass control over to CertManager to process it. 
 	 */
-	private function process_file_csr($person)
+	private function processFileCSR()
 	{
 		/* Testing for uploaded files */
 		if(isset($_FILES['user_csr']['name'])) {
 			decho("Found new CSR<BR>\n");
 			$fu = new FileUpload('user_csr', true, 'test_content');
 			if ($fu->file_ok()) {
-				decho("File-upload OK, starting test");
 				$csr = $fu->get_content();
 				$authvar = pubkey_hash($fu->get_content(), true);
 			
 
-				/* are the CSR already uploaded? */
+				/* is the CSR already uploaded? */
 				$res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE csr=?",
 							    array('text'),
 							    array($csr));
 				if (count($res)>0) {
 					error_output("CSR already present in the database, no need for second upload");
 				} else {
-					decho("Inserting into system");
-					$ip=$_SERVER['REMOTE_ADDR'];
+					$ip	= $_SERVER['REMOTE_ADDR'];
 					$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
 					$query .= " common_name, auth_key)";
 					$query .= " VALUES(?, current_timestamp(), ?, ?, ?)";
+
 					MDB2Wrapper::update($query,
 							    array('text', 'text', 'text', 'text'),
-							    array($csr, $ip, $person->get_valid_cn(), $authvar));
-					$logmsg  = __FILE__ . " Inserted new CSR from $ip (" . $person->get_valid_cn();
+							    array($csr, $ip, $this->person->get_valid_cn(), $authvar));
+
+					$logmsg  = __FILE__ . " Inserted new CSR from $ip (" . $this->person->get_valid_cn();
 					$logmsg .=") with hash " . pubkey_hash($csr, true);
 					Logger::log_event(LOG_INFO, $logmsg);
 				}
-				/* CertManager will test content of CSR before sending it off for signing
-				 *
-				 * As we upload the key manually, the user-script won't
-				 * be called for creating a auth-token. We therefore
-				 * create a random string containing the correct amount
-				 * of characters. It will contain more letters than the
-				 * user-script (which uses sha1sum of some random text).
-				 */
 			} else {
+				/* File NOT OK */
 				error_output("There were errors encountered when processing the file.");
 				error_output("Please create a new keypair and upload a new CSR to the server.");
 			}
@@ -144,57 +137,63 @@ final class ProcessCsr extends ContentPage
 	}
 
 	/**
-	 * process_db_csr()
+	 * processDBCsr()
 	 *
 	 * This function shall look at all the csr's in the csr_cache, and present the
 	 * CSR belonging to the user, to the user.
 	 *
 	 * Note: approve is not handled here, as that requires header-rewriting.
 	 */
-	private function process_db_csr($person)
+	private function processDBCSR()
 	{
 		$res = false;
 		if (isset($_GET['delete_csr'])) {
-			$res = delete_csr_from_db($person, htmlentities($_GET['delete_csr']));
+			$res = delete_csr_from_db($this->person, htmlentities($_GET['delete_csr']));
 		}
 		elseif (isset($_GET['inspect_csr'])) {
-			$res = print_csr_details($person, htmlentities($_GET['inspect_csr']));
+			$res = print_csr_details($this->person, htmlentities($_GET['inspect_csr']));
 		}
 		return $res;
 	}
 
 
 	/**
-	 * approve_csr - send the CSR to cert-manager for signing
+	 * approveCsr - send the CSR to cert-manager for signing
 	 *
 	 * This function approves a CSR for signing. It uses the auth-token as a
 	 * paramenter to find the CSR in the database coupled with the valid CN for the
 	 * user.
 	 */
-	private function approve_csr($auth_token, $person)
+	private function approveCSR($authToken)
 	{
 		try  {
-			$csr = get_csr_from_db($person, $auth_token);
+			$csr = get_csr_from_db($this->person, $authToken);
 		} catch (ConfusaGenException $e) {
 			error_output("Too many hits. Database incosistency.");
+			Logger::log_event(LOG_ALERT, $this->person->get_valid_cn() . " tried to find CSR with key $authToken which resulted in multiple hits");
 			return false;
 		}
 
 		if (!isset($csr)) {
 			error_output("Did not find CSR with auth_token $auth_token");
-			Logger::log_event(LOG_NOTICE, "User " . $person->get_common_name() . " tried to delete CSR with auth_token " . $auth_token . " but was unsuccessful");
+			$msg  = "User " . $this->person->get_common_name() . " ";
+			$msg .= "tried to delete CSR with auth_token " . $authToken . " but was unsuccessful";
+			Logger::log_event(LOG_NOTICE, $msg);
 			return false;
 		}
 
-		$cm = CertManagerHandler::getManager($person);
-
 		try {
-			$cm->sign_key($auth_token, $csr);
+			$this->certManager->sign_key($authToken, $csr);
 		} catch (ConfusaGenException $e) {
 			echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
 			return false;
 		}
-		delete_csr_from_db($person, $auth_token);
+		delete_csr_from_db($this->person, $authToken);
+
+		/* Construct a meta http-equiv to be included in the
+		 * <HEAD>-section in framework. This is to provide a
+		 * auto-refrech for the user, resulting in a cleaner user
+		 * experience. */
 		$url = "http";
 		if ($_SERVER['SERVER_PORT'] == 443)
 			$url .= "s";
@@ -204,18 +203,18 @@ final class ProcessCsr extends ContentPage
 	} /* end approve_csr_remote() */
 
 
-/**
- * list_all_csr
- *
- * List all currently active CSRs for the user. Since we will only accept upload
- * of CSRs through authenticated channels, no expiry will be enforced on CSRs.
- */
-	private function list_all_csr($person)
+	/**
+	 * listAllCSR
+	 *
+	 * List all currently active CSRs for the user. Since we will only accept upload
+	 * of CSRs through authenticated channels, no expiry will be enforced on CSRs.
+	 */
+	private function listAllCSR()
 	{
 		$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip FROM csr_cache WHERE common_name=?";
 		$res = MDB2Wrapper::execute($query,
 					    array('text'),
-					    $person->get_valid_cn());
+					    $this->person->get_valid_cn());
 		if (count($res) > 0) {
 			/* Handle each separate instance */
 			echo "<TABLE CLASS=\"small\">\n";
