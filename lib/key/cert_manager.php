@@ -127,11 +127,9 @@ class CertManagerHandler
 		if (!isset(CertManagerHandler::$cert_manager)) {
 		      if (Config::get_config('standalone')) {
 			      if (Config::get_config('debug'))
-				  echo "Creating Standalone CertManager<BR>\n";
 			      CertManagerHandler::$cert_manager = new CertManager_Standalone($person);
 		      } else {
 			      if (Config::get_config('debug'))
-				  echo "Creating Online CertManager<BR>\n";
 			      CertManagerHandler::$cert_manager = new CertManager_Online($person);
 		      }
 		}
