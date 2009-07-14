@@ -3,8 +3,8 @@ abstract class ContentPage
 {
 	private $title;
 	private $protected;
-
-
+	protected $certManager;
+	protected $person;
 	/**
 	 * Constructor - create the Content Page.
 	 *
@@ -15,6 +15,19 @@ abstract class ContentPage
 	{
 		$this->title = $title;
 		$this->protected = $protected;
+		$this->certManager = null;
+	}
+
+	public function setManager()
+	{
+		if (isset($this->person))
+			$this->certManager = CertManagerHandler::getManager($this->person);
+	}
+	public function setPerson($person)
+	{
+		if (isset($person)) {
+			$this->person = $person;
+		}
 	}
 	public function get_title() { return $this->title; }
 	public function is_protected() { return $this->protected; }
