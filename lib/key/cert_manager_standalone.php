@@ -36,9 +36,13 @@ class CertManager_Standalone extends CertManager
             $tmp_cert = openssl_csr_sign($csr, $cert_path, $ca_priv_path, $sign_days , array('digest_alg' => 'sha1'));
             openssl_x509_export($tmp_cert, $cert, true);
 
-            MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) VALUES(?, ?, ?, addtime(current_timestamp(), ?))",
-                                array('text', 'text', 'text', 'text'),
-                                array($cert, $auth_key, $this->person->get_valid_cn(), Config::get_config('cert_default_timeout')));
+            $expiry_array = Config::get_config('cert_default_timeout');
+
+            $this->touch_cert_user($expiry_array[0], $expiry_array[1]);
+            $date_string = "INTERVAL " . $expiry_array[0] . " " . $expiry_array[1];
+            MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, valid_untill) VALUES(?, ?, ?, date_add(now(), $date_string))",
+                                array('text', 'text', 'text'),
+                                array($cert, $auth_key, $this->person->get_valid_cn()));
             Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
                                 $this->person->get_valid_cn() .
                                 " Contacting us from ".
@@ -51,11 +55,6 @@ class CertManager_Standalone extends CertManager
           throw new KeySignException("CSR subject verification failed!");
         }
 
-         /* read public key and create sum */
-	    $pubkey_checksum = pubkey_hash($csr, true);
-        MDB2Wrapper::update("INSERT INTO pubkeys (pubkey_hash, uploaded_nr) VALUES(?, 0)",
-                            array('text'),
-                            array($pubkey_checksum));
     } /* end sign-key */
 
     /**
@@ -154,13 +153,6 @@ class CertManager_Standalone extends CertManager
                     echo "To try again, please download a new version of the script, ";
                     echo "generate a new key and upload again.<BR>\n";
 		    return false;
-               }
-               else {
-                    /* match hash of pubkey to db */
-                    if (known_pubkey($csr)) {
-                         echo "Cannot sign a public key that's previously signed. Please create a new key with corresponding CSR and try again<BR>\n";
-			 return false;
-                    }
                }
 	       return true;
     } /* end verify_csr */

@@ -149,14 +149,15 @@ $confusa_config = array(
         /* how long should a certificate be valid in the cert_cache before being
          * doomed expired (to avoid that it's available for a long time for the
          * world) */
-        'cert_default_timeout'           => '0 0:15:0',
+        'cert_default_timeout'           => array(15, 'MINUTE'),
 
         /* how long a CSR should stay in the csr_cache before being
-         * removed. Time in MySQL-format
+         * removed. Time consists of an array with the amount being the first
+         * entry and the time-unit being the second entry
          * Time should be fairly low as you don't want the database cluttered
          * with CSRs.
          */
-        'csr_default_timeout'            => '0 0:10:0',
+        'csr_default_timeout'            => array(10, 'MINUTE'),
 
 
 	/* this should be set to true when config is verified (or the file has

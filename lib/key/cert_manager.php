@@ -78,6 +78,44 @@ abstract class CertManager
     $this->person = $pers;
   }
 
+  /**
+   * Look if the person managed by this cert_manager already exists. If the
+   * person exists, look if she expires before $expires.
+   *
+   * - If the person expires before $expires, update her expiry to $expires.
+   * - If the person does not exist yet, add her with expiry $expires.
+   * - Otherwise, leave the entry in cert_user untouched.
+   *
+   * @param integer $expires The expiry of the managed person in the
+   *                     cert_user table
+   * @param string $time_unit one of: SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR
+   */
+  public function touch_cert_user($expires, $time_unit)
+  {
+      $date_string = "INTERVAL $expires $time_unit";
+      $common_name = $this->person->get_valid_cn();
+      $institution = $this->person->get_orgname();
+
+      $query = "SELECT * FROM cert_user WHERE common_name = ? AND expires > " .
+               "date_add(now(),$date_string)";
+      $res = MDB2Wrapper::execute($query, array('text'),
+                                  array($common_name)
+      );
+
+      if (count($res) == 0) {
+          Logger::log_event(LOG_INFO, "Adding a new cert_user with common_name " .
+                            "$common_name into the cert_user table"
+          );
+
+          $update = "INSERT INTO cert_user(common_name, institution, expires) " .
+                    "VALUES(?, ?, date_add(now(),$date_string)) ON DUPLICATE KEY " .
+                    "UPDATE expires=date_add(now(),$date_string)";
+          MDB2Wrapper::update($update, array('text','text'),
+                                       array($common_name, $institution)
+          );
+      }
+  }
+
 } /* end class CertManager */
 
 class CertManagerHandler

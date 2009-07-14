@@ -7,6 +7,7 @@ include_once('mdb2_wrapper.php');
 include_once('logger.php');
 include_once('confusa_gen.php');
 require_once("output.php");
+require_once("pw.php");
 
 $person = null;
 $fw = new Framework('keyhandle');
@@ -40,23 +41,26 @@ function keyhandle($pers)
   global $person;
   $person = $pers;
   if ($person->is_auth()) {
+	  switch($person->get_mode()) {
+	  case NORMAL_MODE:
+		  echo "Showing normal-mode splash<BR>\n";
+		  break;
+	  case ADMIN_MODE:
+		  echo "Showing admin-mode splash<BR>\n";
+		  break;
+	  default:
+		  $code = create_pw(8);
+		  error_output("Unknown mode, contact the administrator with this error code " . $code);
+		  $msg  = $code . " ";
+		  $msg .= "User " . $person->get_common_name() . " was given mode " . $person->get_mode();
+		  $msg .= ". This is not a valid mode. Verify content in admins-table";
+		  Logger::log_event(LOG_WARNING, $msg);
+	  }
 
-	  /* Process awaiting CSR operations (including signing new
-	   * certificates) */
-	  $csr_process = process_db_csr();
-
-	  /* Certt */
+	  /* Cert */
 	  process_db_cert();
 	  show_db_cert();
 
-	  /* CSR */
-	  if (!$csr_process) {
-		  require_once('send_element.php');
-		  set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
-	  }
-	  if (Config::get_config('debug')) {
-		  list_all_csr($pers);
-	  }
   } else {
 	  include('unclassified_intro.php');
   }
@@ -112,28 +116,6 @@ function process_cert_flags_set()
 {
 	return isset($_GET['delete_cert']) || isset($_GET['inspect_cert']);
 }
-/* process_db_csr()
- *
- * This function shall look at all the csr's in the csr_cache, and present the
- * CSR belonging to the user, to the user.
- * The user can then 'approve' a CSR for signing by sending back the id of the
- * given CSR. This will then be put through a challenge-response cycle.
- */
-function process_db_csr()
-{
-	$res = false;
-	if (isset($_GET['delete_csr'])) {
-             $res = delete_csr(htmlentities($_GET['delete_csr']));
-	}
-        if (isset($_GET['auth_token'])){
-             $res = approve_csr(htmlentities($_GET['auth_token']));
-	}
-	else if (isset($_GET['inspect_csr'])) {
-             $res = inspect_csr(htmlentities($_GET['inspect_csr']));
-	}
-
-	return $res;
-}
 
 function process_db_cert()
 {
@@ -146,42 +128,6 @@ function process_db_cert()
      }
      return $res;
 } /* end process_db_cert */
-
-/* approve_csr()
- *
- * This function approves a CSR for signing. It uses the auth-token as a
- * paramenter to find the CSR in the database.
- */
-function approve_csr($auth_token)
-{
-     global $person;
-     $status = false;
-     $csr_res = MDB2Wrapper::execute("SELECT csr FROM csr_cache WHERE auth_key=? AND common_name=?",
-                                     array('text', 'text'),
-                                     array($auth_token, $person->get_valid_cn()));
-     if (count($csr_res) == 1) {
-          $csr = $csr_res[0]['csr'];
-	  $cm = CertManagerHandler::getManager($person);
-	  if (Config::get_config('debug')) {
-		  echo "Content of CSR:<BR>\n";
-		  echo "<PRE>\n";
-		  echo $csr;
-		  echo "</PRE>\n";
-	  }
-          try {
-            $cm->sign_key($auth_token, $csr);
-          } catch (ConfusaGenException $e) {
-               echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
-               return false;
-          }
-	  MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
-			      array('text', 'text'),
-			      array($auth_token, $person->get_valid_cn()));
-	  return true;
-     }
-     echo __FILE__ .":".__LINE__." error getting CSR from database<BR>\n";
-     return false;
-} /* end approve_csr_remote() */
 
 /* send_cert
  *
@@ -282,129 +228,6 @@ function show_db_cert()
 	echo "<br>\n";
 } /* end show_db_cert() */
 
-function list_remote_certs()
-{
-  global $person;
-  $list_endpoint = Config::get_config('capi_listing_endpoint');
-  $postfields_list["loginName"] = Config::get_config('capi_login_name');
-  $postfields_list["loginPassword"] = Config::get_config('capi_login_pw');
-
-  $test_prefix = "";
-  if (Config::get_config('capi_test')) {
-    /* TODO: this should go into a constant. However, I don't want to put it into confusa_config, since people shouldn't directly fiddle with it */
-    $test_prefix = "TEST PERSON ";
-  }
-
-  $postfields_list["commonName"] = $test_prefix . $person->get_valid_cn();
-  $ch = curl_init($list_endpoint);
-  curl_setopt($ch, CURLOPT_HEADER,0);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-  curl_setopt($ch, CURLOPT_POST,1);
-  curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_list);
-  $data=curl_exec($ch);
-  curl_close($ch);
-
-  $params=array();
-  $res = array();
-  parse_str($data, $params);
-
-  if ($params["errorCode"] == "0") {
-    for ($i = 1; $i <= $params['noOfResults']; $i = $i+1) {
-      $res[$i-1]['order_number'] = $params[$i . "_orderNumber"];
-      $res[$i-1]['cert_owner'] = $person->get_valid_cn();
-    }
-  } else {
-    echo "Errors occured when listing user certificates: " . $params["errorMessage"];
-  }
-
-  return $res;
-
-} /* end list_remote_certs() */
-
-function list_all_csr($person)
-{
-	$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip FROM csr_cache WHERE common_name=?";
-	$res = MDB2Wrapper::execute($query,
-				    array('text'),
-				    $person->get_valid_cn());
-	if (count($res) > 0) {
-		/* Handle each separate instance */
-		echo "<TABLE CLASS=\"small\">\n";
-		echo "<TR>";
-		echo "<TH>Database ID</TH>";
-		echo "<TH>Uploaded date</TH>";
-		echo "<TH>Common Name</TH>";
-		echo "<TH>From IP</TH>";
-		echo "<TH>Inspect</TH>";
-		echo "<TH>Delete</TH>";
-		echo "</tr>\n";
-		foreach ($res as $key => $value) {
-			echo "<TR>";
-			echo "<TD>"	. $value['csr_id'] . "</TD>\n";
-			echo "<TD>"	. $value['uploaded_date'] . "</TD>\n";
-			echo "<TD><I>"	. $value['common_name'] . "</I></TD>\n";
-
-			echo "<TD>";
-			if ($_SERVER['REMOTE_ADDR'] != $value['from_ip']) {
-				$diff = true;
-			}
-			if ($diff)
-				echo "<FONT COLOR=\"RED\"><B><I>";
-			echo $value['from_ip'] . "</TD>\n";
-			if ($diff)
-				echo "</I></B></FONT>";
-
-			echo "<TD>[ <A HREF=\""	.$_SERVER['PHP_SELF']."?inspect_csr=".$value['auth_key']."\">Inspect</A> ]</TD>\n";
-			echo "<TD>[ <A HREF=\""	.$_SERVER['PHP_SELF']."?delete_csr=".$value['auth_key']."\">Delete</A> ]</TD>\n";
-			echo "</tr>\n";
-		}
-		echo "</TABLE>\n";
-	}
-}
-
-/* inspect_csr
- *
- * Let the user view detailed information about a CSR (belonging to the user) to
- * help decide whether or not it should be signed.
- */
-function inspect_csr($auth_token) {
-	global $person;
-	$status = false;
-        $res = MDB2Wrapper::execute("SELECT * FROM csr_cache WHERE auth_key=? AND common_name=?",
-                                    array('text', 'text'),
-                                    array($auth_token, $person->get_valid_cn()));
-	if(count($res) == 1) {
-             $csr = $res[0]['csr'];
-             /* print subject */
-             $subj = openssl_csr_get_subject($csr, false);
-             echo "Details in your CSR:\n";
-             echo "<table class=\"small\">\n";
-             echo "<tr><td>AuthToken</td><td>".$res[0]['auth_key']."</td></tr>\n";
-             foreach ($subj as $key => $value)
-                  echo "<tr><td>$key</td><td>$value</td></tr>\n";
-             echo "<tr><td>Length:</td><td>".csr_pubkey_length($res[0]['csr']) . " bits</td></tr>\n";
-             echo "<tr><td>Uploaded </td><td>".$res[0]['uploaded_date'] . "</td></tr>\n";
-             echo "<tr><td>From IP: </td><td>".$res[0]['from_ip'] . "</td></tr>\n";
-             echo "<tr><td></td><td></td></tr>\n";
-             echo "<tr><td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=".$auth_token."\">Delete from Database</A> ]</td>\n";
-             echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?auth_token=".$auth_token."\">Approve for signing</A> ]</td></tr>\n";
-             echo "</table>\n";
-             echo "<BR>\n";
-	     $status = true;
-	} else {
-		echo "<BR><FONT COLOR=\"RED\"><B>\n";
-		echo "Error with auth-token. Not found. Please verify that you have entered the correct auth-url and try again<BR>\n";
-		echo "If this problem persists, try to download a new version of the tool and try again<BR>\n";
-		echo "<BR>\n";
-		echo "</FONT></B>\n";
-
-	}
-	return $status;
-} /* end inspect_csr() */
-
-
 /* inspect_cert
  *
  * This function will 'verbosify' a certificate with given cert_id.
@@ -446,37 +269,6 @@ function inspect_cert($auth_key)
 	return $status;
 }
 
-/* delete_csr
- *
- * Remove the csr with given id from the database.
- * It will check that the CSR belongs to the user in question.
- */
-function delete_csr($auth_token) {
-	global $person;
-	$status = false;
-        $res = mdb2wrapper::execute("select * from csr_cache where auth_key=? and common_name= ?",
-                                    array('text', 'text'),
-                                    array($auth_token, $person->get_valid_cn()));
-        $hits = count($res);
-	if ($hits== 1) {
-             mdb2wrapper::update("delete from csr_cache where auth_key=? and common_name= ?",
-                                 array('text', 'text'),
-                                 array($auth_token, $person->get_valid_cn()));
-             logger::log_event(LOG_NOTICE, "dropping csr with hash ".pubkey_hash($res[0]['csr'], true)." belonging to ".$person->get_valid_cn()." originating from ".$_SERVER['REMOTE_ADDR']."");
-	     $status = true;
-	}
-	else {
-		if ($hits==0) {
-			echo "No matching CSR found.<BR>\n";
-			Logger::log_event(LOG_NOTICE, "Could not delete given CSR from ip ".$_SERVER['REMOTE_ADDR'] . " : " . $person->get_valid_cn() . " Reason: not found");
-		}
-		else {
-			echo "Too many hits (".$hits.") in database<BR>\n";
-			Logger::log_event(LOG_WARNING, "Error in deleting CSR, got several matches on query (".$hits.") with id ".$loc_id."(" . $person->get_valid_cn() .") Ran query " . $update);
-		}
-	}
-	return $status;
-} /* end delete_csr() */
 
 /* delete_cert
  *
