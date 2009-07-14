@@ -18,7 +18,8 @@ final class Index extends ContentPage
 	}
 	public function pre_process($person)
 	{
-		decho(__FILE__ . " starting Index\n");
+		$this->setPerson($person);
+		$this->setManager();
 		return false;
 	}
 	/**

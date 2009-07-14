@@ -21,6 +21,8 @@ final class ProcessCsr extends ContentPage
 
 	public function pre_process($person)
 	{
+		$this->setPerson($person);
+		$this->setManager();
 		$res = false;
 		if (isset($_GET['sign_csr'])) {
 			$res = $this->approve_csr(htmlentities($_GET['sign_csr']), $person);
