@@ -50,9 +50,11 @@ class Tools extends ContentPage
 		$eol = "\r\n";
 		$body = "";
 		$body .= "Attached is a custom-designed script for creating keys" . $eol;
-		$body .= "Save script to computer, set executable (chmod u+x create_cert.sh) and run" . $eol;
-		$body .= "The script will prompt for a passphrase for the key. Read the instructions carefully!" . $eol;
-		$subject = 'Script for creating key and certificate request for ARC';
+		$body .= "Save the script to your computer, preferably in ~/bin/ , " . $eol;
+		$body .= "and set executable (chmod u+x create_cert.sh)." . $eol . $eol;
+		$body .= "The script will prompt for a passphrase for the key. " . $eol;
+		$body .= "Remember to read the instructions carefully!" . $eol;
+		$subject = 'Custom-tailored script for creating key and certificate request for ARC';
 		$mail = new MailManager($this->person,
 					Config::get_config('sys_from_address'),
 					$subject,
