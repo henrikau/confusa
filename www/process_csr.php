@@ -50,7 +50,7 @@ final class ProcessCsr extends ContentPage
 			echo "Depending on the load, this takes approximately 2 minutes.<BR />\n";
 			echo "<BR />\n";
 			echo "You will now be redirected to the certificate-download area found ";
-			echo "<A HREF=\"download_certificate.php\">here</A><BR>\n";
+			echo "<A HREF=\"download_certificate.php?poll=" . htmlentities($_GET['sign_csr']) . "\">here</A><BR>\n";
 			echo "</DIV>\n";
 			echo "<BR />\n";
 		}
@@ -204,7 +204,7 @@ final class ProcessCsr extends ContentPage
 		$url = "http";
 		if ($_SERVER['SERVER_PORT'] == 443)
 			$url .= "s";
-		$url .= "://" . $_SERVER['HTTP_HOST'] . "/" . dirname($_SERVER['PHP_SELF']) . "/download_certificate.php?poll=$auth_token";
+		$url .= "://" . $_SERVER['HTTP_HOST'] . "/" . dirname($_SERVER['PHP_SELF']) . "/download_certificate.php?poll=$authToken";
 		$this->signing_ok = true;
 		return "<META HTTP-EQUIV=\"REFRESH\" content=\"3; url=$url\">\n";
 	} /* end approve_csr_remote() */
