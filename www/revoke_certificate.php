@@ -3,13 +3,35 @@ require_once('confusa_include.php');
 require_once 'framework.php';
 require_once 'person.php';
 
-$fw = new Framework('revoke_cert');
-$fw->force_login();
-$fw->render_page();
-
-function revoke_cert($person)
+class RevokeCertificate extends ContentPage
 {
-	echo "<H3>Certificate Revokation Area</H3>\n";
+	function __construct()
+	{
+		parent::__construct("Revoke Certificate(s)", true);
+	}
+
+	function __destruct()
+	{
+		parent::__destruct();
+	}
+	public function pre_process($person)
+	{
+		$this->setPerson($person);
+		$this->setManager();
+		return false;
+	}
+	public function process($person)
+	{
+		echo "<H3>Certificate Revocation Area</H3>\n";
+	}
+	public function post_render($person)
+	{
+		return;
+	}
+
 }
+
+$fw = new Framework(new RevokeCertificate());
+$fw->start();
 
 ?>
