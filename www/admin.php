@@ -5,7 +5,7 @@ include_once('mdb2_wrapper.php');
 include_once('db_query.php');
 include_once('logger.php');
 
-class Admin extends ContentPage
+class Admin extends FW_Content_Page
 {
 	private $org_states;
 	private $org_name_cache;

@@ -9,7 +9,7 @@ require_once 'file_upload.php';
 require_once 'config.php';
 require_once 'send_element.php';
 
-final class ProcessCsr extends ContentPage
+final class ProcessCsr extends FW_Content_Page
 {
 	private $signing_ok;
 

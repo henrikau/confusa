@@ -3,7 +3,7 @@ require_once('confusa_include.php');
 require_once 'framework.php';
 require_once 'person.php';
 
-class RevokeCertificate extends ContentPage
+class RevokeCertificate extends FW_Content_Page
 {
 	function __construct()
 	{

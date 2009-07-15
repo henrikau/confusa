@@ -1,5 +1,5 @@
 <?php
-abstract class ContentPage
+abstract class FW_Content_Page
 {
 	private $title;
 	private $protected;

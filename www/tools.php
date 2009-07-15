@@ -4,7 +4,7 @@ include_once('framework.php');
 include_once('mail_manager.php');
 include_once('logger.php');
 
-class Tools extends ContentPage
+class Tools extends FW_Content_Page
 {
 	public function __construct()
 	{

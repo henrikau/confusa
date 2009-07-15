@@ -5,7 +5,7 @@ include_once('logger.php');
 require_once("output.php");
 require_once("pw.php");
 
-final class Index extends ContentPage
+final class Index extends FW_Content_Page
 {
 
 	function __construct()

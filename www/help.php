@@ -3,7 +3,7 @@ require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'person.php';
 
-class Help extends ContentPage
+class Help extends FW_Content_Page
 {
 	function __construct()
 	{
