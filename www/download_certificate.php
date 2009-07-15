@@ -11,8 +11,7 @@ final class DownloadCertificate extends FW_Content_Page
 	}
 	public function pre_process($person)
 	{
-		$this->setPerson($person);
-		$this->setManager();
+		parent::pre_process($person);
 
 		$res = false;
 		if ($person->is_auth()){
@@ -31,7 +30,7 @@ final class DownloadCertificate extends FW_Content_Page
 		return false;
 	}
 
-	public function process($person)
+	public function process()
 	{
 		if (!$person->is_auth()) {
 			error_msg("This is an impossible condition. How did you get in here?");
@@ -45,12 +44,6 @@ final class DownloadCertificate extends FW_Content_Page
 		$this->showDBCert($person);
 
 	}
-
-	public function post_process($person)
-	{
-		;
-	}
-
 
 
 	private function processDBCert($person)
