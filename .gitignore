@@ -2,3 +2,4 @@
 confusa_config.php
 *.pem
 *.dia.autosave
+/devdocs/seq_fw.png
