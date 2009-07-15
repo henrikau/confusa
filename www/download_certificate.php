@@ -14,7 +14,7 @@ final class DownloadCertificate extends FW_Content_Page
 		parent::pre_process($person);
 
 		$res = false;
-		if ($person->is_auth()){
+		if ($this->person->is_auth()){
 			if (isset($_GET['file_cert'])) {
 				$authKey = htmlentities($_GET['file_cert']);
 				try {
@@ -32,7 +32,7 @@ final class DownloadCertificate extends FW_Content_Page
 
 	public function process()
 	{
-		if (!$person->is_auth()) {
+		if (!$this->person->is_auth()) {
 			error_msg("This is an impossible condition. How did you get in here?");
 			return;
 		}

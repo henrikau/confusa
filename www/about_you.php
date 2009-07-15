@@ -7,16 +7,9 @@ class AboutYou extends FW_Content_Page
 	function __construct()
 	{
 		parent::__construct("About You", true);
-		$this->signing_ok = false;
 	}
 
-	public function pre_process($person)
-	{
-		$this->setPerson($person);
-		$this->setManager();
-		return false;
-	}
-	public function process($person)
+	public function process()
 	{
 		$textual = "no";
 		if (isset($_GET['text'])) {
@@ -25,19 +18,15 @@ class AboutYou extends FW_Content_Page
 		if ($textual == "yes") {
 			/* The id makes it very easy to automatically retrieve the content, e.g. with XPath */
 			echo "<DIV ID=\"dn-section\">";
-			echo $person->get_complete_dn();
+			echo $this->person->get_complete_dn();
 			echo "</DIV>";
 		} else {
 			echo "<H3>This is what we know about you:</H3>\n";
-			echo $person;
+			echo $this->person;
 			echo "<HR>\n";
 			echo "we store very little information. What we do keep, is information about certificates issued, combinded with the eduPersonPrincipalName\n";
 			echo "This is the DN in the certificate, and whe <b>have</b> to store this.<BR>\n";
 		}
-	}
-	public function post_process($person)
-	{
-		/* cleanups etc? */
 	}
 }
 

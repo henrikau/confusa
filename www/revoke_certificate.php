@@ -14,23 +14,14 @@ class RevokeCertificate extends FW_Content_Page
 	{
 		parent::__destruct();
 	}
-	public function pre_process($person)
-	{
-		$this->setPerson($person);
-		$this->setManager();
-		return false;
-	}
-	public function process($person)
+
+	public function process()
 	{
 		echo "<H3>Certificate Revocation Area</H3>\n";
 		if ($this->person->get_mode() == ADMIN_MODE)
 			$this->admin_revoke();
 		else
 			$this->normal_revoke();
-	}
-	public function post_process($person)
-	{
-		return;
 	}
 
 	private function admin_revoke()

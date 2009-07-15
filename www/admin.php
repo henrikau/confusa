@@ -16,13 +16,6 @@ class Admin extends FW_Content_Page
 		$this->org_name_cache	= array();
 	}
 
-	public function pre_process($person)
-	{
-		$this->setPerson($person);
-		$this->setManager();
-		return false;
-	}
-
 	/*
 	 * Direct the user to the respective operations she may perform
 	 * Currently the admin page can manage NREN subscriptions,
@@ -31,7 +24,7 @@ class Admin extends FW_Content_Page
 	 * The post parameters that are passed are supposed to be sanitized in
 	 * the respective functions that take them
 	 */
-	public function process($person)
+	public function process()
 	{
 		echo "<H3>Admin interface</H3>\n";
 		/*
@@ -113,10 +106,7 @@ class Admin extends FW_Content_Page
 			} catch (ConfusaGenException $e) {
 				echo $e->getHTMLMessage();
 			}
-		}	}
-	public function post_process($person)
-	{
-		/* cleanups etc? */
+		}
 	}
 
 	/*

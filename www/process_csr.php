@@ -31,7 +31,7 @@ final class ProcessCsr extends FW_Content_Page
 
 	}
 	
-	public function process($person)
+	public function process()
 	{
 		echo "<H3>Requesting new Certificates</H3>\n";
 		/* show upload-form. If it returns false, no uploaded CSRs were processed */
@@ -63,11 +63,6 @@ final class ProcessCsr extends FW_Content_Page
 		$this->listAllCSR($this->person);
 
 	}
-	public function post_process($person)
-	{
-		/* cleanups etc? */
-	}
-
 
 	/**
 	 * processCSRFlags_set - test to see if any of the CSR flags are set.

@@ -13,16 +13,6 @@ final class Index extends FW_Content_Page
 		parent::__construct("Index", false);
 	}
 
-	function __destruct()
-	{
-		decho(__FILE__ . " aiieee, dying");
-	}
-	public function pre_process($person)
-	{
-		$this->setPerson($person);
-		$this->setManager();
-		return false;
-	}
 	/**
 	 * process - main control function for handling CSRs and certificates
 	 *
@@ -32,10 +22,10 @@ final class Index extends FW_Content_Page
 	 * @person : the person-object associated with this instance. If the person is
 	 *	     non-AuthN, a unclassified version will be displayed.
 	 */
-	function process($person)
+	function process()
 	{
-		if ($person->is_auth()) {
-			switch($person->get_mode()) {
+		if ($this->person->is_auth()) {
+			switch($this->person->get_mode()) {
 			case NORMAL_MODE:
 				echo "Showing normal-mode splash<BR>\n";
 				break;
@@ -46,7 +36,7 @@ final class Index extends FW_Content_Page
 				$code = create_pw(8);
 				error_output("Unknown mode, contact the administrator with this error code " . $code);
 				$msg  = $code . " ";
-				$msg .= "User " . $person->get_common_name() . " was given mode " . $person->get_mode();
+				$msg .= "User " . $this->person->get_common_name() . " was given mode " . $this->person->get_mode();
 				$msg .= ". This is not a valid mode. Verify content in admins-table";
 				Logger::log_event(LOG_WARNING, $msg);
 			}
@@ -54,11 +44,6 @@ final class Index extends FW_Content_Page
 			include 'unclassified_intro.php';
 		}
 	} /* end process() */
-
-	public function post_process($person)
-	{
-		decho(__FILE__ . " Cleaning up..");
-	}
 }
 
 $ind = new Index();

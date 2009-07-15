@@ -10,29 +10,19 @@ class About_NREN extends FW_Content_Page
 		parent::__construct("About NREN", false);
 	}
 
-	public function pre_process($person)
-	{
-		$this->setPerson($person);
-		$this->setManager();
-		return false;
-	}
 
-	public function process($person)
+	public function process()
 	{
 		echo "<H3>NREN Area</H3>\n";
 
-		if ($person->is_auth()) {
-			$this->auth_page($person);
+		if ($this->person->is_auth()) {
+			$this->auth_page();
 		} else {
 			$this->open_page();
 		}
 	}
 
-	public function post_process($person)
-	{
-		return ;
-	}
-	private function auth_page($page)
+	private function auth_page()
 	{
 		echo "The classified stuff..<BR />\n";
 	}

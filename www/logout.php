@@ -7,11 +7,8 @@ class Logout extends FW_Content_Page
 	{
 		parent::__construct("Logout", false);
 	}
-	public function pre_process($person)
-	{
-		$this->setPerson($person);
-	}
-	public function process($person)
+
+	public function process()
 	{
 		if (isset($_GET['edu_name'])) {
 			require_once 'confusa_auth.php';
@@ -21,10 +18,6 @@ class Logout extends FW_Content_Page
 			echo "<H2>You have been logged out of Confusa</H2>\n";
 			echo "Return to <A HREF=\"index.php\">start</A><BR>\n";
 		}
-	}
-	public function post_process($person)
-	{
-		;
 	}
 }
 
