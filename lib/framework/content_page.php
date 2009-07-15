@@ -55,14 +55,19 @@ abstract class FW_Content_Page
 	 *
 	 * @person : the decorated person (if authenticated)
 	 */
-	abstract function pre_process($person);
+	function pre_process($person)
+	{
+		$this->setPerson($person);
+		$this->setManager();
+		return false;
+	}
 
 
 	/**
 	 * process()	- the main content-page processingfunction. This is
 	 *		  where you want to do the "main business".
 	 */
-	abstract function process($person);
+	abstract function process();
 
 
 	/**
@@ -70,6 +75,9 @@ abstract class FW_Content_Page
 	 *		  before framework runs the internal cleanups.
 	 * 
 	 */
-	abstract function post_process($person);
+	function post_process()
+	{
+		;
+	}
 }
 ?>
