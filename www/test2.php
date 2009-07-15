@@ -1,7 +1,7 @@
 <?php
-require_once('confusa_include.php');
-include_once('framework.php');
-require_once('SimpleSAML/Utilities.php');
+require_once 'confusa_include.php';
+include_once 'framework.php';
+require_once 'SimpleSAML/Utilities.php';
 $fw = new Framework('show_form');
 $fw->render_page();
 

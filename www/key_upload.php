@@ -1,9 +1,9 @@
 <?php
-require_once('confusa_include.php');	/* get path */
-require_once('mdb2_wrapper.php');
-require_once('logger.php');
-require_once('config.php');
-require_once('csr_lib.php');
+require_once 'confusa_include.php';	/* get path */
+require_once 'mdb2_wrapper.php';
+require_once 'logger.php';
+require_once 'config.php';
+require_once 'csr_lib.php';
 
   /* key_upload.php
    *

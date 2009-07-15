@@ -1,11 +1,11 @@
 <?php
 declare(encoding = 'utf-8');
-require_once('person.php');
-require_once('cert_manager.php');
-require_once('key_sign.php');
-require_once('db_query.php');
-require_once('mdb2_wrapper.php');
-require_once('remote_api.php');
+require_once 'person.php';
+require_once 'cert_manager.php';
+require_once 'key_sign.php';
+require_once 'db_query.php';
+require_once 'mdb2_wrapper.php';
+require_once 'remote_api.php';
 
 /**
  * CertManager_Online. Remote extension for CertManager.

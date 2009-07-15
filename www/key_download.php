@@ -1,10 +1,10 @@
 <?php
-require_once('confusa_include.php');	/* get path */
-require_once('logger.php');
-require_once('config.php');
-require_once('csr_lib.php');
-require_once('person.php');
-require_once('confusa_gen.php');
+require_once 'confusa_include.php';	/* get path */
+require_once 'logger.php';
+require_once 'config.php';
+require_once 'csr_lib.php';
+require_once 'person.php';
+require_once 'confusa_gen.php';
 
 /* only accept downloads from sources that specify *both* auth_var and
  * common_name (the client should know this anyway */

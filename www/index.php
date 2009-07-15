@@ -1,9 +1,9 @@
 <?php 
-require_once('confusa_include.php');
-include_once('framework.php');
-include_once('logger.php');
-require_once("output.php");
-require_once("pw.php");
+require_once 'confusa_include.php';
+include_once 'framework.php';
+include_once 'logger.php';
+require_once 'output.php';
+require_once 'pw.php';
 
 final class Index extends FW_Content_Page
 {

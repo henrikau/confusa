@@ -1,8 +1,8 @@
 <?php
 ini_set("include_path", ini_get('include_path') . ":../config/:../lib/misc:../lib/exceptions/");
 
-require_once('mdb2_wrapper.php');
-require_once('config.php');
+require_once 'mdb2_wrapper.php';
+require_once 'config.php';
 
 /**
  * _*DUMMY* bootstrap script.

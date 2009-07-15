@@ -1,8 +1,8 @@
 <?php
-include_once('framework.php');
-include_once('mdb2_wrapper.php');
-include_once('db_query.php');
-include_once('logger.php');
+include_once 'framework.php';
+include_once 'mdb2_wrapper.php';
+include_once 'db_query.php';
+include_once 'logger.php';
 $org_states = array('subscribed', 'suspended', 'unsubscribed');
 $fw = new Framework('admin');
 $fw->force_login();

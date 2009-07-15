@@ -1,6 +1,6 @@
 <?php
 declare(encoding = 'utf-8');
-require_once('confusa_gen.php');
+require_once 'confusa_gen.php';
 
 /**
  * RemoteAPIException thrown if a request at the remote certificate-API does not

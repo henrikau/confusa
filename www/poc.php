@@ -1,6 +1,6 @@
 <?php
-require_once('confusa_include.php');
-include_once('framework.php');
+require_once 'confusa_include.php';
+include_once 'framework.php';
 
 $fw = new Framework('poc');
 $fw->render_page();

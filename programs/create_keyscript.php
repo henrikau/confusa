@@ -1,5 +1,5 @@
 <?php
-require_once('person.php');
+require_once 'person.php';
 /* Class KeyScript
  * Class for modifying the create_cert script based on config-parameters and attributes from SimpleSAMLphp
  *

@@ -5,10 +5,10 @@
    *
    * Author: Henrik Austad <henrik.austad@uninett.no>
    */
-require_once('mdb2_wrapper.php');
-require_once('logger.php');
-require_once('csr_lib.php');
-require_once('config.php');
+require_once 'mdb2_wrapper.php';
+require_once 'logger.php';
+require_once 'csr_lib.php';
+require_once 'config.php';
 
 abstract class CertManager
 {

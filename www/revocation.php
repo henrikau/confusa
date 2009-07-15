@@ -1,8 +1,8 @@
 <?php
-include_once('framework.php');
-include_once('mdb2_wrapper.php');
-include_once('person.php');
-include_once('csv_lib.php');
+include_once 'framework.php';
+include_once 'mdb2_wrapper.php';
+include_once 'person.php';
+include_once 'csv_lib.php';
 
 /* CRL reason codes according to RFC 3280. Those having no real meaning for NREN
  * and institution admins have been removed from this list. */

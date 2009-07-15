@@ -25,6 +25,6 @@ $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/include';
 ini_set('include_path', $path);
 
 /* include lib */
-require_once('lib_include.php');
+require_once 'lib_include.php';
 
 ?>

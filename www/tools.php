@@ -1,8 +1,8 @@
 <?php
-require_once('confusa_include.php');
-include_once('framework.php');
-include_once('mail_manager.php');
-include_once('logger.php');
+require_once 'confusa_include.php';
+include_once 'framework.php';
+include_once 'mail_manager.php';
+include_once 'logger.php';
 
 class Tools extends FW_Content_Page
 {
@@ -20,8 +20,8 @@ class Tools extends FW_Content_Page
 		$this->setPerson($person);
 		$this->setManager();
 		if (isset($_GET['send_file'])) {
-			include_once('file_download.php');
-			include_once('create_keyscript.php');
+			include_once 'file_download.php';
+			include_once 'create_keyscript.php';
 			$keyscript = new KeyScript($person);
 			download_file($keyscript->create_script(), "create_cert.sh");
 			Logger::log_event(LOG_NOTICE, "Sending script via file to ". $person->get_common_name());
@@ -45,7 +45,7 @@ class Tools extends FW_Content_Page
 	}
 	private function send_email()
 	{
-		include_once('create_keyscript.php');
+		include_once 'create_keyscript.php';
 		$keyscript = new KeyScript($this->person);
 		$eol = "\r\n";
 		$body = "";

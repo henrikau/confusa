@@ -1,6 +1,6 @@
 <?php
-require_once('confusa_include.php');
-include_once('framework.php');
+require_once 'confusa_include.php';
+include_once 'framework.php';
 class Logout extends FW_Content_Page
 {
 	public function __construct()
@@ -14,7 +14,7 @@ class Logout extends FW_Content_Page
 	public function process($person)
 	{
 		if (isset($_GET['edu_name'])) {
-			require_once('confusa_auth.php');
+			require_once 'confusa_auth.php';
 			deauthenticate_user($this->person);
 		}
 		if (!$this->person || !$this->person->is_auth()) {

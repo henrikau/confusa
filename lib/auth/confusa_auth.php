@@ -6,18 +6,18 @@
    * This is the main authentication module of Confusa.
    */
 /* get simplesaml */
-require_once('config.php');
+require_once 'config.php';
 
 /* Use the new autoloader functionality in SimpleSAMLphp */
 $sspdir = Config::get_config('simplesaml_path');
 require_once($sspdir . '/lib/_autoload.php');
 SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
 
-require_once('oauth_auth.php');
-require_once('person.php');
-require_once('logger.php');
-require_once('debug.php');
-require_once('mdb2_wrapper.php');
+require_once 'oauth_auth.php';
+require_once 'person.php';
+require_once 'logger.php';
+require_once 'debug.php';
+require_once 'mdb2_wrapper.php';
 /* global variable to check if the session has been started or not (avoid
  * multiple calls to simple_saml's session_start()
  */

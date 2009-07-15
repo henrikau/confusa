@@ -6,19 +6,19 @@
    *
    * This will handle all aspects regarding layout and authentication of user.
    */
-require_once('confusa_include.php');
-require_once('confusa_auth.php');
-require_once('menu.php');
-require_once('person.php');
-require_once('logger.php');
-require_once('content_page.php');
-require_once('output.php');
-require_once('header.php');
+require_once 'confusa_include.php';
+require_once 'confusa_auth.php';
+require_once 'menu.php';
+require_once 'person.php';
+require_once 'logger.php';
+require_once 'content_page.php';
+require_once 'output.php';
+require_once 'header.php';
 
 /* global config */
-require_once('config.php');
-require_once('cert_manager_online.php');
-require_once('cert_manager_standalone.php');
+require_once 'config.php';
+require_once 'cert_manager_online.php';
+require_once 'cert_manager_standalone.php';
 
 /* class Framework
  *
@@ -122,7 +122,7 @@ class Framework {
 
 	/* === Post-amble */
         echo "</TABLE>\n";
-        include_once('footer.php');
+        include_once 'footer.php';
 
 
 	$this->contentPage->post_render($this->person);
