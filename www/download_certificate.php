@@ -138,7 +138,7 @@ final class DownloadCertificate extends ContentPage
 		try {
 			$cert = $this->certManager->get_cert($authKey);
 		} catch (ConfusaGenException $cge) {
-			error_output("Certificcate does not exist in cert_cache");
+			error_output("Certificate does not exist in cert_cache");
 			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$authKey." from ip ".$_SERVER['REMOTE_ADDR']);
 			return false;
 		}
