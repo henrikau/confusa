@@ -23,10 +23,24 @@ class RevokeCertificate extends ContentPage
 	public function process($person)
 	{
 		echo "<H3>Certificate Revocation Area</H3>\n";
+		if ($this->person->get_mode() == ADMIN_MODE)
+			$this->admin_revoke();
+		else
+			$this->normal_revoke();
 	}
 	public function post_render($person)
 	{
 		return;
+	}
+
+	private function admin_revoke()
+	{
+		echo "Admin revoke<BR />\n";
+	}
+
+	private function normal_revoke()
+	{
+		echo "Normal revoke<BR />\n";
 	}
 
 }
