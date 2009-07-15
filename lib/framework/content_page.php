@@ -18,6 +18,14 @@ abstract class FW_Content_Page
 		$this->certManager = null;
 	}
 
+	function __destruct()
+	{
+		unset($this->title);
+		unset($this->protected);
+		unset($this->certManager);
+		unset($this->person);
+	}
+
 	public function setManager()
 	{
 		if (!isset($this->person)) {
