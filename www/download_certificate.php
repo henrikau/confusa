@@ -39,14 +39,14 @@ final class DownloadCertificate extends FW_Content_Page
 
 		echo "<H3>Certificate Download Area</H3>\n";
 		/* test and handle flags */
-		$this->processDBCert($person);
+		$this->processDBCert();
 		/* show all stored certificates (with links to handle) */
-		$this->showDBCert($person);
+		$this->showDBCert();
 
 	}
 
 
-	private function processDBCert($person)
+	private function processDBCert()
 	{
 		$res		= false;
 
