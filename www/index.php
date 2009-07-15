@@ -55,7 +55,7 @@ final class Index extends FW_Content_Page
 		}
 	} /* end process() */
 
-	public function post_render($person)
+	public function post_process($person)
 	{
 		decho(__FILE__ . " Cleaning up..");
 	}

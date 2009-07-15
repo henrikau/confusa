@@ -22,7 +22,7 @@ class Logout extends FW_Content_Page
 			echo "Return to <A HREF=\"index.php\">start</A><BR>\n";
 		}
 	}
-	public function post_render($person)
+	public function post_process($person)
 	{
 		;
 	}

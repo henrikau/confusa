@@ -28,7 +28,7 @@ class RevokeCertificate extends FW_Content_Page
 		else
 			$this->normal_revoke();
 	}
-	public function post_render($person)
+	public function post_process($person)
 	{
 		return;
 	}

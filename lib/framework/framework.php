@@ -125,7 +125,7 @@ class Framework {
         include_once 'footer.php';
 
 
-	$this->contentPage->post_render($this->person);
+	$this->contentPage->post_process($this->person);
         } /* end render_page */
 
     private function user_rendering()

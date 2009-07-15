@@ -28,7 +28,7 @@ class Help extends FW_Content_Page
 		echo "Nothing here yet...<BR />\n";
 	}
 
-	public function post_render($person)
+	public function post_process($person)
 	{
 		/* cleanups etc? */
 	}

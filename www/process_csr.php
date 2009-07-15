@@ -63,7 +63,7 @@ final class ProcessCsr extends FW_Content_Page
 		$this->listAllCSR($this->person);
 
 	}
-	public function post_render($person)
+	public function post_process($person)
 	{
 		/* cleanups etc? */
 	}

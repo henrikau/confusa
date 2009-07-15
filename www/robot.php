@@ -23,7 +23,7 @@ class Robot_Interface extends FW_Content_Page
 		echo "This is where you administer the robotic interface for your institution<BR />\n";
 	}
 
-	public function post_render($person)
+	public function post_process($person)
 	{
 		return ;
 	}

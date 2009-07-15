@@ -70,6 +70,6 @@ abstract class FW_Content_Page
 	 *		  before framework runs the internal cleanups.
 	 * 
 	 */
-	abstract function post_render($person);
+	abstract function post_process($person);
 }
 ?>

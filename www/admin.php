@@ -114,7 +114,7 @@ class Admin extends FW_Content_Page
 				echo $e->getHTMLMessage();
 			}
 		}	}
-	public function post_render($person)
+	public function post_process($person)
 	{
 		/* cleanups etc? */
 	}

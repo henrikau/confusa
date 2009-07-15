@@ -35,7 +35,7 @@ class AboutYou extends FW_Content_Page
 			echo "This is the DN in the certificate, and whe <b>have</b> to store this.<BR>\n";
 		}
 	}
-	public function post_render($person)
+	public function post_process($person)
 	{
 		/* cleanups etc? */
 	}
