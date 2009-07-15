@@ -3,30 +3,39 @@ require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'person.php';
 
-$fw = new Framework('help');
-$fw->render_page();
-
-function help($person)
+class Help extends ContentPage
 {
-	echo "<H3>Help</H3>\n";
-	if (!$person->is_auth()) {
-		open_help();
-		return;
+	function __construct()
+	{
+		parent::__construct("Help", false);
 	}
-	auth_page($person);
-}
 
-function open_help()
-{
-	include 'ipso_lorem.html';
-}
-
-function auth_page($person)
-{
-	if (!$person->is_auth()) {
-		open_help();
-		return;
+	public function pre_process($person)
+	{
+		$this->setPerson($person);
+		$this->setManager();
+		return false;
 	}
-	echo "<H3>Classified help</H3>\n";
+
+	public function process($person)
+	{
+		if (!$person->is_auth()) {
+			echo "<H3>Help</H3>\n";
+			include 'ipso_lorem.html';
+			return;
+		}
+		echo "<H3>Classified help</H3>\n";
+		echo "Nothing here yet...<BR />\n";
+	}
+
+	public function post_render($person)
+	{
+		/* cleanups etc? */
+	}
 }
+
+$fw = new Framework(new Help());
+$fw->start();
+
 ?>
+
