@@ -51,7 +51,7 @@ final class Index extends FW_Content_Page
 				Logger::log_event(LOG_WARNING, $msg);
 			}
 		} else {
-			include('unclassified_intro.php');
+			include 'unclassified_intro.php';
 		}
 	} /* end process() */
 

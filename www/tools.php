@@ -33,7 +33,7 @@ class Tools extends FW_Content_Page
 	{
 		echo "<H3>Certificate Revocation Area</H3>\n";
 
-		include('tools.html');
+		include 'tools.html';
 
 		if (isset($_GET['send_email']))
 			$this->send_email();

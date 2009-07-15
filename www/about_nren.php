@@ -39,7 +39,7 @@ class About_NREN extends FW_Content_Page
 
 	private function open_page()
 	{
-		include('unclassified_intro.php');
+		include 'unclassified_intro.php';
 	}
 }	
 
