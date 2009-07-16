@@ -128,7 +128,7 @@ final class ProcessCsr extends FW_Content_Page
 				error_output("Please create a new keypair and upload a new CSR to the server.");
 			}
 		}
-		show_upload_form($_SERVER['PHP_SELF']);
+		show_upload_form($_SERVER['PHP_SELF'], "user_csr", "Upload CSR");
 	}
 
 	/**
