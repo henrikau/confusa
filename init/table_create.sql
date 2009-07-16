@@ -209,8 +209,6 @@ CREATE TABLE IF NOT EXISTS admins (
        -- '0', i.e. Normal mode.
        last_mode ENUM('0','1') DEFAULT 0
 ) type=InnoDB;
-<<<<<<< HEAD:init/table_create.sql
-=======
 
  
 -- ---------------------------------------------------------
@@ -226,4 +224,3 @@ CREATE TABLE IF NOT EXISTS user_crls (
        cert_sn INT NOT NULL,
        valid_untill DATETIME NOT NULL
 ) type=InnoDB;
->>>>>>> fw:init/table_create.sql
