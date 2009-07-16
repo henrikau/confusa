@@ -9,7 +9,7 @@
    */
 function show_upload_form($target_url, $input_name, $submit_name = NULL)
 {
-	if (!isset($target))
+	if (!isset($target_url))
 		return;
 	if (!isset($input_name))
 		return;
@@ -17,14 +17,14 @@ function show_upload_form($target_url, $input_name, $submit_name = NULL)
 	if (isset($submit_name))
 		$sname = $submit_name;
 ?>
-<FORM ENCTYPE="multipart/form-data" ACTION="<?php echo $target ?>" METHOD="POST">
+<FORM ENCTYPE="multipart/form-data" ACTION="<?php echo "$target_url"; ?>" METHOD="POST">
   <INPUT TYPE="hidden" 
 	 NAME="MAX_FILE_SIZE" 
 	 VALUE="2000000" />
 Please upload your CSR for signing. Signed certificates will be stored in the database.
     <BR />
     <INPUT NAME="<?php echo $input_name ?>" TYPE="file" />
-  <INPUT TYPE="submit" VALUE="echo $sname ?>" />
+  <INPUT TYPE="submit" VALUE="<?php echo $sname ?>" />
 </FORM>
 
 <?php
