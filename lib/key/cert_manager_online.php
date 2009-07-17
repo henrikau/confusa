@@ -121,10 +121,6 @@ class CertManager_Online extends CertManager
             $res[$i-1]['cert_owner'] = $this->person->get_valid_cn();
         }
 
-        if (count($res) > 0) {
-            $this->_insert_list_into_cache($res);
-        }
-
         return $res;
     }
 
