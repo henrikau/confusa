@@ -35,13 +35,14 @@ class RevokeCertificate extends FW_Content_Page
 		parent::pre_process($person);
 		if(isset($_GET['revoke'])) {
 			switch($_GET['revoke']) {
-				switch 'do_revoke':
-				
+			case 'do_revoke':
 				$this->revoke_certs($_POST['order_numbers'], $_POST['reason']);
 				break;
+
 			case 'do_revoke_list':
 				$this->revoke_list($_POST['reason']);
 				break;
+
 			default:
 				break;
 			}
