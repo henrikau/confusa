@@ -1,3 +1,6 @@
+<?php /* Smarty version 2.6.22, created on 2009-07-17 16:52:51
+         compiled from tools.tpl */ ?>
+
 <h2>Certificate Revocation Area</h2>
 
 <h3>Tools of the trade</h3>
@@ -10,11 +13,12 @@ can be downloaded either directly through the browser, or, you can receive it vi
 This means that you cannot use someone else's script, nor they yours.
 <br />
 <br />
-{if $email_sent}
+<?php if ($this->_tpl_vars['email_sent']): ?>
 <div class="success">
-	Mail sent to {$person->get_email()} with new version of create_cert.sh
+	Mail sent to <?php echo $this->_tpl_vars['person']->get_email(); ?>
+ with new version of create_cert.sh
 </div>
-{/if}
+<?php endif; ?>
 <table width="30%">
   <tr>
     <td>

@@ -1,5 +1,3 @@
-<h2>Menu</h2>
-
 {if $person->get_mode() == 0}
 <h3>Certificates</h3>
 <ul>

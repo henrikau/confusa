@@ -12,19 +12,22 @@
 </head>
 
 <body>
-	<div id="logo"><img src="graphics/logo-sigma.png" alt="" /></div>
-	<div id="title">Confusa</div>
 	<div id="site">
-	<div id="menu">
-		{$menu}
-	</div>
-	
-	<div id="content">
-		{foreach from=$errors item=error}
-		<div class="error">{$error}</div>
-		{/foreach}
-		{$content}
-	</div>
+		<div id="header">
+			<div id="logo"><img src="graphics/logo-sigma.png" alt="" /></div>
+			<div id="title">Confusa</div>
+		</div>
+		
+		<div id="menu">
+			{$menu}
+		</div>
+		
+		<div id="content">
+			{foreach from=$errors item=error}
+			<div class="error">{$error}</div>
+			{/foreach}
+			{$content}
+		</div>
 	</div>
 </body>
 </html>
