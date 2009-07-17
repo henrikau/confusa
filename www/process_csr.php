@@ -186,8 +186,12 @@ final class ProcessCsr extends FW_Content_Page
 				return false;
 			}
 			$this->certManager->sign_key($authToken, $csr);
+		} catch (RemoteAPIException $rapie) {
+			error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" . $rapie);n
+			return false;
 		} catch (ConfusaGenException $e) {
-			echo __FILE__ .":".__LINE__." Error signing key<BR>\n";
+			$msg = __FILE__ .":".__LINE__." Error signing key.<BR />\nRemote said: " . $e;
+			error_output($msg);
 			return false;
 		}
 		delete_csr_from_db($this->person, $authToken);
