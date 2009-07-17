@@ -64,9 +64,10 @@ class CertManager_Online extends CertManager
         );
 
         if (count($res) != 1) {
-          throw new DBQueryException("Could not extract the suitable " .
-                                     "remote CA credentials for organization $org!"
-          );
+		Logger::log_event(LOG_NOTICE, "Could not extract the suitable remote CA credentials for organization $org!");
+		throw new DBQueryException("Could not extract the suitable " .
+					   "remote CA credentials for organization $org!"
+			);
         }
 
         $this->login_name = $res[0]['login_name'];
@@ -216,7 +217,7 @@ class CertManager_Online extends CertManager
               /* potential error: no newline in response */
               if ($pos === FALSE) {
                 $msg = "Received an unexpected response from the remote API!\n" .
-                       "Maybe Confusa is improperly configured?<br />\n";
+                       "Maybe Confusa is not properly configured?<br />\n";
                 throw new RemoteAPIException($msg);
               }
 
@@ -226,7 +227,7 @@ class CertManager_Online extends CertManager
                 throw new RemoteAPIException("Received error message $data\n");
               } else {
                 $msg = "Received an unexpected response from the remote API!n" .
-                       "Maybe Confusa is improperly configured?\n";
+                       "Maybe Confusa is not properly configured?\n";
                 throw new RemoteAPIException($msg);
               }
         }
@@ -344,9 +345,10 @@ class CertManager_Online extends CertManager
         parse_str($data, $params);
 
         if (!isset($params['errorCode'])) {
-            throw new RemoteAPIException("Unexpected response from " .
-                "remote endpoint! Maybe Confusa is improperly configured?"
-            );
+		$msg  = "Unexpected response from remote endpoint. ";
+		$msg .= "Perhaps some configuration-switch is not properly set.";
+		$msg .= "Server gave no error-code.";
+		throw new RemoteAPIException($msg);
         }
 
         if ($params['errorCode'] == "0") {
