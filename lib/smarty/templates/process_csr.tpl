@@ -33,10 +33,10 @@ No CSR in database
 	{foreach from=$csrList item=csr}
 	<tr>
 		<td>{$csr.uploaded_date}</td>
-		<td>{$csr-common_name}</td>
-		<td>{$csr-from_ip}</td>
-		<td>[ <a href="process_csr.php?inspect_csr={$csr-auth_key}">Inspect</a> ]</td>
-		<td>[ <a href="process_csr.php?delete_csr={$csr-auth_key}">Delete</a> ]</td>
+		<td>{$csr.common_name}</td>
+		<td>{$csr.from_ip}</td>
+		<td>[ <a href="process_csr.php?inspect_csr={$csr.auth_key}">Inspect</a> ]</td>
+		<td>[ <a href="process_csr.php?delete_csr={$csr.auth_key}">Delete</a> ]</td>
 	</tr>
 	{/foreach}
 </table>
