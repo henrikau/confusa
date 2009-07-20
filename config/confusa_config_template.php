@@ -47,8 +47,8 @@ $confusa_config = array(
 	'approve'		=> '/index.php',
 
         /* For CA handling */
-        'standalone'            => True, /* true: no extra CA, use php to sign
-                                          * key */
+	'ca_mode'		=> CA_STANDALONE,
+
         /* ca_host and ca_port can be removed */
         'ca_host'               => 'localhost',
         'ca_port'               => '9443',
