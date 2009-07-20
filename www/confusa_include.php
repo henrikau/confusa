@@ -20,7 +20,6 @@ define("CA_ONLINE", 1);
 define('WEB_DIR', dirname($_SERVER['SCRIPT_FILENAME']));
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/lib';
-$path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/lib/framework';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/programs';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/config';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/include';
