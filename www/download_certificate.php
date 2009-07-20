@@ -19,9 +19,11 @@ final class DownloadCertificate extends FW_Content_Page
 				$authKey = htmlentities($_GET['file_cert']);
 				try {
 					$cert = $this->certManager->get_cert($authKey);
-					require_once 'file_download.php';
-					download_file($cert, 'usercert.pem');
-					exit(0);
+					if (isset($cert)) {
+						require_once 'file_download.php';
+						download_file($cert, 'usercert.pem');
+						exit(0);
+					}
 				} catch(ConfusaGenException $cge) {
 					;
 				}
