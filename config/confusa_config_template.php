@@ -145,8 +145,11 @@ $confusa_config = array(
 	/**
 	 * When set to true this variable will bypass simplesaml and create fake attributes
 	 * so that the site can be tested without authentication
+	 *
+	 * The auth-bypass should be off by default:config/confusa_config_template.php
 	 */
 	'auth_bypass'		=> false,
+
 	/* this should be set to true when config is verified (or the file has
 	 * been updated and not just copied)
 	 * This should also find all the users that doesn't read the config file
