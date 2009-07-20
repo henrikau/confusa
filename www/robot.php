@@ -13,8 +13,7 @@ class Robot_Interface extends FW_Content_Page
 
 	public function process()
 	{
-		echo "<H3>Robot Interface</H3>\n";
-		echo "This is where you administer the robotic interface for your institution<BR />\n";
+		$this->tpl->assign('content', $this->tpl->fetch('robot.tpl'));
 	}
 }
 

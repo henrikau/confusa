@@ -13,7 +13,7 @@ No certificates in database
 	</tr>
 	{foreach from=$certList item=cert}
 	<tr>
-		{if $standaloje}
+		{if $standalone}
 		<td>[ <a href="download_certificate.php?email_cert={$cert.auth_key}">Email</a> ]</td>
 		<td>[ <a href="download_certificate.php?file_cert={$cert.auth_key}">Download</a> ]</td>
 		<td>{$cert.valid_untill}</td>
@@ -32,3 +32,5 @@ No certificates in database
 	{/foreach}
 </table>
 {/if}
+
+{$processingResult}

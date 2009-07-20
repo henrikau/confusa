@@ -213,7 +213,7 @@ class Person{
     } /* end function is_admin() */
 
     public function is_nren_admin()
-    {
+    {	    	
 	    if (!$this->is_auth())
 		    return false;
 

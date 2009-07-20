@@ -102,6 +102,7 @@ class Framework {
 		}
 		$this->tpl->assign('person', $this->person);
 		$this->contentPage->process($this->person);
+		$this->tpl->assign('logoutUrl', logout_link());
 		$this->tpl->assign('menu', $this->tpl->fetch('menu.tpl')); // see render_menu($this->person)
 		$this->tpl->assign('errors', self::$errors);
 		$this->tpl->display('site.tpl');

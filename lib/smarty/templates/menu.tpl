@@ -43,6 +43,6 @@
 	{if !$person->is_auth()}
 	<li><a href="index.php?start_login=yes">Login</a></li>
 	{else}
-	<li><a href="">logout_link("logout.php", "Logout", $person)</a></li>
+	<li><a href="{$logoutUrl}">Log out</a></li>
     {/if}
 </ul>

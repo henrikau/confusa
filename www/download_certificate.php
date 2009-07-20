@@ -47,18 +47,15 @@ final class DownloadCertificate extends FW_Content_Page
 
 	private function processDBCert()
 	{
-		$res		= false;
-
 		if(isset($_GET['delete_cert']))
-			$res = $this->deleteCert(htmlentities($_GET['delete_cert']));
+			$this->deleteCert(htmlentities($_GET['delete_cert']));
 
 		else if (isset($_GET['inspect_cert']))
-			$res = $this->inspectCert(htmlentities($_GET['inspect_cert']));
+			$this->inspectCert(htmlentities($_GET['inspect_cert']));
 
 		else if (isset($_GET['email_cert']))
-			$res = $this->mailCert(htmlentities($_GET['email_cert']));
+			$this->mailCert(htmlentities($_GET['email_cert']));
 
-		return $res;
 	} /* end process_db_cert */
 
 
@@ -100,7 +97,7 @@ final class DownloadCertificate extends FW_Content_Page
 				    array($authKey, $this->person->get_valid_cn()));
 
 		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$authKey." belonging to ".$this->person->get_valid_cn());
-		return true;
+		$this->tpl->assign('processingResult', 'Certificate deleted');
 	} /* end deleteCert */
 
 	/**
@@ -113,42 +110,26 @@ final class DownloadCertificate extends FW_Content_Page
 	private function inspectCert($authKey)
 	{
 		/* FIXME */
-
-		$status = false;
-
 		try {
 			$cert = $this->certManager->get_cert($authKey);
 			if (isset($cert)) {
-				echo "<BR>\n";
-				echo "<BR>\n";
 				$csr_test = openssl_x509_read($cert);
 				if (openssl_x509_export($csr_test, $text, false)) {
-					echo "[ <a href=\"".$_SERVER['PHP_SELF']."?email_cert=$authKey\">Email</a> ]\n";
-					echo "[ <a href=\"".$_SERVER['PHP_SELF']."?file_cert=$authKey\">Download</a> ]\n";
-					echo "[ <B>Inspect</B> ]\n";
-					if (Config::get_config('standalone')) {
-						echo "[ <a href=\"".$_SERVER['PHP_SELF']."?delete_cert=$authKey\">Delete</a> ]\n";
-					}
-					echo "<pre>$text</pre>\n";
-					$status = true;
+					$this->tpl->assign('pem', $text);
+					$this->tpl->assign('standalone', Config::get_config('standalone'));
 				} else {
-					/* not able to show it properly, dump content to screen */
-					echo "There were errors encountered when formatting the certificate. Here is a raw-dump.<BR>\n";
-					echo "<PRE>\n";
-					print_r ($cert);
-					echo "</PRE>\n";
+					$this->tpl->assign('certificate', print_r($cert));
 				}
 			}
 		} catch (ConfusaGenException $e) {
 			echo $e->getMessage();
 		}
-
-		return $status;
+		
+		$this->tpl->assign('processingResult', $tpl->tpl->fetch('inspect_certificate.tpl'));
 	} /* end inspectCert */
 
 	private function mailCert($authKey)
 	{
-		$send_res = false;
 		try {
 			$cert = $this->certManager->get_cert($authKey);
 			if (isset($cert)) {
@@ -165,8 +146,7 @@ final class DownloadCertificate extends FW_Content_Page
 		} catch (ConfusaGenException $e) {
 			echo $e->getMessage();
 		}
-		echo "Email sent OK<BR />\n";
-		return $send_res;
+		$this->tpl->assign('processingResult', 'Email sent OK');
 	} /* end send_cert */
 
 } /* end class DownloadCertificate */
@@ -208,7 +188,7 @@ function list_remote_certs($person)
       $res[$i-1]['cert_owner'] = $person->get_valid_cn();
     }
   } else {
-    echo "Errors occured when listing user certificates: " . $params["errorMessage"];
+    Framework::error_output("Errors occured when listing user certificates: " . $params["errorMessage"]);
   }
 
   return $res;

@@ -148,10 +148,11 @@ function add_attributes($person)
  * @edu_name:		The unique feide name of the person we're logging out (so
  *			that the logout-form can remove info from the database).
  */
-function logout_link($logout_location="logout.php", $logout_name="Logout Confusa", $person)
+function logout_link($logout_location="logout.php")
 {
 	if(Config::get_config('auth_bypass'))
-		return '';
+		return $logout_location;
+
      $config = _get_config();
      $edu_name = $person->get_common_name();
 
@@ -161,9 +162,7 @@ function logout_link($logout_location="logout.php", $logout_name="Logout Confusa
      if (strpos($base, ".php"))
           $base = dirname($base);
      $link_base =  dirname($base).'/simplesaml/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
-     $link = '<A HREF="' . $link_base . '">' . $logout_name . '</A>';
-
-    return $link;
+	return $link_base;
 } // end get_logout_link()
 
 
