@@ -49,11 +49,8 @@ $confusa_config = array(
         /* For CA handling */
 	'ca_mode'		=> CA_STANDALONE,
 
-        /* ca_host and ca_port can be removed */
-        'ca_host'               => 'localhost',
-        'ca_port'               => '9443',
-                                        /* The following fields can be used when the Comodo-API is called
-                                         * for certificate creation */
+	/* The following fields can be used when the Comodo-API is called
+	 * for certificate creation */
         'capi_apply_endpoint'          => 'https://secure.comodo.com/products/!applyCustomClientCert',
         'capi_auth_endpoint'           => 'https://secure.comodo.net/products/!AutoAuthorize',
         'capi_collect_endpoint'        => 'https://secure.comodo.net/products/download/CollectCCC',
