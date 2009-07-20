@@ -17,15 +17,15 @@ class Tools extends FW_Content_Page
 	}
 	public function pre_process($person)
 	{
-		parent::pre_process($person);
 		if (isset($_GET['send_file'])) {
 			include_once 'file_download.php';
 			include_once 'create_keyscript.php';
-			$keyscript = new KeyScript($this->person);
+			$keyscript = new KeyScript($person);
 			download_file($keyscript->create_script(), "create_cert.sh");
 			Logger::log_event(LOG_NOTICE, "Sending script via file to ". $this->person->get_common_name());
 			exit(0);
 		}
+		parent::pre_process($person);
 		return false;
 	}
 	public function process()
