@@ -12,17 +12,23 @@
 
 -- ---------------------------------------------------------
 --
--- account_map
+-- account_map	 - map an account to a set of username/password credentials.
 --
--- Map an account with the Online CA provider.
--- Such an account currently consists of a username and a password.
+-- The account contains two elements:
 --
--- The password is stored in encrypted form, but the encryption should take
--- place in the PHP application, because of flaws in MySQL's AES_ENCRYPT
--- (see http://moncahier.canalblog.com/archives/2008/01/26/7700105.html)
--- and because it is safer if the password is encrypted as early as possible.
--- PHP::MCrypt also provides us with more options (block mode, etc.) and makes
--- it easier to change to different encryption algorithms.
+--	- username
+--	- password
+--
+-- The password is stored in encrypted form, but the encryption should
+-- take place in the PHP application, because of flaws in MySQL's
+-- AES_ENCRYPT.
+--
+--   http://moncahier.canalblog.com/archives/2008/01/26/7700105.html
+--
+-- This is handled by the mcrypt-library, and the start-vector is stored
+-- in the last key in the table:
+--
+--	- ivector
 --
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS account_map (
@@ -31,18 +37,26 @@ CREATE TABLE IF NOT EXISTS account_map (
     -- the password with which the sub-account will be accessed.
     -- encrypted at application layer
     password TINYBLOB NOT NULL,
-    -- the initialization vector used for encryption
-    -- the vector must be random, but need not be confidential
+
+    -- the initialization vector used for encryption the vector must be
+    -- random, but need not be confidential. The encryption key (or
+    -- passphrase) is stored in the config-file.
     ivector TINYBLOB NOT NULL
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
 --
--- nrens
+-- NRENS - National Research and Educational Network
 --
--- Store the NRENs that are currently hooked up to Confusa
--- If Confusa operates in remote-signing mode, it will also use the linked
--- online account for requesting certificates for an organization.
+-- Each NREN is supposed to run its own federation. The federation will
+-- be tied in via SimpleSAMLphp, and this stores the NRENs currently
+-- hooked into confusa, with their corresponding data (CA subaccount for
+-- COMODO)
+--
+-- If Confusa operates in remote-signing mode, it will also use the
+-- linked online account for requesting certificates for an
+-- organization.
+--
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS nrens (
     -- the name of the NREN (e.g. SUNET, UNINETT, FUNET)
@@ -54,13 +68,12 @@ CREATE TABLE IF NOT EXISTS nrens (
 
 -- ---------------------------------------------------------
 --
--- institutions
+-- Subscribers
 --
--- Store the organizations that are currently hooked up to Confusa along with
--- their current state (subscribed, suspended, unsubscribed)
+-- Store the subscribers (Universities, colleges etc) that are currently
+-- hooked up to Confusa along with their current state (subscribed,
+-- suspended, unsubscribed). These are called 'subscribers'
 --
--- If Confusa operates in remote-signing mode, it will also use the linked
--- online account for requesting certificates for an organization.
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS institutions (
     inst_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -75,12 +88,12 @@ CREATE TABLE IF NOT EXISTS institutions (
 
 -- ---------------------------------------------------------
 --
--- cert_user
+-- Certificate User, or Owner.
 --
--- Table that holds the common_name and institution of users iff they still
--- possess non-expired certificates or CSRs
--- Certificate and CSR tables will have foreign keys pointing to this table,
--- so all tables will be forced to a consistent representation of the users'
+-- Table that holds the common_name and institution of users iff they
+-- still possess non-expired certificates or CSRs Certificate and CSR
+-- tables will have foreign keys pointing to this table, so all tables
+-- will be forced to a consistent representation of the users'
 -- common_names
 --
 -- ---------------------------------------------------------
@@ -91,6 +104,15 @@ CREATE TABLE IF NOT EXISTS cert_user (
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
+    -- common_name is the complete and valid cn for a person
+    -- ($person->get_valid_cn())
+    -- common_name is the complete and valid cn for a person
+
+    -- The institution where the user belongs.
+    -- ($person->get_valid_cn())
+
+    -- When the certificate expires (or will be removed from the
+    -- database).
 --
 -- order_store
 --
