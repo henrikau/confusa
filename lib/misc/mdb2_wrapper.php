@@ -2,6 +2,7 @@
 /* require_once 'logger.php'; */
 require_once 'config.php';
 require_once 'MDB2.php';
+require_once 'logger.php';
 
 /* MDB2Wrapper
  *
