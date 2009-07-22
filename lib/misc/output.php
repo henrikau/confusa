@@ -12,6 +12,35 @@ function decho($msg)
 		echo $msg . "<BR>\n";
 	}
 }
+
+/**
+ * create_link - create a full <A HREF.. link
+ *
+ * @url		: the url we are linking to
+ * @url_name	: the name, the 'name' attribute in the A-tag
+ * @name	: the name that is shown in the webpage for the user.
+ */
+function create_link($url, $url_name=null, $name=null)
+{
+	if (!isset($url)){
+		echo "url not set!";
+		return null;
+	}
+	$loc_url	= $url;
+	$loc_url_name	= $url_name;
+
+	if (!isset($url_name)) {
+		$loc_url_name = basename($url);
+		if (strpos($loc_url_name, ".") !== FALSE) {
+			$loc_url_name = substr($loc_url_name, 0, strpos($loc_url_name, "."));
+		}
+	}
+
+	$loc_name	= (isset($name) ? $name : $loc_url_name);
+
+	return "<A HREF=\"$loc_url\" name=\"$loc_name\">$loc_url_name</A>";
+} /* end create_link */
+
 function db_array_debug($array, $msg=null)
 {
 	if (Config::get_config('debug') && count($array) > 1) {
