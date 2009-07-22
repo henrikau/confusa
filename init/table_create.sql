@@ -33,7 +33,8 @@
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS account_map (
     -- the login-name for the associated sub-account,
-    login_name VARCHAR(128) PRIMARY KEY NOT NULL,
+    login_name VARCHAR(128) PRIMARY KEY,
+
     -- the password with which the sub-account will be accessed.
     -- encrypted at application layer
     password TINYBLOB NOT NULL,
@@ -60,7 +61,8 @@ CREATE TABLE IF NOT EXISTS account_map (
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS nrens (
     -- the name of the NREN (e.g. SUNET, UNINETT, FUNET)
-    name VARCHAR(30) PRIMARY KEY NOT NULL,
+    name VARCHAR(30) PRIMARY KEY,
+
     -- if a remote signing CA is used, the ID of the subaccont there
     login_name VARCHAR(128),
     FOREIGN KEY(login_name) REFERENCES account_map(login_name) ON DELETE SET NULL
@@ -75,12 +77,13 @@ CREATE TABLE IF NOT EXISTS nrens (
 -- suspended, unsubscribed). These are called 'subscribers'
 --
 -- ---------------------------------------------------------
-CREATE TABLE IF NOT EXISTS institutions (
-    inst_id INT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS subscribers (
     -- the name of the institution (e.g. KTH, CSC, Univ. of Oslo,...)
-    name VARCHAR(30) NOT NULL,
+    name VARCHAR(30) PRIMARY KEY,
+
     -- the NREN as it is stored in the NREN table
-    nren_name VARCHAR(30) NOT NULL,
+    nren_name VARCHAR(30),
+
     -- the current subscription state to the service
     org_state ENUM('subscribed', 'suspended', 'unsubscribed') NOT NULL,
     FOREIGN KEY(nren_name) REFERENCES nrens(name) ON DELETE CASCADE
@@ -98,24 +101,22 @@ CREATE TABLE IF NOT EXISTS institutions (
 --
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS cert_user (
-    common_name VARCHAR(128) PRIMARY KEY NOT NULL,
-    institution VARCHAR(30) NOT NULL,
-    expires DATETIME NOT NULL
-) type=InnoDB;
-
--- ---------------------------------------------------------
     -- common_name is the complete and valid cn for a person
     -- ($person->get_valid_cn())
-    -- common_name is the complete and valid cn for a person
+    common_name VARCHAR(128) PRIMARY KEY NOT NULL,
 
     -- The institution where the user belongs.
-    -- ($person->get_valid_cn())
+    institution VARCHAR(30) NOT NULL,
 
     -- When the certificate expires (or will be removed from the
     -- database).
 --
 -- order_store
 --
+    expires DATETIME NOT NULL
+) type=InnoDB;
+
+-- ---------------------------------------------------------
 -- If the standalone CA is not used for signing the CSRs, the CSRs are
 -- ordered by a service provider (e.g. Comodo).
 --
