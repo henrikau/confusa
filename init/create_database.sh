@@ -61,6 +61,15 @@ fi
 echo "Creating tables in the database. Existing databases will be reset according to table_create.sql"
 $MYSQL -D$database < table_create.sql
 
+if [ ! $? -eq 0 ]; then
+    echo "Errors were encountered during the database install"
+    echo "Make sure you have enough privileges to write to the database, and that "
+    echo "the file table_create.sql has not been corrupted."
+    echo ""
+    echo "You might want to delete the entire database and try again.."
+    exit
+fi
+
 # check to see if the the proper user with rights are in place
 webuser=`grep "mysql_username" ../config/confusa_config.php | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
@@ -74,10 +83,22 @@ grants="SELECT, INSERT, DELETE, UPDATE, USAGE"
 user=`$MYSQL -Dmysql -e "SELECT user FROM user WHERE user='$webuser'"`
 if [ -z "$user" ]; then
     echo "did not find user ($webuser) in database, creating"
-    res=`$MYSQL -D$database -e "GRANT $grants on $database.* TO '$webuser'@'localhost' IDENTIFIED BY '$pw'"`
-    echo "Added user to database."
+    query="GRANT $grants on $database.* TO '$webuser'@'$webhost' IDENTIFIED BY '$pw'"
+    `$MYSQL -D$database -e"$query"`
+    res=$?
+    if [ $res -eq 0 ]; then
+	echo "Added user to database."
+    else
+	perror $res
+	echo "Trouble adding user, aborting..."
+	exit $res
+    fi
+
 else
     echo "Found user ($webuser)."
 fi
 
-echo "Confusa-setup complete"
+echo "Confusa-setup complete, adding views"
+$MYSQL -D$database  < views_create.sql
+echo "Vies created. Database bootstrap complete"
+echo ""
