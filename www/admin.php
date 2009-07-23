@@ -5,7 +5,10 @@ include_once 'mdb2_wrapper.php';
 include_once 'db_query.php';
 include_once 'logger.php';
 
-class Admin extends FW_Content_Page
+
+/** class Admin
+ */
+class CP_Admin extends FW_Content_Page
 {
 	private $org_states;
 	private $org_name_cache;
@@ -16,182 +19,84 @@ class Admin extends FW_Content_Page
 		$this->org_name_cache	= array();
 	}
 
-	/*
-	 * Direct the user to the respective operations she may perform
-	 * Currently the admin page can manage NREN subscriptions,
-	 * organization subscriptions and (Comodo) subaccounts.
-	 *
-	 * The post parameters that are passed are supposed to be sanitized in
-	 * the respective functions that take them
-	 */
-	public function process()
+	public function pre_process($person)
 	{
-		echo "<H3>Admin interface</H3>\n";
-		/*
-		 * Authentication check is performed along along with the is_admin
-		 * check
-		 */
-		if ($this->person->is_admin()) {
-			try {
-				if (isset($_GET['subscribe'])) {
-					switch($_GET['subscribe']) {
-					case 'manage':
-						show_subscriptions_mask();
-						break;
-					case 'edit':
-						edit_subscriptions($_POST['org_name'],
-								   $_POST['org_state'],
-								   $_POST['nren_name']);
-						show_subscriptions_mask();
-						break;
-					case 'add':
-						add_subscription($_POST['org_state'],
-								 $_POST['nren'],
-								 $_POST['org_name']);
-						show_subscriptions_mask();
-						break;
-					case 'delete':
-						delete_subscription($_POST['org_name']);
-						show_subscriptions_mask();
-						break;
-					default:
-						echo "Unknown operation!<br />\n";
-						break;
-					}
-				} else if (isset($_GET['account'])) {
-					switch($_GET['account']) {
-					case 'manage':
-						show_accounts_mask();
-						break;
-					case 'add':
-						add_account($_POST['login_name'], $_POST['login_password']);
-						show_accounts_mask();
-						break;
-					case 'delete':
-						delete_account($_POST['login_name']);
-						show_accounts_mask();
-						break;
-					case 'edit':
-						edit_account($_POST['login_name'], $_POST['login_password']);
-						show_accounts_mask();
-						break;
-					default:
-						echo "Unknown operation!<br />\n";
-						break;
-					}
-				} else if (isset($_GET['nren'])) {
-					switch($_GET['nren']) {
-					case 'manage':
-						show_nrens_mask();
-						break;
-					case 'add':
-						add_nren($_POST['nren_name'],
-							 $_POST['login_name']);
-						show_nrens_mask();
-						break;
-					case 'delete':
-						delete_nren($_POST['nren_name']);
-						show_nrens_mask();
-						break;
-					case 'edit':
-						edit_nren($_POST['nren_name'],
-							  $_POST['login_name']);
-						show_nrens_mask();
-						break;
-					default:
-						echo "Unknown operation!<br />\n";
-						break;
-					}
-				}
-			} catch (ConfusaGenException $e) {
-				echo $e->getHTMLMessage();
+		parent::pre_process($person);
+
+		/* IF user is not subscirber- or nren-admin, we stop here */
+		if (!($this->person->is_subscriber_admin() || $this->person->is_nren_admin()))
+			return false;
+
+		/* test for flags */
+		if (isset($_GET['admin'])) {
+			switch(htmlentities($_GET['admin'])) {
+			default:
+				break;
 			}
 		}
 	}
 
 	/*
-	 * Show a mask with all the organizations currently subscribed to the
-	 * service. Show visual elements permitting the user to update, add and
-	 * delete such entries */
-	private function show_subscriptions_mask()
+	 * Direct the user to the respective operations she may perform
+	 * Currently the admin page can manage NREN subscriptions,
+	 * organization subscriptions and (Comodo) subaccounts.
+	 *
+	 * The post parameters that are passed are supposed to be $this->sanitized in
+	 * the respective functions that take them
+	 */
+	public function process()
 	{
-		/*
-		 * mimic tables with <div> elements, because in legal html, forms
-		 * may not be interleaved with table elements, i.e. we can not
-		 * place a form within a whole table row.
-		 *
-		 * But for <div>s, there is no such restriction
-		 */
-		$table	= "<div class=\"admin_table\">\n";
-		$tr	= "<div class=\"admin_table_row\">\n";
-		$td	= "<div class=\"admin_table_cell\">\n";
-		$table_e= "</div>\n";
-		$tr_e	= "</div>\n";
-		$td_e	= "</div>\n";
-
-		if(Config::get_config('standalone')) {
-			$query = "SELECT name, org_state FROM organizations";
-		} else {
-			/* select the organizations and the associated NRENs */
-			$query = "SELECT o.name AS \"name\", o.org_state AS \"org_state\", n.name AS \"nren_name\" " .
-				 "FROM organizations o LEFT JOIN " .
-				 "nrens n ON o.nren_id = n.nren_id";
+		/* IF user is not subscirber- or nren-admin, we stop here */
+		if (!($this->person->is_subscriber_admin() || $this->person->is_nren_admin())) {
+			echo "<H3>Not Authorized for this action</H3>\n";
+			Logger::log_event(LOG_NOTICE, "User " . $this->person->get_valid_cn() . " was rejected at the admin-interface");
+			return false;
 		}
 
-		echo $table;
-		echo "$tr$td$td_e$td<b>Organization</b>$td_e$td<b>State";
-		echo "</b>$td_e$td<b>NREN</b>$td_e$td$td_e$tr_e";
+		echo "<H3>Subscriber and NREN administration</H3>\n";
+		echo "Add, edit or remove subscribers <BR />\n";
 
-		$res = MDB2Wrapper::execute($query, NULL, NULL);
+		if ($this->person->is_subscriber_admin() || $this->person->is_nren_admin()) {
+			/* FIXME: REMOVE THIS */
+			$this->show_handle_links();
+		}
+	}
+	
+	private function show_handle_links()
+	{
+		echo " [ " . create_link($_SERVER['SCRIPT_NAME'] . "?subscribe",	"Subscribers")	. " ] ";
+		echo " [ " . create_link($_SERVER['SCRIPT_NAME'] . "?account",		"Accounts")	. " ] ";
+		echo " [ " . create_link($_SERVER['SCRIPT_NAME'] . "?nren",		"NREN")		. " ] ";
+		echo "<BR />\n";
+	}
 
-		if (count($res) >= 1) {
-			for ($i = 0; $i < count($res); $i++) {
-				$cur_name = $res[$i]['name'];
-				$this->org_name_cache[] = $cur_name;
-				echo $tr;
-				echo $td;
-				echo "<form action=\"?subscribe=delete\" method=\"POST\">\n";
-				echo "<input type=\"hidden\" name=\"org_name\" value=\"$cur_name\" />\n";
-				echo "<input type=\"image\" name=\"delete\" " .
-					"onclick=\"return confirm('Delete entry?')\" " .
-					"value=\"delete\" src=\"graphics/delete.png\" alt=\"delete\" />\n";
-				echo "</form>\n";
-				echo $td_e;
-				echo "$td<form action=\"?subscribe=edit\" method=\"POST\">\n";
-				echo $cur_name . $td_e;
-				echo $td;
-				display_selectbox($res[$i]['org_state'],
-						  $this->org_states,
-						  'org_state'
-					);
-				echo "$td_e$td";
-				display_selectbox($res[$i]['nren_name'],
-						  get_nren_names(),
-						  'nren_name'
-					);
 
-				echo $td_e;
-				echo "$td<input type=\"hidden\" name=\"org_name\" value=\"$cur_name\" />";
-				echo "<input type=\"submit\" name=\"Update\" class=\"button\" value=\"Update\" />";
-				echo "</form>\n";
-				echo $td_e;
-				echo $tr_e;
-			}
+	private function handle_account_actions($action)
+	{
+
+		switch($action) {
+
+		case 'add':
+			$this->add_account($_POST['login_name'], $_POST['login_password']);
+			$this->show_accounts_mask();
+			break;
+
+		case 'delete':
+			$this->delete_account($_POST['login_name']);
+			$this->show_accounts_mask();
+			break;
+
+		case 'edit':
+			$this->edit_account($_POST['login_name'], $_POST['login_password']);
+			$this->show_accounts_mask();
+			break;
+
+		case 'manage':
+		default:
+			$this->show_accounts_mask();
+			break;
 		}
 
-		echo "<div class=\"spacer\"></div>";
-		echo "$tr$td$td_e";
-		echo "$td<form action=\"?subscribe=add\" method=\"POST\">";
-		echo "<input type=\"text\" name=\"org_name\" />$td_e";
-		echo $td;
-		display_selectbox('',$this->org_states,'org_state');
-		echo "$td_e$td";
-		display_selectbox('', get_nren_names(), 'nren');
-		echo $td_e;
-		echo "$td<input type=\"submit\" value=\"Add new\" />";
-		echo "</form>$td_e";
-		echo $tr_e;
-		echo $table_e;
 	}
 
 	/*
@@ -205,22 +110,23 @@ class Admin extends FW_Content_Page
 	{
 		/* check if we have to organization in the DB. Thus we make sure
 		 * the sent post-data is sane and not malicious
-		 * Also check all other input values for sanity.*/
-		if (array_search($org, get_organization_names()) === FALSE) {
+		 * Also check all other input values for sanity.
+		 */
+		if (array_search($org, $this->getOrganizationNames()) === FALSE) {
 			throw new ConfusaGenException("The organization $org you were about to edit " .
 						      "is unknown!");
 		} else if (array_search($new_org_state, $this->org_states) === FALSE) {
 			throw new ConfusaGenException("Tried to update organization state " .
 						      "to an unknown value!"
 				);
-		} else if (array_search($new_nren_name, get_nren_names()) === FALSE) {
+		} else if (array_search($new_nren_name, $this->getNRENNames()) === FALSE) {
 			throw new ConfusaGenException("Tried to update login name " .
 						      "to an unknown value!"
 				);
 		} else {
 
 			/* get the right nren-id first. subselects are expensive */
-			$res = MDB2Wrapper::execute("SELECT nren_id FROM nrens " .
+			$res = MDB2Wrapper::execute("SELECT login_name FROM nrens " .
 						    "WHERE name = ?",
 						    array('text'),
 						    $new_nren_name
@@ -232,11 +138,11 @@ class Admin extends FW_Content_Page
 					);
 			}
 
-			$nren_id = $res[0]['nren_id'];
-			$stmt = "UPDATE organizations SET org_state = ?, nren_id = ? " .
+			$nren_name = $res[0]['login_name'];
+			$stmt = "UPDATE institutions SET org_state = ?, nren_name = ? " .
 				"WHERE name = ?";
 			MDB2Wrapper::update($stmt, array('text','text', 'text'),
-					    array($new_org_state, $nren_id ,$org)
+					    array($new_org_state, $nren_name ,$org)
 				);
 
 			Logger::log_event(LOG_INFO, "Changed organization $org to state " .
@@ -250,7 +156,7 @@ class Admin extends FW_Content_Page
 	 * user is advised to just delete the account and re-create it
 	 */
 	private function edit_account($login_name, $login_pw) {
-		$login_name = sanitize($login_name);
+		$login_name = $this->sanitize($login_name);
 		$login_pw = base64_encode($login_pw);
 
 		$enckey = Config::get_config('capi_enc_pw');
@@ -278,8 +184,8 @@ class Admin extends FW_Content_Page
 	 * is associated with it
 	 */
 	private function edit_nren($nren_name, $login_name) {
-		$nren_name = sanitize($nren_name);
-		$login_name = sanitize($login_name);
+		$nren_name = $this->sanitize($nren_name);
+		$login_name = $this->sanitize($login_name);
 
 		$map_id_query = "SELECT map_id FROM account_map WHERE login_name=?";
 
@@ -379,15 +285,15 @@ class Admin extends FW_Content_Page
 	 */
 	private function show_nrens_mask()
 	{
-		$table = "<div class=\"admin_table\">\n";
-		$tr = "<div class=\"admin_table_row\">\n";
-		$td = "<div class=\"admin_table_cell\">\n";
-		$td_e="</div>\n";
-		$tr_e = "</div>\n";
-		$table_e = "</div>\n";
+		$table	= "<div class=\"admin_table\">\n";
+		$tr	= "<div class=\"admin_table_row\">\n";
+		$td	= "<div class=\"admin_table_cell\">\n";
+		$td_e	="</div>\n";
+		$tr_e	= "</div>\n";
+		$table_e= "</div>\n";
 
-		$query = "SELECT n.name, a.login_name FROM nrens n LEFT JOIN account_map a" .
-			" ON n.account_id = a.map_id";
+		$query	= "SELECT n.name, a.login_name FROM nrens n LEFT JOIN account_map a" .
+			  " ON n.login_name = a.login_name";
 
 		$res = MDB2Wrapper::execute($query, NULL, NULL);
 
@@ -413,7 +319,7 @@ class Admin extends FW_Content_Page
 				echo $cur_nren;
 				echo $td_e;
 				echo $td;
-				display_selectbox($row['login_name'], get_login_names(), 'login_name');
+				$this->displaySelectBox($row['login_name'], $this->getLoginNames(), 'login_name');
 				echo $td_e;
 				echo $td;
 				echo "<input type=\"hidden\" name=\"nren_name\" value=\"$cur_nren\" />\n";
@@ -425,53 +331,28 @@ class Admin extends FW_Content_Page
 		}
 
 		echo "<div class=\"spacer\"></div>";
+
+		/* Add new subscriber to the NREN */
 		echo $tr;
-		echo $td;
-		echo $td_e;
+
+		echo $td . $td_e;
+
 		echo $td;
 		echo "<form action=\"?nren=add\" method=\"POST\">\n";
 		echo "<input type=\"text\" name=\"nren_name\" />\n";
 		echo $td_e;
+
 		echo $td;
-		display_selectbox('',get_login_names(),'login_name');
+		$this->displaySelectBox('subscribed',$this->getLoginNames(),'login_name');
 		echo $td_e;
+
 		echo $td;
 		echo "<input type=\"submit\" name=\"add\" value=\"Add new\" />\n";
 		echo $td_e;
+
 		echo "</form>\n";
 		echo $tr_e;
 		echo $table_e;
-	}
-
-	/*
-	 * Add an organization subscription to the service. An associated
-	 * organization (usually an identity-vetting institution) can have
-	 * one of these three states: subscribed, suspended, unsubscribed and
-	 * belongs to an NREN */
-	private function add_subscription($org_state, $nren, $org_name)
-	{
-		$org_state = sanitize($org_state);
-		$nren = sanitize($nren);
-		$org_name = sanitize($org_name);
-
-		$query = "SELECT nren_id FROM nrens WHERE name=?";
-		$res = MDB2Wrapper::execute($query, array('text'),$nren);
-
-		if (count($res) != 1) {
-			throw new DBQueryException("Could not get the nren-ID for NREN " .
-						   "$nren"
-				);
-		}
-
-		$nren_id = $res[0]['nren_id'];
-
-		$stmt = "INSERT INTO organizations(name,nren_id,org_state) VALUES(?,?,?)";
-
-		MDB2Wrapper::update($stmt, array('text','text','text'),
-				    array($org_name, $nren_id, $org_state));
-
-		Logger::log_event(LOG_INFO, "Added the organization $org_name with " .
-				  "NREN $nren and state $org_state as a subscriber ");
 	}
 
 	/*
@@ -483,9 +364,9 @@ class Admin extends FW_Content_Page
 	 * Thus the data can be easily decrypted again */
 	private function add_account($login_name, $login_password)
 	{
-		$login_name = sanitize($login_name);
+		$login_name = $this->sanitize($login_name);
 		/* this will get encrypted before insertion to the database, so it
-		 * does not need to be sanitized. However, base64_encode allows the
+		 * does not need to be $this->sanitized. However, base64_encode allows the
 		 * user to include all kinds of special characters in the password */
 		$login_password = base64_encode($login_password);
 		$enckey = Config::get_config('capi_enc_pw');
@@ -520,9 +401,9 @@ class Admin extends FW_Content_Page
 	 * Add a NREN. A NREN usually has a name and an associated login-sub-
 	 * account.
 	 */
-	private function add_nren($nren_name, $login_name) {
-		$nren = sanitize($nren_name);
-		$account = sanitize($login_name);
+	private function addNREN($nren_name, $login_name) {
+		$nren = $this->sanitize($nren_name);
+		$account = $this->sanitize($login_name);
 
 		$map_id_query = "SELECT map_id FROM account_map WHERE login_name=?";
 
@@ -544,24 +425,11 @@ class Admin extends FW_Content_Page
 	}
 
 	/*
-	 * Delete a registered (identity-vetting) instituion
-	 */
-	private function delete_subscription($org) {
-		$org = sanitize($org);
-		MDB2Wrapper::execute("DELETE FROM organizations WHERE name = ?",
-				     array('text'),
-				     $org
-			);
-
-		Logger::log_event(LOG_INFO, "Delete organization $org.\n");
-	}
-
-	/*
 	 * Delete a login subaccount. Will not delete connected NRENs, but set
 	 * their respective table column NULL.
 	 */
 	private function delete_account($login_name) {
-		$login_name = sanitize($login_name);
+		$login_name = $this->sanitize($login_name);
 		MDB2Wrapper::execute("DELETE FROM account_map WHERE login_name = ?",
 				     array('text'),
 				     $login_name
@@ -576,7 +444,7 @@ class Admin extends FW_Content_Page
 	 * ON DELETE CASCADE constraint
 	 */
 	private function delete_nren($nren_name) {
-		$nren_name = sanitize($nren_name);
+		$nren_name = $this->sanitize($nren_name);
 		MDB2Wrapper::execute("DELETE FROM nrens WHERE name=?",
 				     array('text'),
 				     $nren_name
@@ -589,17 +457,16 @@ class Admin extends FW_Content_Page
 	 * display a select-box with the elements in choices as the alternative
 	 * highlight the element passed as 'active'
 	 */
-	private function display_selectbox($active, $choices, $sel_name)
+	private function displaySelectBox($active, $choices, $sel_name)
 	{
 		echo "<select name=\"$sel_name\">\n";
-
-		/* always display an empty option in the select-box */
-		echo "<option value=\"\"></option>";
 		foreach($choices as $element) {
-			if ($element == $active) {
-				echo "<option value=\"$element\" selected=\"selected\">" . $element . "</option>\n";
-			} else {
-				echo "<option value=\"$element\">" . $element . "</option>\n";
+			if ($element !== "") {
+				if ($element == $active) {
+					echo "<option value=\"$element\" selected=\"selected\">" . $element . "</option>\n";
+				} else {
+					echo "<option value=\"$element\">" . $element . "</option>\n";
+				}
 			}
 		}
 
@@ -609,7 +476,7 @@ class Admin extends FW_Content_Page
 	/*
 	 * Return a list of all the nren names.
 	 */
-	private function get_nren_names()
+	private function getNRENNames()
 	{
 		$nren_names=array();
 		$query = "SELECT name FROM nrens";
@@ -625,10 +492,10 @@ class Admin extends FW_Content_Page
 	/*
 	 * Return a list of all signed-up institutions.
 	 */
-	private function get_organization_names()
+	private function getOrganizationNames()
 	{
 		$org_names=array();
-		$query = "SELECT name FROM organizations";
+		$query = "SELECT name FROM institutions";
 		$res = MDB2Wrapper::execute($query, NULL, NULL);
 
 		foreach($res as $row) {
@@ -641,7 +508,7 @@ class Admin extends FW_Content_Page
 	/*
 	 * Return a list of all stored login-subaccounts
 	 */
-	private function get_login_names()
+	private function getLoginNames()
 	{
 		$login_names=array();
 		$query = "SELECT login_name FROM account_map";
@@ -654,29 +521,11 @@ class Admin extends FW_Content_Page
 		return $login_names;
 	}
 
-	/*
-	 * Remove anything that could be dangerous from user input.
-	 * Our organization names should contain only [a-z][0-9], like the nren
-	 * names, like the states. So all inputs can be limited to [a-z][0-9]
-	 *
-	 * TODO: This function should be accessible for all forms taking data
-	 */
-	private function sanitize($input)
-	{
-		if (is_array($input)) {
-			foreach($input as $var=>$val) {
-				$output[$var] = sanitize($val);
-			}
-		}
-
-		$output = preg_replace('/[^a-z0-9_ ]+/i','',$input);
-		return $output;
-	}
 
 
 }
 
-$fw = new Framework(new Admin());
+$fw = new Framework(new CP_Admin());
 $fw->start();
 
 
