@@ -58,4 +58,13 @@ function insert_credentials($login_name, $login_password)
     MDB2Wrapper::update($institution2, NULL, NULL);
 
 }
+
+function show_help($argv)
+{
+	echo "Usage: " . $argv[0] . "<nren_name> <login_name> <login_password>\n";
+	echo "\tnren_name:\tThe name of the NREN, e.g. UNINETT\n";
+	echo "\tlogin_name:\tThe username for the CA-account name\n";
+	echo "\tlogin_password:\tThe password tied tot he CA-account\n";
+}
+
 ?>
