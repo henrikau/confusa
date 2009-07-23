@@ -15,20 +15,41 @@ require_once 'config.php';
  * real bootstrap script
  *
  * Execute directly from command line this way:
- *      php -f bootstrap_account.php <username> <password>
+ *      php -f bootstrap_account.php <nren_name> <username> <password>
+ *
  *
  */
 
-if ($argc === 3) {
-    insert_credentials($argv[1], $argv[2]);
+echo "Running " . $argv[0] . " to bootstrap the database with values\n";
+if ($argc === 4) {
+	insert_credentials($argv[1], $argv[2], $argv[3]);
+}
+else {
+	show_help($argv);
+	exit(5);
 }
 
-function insert_credentials($login_name, $login_password)
+/**
+ * insert_credentials - insert credentials for a nren
+ *
+ * @nren_name		: the name of the nren to use.
+ * @login_name		: login to COMODO-account for NREN. This is a key to
+ *			  account_map, which means that an NREN can only have *one*
+ *			  account, but one account can have many NRENS
+ * @login_password	: password for the login to comodo
+ */
+function insert_credentials($nren_name, $login_name, $login_password)
 {
-    $enckey = Config::get_config('capi_enc_pw');
-    $size=mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
-    $iv=mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
-    $login_password = base64_encode($login_password);
+	/* The the encryption key */
+	$enckey		= Config::get_config('capi_enc_pw');
+	$size		= mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
+	$iv		= mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
+	$login_pw	= base64_encode($login_password);
+
+	if ($enckey === "") {
+		echo "You must set the encryption key before we can bootstrap the NREN ($nren_name)\n";
+		exit;
+	}
 
     /*
     * It may seem overblown to base64-encode first the password and then
@@ -38,25 +59,25 @@ function insert_credentials($login_name, $login_password)
     * encrypted account into the DB safe.
     */
     $cryptpw = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,$enckey,
-                          $login_password, MCRYPT_MODE_CFB, $iv
-             ));
+					    $login_pw,
+					    MCRYPT_MODE_CFB,
+					    $iv
+				     ));
 
-    $ivector = base64_encode($iv);
-    $query="INSERT INTO account_map(login_name, password, ivector)" .
-         "VALUES(?, ?, ?)";
+    $query  = "INSERT INTO account_map (login_name, password, ivector)";
+    $query .= "VALUES(?, ?, ?)";
+    MDB2Wrapper::update($query,
+			array('text','text','text'),
+			array($login_name, $cryptpw, base64_encode($iv)));
 
-    MDB2Wrapper::update($query, array('text','text','text'),
-                      array($login_name, $cryptpw, $ivector));
+    echo "Inserted values to account_map. Moving on to update the NREN\n";
 
-    $nren_query = "INSERT INTO nrens(login_name, name) VALUES(?, 'uninett')";
-    MDB2Wrapper::update($nren_query, array('text'), array($login_name));
+    $nren_query = "INSERT INTO nrens (login_name, name) VALUES(?, ?)";
+    MDB2Wrapper::update($nren_query,
+			array('text', 'text'),
+			array($login_name, strtolower($nren_name)));
 
-    $institution1 = "INSERT INTO institutions(name, nren_name, org_state) VALUES('openidp','uninett', 'subscribed')";
-    $institution2 = "INSERT INTO institutions(name, nren_name, org_state) VALUES('feide', 'uninett', 'subscribed')";
-
-    MDB2Wrapper::update($institution1, NULL, NULL);
-    MDB2Wrapper::update($institution2, NULL, NULL);
-
+    echo "Inserted NREN, connected to " . strtolower($nren_name) . "\n";
 }
 
 function show_help($argv)
