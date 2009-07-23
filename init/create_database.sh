@@ -18,17 +18,17 @@ if [ ! `whoami` == "root" ]; then
     echo "Need to be root to run this"
     exit
 fi
-if [ -f /etc/mysql/debian.cnf ]; then
-    echo "Using debian-sys-maintainer config"
-    MYSQL="/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf"
-else 
-    user="root"
-    host="localhost"
-    if [ -f /root/mysql_root.pw ]; then 
-	pass="-p`cat /root/mysql_root.pw`"
-    fi
-    MYSQL="/usr/bin/mysql -u$user -h$host $pass"
+
+MYSQL_ROOT="/usr/bin/mysql -uroot -h localhost $root_pw"
+if [ -f /root/mysql_root.pw ]; then 
+    root_pw="-p`cat /root/mysql_root.pw`"
+else
+    echo "Did not find /root/mysql_root.pw. If the root-account is password-protected, this step will fail"
 fi
+host="-hlocalhost"
+user="-u'root'"
+MYSQL="/usr/bin/mysql $user $host $root_pw"
+
 # use the database stated in the confusa_config.php. If this file is not
 # present, the script will terminate
 if [ ! -f "../config/confusa_config.php" ]; then
@@ -44,7 +44,10 @@ database=`grep "mysql_db" ../config/confusa_config.php | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
 if [ ! -n $databaase ]; then
     echo "mysql-db not set in config-file!"
+    echo "Please set this value and try again"
+    exit
 fi
+
 echo "Found configured database ($database) in config-file"
 res=`$MYSQL -e "SHOW DATABASES like '$database'"`
 if [ ! -n "$res" ]; then
@@ -62,6 +65,8 @@ $MYSQL -D$database < table_create.sql
 webuser=`grep "mysql_username" ../config/confusa_config.php | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
 pw=`grep "mysql_password" ../config/confusa_config.php | cut -d '=' -f 2 \
+    | cut -d "'" -f 2`
+webhost=`grep "mysql_host" ../config/confusa_config.php | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
 grants="SELECT, INSERT, DELETE, UPDATE, USAGE"
 
