@@ -1,5 +1,5 @@
 <?php
-ini_set("include_path", ini_get('include_path') . ":../config/:../lib/misc:../lib/exceptions/");
+ini_set("include_path", ini_get('include_path') . ":../config/:../lib/misc:../lib/exceptions/:../lib/file/");
 
 require_once 'mdb2_wrapper.php';
 require_once 'config.php';
