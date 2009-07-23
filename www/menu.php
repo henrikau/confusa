@@ -38,6 +38,7 @@ function render_menu($person)
 			    echo get_menu_name("robot.php",		"Robot Interface");
 		    } else if ($person->is_nren_admin()) {
 			    echo get_menu_name("admin.php",		"Manage Administrators");
+			    echo get_menu_name("nren_admin.php",	"NREN-Admin");
 		    }
 
 		    echo "<BR />\n";
