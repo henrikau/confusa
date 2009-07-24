@@ -37,6 +37,7 @@ class Framework {
 	private $contentPage;
 	private $tpl;
 	private static $errors = array();
+	private static $messages = array();
 
 	public function __construct($contentPage) {
 		if (!isset($contentPage)) {
@@ -105,6 +106,7 @@ class Framework {
 		$this->tpl->assign('logoutUrl', logout_link());
 		$this->tpl->assign('menu', $this->tpl->fetch('menu.tpl')); // see render_menu($this->person)
 		$this->tpl->assign('errors', self::$errors);
+		$this->tpl->assign('messages', self::$messages);
 		$this->tpl->display('site.tpl');
 		
 		$this->contentPage->post_process($this->person);
@@ -129,5 +131,10 @@ class Framework {
 	{
 		self::$errors[] = $message;
 	}
+	public static function message_output($message)
+	{
+		self::$messages[] = $message;
+	}
+
 	
 } /* end class Framewokr */
