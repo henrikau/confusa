@@ -8,7 +8,6 @@
  */
 require_once 'confusa_include.php';
 require_once 'confusa_auth.php';
-require_once 'menu.php';
 require_once 'person.php';
 require_once 'logger.php';
 require_once 'content_page.php';
@@ -53,13 +52,13 @@ class Framework {
 			exit(0);
 		}
 		$this->contentPage = $contentPage;
-		$this->person = new Person();
-		$this->tpl = new Smarty();
-		$this->tpl->template_dir = Config::get_config('install_path').'lib/smarty/templates';
-		$this->tpl->compile_dir = Config::get_config('install_path').'lib/smarty/templates_c';
-		$this->tpl->config_dir = Config::get_config('install_path').'lib/smarty/configs';
-		$this->tpl->cache_dir = Config::get_config('install_path').'lib/smarty/cache';
-		$this->tpl->assign('title', Config::get_config('system_name').' '.$this->contentPage->get_title());
+		$this->person	= new Person();
+		$this->tpl	= new Smarty();
+		$this->tpl->template_dir= Config::get_config('install_path').'lib/smarty/templates';
+		$this->tpl->compile_dir	= Config::get_config('install_path').'lib/smarty/templates_c';
+		$this->tpl->config_dir	= Config::get_config('install_path').'lib/smarty/configs';
+		$this->tpl->cache_dir	= Config::get_config('install_path').'lib/smarty/cache';
+		$this->tpl->assign('title', Config::get_config('system_name').' - '.$this->contentPage->get_title());
 	}
 
 	public function authenticate() {
