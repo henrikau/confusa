@@ -148,7 +148,7 @@ function delete_csr_from_db($person, $auth_key)
 		$msg  = "Error in deleting CSR (" . $auth_key . ")";
 		$msg .= "for user: " . $person->get_valid_cn() . " ";
 		$msg .= "Too many hits!";
-		error_output($msg);
+		Framework::error_output($msg);
 		Logger::log_event(LOG_ALERT, $msg);
 		return false;
 	}
@@ -170,11 +170,11 @@ function print_csr_details($person, $auth_key)
 		$msg  = "Error with auth-token ($auth_key) - not found. ";
 		$msg .= "Please verify that you have entered the correct auth-url and try again.";
 		$msg .= "If this problem persists, try to upload a new CSR and inspect the fields carefully";
-		error_output($msg);
+		Framework::error_output($msg);
 		return false;
 	} catch (ConfusaGenException $cge) {
 		$msg = "Too menu returns received. This can indicate database inconsistency.";
-		error_output($msg);
+		Framework::error_output($msg);
 		Logger::log_event(LOG_ALERT, "Several identical CSRs (" . $auth_token . ") exists in the database for user " . $person->get_valid_cn());
 		return false;
 	}

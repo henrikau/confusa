@@ -3,6 +3,7 @@ abstract class FW_Content_Page
 {
 	private $title;
 	private $protected;
+	protected $tpl;
 	protected $certManager;
 	protected $person;
 	/**
@@ -29,7 +30,7 @@ abstract class FW_Content_Page
 	public function setManager()
 	{
 		if (!isset($this->person)) {
-			error_output("You are trying to set the certManager before person is set!");
+			Framework::error_output("You are trying to set the certManager before person is set!");
 			return;
 		}
 		$this->certManager = CertManagerHandler::getManager($this->person);
@@ -48,7 +49,7 @@ abstract class FW_Content_Page
 	public function setPerson($person)
 	{
 		if (!isset($person)) {
-			error_output(__FILE__ . ":" . __LINE__ . " Trying to set a non-existing person!");
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " Trying to set a non-existing person!");
 			return;
 		}
 		$this->person = $person;

@@ -204,7 +204,7 @@ class CertManager_Standalone extends CertManager
 		  $composed_dn .= "/CN=".$subject['CN'];
 	  $res = $this->person->get_complete_dn() === $composed_dn;
 	  if (Config::get_config('debug') && !$res) {
-		  error_output("Supplied and composed subject differs!");
+		  Framework::error_output("Supplied and composed subject differs!");
 		  echo "Supplied (found in CSR): " . $composed_dn . "<BR>\n";
 		  echo "Composed (desired subj): " . $this->person->get_complete_dn() . "<BR>\n";
 	  }
