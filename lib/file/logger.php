@@ -17,7 +17,6 @@
   /* get name of default log-file (in addition to syslog)
    * require_once(dirname(WEB_DIR).'/www/_include.php'); */
 require_once 'config.php';
-require_once 'debug.php';
 class Logger {
 /* log_event
  *
@@ -65,7 +64,7 @@ class Logger {
 		/* log to normal file if within level. highest level is 0, increasing number
 		 * is lower pri */
 		if ($pri > Config::get_config('loglevel_min')) {
-			echo "pri lower than loglevel_min <BR>\n";
+			Framework::error_output("pri lower than loglevel_min!");
 			$fclose($fd);
 			return;
 		}
@@ -101,16 +100,15 @@ class Logger {
 			break;
 		default:
 			/* don't log things when you don't know how (un)important it is */
-			echo "Don't know this loglevel ($pri). Please contact sys.developer<BR>\n";
+			Framework::error_output("Don't know this loglevel ($pri). Please contact sys.developer");
 			return;
 			break;
 		}
   
 		/* assemble line and enter into local log */
 		$log_line = Logger::get_timestamp() . " (Confusa) " . $header . " " . $message . "\n";
-		Debug::dump($log_line);
+		Framework::error_output($log_line);
 		fputs($fd, $log_line);
-		/* echo $log_line . "<BR>\n"; */
 		@fclose($fd);
 	}
 

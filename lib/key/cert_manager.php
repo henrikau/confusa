@@ -128,12 +128,12 @@ class CertManagerHandler
 			switch((int)Config::get_config('ca_mode')) {
 
 			case CA_STANDALONE:
-			      decho("Creating Standalone CertManager<BR>\n");
+				Framework::message_output("Creating Standalone CertManager<BR>\n");
 			      CertManagerHandler::$cert_manager = new CertManager_Standalone($person);
 			      break;
 
 			case CA_ONLINE:
-			      decho("Creating Online CertManager<BR>\n");
+				Framework::message_output("Creating Online CertManager<BR>\n");
 			      CertManagerHandler::$cert_manager = new CertManager_Online($person);
 			      break;
 
