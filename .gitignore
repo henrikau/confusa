@@ -3,3 +3,4 @@ confusa_config.php
 *.pem
 *.dia.autosave
 /devdocs/seq_fw.png
+lib/smarty/templates_c
