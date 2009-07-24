@@ -19,9 +19,11 @@ final class DownloadCertificate extends FW_Content_Page
 				$authKey = htmlentities($_GET['file_cert']);
 				try {
 					$cert = $this->certManager->get_cert($authKey);
-					require_once 'file_download.php';
-					download_file($cert, 'usercert.pem');
-					exit(0);
+					if (isset($cert)) {
+						require_once 'file_download.php';
+						download_file($cert, 'usercert.pem');
+						exit(0);
+					}
 				} catch(ConfusaGenException $cge) {
 					;
 				}
@@ -37,11 +39,12 @@ final class DownloadCertificate extends FW_Content_Page
 			return;
 		}
 
+		echo "<H3>Certificate Download Area</H3>\n";
 		/* test and handle flags */
 		$this->processDBCert();
 		/* show all stored certificates (with links to handle) */
-		$this->tpl->assign('certList', $this->showDBCert());
-		$this->tpl->assign('content', $this->tpl->fetch('download_certificate.tpl'));
+		$this->showDBCert();
+
 	}
 
 
@@ -68,10 +71,50 @@ final class DownloadCertificate extends FW_Content_Page
 	{
 		try {
 			$res = $this->certManager->get_cert_list();
-			return $res;
 		} catch (ConfusaGenException $e) {
 			echo $e->getMessage();
 		}
+
+		$num_received = count($res);
+		if ($num_received > 0) {
+			$counter = 0;
+			echo "<TABLE CLASS=\"small\">\n";
+			echo "<TR>";
+			echo "<TH></TH>\n";
+			echo "<TH></TH>\n";
+			echo "<TH>Expires (from DB)</TH>\n";
+			echo "<TH></TH>\n";
+			echo "<TH>AuthToken</TH>";
+			echo "<TH>Owner</TH>";
+			echo "</TR>\n";
+			while($counter < $num_received) {
+				$row = $res[$counter];
+				$counter++;
+				echo "<tr>\n";
+				if (Config::get_config('standalone')) {
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert="	. $row['auth_key'] . "\">Email</A> ]</TD>\n";
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert="	. $row['auth_key'] . "\">Download</A> ]</td>\n";
+					echo "<TD>"	. $row['valid_untill']	. "</td>\n";
+					echo "<TD>"	. $row['cert_owner']	. "</td>\n";
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert="	. $row['auth_key'] . "\">Inspect</A> ]</TD>\n";
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_cert="	. $row['auth_key'] . "\">Delete</A> ]</TD>\n";
+				} else {
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?email_cert="	. $row['order_number'] . "\">Email</A> ]</TD>\n";
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?file_cert="	. $row['order_number'] . "\">Download</A> ]</TD>\n";
+					echo "<TD>[ <A HREF=\"".$_SERVER['PHP_SELF']."?inspect_cert="	. $row['order_number'] . "\">Inspect</A> ]</TD>\n";
+					/* deletion of a certificate won't make sense
+					 * with the remote API. When we implement the
+					 * remote-revocation-API we can provide a revoke
+					 * link here. */
+					echo "<TD></TD>\n";
+					echo "<TD>" . $row['order_number']	. "</TD>\n";
+					echo "<TD>" . $row['cert_owner']	. "</TD>\n";
+				}
+				echo "</TR>\n";
+			}
+			echo "</TABLE>\n";
+		}
+		echo "<BR />\n";
 	}
 
 
