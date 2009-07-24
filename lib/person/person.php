@@ -49,21 +49,6 @@ class Person{
         $this->fed_auth = false;
         } /* end constructor */
 
-    function __tostring() {
-        $var = "<table clas=\"small\">";
-	$var .= "<tr><td><b>Name:</b></td><td>" . $this->get_name() . "</td></tr>\n";
-	$var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->get_common_name() . "</td></tr>\n";
-	$var .= "<tr><td><B>CommonName in DN</b></td><td>" . $this->get_valid_cn() . "</td></tr>\n";
-	$var .= "<tr><td><b>email:</b></td><td>" . $this->get_email() . "</td></tr>\n";
-	$var .= "<tr><td><b>Country:</b></td><td>" . $this->get_country() . "</td></tr>\n";
-	$var .= "<tr><td><b>OrganizationalName:</b></td><td>" . $this->get_orgname() . "</td></tr>\n";
-	$var .= "<tr><td><b>Entitlement:</b></td><td>" . $this->get_entitlement() . "</td></tr>\n";
-	$var .= "<tr><td><b>IdP:</b></td><td>". $this->get_idp() . "</td></tr>\n";
-	$var .= "<tr><td><b>Complete /DN:</b></td><td>". $this->get_complete_dn() . "</td></tr>\n";
-        $var .= "</table><br>";
-        return $var;
-    }
-
     function get_complete_dn() {
 	    $dn = "/C=" . $this->get_country() . "/O=" . $this->get_orgname() . "/CN=" . $this->get_valid_cn();
 	    return $dn;
