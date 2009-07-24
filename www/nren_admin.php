@@ -279,7 +279,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		$res	= MDB2Wrapper::execute($query, array('text'), array($this->person->get_orgname()));
 		if (count($res) == 1)
 			$curr_account = $res[0]['account_login_name'];
-		else if (count($res > 1)) {
+		else if (count($res) > 1) {
 			$msg  = "Inconsistency in the database! You have more than one account tied in! How is this possible?";
 			$msg .= "Got " . count($res) . " results back from the database";
 			throw new DBQueryException($msg);
