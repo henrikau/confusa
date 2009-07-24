@@ -19,6 +19,7 @@ require_once 'header.php';
 require_once 'config.php';
 require_once 'cert_manager_online.php';
 require_once 'cert_manager_standalone.php';
+require_once '/usr/share/php/smarty/Smarty.class.php';
 
 /* class Framework
  *
