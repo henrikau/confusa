@@ -8,11 +8,13 @@
 /* get simplesaml */
 require_once 'config.php';
 
-/* Use the new autoloader functionality in SimpleSAMLphp */
-$sspdir = Config::get_config('simplesaml_path');
-require_once($sspdir . '/lib/_autoload.php');
-SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
-
+if(!Config::get_config('auth_bypass'))
+{
+	/* Use the new autoloader functionality in SimpleSAMLphp */
+	$sspdir = Config::get_config('simplesaml_path');
+	require_once($sspdir . '/lib/_autoload.php');
+	SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
+}
 require_once 'oauth_auth.php';
 require_once 'person.php';
 require_once 'logger.php';
@@ -66,6 +68,22 @@ function is_authenticated($person = null) {
 	if (!isset($person))
 		$person = new Person();
 
+	// Bypass auth
+	if(Config::get_config('auth_bypass'))
+	{
+		// Set some bogus attributes
+		$person->set_name('Ola Nordmann');
+		$person->set_common_name('ola.nordmann@norge.no');
+		$person->set_email('ola.nordmann@norge.no');
+		$person->set_country('NO');
+		$person->set_orgname('Test');
+		$person->set_idp('Test');
+		$person->set_entitlement('Test');
+		$person->fed_auth(true);	
+		
+		return $person;
+	}
+		
 	/* check to see if the person is authN */
 	$config = _get_config();
 
@@ -132,6 +150,8 @@ function add_attributes($person)
  */
 function logout_link($logout_location="logout.php", $logout_name="Logout Confusa", $person)
 {
+	if(Config::get_config('auth_bypass'))
+		return '';
      $config = _get_config();
      $edu_name = $person->get_common_name();
 
@@ -148,6 +168,9 @@ function logout_link($logout_location="logout.php", $logout_name="Logout Confusa
 
 
 function show_sso_debug($person) {
+	if(!Config::get_config('auth_bypass'))
+		return;
+		
     if (!isset($person)) {
         echo __FILE__ . ":" . __LINE__ . " person does not exist<BR>\n";
         return;
