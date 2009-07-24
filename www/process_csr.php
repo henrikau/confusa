@@ -40,7 +40,7 @@ final class ProcessCsr extends FW_Content_Page
 		/* if flags are set, process the CSR*/
 		if ($this->processCSRFlagsSet()) {
 			if (!$this->processDBCsr()) {
-				error_output("Errors were encountered when processing " . $this->getActualFlags());
+				Framework::error_output("Errors were encountered when processing " . $this->getActualFlags());
 			}
 
 		}
@@ -107,7 +107,7 @@ final class ProcessCsr extends FW_Content_Page
 							    array('text'),
 							    array($csr));
 				if (count($res)>0) {
-					error_output("CSR already present in the database, no need for second upload");
+					Framework::error_output("CSR already present in the database, no need for second upload");
 				} else {
 					$ip	= $_SERVER['REMOTE_ADDR'];
 					$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
@@ -124,8 +124,8 @@ final class ProcessCsr extends FW_Content_Page
 				}
 			} else {
 				/* File NOT OK */
-				error_output("There were errors encountered when processing the file.");
-				error_output("Please create a new keypair and upload a new CSR to the server.");
+				Framework::error_output("There were errors encountered when processing the file.");
+				Framework::error_output("Please create a new keypair and upload a new CSR to the server.");
 			}
 		}
 		show_upload_form($_SERVER['PHP_SELF'], "user_csr", "Upload CSR");
@@ -164,16 +164,16 @@ final class ProcessCsr extends FW_Content_Page
 		try  {
 			$csr = get_csr_from_db($this->person, $authToken);
 		} catch (ConfusaGenException $e) {
-			error_output("Too many hits. Database incosistency.");
+			Framework::error_output("Too many hits. Database incosistency.");
 			Logger::log_event(LOG_ALERT, $this->person->get_valid_cn() . " tried to find CSR with key $authToken which resulted in multiple hits");
 			return false;
 		} catch (CSRNotFoundException $csrnfe) {
-			error_output("CSR not found, are you sure this is your CSR?\n");
+			Framework::error_output("CSR not found, are you sure this is your CSR?\n");
 			return false;
 		}
 
 		if (!isset($csr)) {
-			error_output("Did not find CSR with auth_token $auth_token");
+			Framework::error_output("Did not find CSR with auth_token $auth_token");
 			$msg  = "User " . $this->person->get_common_name() . " ";
 			$msg .= "tried to delete CSR with auth_token " . $authToken . " but was unsuccessful";
 			Logger::log_event(LOG_NOTICE, $msg);
@@ -182,16 +182,16 @@ final class ProcessCsr extends FW_Content_Page
 
 		try {
 			if (!isset($this->certManager)) {
-				error_output("certManager is NULL!");
+				Framework::error_output("certManager is NULL!");
 				return false;
 			}
 			$this->certManager->sign_key($authToken, $csr);
 		} catch (RemoteAPIException $rapie) {
-			error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" . $rapie);
+			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" . $rapie);
 			return false;
 		} catch (ConfusaGenException $e) {
 			$msg = __FILE__ .":".__LINE__." Error signing key.<BR />\nRemote said: " . $e;
-			error_output($msg);
+			Framework::error_output($msg);
 			return false;
 		}
 		delete_csr_from_db($this->person, $authToken);

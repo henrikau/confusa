@@ -34,7 +34,7 @@ final class Index extends FW_Content_Page
 				break;
 			default:
 				$code = create_pw(8);
-				error_output("Unknown mode, contact the administrator with this error code " . $code);
+				Framework::error_output("Unknown mode, contact the administrator with this error code " . $code);
 				$msg  = $code . " ";
 				$msg .= "User " . $this->person->get_common_name() . " was given mode " . $this->person->get_mode();
 				$msg .= ". This is not a valid mode. Verify content in admins-table";
