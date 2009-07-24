@@ -39,6 +39,11 @@ abstract class FW_Content_Page
 	{
 		return $this->certManager;
 	}
+	
+	public function setTpl(Smarty $tpl)
+	{
+		$this->tpl = $tpl;
+	}
 
 	public function setPerson($person)
 	{
