@@ -25,14 +25,7 @@ final class Index extends FW_Content_Page
 	function process()
 	{
 		if ($this->person->is_auth()) {
-			switch($this->person->get_mode()) {
-			case NORMAL_MODE:
-				echo "Showing normal-mode splash<BR>\n";
-				break;
-			case ADMIN_MODE:
-				echo "Showing admin-mode splash<BR>\n";
-				break;
-			default:
+			if ($this->person->get_mode() > 1) {
 				$code = create_pw(8);
 				Framework::error_output("Unknown mode, contact the administrator with this error code " . $code);
 				$msg  = $code . " ";
@@ -40,9 +33,8 @@ final class Index extends FW_Content_Page
 				$msg .= ". This is not a valid mode. Verify content in admins-table";
 				Logger::log_event(LOG_WARNING, $msg);
 			}
-		} else {
-			include 'unclassified_intro.php';
 		}
+		$this->tpl->assign('content', $this->tpl->fetch('index.tpl'));
 	} /* end process() */
 }
 

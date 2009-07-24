@@ -4,7 +4,6 @@ require_once 'framework.php';
 require_once 'mdb2_wrapper.php';
 require_once 'logger.php';
 require_once 'csr_lib.php';
-require_once 'upload_form.php';
 require_once 'file_upload.php';
 require_once 'config.php';
 require_once 'send_element.php';
@@ -33,7 +32,6 @@ final class ProcessCsr extends FW_Content_Page
 	
 	public function process()
 	{
-		echo "<H3>Requesting new Certificates</H3>\n";
 		/* show upload-form. If it returns false, no uploaded CSRs were processed */
 		$this->processFileCSR($this->person);
 
@@ -42,26 +40,14 @@ final class ProcessCsr extends FW_Content_Page
 			if (!$this->processDBCsr()) {
 				Framework::error_output("Errors were encountered when processing " . $this->getActualFlags());
 			}
-
-		}
-		if ($this->signing_ok) {
-			echo "<DIV class=\"message\">\n";
-			echo "The certificate is now being provessed by the CA (Certificate Authority)<BR />\n";
-			echo "Depending on the load, this takes approximately 2 minutes.<BR />\n";
-			echo "<BR />\n";
-			echo "You will now be redirected to the certificate-download area found ";
-			echo "<A HREF=\"download_certificate.php?poll=" . htmlentities($_GET['sign_csr']) . "\">here</A><BR>\n";
-			echo "</DIV>\n";
-			echo "<BR />\n";
 		}
 
-		/* Show the inspect-dialogue */
-		set_value($name='inspect_csr', 'index.php', 'Inspect CSR', 'GET');
-
-
-		/* List all CSRs for the person */
-		$this->listAllCSR($this->person);
-
+		if($this->signing_ok) {
+			$this->tpl->assign('signingOk', $this->signing_ok);
+			$this->tpl->assign('sign_csr', htmlentities($_GET['sign_csr']));
+		}
+		$this->tpl->assign('csrList', $this->ListAllCSR($this->person));
+		$this->tpl->assign('content', $this->tpl->fetch('process_csr.tpl'));
 	}
 
 	/**
@@ -128,7 +114,6 @@ final class ProcessCsr extends FW_Content_Page
 				Framework::error_output("Please create a new keypair and upload a new CSR to the server.");
 			}
 		}
-		show_upload_form($_SERVER['PHP_SELF'], "user_csr", "Upload CSR");
 	}
 
 	/**
