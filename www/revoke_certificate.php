@@ -64,7 +64,7 @@ class RevokeCertificate extends FW_Content_Page
 	{
 		echo "Admin revoke<BR />\n";
 		if (!$this->person->is_admin()) {
-			Logger::log_event(LOG_ALERT, "User " . $person->get_valid_cn() . " allowed to set admin-mode, but is not admin");
+			Logger::log_event(LOG_ALERT, "User " . $this->person->get_valid_cn() . " allowed to set admin-mode, but is not admin");
 			throw new ConfusaGenException("Impossible condition. NON-Admin user in admin-mode!");
 		}
 
