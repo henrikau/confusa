@@ -192,23 +192,6 @@ CREATE TABLE cert_cache (
 	valid_untill DATETIME NOT NULL
 ) type=InnoDB;
 
--- ---------------------------------------------------------
---
--- user_crls
---
--- Holds the list of serial-numbers for issued certificates
--- so that the user may revoke them when needed.
---
--- ---------------------------------------------------------
-CREATE TABLE IF NOT EXISTS user_crls(
-    crl_id INT PRIMARY KEY AUTO_INCREMENT,
-    common_name VARCHAR(128) NOT NULL,
-    cert_sn INT NOT NULL,
-    valid_untill DATETIME NOT NULL,
-    FOREIGN KEY(common_name) REFERENCES cert_user(common_name) ON DELETE CASCADE
-) type=InnoDB;
-
--- ---------------------------------------------------------
 -- admins
 --
 -- List of people having admin-rights on the page (to update news,
