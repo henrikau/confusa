@@ -3,6 +3,7 @@ require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'person.php';
 require_once 'send_element.php';
+require_once 'csv_lib.php';
 
 class RevokeCertificate extends FW_Content_Page
 {
@@ -30,6 +31,10 @@ class RevokeCertificate extends FW_Content_Page
 		parent::__destruct();
 	}
 
+	/**
+	 * pre_process - if the user chose revocation action, forward here there
+	 * before rendering anything on the page
+	 */
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
@@ -48,6 +53,7 @@ class RevokeCertificate extends FW_Content_Page
 			}
 		}
 	}
+
 	public function process()
 	{
 		if ($this->person->is_nren_admin() && $this->person->in_admin_mode()) {
@@ -56,14 +62,30 @@ class RevokeCertificate extends FW_Content_Page
 			return;
 		}
 
+		if ($this->person->in_admin_mode()) {
+			$this->admin_revoke();
+		} else {
+			$this->normal_revoke();
+		}
+
 		$this->tpl->assign('textual', $textual);
 		$this->tpl->assign('content', $this->tpl->fetch('revoke_certificate.tpl'));
 
+
+
 	}
 
+	/**
+	 * admin_revoke - Render a revocation interface for the sublime of users.
+	 *
+	 * But not for the sublimest. I.e. a NREN-admin will not be able to revoke
+	 * certificates, but an institution-admin, and the beings of her grace,
+	 * the institution-sub-admins will. Revocation can either take place
+	 * by a wildcard-search for an ePPN or by uplading a CSV with ePPNs which
+	 * will be searched wrapped into wildcards
+	 */
 	private function admin_revoke()
 	{
-		echo "Admin revoke<BR />\n";
 		if (!$this->person->is_admin()) {
 			Logger::log_event(LOG_ALERT, "User " . $this->person->get_valid_cn() . " allowed to set admin-mode, but is not admin");
 			throw new ConfusaGenException("Impossible condition. NON-Admin user in admin-mode!");
@@ -73,54 +95,41 @@ class RevokeCertificate extends FW_Content_Page
 		if (!$this->person->is_subscriber_admin() && !$this->person->is_subscriber_subadmin())
 			throw new ConfusaGenException("Insufficient rights for revocation!");
 
+		$this->tpl->assign('file_name', 'eppn_list');
+
 		/* No need to do processing */
 		if (!isset($_GET['revoke']))
 			return;
 
-
-		/* fields for retrieving certificates to retrieve. */
-		$this->show_search_fields();
-
 		/* Test for revoke-commands */
 		switch($_GET['revoke']) {
-
-			/* when we want so search for a particular certificate
-			 * to revoke. */
+		/* when we want so search for a particular certificate
+		 * to revoke. */
 		case 'search_display':
 			$this->search_certs_display($_POST['search']);
 			break;
-                case 'search_list_display':
+		case 'search_list_display':
 			$this->search_list_display('eppn_list', $person);
 			break;
 
-                default:
-			echo "Unknown operation<BR />\n";
+		default:
+			Framework::error_output("Unknown operation");
 			break;
-                }
+		}
 
 	} /* end admin_revoke */
 
-	private function normal_revoke()
+	/**
+	 * normal_revoke() - certificate revocation for the ordinary man
+	 *
+	 * Not being blessed with the privileges that institution-adminship offers,
+	 * the normal user will only be given the possibility to revoke the full
+	 * set of her own certificates.
+	 */
+	 private function normal_revoke()
 	{
-		echo "Normal revoke<BR />\n";
-		$this->search_certs_display($this->person->get_valid_cn());
+		$this->search_certs_display($this->person->get_common_name());
 	}
-
-
-
-	private function show_search_fields()
-	{
-		/* search for a particular certificate */
-		set_value("search", "revoke_certificate.php?revoke=search_display", "Search");
-
-		/* allow user to upload a CSV-list of certificates to revoke */
-		if ($this->person->in_admin_mode()) {
-			$file_name = "eppn_list";
-			$target_url = $_SERVER['PHP_SELF'] . "?revoke=search_list_display";
-			$submit_name = "Upload list";
-			show_upload_form($target_url, $file_name, $submit_name = NULL);
-		}
-	} /* ened show_search_fields() */
 
 	/**
 	 * search_certs_display() - find and display a particular certificate
@@ -133,22 +142,13 @@ class RevokeCertificate extends FW_Content_Page
 	 *                     turned into a wildcard
 	 * @param $person The person who is performing the search
 	 */
-	function search_certs_display($common_name)
+	private function search_certs_display($common_name)
 	{
-		$tr	="<div class=\"admin_table_row\">\n";
-		$tr_e	= "</div>\n";
+		$common_name = "%" . $this->sanitize($common_name) . "%";
 
-		$td	="<div class=\"admin_table_cell\">\n";
-		$td_e	= "</div>\n";
-
-
-		$common_name = "%" . sanitize($common_name) . "%";
-		
 		$certs = $this->certManager->get_cert_list_for_persons($common_name, $this->person->get_orgname());
 
 		if (count($certs) > 0) {
-			echo "<div class=\"admin_table\">\n";
-
 			/* get the certificate owner/order number pairs into a ordering that
 			 * permits us to send the order-numbers for each certificate owner
 			 * to the revocation method */
@@ -158,34 +158,95 @@ class RevokeCertificate extends FW_Content_Page
 			}
 
 			$owners = array_unique($owners);
-
-			echo $tr;
-			echo "$td<b>Full Subject DN</b>$td_e$td<b>Revocation reason</b>$td_e$td$td_e";
-			echo "$tr_e";
-
-			foreach($owners as $owner) {
-				echo "$tr";
-				echo "$td";
-				echo "<form action=\"?revoke=do_revoke\" method=\"POST\">";
-
-				echo $owner . "\n";
-				echo "$td_e$td";
-				foreach ($orders[$owner] as $order) {
-					echo "<input type=\"hidden\" name=\"order_numbers[]\" value=\"$order\" />";
-				}
-
-				$this->display_selectbox('unspecified', $this->nren_reasons, "reason");
-
-				echo "$td_e$td";
-				echo "<input type=\"submit\" name=\"submit\" value=\"Revoke All\"" .
-					"onclick=\"return confirm('Are you sure?')\"/>";
-				echo "$td_e";
-				echo "</form>";
-				echo $tr_e;
-			}
-
-			echo "</div>\n"; /* end table */
+			$this->tpl->assign('owners', $owners);
+			$this->tpl->assign('revoke_cert', true);
+			$this->tpl->assign('orders', $orders);
+			$this->tpl->assign('nren_reasons', $this->nren_reasons);
+			$this->tpl->assign('selected', 'unspecified');
 		}
+	}
+
+	/*
+	 * Revoke all the certificates in $auth_key_list with the supplied reason
+	 *
+	 * @param $auth_key_list The references to the certificates that are to be
+	 *                       revoked
+	 * @param $reason The reason for revocation as defined in RFC 3280
+	 *
+	 * @throws ConfusaGenException If revocation fails or the revocation reason is
+	 *                             unrecognized
+	 */
+	private function revoke_certs($auth_key_list, $reason)
+	{
+		$auth_key_list = $this->sanitize($auth_key_list);
+
+		if (array_search($reason, $this->nren_reasons) === FALSE) {
+			throw new ConfusaGenException("Encountered an unknown revocation " .
+										  "reason!"
+			);
+		}
+
+		$num_certs = count($auth_key_list);
+
+		Logger::log_event(LOG_INFO, "Trying to revoke $num_certs certificates." .
+									"Administrator contacted us from " .
+									$_SERVER['REMOTE_ADDR']
+		);
+
+		foreach($auth_key_list as $auth_key) {
+			$this->certManager->revoke_cert($auth_key, $reason);
+		}
+
+		Logger::log_event(LOG_NOTICE, "Successfully revoked $num_certs certificates." .
+									  "Administrator contacted us from " .
+									  $_SERVER['REMOTE_ADDR']
+		);
+	}
+
+	/**
+	 * Revoke a list of certificates possibly belonging to more than one end-entity
+	 * based on an array of auth_keys stored in the session. Based on the number of
+	 * certificates that are going to be revoked, this may take some time.
+	 *
+	 * @param string $reason The reason for revocation (as in RFC 3280)
+	 *
+	 * @throws ConfusaGenException If the auth_keys are not found in the session,
+	 *                             there is a problem with revocation or if the
+	 *                             reason is unknown
+	 */
+	private function revoke_list($reason)
+	{
+
+		$auth_keys = array();
+		if (isset($_SESSION['auth_keys'])) {
+			$auth_keys = $_SESSION['auth_keys'];
+			unset($_SESSION['auth_keys']);
+		} else {
+			throw new ConfusaGenException("Lost session! Please log-out of Confusa, " .
+										  "log-in again and try again!\n");
+		}
+
+		if (array_search($reason, $this->nren_reasons) === false) {
+			throw new ConfusaGenException("Unknown reason for certificate revocation!");
+		}
+
+		$num_certs = count($auth_keys);
+
+		Logger::log_event(LOG_INFO, "Trying to revoke $num_certs certificates." .
+									"Administrator contacted us from " .
+									$_SERVER['REMOTE_ADDR'] .
+									" in a bulk (list) revocation request."
+		);
+
+		foreach($auth_keys as $auth_key) {
+			$this->certManager->revoke_cert($auth_key, $reason);
+		}
+
+		Logger::log_event(LOG_INFO, "Successfully revoked $num_certs certificates." .
+									"Administrator contacted us from " .
+									$_SERVER['REMOTE_ADDR'] .
+									" in a bulk (list) revocation request."
+		);
 	}
 
 	/**
@@ -213,21 +274,17 @@ class RevokeCertificate extends FW_Content_Page
 
 		$csvl = new CSV_Lib($eppn_file);
 		$eppn_list = $csvl->get_csv_entries();
-
 		$certs = array();
 		$auth_keys = array();
 
 		foreach($eppn_list as $eppn) {
-			$eppn = sanitize_eppn($eppn);
+			$eppn = $this->sanitize_eppn($eppn);
 			$eppn = "%" . $eppn . "%";
 			$eppn_certs = $this->certManager->get_cert_list_for_persons($eppn, $this->person->get_orgname());
 			$certs = array_merge($certs, $eppn_certs);
 		}
 
 		if (count($certs) > 0) {
-			echo "<b>The following DNs are going to be revoked:</b><br />\n";
-			echo "<div class=\"spacer\"></div>";
-			echo "<table class=\"small\">";
 			/* get the certificate owner/order number pairs into a ordering that
 			 * permits us to send the order-numbers for each certificate owner
 			 * to the revocation method */
@@ -237,43 +294,51 @@ class RevokeCertificate extends FW_Content_Page
 			}
 
 			$owners = array_unique($owners);
-
-			foreach($owners as $owner) {
-				echo "<tr style=\"width: 80%\"><td>";
-				echo $owner;
-				echo "</td></tr>";
-			}
-			echo "</table>";
-
-			echo "<div class=\"spacer\"></div>";
-
-			echo "<div style=\"text-align: right\">";
-			echo "<form action=\"?revoke=do_revoke_list\" method=\"POST\">";
-			echo "Revocation reason: ";
-			display_selectbox('unspecfied', $this->nren_reasons, 'reason');
 			$_SESSION['auth_keys'] = $auth_keys;
-			echo "<input type=\"Submit\" value=\"Revoke all\"" .
-				"onclick=\"return confirm('Are you sure?')\" />";
-			echo "</form>";
-			echo "</div>";
+			$this->tpl->assign('owners', $owners);
+			$this->tpl->assign('revoke_list', true);
+			$this->tpl->assign('nren_reasons', $this->nren_reasons);
+			$this->tpl->assign('selected', 'unspecified');
 		}
 	}
 
-	private function display_selectbox($active, $choices, $sel_name)
+	/**
+	 * Remove anything that could be dangerous from user input.
+	 * Common-name search patterns should contain only [a-z][0-9] @.
+	 * So all inputs can be limited to [a-z][0-9] @.
+	 *
+	 * @param $input The input which is going to be sanitized
+	 */
+	private function sanitize($input)
 	{
-		echo "<select name=\"$sel_name\">\n";
+	  if (is_array($input)) {
+		foreach($input as $var=>$val) {
+		  $output[$var] = $this->sanitize($val);
+		}
+	  }
+	  /* also allow the wildcard character and the e-mail character*/
+	  $output = preg_replace('/[^a-z0-9 @.]+/i','',$input);
+	  return $output;
+	}
 
-		foreach($choices as $element) {
-			if ($element == $active) {
-				echo "<option value=\"$element\" selected=\"selected\">" . $element . "</option>\n";
-			} else {
-				echo "<option value=\"$element\">" . $element . "</option>\n";
+	/**
+	 * Limit the eduPersonPrincipalName to a set of expected characters.
+	 *
+	 * @param mixed $eppn An eduPersonPrincipalName or an array therof
+	 *
+	 * @return The sanitized string/array
+	 */
+	private function sanitize_eppn($eppn)
+	{
+		if (is_array($eppn)) {
+			foreach($eppn as $var=>$val) {
+			  $output[$var] = sanitize_eppn($val);
 			}
 		}
-
-		echo "</select>\n";
+	  /* also allow the the e-mail characters @, . and _ */
+	  $output = preg_replace('/[^a-z0-9@._]+/','',$eppn);
+	  return $output;
 	}
-
 }
 
 $fw = new Framework(new RevokeCertificate());
