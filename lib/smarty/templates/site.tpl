@@ -28,7 +28,7 @@
 			{/foreach}
 
 			{foreach from=$messages item=msg}
-			<dif class="success">{$msg}</div>
+			<div class="success">{$msg}</div>
 			{/foreach}
 			{$content}
 		</div>
