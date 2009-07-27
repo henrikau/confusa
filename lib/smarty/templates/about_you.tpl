@@ -17,6 +17,6 @@
 	<tr><td><b>Complete /DN:</b></td><td>{$person->get_complete_dn()}</td></tr>
 </table><br>
 <hr />
-We store very little information. What we do keep, is information about certificates issued, combinded with the eduPersonPrincipalName
-This is the DN in the certificate, and whe <b>have</b> to store this.<br />
+We store very little information. What we do keep, is information about certificates issued, combined with the eduPersonPrincipalName
+This is the DN in the certificate, and we <b>have</b> to store this.<br />
 {/if}
