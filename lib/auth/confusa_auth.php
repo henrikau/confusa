@@ -12,7 +12,7 @@ if(!Config::get_config('auth_bypass'))
 {
 	/* Use the new autoloader functionality in SimpleSAMLphp */
 	$sspdir = Config::get_config('simplesaml_path');
-	require_once($sspdir . '/lib/_autoload.php');
+	require_once $sspdir . '/lib/_autoload.php';
 	SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
 }
 require_once 'oauth_auth.php';
