@@ -194,26 +194,10 @@ class CP_NREN_Admin extends FW_Content_Page
 		return $result;
 	} /* end getSubscribers */
 
-		echo $table_e;
-
-	} /* end show_subscribers() */
-
-	/**
-	 * listAccountInfo - show info about the current account with comodo
-	 *		     used for creating credentials.
-	 */
-	private function listAccountInfo()
+	private function getAccountInfo()
 	{
-		$table	= " <DIV CLASS=\"admin_table\">\n";
-		$tr	= " <DIV CLASS=\"admin_table_row\">\n";
-		$td	= " <DIV CLASS=\"admin_table_cell\">\n";
-		$td_e	= "</DIV>\n";
-		$tr_e	= "</DIV>\n";
-		$table_e= "</DIV>\n";
 
-		/*
-		 * Find the current account tied to this NREN
-		 */
+		/* Get the current account */
 		$query	= "SELECT * FROM nrens_account_map_view WHERE nren_name = ?";
 		$res	= MDB2Wrapper::execute($query, array('text'), array($this->person->get_orgname()));
 		if (count($res) == 1)
@@ -224,9 +208,7 @@ class CP_NREN_Admin extends FW_Content_Page
 			throw new DBQueryException($msg);
 		}
 
-		/*
-		 * Get all accounts (so we can choose) 
-		 */
+		/* Get all available accounts */
 		$accounts	= array();
 		$query		= "SELECT login_name FROM account_map";
 		$res		= MDB2Wrapper::execute($query, null, null);
@@ -236,15 +218,8 @@ class CP_NREN_Admin extends FW_Content_Page
 			$accounts[] = $row['login_name'];
 		}
 
-		echo "<H4>CA-Account information for " . $this->person->get_orgname() . "</H4>\n";
-		echo "<FoRM ACTION=\"\" METHOD=\"POST\">\n";
-		echo "<INPUT TYPE=\"hidden\" NAME=\"account\" VALUE=\"change\">\n";
-		echo create_select_box($curr_account, $accounts, 'login_name');
-		echo "<INPUT TYPE=\"submit\" VALUE=\"Change account\">\n";
-		echo "</FORM>\n";
-
-
-	}
+		return array('account' => $curr_account, 'all' => $accounts);
+	} /* end getAccountInfo() */
 
 	private function editAccount($login_name, $password)
 	{
