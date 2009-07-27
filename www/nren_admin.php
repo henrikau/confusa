@@ -174,89 +174,25 @@ class CP_NREN_Admin extends FW_Content_Page
 	}
 
 	/**
-	 * showSubscribers
+	 * getSubscribers - get an array with subscriber and state
 	 *
-	 * Show a mask with all the organizations currently subscribed to the
-	 * service. Show visual elements permitting the user to update, add and
-	 * delete such entries.
+	 * Find all subscribers for the current NREN and return an array containing
+	 * - subscriber name
+	 * - subscriber state (subscribed | unsubscribed | suspended)
+	 *
 	 */
-	private function showSubscribers()
+	private function getSubscribers()
 	{
-		/*
-		 * mimic tables with <div> elements, because in legal html, forms
-		 * may not be interleaved with table elements, i.e. we can not
-		 * place a form within a whole table row.
-		 *
-		 * But for <div>s, there is no such restriction
-		 */
-		$table	= "<DIV CLASS=\"admin_table\">\n";
-		$table	= "</DIV>\n";
-
-		$tr	= "<DIV CLASS=\"admin_table_row\">\n";
-		$tr_e	= "</DIV>\n";
-
-		$td	= "<DIV CLASS=\"admin_table_cell\">\n";
-		$td_e	= "</DIV>\n";
-
-		
 		$query = "SELECT * FROM nren_subscriber_view WHERE nren=? ORDER BY subscriber ASC";
 		$res = MDB2Wrapper::execute($query, array('text'), array($this->person->get_orgname()));
 		if (count($res) == 0)
 			return;
+		$result = array();
+		foreach($res as $row)
+			$result[] = array('subscriber' => $row['subscriber'], 'org_state' => $row['org_state']);
 
-		echo "Show subscribers for <B><I>" . $this->person->get_orgname() . "</I></B><BR /><BR />\n";
-		echo $table;
-		echo $tr;
-		echo $td . $td_e; /* button  */
-		echo $td . "<B>Organization</B>"	. $td_e;
-		echo $td . $td_e; /* FIXME: space */
-		echo $td . "<B>State</B>"		. $td_e;
-		echo $td ." ". $td_e; /* FIXME: space */
-		echo $td . $td_e;     /* update-button (<FORM>) */
-		echo $tr_e;
-		echo $tr . $td . $td_e . $tr_e;
-		foreach($res as $key => $val) {
-			echo $tr;
-
-			echo $td . $this->delete_button("subscriber", $val['subscriber']) . $td_e;
-			echo $td . $this->format_subscr_on_state($val['subscriber'], $val['org_state']) . $td_e;
-
-			/* FIXME: space, air, should be fixed with borders in the table */
-			echo $td ." ". $td_e;
-
-			echo "<FORM ACTION=\"\">\n";
-			echo "<INPUT TYPE=\"hidden\" NAME=\"subscriber\" VALUE=\"edit\">\n";
-			echo "<INPUT TYPE=\"hidden\" NAME=\"name\" VALUE=\"" . $val['subscriber'] . "\">\n";
-			echo $td . create_select_box($val['org_state'], $this->org_states, 'state') . $td_e;
-			echo $td ." ". $td_e;
-			echo $td;
-			echo "<INPUT TYPE=\"submit\" CLASS=\"button\" VALUE=\"Update\" />";
-			echo "</FORM>\n";
-			echo $td_e;
-
-			echo $tr_e;
-		} /* end foreach */
-
-
-		echo $tr;
-		echo $td . $td_e;
-
-		echo $td;
-
-		echo "<FORM ACTION=\"\" METHOD=\"GET\">";
-		echo "<INPUT TYPE=\"hidden\" NAME=\"subscriber\" VALUE=\"add\" />\n";
-		echo "<INPUT TYPE=\"TEXT\" NAME=\"name\" />";
-		echo $td_e;
-		echo $td . $td_e;
-		echo $td . create_select_box('',$this->org_states,'state') . $td_e;
-		echo $td . $td_e;
-		echo $td;
-		echo "<INPUT TYPE=\"submit\" VALUE=\"Add new\" />";
-		echo "</FORM>";
-		echo $td_e;
-
-		echo $tr_e;
-
+		return $result;
+	} /* end getSubscribers */
 
 		echo $table_e;
 
