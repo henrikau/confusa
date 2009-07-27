@@ -293,6 +293,15 @@ class CP_NREN_Admin extends FW_Content_Page
 		$res .= "</FORM>\n";
 		echo $res;
 	}
+
+	public function createSelectBox($active, $list = null, $name)
+	{
+		$arg_list = $list;
+		if (!isset($list))
+			$arg_list = $this->org_states;
+
+		return Output::create_select_box($active, $arg_list, $name);
+	} /* end createSelectBox */
 }
 
 
