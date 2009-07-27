@@ -29,7 +29,30 @@ class Output
 		return "<A HREF=\"$loc_url\" name=\"$loc_name\">$loc_url_name</A>";
 	} /* end create_link */
 
-}
+	/**
+	 * create_select_box - create a form select-box
+	 *
+	 * @active	: The active option (pre-selected)
+	 * @choices	: The array of options. Empty choices ("") will be discarded
+	 *		  without warning.
+	 * @sel_name	: The name of the form-variable from the select section
+	 */
+	static function create_select_box($active, $choices, $sel_name)
+	{
+		$res = "<select name=\"$sel_name\">\n";
+		foreach($choices as $element) {
+			if ($element !== "") {
+				$res .= "<option value=\"$element\" ";
+				$res .=  ($element == $active ?  " selected=\"selected\"":"");
+				$res .=  " >" . $element . "</option>\n";
+			}
+		}
+
+		$res .= "</select>\n";
+		return $res;
+	} /* end create_select_box */
+
+} /* end class Output */
 
 function error_output($msg)
 {
@@ -82,26 +105,5 @@ function show_window($url_name, $target)
 	return $help;
 }
 
-/**
- * create_select_box - create a form select-box
- *
- * @active	: The active option (pre-selected)
- * @choices	: The array of options. Empty choices ("") will be discarded
- *		  without warning.
- * @sel_name	: The name of the form-variable from the select section
- */
-function create_select_box($active, $choices, $sel_name)
-{
-	$res = "<select name=\"$sel_name\">\n";
-	foreach($choices as $element) {
-		if ($element !== "") {
-			$res .= "<option value=\"$element\" ";
-			$res .=  ($element == $active ?  " selected=\"selected\"":"");
-			$res .=  " >" . $element . "</option>\n";
-		}
-	}
 
-	$res .= "</select>\n";
-	return $res;
-}
 ?>
