@@ -6,10 +6,12 @@
    *
    * Author: Henrik Austad <henrik.austad@uninett.no>
    */
-include_once('mdb2_wrapper.php');
-include_once('logger.php');
+include_once 'mdb2_wrapper.php';
+include_once 'logger.php';
+require_once 'csr_not_found.php';
 
-/* test_content()
+/**
+ * test_content - test a CSR for deficiencies
  *
  * This function is to be used when testing uploaded CSRs for flaws and errors.
  * It will test for:
@@ -17,7 +19,6 @@ include_once('logger.php');
  * - that the key meets the required key-length
  * - that it is a normal CSR (previous point will fail if it is a 'bogus' CSR
  * - that the auth_url is derived from the supplied CSR
- * - that the public-key in the CSR does not belong to a previously signed certificate
  */
 function test_content($content, $auth_url)
 {
@@ -57,52 +58,13 @@ function test_content($content, $auth_url)
 	  echo "Uploaded key and auth_url does not match. Please download a new keyscript and try again<BR>\n";
 	  return false;
   }
-  /*
-   * test to see if the public-key of the CSR has been part of a previously
-   * signed certificate
-   */
-  return !known_pubkey($content);
+  return true;
 }
 function get_algorithm($csr)
 {
 	$cmd = "exec echo \"$csr\" | openssl req -noout -text |grep 'Public Key Algorithm'|sed 's/\(.*\:\)[\ ]*\([a-z]*\)Encryption/\\2/g'";
 	return exec($cmd);
 }
-
-/* known_pubkey()
- *
- * this function takes a valid CSR and scans the database to check if the
- * public-key has been uploaded before as part of (another) CSR.
- *
- * It will assume that the CSR belongs to a previously signed certificate, and
- * unless it can prove that it is unique, it will claim that it has been seen
- * before. This is due to the 'better safe-than-sorry' principle.
- *
- * Note: this will only test for pubkeys belonging to *signed* keys, not
- * an identical CSR already present in the database.
- */
-function known_pubkey($csr)
-{
-	$issued_before = true;
-	$pubkey_checksum=pubkey_hash($csr, true);
-        $res = MDB2Wrapper::execute("SELECT * FROM pubkeys WHERE pubkey_hash=?",
-                                    array('text'),
-                                    array($pubkey_checksum));
-	if (strlen($res[0]) <= 0) {
-		Logger::log_event(LOG_DEBUG, __FILE__ . " CSR with previously unknown public-key (hash: $pubkey_checksum)\n");
-		$issued_before=false;
-    }  /* update counter in database */
-        else if (count($res) == 1) {
-             MDB2Wrapper::update("UPDATE pubkeys SET uploaded_nr = uploaded_nr + 1 WHERE pubkey_hash=?",
-                                 array('text'),
-                                 array($res[0]['pubkey_hash']));
-        }
-	else {
-		Logger::syslog(LOG_ERR,"Duplicate signed certificates in database! -> $pubkey_checkusm");
-                exit(1);
-	}
-	return $issued_before;
-} /* end known_pubkey */
 
 /* pubkey_hash()
  *
@@ -146,4 +108,93 @@ function text_csr($csr)
      $exported_csr = shell_exec($cmd);
      return $exported_csr;
 } /* end text_csr */
+
+function get_csr_from_db_raw($eppn, $auth_key)
+{
+	$csr_res = MDB2Wrapper::execute("SELECT * FROM csr_cache WHERE auth_key=? AND common_name=?",
+					array('text', 'text'),
+					array($auth_key, $eppn));
+	$size = count($csr_res);
+	switch ($size) {
+	case 0:
+		throw new CSRNotFoundException("CSR with token $auth_key not found for $eppn");
+	case 1:
+		return $csr_res[0];
+	}
+	throw new ConfusaGenException("Too many CSRs found in the database with token $auth_token");
+	
+}
+function get_csr_from_db($person, $auth_key)
+{
+	$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
+	return $csr['csr'];
+}
+
+function delete_csr_from_db($person, $auth_key)
+{
+	if (!$person->is_auth())
+		return false;
+
+	/* Verify that the CSR is present */
+	try {
+		$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
+	} catch (CSRNotFoundException $csrnfe) {
+		echo "No matching CSR found.<BR>\n";
+		$msg  = "Could not delete CSR from ip ".$_SERVER['REMOTE_ADDR'];
+		$msg .= " : " . $person->get_valid_cn() . " Reason: not found";
+		Logger::log_event(LOG_NOTICE, $msg);
+		return false;
+	} catch (ConfusaGenException $cge) {
+		$msg  = "Error in deleting CSR (" . $auth_key . ")";
+		$msg .= "for user: " . $person->get_valid_cn() . " ";
+		$msg .= "Too many hits!";
+		Framework::error_output($msg);
+		Logger::log_event(LOG_ALERT, $msg);
+		return false;
+	}
+
+	MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
+			    array('text', 'text'),
+			    array($auth_key, $person->get_valid_cn()));
+	$msg  = "Dropping csr ". $auth_key . " ";
+	$msg .= "for user ".$person->get_valid_cn()."  (".$_SERVER['REMOTE_ADDR'] . ") from csr_cache";
+	logger::log_event(LOG_NOTICE, $msg);
+	return true;
+}
+
+function print_csr_details($person, $auth_key)
+{
+	try {
+		$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
+	} catch (CSRNotFoundException $csrnfe) {
+		$msg  = "Error with auth-token ($auth_key) - not found. ";
+		$msg .= "Please verify that you have entered the correct auth-url and try again.";
+		$msg .= "If this problem persists, try to upload a new CSR and inspect the fields carefully";
+		Framework::error_output($msg);
+		return false;
+	} catch (ConfusaGenException $cge) {
+		$msg = "Too menu returns received. This can indicate database inconsistency.";
+		Framework::error_output($msg);
+		Logger::log_event(LOG_ALERT, "Several identical CSRs (" . $auth_token . ") exists in the database for user " . $person->get_valid_cn());
+		return false;
+	}
+	$subj = openssl_csr_get_subject($csr['csr'], false);
+	echo "<table class=\"small\">\n";
+	echo "<tr><td>AuthToken</td><td>".$csr['auth_key']."</td></tr>\n";
+
+	/* Print subject-elements */
+	foreach ($subj as $key => $value)
+                  echo "<tr><td>$key</td><td>$value</td></tr>\n";
+	echo "<tr><td>Length:</td><td>".csr_pubkey_length($csr['csr']) . " bits</td></tr>\n";
+	echo "<tr><td>Uploaded </td><td>".$csr['uploaded_date'] . "</td></tr>\n";
+	echo "<tr><td>From IP: </td><td>".format_ip($csr['from_ip'], true) . "</td></tr>\n";
+	echo "<tr><td></td><td></td></tr>\n";
+	echo "<tr><td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?delete_csr=$auth_key\">Delete from Database</A> ]</td>\n";
+	echo "<td>[ <A HREF=\"".$_SERVER['PHP_SELF']."?sign_csr=$auth_key\">Approve for signing</A> ]</td></tr>\n";
+	echo "</table>\n";
+	echo "<BR>\n";
+
+	return true;
+}
+
 ?>

@@ -7,7 +7,7 @@
    *
    * Author: Henrik Austad <henrik.austad@uninett.no>
    */
-include('key_not_found.php');
+include 'key_not_found.php';
 class Config {
      private static $config;
      /* get_config()
@@ -52,7 +52,7 @@ final class Config_Holder {
      function __construct()
           {
                global $confusa_config;
-               require_once('confusa_config.php');
+               require_once 'confusa_config.php';
                if (!isset($confusa_config)){
                     echo "Cannot load config-object when confusa_config.php does not exist!<br>\n";
                     exit(1);

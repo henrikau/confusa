@@ -25,13 +25,14 @@ $confusa_config = array(
          */
 	'server_url'		=> null,
 
+
         /* Pr. default, confusa uses simpleSAMLphp for authentication
          * You can use something else, but you must edit quite a few files to
          * make this possible.
          *
-         * The path whould point to where simpleSAMLphp's _include.php resides
+         * The path whould point to the root of the simpleSAMLphp install directory
          */
-	'simplesaml_path'	=> '/var/www/simplesamlphp/www/_include.php',
+	'simplesaml_path'	=> '/var/www/simplesamlphp/',
 
 	/* for script CSR/cert-handling
          *
@@ -46,40 +47,27 @@ $confusa_config = array(
 	'approve'		=> '/index.php',
 
         /* For CA handling */
-        'standalone'            => True, /* true: no extra CA, use php to sign
-                                          * key */
-        /* ca_host and ca_port can be removed */
-        'ca_host'               => 'localhost',
-        'ca_port'               => '9443',
-                                        /* The following fields can be used when the Comodo-API is called
-                                         * for certificate creation */
+	'ca_mode'		=> CA_STANDALONE,
+
+	/* The following fields can be used when the Comodo-API is called
+	 * for certificate creation */
         'capi_apply_endpoint'          => 'https://secure.comodo.com/products/!applyCustomClientCert',
         'capi_auth_endpoint'           => 'https://secure.comodo.net/products/!AutoAuthorize',
         'capi_collect_endpoint'        => 'https://secure.comodo.net/products/download/CollectCCC',
+        'capi_listing_endpoint'             => 'https://secure.comodo.net/products/!Tier2ResellerReport',
+        'capi_revoke_endpoint'              => 'https://secure.comodo.net/products/!AutoRevokeCCC',
         'capi_ap_name'                 => '',
-        'capi_login_name'               => '',
-        'capi_login_pw'                 => '',
         'capi_escience_id'                      => '285',
         /* if we ever want to issue e-mail certificates */
         'capi_personal_id'                      => '284',
         /* will insert a 'TEST' string into the certificate subjects if set to true */
         'capi_test'                             => true,
+        /* will encrypt the (sub)-account passwords in the DB with this key */
+        'capi_enc_pw'                           => '',
 	'ca_cert_name'		=> '',
 	'ca_cert_path'		=> 'cert_handle/certs/',
 	'ca_key_name'		=> '',
 	'ca_key_path'		=> 'cert_handle/priv/',
-
-	/* For the cmc-script and comms between Confusa and the script */
-	'cmc_script'		=> 'make_cmc.sh',
-	'cmc_tmp_dir'		=> '/tmp/',
-	'cmc_work_dir'		=> '/opt/cmc/',
-	'cmc_cert_dir'		=> '/opt/cmc/cmc_cert_store/',
-	'cmc_agent_nick'	=> 'cmcagent',
-	'cmc_agent_pw'		=> null,
-
-	/* OU and O for the certificate */
-	'cert_o'		=> '',
-	'cert_ou'		=> '',
 
         /* this *should* be true, as you really* want wget to detect a
          * SSL-man-in-the-middle attac! However, as a workaround for testsystems
@@ -120,27 +108,11 @@ $confusa_config = array(
         'mysql_backup_dir'              => '/var/backups',
 
 
-        /* if we should use the sms-layer at all  */
-	'use_sms'                       => false,
-
-        /* should we include debug-behaviour in sms-class? */
-        'sms_debug'                     => true,
-
-
-        /* pr. default we send email to an sms-server (that's the level of sms
-         * supported in this edition. the system expects the sms-server to
-         * accept emails as the following oneliner will do from a cmd-line:
-         * echo "your message" | mail -s "phonenumber" "sms_gw_email@address"
-         */
-	'sms_gw_addr'                   => null,
-
-        /* how long should a SMS-password be valid before a new one must be
-         * generated and sent to the user? */
-	'sms_pw_timeout'		=> 15,
-
-        /* when the user has authenticated via SMS-pw, how long should the
-         * session be valid (between page refreshes) */
-	'sms_session_timeout'           => 30,
+	/* The name of the System. This is the prefix of all titles. For
+	 * instance, process_csr.php sets this to be 'Process CSR'
+	 * The resulting title (<TITLE>) will then be: "Confusa - Process CSR"
+	 */
+	'system_name'		=> 'Confusa',
 
         /* the from-addr to show up in the emails from the system */
 	'sys_from_address'		=> 'your@system.contact.addr',
@@ -160,15 +132,23 @@ $confusa_config = array(
         /* how long should a certificate be valid in the cert_cache before being
          * doomed expired (to avoid that it's available for a long time for the
          * world) */
-        'cert_default_timeout'           => '0 0:15:0',
+        'cert_default_timeout'           => array(15, 'MINUTE'),
 
         /* how long a CSR should stay in the csr_cache before being
-         * removed. Time in MySQL-format
+         * removed. Time consists of an array with the amount being the first
+         * entry and the time-unit being the second entry
          * Time should be fairly low as you don't want the database cluttered
          * with CSRs.
          */
-        'csr_default_timeout'            => '0 0:10:0',
+        'csr_default_timeout'            => array(10, 'MINUTE'),
 
+	/**
+	 * When set to true this variable will bypass simplesaml and create fake attributes
+	 * so that the site can be tested without authentication
+	 *
+	 * The auth-bypass should be off by default:config/confusa_config_template.php
+	 */
+	'auth_bypass'		=> false,
 
 	/* this should be set to true when config is verified (or the file has
 	 * been updated and not just copied)

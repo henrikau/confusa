@@ -1,0 +1,73 @@
+	Conventions for working with the Confusa source
+
+In order to keep a clean codebase and a tidy repository with browsable
+history, the following set of conventions govern the workflow in
+Confusa:
+
+1) Commits.
+   A commit shall do one *change* and one change only. Several changes
+   should be split into several commits.
+
+   Each commit should have one line (less than 80 chars long) giving a
+   short outline of the commit.
+
+   Following this line, a newline will separate the header from the body
+   of the commit message. The message should be included if the header
+   does not describe the change accurately enough.
+
+   The message should explain why the commit is needed, what change is
+   introduced and the kind of impact. The text should be as complete as
+   possible, but it should not describe actual implementation. The
+   *intent* is important.
+
+2) Naming conventions
+   The PEAR standard as several projects have
+   adopted this. The full spec can be found at:
+
+	http://pear.php.net/manual/en/standards.php
+
+   All new code is expected to follow this standard. Old code not
+   conforming to the spec should be updated 'as soon as possible'
+
+3) Return values
+
+  If the return is not checked, there is no point in returning anything.
+
+  If anything check the return, and the function does not return
+  anything, PHP will interpret this as 'true' (i.e. the function-call
+  succeeded).
+
+  Caveat: instead of relying upon return-values to describe errors, we
+  should push Confusa towards a properly Exception-based model. That way
+  we avoid the somewhat panicky 'exit(0);' found in the code:
+
+  git grep "exit("
+    lib/auth/confusa_auth.php:       exit(0);
+    lib/key/cert_manager.php:        exit(0);
+    lib/key/csr_lib.php:             exit(1);
+    lib/key/csr_lib.php:             exit(1);
+    lib/misc/config.php:             exit(1);
+    lib/misc/config.php:             exit(1);
+    www/framework.php:               exit(0);
+    www/index.php:                   exit(0);
+    www/key_upload.php:              exit(1);
+    www/key_upload.php:              exit(1);
+    www/key_upload.php:              exit(1);
+    www/key_upload.php:              exit(1);
+    www/key_upload.php:              exit(1);
+    www/root_cert.php:               exit(1);
+    www/tools.php:                   exit(1);
+
+
+4) OO-model where-ever possible.
+
+5) PHP5 specific. If we break PHP4 compatibility - good! PHP4 is
+   considered broken in so many ways I do not want to
+   start. SimpleSAMLphp requires PHP5 anyway.
+
+6) Documentation: All functions and classes should be documented. By
+   documented we mean 'the intent and operation described as fully as
+   possible' but without adding too much text (as that will be
+   ignored). The same rule of thumb applies to documentation as it did
+   with the commits: actual code should not be described, the
+   *intention* of the code should.

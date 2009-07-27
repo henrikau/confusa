@@ -1,10 +1,11 @@
 <?php
-include_once('framework.php');
+require_once 'confusa_include.php';
+include_once 'framework.php';
 $cert_file = Config::get_config('install_path') . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
 
 if (isset($_GET['send_file'])) {
      global $cert_file;
-     include_once('file_download.php');
+     include_once 'file_download.php';
      download_file(file_get_contents($cert_file), Config::get_config('ca_cert_name'));
      exit(1);
 }

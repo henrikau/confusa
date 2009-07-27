@@ -1,23 +1,15 @@
 <?php
-require_once('person.php');
+require_once 'person.php';
 /* Class KeyScript
  * Class for modifying the create_cert script based on config-parameters and attributes from SimpleSAMLphp
  *
  * Author: Henrik Austad <henrik.austad@uninett.no>
  */
 class KeyScript {
-	private $url;
 	private $person;
-	private $country;
 	function __construct($pers) {
 		if (isset($pers) && $pers->is_auth()) {
 			$this->person = $pers;
-			/* can use strstr for this, but in case common-name
-			 * contains more than 1 . we use substring and search
-			 * from the end (not head) */
-			$this->country = strtoupper(substr($this->person->get_common_name(), 1+strrpos($this->person->get_common_name(), ".", -1)));
-			$this->url = dirname($_SERVER['HTTP_REFERER']);
-
 		}
 	}
 
@@ -31,8 +23,6 @@ class KeyScript {
 	{
 
 		$script = file_get_contents(Config::get_config('programs_path'));
-
-//  		$script = preg_replace_callback('/(\w+)(=")(")/', 'config_match', $script);
 
  		/* set variables for the key and CSR/cert */
 		$script = str_replace('common=""'      ,'common="' .$this->person->get_valid_cn() . '"'	, $script);

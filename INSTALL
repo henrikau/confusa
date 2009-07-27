@@ -21,10 +21,28 @@ To install Confusa
  - PHP5
  - PEAR with MDB2.MySQL
  - php5-curl (when using remote CA for accessing the REST API)
+
 === Install process ===
-1) Install Apache2 with PHP5 support.
-2) Install mysql5
-3) Install php5-mysql, php5-curl and PEAR::MDB2_mysql_driver
+
+1) Webserver (apache)
+
+     apache2
+
+2) Database (MySQL)
+     mysql-server-5.0
+     mysql-client-5.0 (you need this for bootstrapping the tables)
+
+3) PHP
+
+     libapache2-php5
+     php5-mysql
+     php5-curl
+     PEAR::MDB2_mysql_driver
+     
+3 b) When using online, you will also need the mcrypt library:
+
+     php5-mcrypt
+
 4) Configure Apache to use SSL, use the following lines in your 
    apache2/sites-enabled/appropriate.config.file and php5-openssl
 
@@ -75,7 +93,8 @@ anything else.
    'authproc' => array(
         50 => 'core:IdPMap',
         60 => 'core:ConfusaAttributeMap',
-        61 => 'core:CountryMap'
+        61 => 'core:CountryMap',
+        62 => 'core:CharacterMap'
     ),
 	ForceAuthn	 => true
 
@@ -85,6 +104,7 @@ anything else.
 	ln -s /var/www/confusa/include/IdPMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/IdPMap.php
 	ln -s /var/www/confusa/include/ConfusaAttributeMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/ConfusaAttributeMap.php
 	ln -s /var/www/confusa/include/CountryMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CountryMap.php
+  ln -s /var/www/confusa/include/CharacterMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CharacterMap.php
 
 6) Install and configure Confusa:
 

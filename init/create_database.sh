@@ -18,17 +18,17 @@ if [ ! `whoami` == "root" ]; then
     echo "Need to be root to run this"
     exit
 fi
-if [ -f /etc/mysql/debian.cnf ]; then
-    echo "Using debian-sys-maintainer config"
-    MYSQL="/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf"
-else 
-    user="root"
-    host="localhost"
-    if [ -f /root/mysql_root.pw ]; then 
-	pass="-p`cat /root/mysql_root.pw`"
-    fi
-    MYSQL="/usr/bin/mysql -u$user -h$host $pass"
+
+MYSQL_ROOT="/usr/bin/mysql -uroot -h localhost $root_pw"
+if [ -f /root/mysql_root.pw ]; then 
+    root_pw="-p`cat /root/mysql_root.pw`"
+else
+    echo "Did not find /root/mysql_root.pw. If the root-account is password-protected, this step will fail"
 fi
+host="-hlocalhost"
+user="-u'root'"
+MYSQL="/usr/bin/mysql $user $host $root_pw"
+
 # use the database stated in the confusa_config.php. If this file is not
 # present, the script will terminate
 if [ ! -f "../config/confusa_config.php" ]; then
@@ -44,7 +44,10 @@ database=`grep "mysql_db" ../config/confusa_config.php | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
 if [ ! -n $databaase ]; then
     echo "mysql-db not set in config-file!"
+    echo "Please set this value and try again"
+    exit
 fi
+
 echo "Found configured database ($database) in config-file"
 res=`$MYSQL -e "SHOW DATABASES like '$database'"`
 if [ ! -n "$res" ]; then
@@ -58,10 +61,21 @@ fi
 echo "Creating tables in the database. Existing databases will be reset according to table_create.sql"
 $MYSQL -D$database < table_create.sql
 
+if [ ! $? -eq 0 ]; then
+    echo "Errors were encountered during the database install"
+    echo "Make sure you have enough privileges to write to the database, and that "
+    echo "the file table_create.sql has not been corrupted."
+    echo ""
+    echo "You might want to delete the entire database and try again.."
+    exit
+fi
+
 # check to see if the the proper user with rights are in place
 webuser=`grep "mysql_username" ../config/confusa_config.php | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
 pw=`grep "mysql_password" ../config/confusa_config.php | cut -d '=' -f 2 \
+    | cut -d "'" -f 2`
+webhost=`grep "mysql_host" ../config/confusa_config.php | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
 grants="SELECT, INSERT, DELETE, UPDATE, USAGE"
 
@@ -69,10 +83,22 @@ grants="SELECT, INSERT, DELETE, UPDATE, USAGE"
 user=`$MYSQL -Dmysql -e "SELECT user FROM user WHERE user='$webuser'"`
 if [ -z "$user" ]; then
     echo "did not find user ($webuser) in database, creating"
-    res=`$MYSQL -D$database -e "GRANT $grants on $database.* TO '$webuser'@'localhost' IDENTIFIED BY '$pw'"`
-    echo "Added user to database."
+    query="GRANT $grants on $database.* TO '$webuser'@'$webhost' IDENTIFIED BY '$pw'"
+    `$MYSQL -D$database -e"$query"`
+    res=$?
+    if [ $res -eq 0 ]; then
+	echo "Added user to database."
+    else
+	perror $res
+	echo "Trouble adding user, aborting..."
+	exit $res
+    fi
+
 else
     echo "Found user ($webuser)."
 fi
 
-echo "Confusa-setup complete"
+echo "Confusa-setup complete, adding views"
+$MYSQL -D$database  < views_create.sql
+echo "Vies created. Database bootstrap complete"
+echo ""

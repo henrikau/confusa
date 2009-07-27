@@ -22,15 +22,14 @@ n * When creating a certificate, the attributes will be retrieved *from* the
 class Person{
 
     /* instance-variables: */
-    private $mobile;
     private $given_name;
     private $common_name;
     private $email;
     private $db_id;
     private $country;
     private $orgname;
-    private $orgunitname;
     private $idp;
+    private $entitlement;
     /* get variables for:
      * Region (i.e. Sor Trondelag)
      * City (i.e. Trondheim)
@@ -39,34 +38,16 @@ class Person{
 
     /* status variables (so we poll the subsystem as little as possible) */
     private $fed_auth;
-    private $sms_auth;
-
 
     function __construct() {
-        $this->mobile = null;
         $this->given_name = null;
         $this->common_name = null;
         $this->email = null;
+        $this->entitlement = null;
 
         /* we're suspicious by nature */
         $this->fed_auth = false;
-        $this->sms_auth = false;
         } /* end constructor */
-
-    function __tostring() {
-        $var = "<table clas=\"small\">";
-	$var .= "<tr><td><b>Name:</b></td><td>" . $this->get_name() . "</td></tr>\n";
-	$var .= "<tr><td><B>eduPersonPrincipalName:</b></td><td>" . $this->get_common_name() . "</td></tr>\n";
-	$var .= "<tr><td><B>CommonName in DN</b></td><td>" . $this->get_valid_cn() . "</td></tr>\n";
-	$var .= "<tr><td><b>mobile</b>:</td><td>" . $this->get_mobile() . "</td></tr>\n";
-	$var .= "<tr><td><b>email:</b></td><td>" . $this->get_email() . "</td></tr>\n";
-	$var .= "<tr><td><b>Country:</b></td><td>" . $this->get_country() . "</td></tr>\n";
-	$var .= "<tr><td><b>OrganizationalName:</b></td><td>" . $this->get_orgname() . "</td></tr>\n";
-	$var .= "<tr><td><b>OrganizationalUnitName:</b></td><td>" . $this->get_orgunitname() . "</td></tr>\n";
-	$var .= "<tr><td><b>IdP:</b></td><td>". $this->get_idp() . "</td></tr>\n";
-        $var .= "</table><br>";
-        return $var;
-    }
 
     function get_complete_dn() {
 	    $dn = "/C=" . $this->get_country() . "/O=" . $this->get_orgname() . "/CN=" . $this->get_valid_cn();
@@ -76,38 +57,14 @@ class Person{
     public function is_fed_auth() {
         return $this->fed_auth;
         }
-    public function is_sms_auth() {
-        return $this->sms_auth;
-        }
+
     public function is_auth() {
-	    if (Config::get_config('use_sms'))
-		    return $this->is_fed_auth() && $this->is_sms_auth();
 	    return $this->is_fed_auth();
         }
     public function fed_auth($auth = true) {
         $this->fed_auth = $auth;
         }
 
-    public function sms_auth() {
-         $sms = New SMSAuth($person);
-         /* set default timeout for one-time-pass and session
-          * This can be overriden/changed.
-          *
-          * Planned in a later release.. :-)
-          */
-         $sms->set_pw_timeout(15);
-         $sms->set_session_timeout(30, true);
-
-         $this->sms_auth = $sms->assert_user();
-    }
-
-
-    public function set_mobile($mobile) {
-        if (isset($mobile))
-             $this->mobile = htmlentities($mobile);
-        }
-
-    public function get_mobile() { return $this->mobile; }
 
     public function set_name($given_name) {
 	    if (isset($given_name)) {
@@ -140,7 +97,11 @@ class Person{
     public function get_common_name() { return $this->common_name; }
 
     public function get_valid_cn() {
-	    return $this->get_safe_name() . " " . $this->get_common_name();
+        if (isset($this->given_name)) {
+	        return $this->get_safe_name() . " " . $this->get_common_name();
+        } else {
+            return $this->get_common_name();
+        }
     }
     public function set_email($email) {
         if (isset($email)) 
@@ -155,11 +116,13 @@ class Person{
     }
     public function get_orgname() { return $this->orgname; }
 
-    public function set_orgunitname($orgunitname) {
-	    if (isset($orgunitname))
-		    $this->orgunitname = $orgunitname;
+    public function set_entitlement($entitlement) {
+      if (isset($entitlement)) {
+        $this->entitlement = $entitlement;
+      }
     }
-    public function get_orgunitname() { return $this->orgunitname; }
+
+    public function get_entitlement() { return $this->entitlement; }
 
     public function get_keyholder() { return $this->keyholder; }
 
@@ -179,6 +142,63 @@ class Person{
 		    $this->idp = $idp;
     }
     public function get_idp() { return $this->idp; }
+
+
+    /**
+     * get_mode() - get the current modus for the user
+     *
+     * This returns the mode the user displays the page in. Even an
+     * administrator (of any kind) can view the page as a normal user, and this
+     * will be stored in the database for the user.
+     *
+     * This function will look at the type of user and return the mode based on
+     * this and information stored in the database (if admin)
+     */
+    public function get_mode()
+    {
+	    /* If user is not admin, the mode is NORMAL_MODE either way */
+	    if (!$this->is_admin())
+		    return NORMAL_MODE;
+	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",
+					array('text'),
+					array($this->get_common_name()));
+	    db_array_debug($res);
+	    if (count($res) != 1)
+		    return NORMAL_MODE;
+
+	    /* We could just return $res['last_mode'][0] but in case the
+	     * database schema is ever updated, we do not have to worry about
+	     * potentional holes to plug.
+	     *
+	     * I.e. if new modes are to be added, this part must be updated.
+	     */
+	    if ($res[0]['last_mode'] == ADMIN_MODE)
+		    return ADMIN_MODE;
+	    return NORMAL_MODE;
+    }
+
+    public function in_admin_mode()
+    {
+	    return $this->person->get_mode() == ADMIN_MODE;
+    }
+    /**
+     * set_status() - set the mode for a given person.
+     *
+     * Enable a user to switch between normal and admin-mode.
+     */
+    public function set_mode($new_mode)
+    {
+	    $new = (int)$new_mode;
+	    if ($new == 0 || $new == 1) {
+		    if ($this->is_admin()) {
+			    Logger::log_event(LOG_DEBUG, "Changing mode for " . $this->get_common_name());
+			    MDB2Wrapper::update("UPDATE admins SET last_mode=? WHERE admin=?",
+						array('text', 'text'),
+						array($new, $this->get_common_name()));
+		    }
+	    }
+    }
+
     /* is_admin()
      *
      * Test to see if the user is part of the admin-crowd. This will allow the
@@ -186,16 +206,58 @@ class Person{
      */
     public function is_admin()
     {
-         if (!$this->is_auth())
-              return false;
+	    if (!$this->is_auth())
+		    return false;
 
-         require_once('mdb2_wrapper.php');
-         $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($eppn));
-         if (count($res) != 1)
-              return false;
-
-         return true;
+	    return (int)$this->get_admin_status() != NORMAL_USER;
     } /* end function is_admin() */
 
-  } /* end class Person */
+    public function is_nren_admin()
+    {	    	
+	    if (!$this->is_auth())
+		    return false;
+
+	    if ($this->entitlement == "confusaAdmin")
+	    /* test attribute to see if the person is NREN-admin */
+	    if ((int)$this->get_admin_status() == NREN_ADMIN)
+		    return true;
+	    /* add user to table of nren-admins (to save page mode for later) */
+	    return (int)$this->get_admin_status() == NREN_ADMIN;
+    }
+
+
+    public function is_subscriber_admin()
+    {
+	    if (!$this->is_auth())
+		    return false;
+
+	    return (int)$this->get_admin_status() == SUBSCRIBER_ADMIN;
+    }
+
+    public function is_subscriber_subadmin()
+    {
+	    if (!$this->is_auth())
+		    return false;
+
+	    return (int)$this->get_admin_status() == SUBSCRIBER_SUB_ADMIN;
+    }
+    /**
+     * get_admin_status - get the admin-level from the database
+     *
+     * This function assumes is_auth() has been verified.
+     */
+    private function get_admin_status()
+    {
+	    require_once 'mdb2_wrapper.php';
+	    $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->common_name));
+	    $size = count($res);
+	    db_array_debug($res);
+	    if ($size == 1) {
+		    if ($res[0]['admin'] == $this->get_common_name())
+			    return $res[0]['admin_level'];
+		    echo __FILE__ . ":" . __LINE__ . "<B>Uuuugh! Unreachable point! How did you get here?</B><BR>\n";
+	    }
+	    return NORMAL_USER;
+    }
+} /* end class Person */
 ?>

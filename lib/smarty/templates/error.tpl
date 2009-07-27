@@ -1,0 +1,1 @@
+<span style="color: #BB0000;">{$msg}</span>

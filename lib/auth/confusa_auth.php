@@ -6,23 +6,20 @@
    * This is the main authentication module of Confusa.
    */
 /* get simplesaml */
-require_once('config.php');
+require_once 'config.php';
 
-/* include _include in the simplesaml-directory
- * simplesaml_path is the _include in the simplesaml directory
- */
-require_once(Config::get_config('simplesaml_path'));
-require_once('SimpleSAML/Utilities.php');
-require_once('SimpleSAML/Session.php');
-require_once('SimpleSAML/XHTML/Template.php');
-/* required for OAuth
- */
-require_once('SimpleSAML/Module.php');
-require_once('oauth_auth.php');
-require_once('person.php');
-require_once('logger.php');
-require_once('debug.php');
-require_once('mdb2_wrapper.php');
+if(!Config::get_config('auth_bypass'))
+{
+	/* Use the new autoloader functionality in SimpleSAMLphp */
+	$sspdir = Config::get_config('simplesaml_path');
+	require_once($sspdir . '/lib/_autoload.php');
+	SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
+}
+require_once 'oauth_auth.php';
+require_once 'person.php';
+require_once 'logger.php';
+require_once 'debug.php';
+require_once 'mdb2_wrapper.php';
 /* global variable to check if the session has been started or not (avoid
  * multiple calls to simple_saml's session_start()
  */
@@ -71,6 +68,22 @@ function is_authenticated($person = null) {
 	if (!isset($person))
 		$person = new Person();
 
+	// Bypass auth
+	if(Config::get_config('auth_bypass'))
+	{
+		// Set some bogus attributes
+		$person->set_name('Ola Nordmann');
+		$person->set_common_name('ola.nordmann@norge.no');
+		$person->set_email('ola.nordmann@norge.no');
+		$person->set_country('NO');
+		$person->set_orgname('Test');
+		$person->set_idp('Test');
+		$person->set_entitlement('Test');
+		$person->fed_auth(true);	
+		
+		return $person;
+	}
+		
 	/* check to see if the person is authN */
 	$config = _get_config();
 
@@ -114,15 +127,13 @@ function add_attributes($person)
           $person->fed_auth(false);
      }
      else {
-	     if (isset($attributes['mobile'][0]))
-		     $person->set_mobile($attributes['mobile'][0]);
 	     $person->set_name($attributes['cn'][0]);
 	     $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
 	     $person->set_email($attributes['mail'][0]);
 	     $person->set_country($attributes['country'][0]);
-	     $person->set_orgname(Config::get_config('cert_o'));
-	     $person->set_orgunitname(Config::get_config('cert_ou'));
+	     $person->set_orgname($attributes['organization'][0]);
 	     $person->set_idp($attributes['IdP'][0]);
+	     $person->set_entitlement($attributes['eduPersonEntitlement'][0]);
 	     $person->fed_auth(true);
      }
 } /* end add_attributes() */
@@ -137,8 +148,11 @@ function add_attributes($person)
  * @edu_name:		The unique feide name of the person we're logging out (so
  *			that the logout-form can remove info from the database).
  */
-function logout_link($logout_location="logout.php", $logout_name="Logout Confusa", $person)
+function logout_link($logout_location="logout.php")
 {
+	if(Config::get_config('auth_bypass'))
+		return $logout_location;
+
      $config = _get_config();
      $edu_name = $person->get_common_name();
 
@@ -148,13 +162,14 @@ function logout_link($logout_location="logout.php", $logout_name="Logout Confusa
      if (strpos($base, ".php"))
           $base = dirname($base);
      $link_base =  dirname($base).'/simplesaml/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
-     $link = '<A HREF="' . $link_base . '">' . $logout_name . '</A>';
-
-    return $link;
+	return $link_base;
 } // end get_logout_link()
 
 
 function show_sso_debug($person) {
+	if(!Config::get_config('auth_bypass'))
+		return;
+		
     if (!isset($person)) {
         echo __FILE__ . ":" . __LINE__ . " person does not exist<BR>\n";
         return;

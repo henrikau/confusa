@@ -8,6 +8,7 @@ $path .= PATH_SEPARATOR . LIB_DIR . '/file';
 $path .= PATH_SEPARATOR . LIB_DIR . '/key';
 $path .= PATH_SEPARATOR . LIB_DIR . '/misc';
 $path .= PATH_SEPARATOR . LIB_DIR . '/person';
+$path .= PATH_SEPARATOR . LIB_DIR . '/framework';
 
 ini_set('include_path', $path);
 
