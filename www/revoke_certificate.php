@@ -50,14 +50,15 @@ class RevokeCertificate extends FW_Content_Page
 	}
 	public function process()
 	{
-		echo "<H3>Certificate Revocation Area</H3>\n";
+		if ($this->person->is_nren_admin() && $this->person->in_admin_mode()) {
+			$this->tpl->assign('reason', 'You are not allowed to revoke certificates, your clearance is too high.');
+			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
+			return;
+		}
 
-		/* Determine if person is doing revoke in admin (for others) or
-		 * normal (for himself) */
-		if ($this->person->in_admin_mode())
-			$this->admin_revoke();
-		else
-			$this->normal_revoke();
+		$this->tpl->assign('textual', $textual);
+		$this->tpl->assign('content', $this->tpl->fetch('revoke_certificate.tpl'));
+
 	}
 
 	private function admin_revoke()

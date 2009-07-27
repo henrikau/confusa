@@ -75,18 +75,21 @@ class CP_NREN_Admin extends FW_Content_Page
 
 	public function process()
 	{
-		if (!$this->person->is_nren_admin())
+		if (!$this->person->is_nren_admin()) {
+			Logger::log_event(LOG_NOTICE, "User " . $this->person->get_valid_cn() . " tried to access the NREN-area");
+			$this->tpl->assign('reason', 'You are not an NREN-admin');
+			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
-		/* echo "<H3>Administration Area for <I>" . $this->person->get_orgname() . "</I></H3>\n"; */
-		/* echo " [ " . create_link($_SERVER['SCRIPT_NAME'] . "?subscriber",	"Subscribers")	. " ] "; */
-		/* echo " [ " . create_link($_SERVER['SCRIPT_NAME'] . "?account",		"Accounts")	. " ] "; */
-		echo "<BR />\n";
-		
-		/* list all subscriptor */
-		$this->showSubscribers();
+		}
 
-		/* Add account-info for this nren, make it possible to update account */
-		$this->listAccountInfo();
+		/* get all info from database and publish to template */
+		$this->tpl->assign_by_ref('nren'	, $this);
+		$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
+		$this->tpl->assign('account_list'	, $this->getAccountInfo());
+
+		/* render page */
+		$this->tpl->assign('content', $this->tpl->fetch('nren_admin.tpl'));
+
 	} /* end process */
 
 
@@ -138,13 +141,16 @@ class CP_NREN_Admin extends FW_Content_Page
 			echo "orgname not set!";
 		if (!isset($nren) || $nren === "")
 			echo "nren not set!";
-		echo "all set<BR />\n";
 
 		$update = "INSERT INTO subscribers(name, nren_name, org_state) VALUES(?,?,?)";
-		echo "Update: $update <BR />\n";
+		try {
 		MDB2Wrapper::update($update,
 				    array('text',	'text',		'text'),
 				    array($org_name,	$nren,		$org_state));
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Cannot add row, duplicate entry?");
+			return;
+		}
 		/* FIXME: detect errors */
 
 		Logger::log_event(LOG_INFO, "Added the organization $org_name with " .
@@ -171,110 +177,30 @@ class CP_NREN_Admin extends FW_Content_Page
 	}
 
 	/**
-	 * showSubscribers
+	 * getSubscribers - get an array with subscriber and state
 	 *
-	 * Show a mask with all the organizations currently subscribed to the
-	 * service. Show visual elements permitting the user to update, add and
-	 * delete such entries.
+	 * Find all subscribers for the current NREN and return an array containing
+	 * - subscriber name
+	 * - subscriber state (subscribed | unsubscribed | suspended)
+	 *
 	 */
-	private function showSubscribers()
+	private function getSubscribers()
 	{
-		/*
-		 * mimic tables with <div> elements, because in legal html, forms
-		 * may not be interleaved with table elements, i.e. we can not
-		 * place a form within a whole table row.
-		 *
-		 * But for <div>s, there is no such restriction
-		 */
-		$table	= "<DIV CLASS=\"admin_table\">\n";
-		$table	= "</DIV>\n";
-
-		$tr	= "<DIV CLASS=\"admin_table_row\">\n";
-		$tr_e	= "</DIV>\n";
-
-		$td	= "<DIV CLASS=\"admin_table_cell\">\n";
-		$td_e	= "</DIV>\n";
-
-		
 		$query = "SELECT * FROM nren_subscriber_view WHERE nren=? ORDER BY subscriber ASC";
 		$res = MDB2Wrapper::execute($query, array('text'), array($this->person->get_orgname()));
 		if (count($res) == 0)
 			return;
+		$result = array();
+		foreach($res as $row)
+			$result[] = array('subscriber' => $row['subscriber'], 'org_state' => $row['org_state']);
 
-		echo "Show subscribers for <B><I>" . $this->person->get_orgname() . "</I></B><BR /><BR />\n";
-		echo $table;
-		echo $tr;
-		echo $td . $td_e; /* button  */
-		echo $td . "<B>Organization</B>"	. $td_e;
-		echo $td . $td_e; /* FIXME: space */
-		echo $td . "<B>State</B>"		. $td_e;
-		echo $td ." ". $td_e; /* FIXME: space */
-		echo $td . $td_e;     /* update-button (<FORM>) */
-		echo $tr_e;
-		echo $tr . $td . $td_e . $tr_e;
-		foreach($res as $key => $val) {
-			echo $tr;
+		return $result;
+	} /* end getSubscribers */
 
-			echo $td . $this->delete_button("subscriber", $val['subscriber']) . $td_e;
-			echo $td . $this->format_subscr_on_state($val['subscriber'], $val['org_state']) . $td_e;
-
-			/* FIXME: space, air, should be fixed with borders in the table */
-			echo $td ." ". $td_e;
-
-			echo "<FORM ACTION=\"\">\n";
-			echo "<INPUT TYPE=\"hidden\" NAME=\"subscriber\" VALUE=\"edit\">\n";
-			echo "<INPUT TYPE=\"hidden\" NAME=\"name\" VALUE=\"" . $val['subscriber'] . "\">\n";
-			echo $td . create_select_box($val['org_state'], $this->org_states, 'state') . $td_e;
-			echo $td ." ". $td_e;
-			echo $td;
-			echo "<INPUT TYPE=\"submit\" CLASS=\"button\" VALUE=\"Update\" />";
-			echo "</FORM>\n";
-			echo $td_e;
-
-			echo $tr_e;
-		} /* end foreach */
-
-
-		echo $tr;
-		echo $td . $td_e;
-
-		echo $td;
-
-		echo "<FORM ACTION=\"\" METHOD=\"GET\">";
-		echo "<INPUT TYPE=\"hidden\" NAME=\"subscriber\" VALUE=\"add\" />\n";
-		echo "<INPUT TYPE=\"TEXT\" NAME=\"name\" />";
-		echo $td_e;
-		echo $td . $td_e;
-		echo $td . create_select_box('',$this->org_states,'state') . $td_e;
-		echo $td . $td_e;
-		echo $td;
-		echo "<INPUT TYPE=\"submit\" VALUE=\"Add new\" />";
-		echo "</FORM>";
-		echo $td_e;
-
-		echo $tr_e;
-
-
-		echo $table_e;
-
-	} /* end show_subscribers() */
-
-	/**
-	 * listAccountInfo - show info about the current account with comodo
-	 *		     used for creating credentials.
-	 */
-	private function listAccountInfo()
+	private function getAccountInfo()
 	{
-		$table	= " <DIV CLASS=\"admin_table\">\n";
-		$tr	= " <DIV CLASS=\"admin_table_row\">\n";
-		$td	= " <DIV CLASS=\"admin_table_cell\">\n";
-		$td_e	= "</DIV>\n";
-		$tr_e	= "</DIV>\n";
-		$table_e= "</DIV>\n";
 
-		/*
-		 * Find the current account tied to this NREN
-		 */
+		/* Get the current account */
 		$query	= "SELECT * FROM nrens_account_map_view WHERE nren_name = ?";
 		$res	= MDB2Wrapper::execute($query, array('text'), array($this->person->get_orgname()));
 		if (count($res) == 1)
@@ -285,9 +211,7 @@ class CP_NREN_Admin extends FW_Content_Page
 			throw new DBQueryException($msg);
 		}
 
-		/*
-		 * Get all accounts (so we can choose) 
-		 */
+		/* Get all available accounts */
 		$accounts	= array();
 		$query		= "SELECT login_name FROM account_map";
 		$res		= MDB2Wrapper::execute($query, null, null);
@@ -297,15 +221,8 @@ class CP_NREN_Admin extends FW_Content_Page
 			$accounts[] = $row['login_name'];
 		}
 
-		echo "<H4>CA-Account information for " . $this->person->get_orgname() . "</H4>\n";
-		echo "<FoRM ACTION=\"\" METHOD=\"POST\">\n";
-		echo "<INPUT TYPE=\"hidden\" NAME=\"account\" VALUE=\"change\">\n";
-		echo create_select_box($curr_account, $accounts, 'login_name');
-		echo "<INPUT TYPE=\"submit\" VALUE=\"Change account\">\n";
-		echo "</FORM>\n";
-
-
-	}
+		return array('account' => $curr_account, 'all' => $accounts);
+	} /* end getAccountInfo() */
 
 	private function editAccount($login_name, $password)
 	{
@@ -342,7 +259,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		MDB2Wrapper::update($update, array('text', 'text'), array($login_name, $org));
 	} /* end changeAccount() */
 
-	private function format_subscr_on_state($subscriber, $state)
+	public function format_subscr_on_state($subscriber, $state)
 	{
 		$res = $subscriber;
 		switch($state) {
@@ -360,7 +277,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		return $res;
 	}
 
-	private function delete_button($key, $target)
+	public function delete_button($key, $target)
 	{
 		if (!isset($key) || !isset($target))
 			return;
@@ -379,6 +296,15 @@ class CP_NREN_Admin extends FW_Content_Page
 		$res .= "</FORM>\n";
 		echo $res;
 	}
+
+	public function createSelectBox($active, $list = null, $name)
+	{
+		$arg_list = $list;
+		if (!isset($list))
+			$arg_list = $this->org_states;
+
+		return Output::create_select_box($active, $arg_list, $name);
+	} /* end createSelectBox */
 }
 
 
