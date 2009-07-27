@@ -138,13 +138,16 @@ class CP_NREN_Admin extends FW_Content_Page
 			echo "orgname not set!";
 		if (!isset($nren) || $nren === "")
 			echo "nren not set!";
-		echo "all set<BR />\n";
 
 		$update = "INSERT INTO subscribers(name, nren_name, org_state) VALUES(?,?,?)";
-		echo "Update: $update <BR />\n";
+		try {
 		MDB2Wrapper::update($update,
 				    array('text',	'text',		'text'),
 				    array($org_name,	$nren,		$org_state));
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Cannot add row, duplicate entry?");
+			return;
+		}
 		/* FIXME: detect errors */
 
 		Logger::log_event(LOG_INFO, "Added the organization $org_name with " .
