@@ -53,3 +53,24 @@ a:hover {
 	margin-left: 200px;
 	font-size: 28px;
 }
+
+DIV.admin_table
+{
+  display: table;
+  padding-left: 30px
+}
+
+DIV.admin_table_row
+{
+  display: table-row;
+  width: 200px;
+  height: 10px
+}
+
+DIV.admin_table_cell
+{
+  display: table-cell;
+  text-align: left;
+  width: 50px
+}
+
