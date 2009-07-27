@@ -92,8 +92,9 @@ class Person{
     }
 
     public function set_common_name($cn) {
-        if (isset($cn)) 
+        if (isset($cn)) {
              $this->common_name = htmlentities(str_replace("'", "", $cn));
+         }
         }
     public function get_common_name() { return $this->common_name; }
 
@@ -105,8 +106,9 @@ class Person{
         }
     }
     public function set_email($email) {
-        if (isset($email)) 
+        if (isset($email)) {
             $this->email = htmlentities($email);
+        }
         }
     public function get_email() { return $this->email; }
 
@@ -133,14 +135,16 @@ class Person{
 
     public function set_country($c)
          {
-              if (isset($c))
+              if (isset($c)) {
                    $this->country = htmlentities($c);
+               }
          }
     public function get_country() { return $this->country; }
 
     public function set_idp($idp) {
-	    if (isset($idp))
+	    if (isset($idp)) {
 		    $this->idp = $idp;
+        }
     }
     public function get_idp() { return $this->idp; }
 
@@ -164,23 +168,25 @@ class Person{
     public function get_mode()
     {
 	    /* If user is not admin, the mode is NORMAL_MODE either way */
-	    if (!$this->is_admin())
+	    if (!$this->is_admin()) {
 		    return NORMAL_MODE;
+        }
 	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",
 					array('text'),
 					array($this->get_common_name()));
 	    db_array_debug($res);
-	    if (count($res) != 1)
+	    if (count($res) != 1) {
 		    return NORMAL_MODE;
-
+        }
 	    /* We could just return $res['last_mode'][0] but in case the
 	     * database schema is ever updated, we do not have to worry about
 	     * potentional holes to plug.
 	     *
 	     * I.e. if new modes are to be added, this part must be updated.
 	     */
-	    if ($res[0]['last_mode'] == ADMIN_MODE)
+	    if ($res[0]['last_mode'] == ADMIN_MODE) {
 		    return ADMIN_MODE;
+        }
 	    return NORMAL_MODE;
     }
 
@@ -213,21 +219,24 @@ class Person{
      */
     public function is_admin()
     {
-	    if (!$this->is_auth())
+	    if (!$this->is_auth()) {
 		    return false;
-
+        }
 	    return (int)$this->get_admin_status() != NORMAL_USER;
     } /* end function is_admin() */
 
     public function is_nren_admin()
     {	    	
-	    if (!$this->is_auth())
+	    if (!$this->is_auth()) {
 		    return false;
+        }
 
-	    if ($this->entitlement == "confusaAdmin")
-	    /* test attribute to see if the person is NREN-admin */
-	    if ((int)$this->get_admin_status() == NREN_ADMIN)
-		    return true;
+	    if ($this->entitlement == "confusaAdmin") {
+	        /* test attribute to see if the person is NREN-admin */
+	        if ((int)$this->get_admin_status() == NREN_ADMIN) {
+		        return true;
+            }
+        }
 	    /* add user to table of nren-admins (to save page mode for later) */
 	    return (int)$this->get_admin_status() == NREN_ADMIN;
     }
@@ -235,16 +244,18 @@ class Person{
 
     public function is_subscriber_admin()
     {
-	    if (!$this->is_auth())
+	    if (!$this->is_auth()) {
 		    return false;
+        }
 
 	    return (int)$this->get_admin_status() == SUBSCRIBER_ADMIN;
     }
 
     public function is_subscriber_subadmin()
     {
-	    if (!$this->is_auth())
+	    if (!$this->is_auth()) {
 		    return false;
+        }
 
 	    return (int)$this->get_admin_status() == SUBSCRIBER_SUB_ADMIN;
     }
