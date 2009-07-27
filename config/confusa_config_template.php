@@ -46,7 +46,8 @@ $confusa_config = array(
         'download'              => '/key_download.php',
 	'approve'		=> '/index.php',
 
-        /* For CA handling */
+        /* For CA handling.
+         * Legal modes are: CA_STANDALONE and CA_ONLINE */
 	'ca_mode'		=> CA_STANDALONE,
 
 	/* The following fields can be used when the Comodo-API is called
