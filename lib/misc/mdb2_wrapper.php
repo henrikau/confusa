@@ -54,7 +54,7 @@ class MDB2Wrapper
           $res = $stmnt->execute($data);
           if (PEAR::isError($res)) {
                Logger::log_event(LOG_NOTICE, "Query failed: $res->getMessage()");
-               die("error in query -> " . $res->getMessage());
+	       throw new DBQueryException($res->getMessage());
           }
           $stmnt->free();
 
