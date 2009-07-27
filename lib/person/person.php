@@ -179,7 +179,7 @@ class Person{
 
     public function in_admin_mode()
     {
-	    return $this->person->get_mode() == ADMIN_MODE;
+	    return $this->get_mode() == ADMIN_MODE;
     }
     /**
      * set_status() - set the mode for a given person.
