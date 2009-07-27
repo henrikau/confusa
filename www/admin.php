@@ -6,17 +6,28 @@ include_once 'db_query.php';
 include_once 'logger.php';
 
 
-/** class Admin
+/**
+ * Admin - administer admins for the subscriber/nren
+ *
+ * Each NREN has a set of NREN-admins and subscriber-admins. Each subscriber may
+ * manage its own subuscriber admins and subadmin.
  */
 class CP_Admin extends FW_Content_Page
 {
 	private $org_states;
 	private $org_name_cache;
+	private $urls;
 	function __construct()
 	{
 		parent::__construct("Admin", true);
-		$this->org_states	= array('','subscribed', 'suspended', 'unsubscribed');
-		$this->org_name_cache	= array();
+		$this->org_states		= array('','subscribed', 'suspended', 'unsubscribed');
+		$this->org_name_cache		= array();
+
+		/* Create the urls  */
+		$this->urls			= array();
+		$this->urls['subscribers']	= Output::create_link($_SERVER['SCRIPT_NAME'] . "?subscribe",	"Subscribers");
+		$this->urls['accounts']		= Output::create_link($_SERVER['SCRIPT_NAME'] . "?account",	"Accounts");
+		$this->urls['nren']		= Output::create_link($_SERVER['SCRIPT_NAME'] . "?nren",	"NREN");
 	}
 
 	public function pre_process($person)
@@ -50,26 +61,14 @@ class CP_Admin extends FW_Content_Page
 		if (!($this->person->is_subscriber_admin() || $this->person->is_nren_admin())) {
 			echo "<H3>Not Authorized for this action</H3>\n";
 			Logger::log_event(LOG_NOTICE, "User " . $this->person->get_valid_cn() . " was rejected at the admin-interface");
+			$this->tpl->assign('reason', 'You do not have sufficient rights to view this page');
+			$this->tpl->assign('content', 'restricted_access.tpl');
 			return false;
 		}
-
-		echo "<H3>Subscriber and NREN administration</H3>\n";
-		echo "Add, edit or remove subscribers <BR />\n";
-
-		if ($this->person->is_subscriber_admin() || $this->person->is_nren_admin()) {
-			/* FIXME: REMOVE THIS */
-			$this->show_handle_links();
-		}
+		$this->tpl->assign('link_urls', $this->urls);
+		$this->tpl->assign('content', $this->tpl->fetch('admin.tpl'));
 	}
 	
-	private function show_handle_links()
-	{
-		echo " [ " . create_link($_SERVER['SCRIPT_NAME'] . "?subscribe",	"Subscribers")	. " ] ";
-		echo " [ " . create_link($_SERVER['SCRIPT_NAME'] . "?account",		"Accounts")	. " ] ";
-		echo " [ " . create_link($_SERVER['SCRIPT_NAME'] . "?nren",		"NREN")		. " ] ";
-		echo "<BR />\n";
-	}
-
 
 	private function handle_account_actions($action)
 	{
