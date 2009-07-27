@@ -156,7 +156,6 @@ function logout_link($logout_location="logout.php")
 		return $logout_location;
 
      $config = _get_config();
-     $edu_name = $person->get_common_name();
 
      /* need to find the url, and handle some quirks in the result from selfURL
       * in order to get proper url-base */
