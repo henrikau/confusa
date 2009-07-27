@@ -75,18 +75,21 @@ class CP_NREN_Admin extends FW_Content_Page
 
 	public function process()
 	{
-		if (!$this->person->is_nren_admin())
+		if (!$this->person->is_nren_admin()) {
+			Logger::log_event(LOG_NOTICE, "User " . $this->person->get_valid_cn() . " tried to access the NREN-area");
+			$this->tpl->assign('reason', 'You are not an NREN-admin');
+			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
-		/* echo "<H3>Administration Area for <I>" . $this->person->get_orgname() . "</I></H3>\n"; */
-		/* echo " [ " . create_link($_SERVER['SCRIPT_NAME'] . "?subscriber",	"Subscribers")	. " ] "; */
-		/* echo " [ " . create_link($_SERVER['SCRIPT_NAME'] . "?account",		"Accounts")	. " ] "; */
-		echo "<BR />\n";
-		
-		/* list all subscriptor */
-		$this->showSubscribers();
+		}
 
-		/* Add account-info for this nren, make it possible to update account */
-		$this->listAccountInfo();
+		/* get all info from database and publish to template */
+		$this->tpl->assign_by_ref('nren'	, $this);
+		$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
+		$this->tpl->assign('account_list'	, $this->getAccountInfo());
+
+		/* render page */
+		$this->tpl->assign('content', $this->tpl->fetch('nren_admin.tpl'));
+
 	} /* end process */
 
 
