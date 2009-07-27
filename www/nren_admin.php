@@ -265,7 +265,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		MDB2Wrapper::update($update, array('text', 'text'), array($login_name, $org));
 	} /* end changeAccount() */
 
-	private function format_subscr_on_state($subscriber, $state)
+	public function format_subscr_on_state($subscriber, $state)
 	{
 		$res = $subscriber;
 		switch($state) {
@@ -283,7 +283,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		return $res;
 	}
 
-	private function delete_button($key, $target)
+	public function delete_button($key, $target)
 	{
 		if (!isset($key) || !isset($target))
 			return;
