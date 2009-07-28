@@ -26,7 +26,6 @@
 			{foreach from=$errors item=error}
 			<div class="error">{$error}</div>
 			{/foreach}
-
 			{foreach from=$messages item=msg}
 			<div class="success">{$msg}</div>
 			{/foreach}
