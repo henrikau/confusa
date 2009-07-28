@@ -140,7 +140,6 @@ class RevokeCertificate extends FW_Content_Page
 	 *
 	 * @param $common_name The common-name that is searched for. Will be automatically
 	 *                     turned into a wildcard
-	 * @param $person The person who is performing the search
 	 */
 	private function search_certs_display($common_name)
 	{
