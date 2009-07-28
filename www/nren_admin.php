@@ -256,16 +256,38 @@ class CP_NREN_Admin extends FW_Content_Page
 	private function changeAccount($login_name)
 	{
 		$org = $this->person->get_orgname();
-		$res = MDB2Wrapper::execute("SELECT nren_name FROM nrens_account_map_view", null, null);
-		if (count($res) > 1)
-			return;
-		if (count($res) == 1)
-			if ($res[0]['account_login_name'] === $login_name)
-				return;
 
-		echo "Changing account for " . $this->person->get_orgname() . " to $login_name <BR />\n";
-		$update = "UPDATE nrens SET login_name=? WHERE name=?";
-		MDB2Wrapper::update($update, array('text', 'text'), array($login_name, $org));
+		/* Get the current account */
+		try {
+			$res = MDB2Wrapper::execute("SELECT account_login_name FROM nrens_account_map_view WHERE nren_name = ?",
+						    array('text'),
+						    array($org));
+			if (count($res) > 1) {
+				Framework::error_output("Too many hits in database! " . count($res) . " Database inconsistency.");
+				Logger::log_event(LOG_NOTICE, "Inconsistency detected in the database. $org has " . count($res) . " accounts");
+				return;
+			}
+
+			if (count($res) == 1) {
+				if ($res[0]['account_login_name'] === $login_name) {
+					/* FIXME: remove this error-output? Or
+					 * is the feedback valuable? */
+					Framework::error_output("Will not update NREN with the same account");
+					return;
+				}
+			}
+
+			MDB2Wrapper::update("UPDATE nrens SET login_name=? WHERE name=?",
+					    array('text', 'text'),
+					    array($login_name, $org));
+			Framework::message_output("Changed account for $org to $login_name");
+		} catch (DBStatementException $dbqe) {
+			Framework::error_output("Query syntax errors. Server said: " . $dbqe->getMessage());
+			return;
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Database-server problems. Server said: " . $dbqe->getMessage());
+			return;
+		}
 	} /* end changeAccount() */
 
 	public function format_subscr_on_state($subscriber, $state)
