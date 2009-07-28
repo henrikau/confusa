@@ -155,8 +155,10 @@ class CP_NREN_Admin extends FW_Content_Page
 	} /* end addSubscriber() */
 
 
-	/*
-	 * Delete a registered (identity-vetting) instituion
+	/**
+	 * delSubscriber - remove the subscriber from the NREN
+	 *
+	 * @name : the name of the institution
 	 */
 	private function delSubscriber($name, $state) {
 		if (!isset($name) || $name === "") {
@@ -164,13 +166,20 @@ class CP_NREN_Admin extends FW_Content_Page
 		}
 		$nren	= $this->person->get_orgname();
 		$sub	= Input::sanitize($name);
-		MDB2Wrapper::execute("DELETE FROM subscribers WHERE name = ? AND nren_name = ?",
-				     array('text', 'text'),
-				     array($sub, $nren));
-		/* FIXME: test for errors */
 
+		try {
+			/* FIXME: add switch to force the query to fail if the
+			 * subscriber does not exist. */
+			MDB2Wrapper::execute("DELETE FROM subscribers WHERE name = ? AND nren_name = ?",
+					     array('text', 'text'),
+					     array($sub, $nren));
 
-		Logger::log_event(LOG_INFO, "Deleted subscriber $sub in organization $org.\n");
+			Logger::log_event(LOG_INFO, "Deleted subscriber $sub in organization $org.\n");
+			Framework::message_output("Successfully deleted subscriber $sub in organization $org.");
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_NOTICE, "Could not delete $sub in organization $org from DB.\n");
+			Framework::message_output("Could not delete $sub in organization $org from DB.");
+		}
 	}
 
 	/**
