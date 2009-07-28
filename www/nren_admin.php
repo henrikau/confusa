@@ -101,10 +101,21 @@ class CP_NREN_Admin extends FW_Content_Page
 	 */
 	private function editSubscriber($name, $state)
 	{
-		$query = "SELECT * FROM subscribers WHERE name = ? AND nren_name = ?";
+
+		$query_id = "SELECT nren_id FROM nrens WHERE name=?";
+
+		$res_id = MDB2Wrapper::execute($query_id,
+					       array('text'),
+					       array($this->person->get_nren()));
+
+		if (count($res_id) < 1) {
+		    throw new DBQueryException("Could not find your NREN! Something seems to be misconfigured.");
+		}
+
+		$query = "SELECT * FROM subscribers WHERE name = ? AND nren_id = ?";
 		$res = MDB2Wrapper::execute($query,
 					    array('text', 'text'),
-					    array($name, $this->person->get_orgname()));
+					    array($name, $res_id[0]['nren_id']));
 		if (count($res) > 1)
 			throw new DBQueryException("Could not retrieve the correct subscriber. Got " . count($res) . " rows in return");
 		if (count($res) != 1)
@@ -114,8 +125,8 @@ class CP_NREN_Admin extends FW_Content_Page
 		if ($res[0]['org_state'] === $state) {
 			return;
 		}
-		$update = "UPDATE subscribers SET org_state=? WHERE name=? AND nren_name=?";
-		MDB2Wrapper::update($update, array('text', 'text', 'text'), array($state, $name, $this->person->get_orgname()));
+		$update = "UPDATE subscribers SET org_state=? WHERE name=? AND nren_id=?";
+		MDB2Wrapper::update($update, array('text', 'text', 'text'), array($state, $name, $res_id[0]['nren_id']));
 		Logger::log_event(LOG_NOTICE, "Changed state for $name from " . $res[0]['org_state'] . " to $state");
 	}
 
@@ -129,7 +140,7 @@ class CP_NREN_Admin extends FW_Content_Page
 	{
 		$org_state	= Input::sanitize($state);
 		$org_name	= Input::sanitize($name);
-		$nren		= $this->person->get_orgname();
+		$nren		= $this->person->get_nren();
 
 		if (!isset($org_state) || $org_state === "")
 			echo "orgstate not set!";
@@ -138,11 +149,21 @@ class CP_NREN_Admin extends FW_Content_Page
 		if (!isset($nren) || $nren === "")
 			echo "nren not set!";
 
-		$update = "INSERT INTO subscribers(name, nren_name, org_state) VALUES(?,?,?)";
+		$subselect = "(SELECT nren_id FROM nrens WHERE name=?)";
+		$res = MDB2Wrapper::execute($subselect,
+					    array('text'),
+					    array($nren));
+
+		if (count($res) < 1) {
+		    Framework::error_output("Your NREN is unknown to Confusa! " .
+			  "Probably something is wrong with the configuration");
+		}
+
+		$update = "INSERT INTO subscribers(name, nren_id, org_state) VALUES(?,?,?)";
 		try {
 		MDB2Wrapper::update($update,
-				    array('text',	'text',		'text'),
-				    array($org_name,	$nren,		$org_state));
+				    array('text',	'text',			'text'),
+				    array($org_name,	$res[0]['nren_id'],	$org_state));
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Cannot add row, duplicate entry?");
 			return;
@@ -163,13 +184,15 @@ class CP_NREN_Admin extends FW_Content_Page
 		if (!isset($name) || $name === "") {
 			error_output("Cannot delete empty string!");
 		}
-		$nren	= $this->person->get_orgname();
+		$nren	= $this->person->get_nren();
 		$sub	= Input::sanitize($name);
+
+		$subselect = "(SELECT nren_id FROM nrens WHERE name=?)";
 
 		try {
 			/* FIXME: add switch to force the query to fail if the
 			 * subscriber does not exist. */
-			MDB2Wrapper::execute("DELETE FROM subscribers WHERE name = ? AND nren_name = ?",
+			MDB2Wrapper::execute("DELETE FROM subscribers WHERE name = ? AND nren_id = $subselect",
 					     array('text', 'text'),
 					     array($sub, $nren));
 
@@ -192,7 +215,7 @@ class CP_NREN_Admin extends FW_Content_Page
 	private function getSubscribers()
 	{
 		$query = "SELECT * FROM nren_subscriber_view WHERE nren=? ORDER BY subscriber ASC";
-		$res = MDB2Wrapper::execute($query, array('text'), array($this->person->get_orgname()));
+		$res = MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
 		if (count($res) == 0)
 			return;
 		$result = array();
@@ -206,8 +229,8 @@ class CP_NREN_Admin extends FW_Content_Page
 	{
 
 		/* Get the current account */
-		$query	= "SELECT * FROM nrens_account_map_view WHERE nren_name = ?";
-		$res	= MDB2Wrapper::execute($query, array('text'), array($this->person->get_orgname()));
+		$query	= "SELECT * FROM nren_account_map_view WHERE nren = ?";
+		$res	= MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
 		if (count($res) == 1)
 			$curr_account = $res[0]['account_login_name'];
 		else if (count($res) > 1) {
@@ -245,15 +268,17 @@ class CP_NREN_Admin extends FW_Content_Page
 	private function editAccount($login_name, $password)
 	{
 		/* FIXME */
-		$nren = $this->person->get_orgname();
+		$nren = $this->person->get_nren();
 
 		if (!isset($login_name) || $login_name === "") {
 			Framework::error_output("Login-name not set. This <B>must</B> be available when one wants to edit it.");
 			return;
 		}
+
+		$subselect = "(SELECT account_map_id FROM account_map WHERE login_name=?)";
 		/* Is the account the native account for the NREN? */
 		try {
-			$res = MDB2Wrapper::execute("SELECT * FROM nrens WHERE name=? and login_name = ?",
+			$res = MDB2Wrapper::execute("SELECT * FROM nrens WHERE name=? and login_account = $subselect",
 						    array('text', 'text'),
 						    array($nren, $login_name));
 			if (count($res) == 0) {
@@ -332,13 +357,13 @@ class CP_NREN_Admin extends FW_Content_Page
 	}
 	private function changeAccount($login_name)
 	{
-		$org = $this->person->get_orgname();
+		$nren = $this->person->get_nren();
 
 		/* Get the current account */
 		try {
-			$res = MDB2Wrapper::execute("SELECT account_login_name FROM nrens_account_map_view WHERE nren_name = ?",
+			$res = MDB2Wrapper::execute("SELECT account_login_name FROM nren_account_map_view WHERE nren = ?",
 						    array('text'),
-						    array($org));
+						    array($nren));
 			if (count($res) > 1) {
 				Framework::error_output("Too many hits in database! " . count($res) . " Database inconsistency.");
 				Logger::log_event(LOG_NOTICE, "Inconsistency detected in the database. $org has " . count($res) . " accounts");
@@ -354,9 +379,11 @@ class CP_NREN_Admin extends FW_Content_Page
 				}
 			}
 
-			MDB2Wrapper::update("UPDATE nrens SET login_name=? WHERE name=?",
+			$subselect="(SELECT account_map_id FROM account_map WHERE login_name=?)";
+
+			MDB2Wrapper::update("UPDATE nrens SET login_account=$subselect WHERE name=?",
 					    array('text', 'text'),
-					    array($login_name, $org));
+					    array($login_name, $nren));
 			Framework::message_output("Changed account for $org to $login_name");
 		} catch (DBStatementException $dbqe) {
 			Framework::error_output("Query syntax errors. Server said: " . $dbqe->getMessage());
