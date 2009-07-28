@@ -72,12 +72,26 @@ function insert_credentials($nren_name, $login_name, $login_password)
 
     echo "Inserted values to account_map. Moving on to update the NREN\n";
 
-    $nren_query = "INSERT INTO nrens (login_name, name) VALUES(?, ?)";
-    MDB2Wrapper::update($nren_query,
-			array('text', 'text'),
-			array($login_name, strtolower($nren_name)));
+    $pk_query = "SELECT account_map_id FROM account_map WHERE login_name=?";
+    $res = MDB2Wrapper::execute($pk_query,
+				array('text'),
+				array($login_name));
 
-    echo "Inserted NREN, connected to " . strtolower($nren_name) . "\n";
+    if (count($res) == 1) {
+	$account_id = $res[0]['account_map_id'];
+
+	$nren_query = "INSERT INTO nrens (login_account, name) VALUES(?, ?)";
+	MDB2Wrapper::update($nren_query,
+			array('text', 'text'),
+			array($account_id, strtolower($nren_name)));
+
+	echo "Inserted NREN, connected to " . strtolower($nren_name) . "\n";
+
+    } else {
+	echo "An error occured while inserting the bootstrapped account!";
+	exit(5);
+    }
+
 }
 
 function show_help($argv)

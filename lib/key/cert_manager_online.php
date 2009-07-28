@@ -49,10 +49,9 @@ class CertManager_Online extends CertManager
      * (institution of) the managed person.
      */
     private function _get_account_information() {
-        $login_cred_query = "SELECT a.login_name, a.password, a.ivector " .
-              "FROM account_map a, nrens n, institutions i " .
-              "WHERE i.name = ? AND i.nren_name = n.name " .
-              "AND n.login_name = a.login_name";
+        $login_cred_query = "SELECT a.account_login_name, a.account_password, a.account_ivector " .
+              "FROM nren_account_map_view a, nren_subscriber_view s " .
+              "WHERE s.subscriber = ? AND s.nren = a.nren";
 
         $org = $this->person->get_orgname();
         Logger::log_event(LOG_INFO, "Getting the remote-CA login " .
@@ -70,9 +69,9 @@ class CertManager_Online extends CertManager
 			);
         }
 
-        $this->login_name = $res[0]['login_name'];
-        $encrypted_pw = base64_decode($res[0]['password']);
-        $ivector = base64_decode($res[0]['ivector']);
+        $this->login_name = $res[0]['account_login_name'];
+        $encrypted_pw = base64_decode($res[0]['account_password']);
+        $ivector = base64_decode($res[0]['account_ivector']);
         $encryption_key = Config::get_config('capi_enc_pw');
         $this->login_pw = trim(base64_decode(mcrypt_decrypt(
                                 MCRYPT_RIJNDAEL_256, $encryption_key,
@@ -446,8 +445,7 @@ class CertManager_Online extends CertManager
                                         " Person contacted us from " .
                                         $_SERVER['REMOTE_ADDR']);
 
-          $this->touch_cert_user($days, "DAY");
-          $sql_command= "INSERT INTO order_store(auth_key, common_name, " .
+          $sql_command= "INSERT INTO order_store(auth_key, owner, " .
                         "order_number, order_date, authorized)" .
                         "VALUES(?, ?, ?, now(),'unauthorized')";
 
@@ -473,13 +471,14 @@ class CertManager_Online extends CertManager
         */
         return $auth_key;
       } else if(strlen($auth_key) == Config::get_config('auth_length')) {
-          $res = MDB2Wrapper::execute("SELECT order_number FROM order_store WHERE auth_key=? AND common_name=?",
+          // TODO: Replace get_common_name with get_eppn or whatever...
+          $res = MDB2Wrapper::execute("SELECT order_number FROM order_store WHERE auth_key=? AND owner=?",
                                   array('text', 'text'),
-                                  array($auth_key, $this->person->get_valid_cn()));
+                                  array($auth_key, $this->person->get_common_name()));
 
           if (count($res) < 1) {
             throw new DBQueryException("Could not find order number for $auth_key " .
-                                           "and " . $this->person->get_valid_cn() .
+                                           "and " . $this->person->get_common_name() .
                                            " in order_store"
             );
           }
