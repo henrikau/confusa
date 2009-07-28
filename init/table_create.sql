@@ -32,8 +32,9 @@
 --
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS account_map (
+    account_map_id INT PRIMARY KEY AUTO_INCREMENT,
     -- the login-name for the associated sub-account,
-    login_name VARCHAR(128) PRIMARY KEY,
+    login_name VARCHAR(128) UNIQUE NOT NULL,
 
     -- the password with which the sub-account will be accessed.
     -- encrypted at application layer
@@ -60,12 +61,13 @@ CREATE TABLE IF NOT EXISTS account_map (
 --
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS nrens (
+    nren_id INT PRIMARY KEY AUTO_INCREMENT,
     -- the name of the NREN (e.g. SUNET, UNINETT, FUNET)
-    name VARCHAR(30) PRIMARY KEY,
+    name VARCHAR(30),
 
     -- if a remote signing CA is used, the ID of the subaccont there
-    login_name VARCHAR(128),
-    FOREIGN KEY(login_name) REFERENCES account_map(login_name) ON DELETE SET NULL
+    login_account INT,
+    FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
@@ -78,42 +80,16 @@ CREATE TABLE IF NOT EXISTS nrens (
 --
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS subscribers (
+    subscriber_id INT PRIMARY KEY AUTO_INCREMENT,
     -- the name of the institution (e.g. KTH, CSC, Univ. of Oslo,...)
-    name VARCHAR(30) PRIMARY KEY,
+    name VARCHAR(30) NOT NULL,
 
     -- the NREN as it is stored in the NREN table
-    nren_name VARCHAR(30),
+    nren_id INT,
 
     -- the current subscription state to the service
     org_state ENUM('subscribed', 'suspended', 'unsubscribed') NOT NULL,
-    FOREIGN KEY(nren_name) REFERENCES nrens(name) ON DELETE CASCADE
-) type=InnoDB;
-
--- ---------------------------------------------------------
---
--- Certificate User, or Owner.
---
--- Table that holds the common_name and institution of users iff they
--- still possess non-expired certificates or CSRs Certificate and CSR
--- tables will have foreign keys pointing to this table, so all tables
--- will be forced to a consistent representation of the users'
--- common_names
---
--- ---------------------------------------------------------
-CREATE TABLE IF NOT EXISTS cert_user (
-    -- common_name is the complete and valid cn for a person
-    -- ($person->get_valid_cn())
-    common_name VARCHAR(128) PRIMARY KEY NOT NULL,
-
-    -- The institution where the user belongs.
-    institution VARCHAR(30) NOT NULL,
-
-    -- When the certificate expires (or will be removed from the
-    -- database).
---
--- order_store
---
-    expires DATETIME NOT NULL
+    FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
@@ -129,20 +105,18 @@ CREATE TABLE IF NOT EXISTS cert_user (
 -- ---------------------------------------------------------
 DROP TABLE IF EXISTS order_store;
 CREATE TABLE order_store (
-	order_number INT PRIMARY KEY NOT NULL,
+	order_number INT PRIMARY KEY,
 	-- auth_key and owner for remote download and upload
 	auth_key CHAR(64) NOT NULL,
-	common_name VARCHAR(128) NOT NULL,
+	-- the ePPN of the owner of the ordered certificate
+	owner VARCHAR(128) NOT NULL,
 	-- order number and collection code for bookkeeping, revocation,
 	-- delivery
 	order_date DATETIME NOT NULL,
 	authorized ENUM('authorized', 'unauthorized', 'unknown') DEFAULT 'unknown',
-	expires DATETIME NOT NULL,
-    FOREIGN KEY(common_name) REFERENCES cert_user(common_name) ON DELETE CASCADE
+	expires DATETIME NOT NULL
 ) type=InnoDB;
-
 -- ---------------------------------------------------------
-
 
 -- ---------------------------------------------------------
 --
@@ -162,6 +136,7 @@ CREATE TABLE csr_cache (
        csr TEXT NOT NULL,
        uploaded_date DATETIME NOT NULL,
        from_ip varchar(64) NOT NULL,
+       -- the common-name (CN) of the CSR-owner
        common_name varchar(128) NOT NULL,
 
        -- for the challenge-response cycle. when we ask the user to approve
@@ -199,7 +174,8 @@ CREATE TABLE cert_cache (
 --
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS admins (
-       admin varchar(128) PRIMARY KEY, -- common_name of the admin,
+       admin_id INT PRIMARY KEY AUTO_INCREMENT,
+       admin varchar(128), -- ePPN of the admin,
        -- The level of admin privileges
        -- 2: NREN-admin
        -- 1: Subscriber admin
@@ -226,7 +202,8 @@ CREATE TABLE IF NOT EXISTS admins (
 --
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS user_crls (
-       owner varchar(128) PRIMARY KEY,
+       crl_id INT PRIMARY KEY AUTO_INCREMENT,
+       owner varchar(128), -- ePPN of the owner
        cert_sn INT NOT NULL,
        valid_untill DATETIME NOT NULL
 ) type=InnoDB;
