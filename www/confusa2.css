@@ -76,13 +76,13 @@ DIV.admin_table_cell
 
 div.error {
 	padding: 4px;
-	margin-bottom: 4px;	
+	margin-bottom: 4px;
 	background-color: #cf5448;
 	border: 1px solid #961a0e;
 }
 div.success {
 	padding: 4px;
-	margin-bottom: 4px;	
+	margin-bottom: 4px;
 	background-color: #009900;
 	border: 1px solid #508c0a;
 }

@@ -36,11 +36,9 @@ class CP_NREN_Admin extends FW_Content_Page
 			case 'edit':
 				$this->editSubscriber($name, $state);
 				break;
-				
 			case 'add':
 				$this->addSubscriber($name, $state);
 				break;
-				
 			case 'delete':
 				$this->delSubscriber($name, $state);
 				break;
@@ -57,11 +55,9 @@ class CP_NREN_Admin extends FW_Content_Page
 			case 'edit':
 				$this->editAccount($login_name, $password);
 				break;
-				
 			case 'add':
 				$this->addAccount($login_name, $password);
 				break;
-				
 			case 'delete':
 				$this->delAccount($login_name);
 				break;
