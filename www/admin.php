@@ -125,7 +125,7 @@ class CP_Admin extends FW_Content_Page
 		} else {
 
 			/* get the right nren-id first. subselects are expensive */
-			$res = MDB2Wrapper::execute("SELECT login_name FROM nrens " .
+			$res = MDB2Wrapper::execute("SELECT nren_id FROM nrens " .
 						    "WHERE name = ?",
 						    array('text'),
 						    $new_nren_name
@@ -133,19 +133,19 @@ class CP_Admin extends FW_Content_Page
 
 			if (count($res) != 1) {
 				throw new DBQueryException("Could not retrieve a valid nren_id for " .
-							   "login name $new_nren_name"
+							   "nren name $new_nren_name"
 					);
 			}
 
-			$nren_name = $res[0]['login_name'];
-			$stmt = "UPDATE institutions SET org_state = ?, nren_name = ? " .
+			$nren_id = $res[0]['nren_id'];
+			$stmt = "UPDATE subscribers SET org_state = ?, nren_id = ? " .
 				"WHERE name = ?";
 			MDB2Wrapper::update($stmt, array('text','text', 'text'),
-					    array($new_org_state, $nren_name ,$org)
+					    array($new_org_state, $nren_id ,$org)
 				);
 
 			Logger::log_event(LOG_INFO, "Changed organization $org to state " .
-					  "$new_org_state and nren_name $new_nren_name.\n");
+					  "$new_org_state and nren $new_nren_name.\n");
 		}
 	}
 
@@ -186,7 +186,7 @@ class CP_Admin extends FW_Content_Page
 		$nren_name = $this->sanitize($nren_name);
 		$login_name = $this->sanitize($login_name);
 
-		$map_id_query = "SELECT map_id FROM account_map WHERE login_name=?";
+		$map_id_query = "SELECT account_map_id FROM account_map WHERE login_name=?";
 
 		$res = MDB2Wrapper::execute($map_id_query, array('text'), $login_name);
 
@@ -196,14 +196,14 @@ class CP_Admin extends FW_Content_Page
 				);
 		}
 
-		$map_id = $res[0]['map_id'];
+		$map_id = $res[0]['account_map_id'];
 
-		$update_query = "UPDATE nrens SET account_id=? WHERE name=?";
+		$update_query = "UPDATE nrens SET login_account=? WHERE name=?";
 		MDB2Wrapper::update($update_query, array('text','text'),
 				    array($map_id, $nren_name));
 
 		Logger::log_event(LOG_INFO, "Updated NREN $nren_name to use new " .
-				  "account $account_id\n");
+				  "account $map_id\n");
 	}
 
 	/*
@@ -291,8 +291,7 @@ class CP_Admin extends FW_Content_Page
 		$tr_e	= "</div>\n";
 		$table_e= "</div>\n";
 
-		$query	= "SELECT n.name, a.login_name FROM nrens n LEFT JOIN account_map a" .
-			  " ON n.login_name = a.login_name";
+		$query	= "SELECT nren, account_login_name FROM nren_account_map_view";
 
 		$res = MDB2Wrapper::execute($query, NULL, NULL);
 
@@ -303,7 +302,7 @@ class CP_Admin extends FW_Content_Page
 
 		if (count($res) >= 1) {
 			foreach($res as $row)  {
-				$cur_nren = $row['name'];
+				$cur_nren = $row['nren'];
 				echo $tr;
 				echo $td;
 				echo "<form action=\"?nren=delete\" method=\"POST\">\n";
@@ -318,7 +317,7 @@ class CP_Admin extends FW_Content_Page
 				echo $cur_nren;
 				echo $td_e;
 				echo $td;
-				$this->displaySelectBox($row['login_name'], $this->getLoginNames(), 'login_name');
+				$this->displaySelectBox($row['account_login_name'], $this->getLoginNames(), 'login_name');
 				echo $td_e;
 				echo $td;
 				echo "<input type=\"hidden\" name=\"nren_name\" value=\"$cur_nren\" />\n";
@@ -404,17 +403,17 @@ class CP_Admin extends FW_Content_Page
 		$nren = $this->sanitize($nren_name);
 		$account = $this->sanitize($login_name);
 
-		$map_id_query = "SELECT map_id FROM account_map WHERE login_name=?";
+		$map_id_query = "SELECT account_map_id FROM account_map WHERE login_name=?";
 
 		$res = MDB2Wrapper::execute($map_id_query, array('text'),
 					    array($account));
 		$map_id = NULL;
 
 		if (count($res) == 1) {
-			$map_id = $res[0]['map_id'];
+			$map_id = $res[0]['account_map_id'];
 		}
 
-		$query = "INSERT INTO nrens(name, account_id) VALUES(?, ?)";
+		$query = "INSERT INTO nrens(name, login_account) VALUES(?, ?)";
 
 		MDB2Wrapper::update($query, array('text','text'), array($nren, $map_id));
 
@@ -494,7 +493,7 @@ class CP_Admin extends FW_Content_Page
 	private function getOrganizationNames()
 	{
 		$org_names=array();
-		$query = "SELECT name FROM institutions";
+		$query = "SELECT name FROM subscribers";
 		$res = MDB2Wrapper::execute($query, NULL, NULL);
 
 		foreach($res as $row) {
