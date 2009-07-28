@@ -47,8 +47,8 @@ class MDB2Wrapper
 
           $stmnt = MDB2Wrapper::$conn->prepare($query, $types, MDB2_PREPARE_RESULT);
           if (PEAR::isError($stmnt)) {
-               Logger::log_event(LOG_NOTICE, "query failed $stmnt->getMessage()");
-               die("statement: " . $stmnt->getMessage() . "<br>\n$query");
+               Logger::log_event(LOG_NOTICE, "query failed "	. $stmnt->getMessage() . ".");
+	       throw new DBQueryException("query failed: "	. $stmnt->getMessage() . ".");
           }
 
           $res = $stmnt->execute($data);
