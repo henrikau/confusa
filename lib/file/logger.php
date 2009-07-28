@@ -107,7 +107,6 @@ class Logger {
   
 		/* assemble line and enter into local log */
 		$log_line = Logger::get_timestamp() . " (Confusa) " . $header . " " . $message . "\n";
-		Framework::error_output($log_line);
 		fputs($fd, $log_line);
 		@fclose($fd);
 	}
