@@ -296,9 +296,33 @@ class CP_NREN_Admin extends FW_Content_Page
 		return;
 	}
 
+	/* addAccount - add a new account for the NRENs to use.
+	 *
+	 * @login_name : the new login-name. This must be a unidque name (given
+	 *		 by Comodo)
+	 * @password   : a strong password, and must be the same as set in the
+	 *		 remote CA.
+	 */
 	private function addAccount($login_name, $password)
 	{
-		/* FIXME */
+		try {
+		$enckey	= Config::get_config('capi_enc_pw');
+		$pw	= base64_encode($password);
+		$size	= mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
+		$iv	= mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
+		$cryptpw= base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,
+							$enckey,$pw,
+							MCRYPT_MODE_CFB,
+							$iv));
+		MDB2Wrapper::update("INSERT INTO account_map (login_name, password, ivector) VALUES(?, ?, ?)",
+				    array('text','text','text'),
+				    array($login_name, $cryptpw, base64_encode($iv)));
+
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Error adding new account.<BR />\n" . $dbqe->getMessage());
+			return;
+		}
+		Framework::message_output("Added new account $login_name to NREN " . $this->person->get_nren());
 		return;
 	}
 
