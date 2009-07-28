@@ -43,8 +43,8 @@ immediately see a result entry *}
                     {$owner}
                 </div>
                 <div class="admin_table_cell">
-                    {foreach from=$orders item=order}
-                        <input type="hidden" name="order_numbers[]" value=$order />
+                    {foreach from=$orders[$owner] item=order}
+                        <input type="hidden" name="order_numbers[]" value={$order} />
                     {/foreach}
 
                     {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
