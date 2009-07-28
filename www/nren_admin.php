@@ -233,9 +233,66 @@ class CP_NREN_Admin extends FW_Content_Page
 		return array('account' => $curr_account, 'all' => $accounts);
 	} /* end getAccountInfo() */
 
+	/**
+	 * editAccount - change the state of an account.
+	 *
+	 * The account is what ties the NREN to the CA-account. It consists of a
+	 * username and a password (which is encrypted in the databaes). These
+	 * credentials are then used when signing or revoking certificates.
+	 *
+	 * At the moment, an NREN-admin can only change the currently selected
+	 * account (to avoid accidental change of another NREN's account).
+	 *
+	 * @login_name	: the account-name
+	 * @password	: ..
+	 */
 	private function editAccount($login_name, $password)
 	{
 		/* FIXME */
+		$nren = $this->person->get_orgname();
+
+		if (!isset($login_name) || $login_name === "") {
+			Framework::error_output("Login-name not set. This <B>must</B> be available when one wants to edit it.");
+			return;
+		}
+		/* Is the account the native account for the NREN? */
+		try {
+			$res = MDB2Wrapper::execute("SELECT * FROM nrens WHERE name=? and login_name = ?",
+						    array('text', 'text'),
+						    array($nren, $login_name));
+			if (count($res) == 0) {
+				Framework::error_output("Can only change the active account for NREN " . $nren . " and login_name " . $login_name);
+				return;
+			}
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Error in query at " . __FILE__ . ":" . __LINE__ . ". This should be handled by some developer.");
+			return;
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Error in statement at " . __FILE__ . ":" . __LINE__ . ". This should be handled by some developer.");
+			return;
+		}
+
+		/* The account is 'valid', we can change the password */
+		$enckey	= Config::get_config('capi_enc_pw');
+		$pw	= base64_encode($password);
+		$size	= mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
+		$iv	= mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
+		$cryptpw= base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,
+							$enckey,$pw,
+							MCRYPT_MODE_CFB,
+							$iv));
+		try {
+			MDB2Wrapper::update("UPDATE account_map SET password=?, ivector=? WHERE login_name=?",
+					    array('text','text','text'),
+					    array($cryptpw, base64_encode($iv), $login_name));
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Could not update table. Some error in the constraints? " . $dbqe->getMessage());
+			return;
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Could not update table. Some error in the syntax? " . $dbse->getMessage());
+			return;
+		}
+		Framework::message_output("Password for account '$login_name' updated successfully");
 		return;
 	}
 
