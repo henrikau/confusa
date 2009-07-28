@@ -26,13 +26,13 @@ class CP_NREN_Admin extends FW_Content_Page
 
 
 		/* handle nren-flags */
-		if (isset($_GET['subscriber'])) {
-			if (isset($_GET['name']))
-				$name	= Input::sanitize($_GET['name']);
-			if (isset($_GET['state']))
-				$state	= Input::sanitize($_GET['state']);
+		if (isset($_POST['subscriber'])) {
+			if (isset($_POST['name']))
+				$name	= Input::sanitize($_POST['name']);
+			if (isset($_POST['state']))
+				$state	= Input::sanitize($_POST['state']);
 
-			switch(htmlentities($_GET['subscriber'])) {
+			switch(htmlentities($_POST['subscriber'])) {
 			case 'edit':
 				$this->editSubscriber($name, $state);
 				break;
@@ -393,7 +393,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		if ($key === "" || $target === "")
 			return"";
 
-		$res  = "<FORM ACTION=\"\" METHOD=\"GET\">\n";
+		$res  = "<FORM ACTION=\"\" METHOD=\"POST\">\n";
 		$res .= "<INPUT TYPE=\"hidden\" NAME=\"". $key . "\" VALUE=\"delete\">\n";
 		$res .= "<INPUT TYPE=\"hidden\" NAME=\"name\" VALUE=\"" . $target . "\" />\n";
 		$res .= "<INPUT TYPE=\"hidden\" NAME=\"state\" VALUE=\"\" />\n"; /* don't need state to delete */

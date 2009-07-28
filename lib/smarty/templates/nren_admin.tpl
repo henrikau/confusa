@@ -53,7 +53,7 @@
 {$tr_e}
 {$tr}
 	{$td}
-		<FORM ACTION="" METHOD="GET">
+		<FORM ACTION="" METHOD="POST">
 		<INPUT TYPE="hidden" NAME="subscriber" VALUE="add" />
 	{$td_e}
 	{$td}<INPUT TYPE="TEXT" NAME="name" />{$td_e}
