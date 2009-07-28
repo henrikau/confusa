@@ -9,7 +9,7 @@
  * During the authentication-phase, the user will
  * *be* authenticated, the user will never authenticate on it's own.
  *
-n * When creating a certificate, the attributes will be retrieved *from* the
+ * When creating a certificate, the attributes will be retrieved *from* the
  * user, and the finished certificate will be handed *to* the user.
  *
  * Finally, when it's time to ship off the certificate, the system will retrieve
@@ -29,6 +29,7 @@ class Person{
     private $country;
     private $orgname;
     private $idp;
+    private $nren;
     private $entitlement;
     /* get variables for:
      * Region (i.e. Sor Trondelag)
@@ -142,6 +143,12 @@ class Person{
 		    $this->idp = $idp;
     }
     public function get_idp() { return $this->idp; }
+
+    public function set_nren($nren) {
+	    if (isset($nren))
+		    $this->nren = $nren;
+    }
+    public function get_nren() { return $this->nren; }
 
 
     /**

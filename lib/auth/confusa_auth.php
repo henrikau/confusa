@@ -78,6 +78,7 @@ function is_authenticated($person = null) {
 		$person->set_country('NO');
 		$person->set_orgname('Test');
 		$person->set_idp('Test');
+		$person->set_nren('test');
 		$person->set_entitlement('Test');
 		$person->fed_auth(true);	
 		
@@ -134,6 +135,7 @@ function add_attributes($person)
 	     $person->set_orgname($attributes['organization'][0]);
 	     $person->set_idp($attributes['IdP'][0]);
 	     $person->set_entitlement($attributes['eduPersonEntitlement'][0]);
+	     $person->set_nren($attributes['nren'][0]);
 	     $person->fed_auth(true);
      }
 } /* end add_attributes() */
