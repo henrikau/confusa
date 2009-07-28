@@ -28,9 +28,9 @@ class CP_NREN_Admin extends FW_Content_Page
 		/* handle nren-flags */
 		if (isset($_GET['subscriber'])) {
 			if (isset($_GET['name']))
-				$name	= htmlentities($_GET['name']);
+				$name	= Input::sanitize($_GET['name']);
 			if (isset($_GET['state']))
-				$state	= htmlentities($_GET['state']);
+				$state	= Input::sanitize($_GET['state']);
 
 			switch(htmlentities($_GET['subscriber'])) {
 			case 'edit':
@@ -49,9 +49,9 @@ class CP_NREN_Admin extends FW_Content_Page
 			/* We must use POST as we may pass along a password and
 			 * we do not want to set that statically in the subject-line. */
 			if (isset($_POST['login_name']))
-				$login_name = $_POST['login_name'];
+				$login_name = Input::sanitize($_POST['login_name']);
 			if (isset($_POST['password']))
-				$password = $_POST['password'];
+				$password = Input::sanitize($_POST['password']);
 
 			switch(htmlentities($_POST['account'])) {
 			case 'edit':
