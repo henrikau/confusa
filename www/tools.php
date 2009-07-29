@@ -18,6 +18,7 @@ class Tools extends FW_Content_Page
 	}
 	public function pre_process($person)
 	{
+		parent::pre_process($person);
 		if (isset($_GET['send_file'])) {
 			include_once 'file_download.php';
 			include_once 'create_keyscript.php';
