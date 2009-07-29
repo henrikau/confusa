@@ -20,8 +20,7 @@ final class ProcessCsr extends FW_Content_Page
 
 	public function pre_process($person)
 	{
-		$this->setPerson($person);
-		$this->setManager();
+		parent::pre_process($person);
 		$res = false;
 		if (isset($_GET['sign_csr'])) {
 			$res = $this->approveCsr(htmlentities($_GET['sign_csr']));
