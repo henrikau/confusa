@@ -30,7 +30,13 @@ class KeyScript {
 		$script = str_replace('key_length='	,"key_length="	.Config::get_config('key_length')	, $script);
 
 		/* send location and upload related variables */
-		$script = str_replace('server_loc=""'	,'server_loc="'.dirname($_SERVER['HTTP_REFERER']).'"'	, $script);
+		$address = "http";
+		if ($_SERVER['SERVER_PORT'] == "443") {
+			$address .= "s";
+		}
+		$address .= "://" . $_SERVER['SERVER_NAME'] . dirname($_SERVER['REQUEST_URI']);
+
+		$script = str_replace('server_loc=""'	,'server_loc="'. $address .'"'	, $script);
                 $script = str_replace('down_page=""'	,'down_page="'.Config::get_config('download').'"'	, $script);
                 $script = str_replace('up_page=""'	,'up_page="'.Config::get_config('upload').'"'		, $script);
 		$script = str_replace('approve_page=""'	, 'approve_page="'.Config::get_config('approve').'"'	, $script);
