@@ -86,3 +86,13 @@ div.success {
 	background-color: #009900;
 	border: 1px solid #508c0a;
 }
+
+fieldset legend {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: black;
+}
+
+div.csr {
+	margin-bottom: 5%;
+}
