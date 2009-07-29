@@ -5,7 +5,6 @@ require_once 'cert_manager.php';
 require_once 'key_sign.php';
 require_once 'mdb2_wrapper.php';
 require_once 'db_query.php';
-
 /*
  * CertManager_Standalone Standalone-CA extension for CertManager.
  *
@@ -136,7 +135,7 @@ class CertManager_Standalone extends CertManager
          * Generously leaving this decision to Henrik ;-)
          *
         */
-        echo "Revocation for standalone configuration is to be implemented!";
+	    Framework::error_output("Revocation for standalone configuration is to be implemented!");
     }
 
   /* verify_csr()
@@ -154,7 +153,7 @@ class CertManager_Standalone extends CertManager
         * somewhat more involved) and I'm not convinced that it will be any safer.
         */
 	  if (!isset($csr)) {
-		  echo __FILE__ . ":" . __LINE__ . " CSR not provided by caller!<BR>\n";
+		  Framework::error_output( __FILE__ . ":" . __LINE__ . " CSR not provided by caller1");
 		  return false;
 	  }
 
@@ -164,15 +163,17 @@ class CertManager_Standalone extends CertManager
                 * non-compatible with ARC.
                 */
                if (isset($subject['emailAddress'])) {
-                    echo "will not accept email in DN of certificate. Download latest version of script<br>\n";
+		       Framework::error_output("will not accept email in DN of certificate. Download latest version of script.");
 		    return false;
                }
 	       else if (!$this->match_dn($subject)) {
-                    echo "Error in subject! <BR/>\n";
-                    echo "The fields in your CSR was not set properly.<BR>\n";
-                    echo "To try again, please download a new version of the script, ";
-                    echo "generate a new key and upload again.<BR>\n";
-		    return false;
+		       $msg = "";
+		       $msg .= "Error in subject! <BR/>\n";
+		       $msg .= "The fields in your CSR was not set properly.<BR>\n";
+		       $msg .= "To try again, please download a new version of the script, ";
+		       $msg .= "generate a new key and upload again.<BR>\n";
+		       Framework::error_output($msg);
+		       return false;
                }
 	       return true;
     } /* end verify_csr */
@@ -204,9 +205,7 @@ class CertManager_Standalone extends CertManager
 		  $composed_dn .= "/CN=".$subject['CN'];
 	  $res = $this->person->get_complete_dn() === $composed_dn;
 	  if (Config::get_config('debug') && !$res) {
-		  Framework::error_output("Supplied and composed subject differs!");
-		  echo "Supplied (found in CSR): " . $composed_dn . "<BR>\n";
-		  echo "Composed (desired subj): " . $this->person->get_complete_dn() . "<BR>\n";
+		  Framework::error_output("Supplied (".$composed_dn.") and required subject (".$this->person->get_complete_dn() .") differs!");
 	  }
 	  return $res;
   }
