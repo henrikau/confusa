@@ -3,6 +3,7 @@ require_once 'confusa_include.php';
 include_once 'framework.php';
 include_once 'mail_manager.php';
 include_once 'logger.php';
+require_once 'pw.php';
 
 class Tools extends FW_Content_Page
 {
@@ -55,8 +56,14 @@ class Tools extends FW_Content_Page
 					$subject,
 					$body);
 		$mail->add_attachment($keyscript->create_script(), "create_cert.sh");
-		$mail->send_mail();
-		echo "<I>Mail sent to " . $this->person->get_email() . " with new version of create_cert.sh</I><BR />\n";
+		if ($mail->send_mail()) {
+			Framework::message_output("Mail sent to " . $this->person->get_email() . " with new version of create_cert.sh");
+		} else {
+			$code = create_pw(8);
+			Logger::log_event(LOG_NOTICE, "Could not send email to user, check mail-logs at this time. Session-error-code: $code");
+			Framework::error_output("Could not send mail to " . $this->person->get_email() .
+						"<BR />Check the server-logs for details. Log-code $code");
+		}
 
 	}
 }
