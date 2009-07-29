@@ -35,9 +35,11 @@ class CertManager_Standalone extends CertManager
             $tmp_cert = openssl_csr_sign($csr, $cert_path, $ca_priv_path, $sign_days , array('digest_alg' => 'sha1'));
             openssl_x509_export($tmp_cert, $cert, true);
 
-            MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, organization, valid_untill) VALUES(?, ?, ?, ?, addtime(current_timestamp(), ?))",
+            $timeout = Config::get_config('cert_default_timeout');
+
+            MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, organization, valid_untill) VALUES(?, ?, ?, ?, timestampadd($timeout[1], $timeout[0],current_timestamp()))",
                                 array('text', 'text', 'text', 'text'),
-                                array($cert, $auth_key, $this->person->get_valid_cn(), $this->person->get_orgname(), Config::get_config('cert_default_timeout')));
+                                array($cert, $auth_key, $this->person->get_valid_cn(), $this->person->get_orgname()));
             Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
                                 $this->person->get_valid_cn() .
                                 " Contacting us from ".
