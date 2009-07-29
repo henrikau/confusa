@@ -59,12 +59,11 @@ class CertManager_Standalone extends CertManager
      */
     public function get_cert_list()
     {
-        $res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE cert_owner=? AND valid_untill > current_timestamp()",
-              array('text'),
-              array($this->person->get_valid_cn()));
-
+        $res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE ".
+				    "cert_owner=? AND valid_untill > current_timestamp()",
+				    array('text'),
+				    array($this->person->get_valid_cn()));
         $num_received = count($res);
-
         if ($num_received > 0 && !(isset($res[0]['auth_key']))) {
             $msg = "Received an unexpected response from the database for user " .
                      $this->person->get_common_name();
