@@ -26,6 +26,15 @@ function get_val
     fi
     grep "$1" $configfile | cut -d '=' -f 2 | cut -d "'" -f 2
 }
+
+function get_array_vals
+{
+    if [ -z $1 ]; then
+    return;
+    fi
+    grep "$1" $configfile | cut -d "(" -f 2 | cut -d ")" -f 1
+}
+
 user=`get_val "mysql_username"`
 pass=`get_val "mysql_password"`
 host=`get_val "mysql_host"`
@@ -33,9 +42,11 @@ database=`get_val "mysql_db"`
 
 db_auth="-A -u$user -h$host -p$pass -D$database"
 
-csr_timeout=`get_val "csr_default_timeout"`
+csr_timeout=`get_array_vals "csr_default_timeout"`
+csr_timeout_value=`echo $csr_timeout | cut -d "," -f 1`
+csr_timeout_unit=`echo $csr_timeout | cut -d "," -f 2 | cut -d "'" -f 2`
 
-csr_cache="DELETE FROM csr_cache WHERE current_timestamp() > addtime(uploaded_date, '$csr_timeout')";
+csr_cache="DELETE FROM csr_cache WHERE current_timestamp() > timestampadd($csr_timeout_unit, $csr_timeout_value, uploaded_date)";
 cert_cache="DELETE FROM cert_cache WHERE valid_untill < current_timestamp()"
 order_cache="DELETE FROM order_cache WHERE expires < current_timestamp()"
 
