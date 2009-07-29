@@ -32,12 +32,10 @@ class Tools extends FW_Content_Page
 	}
 	public function process()
 	{
-		echo "<H3>Certificate Revocation Area</H3>\n";
-
-		include 'tools.html';
-
 		if (isset($_GET['send_email']))
 			$this->send_email();
+		$this->tpl->assign('content', $this->tpl->fetch('tools.tpl'));
+
 	}
 
 	private function send_email()
