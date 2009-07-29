@@ -80,7 +80,6 @@ final class ProcessCsr extends FW_Content_Page
 	{
 		/* Testing for uploaded files */
 		if(isset($_FILES['user_csr']['name'])) {
-			decho("Found new CSR<BR>\n");
 			$fu = new FileUpload('user_csr', true, 'test_content');
 			if ($fu->file_ok()) {
 				$csr = $fu->get_content();
@@ -129,6 +128,11 @@ final class ProcessCsr extends FW_Content_Page
 		if (isset($_GET['delete_csr'])) {
 			$res = delete_csr_from_db($this->person, htmlentities($_GET['delete_csr']));
 		}
+			if ($res) {
+				Framework::message_output("Successfully deleted CSR for user " . $this->person->get_common_name() . ".");
+			} else {
+				Framework::error_output("Could not delete CSR.");
+			}
 		elseif (isset($_GET['inspect_csr'])) {
 			$res = print_csr_details($this->person, htmlentities($_GET['inspect_csr']));
 		}
@@ -149,7 +153,8 @@ final class ProcessCsr extends FW_Content_Page
 			$csr = get_csr_from_db($this->person, $authToken);
 		} catch (ConfusaGenException $e) {
 			Framework::error_output("Too many hits. Database incosistency.");
-			Logger::log_event(LOG_ALERT, $this->person->get_valid_cn() . " tried to find CSR with key $authToken which resulted in multiple hits");
+			Logger::log_event(LOG_ALERT, $this->person->get_valid_cn() .
+					  " tried to find CSR with key $authToken which resulted in multiple hits");
 			return false;
 		} catch (CSRNotFoundException $csrnfe) {
 			Framework::error_output("CSR not found, are you sure this is your CSR?\n");
@@ -177,8 +182,12 @@ final class ProcessCsr extends FW_Content_Page
 			$msg = __FILE__ .":".__LINE__." Error signing key.<BR />\nRemote said: " . $e;
 			Framework::error_output($msg);
 			return false;
+		} catch (KeySigningException $kse) {
+			Framework::error_output("Could not sign certificate. Server said: " . $kse->getMessage());
+			return false;
 		}
 		delete_csr_from_db($this->person, $authToken);
+		$this->signing_ok = true;
 
 		/* Construct a meta http-equiv to be included in the
 		 * <HEAD>-section in framework. This is to provide a
@@ -188,7 +197,6 @@ final class ProcessCsr extends FW_Content_Page
 		if ($_SERVER['SERVER_PORT'] == 443)
 			$url .= "s";
 		$url .= "://" . $_SERVER['HTTP_HOST'] . "/" . dirname($_SERVER['PHP_SELF']) . "/download_certificate.php?poll=$authToken";
-		$this->signing_ok = true;
 		return "<META HTTP-EQUIV=\"REFRESH\" content=\"3; url=$url\">\n";
 	} /* end approve_csr_remote() */
 
