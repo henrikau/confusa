@@ -7,6 +7,7 @@ require_once 'csr_lib.php';
 require_once 'file_upload.php';
 require_once 'config.php';
 require_once 'send_element.php';
+require_once 'input.php';
 
 final class ProcessCsr extends FW_Content_Page
 {
@@ -127,14 +128,30 @@ final class ProcessCsr extends FW_Content_Page
 		$res = false;
 		if (isset($_GET['delete_csr'])) {
 			$res = delete_csr_from_db($this->person, htmlentities($_GET['delete_csr']));
-		}
 			if ($res) {
 				Framework::message_output("Successfully deleted CSR for user " . $this->person->get_common_name() . ".");
 			} else {
 				Framework::error_output("Could not delete CSR.");
 			}
+		}
 		elseif (isset($_GET['inspect_csr'])) {
-			$res = print_csr_details($this->person, htmlentities($_GET['inspect_csr']));
+			try {
+				$this->tpl->assign('csrInspect', get_csr_details($this->person, Input::sanitize($_GET['inspect_csr'])));
+				$res = true;
+			} catch (CSRNotFoundException $csrnfe) {
+				$msg  = "Error with auth-token ($auth_key) - not found. ";
+				$msg .= "Please verify that you have entered the correct auth-url and try again.";
+				$msg .= "If this problem persists, try to upload a new CSR and inspect the fields carefully";
+				Framework::error_output($msg);
+				return false;
+			} catch (ConfusaGenException $cge) {
+				$msg = "Too menu returns received. This can indicate database inconsistency.";
+				Framework::error_output($msg);
+				Logger::log_event(LOG_ALERT, "Several identical CSRs (" .
+						  $auth_token . ") exists in the database for user " .
+						  $this->person->get_valid_cn());
+				return false;
+			}	
 		}
 		return $res;
 	}
@@ -213,30 +230,11 @@ final class ProcessCsr extends FW_Content_Page
 		$res = MDB2Wrapper::execute($query,
 					    array('text'),
 					    $this->person->get_valid_cn());
-		if (count($res) > 0) {
-			/* Handle each separate instance */
-			echo "<TABLE CLASS=\"small\">\n";
-			echo "<TR>";
-			echo "<TH>Uploaded date</TH>";
-			echo "<TH>Common Name</TH>";
-			echo "<TH>From IP</TH>";
-			echo "<TH>Inspect</TH>";
-			echo "<TH>Delete</TH>";
-			echo "</tr>\n";
-			foreach ($res as $key => $value) {
-				echo "<TR>";
-				echo "<TD>"	. $value['uploaded_date'] . "</TD>\n";
-				echo "<TD><I>"	. $value['common_name'] . "</I></TD>\n";
-
-				echo "<TD>".format_ip($value['from_ip'], true) ."</TD>\n";
-				echo "<TD>[ <A HREF=\""	.$_SERVER['PHP_SELF']."?inspect_csr=".$value['auth_key']."\">Inspect</A> ]</TD>\n";
-				echo "<TD>[ <A HREF=\""	.$_SERVER['PHP_SELF']."?delete_csr=".$value['auth_key']."\">Delete</A> ]</TD>\n";
-				echo "</tr>\n";
-			}
-			echo "</TABLE>\n";
-		} else {
-			decho("There are no valid CSRs currently stored in the database for " . $this->person->get_valid_cn());
+		/* Format the IPs */
+		foreach ($res as $key => $value) {
+			$res[$key]['from_ip'] = format_ip($value['from_ip'], true);
 		}
+		return $res;
 	}
 
 }
