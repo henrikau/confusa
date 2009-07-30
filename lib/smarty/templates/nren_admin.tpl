@@ -141,6 +141,46 @@
 
 {* ---------------------------------------------------------------- *
  *
+ *	Delete an account from the database
+ *
+ * ---------------------------------------------------------------- *}
+<BR />
+<H4>Change the current CA NREN-account</H4>
+{$table}
+<FoRM ACTION="" METHOD="POST">
+<INPUT TYPE="hidden" NAME="account" VALUE="delete">
+
+{$tr}
+{$tr_e}
+
+{$tr}
+{$td}Account:{$td_e}
+{$td}{$td_e}
+{$td}
+{$nren->createSelectBox($account_list.account, $account_list.all, 'login_name')}
+{$td_e}
+{$td}{$td_e}
+{$tr_e}
+
+{$tr}
+{$tr_e}
+
+{$tr}
+{$td}{$td_e}
+{$td}{$td_e}
+{$td}
+<INPUT TYPE="submit"
+	onClick="return confirm('Delete entry? ({$account_list.account})')""
+	NAME="submit" VALUE="Delete">
+
+{$td_e}
+
+{$tr_e}
+</FORM>
+{$table_e}
+
+{* ---------------------------------------------------------------- *
+ *
  *	Add a new CA-account for this NREN
  *
  * ---------------------------------------------------------------- *}
