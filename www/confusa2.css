@@ -96,3 +96,8 @@ fieldset legend {
 div.csr {
 	margin-bottom: 5%;
 }
+
+div.spacer
+{
+  height: 12px
+}
