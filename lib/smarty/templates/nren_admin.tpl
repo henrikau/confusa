@@ -145,7 +145,7 @@
  *
  * ---------------------------------------------------------------- *}
 <BR />
-<H4>Change the current CA NREN-account</H4>
+<H4>Delete a CA NREN-account</H4>
 {$table}
 <FoRM ACTION="" METHOD="POST">
 <INPUT TYPE="hidden" NAME="account" VALUE="delete">
