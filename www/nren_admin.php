@@ -239,7 +239,7 @@ class CP_NREN_Admin extends FW_Content_Page
 			Logger::log_event(LOG_INFO, "Deleted subscriber $sub in organization $org.\n");
 			Framework::message_output("Successfully deleted subscriber $sub in organization $org.");
 		} catch (DBQueryException $dbqe) {
-			$msg = "Could not delete $sub in organization $org from DB."
+			$msg = "Could not delete $sub in organization $org from DB.";
 			Logger::log_event(LOG_NOTICE, $msg);
 			Framework::message_output($msg . "<BR />Server said: " . $dbqe->getMessage());
 		}
