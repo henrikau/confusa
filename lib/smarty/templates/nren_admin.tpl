@@ -170,7 +170,7 @@
 {$td}{$td_e}
 {$td}
 <INPUT TYPE="submit"
-	onClick="return confirm('Delete entry? ({$account_list.account})')""
+	onClick="return confirm('Delete entry?')""
 	NAME="submit" VALUE="Delete">
 
 {$td_e}
