@@ -101,33 +101,47 @@ class CP_NREN_Admin extends FW_Content_Page
 	 */
 	private function editSubscriber($name, $state)
 	{
+		$query_id		= "SELECT nren_id FROM nrens WHERE name=?";
+		$query_subscribers	= "SELECT * FROM subscribers WHERE name = ? AND nren_id = ?";
+		$update			= "UPDATE subscribers SET org_state=? WHERE name=? AND nren_id=?";
 
-		$query_id = "SELECT nren_id FROM nrens WHERE name=?";
+		try {
+			$res_id = MDB2Wrapper::execute($query_id,
+						       array('text'),
+						       array($this->person->get_nren()));
+			if (count($res_id) < 1) {
+				throw new DBQueryException("Could not find your NREN! Something seems to be misconfigured.");
+			}
+			$res_subscribers = MDB2Wrapper::execute($query_subscribers,
+								array('text', 'text'),
+								array($name, $res_id[0]['nren_id']));
 
-		$res_id = MDB2Wrapper::execute($query_id,
-					       array('text'),
-					       array($this->person->get_nren()));
+			if (count($res_subscribers) > 1) {
+				$msg  = "Database Inconsistency! Got duplicate (identical) subscribers (" . $name . ")";
+				$msg .= " for NREN " . $this->person->get_nren() . ". Got " . count($res_subscribers);
+				$msg .= ", should have found 0 or 1";
+				Logger::log_event(LOG_ALERT, $msg);
+				throw new DBQueryException($msg);
+			}
 
-		if (count($res_id) < 1) {
-		    throw new DBQueryException("Could not find your NREN! Something seems to be misconfigured.");
+			/* only thing you can change is state.
+			 * If the subscriber is unknown or the new state
+			 * is identical to the current, there's no point in
+			 * going further. */
+			if (count($res_subscribers) != 1 || $res_subscribers[0]['org_state'] === $state) {
+				return;
+			}
+			MDB2Wrapper::update($update,
+					    array('text', 'text', 'text'),
+					    array($state, $name, $res_id[0]['nren_id']));
+
+			Logger::log_event(LOG_NOTICE, "Changed state for $name from " . $res[0]['org_state'] . " to $state");
+
+		} catch (DBStatementException $dbse) {
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " Error in query-syntax.<BR />Server said " . $dbse->getMessage());
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " Problems with query.<BR />Server said " . $dbqe->getMessage());
 		}
-
-		$query = "SELECT * FROM subscribers WHERE name = ? AND nren_id = ?";
-		$res = MDB2Wrapper::execute($query,
-					    array('text', 'text'),
-					    array($name, $res_id[0]['nren_id']));
-		if (count($res) > 1)
-			throw new DBQueryException("Could not retrieve the correct subscriber. Got " . count($res) . " rows in return");
-		if (count($res) != 1)
-			return;
-
-		/* only thing you can change is state */
-		if ($res[0]['org_state'] === $state) {
-			return;
-		}
-		$update = "UPDATE subscribers SET org_state=? WHERE name=? AND nren_id=?";
-		MDB2Wrapper::update($update, array('text', 'text', 'text'), array($state, $name, $res_id[0]['nren_id']));
-		Logger::log_event(LOG_NOTICE, "Changed state for $name from " . $res[0]['org_state'] . " to $state");
 	}
 
 	/**
