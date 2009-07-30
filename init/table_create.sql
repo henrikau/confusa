@@ -9,7 +9,6 @@
 --
 --
 -- ---------------------------------------------------------
-
 -- ---------------------------------------------------------
 --
 -- account_map	 - map an account to a set of username/password credentials.
@@ -175,7 +174,7 @@ CREATE TABLE cert_cache (
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS admins (
        admin_id INT PRIMARY KEY AUTO_INCREMENT,
-       admin varchar(128), -- ePPN of the admin,
+       admin varchar(128) NOT NULL, -- ePPN of the admin,
        -- The level of admin privileges
        -- 2: NREN-admin
        -- 1: Subscriber admin
@@ -189,7 +188,22 @@ CREATE TABLE IF NOT EXISTS admins (
        -- Note: as an extra injection protection, Person will cast any
        -- updated new_mode to integer, forcing all non-integers to be
        -- '0', i.e. Normal mode.
-       last_mode ENUM('0','1') DEFAULT 0
+       last_mode ENUM('0','1') DEFAULT 0,
+
+       -- in order to be able to easily track the hierarchy within administrators
+       -- store the subscriber to which the admin belongs.
+       -- Leave this field NULL if the admin is a NREN-admin
+       subscriber INT,
+       -- another nullable field, this time pointing to the NREN.
+       -- This field helps to easily determine, for which NREN a NREN-admin is
+       -- responsible. It would have been possible to find this information by
+       -- joining over the subscriber to the NREN, but it would make bootstrapping
+       -- hard, if the subscriber for each NREN-admin was to be known.
+       -- The field can be left NULL or filled in if the admin is a subscriber
+       -- admin.
+       nren INT,
+       FOREIGN KEY(subscriber) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
+       FOREIGN KEY(nren) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
 
  

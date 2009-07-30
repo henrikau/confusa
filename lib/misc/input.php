@@ -20,7 +20,7 @@ class Input
 			}
 		}
 
-		$output = preg_replace('/[^a-z0-9_ ]+/i','',$input);
+		$output = preg_replace('/[^a-z0-9_.@ ]+/i','',$input);
 		return $output;
 	}
 }

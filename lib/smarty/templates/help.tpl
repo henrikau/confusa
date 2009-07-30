@@ -5,5 +5,5 @@ Nothing here yet...
 {else}
 <h2>Help</h2>
 
-Nothing here yet...
 {/if}
+{$help_file}

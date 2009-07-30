@@ -197,4 +197,20 @@ function print_csr_details($person, $auth_key)
 	return true;
 }
 
+function get_csr_details($person, $auth_key)
+{
+	$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
+	$subj = openssl_csr_get_subject($csr['csr'], false);
+	$result = array(
+		'auth_token'	=> $csr['auth_key'],
+		'length'	=> csr_pubkey_length($csr['csr']),
+		'uploaded'	=> $csr['uploaded_date'],
+		'from_ip'	=> format_ip($csr['from_ip'], true)
+		);
+	foreach($subj as $key => $value) {
+		$result[$key] = $value;
+	}
+
+	return $result;
+}
 ?>

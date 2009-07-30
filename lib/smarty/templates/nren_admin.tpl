@@ -31,7 +31,7 @@
 			{$td}{$nren->delete_button('subscriber', $row.subscriber)}{$td_e}
 			{$td}{$nren->format_subscr_on_state($row.subscriber, $row.org_state)}{$td_e}
 			{$td}
-				<FORM ACTION="">
+				<FORM ACTION="" METHOD="POST">
 				<INPUT TYPE="hidden" NAME="subscriber" VALUE="edit">
 				<INPUT TYPE="hidden" NAME="name" VALUE="{$row.subscriber}">
 				{$nren->createSelectBox($row.org_state,	null, state)}
@@ -135,6 +135,46 @@
 {$td}{$td_e}
 {$td}{$td_e}
 {$td}<INPUT TYPE="submit" NAME="submit" VALUE="Change">{$td_e}
+{$tr_e}
+</FORM>
+{$table_e}
+
+{* ---------------------------------------------------------------- *
+ *
+ *	Delete an account from the database
+ *
+ * ---------------------------------------------------------------- *}
+<BR />
+<H4>Delete a CA NREN-account</H4>
+{$table}
+<FoRM ACTION="" METHOD="POST">
+<INPUT TYPE="hidden" NAME="account" VALUE="delete">
+
+{$tr}
+{$tr_e}
+
+{$tr}
+{$td}Account:{$td_e}
+{$td}{$td_e}
+{$td}
+{$nren->createSelectBox($account_list.account, $account_list.all, 'login_name')}
+{$td_e}
+{$td}{$td_e}
+{$tr_e}
+
+{$tr}
+{$tr_e}
+
+{$tr}
+{$td}{$td_e}
+{$td}{$td_e}
+{$td}
+<INPUT TYPE="submit"
+	onClick="return confirm('Delete entry?')""
+	NAME="submit" VALUE="Delete">
+
+{$td_e}
+
 {$tr_e}
 </FORM>
 {$table_e}

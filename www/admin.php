@@ -4,6 +4,7 @@ include_once 'framework.php';
 include_once 'mdb2_wrapper.php';
 include_once 'db_query.php';
 include_once 'logger.php';
+include_once 'input.php';
 
 
 /**
@@ -14,20 +15,10 @@ include_once 'logger.php';
  */
 class CP_Admin extends FW_Content_Page
 {
-	private $org_states;
-	private $org_name_cache;
-	private $urls;
+
 	function __construct()
 	{
 		parent::__construct("Admin", true);
-		$this->org_states		= array('','subscribed', 'suspended', 'unsubscribed');
-		$this->org_name_cache		= array();
-
-		/* Create the urls  */
-		$this->urls			= array();
-		$this->urls['subscribers']	= Output::create_link($_SERVER['SCRIPT_NAME'] . "?subscribe",	"Subscribers");
-		$this->urls['accounts']		= Output::create_link($_SERVER['SCRIPT_NAME'] . "?account",	"Accounts");
-		$this->urls['nren']		= Output::create_link($_SERVER['SCRIPT_NAME'] . "?nren",	"NREN");
 	}
 
 	public function pre_process($person)
@@ -38,11 +29,63 @@ class CP_Admin extends FW_Content_Page
 		if (!($this->person->is_subscriber_admin() || $this->person->is_nren_admin()))
 			return false;
 
-		/* test for flags */
-		if (isset($_GET['admin'])) {
-			switch(htmlentities($_GET['admin'])) {
-			default:
-				break;
+		if (isset($_POST['nren_operation'])) {
+			if (!$this->person->is_nren_admin()) {
+				Framework::error_output("You have the wrong permissions for that operation!");
+				return false;
+			}
+
+			/* operations called by the NREN-admin */
+			switch(htmlentities($_POST['nren_operation'])) {
+				case 'delete_nren_admin':
+					$admin = Input::sanitize($_POST['nren_admin']);
+					$this->deleteAdmin($admin, 2);
+					break;
+				case 'add_nren_admin':
+					$admin = Input::sanitize($_POST['nren_admin']);
+					$nren = $this->person->get_nren();
+					$this->addAdmin($admin,2,NULL,$nren);
+					break;
+				case 'delete_subs_admin':
+					$admin = Input::sanitize($_POST['subs_admin']);
+					$this->deleteAdmin($admin,1);
+					break;
+				case 'add_subs_admin':
+					$admin = Input::sanitize($_POST['subs_admin']);
+					$subscriber = Input::sanitize($_POST['subscriber']);
+					$this->addAdmin($admin,1,$subscriber,NULL);
+					break;
+				default:
+					break;
+			}
+		/* operations called by the subscriber admin */
+		} else if (isset($_POST['subs_operation'])) {
+			if (!$this->person->is_subscriber_admin()) {
+				Framework::error_output("You have the wrong permissions for that operation!");
+				return false;
+			}
+
+			switch(htmlentities($_POST['subs_operation'])) {
+				case 'delete_subs_admin':
+					$admin = Input::sanitize($_POST['subs_admin']);
+					$this->deleteAdmin($admin,1);
+					break;
+				case 'add_subs_admin':
+					$admin = Input::sanitize($_POST['subs_admin']);
+					$subscriber = $this->person->get_orgname();
+					$this->addAdmin($admin,1,$subscriber,NULL);
+					break;
+				case 'delete_subs_sub_admin':
+					$admin = Input::sanitize($_POST['subs_sub_admin']);
+					$this->deleteAdmin($admin,0);
+					break;
+				case 'add_subs_sub_admin':
+					$admin = Input::sanitize($_POST['subs_sub_admin']);
+					$subscriber = $this->person->get_orgname();
+					$this->addAdmin($admin,0,$subscriber,NULL);
+					break;
+				default:
+					break;
 			}
 		}
 	}
@@ -59,468 +102,260 @@ class CP_Admin extends FW_Content_Page
 	{
 		/* IF user is not subscirber- or nren-admin, we stop here */
 		if (!($this->person->is_subscriber_admin() || $this->person->is_nren_admin())) {
-			echo "<H3>Not Authorized for this action</H3>\n";
 			Logger::log_event(LOG_NOTICE, "User " . $this->person->get_valid_cn() . " was rejected at the admin-interface");
 			$this->tpl->assign('reason', 'You do not have sufficient rights to view this page');
 			$this->tpl->assign('content', 'restricted_access.tpl');
 			return false;
 		}
-		$this->tpl->assign('link_urls', $this->urls);
+
+		if ($this->person->is_nren_admin()) { /* NREN admin display */
+			$admins=$this->getNRENAdmins($this->person->get_nren());
+			$subscribers=$this->getSubscribers($this->person->get_nren());
+			$current_subscriber = "";
+
+			if (isset($_POST['subscriber'])) {
+				$current_subscriber = Input::sanitize($_POST['subscriber']);
+			} else if (count($subscribers) > 0) {
+				$current_subscriber = $subscribers[0];
+			}
+
+			if (!empty($current_subscriber)) {
+				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber, 1);
+				$this->tpl->assign('subscriber', $current_subscriber);
+				$this->tpl->assign('subscriber_admins', $subscriber_admins);
+			}
+
+			$this->tpl->assign('nren_admins', $admins);
+			$this->tpl->assign('nren', $this->person->get_nren());
+			$this->tpl->assign('subscribers', $subscribers);
+
+		} else if ($this->person->is_subscriber_admin()) { /* subscriber admin display */
+			$subscriber = $this->person->get_orgname();
+			$subscriber_admins = $this->getSubscriberAdmins($subscriber, 1);
+			$this->tpl->assign('subscriber', $subscriber);
+			$this->tpl->assign('subscriber_admins', $subscriber_admins);
+
+			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->get_orgname(), 0);
+			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
+
+		}
+
+		$this->tpl->assign('self', $this->person->get_common_name());
 		$this->tpl->assign('content', $this->tpl->fetch('admin.tpl'));
 	}
-	
 
-	private function handle_account_actions($action)
+
+	/**
+	 * Get all the NREN admins that belong to a certain NREN
+	 *
+	 * @param $nren The NREN for which the respective admins are queried
+	 */
+	private function getNRENAdmins($nren)
 	{
 
-		switch($action) {
+		$query = "SELECT admin FROM admins WHERE admin_level='2' AND nren=";
+		$query .= "(SELECT nren_id FROM nrens WHERE name = ?)";
 
-		case 'add':
-			$this->add_account($_POST['login_name'], $_POST['login_password']);
-			$this->show_accounts_mask();
-			break;
-
-		case 'delete':
-			$this->delete_account($_POST['login_name']);
-			$this->show_accounts_mask();
-			break;
-
-		case 'edit':
-			$this->edit_account($_POST['login_name'], $_POST['login_password']);
-			$this->show_accounts_mask();
-			break;
-
-		case 'manage':
-		default:
-			$this->show_accounts_mask();
-			break;
+		try {
+			$res = MDB2Wrapper::execute($query,
+										array('text'),
+										array($nren));
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Cannot retrieve (nren)admins from database!<BR /> " .
+				"Probably wrong syntax for query, ask an admin to investigate. Server said: " . $dbse->getMessage());
+			return null;
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Query failed. This probably means that the values " .
+				"passed to the database are wrong. Server said: " . $dbqe->getMessage());
+			return null;
 		}
 
-	}
+		$admins = array();
 
-	/*
-	 * Edit the subscription status or the associated subaccount of the
-	 * organization passed..
-	 * Check the received organization state or subaccount-name carefully
-	 * for their feasabiltiy before performing an update (i.e. check if they
-	 * are already in the database without passing them to SQL).
-	 */
-	private function edit_subscriptions($org, $new_org_state, $new_nren_name)
-	{
-		/* check if we have to organization in the DB. Thus we make sure
-		 * the sent post-data is sane and not malicious
-		 * Also check all other input values for sanity.
-		 */
-		if (array_search($org, $this->getOrganizationNames()) === FALSE) {
-			throw new ConfusaGenException("The organization $org you were about to edit " .
-						      "is unknown!");
-		} else if (array_search($new_org_state, $this->org_states) === FALSE) {
-			throw new ConfusaGenException("Tried to update organization state " .
-						      "to an unknown value!"
-				);
-		} else if (array_search($new_nren_name, $this->getNRENNames()) === FALSE) {
-			throw new ConfusaGenException("Tried to update login name " .
-						      "to an unknown value!"
-				);
-		} else {
-
-			/* get the right nren-id first. subselects are expensive */
-			$res = MDB2Wrapper::execute("SELECT nren_id FROM nrens " .
-						    "WHERE name = ?",
-						    array('text'),
-						    $new_nren_name
-				);
-
-			if (count($res) != 1) {
-				throw new DBQueryException("Could not retrieve a valid nren_id for " .
-							   "nren name $new_nren_name"
-					);
-			}
-
-			$nren_id = $res[0]['nren_id'];
-			$stmt = "UPDATE subscribers SET org_state = ?, nren_id = ? " .
-				"WHERE name = ?";
-			MDB2Wrapper::update($stmt, array('text','text', 'text'),
-					    array($new_org_state, $nren_id ,$org)
-				);
-
-			Logger::log_event(LOG_INFO, "Changed organization $org to state " .
-					  "$new_org_state and nren $new_nren_name.\n");
-		}
-	}
-
-	/*
-	 * Edit an existing account. This only refers to updating the encrypted
-	 * password entry. If the name of the account is to change as well, the
-	 * user is advised to just delete the account and re-create it
-	 */
-	private function edit_account($login_name, $login_pw) {
-		$login_name = $this->sanitize($login_name);
-		$login_pw = base64_encode($login_pw);
-
-		$enckey = Config::get_config('capi_enc_pw');
-		$size=mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
-		$iv=mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
-
-		$cryptpw = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,$enckey,$login_pw,
-							MCRYPT_MODE_CFB, $iv
-						 ));
-
-		$query = "UPDATE account_map SET password=?,ivector=? " .
-			"WHERE login_name=?";
-
-		MDB2Wrapper::update($query,array('text','text','text'),
-				    array($cryptpw, base64_encode($iv), $login_name));
-
-		Logger::log_event(LOG_INFO, "Updated the password of account " .
-				  "$login_name\n"
-			);
-
-	}
-
-	/*
-	 * Edit an existing NREN. I.E. change the (Comodo) subaccount which
-	 * is associated with it
-	 */
-	private function edit_nren($nren_name, $login_name) {
-		$nren_name = $this->sanitize($nren_name);
-		$login_name = $this->sanitize($login_name);
-
-		$map_id_query = "SELECT account_map_id FROM account_map WHERE login_name=?";
-
-		$res = MDB2Wrapper::execute($map_id_query, array('text'), $login_name);
-
-		if (count($res) != 1) {
-			throw new DBQueryException("Could not find the account map ID for " .
-						   "login-name $login_name\n"
-				);
-		}
-
-		$map_id = $res[0]['account_map_id'];
-
-		$update_query = "UPDATE nrens SET login_account=? WHERE name=?";
-		MDB2Wrapper::update($update_query, array('text','text'),
-				    array($map_id, $nren_name));
-
-		Logger::log_event(LOG_INFO, "Updated NREN $nren_name to use new " .
-				  "account $map_id\n");
-	}
-
-	/*
-	 * Show a mask permitting the user to add, update and delete remote-CA
-	 * subaccounts.
-	 */
-	private function show_accounts_mask() {
-		$table = "<div class=\"admin_table\">\n";
-		$tr = "<div class=\"admin_table_row\">\n";
-		$td = "<div class=\"admin_table_cell\">\n";
-		$td_e="</div>\n";
-		$tr_e = "</div>\n";
-		$table_e = "</div>\n";
-
-		$query = "SELECT login_name, password, ivector FROM account_map a ";
-
-
-		echo $table;
-		echo $tr;
-		echo "$td$td_e$td<b>Login name</b>$td_e$td<b>Password</b>$td_e$td$td_e";
-		echo $tr_e;
-		$res = MDB2Wrapper::execute($query, NULL, NULL);
-
-		if (count($res) >= 1) {
+		if (count($res) > 0) {
 
 			foreach($res as $row) {
-				$lname = $row['login_name'];
-				echo $tr;
-				echo $td;
-				echo "<form action=\"?account=delete\" method=\"POST\">\n";
-				echo "<input type=\"hidden\" name=\"login_name\" value=\"$lname\" />\n";
-				echo "<input type=\"image\" name=\"delete\" " .
-					"onclick=\"return confirm('Delete entry?')\" " .
-					"value=\"delete\" src=\"graphics/delete.png\" alt=\"delete\" />\n";
-				echo "</form>\n";
-				echo $td_e;
-				echo $td;
-				echo "<form action=\"?account=edit\" method=\"POST\">\n";
-				echo $lname;
-				echo $td_e;
-				echo $td;
-				$pw =  trim(base64_decode(mcrypt_decrypt(MCRYPT_RIJNDAEL_256,
-									 Config::get_config('capi_enc_pw'), base64_decode($row['password']),
-									 MCRYPT_MODE_CFB,base64_decode($row['ivector']))));
-
-				echo "<input type=\"password\" name=\"login_password\" value=\"$pw\" />\n";
-				echo $td_e;
-				echo $td;
-				echo "<input type=\"hidden\" name=\"login_name\" value=\"$lname\" />";
-				echo "<input type=\"submit\" name=\"submit\" value=\"Update\" />";
-				echo $td_e;
-				echo "</form>";
-				echo $tr_e;
+				$admins[] = $row['admin'];
 			}
 		}
 
-		echo "<div class=\"spacer\"></div>";
-		echo $tr;
-		echo $td . $td_e;
-		echo $td;
-		echo "<form action=\"?account=add\" method=\"POST\">\n";
-		echo "<input type=\"text\" name=\"login_name\" />\n";
-		echo $td_e;
-		echo $td;
-		echo "<input type=\"password\" name=\"login_password\" />\n";
-		echo $td_e;
-		echo $td;
-		echo "<input type=\"submit\" name=\"submit\" value=\"Add new\" />\n";
-		echo $td_e;
-		echo "</form>";
-		echo $tr_e;
-		echo $table_e;
-	}
-
-	/*
-	 * Show a mask permitting the user to add, delete and update subscribed
-	 * NRENs
-	 */
-	private function show_nrens_mask()
-	{
-		$table	= "<div class=\"admin_table\">\n";
-		$tr	= "<div class=\"admin_table_row\">\n";
-		$td	= "<div class=\"admin_table_cell\">\n";
-		$td_e	="</div>\n";
-		$tr_e	= "</div>\n";
-		$table_e= "</div>\n";
-
-		$query	= "SELECT nren, account_login_name FROM nren_account_map_view";
-
-		$res = MDB2Wrapper::execute($query, NULL, NULL);
-
-		echo $table;
-		echo $tr;
-		echo "$td$td_e$td<b>NREN</b>$td_e$td<b>Account</b>$td_e$td$td_e";
-		echo $tr_e;
-
-		if (count($res) >= 1) {
-			foreach($res as $row)  {
-				$cur_nren = $row['nren'];
-				echo $tr;
-				echo $td;
-				echo "<form action=\"?nren=delete\" method=\"POST\">\n";
-				echo "<input type=\"hidden\" name=\"nren_name\" value=\"$cur_nren\" />\n";
-				echo "<input type=\"image\" name=\"delete\" " .
-					"onclick=\"return confirm('Delete entry?')\" " .
-					"value=\"delete\" src=\"graphics/delete.png\" alt=\"delete\" />\n";
-				echo "</form>\n";
-				echo $td_e;
-				echo $td;
-				echo "<form action=\"?nren=edit\" method=\"POST\">\n";
-				echo $cur_nren;
-				echo $td_e;
-				echo $td;
-				$this->displaySelectBox($row['account_login_name'], $this->getLoginNames(), 'login_name');
-				echo $td_e;
-				echo $td;
-				echo "<input type=\"hidden\" name=\"nren_name\" value=\"$cur_nren\" />\n";
-				echo "<input type=\"submit\" name=\"submit\" value=\"Update\" />\n";
-				echo $td_e;
-				echo "</form>\n";
-				echo $tr_e;
-			}
-		}
-
-		echo "<div class=\"spacer\"></div>";
-
-		/* Add new subscriber to the NREN */
-		echo $tr;
-
-		echo $td . $td_e;
-
-		echo $td;
-		echo "<form action=\"?nren=add\" method=\"POST\">\n";
-		echo "<input type=\"text\" name=\"nren_name\" />\n";
-		echo $td_e;
-
-		echo $td;
-		$this->displaySelectBox('subscribed',$this->getLoginNames(),'login_name');
-		echo $td_e;
-
-		echo $td;
-		echo "<input type=\"submit\" name=\"add\" value=\"Add new\" />\n";
-		echo $td_e;
-
-		echo "</form>\n";
-		echo $tr_e;
-		echo $table_e;
-	}
-
-	/*
-	 * Add remote-CA subaccount information to the system.
-	 * The password will be stored in the DB encrypted and due to MySQL
-	 * encryption deficiencies it will be encrypted in the application layer,
-	 * i.e. here. The initialization vector IV for the used block mode is
-	 * stored along with the encrypted data, since it needs not be secret.
-	 * Thus the data can be easily decrypted again */
-	private function add_account($login_name, $login_password)
-	{
-		$login_name = $this->sanitize($login_name);
-		/* this will get encrypted before insertion to the database, so it
-		 * does not need to be $this->sanitized. However, base64_encode allows the
-		 * user to include all kinds of special characters in the password */
-		$login_password = base64_encode($login_password);
-		$enckey = Config::get_config('capi_enc_pw');
-
-		$size=mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
-		$iv=mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
-
-		/*
-		 * It may seem overblown to base64-encode first the password and then
-		 * the encryption result again. But testing revealed that
-		 * insertion can fail sometimes if the encryption string is not b64-encoded.
-		 * It doesn't take very long to b64-encode and it makes inserting the
-		 * encrypted account into the DB safe.
-		 */
-		$cryptpw = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,$enckey,
-							$login_password, MCRYPT_MODE_CFB, $iv
-						 ));
-
-		$ivector = base64_encode($iv);
-		$query="INSERT INTO account_map(login_name, password, ivector)" .
-			"VALUES(?, ?, ?)";
-
-		MDB2Wrapper::update($query, array('text','text','text'),
-				    array($login_name, $cryptpw, $ivector));
-
-		Logger::log_event(LOG_INFO, "Inserted new account $login_name into " .
-				  "account-map\n"
-			);
-	}
-
-	/*
-	 * Add a NREN. A NREN usually has a name and an associated login-sub-
-	 * account.
-	 */
-	private function addNREN($nren_name, $login_name) {
-		$nren = $this->sanitize($nren_name);
-		$account = $this->sanitize($login_name);
-
-		$map_id_query = "SELECT account_map_id FROM account_map WHERE login_name=?";
-
-		$res = MDB2Wrapper::execute($map_id_query, array('text'),
-					    array($account));
-		$map_id = NULL;
-
-		if (count($res) == 1) {
-			$map_id = $res[0]['account_map_id'];
-		}
-
-		$query = "INSERT INTO nrens(name, login_account) VALUES(?, ?)";
-
-		MDB2Wrapper::update($query, array('text','text'), array($nren, $map_id));
-
-		Logger::log_event(LOG_INFO, "Added NREN with name $nren_name and login " .
-				  "$login_name to the DB\n"
-			);
-	}
-
-	/*
-	 * Delete a login subaccount. Will not delete connected NRENs, but set
-	 * their respective table column NULL.
-	 */
-	private function delete_account($login_name) {
-		$login_name = $this->sanitize($login_name);
-		MDB2Wrapper::execute("DELETE FROM account_map WHERE login_name = ?",
-				     array('text'),
-				     $login_name
-			);
-
-		Logger::log_event(LOG_INFO, "Delete account $login_name.\n");
-	}
-
-	/*
-	 * Delete a NREN.
-	 * Notice that this can also delete a lot of institutions due to the
-	 * ON DELETE CASCADE constraint
-	 */
-	private function delete_nren($nren_name) {
-		$nren_name = $this->sanitize($nren_name);
-		MDB2Wrapper::execute("DELETE FROM nrens WHERE name=?",
-				     array('text'),
-				     $nren_name
-			);
-
-		Logger::log_event(LOG_INFO, "Delete NREN $nren_name.\n");
+		return $admins;
 	}
 
 	/**
-	 * display a select-box with the elements in choices as the alternative
-	 * highlight the element passed as 'active'
+	 * Get all the admins that belong to a certain subscriber
+	 *
+	 * @param $subscriber The subscriber whose admins are sought
+	 * @param $level 0 or 1, dependant on whether the query is for subscriber
+	 * admins or subscriber sub-admins
 	 */
-	private function displaySelectBox($active, $choices, $sel_name)
+	private function getSubscriberAdmins($subscriber, $level)
 	{
-		echo "<select name=\"$sel_name\">\n";
-		foreach($choices as $element) {
-			if ($element !== "") {
-				if ($element == $active) {
-					echo "<option value=\"$element\" selected=\"selected\">" . $element . "</option>\n";
-				} else {
-					echo "<option value=\"$element\">" . $element . "</option>\n";
-				}
+		$query = "SELECT admin FROM admins WHERE admin_level=? AND subscriber=";
+		$query .= "(SELECT subscriber_id FROM subscribers WHERE name=?)";
+
+		try {
+			$res = MDB2Wrapper::execute($query,
+										array('text','text'),
+										array($level, $subscriber));
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Cannot retrieve (subscriber) admins from database!<BR /> " .
+				"Probably wrong syntax for query, ask an admin to investigate. Server said: " . $dbse->getMessage());
+			return null;
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Query failed. This probably means that the values passed to the "
+								. "database are wrong. Server said: " . $dbqe->getMessage());
+			return null;
+		}
+
+		$subscribers = array();
+
+		if (count($res) > 0) {
+
+			foreach($res as $row) {
+				$subscribers[] = $row['admin'];
 			}
 		}
 
-		echo "</select>\n";
+		return $subscribers;
 	}
 
 	/*
-	 * Return a list of all the nren names.
+	 * Get all the subscribers that belong to an NREN
+	 *
+	 * @param $nren The NREN for which the subscribers are to be returned
 	 */
-	private function getNRENNames()
+	private function getSubscribers($nren)
 	{
-		$nren_names=array();
-		$query = "SELECT name FROM nrens";
-		$res = MDB2Wrapper::execute($query, NULL, NULL);
+		$query = "SELECT subscriber FROM nren_subscriber_view WHERE nren=?";
 
-		foreach($res as $row) {
-			$nren_names[] = $row['name'];
+		try {
+			$res = MDB2Wrapper::execute($query,
+										array('text'),
+										array($nren));
+		} catch(DBStatementException $dbse) {
+			Framework::error_output("Cannot retrieve subscriber from database!<BR /> " .
+				"Probably wrong syntax for query, ask an admin to investigate. Server said: " . $dbse->getMessage());
+			return null;
+		} catch(DBQueryException $dbqe) {
+			Framework::error_output("Query failed. This probably means that the values passed to the "
+								. "database are wrong. Server said: " . $dbqe->getMessage());
+			return null;
 		}
 
-		return $nren_names;
+		$subscribers = array();
+
+		if (count($res) > 0) {
+
+			foreach($res as $row) {
+				$subscribers[] = $row['subscriber'];
+			}
+		}
+
+		return $subscribers;
 	}
 
 	/*
-	 * Return a list of all signed-up institutions.
+	 * Add an admin to the DB, either a subscriber or a NREN admin.
+	 * One of subscriber or nren must be specified, and it must match the
+	 * specified administrator level
+	 *
+	 * @param $admin The principal identifier of the admin
+	 * @param $level The level of the admin (2 - NREN-admin, 1 - subscriber-admin,
+	 *	0 - subscriber-sub-admin)
+	 * @param $subscriber The name of the subscriber of which this is the admin,
+	 *		level must be 0 or 1
+	 * @param $nren The name of the NREN of which this is a admin, level must 2
 	 */
-	private function getOrganizationNames()
+	private function addAdmin($admin, $level, $subscriber=NULL, $nren=NULL)
 	{
-		$org_names=array();
-		$query = "SELECT name FROM subscribers";
-		$res = MDB2Wrapper::execute($query, NULL, NULL);
+		$nren_id = NULL;
+		$subscriber_id = NULL;
 
-		foreach($res as $row) {
-			$org_names[] = $row['name'];
+		if ($nren === NULL && $subscriber === NULL) {
+			Framework::error_output("Not both NREN and subscriber can be empty when adding an admin!");
+			return;
+		} else if ($admin == NULL) {
+			Framework::error_output("The name of the admin must not be empty!");
+			return;
 		}
 
-		return $org_names;
+		try {
+			if ($level == 2) { /* Insert a NREN-admin */
+				$query = "SELECT nren_id FROM nrens WHERE name=?";
+				$res = MDB2Wrapper::execute($query,
+											array('text'),
+											array($nren));
+
+				if (count($res) === 1) {
+					$nren_id = $res[0]['nren_id'];
+				} else {
+					Framework::error_output("Could not retrieve exactly one NREN" .
+							" with name $nren WHEN inserting a new admin! Got " . count($res) . "results!");
+				}
+			} else { /* insert a subscriber-admin or subscriber-sub-admin */
+				$query = "SELECT subscriber_id FROM subscribers WHERE name=?";
+				$res = MDB2Wrapper::execute($query,
+											array('text'),
+											array($subscriber));
+
+				if (count($res) === 1) {
+					$subscriber_id = $res[0]['subscriber_id'];
+				} else {
+					Framework::error_output("Could not retrieve exactly one subscriber" .
+							" with name $subscriber WHEN inserting a new admin! Got " . count($res) . "results!");
+				}
+			}
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Could not retrieve NREN/subscriber for which you are " .
+									"trying to add an admin. Probably there's a server side problem, contact " .
+									"an administrator! Server said " . $dbse->getMessage());
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Could not retrieve NREN/subscriber for which you are " .
+									 "trying to add an admin! There seems to be a problem with the " .
+									 "received data. Server said " . $dbqe->getMessage());
+		}
+
+		$query = "INSERT INTO admins(admin, admin_level, nren, subscriber) ";
+		$query .= "VALUES(?,?,?,?)";
+
+		try {
+			MDB2Wrapper::update($query,
+								 array('text','text','text','text'),
+								 array($admin,$level,$nren_id,$subscriber_id));
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Inserting the admin into the database failed, because the statement " .
+									 "was bad. Please contact an administrator. Server said " . $dbse->getMessage());
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Inserting the admin into the database failed because of problems " .
+									 "with the supplied data. Server said " . $dbqe->getMessage());
+		}
 	}
 
 	/*
-	 * Return a list of all stored login-subaccounts
+	 * Delete an administrator from the DB
+	 *
+	 * @param $level the privilege level of the admin that is to be deleted
+	 *			(this is for added security)
+	 * @param $admin The eduPersonPrincipalName (or similar identifier) for the
+	 *			admin that is to be deleted
 	 */
-	private function getLoginNames()
+	private function deleteAdmin($admin, $level)
 	{
-		$login_names=array();
-		$query = "SELECT login_name FROM account_map";
-		$res = MDB2Wrapper::execute($query, NULL, NULL);
+		$query = "DELETE FROM admins WHERE admin=? and admin_level=?";
 
-		foreach($res as $row) {
-			$login_names[] = $row['login_name'];
+		try {
+			MDB2Wrapper::update($query,
+								array('text','text'),
+								array($admin, $level));
+		} catch(DBStatementException $dbse) {
+			Framework::error_output("Could not delete the admin because the statement was bad " .
+									 "Please contact an administrator. Server said " . $dbse->getMessage());
+		} catch(DBQueryException $dbqe) {
+			Framework::error_output("Could not delete the admin because of problems with the " .
+									 "received data. Server said " . $dbqe->getMessage());
 		}
-
-		return $login_names;
 	}
-
-
-
 }
 
 $fw = new Framework(new CP_Admin());

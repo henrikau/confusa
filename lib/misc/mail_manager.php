@@ -64,7 +64,12 @@ class MailManager {
 	} /* end add_attachment */
 		
     public function send_mail()
-	{
+    {
+	    if (Config::get_config('auth_bypass')) {
+		    Logger::log_event(LOG_NOTICE, $_SERVER['SCRIPT_FILENAME'] . ":" . __LINE__ .
+				      " Refusing to send email when Confusa is placed in auth-bypass");
+		    return false;
+	    }
         $this->create_headers();
         $this->compose_mail();
 

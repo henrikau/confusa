@@ -12,13 +12,10 @@ class Help extends FW_Content_Page
 
 	public function process()
 	{
-		if (!$this->person->is_auth()) {
-			echo "<H3>Help</H3>\n";
-			include 'ipso_lorem.html';
-			return;
-		}
-		echo "<H3>Classified help</H3>\n";
-		echo "Nothing here yet...<BR />\n";
+		
+		$this->tpl->assign('help_file', file_get_contents('../include/ipso_lorem.html'));
+		$this->tpl->assign('content', $this->tpl->fetch('help.tpl'));
+
 	}
 }
 

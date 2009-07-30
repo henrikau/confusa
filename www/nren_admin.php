@@ -40,7 +40,7 @@ class CP_NREN_Admin extends FW_Content_Page
 				$this->addSubscriber($name, $state);
 				break;
 			case 'delete':
-				$this->delSubscriber($name, $state);
+				$this->delSubscriber($name);
 				break;
 			}
 		} else if (isset($_POST['account'])) {
@@ -59,7 +59,7 @@ class CP_NREN_Admin extends FW_Content_Page
 				$this->addAccount($login_name, $password);
 				break;
 			case 'delete':
-				$this->delAccount($login_name);
+				$this->deleteAccount($login_name);
 				break;
 			case 'change':
 				$this->changeAccount($login_name);
@@ -101,33 +101,47 @@ class CP_NREN_Admin extends FW_Content_Page
 	 */
 	private function editSubscriber($name, $state)
 	{
+		$query_id		= "SELECT nren_id FROM nrens WHERE name=?";
+		$query_subscribers	= "SELECT * FROM subscribers WHERE name = ? AND nren_id = ?";
+		$update			= "UPDATE subscribers SET org_state=? WHERE name=? AND nren_id=?";
 
-		$query_id = "SELECT nren_id FROM nrens WHERE name=?";
+		try {
+			$res_id = MDB2Wrapper::execute($query_id,
+						       array('text'),
+						       array($this->person->get_nren()));
+			if (count($res_id) < 1) {
+				throw new DBQueryException("Could not find your NREN! Something seems to be misconfigured.");
+			}
+			$res_subscribers = MDB2Wrapper::execute($query_subscribers,
+								array('text', 'text'),
+								array($name, $res_id[0]['nren_id']));
 
-		$res_id = MDB2Wrapper::execute($query_id,
-					       array('text'),
-					       array($this->person->get_nren()));
+			if (count($res_subscribers) > 1) {
+				$msg  = "Database Inconsistency! Got duplicate (identical) subscribers (" . $name . ")";
+				$msg .= " for NREN " . $this->person->get_nren() . ". Got " . count($res_subscribers);
+				$msg .= ", should have found 0 or 1";
+				Logger::log_event(LOG_ALERT, $msg);
+				throw new DBQueryException($msg);
+			}
 
-		if (count($res_id) < 1) {
-		    throw new DBQueryException("Could not find your NREN! Something seems to be misconfigured.");
+			/* only thing you can change is state.
+			 * If the subscriber is unknown or the new state
+			 * is identical to the current, there's no point in
+			 * going further. */
+			if (count($res_subscribers) != 1 || $res_subscribers[0]['org_state'] === $state) {
+				return;
+			}
+			MDB2Wrapper::update($update,
+					    array('text', 'text', 'text'),
+					    array($state, $name, $res_id[0]['nren_id']));
+
+			Logger::log_event(LOG_NOTICE, "Changed state for $name from " . $res[0]['org_state'] . " to $state");
+
+		} catch (DBStatementException $dbse) {
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " Error in query-syntax.<BR />Server said " . $dbse->getMessage());
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " Problems with query.<BR />Server said " . $dbqe->getMessage());
 		}
-
-		$query = "SELECT * FROM subscribers WHERE name = ? AND nren_id = ?";
-		$res = MDB2Wrapper::execute($query,
-					    array('text', 'text'),
-					    array($name, $res_id[0]['nren_id']));
-		if (count($res) > 1)
-			throw new DBQueryException("Could not retrieve the correct subscriber. Got " . count($res) . " rows in return");
-		if (count($res) != 1)
-			return;
-
-		/* only thing you can change is state */
-		if ($res[0]['org_state'] === $state) {
-			return;
-		}
-		$update = "UPDATE subscribers SET org_state=? WHERE name=? AND nren_id=?";
-		MDB2Wrapper::update($update, array('text', 'text', 'text'), array($state, $name, $res_id[0]['nren_id']));
-		Logger::log_event(LOG_NOTICE, "Changed state for $name from " . $res[0]['org_state'] . " to $state");
 	}
 
 	/**
@@ -142,6 +156,9 @@ class CP_NREN_Admin extends FW_Content_Page
 		$org_name	= Input::sanitize($name);
 		$nren		= $this->person->get_nren();
 
+		$select_nrenid		= "(SELECT nren_id FROM nrens WHERE name=?)";
+		$update_subscr_insert	= "INSERT INTO subscribers(name, nren_id, org_state) VALUES(?,?,?)";
+
 		if (!isset($org_state) || $org_state === "")
 			echo "orgstate not set!";
 		if (!isset($org_name) || $org_name === "")
@@ -149,26 +166,44 @@ class CP_NREN_Admin extends FW_Content_Page
 		if (!isset($nren) || $nren === "")
 			echo "nren not set!";
 
-		$subselect = "(SELECT nren_id FROM nrens WHERE name=?)";
-		$res = MDB2Wrapper::execute($subselect,
-					    array('text'),
-					    array($nren));
-
-		if (count($res) < 1) {
-		    Framework::error_output("Your NREN is unknown to Confusa! " .
-			  "Probably something is wrong with the configuration");
-		}
-
-		$update = "INSERT INTO subscribers(name, nren_id, org_state) VALUES(?,?,?)";
 		try {
-		MDB2Wrapper::update($update,
-				    array('text',	'text',			'text'),
-				    array($org_name,	$res[0]['nren_id'],	$org_state));
+			$res = MDB2Wrapper::execute($select_nrenid,
+						    array('text'),
+						    array($nren));
+		} catch (DBStatementException $dbse) {
+			$msg  = __FILE__ . ":" . __LINE__ . " Error in query syntax.";
+			Logger::log_event(LOG_INFO, $msg);
+			$msg .=	"<BR />Server said: " . $dbse->getMessage();
+			Framework::error_output($msg);
+			return;
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Cannot add row, duplicate entry?");
+			$msg  = __FILE__ . ":" . __LINE__ . " Query-error. Constraint violoation in query?";
+			Logger::log_event(LOG_INFO, $msg);
+			$msg .= "<BR />Server said: " . $dbqe->getMessage();
+			Framework::error_output($msg);
 			return;
 		}
-		/* FIXME: detect errors */
+
+		if (count($res) < 1) {
+			Framework::error_output("Your NREN is unknown to Confusa! " .
+						"Probably something is wrong with the configuration");
+			return;
+		}
+
+		try {
+			MDB2Wrapper::update($update_subscr_insert,
+					    array('text',	'text',			'text'),
+					    array($org_name,	$res[0]['nren_id'],	$org_state));
+		} catch (DBStatementException $dbse) {
+			$msg = __FILE__ . ":" . __LINE__ . " synatx error in update, server said: " . $dbse->getMessage();
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_output($msg);
+		} catch (DBQueryException $dbqe) {
+			$msg = __FILE__ . ":" . __LINE__ . " Cannot add row, duplicate entry?";
+			Framework::error_output($msg);
+			Logger::log_event(LOG_NOTICE, $msg);
+			return;
+		}
 
 		Logger::log_event(LOG_INFO, "Added the organization $org_name with " .
 				  "NREN $nren and state $org_state as a subscriber ");
@@ -176,11 +211,16 @@ class CP_NREN_Admin extends FW_Content_Page
 
 
 	/**
-	 * delSubscriber - remove the subscriber from the NREN
+	 * delSubscriber - remove the subscriber from the NREN and Confusa.
 	 *
-	 * @name : the name of the institution
+	 * This will remove the subscriber *permanently* along with all it's
+	 * affiliated subscriber admins (this is handled by the database-schema
+	 * with the 'ON DELETE CASCADE'.
+	 *
+	 * @name  : the name of the institution/subscriber
+	 *
 	 */
-	private function delSubscriber($name, $state) {
+	private function delSubscriber($name) {
 		if (!isset($name) || $name === "") {
 			error_output("Cannot delete empty string!");
 		}
@@ -199,10 +239,11 @@ class CP_NREN_Admin extends FW_Content_Page
 			Logger::log_event(LOG_INFO, "Deleted subscriber $sub in organization $org.\n");
 			Framework::message_output("Successfully deleted subscriber $sub in organization $org.");
 		} catch (DBQueryException $dbqe) {
-			Logger::log_event(LOG_NOTICE, "Could not delete $sub in organization $org from DB.\n");
-			Framework::message_output("Could not delete $sub in organization $org from DB.");
+			$msg = "Could not delete $sub in organization $org from DB.";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::message_output($msg . "<BR />Server said: " . $dbqe->getMessage());
 		}
-	}
+	} /* end delSubscriber */
 
 	/**
 	 * getSubscribers - get an array with subscriber and state
@@ -214,42 +255,96 @@ class CP_NREN_Admin extends FW_Content_Page
 	 */
 	private function getSubscribers()
 	{
-		$query = "SELECT * FROM nren_subscriber_view WHERE nren=? ORDER BY subscriber ASC";
-		$res = MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
-		if (count($res) == 0)
+		try {
+			$query = "SELECT * FROM nren_subscriber_view WHERE nren=? ORDER BY subscriber ASC";
+			$res = MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
+			if (count($res) == 0)
+				return;
+			$result = array();
+			foreach($res as $row)
+				$result[] = array('subscriber' => $row['subscriber'], 'org_state' => $row['org_state']);
+		} catch (DBStatementException $dbse) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax. Verify that the query matches the database!";
+			Logger::log_event(LOG_NOTICE, $msg);
+			$msg .= "<BR />Server said: " . $dbse->getMessage();
+			Framework::error_output($msg);
 			return;
-		$result = array();
-		foreach($res as $row)
-			$result[] = array('subscriber' => $row['subscriber'], 'org_state' => $row['org_state']);
-
+		} catch (DBQueryException $dbqe) {
+			$msg =  __FILE__ . ":" . __LINE__ . " Possible constraint-violation in query. Compare query to db-schema";
+			Logger::log_event(LOG_NOTICE, $msg);
+			$msg .= "<BR />Server said: " . $dbse->getMessage();
+			Framework::error_output($msg);
+		}
 		return $result;
 	} /* end getSubscribers */
 
+	/**
+	 * getAccountInfo - return an array with info for *this* nren-account
+	 *
+	 * This function will find 
+	 */
 	private function getAccountInfo()
 	{
 
-		/* Get the current account */
+		/*
+		 * Get the current account
+		 */
 		$query	= "SELECT * FROM nren_account_map_view WHERE nren = ?";
-		$res	= MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
+		try {
+			$res	= MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
+		} catch (DBStatementException $dbse) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax.";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_output($msg . "<BR />Server said: " . $dbse->getMessage());
+			return null;
+		} catch (DBQueryException $dbqe) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in query values, possible constraint violation";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_output($msg . "<BR />Server said: " . $dbse->getMessage());
+			return null;
+		}
+
 		if (count($res) == 1)
 			$curr_account = $res[0]['account_login_name'];
 		else if (count($res) > 1) {
-			$msg  = "Inconsistency in the database! You have more than one account tied in! How is this possible?";
+			$msg  = "Inconsistency in the database,  more than one account tied to a single NREN. ";
 			$msg .= "Got " . count($res) . " results back from the database";
+			Logger::log_event(LOG_ALERT, $msg);
 			throw new DBQueryException($msg);
 		}
 
-		/* Get all available accounts */
+		/*
+		 * Get all available accounts
+		 */
 		$accounts	= array();
+		$return_res	= null;
 		$query		= "SELECT login_name FROM account_map";
-		$res		= MDB2Wrapper::execute($query, null, null);
-		if (count($res) < 1)
-			throw new DBQueryException("No account-maps set for Confusa!");
-		foreach($res as $row) {
-			$accounts[] = $row['login_name'];
+		try {
+			$res = MDB2Wrapper::execute($query, null, null);
+
+			if (count($res) > 0) {
+				foreach($res as $row) {
+					$accounts[] = $row['login_name'];
+				}
+				$return_res = array('account' => $curr_account, 'all' => $accounts);
+			} else {
+				Framework::error_output("No account-maps set for Confusa!");
+				return null;
+			}
+
+		} catch (DBStatemenetException $dbse) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax.";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_output($msg . "<BR />Server said: " . $dbse->getMessage());
+			return null;
+		} catch (DBQueryException $dbqe) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error with values, possible constraints viloation.";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_output($msg . "<BR />Server said: " . $dbse->getMessage());
+			return null;
 		}
 
-		return array('account' => $curr_account, 'all' => $accounts);
+		return $return_res;
 	} /* end getAccountInfo() */
 
 	/**
@@ -347,6 +442,19 @@ class CP_NREN_Admin extends FW_Content_Page
 		return;
 	}
 
+	/**
+	 * deleteAccount - remove an account from account_map
+	 *
+	 * Note:
+	 *	at the moment, this function only supports the deletion of
+	 *	unused accounts. If *any* NREN uses this account, it cannot be
+	 *	deleted. Furthermore, it does not distinguish between accounts
+	 *	belonging to other NRENS, it will happily delete any unused
+	 *	account regardless of who created/owns it.
+	 * 
+	 * @login_name: the name of the account (the actual login-name used at
+	 *		the Comodo interface).
+	 */
 	private function deleteAccount($login_name)
 	{
 		/* FIXME:
@@ -354,7 +462,28 @@ class CP_NREN_Admin extends FW_Content_Page
 		 * Handle scenario when more than one NREN is still using the
 		 * account.
 		 */
-	}
+		/* Temporary solution: only allow the deletion of an unused account */
+		$query = "SELECT * FROM nren_account_map_view WHERE account_login_name=?";
+		try {
+			$res = MDB2Wrapper::execute($query, array('text'), array($login_name));
+			if (count($res) > 0) {
+				Framework::error_output("Cannot delete an account that's still being used.");
+				return;
+			}
+			$update = "DELETE FROM account_map WHERE login_name=?";
+			MDB2Wrapper::update($update, array('text'), array($login_name));
+			Framework::message_output("Deleted account $login_name from account_map.");
+		} catch (DBStatementException $dbse) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in db-statement. Check syntax.";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_message($msg . "<BR />Server said: " . $dbse->getMessage());
+		} catch (DBQueryException $dbqe) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in query. Check values, possible constrain-violation.";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_message($msg . "<BR />Server said: " . $dbse->getMessage());
+		}
+	} /* end deleteAccount */
+
 	private function changeAccount($login_name)
 	{
 		$nren = $this->person->get_nren();
