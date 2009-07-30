@@ -255,14 +255,26 @@ class CP_NREN_Admin extends FW_Content_Page
 	 */
 	private function getSubscribers()
 	{
-		$query = "SELECT * FROM nren_subscriber_view WHERE nren=? ORDER BY subscriber ASC";
-		$res = MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
-		if (count($res) == 0)
+		try {
+			$query = "SELECT * FROM nren_subscriber_view WHERE nren=? ORDER BY subscriber ASC";
+			$res = MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
+			if (count($res) == 0)
+				return;
+			$result = array();
+			foreach($res as $row)
+				$result[] = array('subscriber' => $row['subscriber'], 'org_state' => $row['org_state']);
+		} catch (DBStatementException $dbse) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax. Verify that the query matches the database!";
+			Logger::log_event(LOG_NOTICE, $msg);
+			$msg .= "<BR />Server said: " . $dbse->getMessage();
+			Framework::error_output($msg);
 			return;
-		$result = array();
-		foreach($res as $row)
-			$result[] = array('subscriber' => $row['subscriber'], 'org_state' => $row['org_state']);
-
+		} catch (DBQueryException $dbqe) {
+			$msg =  __FILE__ . ":" . __LINE__ . " Possible constraint-violation in query. Compare query to db-schema";
+			Logger::log_event(LOG_NOTICE, $msg);
+			$msg .= "<BR />Server said: " . $dbse->getMessage();
+			Framework::error_output($msg);
+		}
 		return $result;
 	} /* end getSubscribers */
 
