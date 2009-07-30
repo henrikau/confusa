@@ -17,7 +17,12 @@ require_once 'output.php';
 require_once 'config.php';
 require_once 'cert_manager_online.php';
 require_once 'cert_manager_standalone.php';
-require_once '/usr/share/php/smarty/Smarty.class.php';
+
+try {
+	require_once Config::get_config('smarty_path') . 'Smarty.class.php';
+} catch (KeyNotFoundException $knfe) {
+	die("Cannot load smarty, smarty_path not set!");
+}
 
 /* class Framework
  *

@@ -34,6 +34,19 @@ $confusa_config = array(
          */
 	'simplesaml_path'	=> '/var/www/simplesamlphp/',
 
+	/* smarty path
+	 *
+	 * This is the absolute path to the file
+	 *
+	 *	Smarty.class.php
+	 *
+	 * normally found in
+	 *
+	 *	/usr/share/php/smarty/
+	 *
+	 */
+	'smarty_path'		=> '/usr/share/php/smarty/',
+
 	/* for script CSR/cert-handling
          *
          * key_upload is the program that handles automatic CSR upload from the user-script.
