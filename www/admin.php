@@ -15,9 +15,7 @@ include_once 'input.php';
  */
 class CP_Admin extends FW_Content_Page
 {
-	private $org_states;
-	private $org_name_cache;
-	private $urls;
+
 	function __construct()
 	{
 		parent::__construct("Admin", true);
@@ -31,24 +29,63 @@ class CP_Admin extends FW_Content_Page
 		if (!($this->person->is_subscriber_admin() || $this->person->is_nren_admin()))
 			return false;
 
-		if (isset($_POST['operation'])) {
-			switch(htmlentities($_POST['operation'])) {
-			case 'delete':
-				$privilege = Input::sanitize($_POST['privilege']);
-				$admin = Input::sanitize($_POST['admin']);
-				$level = $this->getLevelForPrivilege($privilege);
-				$this->deleteAdmin($admin, $level);
-				break;
-			case 'add':
-				$privilege = Input::sanitize($_POST['privilege']);
-				$admin = Input::sanitize($_POST['ePPN']);
-				$nren = Input::sanitize($_POST['nren']);
-				$subscriber = Input::sanitize($_POST['subscriber']);
-				$level = $this->getLevelForPrivilege($privilege);
+		if (isset($_POST['nren_operation'])) {
+			if (!$this->person->is_nren_admin()) {
+				Framework::error_output("You have the wrong permissions for that operation!");
+				return false;
+			}
 
-				$this->addAdmin($admin, $level, $subscriber, $nren);
-			default:
-				break;
+			/* operations called by the NREN-admin */
+			switch(htmlentities($_POST['nren_operation'])) {
+				case 'delete_nren_admin':
+					$admin = Input::sanitize($_POST['nren_admin']);
+					$this->deleteAdmin($admin, 2);
+					break;
+				case 'add_nren_admin':
+					$admin = Input::sanitize($_POST['nren_admin']);
+					$nren = $this->person->get_nren();
+					$this->addAdmin($admin,2,NULL,$nren);
+					break;
+				case 'delete_subs_admin':
+					$admin = Input::sanitize($_POST['subs_admin']);
+					$this->deleteAdmin($admin,1);
+					break;
+				case 'add_subs_admin':
+					$admin = Input::sanitize($_POST['subs_admin']);
+					$subscriber = Input::sanitize($_POST['subscriber']);
+					$this->addAdmin($admin,1,$subscriber,NULL);
+					break;
+				default:
+					break;
+			}
+		/* operations called by the subscriber admin */
+		} else if (isset($_POST['subs_operation'])) {
+			if (!$this->person->is_subscriber_admin()) {
+				Framework::error_output("You have the wrong permissions for that operation!");
+				return false;
+			}
+
+			switch(htmlentities($_POST['subs_operation'])) {
+				case 'delete_subs_admin':
+					$admin = Input::sanitize($_POST['subs_admin']);
+					$this->deleteAdmin($admin,1);
+					break;
+				case 'add_subs_admin':
+					$admin = Input::sanitize($_POST['subs_admin']);
+					$subscriber = $this->person->get_orgname();
+					$this->addAdmin($admin,1,$subscriber,NULL);
+					break;
+				case 'delete_subs_sub_admin':
+					$admin = Input::sanitize($_POST['subs_sub_admin']);
+					$this->deleteAdmin($admin,0);
+					break;
+				case 'add_subs_sub_admin':
+					$admin = Input::sanitize($_POST['subs_sub_admin']);
+					$subscriber = $this->person->get_orgname();
+					$this->addAdmin($admin,0,$subscriber,NULL);
+					break;
+				default:
+					break;
 			}
 		}
 	}
@@ -65,39 +102,77 @@ class CP_Admin extends FW_Content_Page
 	{
 		/* IF user is not subscirber- or nren-admin, we stop here */
 		if (!($this->person->is_subscriber_admin() || $this->person->is_nren_admin())) {
-			echo "<H3>Not Authorized for this action</H3>\n";
 			Logger::log_event(LOG_NOTICE, "User " . $this->person->get_valid_cn() . " was rejected at the admin-interface");
 			$this->tpl->assign('reason', 'You do not have sufficient rights to view this page');
 			$this->tpl->assign('content', 'restricted_access.tpl');
 			return false;
 		}
 
-		if ($this->person->is_nren_admin()) {
+		if ($this->person->is_nren_admin()) { /* NREN admin display */
 			$admins=$this->getNRENAdmins($this->person->get_nren());
+			$subscribers=$this->getSubscribers($this->person->get_nren());
+			$current_subscriber = "";
+
+			if (isset($_POST['subscriber'])) {
+				$current_subscriber = Input::sanitize($_POST['subscriber']);
+			} else if (count($subscribers) > 0) {
+				$current_subscriber = $subscribers[0];
+			}
+
+			if (!empty($current_subscriber)) {
+				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber, 1);
+				$this->tpl->assign('subscriber', $current_subscriber);
+				$this->tpl->assign('subscriber_admins', $subscriber_admins);
+			}
+
 			$this->tpl->assign('nren_admins', $admins);
 			$this->tpl->assign('nren', $this->person->get_nren());
+			$this->tpl->assign('subscribers', $subscribers);
+
+		} else if ($this->person->is_subscriber_admin()) { /* subscriber admin display */
+			$subscriber = $this->person->get_orgname();
+			$subscriber_admins = $this->getSubscriberAdmins($subscriber, 1);
+			$this->tpl->assign('subscriber', $subscriber);
+			$this->tpl->assign('subscriber_admins', $subscriber_admins);
+
+			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->get_orgname(), 0);
+			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
+
 		}
 
-		$this->tpl->assign('link_urls', $this->urls);
+		$this->tpl->assign('self', $this->person->get_common_name());
 		$this->tpl->assign('content', $this->tpl->fetch('admin.tpl'));
 	}
 
 
 	/**
-	 * get all the NREN admins that belong to a certain NREN
+	 * Get all the NREN admins that belong to a certain NREN
+	 *
+	 * @param $nren The NREN for which the respective admins are queried
 	 */
 	private function getNRENAdmins($nren)
 	{
+
 		$query = "SELECT admin FROM admins WHERE admin_level='2' AND nren=";
 		$query .= "(SELECT nren_id FROM nrens WHERE name = ?)";
 
-		$res = MDB2Wrapper::execute($query,
-									array('text'),
-									array($nren));
+		try {
+			$res = MDB2Wrapper::execute($query,
+										array('text'),
+										array($nren));
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Cannot retrieve (nren)admins from database!<BR /> " .
+				"Probably wrong syntax for query, ask an admin to investigate. Server said: " . $dbse->getMessage());
+			return null;
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Query failed. This probably means that the values " .
+				"passed to the database are wrong. Server said: " . $dbqe->getMessage());
+			return null;
+		}
+
+		$admins = array();
 
 		if (count($res) > 0) {
-
-			$admins = array();
 
 			foreach($res as $row) {
 				$admins[] = $row['admin'];
@@ -107,68 +182,159 @@ class CP_Admin extends FW_Content_Page
 		return $admins;
 	}
 
-	private function getLevelForPrivilege($privilege)
+	/**
+	 * Get all the admins that belong to a certain subscriber
+	 *
+	 * @param $subscriber The subscriber whose admins are sought
+	 * @param $level 0 or 1, dependant on whether the query is for subscriber
+	 * admins or subscriber sub-admins
+	 */
+	private function getSubscriberAdmins($subscriber, $level)
 	{
+		$query = "SELECT admin FROM admins WHERE admin_level=? AND subscriber=";
+		$query .= "(SELECT subscriber_id FROM subscribers WHERE name=?)";
 
-		switch($privilege) {
-		case 'nren':
-			return 2;
-			break;
-		case 'subscriber':
-			return 1;
-			break;
-		case 'subsubscriber':
-			return 0;
-			break;
-		default:
-			throw new ConfusaGenException("Unknown privilege specified!");
-			break;
+		try {
+			$res = MDB2Wrapper::execute($query,
+										array('text','text'),
+										array($level, $subscriber));
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Cannot retrieve (subscriber) admins from database!<BR /> " .
+				"Probably wrong syntax for query, ask an admin to investigate. Server said: " . $dbse->getMessage());
+			return null;
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Query failed. This probably means that the values passed to the "
+								. "database are wrong. Server said: " . $dbqe->getMessage());
+			return null;
 		}
+
+		$subscribers = array();
+
+		if (count($res) > 0) {
+
+			foreach($res as $row) {
+				$subscribers[] = $row['admin'];
+			}
+		}
+
+		return $subscribers;
 	}
 
+	/*
+	 * Get all the subscribers that belong to an NREN
+	 *
+	 * @param $nren The NREN for which the subscribers are to be returned
+	 */
+	private function getSubscribers($nren)
+	{
+		$query = "SELECT subscriber FROM nren_subscriber_view WHERE nren=?";
+
+		try {
+			$res = MDB2Wrapper::execute($query,
+										array('text'),
+										array($nren));
+		} catch(DBStatementException $dbse) {
+			Framework::error_output("Cannot retrieve subscriber from database!<BR /> " .
+				"Probably wrong syntax for query, ask an admin to investigate. Server said: " . $dbse->getMessage());
+			return null;
+		} catch(DBQueryException $dbqe) {
+			Framework::error_output("Query failed. This probably means that the values passed to the "
+								. "database are wrong. Server said: " . $dbqe->getMessage());
+			return null;
+		}
+
+		$subscribers = array();
+
+		if (count($res) > 0) {
+
+			foreach($res as $row) {
+				$subscribers[] = $row['subscriber'];
+			}
+		}
+
+		return $subscribers;
+	}
+
+	/*
+	 * Add an admin to the DB, either a subscriber or a NREN admin.
+	 * One of subscriber or nren must be specified, and it must match the
+	 * specified administrator level
+	 *
+	 * @param $admin The principal identifier of the admin
+	 * @param $level The level of the admin (2 - NREN-admin, 1 - subscriber-admin,
+	 *	0 - subscriber-sub-admin)
+	 * @param $subscriber The name of the subscriber of which this is the admin,
+	 *		level must be 0 or 1
+	 * @param $nren The name of the NREN of which this is a admin, level must 2
+	 */
 	private function addAdmin($admin, $level, $subscriber=NULL, $nren=NULL)
 	{
 		$nren_id = NULL;
 		$subscriber_id = NULL;
 
 		if ($nren === NULL && $subscriber === NULL) {
-			throw new ConfusaGenException("Not both NREN and subscriber can be NULL!");
+			Framework::error_output("Not both NREN and subscriber can be empty when adding an admin!");
+			return;
+		} else if ($admin == NULL) {
+			Framework::error_output("The name of the admin must not be empty!");
+			return;
 		}
 
-		if ($nren != NULL) {
-			$query = "SELECT nren_id FROM nrens WHERE name=?";
-			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($nren));
+		try {
+			if ($level == 2) { /* Insert a NREN-admin */
+				$query = "SELECT nren_id FROM nrens WHERE name=?";
+				$res = MDB2Wrapper::execute($query,
+											array('text'),
+											array($nren));
 
-			if (count($res) === 1) {
-				$nren_id = $res[0]['nren_id'];
-			} else {
-				throw new DBQueryException("Could not retrieve exactly one NREN" .
-						" with name $nren WHEN inserting a new admin! Got " . count($res) . "results!");
-			}
-		} else if ($subscriber != NULL) {
-			$query = "SELECT subscriber_id FROM subscribers WHERE name=?";
-			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($nren));
+				if (count($res) === 1) {
+					$nren_id = $res[0]['nren_id'];
+				} else {
+					Framework::error_output("Could not retrieve exactly one NREN" .
+							" with name $nren WHEN inserting a new admin! Got " . count($res) . "results!");
+				}
+			} else { /* insert a subscriber-admin or subscriber-sub-admin */
+				$query = "SELECT subscriber_id FROM subscribers WHERE name=?";
+				$res = MDB2Wrapper::execute($query,
+											array('text'),
+											array($subscriber));
 
-			if (count($res) === 1) {
-				$subscriber_id = $res[0]['subscriber_id'];
-			} else {
-				throw new DBQueryException("Could not retrieve exactly one subscriber" .
-						" with name $subscriber WHEN inserting a new admin! Got " . count($res) . "results!");
+				if (count($res) === 1) {
+					$subscriber_id = $res[0]['subscriber_id'];
+				} else {
+					Framework::error_output("Could not retrieve exactly one subscriber" .
+							" with name $subscriber WHEN inserting a new admin! Got " . count($res) . "results!");
+				}
 			}
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Could not retrieve NREN/subscriber for which you are " .
+									"trying to add an admin. Probably there's a server side problem, contact " .
+									"an administrator! Server said " . $dbse->getMessage());
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Could not retrieve NREN/subscriber for which you are " .
+									 "trying to add an admin! There seems to be a problem with the " .
+									 "received data. Server said " . $dbqe->getMessage());
 		}
 
 		$query = "INSERT INTO admins(admin, admin_level, nren, subscriber) ";
 		$query .= "VALUES(?,?,?,?)";
 
-		MDB2Wrapper::execute($query,
-							 array('text','text','text','text'),
-							 array($admin,$level,$nren_id,$subscriber_id));
+		try {
+			MDB2Wrapper::update($query,
+								 array('text','text','text','text'),
+								 array($admin,$level,$nren_id,$subscriber_id));
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Inserting the admin into the database failed, because the statement " .
+									 "was bad. Please contact an administrator. Server said " . $dbse->getMessage());
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Inserting the admin into the database failed because of problems " .
+									 "with the supplied data. Server said " . $dbqe->getMessage());
+		}
 	}
+
 	/*
+	 * Delete an administrator from the DB
+	 *
 	 * @param $level the privilege level of the admin that is to be deleted
 	 *			(this is for added security)
 	 * @param $admin The eduPersonPrincipalName (or similar identifier) for the
@@ -177,9 +343,18 @@ class CP_Admin extends FW_Content_Page
 	private function deleteAdmin($admin, $level)
 	{
 		$query = "DELETE FROM admins WHERE admin=? and admin_level=?";
-		MDB2Wrapper::update($query,
-							array('text','text'),
-							array($admin, $level));
+
+		try {
+			MDB2Wrapper::update($query,
+								array('text','text'),
+								array($admin, $level));
+		} catch(DBStatementException $dbse) {
+			Framework::error_output("Could not delete the admin because the statement was bad " .
+									 "Please contact an administrator. Server said " . $dbse->getMessage());
+		} catch(DBQueryException $dbqe) {
+			Framework::error_output("Could not delete the admin because of problems with the " .
+									 "received data. Server said " . $dbqe->getMessage());
+		}
 	}
 }
 
