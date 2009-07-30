@@ -31,7 +31,7 @@
 			{$td}{$nren->delete_button('subscriber', $row.subscriber)}{$td_e}
 			{$td}{$nren->format_subscr_on_state($row.subscriber, $row.org_state)}{$td_e}
 			{$td}
-				<FORM ACTION="">
+				<FORM ACTION="" METHOD="POST">
 				<INPUT TYPE="hidden" NAME="subscriber" VALUE="edit">
 				<INPUT TYPE="hidden" NAME="name" VALUE="{$row.subscriber}">
 				{$nren->createSelectBox($row.org_state,	null, state)}
