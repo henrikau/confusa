@@ -278,31 +278,73 @@ class CP_NREN_Admin extends FW_Content_Page
 		return $result;
 	} /* end getSubscribers */
 
+	/**
+	 * getAccountInfo - return an array with info for *this* nren-account
+	 *
+	 * This function will find 
+	 */
 	private function getAccountInfo()
 	{
 
-		/* Get the current account */
+		/*
+		 * Get the current account
+		 */
 		$query	= "SELECT * FROM nren_account_map_view WHERE nren = ?";
-		$res	= MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
+		try {
+			$res	= MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
+		} catch (DBStatementException $dbse) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax.";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_output($msg . "<BR />Server said: " . $dbse->getMessage());
+			return null;
+		} catch (DBQueryException $dbqe) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in query values, possible constraint violation";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_output($msg . "<BR />Server said: " . $dbse->getMessage());
+			return null;
+		}
+
 		if (count($res) == 1)
 			$curr_account = $res[0]['account_login_name'];
 		else if (count($res) > 1) {
-			$msg  = "Inconsistency in the database! You have more than one account tied in! How is this possible?";
+			$msg  = "Inconsistency in the database,  more than one account tied to a single NREN. ";
 			$msg .= "Got " . count($res) . " results back from the database";
+			Logger::log_event(LOG_ALERT, $msg);
 			throw new DBQueryException($msg);
 		}
 
-		/* Get all available accounts */
+		/*
+		 * Get all available accounts
+		 */
 		$accounts	= array();
+		$return_res	= null;
 		$query		= "SELECT login_name FROM account_map";
-		$res		= MDB2Wrapper::execute($query, null, null);
-		if (count($res) < 1)
-			throw new DBQueryException("No account-maps set for Confusa!");
-		foreach($res as $row) {
-			$accounts[] = $row['login_name'];
+		try {
+			$res = MDB2Wrapper::execute($query, null, null);
+
+			if (count($res) > 0) {
+				foreach($res as $row) {
+					$accounts[] = $row['login_name'];
+				}
+				$return_res = array('account' => $curr_account, 'all' => $accounts);
+			} else {
+				Framework::error_output("No account-maps set for Confusa!");
+				return null;
+			}
+
+		} catch (DBStatemenetException $dbse) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax.";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_output($msg . "<BR />Server said: " . $dbse->getMessage());
+			return null;
+		} catch (DBQueryException $dbqe) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error with values, possible constraints viloation.";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_output($msg . "<BR />Server said: " . $dbse->getMessage());
+			return null;
 		}
 
-		return array('account' => $curr_account, 'all' => $accounts);
+		return $return_res;
 	} /* end getAccountInfo() */
 
 	/**
