@@ -40,7 +40,7 @@ class CP_NREN_Admin extends FW_Content_Page
 				$this->addSubscriber($name, $state);
 				break;
 			case 'delete':
-				$this->delSubscriber($name, $state);
+				$this->delSubscriber($name);
 				break;
 			}
 		} else if (isset($_POST['account'])) {
@@ -211,11 +211,16 @@ class CP_NREN_Admin extends FW_Content_Page
 
 
 	/**
-	 * delSubscriber - remove the subscriber from the NREN
+	 * delSubscriber - remove the subscriber from the NREN and Confusa.
 	 *
-	 * @name : the name of the institution
+	 * This will remove the subscriber *permanently* along with all it's
+	 * affiliated subscriber admins (this is handled by the database-schema
+	 * with the 'ON DELETE CASCADE'.
+	 *
+	 * @name  : the name of the institution/subscriber
+	 *
 	 */
-	private function delSubscriber($name, $state) {
+	private function delSubscriber($name) {
 		if (!isset($name) || $name === "") {
 			error_output("Cannot delete empty string!");
 		}
@@ -234,10 +239,11 @@ class CP_NREN_Admin extends FW_Content_Page
 			Logger::log_event(LOG_INFO, "Deleted subscriber $sub in organization $org.\n");
 			Framework::message_output("Successfully deleted subscriber $sub in organization $org.");
 		} catch (DBQueryException $dbqe) {
-			Logger::log_event(LOG_NOTICE, "Could not delete $sub in organization $org from DB.\n");
-			Framework::message_output("Could not delete $sub in organization $org from DB.");
+			$msg = "Could not delete $sub in organization $org from DB."
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::message_output($msg . "<BR />Server said: " . $dbqe->getMessage());
 		}
-	}
+	} /* end delSubscriber */
 
 	/**
 	 * getSubscribers - get an array with subscriber and state
