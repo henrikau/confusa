@@ -59,7 +59,7 @@ class CP_NREN_Admin extends FW_Content_Page
 				$this->addAccount($login_name, $password);
 				break;
 			case 'delete':
-				$this->delAccount($login_name);
+				$this->deleteAccount($login_name);
 				break;
 			case 'change':
 				$this->changeAccount($login_name);
@@ -442,6 +442,19 @@ class CP_NREN_Admin extends FW_Content_Page
 		return;
 	}
 
+	/**
+	 * deleteAccount - remove an account from account_map
+	 *
+	 * Note:
+	 *	at the moment, this function only supports the deletion of
+	 *	unused accounts. If *any* NREN uses this account, it cannot be
+	 *	deleted. Furthermore, it does not distinguish between accounts
+	 *	belonging to other NRENS, it will happily delete any unused
+	 *	account regardless of who created/owns it.
+	 * 
+	 * @login_name: the name of the account (the actual login-name used at
+	 *		the Comodo interface).
+	 */
 	private function deleteAccount($login_name)
 	{
 		/* FIXME:
@@ -449,7 +462,28 @@ class CP_NREN_Admin extends FW_Content_Page
 		 * Handle scenario when more than one NREN is still using the
 		 * account.
 		 */
-	}
+		/* Temporary solution: only allow the deletion of an unused account */
+		$query = "SELECT * FROM nren_account_map_view WHERE account_login_name=?";
+		try {
+			$res = MDB2Wrapper::execute($query, array('text'), array($login_name));
+			if (count($res) > 0) {
+				Framework::error_output("Cannot delete an account that's still being used.");
+				return;
+			}
+			$update = "DELETE FROM account_map WHERE login_name=?";
+			MDB2Wrapper::update($update, array('text'), array($login_name));
+			Framework::message_output("Deleted account $login_name from account_map.");
+		} catch (DBStatementException $dbse) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in db-statement. Check syntax.";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_message($msg . "<BR />Server said: " . $dbse->getMessage());
+		} catch (DBQueryException $dbqe) {
+			$msg = __FILE__ . ":" . __LINE__ . " Error in query. Check values, possible constrain-violation.";
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_message($msg . "<BR />Server said: " . $dbse->getMessage());
+		}
+	} /* end deleteAccount */
+
 	private function changeAccount($login_name)
 	{
 		$nren = $this->person->get_nren();
