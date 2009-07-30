@@ -21,21 +21,7 @@ class Config {
                if (!is_object(Config::$config)) {
                     Config::$config = new Config_Holder();
                }
-               try {
                     return Config::$config->get_config_val($entry_name);
-               }
-	       /* This exception should be propagated to the calling instance.
-		* Put it here for now to avoid breaking the entire system
-		*/
-               catch (KeyNotFoundException $knfe) {
-                    echo "Key not found! -> " . $knfe->getMessage() . "<br>\n";
-                    /* throw $knfe; */
-               }
-               catch (Exception $e) {
-                    echo "unhandled exception!<br>\n" . $e->getMessage() . "<br>\n";
-                    exit(1);
-               }
-               return Null;
           }
 } /* end class Config  */
 
