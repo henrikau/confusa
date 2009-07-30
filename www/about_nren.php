@@ -13,24 +13,9 @@ class About_NREN extends FW_Content_Page
 
 	public function process()
 	{
-		echo "<H3>NREN Area</H3>\n";
-
-		if ($this->person->is_auth()) {
-			$this->auth_page();
-		} else {
-			$this->open_page();
-		}
+		$this->tpl->assign('content', $this->tpl->fetch('about_nren.tpl'));
 	}
 
-	private function auth_page()
-	{
-		echo "The classified stuff..<BR />\n";
-	}
-
-	private function open_page()
-	{
-		include 'unclassified_intro.php';
-	}
 }	
 
 $fw = new Framework(new About_NREN());
