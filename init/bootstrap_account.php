@@ -5,7 +5,7 @@ require_once 'mdb2_wrapper.php';
 require_once 'config.php';
 
 /**
- * _*DUMMY* bootstrap script.
+ *  Bootstrap script for remote-CA accounts of NRENs.
  *
  * - Insert login name and mcrypt-encrypted password into DB
  * - Create a NREN called 'uninett'
@@ -66,24 +66,51 @@ function insert_credentials($nren_name, $login_name, $login_password)
 
     $query  = "INSERT INTO account_map (login_name, password, ivector)";
     $query .= "VALUES(?, ?, ?)";
-    MDB2Wrapper::update($query,
-			array('text','text','text'),
-			array($login_name, $cryptpw, base64_encode($iv)));
+
+    try {
+	MDB2Wrapper::update($query,
+			    array('text','text','text'),
+			    array($login_name, $cryptpw, base64_encode($iv)));
+    } catch (DBStatementException $dbse) {
+	echo "Could not insert the supplied login name into the account-map table! Problem " . $dbse->getMessage();
+	exit(5);
+    } catch (DBQueryException $dbqe) {
+	echo "Could not insert the supplied login name into the account-map table! Problem " . $dbse->getMessage();
+	exit(5);
+    }
 
     echo "Inserted values to account_map. Moving on to update the NREN\n";
 
     $pk_query = "SELECT account_map_id FROM account_map WHERE login_name=?";
-    $res = MDB2Wrapper::execute($pk_query,
-				array('text'),
-				array($login_name));
+    $res = NULL;
+
+    try {
+	$res = MDB2Wrapper::execute($pk_query,
+				    array('text'),
+				    array($login_name));
+    } catch (DBStatementException $dbse) {
+	echo "Could not get the ID of the inserted account. This looks serious..." . $dbse->getMessage();
+	exit(5);
+    } catch (DBQueryException $dbqe) {
+	echo "Could not get the ID of the inserted account. This looks serious..." . $dbqe->getMessage();
+	exit(5);
+    }
 
     if (count($res) == 1) {
 	$account_id = $res[0]['account_map_id'];
 
 	$nren_query = "INSERT INTO nrens (login_account, name) VALUES(?, ?)";
-	MDB2Wrapper::update($nren_query,
-			array('text', 'text'),
-			array($account_id, strtolower($nren_name)));
+	try {
+		MDB2Wrapper::update($nren_query,
+				    array('text', 'text'),
+				    array($account_id, strtolower($nren_name)));
+	} catch (DBStatementException $dbse) {
+		echo "Could not insert the NREN with it's login account. Database said " . $dbse->getMessage();
+		exit(5);
+	} catch (DBQueryException $dbqe) {
+		echo "Could not insert the NREN with it's login account. Database said " . $dbqe->getMessage();
+		exit(5);
+	}
 
 	echo "Inserted NREN, connected to " . strtolower($nren_name) . "\n";
 
