@@ -156,6 +156,9 @@ class CP_NREN_Admin extends FW_Content_Page
 		$org_name	= Input::sanitize($name);
 		$nren		= $this->person->get_nren();
 
+		$select_nrenid		= "(SELECT nren_id FROM nrens WHERE name=?)";
+		$update_subscr_insert	= "INSERT INTO subscribers(name, nren_id, org_state) VALUES(?,?,?)";
+
 		if (!isset($org_state) || $org_state === "")
 			echo "orgstate not set!";
 		if (!isset($org_name) || $org_name === "")
@@ -163,26 +166,44 @@ class CP_NREN_Admin extends FW_Content_Page
 		if (!isset($nren) || $nren === "")
 			echo "nren not set!";
 
-		$subselect = "(SELECT nren_id FROM nrens WHERE name=?)";
-		$res = MDB2Wrapper::execute($subselect,
-					    array('text'),
-					    array($nren));
-
-		if (count($res) < 1) {
-		    Framework::error_output("Your NREN is unknown to Confusa! " .
-			  "Probably something is wrong with the configuration");
-		}
-
-		$update = "INSERT INTO subscribers(name, nren_id, org_state) VALUES(?,?,?)";
 		try {
-		MDB2Wrapper::update($update,
-				    array('text',	'text',			'text'),
-				    array($org_name,	$res[0]['nren_id'],	$org_state));
+			$res = MDB2Wrapper::execute($select_nrenid,
+						    array('text'),
+						    array($nren));
+		} catch (DBStatementException $dbse) {
+			$msg  = __FILE__ . ":" . __LINE__ . " Error in query syntax.";
+			Logger::log_event(LOG_INFO, $msg);
+			$msg .=	"<BR />Server said: " . $dbse->getMessage();
+			Framework::error_output($msg);
+			return;
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Cannot add row, duplicate entry?");
+			$msg  = __FILE__ . ":" . __LINE__ . " Query-error. Constraint violoation in query?";
+			Logger::log_event(LOG_INFO, $msg);
+			$msg .= "<BR />Server said: " . $dbqe->getMessage();
+			Framework::error_output($msg);
 			return;
 		}
-		/* FIXME: detect errors */
+
+		if (count($res) < 1) {
+			Framework::error_output("Your NREN is unknown to Confusa! " .
+						"Probably something is wrong with the configuration");
+			return;
+		}
+
+		try {
+			MDB2Wrapper::update($update_subscr_insert,
+					    array('text',	'text',			'text'),
+					    array($org_name,	$res[0]['nren_id'],	$org_state));
+		} catch (DBStatementException $dbse) {
+			$msg = __FILE__ . ":" . __LINE__ . " synatx error in update, server said: " . $dbse->getMessage();
+			Logger::log_event(LOG_NOTICE, $msg);
+			Framework::error_output($msg);
+		} catch (DBQueryException $dbqe) {
+			$msg = __FILE__ . ":" . __LINE__ . " Cannot add row, duplicate entry?";
+			Framework::error_output($msg);
+			Logger::log_event(LOG_NOTICE, $msg);
+			return;
+		}
 
 		Logger::log_event(LOG_INFO, "Added the organization $org_name with " .
 				  "NREN $nren and state $org_state as a subscriber ");
