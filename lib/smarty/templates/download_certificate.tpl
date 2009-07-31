@@ -38,8 +38,13 @@
 					[<a href="download_certificate.php?inspect_cert={$key}">Inspect</a>]
 				{/if}
 				[<a href="download_certificate.php?delete_cert={$key}">Delete</a>]
-				<INPUT TYPE="hidden" name="order_number" VALUE="{$key}">
-				<input type="submit" name="submit" value="Revoke" onclick="return confirm('Are you sure?')" />
+				
+				{* Revoke-button *}
+				<INPUT TYPE="hidden" NAME="revoke"		VALUE="revoke_single">
+				<INPUT TYPE="hidden" NAME="order_number"	VALUE="{$key}">
+				<INPUT TYPE="submit" NAME="submit"		VALUE="Revoke"
+				       		     style=" background-color:#660000; color:#FFFFFF;" 
+						     onclick="return confirm('\t\tReally revoke certificate?\n\nAuth_key:       {$key}\nExpiry date:   {$cert.valid_untill}')" />
 				</FORM>
 				{$td_e}
 				{$td}{$td_e}
