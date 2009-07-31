@@ -29,7 +29,7 @@
 				{$tr}
 				{$td}{$td_e}
 				{$td}
-				<FORM ACTION="revoke_certificate.php?revoke=revoke_single" METHOD="POST">
+				<FORM ACTION="revoke_certificate.php" METHOD="GET">
 				[<a href="download_certificate.php?email_cert={$key}">Email</a>]
 				[<a href="download_certificate.php?file_cert={$key}">Download</a>]
 				{if $processingToken eq $key}
