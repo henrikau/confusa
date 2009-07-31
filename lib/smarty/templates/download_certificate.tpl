@@ -8,7 +8,7 @@
 {if empty($certList)}
 <H3>No certificates in database</H3>
 {else}
-	<DIV ID="inspect_csr">
+	<DIV ID="csr">
 	<FIELDSET>
 	<LEGEND>Available Certificates</LEGEND>
 	{$table}
