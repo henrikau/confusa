@@ -66,6 +66,10 @@ CREATE TABLE IF NOT EXISTS nrens (
 
     -- if a remote signing CA is used, the ID of the subaccont there
     login_account INT,
+    -- a customized help-text that the NREN may display to its consituency
+    help TEXT,
+    -- a customized about-message that the NREN may display to its constituency
+    about TEXT,
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) type=InnoDB;
 
