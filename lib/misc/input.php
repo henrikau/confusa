@@ -14,6 +14,9 @@ class Input
 	 */
 	static function sanitize($input)
 	{
+		if (!isset($input) || $input === "")
+			return null;
+
 		if (is_array($input)) {
 			foreach($input as $var=>$val) {
 				$output[$var] = $this->sanitize($val);

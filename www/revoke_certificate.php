@@ -4,6 +4,7 @@ require_once 'framework.php';
 require_once 'person.php';
 require_once 'send_element.php';
 require_once 'csv_lib.php';
+require_once 'input.php';
 
 class RevokeCertificate extends FW_Content_Page
 {
@@ -41,11 +42,11 @@ class RevokeCertificate extends FW_Content_Page
 		if(isset($_GET['revoke'])) {
 			switch($_GET['revoke']) {
 			case 'do_revoke':
-				$this->revoke_certs($_POST['order_numbers'], $_POST['reason']);
+				$this->revoke_certs(Input::sanitize($_POST['order_number']), Input::sanitize($_POST['reason']));
 				break;
 
 			case 'do_revoke_list':
-				$this->revoke_list($_POST['reason']);
+				$this->revoke_list(Input::sanitize($_POST['reason']));
 				break;
 
 			default:
@@ -153,7 +154,7 @@ class RevokeCertificate extends FW_Content_Page
 			 * to the revocation method */
 			foreach($certs as $row) {
 				$owners[] = $row['cert_owner'];
-				$orders[$row['cert_owner']][] = $row['auth_key'];
+				$orders[$row['cert_owner']][] = array($row['auth_key'], $row['valid_untill']);
 			}
 
 			$owners = array_unique($owners);

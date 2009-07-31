@@ -12,25 +12,45 @@
 </head>
 
 <body>
-	<div id="site">
-		<div id="header">
-			<div id="logo"><img src="graphics/logo-sigma.png" alt="" /></div>
-			<div id="title">Confusa</div>
+<div id="site">
+  <div class="confusa_corners_t">
+    <div class="confusa_corners_l">
+      <div class="confusa_corners_r">
+	<div class="confusa_corners_b">
+	  <div class="confusa_corners_tl">
+	    <div class="confusa_corners_tr">
+	      <div class="confusa_corners_bl">
+		<div class="confusa_corners_br">
+		  <div class="confusa_corners">
+
+		    <div id="header">
+		      <div id="logo"><img src="graphics/logo-sigma.png" alt="" /></div>
+		      <div id="title">Confusa</div>
+		    </div> <!-- header -->
+		    <div id="menu">
+		      {$menu}
+		    </div> <!-- menu -->
+		    
+		    <div id="content">
+		      {foreach from=$errors item=error}
+		      <div class="error">{$error}</div>
+		      {/foreach}
+		      {foreach from=$messages item=msg}
+		      <div class="success">{$msg}</div>
+		      {/foreach}
+		      {$content}
+		    </div> <!-- content -->
+
+		  </div> <!-- rounded borders -->
 		</div>
-		
-		<div id="menu">
-			{$menu}
-		</div>
-		
-		<div id="content">
-			{foreach from=$errors item=error}
-			<div class="error">{$error}</div>
-			{/foreach}
-			{foreach from=$messages item=msg}
-			<div class="success">{$msg}</div>
-			{/foreach}
-			{$content}
-		</div>
+	      </div>
+	    </div>
+	  </div>
 	</div>
+      </div>
+    </div>
+  </div> <!-- end rounded border -->
+
+</div> <!-- site -->
 </body>
 </html>

@@ -13,7 +13,6 @@ body {
 	background-color: #FFF;
 	width: 900px;
 	margin: 30px auto;
-	padding: 20px;
 }
 #menu {
 	border: 1px solid #00000;
@@ -100,4 +99,74 @@ div.csr {
 div.spacer
 {
   height: 12px
+}
+
+/* powered by http://mierendo.com/software/rounded_css_boxes/ */
+.confusa_corners_tl, .confusa_corners_t, .confusa_corners_tr, .confusa_corners_l, .confusa_corners_r, .confusa_corners_bl, .confusa_corners_b, .confusa_corners_br, .confusa_corners {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    position: relative;
+}
+.confusa_corners_t {
+    /*
+        change this div to layout the whole box (width, height, float, margin, ...)
+        example lines:
+        width: 60%;
+        margin: 7px 35px 0px 1px
+        to change distance to content/text scroll to class ".confusa_corners" and change the padding
+    */
+    background-color: #FFFFFF;
+    background-image: url("graphics/confusa_corners_border.png");
+    background-repeat: repeat-x;
+    background-position: top;
+}
+.confusa_corners_tl {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_topleft.png");
+    background-repeat: no-repeat;
+    background-position: left top;
+}
+.confusa_corners_tr {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_topright.png");
+    background-repeat: no-repeat;
+    background-position: right top;
+}
+.confusa_corners_bl {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_bottomleft.png");
+    background-repeat: no-repeat;
+    background-position: left bottom;
+}
+.confusa_corners_br {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_bottomright.png");
+    background-repeat: no-repeat;
+    background-position: right bottom;
+}
+.confusa_corners {
+    height: 100%;
+    /* change this if you want to change the distance distance to text/content */
+    padding: 16px 17px 16px 17px;
+}
+
+.confusa_corners_l {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_border.png");
+    background-repeat: repeat-y;
+    background-position: left;
+}
+.confusa_corners_r {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_border.png");
+    background-repeat: repeat-y;
+    background-position: right;
+}
+.confusa_corners_b {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_border.png");
+    background-repeat: repeat-x;
+    background-position: bottom;
 }

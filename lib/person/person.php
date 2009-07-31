@@ -164,6 +164,9 @@ class Person{
      *
      * This function will look at the type of user and return the mode based on
      * this and information stored in the database (if admin)
+     *
+     * NORMAL_MODE: 0
+     * ADMIN_MODE:  1
      */
     public function get_mode()
     {

@@ -8,7 +8,7 @@
 {if empty($certList)}
 <H3>No certificates in database</H3>
 {else}
-	<DIV ID="inspect_csr">
+	<DIV ID="csr">
 	<FIELDSET>
 	<LEGEND>Available Certificates</LEGEND>
 	{$table}
@@ -29,6 +29,7 @@
 				{$tr}
 				{$td}{$td_e}
 				{$td}
+				<FORM ACTION="revoke_certificate.php" METHOD="GET">
 				[<a href="download_certificate.php?email_cert={$key}">Email</a>]
 				[<a href="download_certificate.php?file_cert={$key}">Download</a>]
 				{if $processingToken eq $key}
@@ -37,6 +38,15 @@
 					[<a href="download_certificate.php?inspect_cert={$key}">Inspect</a>]
 				{/if}
 				[<a href="download_certificate.php?delete_cert={$key}">Delete</a>]
+				
+				{* Revoke-button *}
+				<INPUT TYPE="hidden" NAME="revoke"		VALUE="revoke_single">
+				<INPUT TYPE="hidden" NAME="order_number"	VALUE="{$key}">
+				<INPUT TYPE="hidden" NAME="reason"		VALUE="unspecified">
+				<INPUT TYPE="submit" NAME="submit"		VALUE="Revoke"
+				       		     style=" background-color:#660000; color:#FFFFFF;" 
+						     onclick="return confirm('\t\tReally revoke certificate?\n\nAuth_key:       {$key}\nExpiry date:   {$cert.valid_untill}')" />
+				</FORM>
 				{$td_e}
 				{$td}{$td_e}
 				{$tr_e}
