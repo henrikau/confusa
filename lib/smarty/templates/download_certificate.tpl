@@ -29,6 +29,7 @@
 				{$tr}
 				{$td}{$td_e}
 				{$td}
+				<FORM ACTION="revoke_certificate.php?revoke=revoke_single" METHOD="POST">
 				[<a href="download_certificate.php?email_cert={$key}">Email</a>]
 				[<a href="download_certificate.php?file_cert={$key}">Download</a>]
 				{if $processingToken eq $key}
@@ -37,6 +38,9 @@
 					[<a href="download_certificate.php?inspect_cert={$key}">Inspect</a>]
 				{/if}
 				[<a href="download_certificate.php?delete_cert={$key}">Delete</a>]
+				<INPUT TYPE="hidden" name="order_number" VALUE="{$key}">
+				<input type="submit" name="submit" value="Revoke" onclick="return confirm('Are you sure?')" />
+				</FORM>
 				{$td_e}
 				{$td}{$td_e}
 				{$tr_e}
