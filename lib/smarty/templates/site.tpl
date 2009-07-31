@@ -7,7 +7,7 @@
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
 	<link rel="shortcut icon" href="graphics/icon.gif" type="image/gif" />
-	<link rel="stylesheet" href="confusa2.css" type="text/css" />
+	<link rel="stylesheet" href="css/confusa2.css" type="text/css" />
 	{$extraHeader}
 </head>
 
