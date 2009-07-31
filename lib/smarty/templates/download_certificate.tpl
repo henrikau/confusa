@@ -42,6 +42,7 @@
 				{* Revoke-button *}
 				<INPUT TYPE="hidden" NAME="revoke"		VALUE="revoke_single">
 				<INPUT TYPE="hidden" NAME="order_number"	VALUE="{$key}">
+				<INPUT TYPE="hidden" NAME="reason"		VALUE="unspecified">
 				<INPUT TYPE="submit" NAME="submit"		VALUE="Revoke"
 				       		     style=" background-color:#660000; color:#FFFFFF;" 
 						     onclick="return confirm('\t\tReally revoke certificate?\n\nAuth_key:       {$key}\nExpiry date:   {$cert.valid_untill}')" />
