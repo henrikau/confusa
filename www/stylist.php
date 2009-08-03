@@ -3,13 +3,26 @@ require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'mdb2_wrapper.php';
 require_once 'input.php';
+require_once 'file_upload.php';
 
 class CP_Stylist extends FW_Content_Page
 {
+
+	/* maximum width for custom logos */
+	private $allowed_width;
+	/* maximum height for custom logos */
+	private $allowed_height;
+
 	function __construct() {
 		parent::__construct("Stylist", true);
+		$this->allowed_width = 200;
+		$this->allowed_height = 200;
 	}
 
+	/*
+	 * Dispatcher for non-visual operations like e.g. writing changes to
+	 * somewhere or updating values.
+	 */
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
@@ -35,9 +48,17 @@ class CP_Stylist extends FW_Content_Page
 				} else {
 					/* the CSS will not be inserted into the DB or executed in another way.
 					* Hence do not sanitize it. It will contain 'dangerous' string portions,
-					* such as { : ' anyways, so it would be hard to insert it into the DB*/
+					* such as { : ' anyways, so it would be hard to insert it into the DB properly*/
 					$new_css = $_POST['css_content'];
 					$this->updateNRENCSS($this->person->get_nren(), $new_css);
+				}
+				break;
+			case 'upload_logo':
+				if (isset($_FILES['nren_logo']['name'])) {
+					/* only allow image uploads */
+					if (eregi('image/', $_FILES['nren_logo']['type'])) {
+						$this->uploadLogo('nren_logo', $this->person->get_nren());
+					}
 				}
 				break;
 			default:
@@ -47,6 +68,9 @@ class CP_Stylist extends FW_Content_Page
 		}
 	}
 
+	/*
+	 * Dispatcher for visual operations, e.g. displaying a mask
+	 */
 	public function process()
 	{
 		if (!$this->person->is_nren_admin()) {
@@ -79,6 +103,10 @@ class CP_Stylist extends FW_Content_Page
 				break;
 			case 'logo':
 				$this->tpl->assign('edit_logo', true);
+				$logo = Framework::get_logo_for_nren($this->person->get_nren());
+				$this->tpl->assign('logo', $logo);
+				$this->tpl->assign('width', $this->allowed_width);
+				$this->tpl->assign('height', $this->allowed_height);
 				break;
 			default:
 				Framework::error_output("Unsupported operation chosen!");
@@ -89,6 +117,13 @@ class CP_Stylist extends FW_Content_Page
 		$this->tpl->assign('content', $this->tpl->fetch('stylist.tpl'));
 	}
 
+	/*
+	 * Get the help and about texts for a certain NREN from the DB
+	 *
+	 * @param $nren The name of the NREN for which to retrieve the texts
+	 * @return list($help, $about) where $help Individual help text
+	 * 									 $about Individual about text
+	 */
 	private function getNRENTexts($nren)
 	{
 		$query = "SELECT help, about FROM nrens WHERE name=?";
@@ -124,6 +159,12 @@ class CP_Stylist extends FW_Content_Page
 
 	}
 
+	/*
+	 * Update the help text of a certain NREN
+	 *
+	 * @param $nren The NREN whose help text is to be updated
+	 * @param $new_text The new help text of that NREN
+	 */
 	private function updateNRENHelpText($nren, $new_text)
 	{
 		$query = "UPDATE nrens SET help=? WHERE name=?";
@@ -142,6 +183,12 @@ class CP_Stylist extends FW_Content_Page
 		}
 	}
 
+	/*
+	 * Update the about-text of a NREN
+	 *
+	 * @param $nren The NREN whose about-text is going to be updated
+	 * @param $new_text The updated about-text
+	 */
 	private function updateNRENAboutText($nren, $new_text)
 	{
 		$query = "UPDATE nrens SET about=? WHERE name=?";
@@ -163,6 +210,8 @@ class CP_Stylist extends FW_Content_Page
 	/**
 	 * Fetch the CSS file content for a certain NREN. If no CSS file for the
 	 * NREN has been defined so far, display the standard site-wide CSS
+	 *
+	 * @param $nren The NREN for which the CSS-file is to be fetched
 	 */
 	private function fetchNRENCSS($nren)
 	{
@@ -188,7 +237,6 @@ class CP_Stylist extends FW_Content_Page
 		 */
 		$main_css_path = Config::get_config('install_path') . 'www/css/';
 		$main_css_path .= 'confusa2.css';
-		echo $main_css_path;
 
 		if (file_exists($main_css_path) === TRUE) {
 			$fd = fopen($main_css_path, 'r');
@@ -207,6 +255,13 @@ class CP_Stylist extends FW_Content_Page
 		return NULL;
 	}
 
+	/*
+	 * Update the customized CSS file of a certain NREN. Write the CSS file to
+	 * a certain NREN-specific folder on the filesystem.
+	 *
+	 * @param $nren The NREN whose CSS is to be updated
+	 * @param $content The content which forms the new custom CSS file of the NREN
+	 */
 	private function updateNRENCSS($nren, $content)
 	{
 		$css_path = Config::get_config('install_path') . 'www/css/';
@@ -217,7 +272,7 @@ class CP_Stylist extends FW_Content_Page
 		 * This should have been done by the bootstrap script, though
 		 */
 		if (!file_exists($css_path)) {
-			mkdir($css_path, 0644, TRUE);
+			mkdir($css_path, 0755, TRUE);
 		}
 
 		$css = $css_path . '/custom.css';
@@ -238,6 +293,12 @@ class CP_Stylist extends FW_Content_Page
 		fclose($fd);
 	}
 
+	/*
+	 * Reset the CSS changes of a certain NREN. In techspeak, delete the custom
+	 * CSS file so a fallback to the standard CSS file will be performed.
+	 *
+	 * @param $nren The NREN, whose custom CSS is to be "reset"
+	 */
 	private function resetNRENCSS($nren)
 	{
 		$css_file = Config::get_config('install_path') . 'www/css/';
@@ -248,6 +309,63 @@ class CP_Stylist extends FW_Content_Page
 
 			if ($success === FALSE) {
 				Framework::error_output("Could not reset the CSS file! Please contact an administrator!");
+			}
+		}
+	}
+
+	/*
+	 * Upload a custom logo for a certain NREN. Enforce dimensional constraints,
+	 * as well as filename (suffix) constraints. Store the file in a NREN-specific
+	 * subdirectory of the graphics-folder
+	 */
+	private function uploadLogo($filename, $nren) {
+		$fu = new FileUpload($filename, false, false, NULL);
+
+		if ($fu->file_ok()) {
+			$file_tokens = explode(".", $_FILES[$filename]['name']);
+
+			$suffix = $file_tokens[count($file_tokens) - 1];
+
+			if (array_search($suffix, Framework::$allowed_img_suffixes) === FALSE) {
+				Framework::error_output("Your file has an illegal ending! Make sure the ending is one of: "
+									. implode(" ", Framework::$allowed_img_suffixes));
+				return;
+			}
+
+			list($width, $height) = getimagesize($_FILES[$filename]['tmp_name']);
+
+			if ($width > $this->allowed_width) {
+				Framework::error_output("The width of your image is $width pixel, greater than " .
+										"the allowed image-width $allowed_width pixel. Please " .
+										"crop or resize your image and upload it again");
+				return;
+			}
+
+			if ($height > $this->allowed_height) {
+				Framework::error_output("The height of your image is $width pixel, greater than " .
+										"the allowed image-height $allowed_height pixel. Please " .
+										"crop or resize your image and upload it again");
+				return;
+			}
+
+			/* keep the suffix but change the name to custom.suffix
+			 */
+			$logo_path = Config::get_config('install_path') . 'www/';
+			$logo_path .= Config::get_config('custom_logo');
+			$logo_path .= $nren;
+
+			if (!file_exists($logo_path)) {
+				mkdir($logo_path, 0755, TRUE);
+			}
+
+			$content = $fu->get_content();
+			$logo_file = $logo_path . '/custom.' . $suffix;
+
+			try {
+				$fu->write_content_to_file($logo_file);
+			} catch (FileException $fexp) {
+				Framework::error_output("Could not save the logo on the server. " .
+							"Server said: " . $fexp->getMessage());
 			}
 		}
 	}
