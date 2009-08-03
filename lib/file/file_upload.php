@@ -34,7 +34,7 @@ class FileUpload {
   private $parsed;		/* if the file has already been read and tested */
   private $test_func;
 
-  function __construct($fname, $mem_read, $file_test_func) {
+  function __construct($fname, $mem_read, $parse, $file_test_func) {
     $this->open_file	= $fname;
     $this->filename	= $_FILES[$this->open_file]['tmp_name'];
     $this->keep		= false;
@@ -52,7 +52,10 @@ class FileUpload {
 
     /* test to see if file is ok */
     $this->test_file();
-    $this->parse_file();
+
+    if ($parse) {
+	    $this->parse_file();
+    }
   } /* end __construct */
 
   function __destruct() {
@@ -87,7 +90,7 @@ class FileUpload {
       if (!$this->parsed && $this->file_ok) {
 	      if ($this->file_ok() && isset($this->filename)) {
 	  $fd = fopen($this->filename,'r');
-	  $fsize=filesize($_FILES['user_csr']['tmp_name']);
+	  $fsize=filesize($_FILES[$this->open_file]['tmp_name']);
 	  if ($this->mem) {
 	    $this->fcont = fread($fd, $fsize);
 	    fclose($fd);
@@ -112,6 +115,24 @@ class FileUpload {
 	  /* echo __FILE__.":".__LINE__. " " . $this->fcont . "<BR>\n"; */
 	  if ($this->file_ok() && $this->parsed)
 		  return $this->fcont;
+  }
+
+  /**
+   * Write the content of the uploaded file to the path described by filepath.
+   * Handy for instance for image uploads.
+   *
+   * @param $filepath The path to which the file's content is written.
+   * @throws FileException If writing the file's content fails for some reason
+   */
+  public function write_content_to_file($filepath)
+  {
+      if ($this->file_ok()) {
+	  $success = copy($_FILES[$this->open_file]['tmp_name'], $filepath);
+
+	  if ($success === FALSE) {
+	      throw new FileException("Could not write to location $filepath!");
+	  }
+      }
   }
 
   private function test_file()
