@@ -43,6 +43,14 @@ class Framework {
 	private static $errors = array();
 	private static $messages = array();
 
+	/* Limit the file endings that are going to be accepted.
+	 * There can be images with embedded comments. As the comments can
+	 * contain PHP code, allowing files with suffix .php is dangerous,
+	 * even when a check for the file mime-type has already been made.
+	 * Classical injection scenario.
+	 */
+	public static $allowed_img_suffixes = array('png','jpg','gif');
+
 	public function __construct($contentPage) {
 		if (!isset($contentPage)) {
 			Framework::error_output("Error! content_page not provided to Framework constructor");
@@ -111,6 +119,10 @@ class Framework {
 		$this->tpl->assign('menu', $this->tpl->fetch('menu.tpl')); // see render_menu($this->person)
 		$this->tpl->assign('errors', self::$errors);
 		$this->tpl->assign('messages', self::$messages);
+
+		/* get custom logo if there is any */
+		$logo = Framework::get_logo_for_nren($this->person->get_nren());
+		$this->tpl->assign('logo', $logo);
 		$this->tpl->display('site.tpl');
 		
 		$this->contentPage->post_process($this->person);
@@ -127,6 +139,7 @@ class Framework {
 			if (isset($_POST['start_login']) && $_POST['start_login'] == 'yes')
 			authenticate_user($this->person);
 		}
+
 		$func = $this->f_content;
 		$func($this->person);
 	} /* end user-rendering */
@@ -138,6 +151,48 @@ class Framework {
 	public static function message_output($message)
 	{
 		self::$messages[] = $message;
+	}
+
+	/*
+	 * Check if there is a custom logo for a certain NREN and if there is,
+	 * return an array with it containing all data needed to display it on
+	 * a web-page.
+	 *
+	 * @param NREN the name of the NREN of which the logo should be retrieved
+	 * @return $url: The URL of the logo
+	 *
+	 * 			NULL if the logo does not exist
+	 */
+	public static function get_logo_for_nren($nren)
+	{
+		$logo_path = Config::get_config('install_path') . 'www/';
+		$logo_path .= Config::get_config('custom_logo') . '/' . $nren . '/custom.';
+
+		$logo_suffix = "";
+
+		/*
+		 * Search if there is one custom.png, custom.jpg or custom.any_other_
+		 * allowed_suffix file in the custom-logo folder.
+		 *
+		 * If there isn't return null
+		 */
+		foreach(Framework::$allowed_img_suffixes as $suffix) {
+			if (file_exists($logo_path . $suffix)) {
+				$logo_suffix = $suffix;
+				break;
+			}
+		}
+
+		if (empty($logo_suffix)) {
+			return NULL;
+		}
+
+		$image = $logo_path . $logo_suffix;
+
+		$logo_url = Config::get_config('server_url') . Config::get_config('custom_logo');
+		$logo_url .= $nren . '/custom.' . $logo_suffix;
+
+		return $logo_url;
 	}
 
 	
