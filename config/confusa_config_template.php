@@ -59,6 +59,14 @@ $confusa_config = array(
         'download'              => '/key_download.php',
 	'approve'		=> '/index.php',
 
+	/* for NREN landing page customization
+	 *
+	 * define where custom CSS files and logos are kept - the paths are
+	 * relative to Confusa's' www directory
+	 */
+	'custom_css'		=> 'css/custom/',
+	'custom_logo'		=> 'graphics/custom/',
+
         /* For CA handling.
          * Legal modes are: CA_STANDALONE and CA_ONLINE */
 	'ca_mode'		=> CA_STANDALONE,
