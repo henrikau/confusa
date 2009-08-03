@@ -24,7 +24,13 @@
 		  <div class="confusa_corners">
 
 		    <div id="header">
-		      <div id="logo"><img src="graphics/logo-sigma.png" alt="" /></div>
+		      {if is_null($logo)}
+		      <div id="logo"><img src="graphics/logo-sigma.png" alt="UNINETT Sigma Logo" /></div>
+		      {else}
+		      <div id="logo">
+		      <img src="{$logo}" alt="NREN logo" />
+		      </div>
+		      {/if}
 		      <div id="title">Confusa</div>
 		    </div> <!-- header -->
 		    <div id="menu">
