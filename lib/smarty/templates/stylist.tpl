@@ -81,10 +81,10 @@
 	</tr>
 	<tr>
 	<td align="right">
-		<input type="hidden" name="stylist_operation" value="change_css" >
+		<input type="hidden" name="stylist_operation" value="change_css" />
 		<input type="submit" name="reset" value="Reset"
-			onclick="return confirm('Reset CSS to Confusa\'s shipped CSS?')" >
-		<input type="submit" name="change" value="Save" >
+			onclick="return confirm('Reset CSS to Confusa\'s shipped CSS?')" />
+		<input type="submit" name="change" value="Save" />
 	</td>
 	</tr>
 	</table>
@@ -95,6 +95,38 @@
 	[ <a href="?show=text">Texts</a> ]
 	[ <a href="?show=css">CSS</a> ]
 	[ Logo ]
+	<div class="spacer"></div>
+	<fieldset>
+	<legend>Custom NREN logo</legend>
+	Upload a custom logo here. This logo will be displayed on your users' landing
+	page, i.e. when the user has logged in to Confusa.<br /><br />
+	Please provide an image with a size of maximally <b>{$width} x {$height}</b>
+	pixel!
 
+	{if is_null($logo) === FALSE}
+		<br />
+		<br />
+		<p><i>Your current logo:</i></p>
+		<div class="spacer"></div>
+		<img src={$logo} alt="Currently uploaded NREN logo" name="logo" />
+	{/if}
+	<div class="spacer"></div>
+	<form action="" method="POST" enctype="multipart/form-data">
+	<table>
+	<tr>
+	<td>
+		<input type="hidden" name="stylist_operation" value="upload_logo" />
+		<input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
+		<input type="file" name="nren_logo" />
+
+	</td>
+	<td>
+		<input type="submit" value="Upload image" />
+	</td>
+	</tr>
+	</table>
+	</form>
+	<div class="spacer"></div>
+	</fieldset>
   {/if}
 {/if}
