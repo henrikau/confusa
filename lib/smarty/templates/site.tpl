@@ -32,6 +32,8 @@
 		      </div>
 		      {/if}
 		      <div id="title">Confusa</div>
+		      <!-- fix for adjusting the header's height to the image's height. Breaks in IE6 -->
+		      <div style="clear: left"></div>
 		    </div> <!-- header -->
 		    <div id="menu">
 		      {$menu}
