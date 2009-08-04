@@ -122,7 +122,9 @@ class Framework {
 
 		/* get custom logo if there is any */
 		$logo = Framework::get_logo_for_nren($this->person->get_nren());
+		$css = Framework::get_css_for_nren($this->person->get_nren());
 		$this->tpl->assign('logo', $logo);
+		$this->tpl->assign('css',$css);
 		$this->tpl->display('site.tpl');
 		
 		$this->contentPage->post_process($this->person);
@@ -155,8 +157,7 @@ class Framework {
 
 	/*
 	 * Check if there is a custom logo for a certain NREN and if there is,
-	 * return an array with it containing all data needed to display it on
-	 * a web-page.
+	 * return its URL.
 	 *
 	 * @param NREN the name of the NREN of which the logo should be retrieved
 	 * @return $url: The URL of the logo
@@ -193,6 +194,28 @@ class Framework {
 		$logo_url .= $nren . '/custom.' . $logo_suffix;
 
 		return $logo_url;
+	}
+
+	/*
+	 * Check if a custom CSS file for a certain NREN exists and return it if it
+	 * does.
+	 *
+	 * @param $nren The name of the NREN for which to retrieve the custom CSS
+	 * @return The custom CSS file for the respective NREN
+	 */
+	public static function get_css_for_nren($nren)
+	{
+		$css_path = Config::get_config('install_path') . 'www/';
+		$css_path .= Config::get_config('custom_css') . $nren . '/custom.css';
+
+		if (!file_exists($css_path)) {
+			return NULL;
+		}
+
+		$css_url =  Config::get_config('custom_css');
+		$css_url .= $nren . '/custom.css';
+
+		return $css_url;
 	}
 
 	

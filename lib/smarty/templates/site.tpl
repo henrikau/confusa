@@ -8,6 +8,11 @@
 	<meta http-equiv="Content-Style-Type" content="text/css" />
 	<link rel="shortcut icon" href="graphics/icon.gif" type="image/gif" />
 	<link rel="stylesheet" href="css/confusa2.css" type="text/css" />
+
+	{if !is_null($css)}
+		<link rel="stylesheet" href="{$css}" type ="text/css" />
+	{/if}
+
 	{$extraHeader}
 </head>
 
