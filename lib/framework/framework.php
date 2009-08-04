@@ -190,7 +190,7 @@ class Framework {
 
 		$image = $logo_path . $logo_suffix;
 
-		$logo_url = Config::get_config('server_url') . Config::get_config('custom_logo');
+		$logo_url = Config::get_config('custom_logo');
 		$logo_url .= $nren . '/custom.' . $logo_suffix;
 
 		return $logo_url;
