@@ -58,6 +58,8 @@ $confusa_config = array(
         'upload'                => '/key_upload.php',
         'download'              => '/key_download.php',
 	'approve'		=> '/index.php',
+	/* the page of Confusa that should be shown after the user signed in */
+	'post_login_page'	=> '/about_nren.php',
 
 	/* for NREN landing page customization
 	 *

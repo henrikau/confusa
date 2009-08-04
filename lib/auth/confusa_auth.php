@@ -253,7 +253,8 @@ function _assert_sso($person)
    * http://rnd.feide.no/content/using-simplesamlphp-service-provider#id436365
    */
   if (!isset($session) || !$session->isValid() ) {
-       SimpleSAML_Utilities::redirect('/' . $config->getBaseURL() . 'saml2/sp/initSSO.php',array('RelayState' => SimpleSAML_Utilities::selfURL()));
+       $relay = Config::get_config('server_url') . Config::get_config('post_login_page');
+       SimpleSAML_Utilities::redirect('/' . $config->getBaseURL() . 'saml2/sp/initSSO.php',array('RelayState' => $relay));
        exit(0);
   }
 
