@@ -356,6 +356,11 @@ class CP_Stylist extends FW_Content_Page
 
 			if (!file_exists($logo_path)) {
 				mkdir($logo_path, 0755, TRUE);
+			} else {
+				/* delete all the other potential logos that might be there */
+				foreach (Framework::$allowed_img_suffixes as $suffix) {
+					unlink($logo_path . "/custom.$suffix");
+				}
 			}
 
 			$content = $fu->get_content();
