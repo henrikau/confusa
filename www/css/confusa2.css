@@ -1,4 +1,5 @@
 @CHARSET "UTF-8";
+
 * {
 	margin: 0px;
 	padding: 0px;
@@ -48,6 +49,13 @@ a:hover {
 #logo {
 	float: left;
 }
+
+#logo_in_text {
+	float: left;
+	margin-right: 10px;
+	margin-bottom: 10px;
+}
+
 #title {
 	margin-left: 200px;
 	font-size: 28px;
