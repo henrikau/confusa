@@ -45,7 +45,7 @@ final class DownloadCertificate extends FW_Content_Page
 		} catch (ConfusaGenException $e) {
 			Framework::error_output("Could not retrieve certificates from the database. Server said: " .  $e->getMessage());
 		}
-		$this->tpl->assign('standalone', Config::get_config('standalone'));
+		$this->tpl->assign('standalone', (Config::get_config('ca_mode') === CA_STANDALONE));
 		$this->tpl->assign('content', $this->tpl->fetch('download_certificate.tpl'));
 
 	}
