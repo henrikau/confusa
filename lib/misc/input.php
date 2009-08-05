@@ -19,7 +19,7 @@ class Input
 
 		if (is_array($input)) {
 			foreach($input as $var=>$val) {
-				$output[$var] = $this->sanitize($val);
+				$output[$var] = Input::sanitize($val);
 			}
 		}
 
