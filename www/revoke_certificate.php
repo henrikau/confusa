@@ -58,7 +58,7 @@ class RevokeCertificate extends FW_Content_Page
 				break;
 
 			case 'do_revoke':
-				$this->revoke_certs(Input::sanitize($_POST['order_number']), Input::sanitize($_POST['reason']));
+				$this->revoke_certs(Input::sanitize($_POST['order_numbers']), Input::sanitize($_POST['reason']));
 				break;
 
 			case 'do_revoke_list':
@@ -194,6 +194,7 @@ class RevokeCertificate extends FW_Content_Page
 	 */
 	private function revoke_certs($auth_key_list, $reason)
 	{
+
 		$auth_key_list = $this->sanitize($auth_key_list);
 
 		if (array_search($reason, $this->nren_reasons) === FALSE) {

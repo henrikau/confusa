@@ -52,12 +52,13 @@ immediately see a result entry *}
                     <form action="?revoke=do_revoke" method="POST">
 
                     {foreach from=$orders[$owner] item=order}
-                        <input type="hidden" name="order_numbers[]" value={$order.auth_key} />
-                        <input type="hidden" name="valid_untill[]" value={$order.valid_untill} />
+                        <input type="hidden" name="order_numbers[]" value="{$order[0]}" />
+                        <input type="hidden" name="valid_untill[]" value="{$order[1]}" />
                     {/foreach}
 
                     {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
-                    <input type="submit" name="submit" value="Revoke all" onclick="return confirm('Are you sure?')" />
+                    <input type="submit" name="submit" value="Revoke all"
+                            onclick="return confirm('Revoking {$orders[$owner]|@count} certificates! Are you sure?')" />
                     </form>
                 </td>
 
@@ -92,7 +93,8 @@ immediately see a result entry *}
     {else}
 	nothing to do
     {/if}
-
-
+{else}
+    <div class="spacer"></div>
+    Found no valid certificates to revoke for DN<br /><b>{$person->get_valid_cn()}</b>!
 {/if}
 
