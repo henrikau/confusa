@@ -27,7 +27,7 @@
 		<tr>
 		<td>
 		<input type="hidden" name="stylist_operation" value="change_help_text" />
-		<textarea name="help_text" rows="10" cols="90">{$help_text}</textarea>
+		<textarea name="help_text" rows="10" cols="80">{$help_text}</textarea>
 		</td>
 		</tr>
 		<tr>
@@ -47,7 +47,7 @@
 	<tr>
 	<td>
 	<input type="hidden" name="stylist_operation" value="change_about_text" />
-	<textarea name="about_text" rows="10" cols="90">{$about_text}</textarea>
+	<textarea name="about_text" rows="10" cols="80">{$about_text}</textarea>
 	</td>
 	</tr>
 	<tr>
@@ -76,7 +76,7 @@
 	<table>
 	<tr>
 	<td>
-		<textarea name="css_content" rows="20" cols="90">{$css_content}</textarea>
+		<textarea name="css_content" rows="20" cols="80">{$css_content}</textarea>
 	</td>
 	</tr>
 	<tr>

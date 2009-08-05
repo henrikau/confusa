@@ -1,10 +1,3 @@
-{assign var='table'	value='<div class="admin_table">'}
-{assign var='table_e'	value='</div>'}
-{assign var='tr'	value='<DIV CLASS="admin_table_row">'}
-{assign var='tr_e'	value='</DIV>'}
-{assign var='td'	value='<DIV CLASS="admin_table_cell">'}
-{assign var='td_e'	value='</DIV>'}
-
 {if $signingOk}
 <div class="success">
 <CENTER>
@@ -24,45 +17,45 @@
     <fieldset>
     <legend>List of CSR</legend>
 
-{$table}
-	{$tr}
-	{$tr_e}
-	{$tr}
-		{$td}<B>Upload date</B>{$td_e}
-		{$td}{$td_e}
-		{$td}<B>Common name</B>{$td_e}
-		{$td}{$td_e}
-		{$td}<B>Remote IP</B>{$td_e}
-		{$td}{$td_e}
-		{$td}{*<B>Inspect</B>*}{$td_e}
-		{$td}{$td_e}
-		{$td}{*<B>Delete</B>*}{$td_e}
-		{$td}{$td_e}
-	{$tr_e}
+<table>
+	<tr>
+	</tr>
+	<tr>
+		<td><B>Upload date</B></td>
+		<td></td>
+		<td><B>Common name</B></td>
+		<td></td>
+		<td><B>Remote IP</B></td>
+		<td></td>
+		<td>{*<B>Inspect</B>*}</td>
+		<td></td>
+		<td>{*<B>Delete</B>*}</td>
+		<td></td>
+	</tr>
 	{foreach from=$csrList item=csr}
-	{$tr}{$tr_e}
-	{$tr}
-		{$td}{$csr.uploaded_date}{$td_e}
-		{$td} {$td_e}
-		{$td}{$csr.common_name}{$td_e}
-		{$td} {$td_e}
-		{$td}{$csr.from_ip}{$td_e}
-		{$td} {$td_e}
-		{$td}
+	<tr></tr>
+	<tr>
+		<td>{$csr.uploaded_date}</td>
+		<td> </td>
+		<td>{$csr.common_name}</td>
+		<td> </td>
+		<td>{$csr.from_ip}</td>
+		<td> </td>
+		<td>
 		{if $csrInspect.auth_token eq $csr.auth_key}
 			[<FONT COLOR="GRAY">Inspect</FONT>]
 		{else}
 			[<a href="process_csr.php?inspect_csr={$csr.auth_key}">Inspect</a>]
 		{/if}
-		{$td_e}
-		{$td} {$td_e}
-		{$td}[<a href="process_csr.php?delete_csr={$csr.auth_key}">Delete</a>]{$td_e}
-		{$td}{$td_e}
-	{$tr_e}
+		</td>
+		<td> </td>
+		<td>[<a href="process_csr.php?delete_csr={$csr.auth_key}">Delete</a>]</td>
+		<td></td>
+	</tr>
 	{/foreach}
-	{$tr}
-	{$tr_e}
-{$table_e}
+	<tr>
+	</tr>
+</table>
 </legend>
 </div>
 <BR />
@@ -72,94 +65,94 @@
     <div id="inspect_csr">
     <fieldset>
     <legend>Inspect CSR</legend>
-    {$table}
-	{$tr}{$tr_e}
+    <table>
+	<tr></tr>
 
 	{* Auth Token *}
-	{$tr}
-	{$td}Auth token{$td_e}
-	{$td}{$td_e}
-	{$td}{$csrInspect.auth_token}{$td_e}
-	{$tr_e}
-	{$tr}{$tr_e}
+	<tr>
+	<td>Auth token</td>
+	<td></td>
+	<td>{$csrInspect.auth_token}</td>
+	</tr>
+	<tr></tr>
 
 	{* Country *}
 	{if !empty($csrInspect.countryName)}
-	{$tr}
-	{$td}Country:{$td_e}
-	{$td}{$td_e}
-	{$td}{$csrInspect.countryName}{$td_e}
-	{$tr_e}
-	{$tr}{$tr_e}
+	<tr>
+	<td>Country:</td>
+	<td></td>
+	<td>{$csrInspect.countryName}</td>
+	</tr>
+	<tr></tr>
 	{/if}
 
 	{* Organization name *}
 	{if !empty($csrInspect.organizationName)}
-	{$tr}
-	{$td}Organization Name:{$td_e}
-	{$td}{$td_e}
-	{$td}{$csrInspect.organizationName}{$td_e}
-	{$tr_e}
-	{$tr}{$tr_e}
+	<tr>
+	<td>Organization Name:</td>
+	<td></td>
+	<td>{$csrInspect.organizationName}</td>
+	</tr>
+	<tr></tr>
 	{/if}
 
 	{* Common-Name *}
 	{if !empty($csrInspect.commonName)}
-	{$tr}
-	{$td}Common-Name:{$td_e}
-	{$td}{$td_e}
-	{$td}{$csrInspect.commonName}{$td_e}
-	{$tr_e}
-	{$tr}{$tr_e}
+	<tr>
+	<td>Common-Name:</td>
+	<td></td>
+	<td>{$csrInspect.commonName}</td>
+	</tr>
+	<tr></tr>
 	{/if}
 
 	{* Length of key *}
 	{if !empty($csrInspect.length)}
-	{$tr}
-	{$td}Key length:{$td_e}
-	{$td}{$td_e}
-	{$td}{$csrInspect.length}{$td_e}
-	{$tr_e}
-	{$tr}{$tr_e}
+	<tr>
+	<td>Key length:</td>
+	<td></td>
+	<td>{$csrInspect.length}</td>
+	</tr>
+	<tr></tr>
 	{/if}
 
 	{* Uploaded *}
 	{if !empty($csrInspect.length)}
-	{$tr}
-	{$td}Was uploaded:{$td_e}
-	{$td}{$td_e}
-	{$td}{$csrInspect.uploaded}{$td_e}
-	{$tr_e}
-	{$tr}{$tr_e}
+	<tr>
+	<td>Was uploaded:</td>
+	<td></td>
+	<td>{$csrInspect.uploaded}</td>
+	</tr>
+	<tr></tr>
 	{/if}
 
 	{* Remote IP *}
 	{if !empty($csrInspect.length)}
-	{$tr}
-	{$td}IP:{$td_e}
-	{$td}{$td_e}
-	{$td}{$csrInspect.from_ip}{$td_e}
-	{$tr_e}
-	{$tr}{$tr_e}
+	<tr>
+	<td>IP:</td>
+	<td></td>
+	<td>{$csrInspect.from_ip}</td>
+	</tr>
+	<tr></tr>
 	{/if}
 
-	{$tr}
-	{$td}
+	<tr>
+	<td>
 	[<A HREF="?delete_csr={$csrInspect.auth_token}">Delete</A>]
-	{$td_e}
-	{$td}{$td_e}
-	{$td}
+	</td>
+	<td></td>
+	<td>
 	[<A HREF="?sign_csr={$csrInspect.auth_token}">Approve</A>]
-	{$td_e}
-	{$tr_e}
-	{$tr}{$tr_e}
+	</td>
+	</tr>
+	<tr></tr>
 
-	{$tr}
-	{$td}{$td_e}
-	{$td}{$td_e}
-	{$td}{$td_e}
-	{$tr_e}	
-    {$table_e}
+	<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+	</tr>
+    </table>
     </fieldset>
     </div>{* inspect_csr *}
 <BR />    
@@ -176,22 +169,19 @@
 		the folder ".globus" in you home directory.
 		</P>
 		<BR />
-		{$table}
-			{$tr}
-				{$td}
+		<table>
+			<tr>
+				<td>
 					<form action="" method="post" enctype="multipart/form-data">
 					<input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
 					<input type="file" name="user_csr" />
-				{$td_e}
-
-				{$td}
 					<input type="submit" value="Upload CSR" />
 					</form>
-				{$td_e}
-			{$tr_e}
-			{$tr}{$tr_e}
-			{$tr}{$tr_e}
-		{$table_e}
+				</td>
+			</tr>
+			<tr></tr>
+			<tr></tr>
+		</table>
 	</fieldset>
 </div> {* id="csr" *}
 

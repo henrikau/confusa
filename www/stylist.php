@@ -336,14 +336,14 @@ class CP_Stylist extends FW_Content_Page
 
 			if ($width > $this->allowed_width) {
 				Framework::error_output("The width of your image is $width pixel, greater than " .
-										"the allowed image-width $allowed_width pixel. Please " .
+										"the allowed image-width $this->allowed_width pixel. Please " .
 										"crop or resize your image and upload it again");
 				return;
 			}
 
 			if ($height > $this->allowed_height) {
 				Framework::error_output("The height of your image is $width pixel, greater than " .
-										"the allowed image-height $allowed_height pixel. Please " .
+										"the allowed image-height $this->allowed_height pixel. Please " .
 										"crop or resize your image and upload it again");
 				return;
 			}

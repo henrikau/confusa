@@ -47,7 +47,6 @@ final class DownloadCertificate extends FW_Content_Page
 		}
 		$this->tpl->assign('standalone', (Config::get_config('ca_mode') === CA_STANDALONE));
 		$this->tpl->assign('content', $this->tpl->fetch('download_certificate.tpl'));
-
 	}
 
 
@@ -109,7 +108,7 @@ final class DownloadCertificate extends FW_Content_Page
 				$csr_test = openssl_x509_read($cert);
 				if (openssl_x509_export($csr_test, $text, false)) {
 					$this->tpl->assign('pem', $text);
-					$this->tpl->assign('standalone', Config::get_config('standalone'));
+					$this->tpl->assign('standalone', (Config::get_config('ca_mode') === CA_STANDALONE));
 				} else {
 					$this->tpl->assign('certificate', print_r($cert));
 				}
