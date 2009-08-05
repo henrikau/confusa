@@ -5,6 +5,7 @@ require_once 'person.php';
 require_once 'send_element.php';
 require_once 'csv_lib.php';
 require_once 'input.php';
+require_once 'mdb2_wrapper.php';
 
 class RevokeCertificate extends FW_Content_Page
 {
@@ -41,6 +42,21 @@ class RevokeCertificate extends FW_Content_Page
 		parent::pre_process($person);
 		if(isset($_GET['revoke'])) {
 			switch($_GET['revoke']) {
+
+				/* the revoke single is done via a GET
+				 * request. This is to allow for dedicated urls
+				 * for revocation to be used. */
+			case 'revoke_single':
+				$order_number	= Input::sanitize($_GET['order_number']);
+				$reason		= Input::sanitize($_GET['reason']);
+				if (!isset($order_number) || !isset($reason)) {
+					Framework::error_output("Revoke Certificate: Errors with parameters, not set properly");
+				}
+				elseif (!$this->certManager->revoke_cert($order_number, $reason)) {
+					Framework::error_output("Cannot revoke yet ($order_number) for supplied reason: $reason");
+				}
+				break;
+
 			case 'do_revoke':
 				$this->revoke_certs(Input::sanitize($_POST['order_numbers']), Input::sanitize($_POST['reason']));
 				break;
