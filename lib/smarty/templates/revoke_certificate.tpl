@@ -1,3 +1,10 @@
+{assign var='table'	value='<div class="admin_table">'}
+{assign var='table_e'	value='</div><!--admin_table-->'}
+{assign var='tr'	value='<DIV CLASS="admin_table_row">'}
+{assign var='tr_e'	value='</DIV><!--admin_table_row-->'}
+{assign var='td'	value='<DIV CLASS="admin_table_cell">'}
+{assign var='td_e'	value='</DIV><!--admin_table_cell-->'}
+
 <h3>Certificate Revocation Area</h3>
 
 {* The search part *}
@@ -22,42 +29,49 @@ immediately see a result entry *}
 {/if}
 
 {* The display part *}
+
 {if isset($owners)}
-    {* Revoke the certificates from a single cert-owner *}
     {if $revoke_cert}
-        <table>
-        <tr>
-            <td>
+    <BR />
+    <BR />
+    <DIV>
+    <FIELDSET>
+    <LEGEND>Revoke Selected Certificate</LEGEND>
+    {$table}
+        {$tr}
+            {$td}
                 <b>Full Subject DN</b>
-            </td>
-            <td>
+            {$td_e}
+            {$td}
                 <b>Revocation reason</b>
-            </td>
-            <td></td>
-        </tr>
+            {$td_e}
+	    {$td}Expires (from DB){$td_e}
+        {$tr_e}
 
         {foreach from=$owners item=owner}
-            <tr>
-                <td>
-                    {$owner}
-                </td>
-                <td>
-                    <form action="?revoke=do_revoke" method="POST">
-
-                    {foreach from=$orders[$owner] item=order}
-                        <input type="hidden" name="order_numbers[]" value={$order.auth_key} />
-                        <input type="hidden" name="valid_untill[]" value={$order.valid_untill} />
-                    {/foreach}
-
-                    {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
-                    <input type="submit" name="submit" value="Revoke all" onclick="return confirm('Are you sure?')" />
-                    </form>
-                </td>
-
-                </form>
-            </tr>
-        {/foreach}
-        </table>
+		{foreach from=$orders[$owner] item=order}
+	        {$tr}
+			{$td}
+				<FORM ACTION="revoke_certificate.php?revoke=do_revoke" METHOD="POST">
+				<INPUT TYPE="hidden" NAME="order_number" VALUE="{$order.0}">
+				{$owner}
+			{$td_e}
+			{$td}
+				{html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
+			{$td_e}
+			{$td}
+				{$order.1}
+			{$td_e}
+	                {$td}
+				<INPUT TYPE="submit" NAME="submit" VALUE="Revoke" onclick="return confirm('Are you sure?')" />
+				</FORM>
+			{$td_e}
+		{$tr_e}
+		{/foreach}
+	{/foreach}
+    {$table_e}
+    </FIELDSET>
+    </DIV>
 
     {* Revoke the certificates from a list of cert-owners *}
     {elseif $revoke_list}
@@ -82,6 +96,10 @@ immediately see a result entry *}
             </form>
         </div>
 
+    {else}
+	nothing to do
     {/if}
+
+
 {/if}
 
