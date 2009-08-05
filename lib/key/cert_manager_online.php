@@ -207,7 +207,7 @@ class CertManager_Online extends CertManager
               $return_res = substr($data,2);
               break;
           case $STATUS_PEND:
-		  error_output("The certificate is being processed and is not yet available");
+		  Framework::message_output("The certificate is being processed and is not yet available");
 		  return null;
           default:
               /* extract the error status code which is longer than one character */
