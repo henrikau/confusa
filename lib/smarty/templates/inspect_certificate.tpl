@@ -6,9 +6,7 @@
 	</PRE>
 	</DIV>
 {else}
-	{if $standalone}
-		<pre>
-			{$pem}
-		</pre>
-	{/if}
+	<pre>
+		{$pem}
+	</pre>
 {/if}
