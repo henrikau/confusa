@@ -32,46 +32,39 @@ immediately see a result entry *}
 
 {if isset($owners)}
     {if $revoke_cert}
-    <BR />
-    <BR />
-    <DIV>
-    <FIELDSET>
-    <LEGEND>Revoke Selected Certificate</LEGEND>
-    {$table}
-        {$tr}
-            {$td}
+        <table>
+        <tr>
+            <td>
                 <b>Full Subject DN</b>
-            {$td_e}
-            {$td}
+            </td>
+            <td>
                 <b>Revocation reason</b>
-            {$td_e}
-	    {$td}Expires (from DB){$td_e}
-        {$tr_e}
+            </td>
+            <td></td>
+        </tr>
 
         {foreach from=$owners item=owner}
-		{foreach from=$orders[$owner] item=order}
-	        {$tr}
-			{$td}
-				<FORM ACTION="revoke_certificate.php?revoke=do_revoke" METHOD="POST">
-				<INPUT TYPE="hidden" NAME="order_number" VALUE="{$order.0}">
-				{$owner}
-			{$td_e}
-			{$td}
-				{html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
-			{$td_e}
-			{$td}
-				{$order.1}
-			{$td_e}
-	                {$td}
-				<INPUT TYPE="submit" NAME="submit" VALUE="Revoke" onclick="return confirm('Are you sure?')" />
-				</FORM>
-			{$td_e}
-		{$tr_e}
-		{/foreach}
-	{/foreach}
-    {$table_e}
-    </FIELDSET>
-    </DIV>
+            <tr>
+                <td>
+                    {$owner}
+                </td>
+                <td>
+                    <form action="?revoke=do_revoke" method="POST">
+
+                    {foreach from=$orders[$owner] item=order}
+                        <input type="hidden" name="order_numbers[]" value={$order.auth_key} />
+                        <input type="hidden" name="valid_untill[]" value={$order.valid_untill} />
+                    {/foreach}
+
+                    {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
+                    <input type="submit" name="submit" value="Revoke all" onclick="return confirm('Are you sure?')" />
+                    </form>
+                </td>
+
+                </form>
+            </tr>
+        {/foreach}
+        </table>
 
     {* Revoke the certificates from a list of cert-owners *}
     {elseif $revoke_list}
