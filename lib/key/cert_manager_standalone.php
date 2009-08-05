@@ -89,7 +89,7 @@ class CertManager_Standalone extends CertManager
      *          array('cert_owner','auth_key')
      */
     public function get_cert_list_for_persons($common_name, $org) {
-        $query = "SELECT auth_key, cert_owner FROM cert_cache WHERE " .
+        $query = "SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE " .
                  "cert_owner LIKE ? AND organization = ?";
         $res = MDB2Wrapper::execute($query, array('text','text'),
                                             array($common_name, $org)
