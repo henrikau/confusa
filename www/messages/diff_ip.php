@@ -13,7 +13,7 @@ echo "         <BR /><BR />\n";
 echo "         Your current IP is " . $_SERVER['REMOTE_ADDR'] . "<BR />\n";
 echo "      </CENTER>\n";
 echo "   </BODY>\n";
-echo "</HTML\n";
+echo "</HTML>\n";
 
 ?>
 

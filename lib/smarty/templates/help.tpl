@@ -1,9 +1,8 @@
-{if $person->is_auth()}
-<h2>Classified help</h2>
-
-Nothing here yet...
-{else}
 <h2>Help</h2>
 
+{if $person->is_auth()}
+{$nren_help_text}
 {/if}
+
+{* Generic, NREN-independent help can be here *}
 {$help_file}

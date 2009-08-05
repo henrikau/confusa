@@ -1,0 +1,169 @@
+/*
+ * Thanks to Mathew James Taylor for his suggestions which helped me make this
+ * work with IE:
+ * http://matthewjamestaylor.com/blog/perfect-2-column-left-menu.htm
+ */
+
+@CHARSET "UTF-8";
+
+* {
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	background-color: #36364C;
+}	
+
+#site {
+	position: relative;
+	background-color: #FFF;
+	width: 900px;
+	margin: 30px auto;
+}
+#menu {
+	border: 1px solid #00000;
+	width: 20%;
+	position: relative;
+	clear: both;
+	overflow: hidden;
+	float: left;
+}
+
+#menu ul {
+	list-style: none;
+}
+#menu li {
+	margin-left: 8px;
+}
+a:link,a:visited	{
+	text-decoration: none;
+	color: #942039;
+}
+a:hover {
+	color: #000;
+}
+
+#content {
+	border: 1px solid #00000;
+	margin-left: 20%;
+	width: 80%;
+	min-height: 400px;
+}
+
+#header {
+	margin-bottom: 25px;
+}
+
+#logo {
+	float: left;
+}
+
+#logo_in_text {
+	float: left;
+	margin-right: 10px;
+	margin-bottom: 10px;
+}
+
+#title {
+	margin-left: 200px;
+	font-size: 28px;
+}
+
+div.error {
+	padding: 4px;
+	margin-bottom: 4px;
+	background-color: #cf5448;
+	border: 1px solid #961a0e;
+}
+div.success {
+	padding: 4px;
+	margin-bottom: 4px;
+	background-color: #009900;
+	border: 1px solid #508c0a;
+}
+
+fieldset legend {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: black;
+}
+
+div.csr {
+	margin-bottom: 5%;
+}
+
+div.spacer
+{
+  height: 12px;
+}
+
+/* powered by http://mierendo.com/software/rounded_css_boxes/ */
+.confusa_corners_tl, .confusa_corners_t, .confusa_corners_tr, .confusa_corners_l, .confusa_corners_r, .confusa_corners_bl, .confusa_corners_b, .confusa_corners_br, .confusa_corners {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    position: relative;
+}
+.confusa_corners_t {
+    /*
+        change this div to layout the whole box (width, height, float, margin, ...)
+        example lines:
+        width: 60%;
+        margin: 7px 35px 0px 1px
+        to change distance to content/text scroll to class ".confusa_corners" and change the padding
+    */
+    background-color: #FFFFFF;
+    background-image: url("graphics/confusa_corners_border.png");
+    background-repeat: repeat-x;
+    background-position: top;
+}
+.confusa_corners_tl {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_topleft.png");
+    background-repeat: no-repeat;
+    background-position: left top;
+}
+.confusa_corners_tr {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_topright.png");
+    background-repeat: no-repeat;
+    background-position: right top;
+}
+.confusa_corners_bl {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_bottomleft.png");
+    background-repeat: no-repeat;
+    background-position: left bottom;
+}
+.confusa_corners_br {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_bottomright.png");
+    background-repeat: no-repeat;
+    background-position: right bottom;
+}
+.confusa_corners {
+    height: 100%;
+    /* change this if you want to change the distance distance to text/content */
+    padding: 16px 17px 16px 17px;
+}
+
+.confusa_corners_l {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_border.png");
+    background-repeat: repeat-y;
+    background-position: left;
+}
+.confusa_corners_r {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_border.png");
+    background-repeat: repeat-y;
+    background-position: right;
+}
+.confusa_corners_b {
+    height: 100%;
+    background-image: url("graphics/confusa_corners_border.png");
+    background-repeat: repeat-x;
+    background-position: bottom;
+}

@@ -81,7 +81,7 @@ final class ProcessCsr extends FW_Content_Page
 	{
 		/* Testing for uploaded files */
 		if(isset($_FILES['user_csr']['name'])) {
-			$fu = new FileUpload('user_csr', true, 'test_content');
+			$fu = new FileUpload('user_csr', true, true, 'test_content');
 			if ($fu->file_ok()) {
 				$csr = $fu->get_content();
 				$authvar = pubkey_hash($fu->get_content(), true);

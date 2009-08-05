@@ -58,6 +58,16 @@ $confusa_config = array(
         'upload'                => '/key_upload.php',
         'download'              => '/key_download.php',
 	'approve'		=> '/index.php',
+	/* the page of Confusa that should be shown after the user signed in */
+	'post_login_page'	=> '/about_nren.php',
+
+	/* for NREN landing page customization
+	 *
+	 * define where custom CSS files and logos are kept - the paths are
+	 * relative to Confusa's' www directory
+	 */
+	'custom_css'		=> 'css/custom/',
+	'custom_logo'		=> 'graphics/custom/',
 
         /* For CA handling.
          * Legal modes are: CA_STANDALONE and CA_ONLINE */
@@ -78,10 +88,18 @@ $confusa_config = array(
         'capi_test'                             => true,
         /* will encrypt the (sub)-account passwords in the DB with this key */
         'capi_enc_pw'                           => '',
+
+	/* Values needed for standalone-mode
+	 * The names should be self-explanatory. All paths are relative to the
+	 * install_path
+	 */
+	'ca_cert_base_path'	=> '/cert_handle',
+	'ca_cert_path'		=> '/cert',
 	'ca_cert_name'		=> '',
-	'ca_cert_path'		=> 'cert_handle/certs/',
+	'ca_key_path'		=> '/priv',
 	'ca_key_name'		=> '',
-	'ca_key_path'		=> 'cert_handle/priv/',
+	'ca_conf_name'		=> '/conf/confusa_openssl.cnf',
+	'ca_crl_name'		=> '/confusa_crl.pem',
 
         /* this *should* be true, as you really* want wget to detect a
          * SSL-man-in-the-middle attac! However, as a workaround for testsystems

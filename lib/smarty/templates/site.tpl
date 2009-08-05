@@ -7,30 +7,63 @@
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
 	<link rel="shortcut icon" href="graphics/icon.gif" type="image/gif" />
-	<link rel="stylesheet" href="confusa2.css" type="text/css" />
+	<link rel="stylesheet" href="css/confusa2.css" type="text/css" />
+
+	{if !is_null($css)}
+		<link rel="stylesheet" href="{$css}" type ="text/css" />
+	{/if}
+
 	{$extraHeader}
 </head>
 
 <body>
-	<div id="site">
-		<div id="header">
-			<div id="logo"><img src="graphics/logo-sigma.png" alt="" /></div>
-			<div id="title">Confusa</div>
+<div id="site">
+  <div class="confusa_corners_t">
+    <div class="confusa_corners_l">
+      <div class="confusa_corners_r">
+	<div class="confusa_corners_b">
+	  <div class="confusa_corners_tl">
+	    <div class="confusa_corners_tr">
+	      <div class="confusa_corners_bl">
+		<div class="confusa_corners_br">
+		  <div class="confusa_corners">
+
+		    <div id="header">
+		      {if is_null($logo)}
+		      <div id="logo"><img src="graphics/logo-sigma.png" alt="UNINETT Sigma Logo" /></div>
+		      {else}
+		      <div id="logo">
+		      <img src="{$logo}" alt="NREN logo" />
+		      </div>
+		      {/if}
+		      <div id="title">Confusa</div>
+		      <!-- fix for adjusting the header's height to the image's height. Breaks in IE6 -->
+		      <div style="clear: left"></div>
+		    </div> <!-- header -->
+		    <div id="menu">
+		      {$menu}
+		    </div> <!-- menu -->
+		    
+		    <div id="content">
+		      {foreach from=$errors item=error}
+		      <div class="error">{$error}</div>
+		      {/foreach}
+		      {foreach from=$messages item=msg}
+		      <div class="success">{$msg}</div>
+		      {/foreach}
+		      {$content}
+		    </div> <!-- content -->
+
+		  </div> <!-- rounded borders -->
 		</div>
-		
-		<div id="menu">
-			{$menu}
-		</div>
-		
-		<div id="content">
-			{foreach from=$errors item=error}
-			<div class="error">{$error}</div>
-			{/foreach}
-			{foreach from=$messages item=msg}
-			<div class="success">{$msg}</div>
-			{/foreach}
-			{$content}
-		</div>
+	      </div>
+	    </div>
+	  </div>
 	</div>
+      </div>
+    </div>
+  </div> <!-- end rounded border -->
+
+</div> <!-- site -->
 </body>
 </html>

@@ -19,12 +19,13 @@
 	{if $person->is_subscriber_subadmin()}
 	<li><a href="revoke_certificate.php">Revoke Certificates</a></li>
 	{elseif $person->is_subscriber_admin()}
-	<li><a href="revoke_certificate.php"></a></li>
+	<li><a href="revoke_certificate.php">Revoke certificates</a></li>
 	<li><a href="admin.php">Manage Subscriber Administrators</a></li>
 	<li><a href="robot.php">Robot Interface</a></li>
 	{elseif $person->is_nren_admin()}
 	<li><a href="admin.php">Manage Administrators</a></li>
 	<li><a href="nren_admin.php">NREN-Admin</a></li>
+	<li><a href="stylist.php?show=text">Customize appearance</a></li>
 	{/if}
 </ul>
 <h3>Other</h3>
@@ -32,7 +33,9 @@
 	<li><a href="index.php?mode=normal">Normal mode</a></li>	
 {/if}
 	<li><a href="index.php">Old Start</a></li>
+	<li><a href="root_cert.php">CA Certificate</a></li>
 </ul>
+
 <h3>Help</h3>
 <ul>
 	<li><a href="about_nren.php">About</a></li>

@@ -25,38 +25,39 @@ immediately see a result entry *}
 {if isset($owners)}
     {* Revoke the certificates from a single cert-owner *}
     {if $revoke_cert}
-        <div class="admin_table">
-        <div class="admin_table_row">
-            <div class="admin_table_cell">
+        <table>
+        <tr>
+            <td>
                 <b>Full Subject DN</b>
-            </div>
-            <div class="admin_table_cell">
+            </td>
+            <td>
                 <b>Revocation reason</b>
-            </div>
-            <div class="admin_table_cell"></div>
-        </div>
+            </td>
+            <td></td>
+        </tr>
 
         {foreach from=$owners item=owner}
-            <div class="admin_table_row">
-                <div class="admin_table_cell">
-                    <form action="?revoke=do_revoke" method="POST">
+            <tr>
+                <td>
                     {$owner}
-                </div>
-                <div class="admin_table_cell">
+                </td>
+                <td>
+                    <form action="?revoke=do_revoke" method="POST">
+
                     {foreach from=$orders[$owner] item=order}
-                        <input type="hidden" name="order_numbers[]" value={$order} />
+                        <input type="hidden" name="order_numbers[]" value={$order.auth_key} />
+                        <input type="hidden" name="valid_untill[]" value={$order.valid_untill} />
                     {/foreach}
 
                     {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
-                </div>
-                <div class="admin_table_cell">
                     <input type="submit" name="submit" value="Revoke all" onclick="return confirm('Are you sure?')" />
-                </div>
+                    </form>
+                </td>
 
                 </form>
-            </div>
+            </tr>
         {/foreach}
-        </div>
+        </table>
 
     {* Revoke the certificates from a list of cert-owners *}
     {elseif $revoke_list}

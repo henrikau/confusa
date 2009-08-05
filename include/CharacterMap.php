@@ -11,10 +11,7 @@ class sspmod_core_Auth_Process_CharacterMap extends SimpleSAML_Auth_ProcessingFi
 
    public function process(&$request) {
           if (isset($request['Attributes']['cn'][0])) {
-              echo $request['Attributes']['cn'][0] . "<br />\n";
               $request['Attributes']['cn'][0] = str_replace($this->special_chars, $this->replacement_chars, $request['Attributes']['cn'][0]);
-              echo $request['Attributes']['cn'][0] . "<br />\n";
-
           }
    }
 }
