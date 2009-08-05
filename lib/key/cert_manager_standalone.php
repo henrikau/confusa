@@ -30,8 +30,14 @@ class CertManager_Standalone extends CertManager
     public function sign_key($auth_key, $csr)
     {
         if ($this->verify_csr($csr)) {
-            $cert_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
-            $ca_priv_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_key_path') . Config::get_config('ca_key_name');
+		$base_path	= Config::get_config('install_path') . Config::get_config('ca_cert_base_path');
+		$cert_path	= $base_path . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
+		$ca_priv_path	= $base_path . Config::get_config('ca_key_path') . Config::get_config('ca_key_name');
+		$config		= $base_path . '/conf/confusa_openssl.conf';
+		$days		= 365 + 10;
+		$cmd		= "cd $base_path ; echo \"".$csr."\" | openssl x509 -req  -days $days -CA $cert_path -CAkey $ca_priv_path -CAcreateserial -out test.key";
+		$return_res	= shell_exec($cmd);
+		throw new KeySignException("Working on it. Stay tuned!");
 
             $cert = null;
             $sign_days = 11;
