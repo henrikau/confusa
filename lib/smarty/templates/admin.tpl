@@ -1,9 +1,9 @@
 {if $person->inAdminMode()}
-{if $person->is_nren_admin() ||  $person->is_subscriber_admin()}
+{if $person->isNRENAdmin() ||  $person->is_subscriber_admin()}
 	<H3>Add/delete Confusa administrators</H3>
 {/if}
 
-{if $person->is_nren_admin()}
+{if $person->isNRENAdmin()}
 <div class="spacer"></div>
 {* *********************************************************************** *}
 {* ***** NREN-admin/NREN-admin view ***** *}

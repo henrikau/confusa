@@ -21,7 +21,7 @@ class CP_NREN_Admin extends FW_Content_Page
 	{
 		parent::pre_process($person);
 		/* If user is not subscirber- or nren-admin, we stop here */
-		if (!$this->person->is_nren_admin())
+		if (!$this->person->isNRENAdmin())
 			return false;
 
 
@@ -71,7 +71,7 @@ class CP_NREN_Admin extends FW_Content_Page
 
 	public function process()
 	{
-		if (!$this->person->is_nren_admin()) {
+		if (!$this->person->isNRENAdmin()) {
 			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " tried to access the NREN-area");
 			$this->tpl->assign('reason', 'You are not an NREN-admin');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));

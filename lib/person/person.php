@@ -483,7 +483,7 @@ class Person{
 	    return (int)$this->get_admin_status() != NORMAL_USER;
     } /* end function isAdmin() */
 
-    public function is_nren_admin()
+    public function isNRENAdmin()
     {	    	
 	    if (!$this->isAuth()) {
 		    return false;
