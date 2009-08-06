@@ -52,7 +52,7 @@ function authenticate_user($person)
 function deauthenticate_user($person)
 {
 	if (isset($person)) {
-		$person->fed_auth(false);
+		$person->setAuth(false);
 	}
 }
 
@@ -80,7 +80,7 @@ function is_authenticated($person = null) {
 		$person->set_idp('Test');
 		$person->set_nren('test');
 		$person->set_entitlement('Test');
-		$person->fed_auth(true);	
+		$person->setAuth(true);
 		
 		return $person;
 	}
@@ -93,13 +93,13 @@ function is_authenticated($person = null) {
 
 	if ($use_oauth) {
 		$oauth = ConfusaOAuth::getInstance();
-		$person->fed_auth($oauth->isAuthorized());
+		$person->setAuth($oauth->isAuthorized());
 	} else {
 		$session = _get_session();
 		$person->setSession(_get_session());
 		$person->setSAMLConfiguration(SimpleSAML_Configuration::getInstance());
 		if (isset($session)) {
-			$person->fed_auth($session->isValid());
+			$person->setAuth($session->isValid());
 		}
 	}
 
@@ -127,7 +127,7 @@ function add_attributes($person)
      if (!isset($attributes['eduPersonPrincipalName'][0])) {
 	  $debug_string=__FILE__ .":".__LINE__." -> eduPersonPrincipalName not set!<BR>\n";
 	  Debug::dump($debug_string);
-          $person->fed_auth(false);
+          $person->setAuth(false);
      }
      else {
 	     $person->set_name($attributes['cn'][0]);
@@ -138,7 +138,7 @@ function add_attributes($person)
 	     $person->set_idp(_get_session()->getIdP());
 	     $person->set_entitlement($attributes['eduPersonEntitlement'][0]);
 	     $person->set_nren($attributes['nren'][0]);
-	     $person->fed_auth(true);
+	     $person->setAuth(true);
      }
 } /* end add_attributes() */
 
@@ -208,6 +208,7 @@ function show_sso_debug($person) {
  * Parameters: none
  * Returns: config-descriptor from simple-saml
  */
+
 function _get_config() 
 {
     return SimpleSAML_Configuration::getInstance();
@@ -261,7 +262,7 @@ function _assert_sso($person)
   }
 
   /* update person, FIXME: update attributes as well */
-  $person->fed_auth($session->isValid());
+  $person->setAuth($session->isValid());
   add_attributes($person);
 } /* end  _assert_sso() */
 
