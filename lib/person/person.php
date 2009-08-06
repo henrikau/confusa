@@ -445,14 +445,19 @@ class Person{
     }
 
     /**
-     * set_status() - set the mode for a given person.
+     * setMode() - set the mode for a given person.
      *
-     * Enable a user to switch between normal and admin-mode.
+     * Enable a user to switch between normal and admin-mode. The input-mode
+     * must be a value recognized by confusa:
+     * 
+     *		i.e. either ADMIN_MODE or NORMAL_MODE
+     *
+     * @new_mode: the new mode for the user.
      */
-    public function set_mode($new_mode)
+    public function setMode($new_mode)
     {
 	    $new = (int)$new_mode;
-	    if ($new == 0 || $new == 1) {
+	    if ($new == NORMAL_MODE || $new == ADMIN_MODE) {
 		    if ($this->is_admin()) {
 			    Logger::log_event(LOG_DEBUG, "Changing mode (-> $new_mode) for " . $this->getEPPN());
 			    MDB2Wrapper::update("UPDATE admins SET last_mode=? WHERE admin=?",

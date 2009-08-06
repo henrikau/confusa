@@ -111,7 +111,7 @@ class Framework {
 			if (htmlentities($_GET['mode']) == 'admin') {
 				$new_mode = ADMIN_MODE;
 			}
-			$this->person->set_mode($new_mode);
+			$this->person->setMode($new_mode);
 		}
 		$this->tpl->assign('person', $this->person);
 		$this->contentPage->process($this->person);
