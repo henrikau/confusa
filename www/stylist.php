@@ -106,6 +106,8 @@ class CP_Stylist extends FW_Content_Page
 				$this->tpl->assign('edit_logo', true);
 				$logo = Framework::get_logo_for_nren($this->person->getNREN());
 				$this->tpl->assign('logo', $logo);
+				$extensions = implode(", ", Framework::$allowed_img_suffixes);
+				$this->tpl->assign('extensions', $extensions);
 				$this->tpl->assign('width', $this->allowed_width);
 				$this->tpl->assign('height', $this->allowed_height);
 				break;
