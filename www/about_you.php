@@ -15,6 +15,8 @@ class AboutYou extends FW_Content_Page
 		if (isset($_GET['text'])) {
 			$textual = htmlentities($_GET['text']);
 		}
+		$this->tpl->assign('timeSinceStart', $this->person->getTimeSinceStart());
+		$this->tpl->assign('timeLeft', $this->person->getTimeLeft());
 		$this->tpl->assign('textual', $textual);
 		$this->tpl->assign('content', $this->tpl->fetch('about_you.tpl'));
 	}
