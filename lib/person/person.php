@@ -477,9 +477,6 @@ class Person{
      */
     public function isAdmin()
     {
-	    if (!$this->isAuth()) {
-		    return false;
-	    }
 	    return (int)$this->get_admin_status() != NORMAL_USER;
     } /* end function isAdmin() */
 
@@ -492,9 +489,6 @@ class Person{
      */
     public function isNRENAdmin()
     {	    	
-	    if (!$this->isAuth()) {
-		    return false;
-	    }
 	    /* test attribute to see if the person is NREN-admin */
 	    if ((int)$this->get_admin_status() == NREN_ADMIN) {
 		    return true;
@@ -504,19 +498,11 @@ class Person{
 
     public function is_subscriber_admin()
     {
-	    if (!$this->isAuth()) {
-		    return false;
-        }
-
 	    return (int)$this->get_admin_status() == SUBSCRIBER_ADMIN;
     }
 
     public function is_subscriber_subadmin()
     {
-	    if (!$this->isAuth()) {
-		    return false;
-        }
-
 	    return (int)$this->get_admin_status() == SUBSCRIBER_SUB_ADMIN;
     }
     /**
@@ -531,6 +517,9 @@ class Person{
 	    }
 
 	    require_once 'mdb2_wrapper.php';
+	    if (!$this->isAuth()) {
+		    return NORMAL_USER;
+	    }
 	    $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->common_name));
 	    $size = count($res);
 	    db_array_debug($res);
