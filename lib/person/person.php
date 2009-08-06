@@ -189,12 +189,23 @@ class Person{
 	    return $res . $this->get_common_name();
     }
 
-    public function set_email($email) {
+    /**
+     * setEmail - set a email-address for the person
+     *
+     * @email : the (new) email address for the person
+     */
+    public function setEmail($email) {
         if (isset($email)) {
             $this->email = htmlentities($email);
         }
-        }
-    public function get_email() { return $this->email; }
+    }
+
+    /**
+     * getEmail - return the registred email-address
+     *
+     * @return: string containing the email-address
+     */
+    public function getEmail() { return $this->email; }
 
 
     public function set_orgname($orgname) {
