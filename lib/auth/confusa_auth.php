@@ -133,7 +133,7 @@ function add_attributes($person)
 	     $person->set_email($attributes['mail'][0]);
 	     $person->set_country($attributes['country'][0]);
 	     $person->set_orgname($attributes['organization'][0]);
-	     $person->set_idp($attributes['IdP'][0]);
+	     $person->set_idp(_get_session()->getIdP());
 	     $person->set_entitlement($attributes['eduPersonEntitlement'][0]);
 	     $person->set_nren($attributes['nren'][0]);
 	     $person->fed_auth(true);
