@@ -328,7 +328,8 @@ class CP_Admin extends FW_Content_Page
 									 "was bad. Please contact an administrator. Server said " . $dbse->getMessage());
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Inserting the admin into the database failed because of problems " .
-									 "with the supplied data. Server said " . $dbqe->getMessage());
+									 "with the supplied data. Server said " . $dbqe->getMessage() .
+									 " Maybe an admin with that name already exists?");
 		}
 	}
 
