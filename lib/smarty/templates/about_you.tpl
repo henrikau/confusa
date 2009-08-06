@@ -10,7 +10,7 @@
 	<tr><td><b>CommonName in DN</b></td><td>{$person->getX509ValidCN()}</td></tr>
 	<tr><td><b>email:</b></td><td>{$person->getEmail()}</td></tr>
 	<tr><td><b>Country:</b></td><td>{$person->get_country()}</td></tr>
-	<tr><td><b>OrganizationalName:</b></td><td>{$person->get_orgname()}</td></tr>
+	<tr><td><b>OrganizationalName:</b></td><td>{$person->getSubscriberOrgName()}</td></tr>
 	<tr><td><b>Entitlement:</b></td><td>{$person->get_entitlement()}</td></tr>
 	<tr><td><b>IdP:</b></td><td>{$person->get_idp()}</td></tr>
 	<tr><td><b>NREN:</b></td><td>{$person->get_nren()}</td></tr>

@@ -29,7 +29,10 @@ class Person{
 
     private $email;
     private $country;
-    private $orgname;
+
+    /* The name of the subscriber, e.g. 'ntnu', 'uio', 'uninett' */
+    private $subscriberName;
+
     private $idp;
     private $nren;
     private $entitlement;
@@ -123,8 +126,9 @@ class Person{
      *
      * @return: generated /DN from attributes to use in the certificate subject.
      */
-    function getX509SubjectDN() {
-	    $dn = "/C=" . $this->get_country() . "/O=" . $this->get_orgname() . "/CN=" . $this->getX509ValidCN();
+    function getX509SubjectDN()
+    {
+	    $dn = "/C=" . $this->get_country() . "/O=" . $this->getSubscriberOrgName() . "/CN=" . $this->getX509ValidCN();
 	    return $dn;
     }
 
@@ -237,11 +241,19 @@ class Person{
 	    if (isset($subscriber))
 		    $this->subsriberName = $subscriber;
     }
-    public function set_orgname($org) { $this->setSubscriberOrgName($org); }
 
-    public function getSubscriberOrgName() { return $this->subscriberName; }
+    /**
+     * getSusbscriberOrgName - return the name of the person's subscriber organization name. 
+     *
+     * This is a name of the home-institution, e.g. 'ntnu',  'uio'.
+     *
+     * @return: string holding the subscriber's name.
+     */
+    public function getSubscriberOrgName()
+    {
+	    return $this->subsriberName;
+    }
 
-    public function get_orgname() { return $this->getSubscriberOrgName(); }
 
     public function set_entitlement($entitlement) {
       if (isset($entitlement)) {
