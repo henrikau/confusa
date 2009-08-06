@@ -477,58 +477,57 @@ class Person{
      */
     public function isAdmin()
     {
-	    return (int)$this->get_admin_status() != NORMAL_USER;
+	    return (int)$this->getAdminStatus() != NORMAL_USER;
     } /* end function isAdmin() */
 
 
     /**
-     * isNRENAdmin() - test to see if the person is an NREN-admin
+     * is(NREN|Subscriber|SubscriberSub)Admin()
      *
      *
-     * @return : boolean true when person is NREN-admin
+     * @return : boolean true when person is the given admin
      */
     public function isNRENAdmin()
     {	    	
 	    /* test attribute to see if the person is NREN-admin */
-	    if ((int)$this->get_admin_status() == NREN_ADMIN) {
+	    if ((int)$this->getAdminStatus() == NREN_ADMIN) {
 		    return true;
             }
     }
-
-
     public function isSubscriberAdmin()
     {
-	    return (int)$this->get_admin_status() == SUBSCRIBER_ADMIN;
+	    return (int)$this->getAdminStatus() == SUBSCRIBER_ADMIN;
     }
-
     public function isSubscriberSubAdmin()
     {
-	    return (int)$this->get_admin_status() == SUBSCRIBER_SUB_ADMIN;
+	    return (int)$this->getAdminStatus() == SUBSCRIBER_SUB_ADMIN;
     }
+
     /**
-     * get_admin_status - get the admin-level from the database
+     * getAdminStatus - get the admin-level from the database
      *
-     * This function assumes is_auth() has been verified.
+     * This function assumes isAuth() has been verified.
      */
-    private function get_admin_status()
+    private function getAdminStatus()
     {
+	    $adminRes = NORMAL_USER;
+	    if (!$this->isAuth()) {
+		    return NORMAL_USER;
+	    }
 	    if (!$this->entitlement == "confusaAdmin") {
 		    return NORMAL_USER;
 	    }
 
 	    require_once 'mdb2_wrapper.php';
-	    if (!$this->isAuth()) {
-		    return NORMAL_USER;
-	    }
-	    $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->common_name));
-	    $size = count($res);
+	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->common_name));
+	    $size	= count($res);
 	    db_array_debug($res);
 	    if ($size == 1) {
 		    if ($res[0]['admin'] == $this->getEPPN())
-			    return $res[0]['admin_level'];
+			    $adminRes = $res[0]['admin_level'];
 		    echo __FILE__ . ":" . __LINE__ . "<B>Uuuugh! Unreachable point! How did you get here?</B><BR>\n";
 	    }
-	    return NORMAL_USER;
+	    return $adminRes;
     }
 } /* end class Person */
 ?>
