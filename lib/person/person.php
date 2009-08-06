@@ -387,31 +387,37 @@ class Person{
 
 
     /**
-     * get_mode() - get the current modus for the user
+     * getMode() - get the current modus for the user
      *
      * This returns the mode the user displays the page in. Even an
      * administrator (of any kind) can view the page as a normal user, and this
-     * will be stored in the database for the user.
+     * will be stored in the database for this particluar user.
+     *
+     * Note that *only* administrators will have a table-row in the
+     * database. Any non-admin, normal users will not be stored in the database
+     * (allthough data, such as CSRs and certificates will be stored).
      *
      * This function will look at the type of user and return the mode based on
      * this and information stored in the database (if admin)
      *
      * NORMAL_MODE: 0
      * ADMIN_MODE:  1
+     *
+     * @return integer indicating the mode of the user
      */
-    public function get_mode()
+    public function getMode()
     {
 	    /* If user is not admin, the mode is NORMAL_MODE either way */
 	    if (!$this->is_admin()) {
 		    return NORMAL_MODE;
-        }
+	    }
 	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",
 					array('text'),
 					array($this->getEPPN()));
 	    db_array_debug($res);
 	    if (count($res) != 1) {
 		    return NORMAL_MODE;
-        }
+	    }
 	    /* We could just return $res['last_mode'][0] but in case the
 	     * database schema is ever updated, we do not have to worry about
 	     * potentional holes to plug.
@@ -420,7 +426,8 @@ class Person{
 	     */
 	    if ($res[0]['last_mode'] == ADMIN_MODE) {
 		    return ADMIN_MODE;
-        }
+	    }
+
 	    return NORMAL_MODE;
     }
 

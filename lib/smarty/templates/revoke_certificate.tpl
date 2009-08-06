@@ -8,7 +8,7 @@
 <h3>Certificate Revocation Area</h3>
 
 {* The search part *}
-{if $person->get_mode() == 0}
+{if $person->getMode() == 0}
 
 {* A normal person isn't offered any search options. Instead, he/she will
 immediately see a result entry *}
