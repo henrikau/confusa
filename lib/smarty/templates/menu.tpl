@@ -16,7 +16,7 @@
 {elseif $person->getMode() == 1}
 <h3>Admin</h3>
 <ul>
-	{if $person->is_subscriber_subadmin()}
+	{if $person->isSubscriberSubadmin()}
 	<li><a href="revoke_certificate.php">Revoke Certificates</a></li>
 	{elseif $person->isSubscriberAdmin()}
 	<li><a href="revoke_certificate.php">Revoke certificates</a></li>
