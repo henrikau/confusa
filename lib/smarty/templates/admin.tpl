@@ -140,14 +140,18 @@
 		<form action="" method="POST">
 				<input type="hidden" name="subs_operation" value="delete_subs_admin" />
 				<input type="hidden" name="subs_admin" value="{$subscriber_admin}" />
-				<input type="image" src="graphics/delete.png" alt="Delete entry"
-				name="delete" onclick="return confirm('Delete entry {$subscriber_admin}?')" />
-		</form>
-		</td>
 		{if ($subscriber_admin == $self)}
-		<td style="color: blue"><b>{$subscriber_admin}</b></td>
+			<input type="image" src="graphics/delete.png" alt="Delete entry"
+				name="delete" onclick="return confirm('You are about to delete YOURSELF!\nAre you sure?')" />
+			</form>
+			</td>
+			<td style="color: blue"><b>{$subscriber_admin}</b></td>
 		{else}
-		<td>{$subscriber_admin}</td>
+			<input type="image" src="graphics/delete.png" alt="Delete entry"
+				name="delete" onclick="return confirm('Delete entry {$subscriber_admin}?')" />
+			</form>
+			</td>
+			<td>{$subscriber_admin}</td>
 		{/if}
 		</tr>
 		{/foreach}
