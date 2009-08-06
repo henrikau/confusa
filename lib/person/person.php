@@ -496,12 +496,12 @@ class Person{
     }
 
 
-    public function is_subscriber_admin()
+    public function isSubscriberAdmin()
     {
 	    return (int)$this->get_admin_status() == SUBSCRIBER_ADMIN;
     }
 
-    public function is_subscriber_subadmin()
+    public function isSubscriberSubAdmin()
     {
 	    return (int)$this->get_admin_status() == SUBSCRIBER_SUB_ADMIN;
     }

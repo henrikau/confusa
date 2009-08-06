@@ -26,7 +26,7 @@ class CP_Admin extends FW_Content_Page
 		parent::pre_process($person);
 
 		/* IF user is not subscirber- or nren-admin, we stop here */
-		if (!($this->person->is_subscriber_admin() || $this->person->isNRENAdmin()))
+		if (!($this->person->isSubscriberAdmin() || $this->person->isNRENAdmin()))
 			return false;
 
 		if (isset($_POST['nren_operation'])) {
@@ -60,7 +60,7 @@ class CP_Admin extends FW_Content_Page
 			}
 		/* operations called by the subscriber admin */
 		} else if (isset($_POST['subs_operation'])) {
-			if (!$this->person->is_subscriber_admin()) {
+			if (!$this->person->isSubscriberAdmin()) {
 				Framework::error_output("You have the wrong permissions for that operation!");
 				return false;
 			}
@@ -101,7 +101,7 @@ class CP_Admin extends FW_Content_Page
 	public function process()
 	{
 		/* IF user is not subscirber- or nren-admin, we stop here */
-		if (!($this->person->is_subscriber_admin() || $this->person->isNRENAdmin())) {
+		if (!($this->person->isSubscriberAdmin() || $this->person->isNRENAdmin())) {
 			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " was rejected at the admin-interface");
 			$this->tpl->assign('reason', 'You do not have sufficient rights to view this page');
 			$this->tpl->assign('content', 'restricted_access.tpl');
@@ -129,7 +129,7 @@ class CP_Admin extends FW_Content_Page
 			$this->tpl->assign('nren', $this->person->getNREN());
 			$this->tpl->assign('subscribers', $subscribers);
 
-		} else if ($this->person->is_subscriber_admin()) { /* subscriber admin display */
+		} else if ($this->person->isSubscriberAdmin()) { /* subscriber admin display */
 			$subscriber = $this->person->getSubscriberOrgName();
 			$subscriber_admins = $this->getSubscriberAdmins($subscriber, 1);
 			$this->tpl->assign('subscriber', $subscriber);
