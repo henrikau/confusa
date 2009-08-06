@@ -1,4 +1,4 @@
-{if $person->in_admin_mode() && $person->is_nren_admin()}
+{if $person->inAdminMode() && $person->is_nren_admin()}
 <h3>NREN page customization</h3>
 <br />
 

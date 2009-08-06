@@ -1,4 +1,4 @@
-{if $person->in_admin_mode()}
+{if $person->inAdminMode()}
 {if $person->is_nren_admin() ||  $person->is_subscriber_admin()}
 	<H3>Add/delete Confusa administrators</H3>
 {/if}

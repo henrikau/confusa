@@ -431,10 +431,19 @@ class Person{
 	    return NORMAL_MODE;
     }
 
-    public function in_admin_mode()
+    /**
+     * inAdminMode() - test to see if person is currently in *any* admin-mode
+     *
+     * This function is intended as a convenient way of getting a yes/no answer
+     * to whether or not we should show the user the admin-menu.
+     *
+     * @return boolean true when the user is in admin-mode, false otherwise
+     */
+    public function inAdminMode()
     {
-	    return $this->get_mode() == ADMIN_MODE;
+	    return $this->getMode() == ADMIN_MODE;
     }
+
     /**
      * set_status() - set the mode for a given person.
      *
