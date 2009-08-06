@@ -483,20 +483,22 @@ class Person{
 	    return (int)$this->get_admin_status() != NORMAL_USER;
     } /* end function isAdmin() */
 
+
+    /**
+     * isNRENAdmin() - test to see if the person is an NREN-admin
+     *
+     *
+     * @return : boolean true when person is NREN-admin
+     */
     public function isNRENAdmin()
     {	    	
 	    if (!$this->isAuth()) {
 		    return false;
-        }
-
-	    if ($this->entitlement == "confusaAdmin") {
-	        /* test attribute to see if the person is NREN-admin */
-	        if ((int)$this->get_admin_status() == NREN_ADMIN) {
-		        return true;
+	    }
+	    /* test attribute to see if the person is NREN-admin */
+	    if ((int)$this->get_admin_status() == NREN_ADMIN) {
+		    return true;
             }
-        }
-	    /* add user to table of nren-admins (to save page mode for later) */
-	    return (int)$this->get_admin_status() == NREN_ADMIN;
     }
 
 
@@ -524,6 +526,10 @@ class Person{
      */
     private function get_admin_status()
     {
+	    if (!$this->entitlement == "confusaAdmin") {
+		    return NORMAL_USER;
+	    }
+
 	    require_once 'mdb2_wrapper.php';
 	    $res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->common_name));
 	    $size = count($res);
