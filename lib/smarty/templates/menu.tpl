@@ -1,4 +1,4 @@
-{if $person->get_mode() == 0}
+{if $person->getMode() == 0}
 <h3>Certificates</h3>
 <ul>
 	<li><a href="process_csr.php">Request new</a></li>
@@ -13,7 +13,7 @@
 	{if $person->is_admin()}
 	<li><a href="{php}$_SERVER['PHP_SELF']{/php}?mode=admin">Admin menu</a></li>
 	{/if}
-{elseif $person->get_mode() == 1}
+{elseif $person->getMode() == 1}
 <h3>Admin</h3>
 <ul>
 	{if $person->is_subscriber_subadmin()}
