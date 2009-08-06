@@ -22,7 +22,7 @@
 	<li><a href="revoke_certificate.php">Revoke certificates</a></li>
 	<li><a href="admin.php">Manage Subscriber Administrators</a></li>
 	<li><a href="robot.php">Robot Interface</a></li>
-	{elseif $person->is_nren_admin()}
+	{elseif $person->isNRENAdmin()}
 	<li><a href="admin.php">Manage Administrators</a></li>
 	<li><a href="nren_admin.php">NREN-Admin</a></li>
 	<li><a href="stylist.php?show=text">Customize appearance</a></li>

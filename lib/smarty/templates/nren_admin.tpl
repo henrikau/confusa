@@ -1,5 +1,5 @@
 
-{if $person->inAdminMode() && $person->is_nren_admin()}
+{if $person->inAdminMode() && $person->isNRENAdmin()}
 <H3>NREN administration</H3>
 <BR />
 
