@@ -31,6 +31,10 @@ class Person{
     private $idp;
     private $nren;
     private $entitlement;
+
+    private $session;
+    private $saml_config;
+
     /* get variables for:
      * Region (i.e. Sor Trondelag)
      * City (i.e. Trondheim)
@@ -49,6 +53,68 @@ class Person{
         /* we're suspicious by nature */
         $this->fed_auth = false;
         } /* end constructor */
+
+    /**
+     * setSession - set a reference to the current session
+     *
+     * @session : the current session for this (authN) user
+     */
+    function setSession($session)
+    {
+	    if (!isset($session)) {
+		    return;
+	    }
+	    $this->session = $session;
+    }
+    /**
+     * setSAMLConfiguration - add a reference to the config
+     *
+     * The configuration contains a lot of useful information, some of which is
+     * directly related to the lifespan of the session.
+     *
+     * @config - the configuration object for this session/instance.
+     */
+    function setSAMLConfiguration($config)
+    {
+	    if (!isset($config)) {
+		    return;
+	    }
+	    $this->saml_config = $config;
+    }
+
+    /**
+     * getTimeLeft - the time in seconds until the session expires.
+     *
+     * Each session has a pre-determined lifespan. Confusa (and in return,
+     * SimpleSAMLphp) can ask for a particular timeframe, but it is the IdP that
+     * decides this.
+     *
+     * This function returns the time in seconds until the session expires and
+     * the user must re-AuthN.
+     */
+    function getTimeLeft()
+    {
+	    if (!isset($this->session))
+		    return null;
+	    return $this->session->remainingTime();
+    }
+
+    /**
+     * getTimeSinceStart - get the seconds since the session started.
+     *
+     * The session started when the user last authenticated.
+     */
+    function getTimeSinceStart()
+    {
+	    if (!isset($this->saml_config))
+		    return null;
+	    $start = $this->saml_config->getValue('session.duration');
+	    if (!isset($start)) {
+		    echo __FILE__  . ":" . __LINE__ . " Cannot find time of start.<BR />\n";
+		    return null;
+	    }
+	    return $start - $this->getTimeLeft();
+    }
 
     function get_complete_dn() {
 	    $dn = "/C=" . $this->get_country() . "/O=" . $this->get_orgname() . "/CN=" . $this->get_valid_cn();

@@ -96,6 +96,8 @@ function is_authenticated($person = null) {
 		$person->fed_auth($oauth->isAuthorized());
 	} else {
 		$session = _get_session();
+		$person->setSession(_get_session());
+		$person->setSAMLConfiguration(SimpleSAML_Configuration::getInstance());
 		if (isset($session)) {
 			$person->fed_auth($session->isValid());
 		}
