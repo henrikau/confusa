@@ -25,7 +25,6 @@ class Person{
     private $given_name;
     private $common_name;
     private $email;
-    private $db_id;
     private $country;
     private $orgname;
     private $idp;
@@ -194,10 +193,6 @@ class Person{
     public function get_entitlement() { return $this->entitlement; }
 
     public function get_keyholder() { return $this->keyholder; }
-
-    public function set_db_id ($id) { if (isset($id)) { $this->db_id = htmlentities($id); } }
-    public function get_db_id () { return $this->db_id; }
-    public function has_db_id () { return isset($this->db_id); }
 
     public function set_country($c)
          {
