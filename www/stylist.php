@@ -4,6 +4,7 @@ require_once 'framework.php';
 require_once 'mdb2_wrapper.php';
 require_once 'input.php';
 require_once 'file_upload.php';
+require_once 'logger.php';
 
 class CP_Stylist extends FW_Content_Page
 {
@@ -35,11 +36,11 @@ class CP_Stylist extends FW_Content_Page
 		if (isset($_POST['stylist_operation'])) {
 			switch(htmlentities($_POST['stylist_operation'])) {
 			case 'change_help_text':
-				$new_text = Input::sanitize($_POST['help_text']);
+				$new_text = Input::sanitizeText($_POST['help_text']);
 				$this->updateNRENHelpText($this->person->getNREN(), $new_text);
 				break;
 			case 'change_about_text':
-				$new_text = Input::sanitize($_POST['about_text']);
+				$new_text = Input::sanitizeText($_POST['about_text']);
 				$this->updateNRENAboutText($this->person->getNREN(), $new_text);
 				break;
 			case 'change_css':
@@ -181,6 +182,9 @@ class CP_Stylist extends FW_Content_Page
 									"probably related to the supplied data. Please verify the data to be inserted! " .
 									"Server said " . $dbqe->getMessage());
 		}
+
+		Logger::log_event(LOG_INFO, "Help-text for NREN $nren was changed. " .
+				  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
 	}
 
 	/*
@@ -205,6 +209,9 @@ class CP_Stylist extends FW_Content_Page
 									"probably related to the supplied data. Please verify the data to be inserted! " .
 									"Server said " . $dbqe->getMessage());
 		}
+
+		Logger::log_event(LOG_INFO, "About-text for NREN $nren was changed. " .
+						  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
 	}
 
 	/**
@@ -292,6 +299,10 @@ class CP_Stylist extends FW_Content_Page
 
 		if ($success === FALSE) {
 			Framework::error_output("Could not write to custom CSS file! Please contact an administrator!");
+		} else {
+			Logger::log_event(LOG_INFO, "The custom CSS for NREN " . $nren .
+										" was changed. User contacted us from " .
+										$_SERVER['REMOTE_ADDR']);
 		}
 
 		fclose($fd);
@@ -364,7 +375,10 @@ class CP_Stylist extends FW_Content_Page
 			} else {
 				/* delete all the other potential logos that might be there */
 				foreach (Framework::$allowed_img_suffixes as $suffix) {
-					unlink($logo_path . "/custom.$suffix");
+					$file = $logo_path . "/custom.$suffix";
+					if (file_exists($file)) {
+						unlink($file);
+					}
 				}
 			}
 
@@ -377,6 +391,10 @@ class CP_Stylist extends FW_Content_Page
 				Framework::error_output("Could not save the logo on the server. " .
 							"Server said: " . $fexp->getMessage());
 			}
+
+			Logger::log_event(LOG_INFO, "Logo for NREN $nren was changed to new " .
+							  "logo custom.$suffix User contacted us from " .
+							  $_SERVER['REMOTE_ADDR']);
 		}
 	}
 }
