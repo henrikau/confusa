@@ -1,6 +1,6 @@
 {if $textual == 'yes'}
 <div id="dn-section">
-	{$person->get_complete_dn()}
+	{$person->getX509SubjectDN()}
 </div>
 {else}
 <h3>This is what we know about you:</h3>
@@ -14,7 +14,7 @@
 	<tr><td><b>Entitlement:</b></td><td>{$person->get_entitlement()}</td></tr>
 	<tr><td><b>IdP:</b></td><td>{$person->get_idp()}</td></tr>
 	<tr><td><b>NREN:</b></td><td>{$person->get_nren()}</td></tr>
-	<tr><td><b>Complete /DN:</b></td><td>{$person->get_complete_dn()}</td></tr>
+	<tr><td><b>Complete /DN:</b></td><td>{$person->getX509SubjectDN()}</td></tr>
 
 	<tr><td></td><td></td></tr>
 

@@ -199,7 +199,7 @@ class CertManager_Standalone extends CertManager
 
   /* match_dn
    *
-   * This will match the associative array $subject with the constructed DN from person->get_complete_dn()
+   * This will match the associative array $subject with the constructed DN from person->getX509SubjectDN()
    *
    * The best would be to use something like what openssl supports:
    *	openssl x509 -in usercert.pem -subject -noout
@@ -222,9 +222,9 @@ class CertManager_Standalone extends CertManager
 		  $composed_dn .= "/OU=".$subject['OU'];
 	  if (isset($subject['C']))
 		  $composed_dn .= "/CN=".$subject['CN'];
-	  $res = $this->person->get_complete_dn() === $composed_dn;
+	  $res = $this->person->getX509SubjectDN() === $composed_dn;
 	  if (Config::get_config('debug') && !$res) {
-		  Framework::error_output("Supplied (".$composed_dn.") and required subject (".$this->person->get_complete_dn() .") differs!");
+		  Framework::error_output("Supplied (".$composed_dn.") and required subject (".$this->person->getX509SubjectDN() .") differs!");
 	  }
 	  return $res;
   }
