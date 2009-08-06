@@ -41,7 +41,7 @@ class Person{
      */
 
     /* status variables (so we poll the subsystem as little as possible) */
-    private $fed_auth;
+    private $isAuthenticated;
 
     function __construct() {
         $this->given_name = null;
@@ -50,7 +50,7 @@ class Person{
         $this->entitlement = null;
 
         /* we're suspicious by nature */
-        $this->fed_auth = false;
+        $this->isAuthenticated = false;
         } /* end constructor */
 
     /**
@@ -126,10 +126,10 @@ class Person{
     }
 
     public function is_fed_auth() {
-        return $this->fed_auth;
+        return $this->isAuthenticated;
         }
     public function fed_auth($auth = true) {
-        $this->fed_auth = $auth;
+        $this->isAuthenticated = $auth;
         }
 
     /**
@@ -138,7 +138,7 @@ class Person{
      * @return boolean (true when person *is* authenticated)
      */
     public function isAuth() {
-	    return $this->fed_auth;
+	    return $this->isAuthenticated;
     }
 
 
