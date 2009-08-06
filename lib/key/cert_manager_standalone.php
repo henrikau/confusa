@@ -86,7 +86,7 @@ class CertManager_Standalone extends CertManager
         $num_received = count($res);
         if ($num_received > 0 && !(isset($res[0]['auth_key']))) {
             $msg = "Received an unexpected response from the database for user " .
-                     $this->person->get_common_name();
+                     $this->person->getEPPN();
             throw new DBQueryException($msg);
         }
 
