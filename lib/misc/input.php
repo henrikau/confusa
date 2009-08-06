@@ -66,13 +66,21 @@ class Input
 
 		/* Remove all url properties, since they can be abused for XSS attacks
 		 * Attack vectors: javascript: links in IE (sic!)
-		 * 				   -moz-binding: in Firefox
+		 *				   -moz-binding: in Firefox
+		 *
+		 * Also, remove all statements starting with (, since IE has a dynamic
+		 * property called expression() which will execute arbitrary
+		 * JavaScript in the stylesheet. Normal CSS properties don't need
+		 * brackets.
 		 *
 		 * more patterns: http://ha.ckers.org/xss.html
 		 */
 	static function sanitizeCSS($input)
 	{
-		$output = preg_replace('/(\n)?(.)*(url)\((.)*(;)?/','',$input);
+		$output = preg_replace('/(\n)?(.)*(url)(.)*(;)?/','',$input);
+		/* execute this after the URL removal, since it will break the CSS.
+		 * this is for the leftover hardcore cases such as expression(...) */
+		$output = preg_replace('/(.)*(\()+(.)*/', '', $output);
 		return $output;
 	}
 }
