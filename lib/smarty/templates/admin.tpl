@@ -27,13 +27,17 @@
 			<form action="" method="POST">
 				<input type="hidden" name="nren_operation" value="delete_nren_admin" />
 				<input type="hidden" name="nren_admin" value="{$admin}" />
-				<input type="image" src="graphics/delete.png" alt="Delete entry"
-				name="delete" onclick="return confirm('Delete entry {$admin}?')" />
-			</form>
-		</td>
 		{if ($admin == $self)}
+			<input type="image" src="graphics/delete.png" alt="Delete entry"
+				name="delete" onclick="return confirm('You are about to delete YOURSELF!\nAre you sure?')" />
+			</form>
+			</td>
 			<td style="color: blue"><b>{$admin}</b></td>
 		{else}
+			<input type="image" src="graphics/delete.png" alt="Delete entry"
+				name="delete" onclick="return confirm('Delete entry {$admin}?')" />
+			</form>
+			</td>
 			<td>{$admin}</td>
 		{/if}
 		</tr>
