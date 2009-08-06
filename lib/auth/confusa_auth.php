@@ -79,7 +79,7 @@ function is_authenticated($person = null) {
 		$person->setSubscriberOrgName('Test');
 		$person->set_idp('Test');
 		$person->set_nren('test');
-		$person->set_entitlement('Test');
+		$person->setEduPersonEntitlement('confusaAdmin');
 		$person->setAuth(true);
 		
 		return $person;
@@ -136,7 +136,7 @@ function add_attributes($person)
 	     $person->set_country($attributes['country'][0]);
 	     $person->setSubscriberOrgName($attributes['organization'][0]);
 	     $person->set_idp(_get_session()->getIdP());
-	     $person->set_entitlement($attributes['eduPersonEntitlement'][0]);
+	     $person->setEduPersonEntitlement($attributes['eduPersonEntitlement'][0]);
 	     $person->set_nren($attributes['nren'][0]);
 	     $person->setAuth(true);
      }
