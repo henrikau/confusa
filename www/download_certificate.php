@@ -83,12 +83,12 @@ final class DownloadCertificate extends FW_Content_Page
 		try {
 		MDB2Wrapper::update("DELETE FROM cert_cache WHERE auth_key=? AND cert_owner=?",
 				    array('text', 'text'),
-				    array($authKey, $this->person->get_valid_cn()));
+				    array($authKey, $this->person->getX509ValidCN()));
 		} catch (Exception $e) {
 			/* FIXME: better error-handling */
 			Framework::error_output($e->getMessage);
 		}
-		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$authKey." belonging to ".$this->person->get_valid_cn());
+		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$authKey." belonging to ".$this->person->getX509ValidCN());
 		$this->tpl->assign('processingResult', 'Certificate deleted');
 	} /* end deleteCert */
 
@@ -160,7 +160,7 @@ function list_remote_certs($person)
     $test_prefix = "TEST PERSON ";
   }
 
-  $postfields_list["commonName"] = $test_prefix . $person->get_valid_cn();
+  $postfields_list["commonName"] = $test_prefix . $person->getX509ValidCN();
   $ch = curl_init($list_endpoint);
   curl_setopt($ch, CURLOPT_HEADER,0);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -178,7 +178,7 @@ function list_remote_certs($person)
   if ($params["errorCode"] == "0") {
     for ($i = 1; $i <= $params['noOfResults']; $i = $i+1) {
       $res[$i-1]['order_number'] = $params[$i . "_orderNumber"];
-      $res[$i-1]['cert_owner'] = $person->get_valid_cn();
+      $res[$i-1]['cert_owner'] = $person->getX509ValidCN();
     }
   } else {
     Framework::error_output("Errors occured when listing user certificates: " . $params["errorMessage"]);

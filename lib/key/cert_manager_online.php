@@ -105,7 +105,7 @@ class CertManager_Online extends CertManager
      */
     public function get_cert_list()
     {
-        $common_name = $this->person->get_valid_cn();
+        $common_name = $this->person->getX509ValidCN();
         $params = $this->_capi_get_cert_list($common_name);
         $res=array();
 
@@ -125,7 +125,7 @@ class CertManager_Online extends CertManager
             }
 
             $res[$i-1]['order_number'] = $params[$i . '_orderNumber'];
-            $res[$i-1]['cert_owner'] = $this->person->get_valid_cn();
+            $res[$i-1]['cert_owner'] = $this->person->getX509ValidCN();
         }
 
         return $res;
@@ -425,7 +425,7 @@ class CertManager_Online extends CertManager
         /* manually compose the subject. Necessary, because we want to have
          * Terena domainComponents */
         $postfields_sign_req["subject_commonName_1"] = $this->TEST_CN_PREFIX .
-            $this->person->get_valid_cn();
+            $this->person->getX509ValidCN();
         $postfields_sign_req["subject_organizationName_2"] = $this->TEST_O_PREFIX .
             $this->person->get_orgname();
         $postfields_sign_req["subject_countryName_3"] = $this->person->get_country();
@@ -469,7 +469,7 @@ class CertManager_Online extends CertManager
                                         "order number " .
                                         $this->order_number .
                                         " for user " .
-                                        $this->person->get_valid_cn() .
+                                        $this->person->getX509ValidCN() .
                                         " Person contacted us from " .
                                         $_SERVER['REMOTE_ADDR']);
 
@@ -479,7 +479,7 @@ class CertManager_Online extends CertManager
 
           MDB2Wrapper::update($sql_command,
                             array('text', 'text', 'text'),
-                            array($auth_key, $this->person->get_valid_cn(),
+                            array($auth_key, $this->person->getX509ValidCN(),
                             $this->order_number));
         } /* end _capi_upload_csr */
     }
@@ -546,7 +546,7 @@ class CertManager_Online extends CertManager
                               array('text', 'text'),
                               array($this->order_number, $this->collection_code));
           Logger::log_event(LOG_NOTICE, "Authorized remote certificate for person ".
-                                        $this->person->get_valid_cn().
+                                        $this->person->getX509ValidCN().
                                         " with order number " .
                                         $this->order_number .
                                         " Person contacted us from ".

@@ -126,7 +126,7 @@ function get_csr_from_db_raw($eppn, $auth_key)
 }
 function get_csr_from_db($person, $auth_key)
 {
-	$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
+	$csr = get_csr_from_db_raw($person->getX509ValidCN(), $auth_key);
 	return $csr['csr'];
 }
 
@@ -137,16 +137,16 @@ function delete_csr_from_db($person, $auth_key)
 
 	/* Verify that the CSR is present */
 	try {
-		$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
+		$csr = get_csr_from_db_raw($person->getX509ValidCN(), $auth_key);
 	} catch (CSRNotFoundException $csrnfe) {
 		echo "No matching CSR found.<BR>\n";
 		$msg  = "Could not delete CSR from ip ".$_SERVER['REMOTE_ADDR'];
-		$msg .= " : " . $person->get_valid_cn() . " Reason: not found";
+		$msg .= " : " . $person->getX509ValidCN() . " Reason: not found";
 		Logger::log_event(LOG_NOTICE, $msg);
 		return false;
 	} catch (ConfusaGenException $cge) {
 		$msg  = "Error in deleting CSR (" . $auth_key . ")";
-		$msg .= "for user: " . $person->get_valid_cn() . " ";
+		$msg .= "for user: " . $person->getX509ValidCN() . " ";
 		$msg .= "Too many hits!";
 		Framework::error_output($msg);
 		Logger::log_event(LOG_ALERT, $msg);
@@ -155,9 +155,9 @@ function delete_csr_from_db($person, $auth_key)
 
 	MDB2Wrapper::update("DELETE FROM csr_cache WHERE auth_key=? AND common_name=?",
 			    array('text', 'text'),
-			    array($auth_key, $person->get_valid_cn()));
+			    array($auth_key, $person->getX509ValidCN()));
 	$msg  = "Dropping csr ". $auth_key . " ";
-	$msg .= "for user ".$person->get_valid_cn()."  (".$_SERVER['REMOTE_ADDR'] . ") from csr_cache";
+	$msg .= "for user ".$person->getX509ValidCN()."  (".$_SERVER['REMOTE_ADDR'] . ") from csr_cache";
 	logger::log_event(LOG_NOTICE, $msg);
 	return true;
 }
@@ -165,7 +165,7 @@ function delete_csr_from_db($person, $auth_key)
 function print_csr_details($person, $auth_key)
 {
 	try {
-		$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
+		$csr = get_csr_from_db_raw($person->getX509ValidCN(), $auth_key);
 	} catch (CSRNotFoundException $csrnfe) {
 		$msg  = "Error with auth-token ($auth_key) - not found. ";
 		$msg .= "Please verify that you have entered the correct auth-url and try again.";
@@ -175,7 +175,7 @@ function print_csr_details($person, $auth_key)
 	} catch (ConfusaGenException $cge) {
 		$msg = "Too menu returns received. This can indicate database inconsistency.";
 		Framework::error_output($msg);
-		Logger::log_event(LOG_ALERT, "Several identical CSRs (" . $auth_token . ") exists in the database for user " . $person->get_valid_cn());
+		Logger::log_event(LOG_ALERT, "Several identical CSRs (" . $auth_token . ") exists in the database for user " . $person->getX509ValidCN());
 		return false;
 	}
 	$subj = openssl_csr_get_subject($csr['csr'], false);
@@ -199,7 +199,7 @@ function print_csr_details($person, $auth_key)
 
 function get_csr_details($person, $auth_key)
 {
-	$csr = get_csr_from_db_raw($person->get_valid_cn(), $auth_key);
+	$csr = get_csr_from_db_raw($person->getX509ValidCN(), $auth_key);
 	$subj = openssl_csr_get_subject($csr['csr'], false);
 	$result = array(
 		'auth_token'	=> $csr['auth_key'],

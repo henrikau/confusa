@@ -102,7 +102,7 @@ class CP_Admin extends FW_Content_Page
 	{
 		/* IF user is not subscirber- or nren-admin, we stop here */
 		if (!($this->person->is_subscriber_admin() || $this->person->is_nren_admin())) {
-			Logger::log_event(LOG_NOTICE, "User " . $this->person->get_valid_cn() . " was rejected at the admin-interface");
+			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " was rejected at the admin-interface");
 			$this->tpl->assign('reason', 'You do not have sufficient rights to view this page');
 			$this->tpl->assign('content', 'restricted_access.tpl');
 			return false;

@@ -53,7 +53,7 @@ class CertManager_Standalone extends CertManager
 					array('text', 'text', 'text', 'text'),
 					array($cert,
 					      $auth_key,
-					      $this->person->get_valid_cn(),
+					      $this->person->getX509ValidCN(),
 					      $this->person->get_orgname()));
 
 	    } catch (DBStatementException $dbse) {
@@ -69,12 +69,12 @@ class CertManager_Standalone extends CertManager
 	    }
 	    
             Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
-			      $this->person->get_valid_cn() .
+			      $this->person->getX509ValidCN() .
 			      " Contacting us from ".
 			      $_SERVER['REMOTE_ADDR']);
         } else {
 		Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user ".
-				  $this->person->get_valid_cn() .
+				  $this->person->getX509ValidCN() .
 				  " from ip ".$_SERVER['REMOTE_ADDR']);
 		throw new KeySignException("CSR subject verification failed!");
         }
@@ -91,7 +91,7 @@ class CertManager_Standalone extends CertManager
         $res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE ".
 				    "cert_owner=? AND valid_untill > current_timestamp()",
 				    array('text'),
-				    array($this->person->get_valid_cn()));
+				    array($this->person->getX509ValidCN()));
         $num_received = count($res);
         if ($num_received > 0 && !(isset($res[0]['auth_key']))) {
             $msg = "Received an unexpected response from the database for user " .
@@ -134,7 +134,7 @@ class CertManager_Standalone extends CertManager
     {
         $res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=? AND valid_untill > current_timestamp()",
                                       array('text', 'text'),
-                                      array($key, $this->person->get_valid_cn()));
+                                      array($key, $this->person->getX509ValidCN()));
 
         if (count($res) == 1) {
 		$msg  = "Sending certificate with hash " . pubkey_hash($res[0]['cert'], false) . " ";
@@ -144,7 +144,7 @@ class CertManager_Standalone extends CertManager
         }
         else {
             $msg = "Error in getting certificate, got " . count($res) . " results\n";
-            $cn = $this->person->get_valid_cn();
+            $cn = $this->person->getX509ValidCN();
             $msg .= "Queried for key $key and CN $cn\n";
             throw new DBQueryException($msg);
         }
@@ -174,11 +174,11 @@ class CertManager_Standalone extends CertManager
 	     * Get cert from DB and store in temp-file
 	     */
 	    try {
-		    echo "getting certificate for user " . $this->person->get_valid_cn() . "<BR />\n";
+		    echo "getting certificate for user " . $this->person->getX509ValidCN() . "<BR />\n";
 		    $query = "SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=?";
 		    $res = MDB2Wrapper::execute($query,
 						array('text', 'text'),
-						array($key, $this->person->get_valid_cn()));
+						array($key, $this->person->getX509ValidCN()));
 		    $cert = $res[0]['cert'];
 		    if (!isset($cert) || $cert === "") {
 			    Framework::error_output("Could not retrieve certificate from database!");

@@ -121,7 +121,7 @@ class Person{
      * @return: generated /DN from attributes to use in the certificate subject.
      */
     function getX509SubjectDN() {
-	    $dn = "/C=" . $this->get_country() . "/O=" . $this->get_orgname() . "/CN=" . $this->get_valid_cn();
+	    $dn = "/C=" . $this->get_country() . "/O=" . $this->get_orgname() . "/CN=" . $this->getX509ValidCN();
 	    return $dn;
     }
 
@@ -165,21 +165,6 @@ class Person{
      */
     public function getName() { return $this->given_name; }
 
-    /* "Safe" function
-     *
-     * THis returns a 'safe representation' of the person's name.
-     * As a user's name can contain different special characters, whitespace and
-     * other nonsense, we remove it here, sothat elements that require *very*
-     * sanitized input, can call this instead of the original getName()
-     */
-    public function get_safe_name() {
-	    /* remove non-printable characters, or, only allow printable characters */
-	    $tmp_name = $this->given_name;
-	    $tmp_name = preg_replace("/[^a-z \d]/i", "", $tmp_name);
-
-	    return $tmp_name;
-    }
-
     public function set_common_name($cn) {
         if (isset($cn)) {
              $this->common_name = htmlentities(str_replace("'", "", $cn));
@@ -187,13 +172,23 @@ class Person{
         }
     public function get_common_name() { return $this->common_name; }
 
-    public function get_valid_cn() {
-        if (isset($this->given_name)) {
-	        return $this->get_safe_name() . " " . $this->get_common_name();
-        } else {
-            return $this->get_common_name();
-        }
+    /** getX509ValidCN - get a valid /CN for a X.509 /DN
+     *
+     * This will return the common-name attribute for the X.509 subject. As not
+     * all characters are printable, this function will also strip those away.
+     *
+     * @return: a X.509 printable /CN attribute
+     */
+    public function getX509ValidCN() {
+	    $res = "";
+	    if (isset($this->given_name)) {
+		    $tmp_name = $this->given_name;
+		    $tmp_name = preg_replace("/[^a-z \d]/i", "", $tmp_name);
+		    $res .= $tmp_name . " ";
+	    }
+	    return $res . $this->get_common_name();
     }
+
     public function set_email($email) {
         if (isset($email)) {
             $this->email = htmlentities($email);

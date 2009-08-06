@@ -25,7 +25,7 @@ class KeyScript {
 		$script = file_get_contents(Config::get_config('programs_path'));
 
  		/* set variables for the key and CSR/cert */
-		$script = str_replace('common=""'      ,'common="' .$this->person->get_valid_cn() . '"'	, $script);
+		$script = str_replace('common=""'      ,'common="' .$this->person->getX509ValidCN() . '"'	, $script);
 		$script = str_replace('full_dn=""'	,'full_dn="'.$this->person->getX509SubjectDN() . '"'	, $script);
 		$script = str_replace('key_length='	,"key_length="	.Config::get_config('key_length')	, $script);
 
