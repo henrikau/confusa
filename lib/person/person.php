@@ -492,7 +492,7 @@ class Person{
      * @return : boolean true when person is the given admin
      */
     public function isNRENAdmin()
-    {	    	
+    {
 	    /* test attribute to see if the person is NREN-admin */
 	    if ((int)$this->getAdminStatus() == NREN_ADMIN) {
 		    return true;
@@ -523,13 +523,12 @@ class Person{
 	    }
 
 	    require_once 'mdb2_wrapper.php';
-	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->common_name));
+	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->eppn));
 	    $size	= count($res);
 	    db_array_debug($res);
 	    if ($size == 1) {
 		    if ($res[0]['admin'] == $this->getEPPN())
 			    $adminRes = $res[0]['admin_level'];
-		    echo __FILE__ . ":" . __LINE__ . "<B>Uuuugh! Unreachable point! How did you get here?</B><BR>\n";
 	    }
 	    return $adminRes;
     }
