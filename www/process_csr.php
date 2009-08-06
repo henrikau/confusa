@@ -129,7 +129,7 @@ final class ProcessCsr extends FW_Content_Page
 		if (isset($_GET['delete_csr'])) {
 			$res = delete_csr_from_db($this->person, htmlentities($_GET['delete_csr']));
 			if ($res) {
-				Framework::message_output("Successfully deleted CSR for user " . $this->person->get_common_name() . ".");
+				Framework::message_output("Successfully deleted CSR for user " . $this->person->getEPPN() . ".");
 			} else {
 				Framework::error_output("Could not delete CSR.");
 			}
@@ -180,7 +180,7 @@ final class ProcessCsr extends FW_Content_Page
 
 		if (!isset($csr)) {
 			Framework::error_output("Did not find CSR with auth_token $auth_token");
-			$msg  = "User " . $this->person->get_common_name() . " ";
+			$msg  = "User " . $this->person->getEPPN() . " ";
 			$msg .= "tried to delete CSR with auth_token " . $authToken . " but was unsuccessful";
 			Logger::log_event(LOG_NOTICE, $msg);
 			return false;

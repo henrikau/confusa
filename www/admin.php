@@ -140,7 +140,7 @@ class CP_Admin extends FW_Content_Page
 
 		}
 
-		$this->tpl->assign('self', $this->person->get_common_name());
+		$this->tpl->assign('self', $this->person->getEPPN());
 		$this->tpl->assign('content', $this->tpl->fetch('admin.tpl'));
 	}
 

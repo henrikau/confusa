@@ -12,7 +12,7 @@ if (isset($_GET[Config::get_config('auth_var')]) && $_GET['common_name']) {
       $authvar        = htmlentities($_GET[Config::get_config('auth_var')]);
       $user           = base64_decode($_GET['common_name']);
       $person = new Person();
-      $person->set_common_name($user);
+      $person->setEPPN($user);
 
       if(Config::get_config('standalone')) {
         $cm = new CertManager_Standalone($person);

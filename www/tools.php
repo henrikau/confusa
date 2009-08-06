@@ -24,7 +24,7 @@ class Tools extends FW_Content_Page
 			include_once 'create_keyscript.php';
 			$keyscript = new KeyScript($person);
 			download_file($keyscript->create_script(), "create_cert.sh");
-			Logger::log_event(LOG_NOTICE, "Sending script via file to ". $this->person->get_common_name());
+			Logger::log_event(LOG_NOTICE, "Sending script via file to ". $this->person->getEPPN());
 			exit(0);
 		}
 		parent::pre_process($person);

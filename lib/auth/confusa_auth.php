@@ -73,7 +73,7 @@ function is_authenticated($person = null) {
 	{
 		// Set some bogus attributes
 		$person->setName('Ola Nordmann');
-		$person->set_common_name('ola.nordmann@norge.no');
+		$person->setEPPN('ola.nordmann@norge.no');
 		$person->setEmail('ola.nordmann@norge.no');
 		$person->set_country('NO');
 		$person->set_orgname('Test');
@@ -131,7 +131,7 @@ function add_attributes($person)
      }
      else {
 	     $person->setName($attributes['cn'][0]);
-	     $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
+	     $person->setEPPN($attributes['eduPersonPrincipalName'][0]);
 	     $person->setEmail($attributes['mail'][0]);
 	     $person->set_country($attributes['country'][0]);
 	     $person->set_orgname($attributes['organization'][0]);

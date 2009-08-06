@@ -23,7 +23,10 @@ class Person{
 
     /* instance-variables: */
     private $given_name;
-    private $common_name;
+
+    /* eduPersonPrincipalName - unique name within the namespace for *all* users */
+    private $eppn;
+
     private $email;
     private $country;
     private $orgname;
@@ -45,7 +48,7 @@ class Person{
 
     function __construct() {
         $this->given_name = null;
-        $this->common_name = null;
+        $this->eppn = null;
         $this->email = null;
         $this->entitlement = null;
 
@@ -165,12 +168,29 @@ class Person{
      */
     public function getName() { return $this->given_name; }
 
-    public function set_common_name($cn) {
-        if (isset($cn)) {
-             $this->common_name = htmlentities(str_replace("'", "", $cn));
+    /* setEPPN - set the ePPN for the person
+     *
+     * The eduPersonPrincipalName is a guaranteed unique key, and is widely used
+     * within in Confusa for drilling down the identity of the user.
+     *
+     * @eppn: the ePPN.
+     */
+    public function setEPPN($eppn)
+    {
+        if (isset($eppn)) {
+             $this->eppn = htmlentities(str_replace("'", "", $eppn));
          }
-        }
-    public function get_common_name() { return $this->common_name; }
+    }
+
+    /**
+     * getEPPN - return the ePPN for the person.
+     *
+     * @return : string containing the ePPN for the user
+     */
+    public function getEPPN()
+    {
+	    return $this->eppn;
+    }
 
     /** getX509ValidCN - get a valid /CN for a X.509 /DN
      *
@@ -186,7 +206,7 @@ class Person{
 		    $tmp_name = preg_replace("/[^a-z \d]/i", "", $tmp_name);
 		    $res .= $tmp_name . " ";
 	    }
-	    return $res . $this->get_common_name();
+	    return $res . $this->getEPPN();
     }
 
     /**
@@ -208,11 +228,20 @@ class Person{
     public function getEmail() { return $this->email; }
 
 
-    public function set_orgname($orgname) {
-	    if (isset($orgname))
-		    $this->orgname = $orgname;
+    /** setSubscriberOrgName - set the name of the subscriber organization
+     *
+     * @subscriber
+     */
+    public function setSubscriberOrgName($subscriber)
+    {
+	    if (isset($subscriber))
+		    $this->subsriberName = $subscriber;
     }
-    public function get_orgname() { return $this->orgname; }
+    public function set_orgname($org) { $this->setSubscriberOrgName($org); }
+
+    public function getSubscriberOrgName() { return $this->subscriberName; }
+
+    public function get_orgname() { return $this->getSubscriberOrgName(); }
 
     public function set_entitlement($entitlement) {
       if (isset($entitlement)) {
@@ -267,7 +296,7 @@ class Person{
         }
 	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",
 					array('text'),
-					array($this->get_common_name()));
+					array($this->getEPPN()));
 	    db_array_debug($res);
 	    if (count($res) != 1) {
 		    return NORMAL_MODE;
@@ -298,10 +327,10 @@ class Person{
 	    $new = (int)$new_mode;
 	    if ($new == 0 || $new == 1) {
 		    if ($this->is_admin()) {
-			    Logger::log_event(LOG_DEBUG, "Changing mode (-> $new_mode) for " . $this->get_common_name());
+			    Logger::log_event(LOG_DEBUG, "Changing mode (-> $new_mode) for " . $this->getEPPN());
 			    MDB2Wrapper::update("UPDATE admins SET last_mode=? WHERE admin=?",
 						array('text', 'text'),
-						array($new, $this->get_common_name()));
+						array($new, $this->getEPPN()));
 		    }
 	    }
     }
@@ -365,7 +394,7 @@ class Person{
 	    $size = count($res);
 	    db_array_debug($res);
 	    if ($size == 1) {
-		    if ($res[0]['admin'] == $this->get_common_name())
+		    if ($res[0]['admin'] == $this->getEPPN())
 			    return $res[0]['admin_level'];
 		    echo __FILE__ . ":" . __LINE__ . "<B>Uuuugh! Unreachable point! How did you get here?</B><BR>\n";
 	    }

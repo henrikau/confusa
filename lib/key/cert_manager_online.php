@@ -499,14 +499,14 @@ class CertManager_Online extends CertManager
         */
         return $auth_key;
       } else if(strlen($auth_key) == Config::get_config('auth_length')) {
-          // TODO: Replace get_common_name with get_eppn or whatever...
+          // TODO: Replace getEPPN with get_eppn or whatever...
           $res = MDB2Wrapper::execute("SELECT order_number FROM order_store WHERE auth_key=? AND owner=?",
                                   array('text', 'text'),
-                                  array($auth_key, $this->person->get_common_name()));
+                                  array($auth_key, $this->person->getEPPN()));
 
           if (count($res) < 1) {
             throw new DBQueryException("Could not find order number for $auth_key " .
-                                           "and " . $this->person->get_common_name() .
+                                           "and " . $this->person->getEPPN() .
                                            " in order_store"
             );
           }

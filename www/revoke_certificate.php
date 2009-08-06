@@ -145,7 +145,7 @@ class RevokeCertificate extends FW_Content_Page
 	 */
 	 private function normal_revoke()
 	{
-		$this->search_certs_display($this->person->get_common_name());
+		$this->search_certs_display($this->person->getEPPN());
 	}
 
 	/**
