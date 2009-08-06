@@ -26,7 +26,7 @@
 		<td style="width: 30px">
 			<form action="" method="POST">
 				<input type="hidden" name="nren_operation" value="delete_nren_admin" />
-				<input type="hidden" name="nren_admin" value={$admin} />
+				<input type="hidden" name="nren_admin" value="{$admin}" />
 				<input type="image" src="graphics/delete.png" alt="Delete entry"
 				name="delete" onclick="return confirm('Delete entry {$admin}?')" />
 			</form>
@@ -79,8 +79,8 @@
 				<td style="width: 30px">
 						<form action="" method="POST">
 						<input type="hidden" name="nren_operation" value="delete_subs_admin" />
-						<input type="hidden" name="subscriber" value={$subscriber} />
-						<input type="hidden" name="subs_admin" value={$subscriber_admin} />
+						<input type="hidden" name="subscriber" value="{$subscriber}" />
+						<input type="hidden" name="subs_admin" value="{$subscriber_admin}" />
 						<input type="image" src="graphics/delete.png" alt="Delete entry"
 						name="delete" onclick="return confirm('Delete entry {$subscriber_admin}?')" />
 						</form>
@@ -94,7 +94,7 @@
 			<td>
 			<form action="" method="POST">
 				<input type="hidden" name="nren_operation" value="add_subs_admin" />
-				<input type="hidden" name="subscriber" value={$subscriber} />
+				<input type="hidden" name="subscriber" value="{$subscriber}" />
 				<input type="text" name="subs_admin" />
 				<input type="submit" name="add" value="Add new" />
 			</form>
@@ -135,7 +135,7 @@
 		<td style="width: 30px">
 		<form action="" method="POST">
 				<input type="hidden" name="subs_operation" value="delete_subs_admin" />
-				<input type="hidden" name="subs_admin" value={$subscriber_admin} />
+				<input type="hidden" name="subs_admin" value="{$subscriber_admin}" />
 				<input type="image" src="graphics/delete.png" alt="Delete entry"
 				name="delete" onclick="return confirm('Delete entry {$subscriber_admin}?')" />
 		</form>
@@ -188,7 +188,7 @@
 		<td style="width: 30px">
 			<form action="" method="POST">
 			<input type="hidden" name="subs_operation" value="delete_subs_sub_admin" />
-			<input type="hidden" name="subs_sub_admin" value={$admin} />
+			<input type="hidden" name="subs_sub_admin" value="{$admin}" />
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
 			name="delete" onclick="return confirm('Delete entry {$admin}?')" />
 		</form>
