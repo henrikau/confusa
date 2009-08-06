@@ -115,7 +115,12 @@ class Person{
 	    return $start - $this->getTimeLeft();
     }
 
-    function get_complete_dn() {
+    /**
+     * getX509SubjectDN - construct the complete /DN for a certificate/CSR
+     *
+     * @return: generated /DN from attributes to use in the certificate subject.
+     */
+    function getX509SubjectDN() {
 	    $dn = "/C=" . $this->get_country() . "/O=" . $this->get_orgname() . "/CN=" . $this->get_valid_cn();
 	    return $dn;
     }
