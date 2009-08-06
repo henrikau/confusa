@@ -18,7 +18,7 @@
 <ul>
 	{if $person->is_subscriber_subadmin()}
 	<li><a href="revoke_certificate.php">Revoke Certificates</a></li>
-	{elseif $person->is_subscriber_admin()}
+	{elseif $person->isSubscriberAdmin()}
 	<li><a href="revoke_certificate.php">Revoke certificates</a></li>
 	<li><a href="admin.php">Manage Subscriber Administrators</a></li>
 	<li><a href="robot.php">Robot Interface</a></li>

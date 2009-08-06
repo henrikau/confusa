@@ -1,5 +1,5 @@
 {if $person->inAdminMode()}
-{if $person->isNRENAdmin() ||  $person->is_subscriber_admin()}
+{if $person->isNRENAdmin() ||  $person->isSubscriberAdmin()}
 	<H3>Add/delete Confusa administrators</H3>
 {/if}
 
@@ -115,7 +115,7 @@
 
 {/if}
 
-{elseif $person->is_subscriber_admin()}
+{elseif $person->isSubscriberAdmin()}
 	<div class="spacer"></div>
 	<fieldset>
 	{* *********************************************************************** *}
