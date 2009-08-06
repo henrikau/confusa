@@ -178,7 +178,7 @@ CREATE TABLE cert_cache (
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS admins (
        admin_id INT PRIMARY KEY AUTO_INCREMENT,
-       admin varchar(128) NOT NULL, -- ePPN of the admin,
+       admin varchar(128) UNIQUE NOT NULL, -- ePPN of the admin,
        -- The level of admin privileges
        -- 2: NREN-admin
        -- 1: Subscriber admin
