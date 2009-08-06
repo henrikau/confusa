@@ -26,7 +26,7 @@ class MailManager {
 			return;
 		}
 		$this->person = $pers;
-		$this->receiver .= $this->person->get_name() . " <" . $this->person->get_email() . ">";
+		$this->receiver .= $this->person->getName() . " <" . $this->person->get_email() . ">";
 
         $this->sender   = $sender;
         /* UTF-8 encode subject: */

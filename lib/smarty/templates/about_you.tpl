@@ -5,7 +5,7 @@
 {else}
 <h3>This is what we know about you:</h3>
  <table class="small">
-	<tr><td><b>Name:</b></td><td>{$person->get_name()}</td></tr>
+	<tr><td><b>Name:</b></td><td>{$person->getName()}</td></tr>
 	<tr><td><b>eduPersonPrincipalName:</b></td><td>{$person->get_common_name()}</td></tr>
 	<tr><td><b>CommonName in DN</b></td><td>{$person->get_valid_cn()}</td></tr>
 	<tr><td><b>email:</b></td><td>{$person->get_email()}</td></tr>
