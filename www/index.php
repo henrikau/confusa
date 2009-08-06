@@ -24,7 +24,7 @@ final class Index extends FW_Content_Page
 	 */
 	function process()
 	{
-		if ($this->person->is_auth()) {
+		if ($this->person->isAuth()) {
 			if ($this->person->get_mode() > 1) {
 				$code = create_pw(8);
 				Framework::error_output("Unknown mode, contact the administrator with this error code " . $code);

@@ -41,7 +41,7 @@ function authenticate_user($person)
      */
          $person = is_authenticated($person);
 
-    if (!$person->is_auth()) {
+    if (!$person->isAuth()) {
         /* assert SSO
          * Make sure the feide-login is OK.
          */
@@ -103,8 +103,8 @@ function is_authenticated($person = null) {
 		}
 	}
 
-	if ($person->is_fed_auth()) {
-			add_attributes($person);
+	if ($person->isAuth()) {
+		add_attributes($person);
 	}
 
 	return $person;
@@ -180,7 +180,7 @@ function show_sso_debug($person) {
         }
     $config  = _get_config();
     $session = _get_session();
-    if($person->is_auth()) {
+    if($person->isAuth()) {
         $attributes = _get_attributes();
         $time_left = $session->remainingTime();
         $hours_left = (int)($time_left / 3600);

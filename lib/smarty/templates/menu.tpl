@@ -44,7 +44,7 @@
 
 
 <ul>
-	{if !$person->is_auth()}
+	{if !$person->isAuth()}
 	<li><a href="index.php?start_login=yes">Login</a></li>
 	{else}
 	<li><a href="{$logoutUrl}">Log out</a></li>

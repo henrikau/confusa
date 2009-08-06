@@ -128,13 +128,18 @@ class Person{
     public function is_fed_auth() {
         return $this->fed_auth;
         }
-
-    public function is_auth() {
-	    return $this->is_fed_auth();
-        }
     public function fed_auth($auth = true) {
         $this->fed_auth = $auth;
         }
+
+    /**
+     * isAuth - return a boolean value indicating if the person is AuthN
+     *
+     * @return boolean (true when person *is* authenticated)
+     */
+    public function isAuth() {
+	    return $this->fed_auth;
+    }
 
 
     public function set_name($given_name) {
@@ -288,7 +293,7 @@ class Person{
      */
     public function is_admin()
     {
-	    if (!$this->is_auth()) {
+	    if (!$this->isAuth()) {
 		    return false;
         }
 	    return (int)$this->get_admin_status() != NORMAL_USER;
@@ -296,7 +301,7 @@ class Person{
 
     public function is_nren_admin()
     {	    	
-	    if (!$this->is_auth()) {
+	    if (!$this->isAuth()) {
 		    return false;
         }
 
@@ -313,7 +318,7 @@ class Person{
 
     public function is_subscriber_admin()
     {
-	    if (!$this->is_auth()) {
+	    if (!$this->isAuth()) {
 		    return false;
         }
 
@@ -322,7 +327,7 @@ class Person{
 
     public function is_subscriber_subadmin()
     {
-	    if (!$this->is_auth()) {
+	    if (!$this->isAuth()) {
 		    return false;
         }
 

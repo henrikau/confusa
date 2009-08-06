@@ -76,14 +76,14 @@ class Framework {
 
 	public function authenticate() {
 		is_authenticated($this->person);
-		if (!$this->person->is_auth()) {
+		if (!$this->person->isAuth()) {
 			/* if login, trigger SAML-redirect first */
 			if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
 				_assert_sso($this->person);
 			}
 		}
 		$uname = "anonymous";
-		if($this->person->is_auth())
+		if($this->person->isAuth())
 		$uname = $this->person->get_valid_cn();
 		return $this->person;
 	}
@@ -134,7 +134,7 @@ class Framework {
 	private function user_rendering()
 	{
 		/* check to see if the user wants to log in, if so, start login-procedure */
-		if (!$this->person->is_auth()) {
+		if (!$this->person->isAuth()) {
 			if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
 				authenticate_user($this->person);
 			}
