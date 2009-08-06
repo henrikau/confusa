@@ -50,7 +50,7 @@ class CP_Stylist extends FW_Content_Page
 					/* the CSS will not be inserted into the DB or executed in another way.
 					* Hence do not sanitize it. It will contain 'dangerous' string portions,
 					* such as { : ' anyways, so it would be hard to insert it into the DB properly*/
-					$new_css = $_POST['css_content'];
+					$new_css = Input::sanitizeCSS($_POST['css_content']);
 					$this->updateNRENCSS($this->person->getNREN(), $new_css);
 				}
 				break;
