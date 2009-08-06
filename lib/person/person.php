@@ -158,14 +158,19 @@ class Person{
 	    }
     }
 
-    public function get_name() { return $this->given_name; }
+    /**
+     * getName - return the full name for the person.
+     *
+     * @return : full, given name, for the person.
+     */
+    public function getName() { return $this->given_name; }
 
     /* "Safe" function
      *
      * THis returns a 'safe representation' of the person's name.
      * As a user's name can contain different special characters, whitespace and
      * other nonsense, we remove it here, sothat elements that require *very*
-     * sanitized input, can call this instead of the original get_name()
+     * sanitized input, can call this instead of the original getName()
      */
     public function get_safe_name() {
 	    /* remove non-printable characters, or, only allow printable characters */
