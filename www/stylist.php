@@ -36,28 +36,28 @@ class CP_Stylist extends FW_Content_Page
 			switch(htmlentities($_POST['stylist_operation'])) {
 			case 'change_help_text':
 				$new_text = Input::sanitize($_POST['help_text']);
-				$this->updateNRENHelpText($this->person->get_nren(), $new_text);
+				$this->updateNRENHelpText($this->person->getNREN(), $new_text);
 				break;
 			case 'change_about_text':
 				$new_text = Input::sanitize($_POST['about_text']);
-				$this->updateNRENAboutText($this->person->get_nren(), $new_text);
+				$this->updateNRENAboutText($this->person->getNREN(), $new_text);
 				break;
 			case 'change_css':
 				if (isset($_POST['reset'])) {
-					$this->resetNRENCSS($this->person->get_nren());
+					$this->resetNRENCSS($this->person->getNREN());
 				} else {
 					/* the CSS will not be inserted into the DB or executed in another way.
 					* Hence do not sanitize it. It will contain 'dangerous' string portions,
 					* such as { : ' anyways, so it would be hard to insert it into the DB properly*/
 					$new_css = $_POST['css_content'];
-					$this->updateNRENCSS($this->person->get_nren(), $new_css);
+					$this->updateNRENCSS($this->person->getNREN(), $new_css);
 				}
 				break;
 			case 'upload_logo':
 				if (isset($_FILES['nren_logo']['name'])) {
 					/* only allow image uploads */
 					if (eregi('image/', $_FILES['nren_logo']['type'])) {
-						$this->uploadLogo('nren_logo', $this->person->get_nren());
+						$this->uploadLogo('nren_logo', $this->person->getNREN());
 					}
 				}
 				break;
@@ -83,7 +83,7 @@ class CP_Stylist extends FW_Content_Page
 		if (isset($_GET['show'])) {
 			switch(htmlentities($_GET['show'])) {
 			case 'text':
-				$texts = $this->getNRENTexts($this->person->get_nren());
+				$texts = $this->getNRENTexts($this->person->getNREN());
 
 				if ($texts != NULL) {
 					$this->tpl->assign('help_text', $texts[0]);
@@ -94,7 +94,7 @@ class CP_Stylist extends FW_Content_Page
 				break;
 			case 'css':
 				$this->tpl->assign('edit_css', true);
-				$css_string = $this->fetchNRENCSS($this->person->get_nren());
+				$css_string = $this->fetchNRENCSS($this->person->getNREN());
 
 				if (!is_null($css_string)) {
 					$this->tpl->assign('css_content', $css_string);
@@ -103,7 +103,7 @@ class CP_Stylist extends FW_Content_Page
 				break;
 			case 'logo':
 				$this->tpl->assign('edit_logo', true);
-				$logo = Framework::get_logo_for_nren($this->person->get_nren());
+				$logo = Framework::get_logo_for_nren($this->person->getNREN());
 				$this->tpl->assign('logo', $logo);
 				$this->tpl->assign('width', $this->allowed_width);
 				$this->tpl->assign('height', $this->allowed_height);

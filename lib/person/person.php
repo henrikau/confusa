@@ -347,11 +347,43 @@ class Person{
 	    return $this->session->getIdP();
     }
 
-    public function set_nren($nren) {
-	    if (isset($nren))
-		    $this->nren = $nren;
+
+    /**
+     * setNREN - set the National Research and Education Network for the user.
+     *
+     * the NREN is found via the IdP. One user can only belong to one IdP and
+     * one IdP can only belong to one NREN.
+     *
+     *			NREN
+     *                _/  | \_
+     *            ___/    |   \__
+     *         __/        |      \__
+     *        /           |         \
+     *   IdP(A)		IdP(B) ...  IdP(n)
+     *          ______/  |  \_______
+     *         /         |          \
+     *   User_(a)      User_(b) .... User_(m)
+     *
+     * The nren will be stored as lowercase only to make sure things are
+     * consistent all the way through confusa.
+     *
+     * @nren : the NREN the user ultimately belongs to.
+     */
+    public function setNREN($nren) {
+	    if (isset($nren)) {
+		    $this->nren = strtolower(htmlentities($nren));
+	    }
     }
-    public function get_nren() { return $this->nren; }
+
+    /**
+     * getNREN - return the NREN
+     *
+     * @return string with the name of the nren
+     */
+    public function getNREN() 
+    {
+	    return $this->nren;
+    }
 
 
     /**

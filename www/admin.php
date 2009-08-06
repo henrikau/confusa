@@ -43,7 +43,7 @@ class CP_Admin extends FW_Content_Page
 					break;
 				case 'add_nren_admin':
 					$admin = Input::sanitize($_POST['nren_admin']);
-					$nren = $this->person->get_nren();
+					$nren = $this->person->getNREN();
 					$this->addAdmin($admin,2,NULL,$nren);
 					break;
 				case 'delete_subs_admin':
@@ -109,8 +109,8 @@ class CP_Admin extends FW_Content_Page
 		}
 
 		if ($this->person->is_nren_admin()) { /* NREN admin display */
-			$admins=$this->getNRENAdmins($this->person->get_nren());
-			$subscribers=$this->getSubscribers($this->person->get_nren());
+			$admins=$this->getNRENAdmins($this->person->getNREN());
+			$subscribers=$this->getSubscribers($this->person->getNREN());
 			$current_subscriber = "";
 
 			if (isset($_POST['subscriber'])) {
@@ -126,7 +126,7 @@ class CP_Admin extends FW_Content_Page
 			}
 
 			$this->tpl->assign('nren_admins', $admins);
-			$this->tpl->assign('nren', $this->person->get_nren());
+			$this->tpl->assign('nren', $this->person->getNREN());
 			$this->tpl->assign('subscribers', $subscribers);
 
 		} else if ($this->person->is_subscriber_admin()) { /* subscriber admin display */

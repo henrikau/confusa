@@ -121,8 +121,8 @@ class Framework {
 		$this->tpl->assign('messages', self::$messages);
 
 		/* get custom logo if there is any */
-		$logo = Framework::get_logo_for_nren($this->person->get_nren());
-		$css = Framework::get_css_for_nren($this->person->get_nren());
+		$logo = Framework::get_logo_for_nren($this->person->getNREN());
+		$css = Framework::get_css_for_nren($this->person->getNREN());
 		$this->tpl->assign('logo', $logo);
 		$this->tpl->assign('css',$css);
 		$this->tpl->display('site.tpl');
