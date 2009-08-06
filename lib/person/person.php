@@ -125,13 +125,6 @@ class Person{
 	    return $dn;
     }
 
-    public function is_fed_auth() {
-        return $this->isAuthenticated;
-        }
-    public function fed_auth($auth = true) {
-        $this->isAuthenticated = $auth;
-        }
-
     /**
      * isAuth - return a boolean value indicating if the person is AuthN
      *
@@ -141,6 +134,14 @@ class Person{
 	    return $this->isAuthenticated;
     }
 
+    /**
+     * setAuth - set the authN status of the person
+     *
+     * @auth: a boolean describing the AuthN-status.
+     */
+    public function setAuth($auth = true) {
+	    $this->isAuthenticated = $auth;
+    }
 
     public function set_name($given_name) {
 	    if (isset($given_name)) {
