@@ -1,6 +1,6 @@
 <h2>Help</h2>
 
-{if $person->is_auth()}
+{if $person->isAuth()}
 {$nren_help_text}
 {/if}
 

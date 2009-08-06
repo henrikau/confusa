@@ -8,7 +8,7 @@ require_once 'person.php';
 class KeyScript {
 	private $person;
 	function __construct($pers) {
-		if (isset($pers) && $pers->is_auth()) {
+		if (isset($pers) && $pers->isAuth()) {
 			$this->person = $pers;
 		}
 	}

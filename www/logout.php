@@ -14,7 +14,7 @@ class Logout extends FW_Content_Page
 			require_once 'confusa_auth.php';
 			deauthenticate_user($this->person);
 		}
-		if (!$this->person || !$this->person->is_auth()) {
+		if (!$this->person || !$this->person->isAuth()) {
 			echo "<H2>You have been logged out of Confusa</H2>\n";
 			echo "Return to <A HREF=\"index.php\">start</A><BR>\n";
 		}

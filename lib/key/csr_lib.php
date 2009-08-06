@@ -132,7 +132,7 @@ function get_csr_from_db($person, $auth_key)
 
 function delete_csr_from_db($person, $auth_key)
 {
-	if (!$person->is_auth())
+	if (!$person->isAuth())
 		return false;
 
 	/* Verify that the CSR is present */
