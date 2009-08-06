@@ -137,7 +137,8 @@ class Person{
      *
      * @return boolean (true when person *is* authenticated)
      */
-    public function isAuth() {
+    public function isAuth()
+    {
 	    return $this->isAuthenticated;
     }
 
@@ -146,7 +147,8 @@ class Person{
      *
      * @auth: a boolean describing the AuthN-status.
      */
-    public function setAuth($auth = true) {
+    public function setAuth($auth = true)
+    {
 	    $this->isAuthenticated = $auth;
     }
 
@@ -203,7 +205,8 @@ class Person{
      *
      * @return: a X.509 printable /CN attribute
      */
-    public function getX509ValidCN() {
+    public function getX509ValidCN()
+    {
 	    $res = "";
 	    if (isset($this->given_name)) {
 		    $tmp_name = $this->given_name;
@@ -218,7 +221,8 @@ class Person{
      *
      * @email : the (new) email address for the person
      */
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         if (isset($email)) {
             $this->email = htmlentities($email);
         }
