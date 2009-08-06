@@ -76,7 +76,7 @@ function is_authenticated($person = null) {
 		$person->setEPPN('ola.nordmann@norge.no');
 		$person->setEmail('ola.nordmann@norge.no');
 		$person->set_country('NO');
-		$person->set_orgname('Test');
+		$person->setSubscriberOrgName('Test');
 		$person->set_idp('Test');
 		$person->set_nren('test');
 		$person->set_entitlement('Test');
@@ -134,7 +134,7 @@ function add_attributes($person)
 	     $person->setEPPN($attributes['eduPersonPrincipalName'][0]);
 	     $person->setEmail($attributes['mail'][0]);
 	     $person->set_country($attributes['country'][0]);
-	     $person->set_orgname($attributes['organization'][0]);
+	     $person->setSubscriberOrgName($attributes['organization'][0]);
 	     $person->set_idp(_get_session()->getIdP());
 	     $person->set_entitlement($attributes['eduPersonEntitlement'][0]);
 	     $person->set_nren($attributes['nren'][0]);

@@ -45,7 +45,7 @@ class CertManager_Standalone extends CertManager
 					array($cert,
 					      $auth_key,
 					      $this->person->getX509ValidCN(),
-					      $this->person->get_orgname()));
+					      $this->person->getSubscriberOrgName()));
 
 	    } catch (DBStatementException $dbse) {
 		    $error_key = create_pw(8);

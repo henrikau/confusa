@@ -162,7 +162,7 @@ class RevokeCertificate extends FW_Content_Page
 	{
 		$common_name = "%" . $this->sanitize($common_name) . "%";
 
-		$certs = $this->certManager->get_cert_list_for_persons($common_name, $this->person->get_orgname());
+		$certs = $this->certManager->get_cert_list_for_persons($common_name, $this->person->getSubscriberOrgName());
 
 		if (count($certs) > 0) {
 			/* get the certificate owner/order number pairs into a ordering that
@@ -297,7 +297,7 @@ class RevokeCertificate extends FW_Content_Page
 		foreach($eppn_list as $eppn) {
 			$eppn = $this->sanitize_eppn($eppn);
 			$eppn = "%" . $eppn . "%";
-			$eppn_certs = $this->certManager->get_cert_list_for_persons($eppn, $this->person->get_orgname());
+			$eppn_certs = $this->certManager->get_cert_list_for_persons($eppn, $this->person->getSubscriberOrgName());
 			$certs = array_merge($certs, $eppn_certs);
 		}
 

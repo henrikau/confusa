@@ -53,10 +53,10 @@ class CertManager_Online extends CertManager
               "FROM nren_account_map_view a, nren_subscriber_view s " .
               "WHERE s.subscriber = ? AND s.nren = a.nren";
 
-        $org = $this->person->get_orgname();
+        $org = $this->person->getSubscriberOrgName();
         Logger::log_event(LOG_INFO, "Getting the remote-CA login " .
                           "credentials for organization " .
-                          $this->person->get_orgname()
+                          $this->person->getSubscriberOrgName()
                 );
         $res = MDB2Wrapper::execute($login_cred_query, array('text'),
                                     array($org)
@@ -427,7 +427,7 @@ class CertManager_Online extends CertManager
         $postfields_sign_req["subject_commonName_1"] = $this->TEST_CN_PREFIX .
             $this->person->getX509ValidCN();
         $postfields_sign_req["subject_organizationName_2"] = $this->TEST_O_PREFIX .
-            $this->person->get_orgname();
+            $this->person->getSubscriberOrgName();
         $postfields_sign_req["subject_countryName_3"] = $this->person->get_country();
         $postfields_sign_req["subject_domainComponent_4"] = "tcs";
         $postfields_sign_req["subject_domainComponent_5"] = "terena";

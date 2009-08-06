@@ -72,7 +72,7 @@ class CP_Admin extends FW_Content_Page
 					break;
 				case 'add_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
-					$subscriber = $this->person->get_orgname();
+					$subscriber = $this->person->getSubscriberOrgName();
 					$this->addAdmin($admin,1,$subscriber,NULL);
 					break;
 				case 'delete_subs_sub_admin':
@@ -81,7 +81,7 @@ class CP_Admin extends FW_Content_Page
 					break;
 				case 'add_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
-					$subscriber = $this->person->get_orgname();
+					$subscriber = $this->person->getSubscriberOrgName();
 					$this->addAdmin($admin,0,$subscriber,NULL);
 					break;
 				default:
@@ -130,12 +130,12 @@ class CP_Admin extends FW_Content_Page
 			$this->tpl->assign('subscribers', $subscribers);
 
 		} else if ($this->person->is_subscriber_admin()) { /* subscriber admin display */
-			$subscriber = $this->person->get_orgname();
+			$subscriber = $this->person->getSubscriberOrgName();
 			$subscriber_admins = $this->getSubscriberAdmins($subscriber, 1);
 			$this->tpl->assign('subscriber', $subscriber);
 			$this->tpl->assign('subscriber_admins', $subscriber_admins);
 
-			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->get_orgname(), 0);
+			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->getSubscriberOrgName(), 0);
 			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
 
 		}
