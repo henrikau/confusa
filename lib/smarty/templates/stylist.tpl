@@ -128,6 +128,8 @@
 	</tr>
 	</table>
 	</form>
+
+	Allowed filename extensions: <i>{$extensions}</i>
 	<div class="spacer"></div>
 	</fieldset>
   {/if}
