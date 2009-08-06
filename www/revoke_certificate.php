@@ -73,13 +73,13 @@ class RevokeCertificate extends FW_Content_Page
 
 	public function process()
 	{
-		if ($this->person->is_nren_admin() && $this->person->in_admin_mode()) {
+		if ($this->person->is_nren_admin() && $this->person->inAdminMode()) {
 			$this->tpl->assign('reason', 'You are not allowed to revoke certificates, your clearance is too high.');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
 		}
 
-		if ($this->person->in_admin_mode()) {
+		if ($this->person->inAdminMode()) {
 			$this->admin_revoke();
 		} else {
 			$this->normal_revoke();
