@@ -255,13 +255,40 @@ class Person{
     }
 
 
-    public function set_entitlement($entitlement) {
-      if (isset($entitlement)) {
-        $this->entitlement = $entitlement;
-      }
+    /**
+     * setEduPersonEntitlement - store the entitlement
+     *
+     * The entitlement is set by the IdP for the user, and we use this to test
+     * for admins. This is not a sufficicent conditions, but is is a necessary
+     * one.
+     *
+     * @entitlement: the entitlement for the person
+     *
+     * TODO:	how to handle the case when several entitlement-attributes are
+     *		set.
+     */
+    public function setEduPersonEntitlement($entitlement)
+    {
+	    if (isset($entitlement)) {
+		    if (is_array($entitlement)) {
+			    $this->entitlement = $entitlement[0];
+		    } else {
+			    $this->entitlement = $entitlement;
+		    }
+	    }
     }
 
-    public function get_entitlement() { return $this->entitlement; }
+    /**
+     * getEduPersonEntitlement - return the entitlement.
+     *
+     * This results the (relevant) entitlement(s).
+     *
+     * @return string with the entitlement.
+     */
+    public function getEduPersonEntitlement()
+    {
+	    return $this->entitlement;
+    }
 
     public function get_keyholder() { return $this->keyholder; }
 
