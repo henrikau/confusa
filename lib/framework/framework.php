@@ -84,7 +84,7 @@ class Framework {
 		}
 		$uname = "anonymous";
 		if($this->person->isAuth())
-		$uname = $this->person->get_valid_cn();
+		$uname = $this->person->getX509ValidCN();
 		return $this->person;
 	}
 

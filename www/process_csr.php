@@ -101,9 +101,9 @@ final class ProcessCsr extends FW_Content_Page
 
 					MDB2Wrapper::update($query,
 							    array('text', 'text', 'text', 'text'),
-							    array($csr, $ip, $this->person->get_valid_cn(), $authvar));
+							    array($csr, $ip, $this->person->getX509ValidCN(), $authvar));
 
-					$logmsg  = __FILE__ . " Inserted new CSR from $ip (" . $this->person->get_valid_cn();
+					$logmsg  = __FILE__ . " Inserted new CSR from $ip (" . $this->person->getX509ValidCN();
 					$logmsg .=") with hash " . pubkey_hash($csr, true);
 					Logger::log_event(LOG_INFO, $logmsg);
 				}
@@ -149,7 +149,7 @@ final class ProcessCsr extends FW_Content_Page
 				Framework::error_output($msg);
 				Logger::log_event(LOG_ALERT, "Several identical CSRs (" .
 						  $auth_token . ") exists in the database for user " .
-						  $this->person->get_valid_cn());
+						  $this->person->getX509ValidCN());
 				return false;
 			}	
 		}
@@ -170,7 +170,7 @@ final class ProcessCsr extends FW_Content_Page
 			$csr = get_csr_from_db($this->person, $authToken);
 		} catch (ConfusaGenException $e) {
 			Framework::error_output("Too many hits. Database incosistency.");
-			Logger::log_event(LOG_ALERT, $this->person->get_valid_cn() .
+			Logger::log_event(LOG_ALERT, $this->person->getX509ValidCN() .
 					  " tried to find CSR with key $authToken which resulted in multiple hits");
 			return false;
 		} catch (CSRNotFoundException $csrnfe) {
@@ -229,7 +229,7 @@ final class ProcessCsr extends FW_Content_Page
 		$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip FROM csr_cache WHERE common_name=? ORDER BY uploaded_date DESC";
 		$res = MDB2Wrapper::execute($query,
 					    array('text'),
-					    $this->person->get_valid_cn());
+					    $this->person->getX509ValidCN());
 		/* Format the IPs */
 		foreach ($res as $key => $value) {
 			$res[$key]['from_ip'] = format_ip($value['from_ip'], true);

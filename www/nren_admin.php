@@ -72,7 +72,7 @@ class CP_NREN_Admin extends FW_Content_Page
 	public function process()
 	{
 		if (!$this->person->is_nren_admin()) {
-			Logger::log_event(LOG_NOTICE, "User " . $this->person->get_valid_cn() . " tried to access the NREN-area");
+			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " tried to access the NREN-area");
 			$this->tpl->assign('reason', 'You are not an NREN-admin');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;

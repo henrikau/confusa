@@ -95,6 +95,6 @@ immediately see a result entry *}
     {/if}
 {else}
     <div class="spacer"></div>
-    Found no valid certificates to revoke for DN<br /><b>{$person->get_valid_cn()}</b>!
+    Found no valid certificates to revoke for DN<br /><b>{$person->getX509ValidCN()}</b>!
 {/if}
 

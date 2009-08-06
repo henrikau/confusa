@@ -7,7 +7,7 @@
  <table class="small">
 	<tr><td><b>Name:</b></td><td>{$person->getName()}</td></tr>
 	<tr><td><b>eduPersonPrincipalName:</b></td><td>{$person->get_common_name()}</td></tr>
-	<tr><td><b>CommonName in DN</b></td><td>{$person->get_valid_cn()}</td></tr>
+	<tr><td><b>CommonName in DN</b></td><td>{$person->getX509ValidCN()}</td></tr>
 	<tr><td><b>email:</b></td><td>{$person->get_email()}</td></tr>
 	<tr><td><b>Country:</b></td><td>{$person->get_country()}</td></tr>
 	<tr><td><b>OrganizationalName:</b></td><td>{$person->get_orgname()}</td></tr>
