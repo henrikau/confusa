@@ -249,7 +249,7 @@ class CP_Stylist extends FW_Content_Page
 			$css_string = fread($fd, filesize($main_css_path));
 			fclose($fd);
 
-			return $css_string;
+			return Input::sanitizeCSS($css_string);
 		}
 
 		return NULL;
@@ -283,14 +283,19 @@ class CP_Stylist extends FW_Content_Page
 			return;
 		}
 
+		if (ini_get('magic_quotes_gpc') === "1") {
+			/* no slashes should be introduced into the content */
+			$content = stripslashes($content);
+		}
+
 		$success = fwrite($fd, $content);
 
 		if ($success === FALSE) {
 			Framework::error_output("Could not write to custom CSS file! Please contact an administrator!");
-			return;
 		}
 
 		fclose($fd);
+		return;
 	}
 
 	/*

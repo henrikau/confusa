@@ -69,7 +69,9 @@
 	<legend>Custom NREN-CSS</legend>
 	Edit your NREN's custom-CSS. This will affect how your users will see the page
 	once they are logged in. Initially, Confusa's main CSS is shown in this field,
-	which you may adapt to fit your needs.
+	which you may adapt to fit your needs. All CSS properties except url(...) are
+	supported.
+
 	<div class="spacer"></div>
 
 	<form action="" method="POST">
