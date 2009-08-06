@@ -63,5 +63,17 @@ class Input
 		$output = mysql_real_escape_string($input);
 		return $output;
 	}
+
+		/* Remove all url properties, since they can be abused for XSS attacks
+		 * Attack vectors: javascript: links in IE (sic!)
+		 * 				   -moz-binding: in Firefox
+		 *
+		 * more patterns: http://ha.ckers.org/xss.html
+		 */
+	static function sanitizeCSS($input)
+	{
+		$output = preg_replace('/(\n)?(.)*(url)\((.)*(;)?/','',$input);
+		return $output;
+	}
 }
 ?>
