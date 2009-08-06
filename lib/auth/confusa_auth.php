@@ -72,7 +72,7 @@ function is_authenticated($person = null) {
 	if(Config::get_config('auth_bypass'))
 	{
 		// Set some bogus attributes
-		$person->set_name('Ola Nordmann');
+		$person->setName('Ola Nordmann');
 		$person->set_common_name('ola.nordmann@norge.no');
 		$person->set_email('ola.nordmann@norge.no');
 		$person->set_country('NO');
@@ -130,7 +130,7 @@ function add_attributes($person)
           $person->setAuth(false);
      }
      else {
-	     $person->set_name($attributes['cn'][0]);
+	     $person->setName($attributes['cn'][0]);
 	     $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
 	     $person->set_email($attributes['mail'][0]);
 	     $person->set_country($attributes['country'][0]);

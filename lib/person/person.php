@@ -143,12 +143,20 @@ class Person{
 	    $this->isAuthenticated = $auth;
     }
 
-    public function set_name($given_name) {
-	    if (isset($given_name)) {
-		    $this->given_name = trim(htmlentities($given_name));
-				
+    /**
+     * setName - set the (full) name for the user.
+     *
+     * A full name, is the name on the form 'John Doe'
+     *
+     *		http://rnd.feide.no/content/cn
+     *
+     * @given_name : the full name of the person.
+     */
+    public function setName($cn) {
+	    if (isset($cn)) {
+		    $this->given_name = trim(htmlentities($cn));
 	    }
-        }
+    }
 
     public function get_name() { return $this->given_name; }
 
