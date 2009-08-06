@@ -128,7 +128,7 @@ class Person{
      */
     function getX509SubjectDN()
     {
-	    $dn = "/C=" . $this->get_country() . "/O=" . $this->getSubscriberOrgName() . "/CN=" . $this->getX509ValidCN();
+	    $dn = "/C=" . $this->getCountry() . "/O=" . $this->getSubscriberOrgName() . "/CN=" . $this->getX509ValidCN();
 	    return $dn;
     }
 
@@ -290,15 +290,32 @@ class Person{
 	    return $this->entitlement;
     }
 
-    public function get_keyholder() { return $this->keyholder; }
 
-    public function set_country($c)
-         {
-              if (isset($c)) {
-                   $this->country = htmlentities($c);
-               }
-         }
-    public function get_country() { return $this->country; }
+    /**
+     * setCountry() - set the country the user belongs to.
+     *
+     * This is actually a potential problem, as this country is the country
+     * where the *NREN* is located. As most federations are national (hence the
+     * name), it should be accurate most of the time.
+     *
+     * @country : the country of the NREN (and in effect, person)
+     */
+    public function setCountry($country)
+    {
+	    if (isset($country)) {
+		    $this->country = strtoupper(substr(htmlentities($country),0, 2));
+	    }
+    }
+
+    /**
+     * getCountry() - return the country for the user
+     *
+     * @return string with the two-letter
+     */
+    public function getCountry()
+    {
+	    return $this->country;
+    }
 
 
     /* setIdP - set the IdP for the person
