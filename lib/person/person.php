@@ -408,7 +408,7 @@ class Person{
     public function getMode()
     {
 	    /* If user is not admin, the mode is NORMAL_MODE either way */
-	    if (!$this->is_admin()) {
+	    if (!$this->isAdmin()) {
 		    return NORMAL_MODE;
 	    }
 	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",
@@ -458,7 +458,7 @@ class Person{
     {
 	    $new = (int)$new_mode;
 	    if ($new == NORMAL_MODE || $new == ADMIN_MODE) {
-		    if ($this->is_admin()) {
+		    if ($this->isAdmin()) {
 			    Logger::log_event(LOG_DEBUG, "Changing mode (-> $new_mode) for " . $this->getEPPN());
 			    MDB2Wrapper::update("UPDATE admins SET last_mode=? WHERE admin=?",
 						array('text', 'text'),
@@ -467,18 +467,21 @@ class Person{
 	    }
     }
 
-    /* is_admin()
+    /**
+     * isAadmin() - test to see if the user is an admin (of any kind)
      *
      * Test to see if the user is part of the admin-crowd. This will allow the
      * user to add news entries.
+     *
+     * @return boolean, true if person has admin-privileges in the Confusa instance.
      */
-    public function is_admin()
+    public function isAdmin()
     {
 	    if (!$this->isAuth()) {
 		    return false;
-        }
+	    }
 	    return (int)$this->get_admin_status() != NORMAL_USER;
-    } /* end function is_admin() */
+    } /* end function isAdmin() */
 
     public function is_nren_admin()
     {	    	
