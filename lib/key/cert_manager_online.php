@@ -428,7 +428,7 @@ class CertManager_Online extends CertManager
             $this->person->getX509ValidCN();
         $postfields_sign_req["subject_organizationName_2"] = $this->TEST_O_PREFIX .
             $this->person->getSubscriberOrgName();
-        $postfields_sign_req["subject_countryName_3"] = $this->person->get_country();
+        $postfields_sign_req["subject_countryName_3"] = $this->person->getCountry();
         $postfields_sign_req["subject_domainComponent_4"] = "tcs";
         $postfields_sign_req["subject_domainComponent_5"] = "terena";
         $postfields_sign_req["subject_domainComponent_6"] = "org";
