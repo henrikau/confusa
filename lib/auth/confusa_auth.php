@@ -78,7 +78,7 @@ function is_authenticated($person = null) {
 		$person->setCountry('NO');
 		$person->setSubscriberOrgName('Test');
 		$person->setIdP('test-idp');
-		$person->set_nren('test');
+		$person->setNREN('TEST-NREN');
 		$person->setEduPersonEntitlement('confusaAdmin');
 		$person->setAuth(true);
 		
@@ -136,7 +136,7 @@ function add_attributes($person)
 	     $person->setCountry($attributes['country'][0]);
 	     $person->setSubscriberOrgName($attributes['organization'][0]);
 	     $person->setEduPersonEntitlement($attributes['eduPersonEntitlement'][0]);
-	     $person->set_nren($attributes['nren'][0]);
+	     $person->setNREN($attributes['nren'][0]);
 	     $person->setAuth(true);
      }
 } /* end add_attributes() */

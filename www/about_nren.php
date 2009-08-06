@@ -13,9 +13,9 @@ class About_NREN extends FW_Content_Page
 
 	public function process()
 	{
-		$logo = Framework::get_logo_for_nren($this->person->get_nren());
+		$logo = Framework::get_logo_for_nren($this->person->getNREN());
 		$this->tpl->assign('logo', $logo);
-		$about_text = $this->getAboutTextForNREN($this->person->get_nren());
+		$about_text = $this->getAboutTextForNREN($this->person->getNREN());
 		$this->tpl->assign('text_info', $about_text);
 		$this->tpl->assign('content', $this->tpl->fetch('about_nren.tpl'));
 	}
