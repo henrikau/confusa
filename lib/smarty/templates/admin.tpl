@@ -24,7 +24,7 @@
 		marked with an asterisk (*). NREN admins have many privileges:
 	</p>
 	<br />
-		<ul>
+		<ul class="info">
 		<li>Add/delete other NREN admins.</li>
 		<li>Add/delete subscriber admins.</li>
 		<li>Give institutions within the NREN's domain access to Confusa</li>
@@ -91,7 +91,7 @@
 		Allows you to add/delete Subscriber admins. Subscriber admins may:
 		</p>
 		<br />
-		<ul>
+		<ul class="info">
 		<li>revoke user certificates</li>
 		<li>appoint other subscriber admins.</li>
 		</ul>
@@ -164,7 +164,7 @@
 	following privileges:
 	</p>
 	<br />
-	<ul>
+	<ul class="info">
 	<li>Revoke certificates of users of their own institution</li>
 	<li>Add/delete other subscriber admins and subscriber-subadmins</li>
 	</ul>
@@ -228,7 +228,7 @@ Add/delete subscriber-subadmins for your institution '{$subscriber}'.
 Subscriber sub-admins have the following privileges:
 </p>
 <br />
-	<ul>
+	<ul class="info">
 	<li>Revoke certificates of users of their own institution</li>
 	</ul>
 <br />
