@@ -112,6 +112,12 @@ div.spacer
   height: 12px;
 }
 
+ul.info {
+    padding-left: inherit;
+    width: 80%;
+    font-style: italic;
+}
+
 /* powered by http://mierendo.com/software/rounded_css_boxes/ */
 .confusa_corners_tl, .confusa_corners_t, .confusa_corners_tr, .confusa_corners_l, .confusa_corners_r, .confusa_corners_bl, .confusa_corners_b, .confusa_corners_br, .confusa_corners {
     width: auto;
