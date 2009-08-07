@@ -84,6 +84,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		$this->tpl->assign_by_ref('nren'	, $this);
 		$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
 		$this->tpl->assign('account_list'	, $this->getAccountInfo());
+		$this->tpl->assign('self_subscriber'	, $this->person->getSubscriberOrgName());
 
 		/* render page */
 		$this->tpl->assign('content', $this->tpl->fetch('nren_admin.tpl'));
@@ -528,6 +529,7 @@ class CP_NREN_Admin extends FW_Content_Page
 	public function format_subscr_on_state($subscriber, $state)
 	{
 		$res = $subscriber;
+
 		switch($state) {
 		case unsubscribed:
 			$res = "<FONT COLOR=\"GRAY\"><B>$res</B></FONT>";
@@ -555,8 +557,17 @@ class CP_NREN_Admin extends FW_Content_Page
 		$res .= "<INPUT TYPE=\"hidden\" NAME=\"". $key . "\" VALUE=\"delete\">\n";
 		$res .= "<INPUT TYPE=\"hidden\" NAME=\"name\" VALUE=\"" . $target . "\" />\n";
 		$res .= "<INPUT TYPE=\"hidden\" NAME=\"state\" VALUE=\"\" />\n"; /* don't need state to delete */
+
 		$res .= "<INPUT TYPE=\"IMAGE\" NAME=\"delete\" ";
-		$res .= "       onclick=\"return confirm('Delete entry? (" . $target . ") ')\" ";
+
+		/* warning upon attempted self-deletion */
+		if ($target === $this->person->getSubscriberOrgName()) {
+			$res .= "onclick=\"return confirm('You are about to delete your OWN INSTITUTION (" . $target . ")!\\n";
+			$res .= "          Are you sure about that?')\"";
+		} else {
+			$res .= "onclick=\"return confirm('Delete entry? (" . $target . ") ')\" ";
+		}
+
 		$res .= "                 value=\"delete\" src=\"graphics/delete.png\"";
 		$res .= "                 alt=\"delete\" />\n";
 		$res .= "</FORM>\n";
