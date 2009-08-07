@@ -155,7 +155,7 @@ class CP_NREN_Admin extends FW_Content_Page
 	private function addSubscriber($name, $state)
 	{
 		$org_state	= Input::sanitize($state);
-		$org_name	= Input::sanitize($name);
+		$org_name	= strtolower(Input::sanitize($name));
 		$nren		= $this->person->getNREN();
 
 		$select_nrenid		= "(SELECT nren_id FROM nrens WHERE name=?)";
