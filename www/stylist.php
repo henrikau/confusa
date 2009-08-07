@@ -350,7 +350,12 @@ class CP_Stylist extends FW_Content_Page
 				return;
 			}
 
-			list($width, $height) = getimagesize($_FILES[$filename]['tmp_name']);
+			list($width, $height, $type) = getimagesize($_FILES[$filename]['tmp_name']);
+
+			if (is_null($type) || $type < 0) {
+				Framework::error_output("What you have provided doesn't seem to be an image!");
+				return;
+			}
 
 			if ($width > $this->allowed_width) {
 				Framework::error_output("The width of your image is $width pixel, greater than " .
