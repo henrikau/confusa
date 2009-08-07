@@ -115,31 +115,31 @@ div.spacer
         to change distance to content/text scroll to class ".confusa_corners" and change the padding
     */
     background-color: #FFFFFF;
-    background-image: url("graphics/confusa_corners_border.png");
+    background-image: url("../graphics/confusa_corners_border.png");
     background-repeat: repeat-x;
     background-position: top;
 }
 .confusa_corners_tl {
     height: 100%;
-    background-image: url("graphics/confusa_corners_topleft.png");
+    background-image: url("../graphics/confusa_corners_topleft.png");
     background-repeat: no-repeat;
     background-position: left top;
 }
 .confusa_corners_tr {
     height: 100%;
-    background-image: url("graphics/confusa_corners_topright.png");
+    background-image: url("../graphics/confusa_corners_topright.png");
     background-repeat: no-repeat;
     background-position: right top;
 }
 .confusa_corners_bl {
     height: 100%;
-    background-image: url("graphics/confusa_corners_bottomleft.png");
+    background-image: url("../graphics/confusa_corners_bottomleft.png");
     background-repeat: no-repeat;
     background-position: left bottom;
 }
 .confusa_corners_br {
     height: 100%;
-    background-image: url("graphics/confusa_corners_bottomright.png");
+    background-image: url("../graphics/confusa_corners_bottomright.png");
     background-repeat: no-repeat;
     background-position: right bottom;
 }
@@ -151,19 +151,19 @@ div.spacer
 
 .confusa_corners_l {
     height: 100%;
-    background-image: url("graphics/confusa_corners_border.png");
+    background-image: url("../graphics/confusa_corners_border.png");
     background-repeat: repeat-y;
     background-position: left;
 }
 .confusa_corners_r {
     height: 100%;
-    background-image: url("graphics/confusa_corners_border.png");
+    background-image: url("../graphics/confusa_corners_border.png");
     background-repeat: repeat-y;
     background-position: right;
 }
 .confusa_corners_b {
     height: 100%;
-    background-image: url("graphics/confusa_corners_border.png");
+    background-image: url("../graphics/confusa_corners_border.png");
     background-repeat: repeat-x;
     background-position: bottom;
 }
