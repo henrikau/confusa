@@ -73,7 +73,7 @@
 </fieldset>
 <BR />
 
-{if caMode == 1} {* Only display if system is placed in CA-mode *}
+{if $caMode == 1} {* Only display if system is placed in CA-mode *}
 {* ---------------------------------------------------------------- *
  *
  *	Modify current CA-account
