@@ -10,7 +10,7 @@
 {* *********************************************************************** *}
 <fieldset>
 <legend style="cursor:help" title="NREN admins have the same privileges as
- you have. You yourself are highlighted blue in the list. This lets you add/remove
+ you have. You yourself are marked with an asterisk (*). This lets you add/remove
  admins for your NREN '{$nren}'.">
  NREN admins
 </legend>
@@ -32,7 +32,7 @@
 				name="delete" onclick="return confirm('You are about to delete YOURSELF!\nAre you sure?')" />
 			</form>
 			</td>
-			<td style="color: blue"><b>{$admin}</b></td>
+			<td >{$admin} <span style="cursor:help" title="That's you!">(*)</span></td>
 		{else}
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
 				name="delete" onclick="return confirm('Delete entry {$admin}?')" />
@@ -126,7 +126,7 @@
 	{* ***** subscriber-admin/subscriber-admin view ***** *}
 	{* *********************************************************************** *}
 	<legend style="cursor:help" title="Administrators of your own organization
- '{$subscriber}'. You yourself are highlighted blue in the list.">
+ '{$subscriber}'. You yourself are marked with an asterisk (*).">
  Subscriber admins
 </legend>
 	<table>
@@ -145,7 +145,7 @@
 				name="delete" onclick="return confirm('You are about to delete YOURSELF!\nAre you sure?')" />
 			</form>
 			</td>
-			<td style="color: blue"><b>{$subscriber_admin}</b></td>
+			<td>{$subscriber_admin} <span style="cursor:help" title="That's you!">(*)</span></td>
 		{else}
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
 				name="delete" onclick="return confirm('Delete entry {$subscriber_admin}?')" />
