@@ -79,6 +79,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		}
 
 		/* get all info from database and publish to template */
+		$this->tpl->assign('nrenName'		, $this->person->getNREN());
 		$this->tpl->assign_by_ref('nren'	, $this);
 		$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
 		$this->tpl->assign('account_list'	, $this->getAccountInfo());
