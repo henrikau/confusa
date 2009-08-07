@@ -89,7 +89,7 @@ function format_ip($ip, $show_help=false)
 		$pre =  "<FONT COLOR=\"RED\"><B><I>";
 		$post = "</I></B></FONT>";
 		if ($show_help) {
-			$help = " [ " . show_window("?", "messages/diff_ip.php") . " ] ";
+			$help = " [" . show_window("?", "messages/diff_ip.php") . "]";
 		}
 	}
 	return "$pre$ip$post$help";
