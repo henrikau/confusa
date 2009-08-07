@@ -93,6 +93,10 @@ div.csr {
 	margin-bottom: 5%;
 }
 
+p.info {
+    font-style: italic;
+    width: 80%;
+}
 div.spacer
 {
   height: 12px;
