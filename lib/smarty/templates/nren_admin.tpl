@@ -73,6 +73,7 @@
 <INPUT TYPE="hidden" NAME="account" VALUE="change">
 
 <tr>
+{if caMode == 1} {* Only display if system is placed in CA-mode *}
 </tr>
 
 <tr>
@@ -217,4 +218,7 @@
 </table>
 
 
-{/if}
+<BR />
+<BR />
+{/if} {* if in CA-mode *}
+{/if} {* if user is admin *}
