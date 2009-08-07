@@ -33,7 +33,11 @@
 		<tr>
 			{* Show the delete-subscriber button *}
 			<td style="width: 25px">{$nren->delete_button('subscriber', $row.subscriber)}</td>
-			<td style="width: 200px">{$nren->format_subscr_on_state($row.subscriber, $row.org_state)}</td>
+			<td style="width: 200px">{$nren->format_subscr_on_state($row.subscriber, $row.org_state)}
+				{if $row.subscriber == $self_subscriber}
+						<span title="Your own institution" style="cursor:help">(*)</span>
+				{/if}
+			</td>
 			<td>
 				<form action="" method="POST">
 					<INPUT TYPE="hidden" NAME="subscriber" VALUE="edit" />
