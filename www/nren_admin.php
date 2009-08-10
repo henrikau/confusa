@@ -369,7 +369,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		$nren = $this->person->getNREN();
 
 		if (!isset($login_name) || $login_name === "") {
-			Framework::error_output("Login-name not set. This <B>must</B> be available when one wants to edit it.");
+			Framework::error_output("Login-name not set. This <b>must</b> be available when one wants to edit it.");
 			return;
 		}
 
@@ -532,12 +532,12 @@ class CP_NREN_Admin extends FW_Content_Page
 
 		switch($state) {
 		case unsubscribed:
-			$res = "<FONT COLOR=\"GRAY\"><B>$res</B></FONT>";
+			$res = "<span style=\"color: gray\"><b>$res</b></span>";
 			break;
 		case suspended:
-			$res = "<FONT COLOR=\"RED\"><B>$res</B></FONT>";
+			$res = "<span style=\"color: red\"><b>$res</b></span>";
 		case subscribed:
-			$res = "<I>$res</I>";
+			$res = "<i>$res</i>";
 			break;
 		default:
 			break;
@@ -553,12 +553,13 @@ class CP_NREN_Admin extends FW_Content_Page
 		if ($key === "" || $target === "")
 			return"";
 
-		$res  = "<FORM ACTION=\"\" METHOD=\"POST\">\n";
-		$res .= "<INPUT TYPE=\"hidden\" NAME=\"". $key . "\" VALUE=\"delete\">\n";
-		$res .= "<INPUT TYPE=\"hidden\" NAME=\"name\" VALUE=\"" . $target . "\" />\n";
-		$res .= "<INPUT TYPE=\"hidden\" NAME=\"state\" VALUE=\"\" />\n"; /* don't need state to delete */
+		$res  = "<form action=\"\" method=\"post\">\n";
+		$res .= "<div>\n";
+		$res .= "<input type=\"hidden\" name=\"". $key . "\" value=\"delete\" />\n";
+		$res .= "<input type=\"hidden\" name=\"name\" value=\"" . $target . "\" />\n";
+		$res .= "<input type=\"hidden\" name=\"state\" value=\"\" />\n"; /* don't need state to delete */
 
-		$res .= "<INPUT TYPE=\"IMAGE\" NAME=\"delete\" ";
+		$res .= "<input type=\"image\" name=\"delete\" ";
 
 		/* warning upon attempted self-deletion */
 		if ($target === $this->person->getSubscriberOrgName()) {
@@ -570,7 +571,8 @@ class CP_NREN_Admin extends FW_Content_Page
 
 		$res .= "                 value=\"delete\" src=\"graphics/delete.png\"";
 		$res .= "                 alt=\"delete\" />\n";
-		$res .= "</FORM>\n";
+		$res .= "</div>\n";
+		$res .= "</form>\n";
 		echo $res;
 	}
 
