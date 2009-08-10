@@ -36,11 +36,11 @@ class CP_Stylist extends FW_Content_Page
 		if (isset($_POST['stylist_operation'])) {
 			switch(htmlentities($_POST['stylist_operation'])) {
 			case 'change_help_text':
-				$new_text = Input::sanitize($_POST['help_text']);
+				$new_text = Input::sanitizeText($_POST['help_text']);
 				$this->updateNRENHelpText($this->person->getNREN(), $new_text);
 				break;
 			case 'change_about_text':
-				$new_text = Input::sanitize($_POST['about_text']);
+				$new_text = Input::sanitizeText($_POST['about_text']);
 				$this->updateNRENAboutText($this->person->getNREN(), $new_text);
 				break;
 			case 'change_css':
