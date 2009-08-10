@@ -1,9 +1,9 @@
 {assign var='table'	value='<div class="admin_table">'}
 {assign var='table_e'	value='</div><!--admin_table-->'}
-{assign var='tr'	value='<DIV CLASS="admin_table_row">'}
-{assign var='tr_e'	value='</DIV><!--admin_table_row-->'}
-{assign var='td'	value='<DIV CLASS="admin_table_cell">'}
-{assign var='td_e'	value='</DIV><!--admin_table_cell-->'}
+{assign var='tr'	value='<div CLASS="admin_table_row">'}
+{assign var='tr_e'	value='</div><!--admin_table_row-->'}
+{assign var='td'	value='<div CLASS="admin_table_cell">'}
+{assign var='td_e'	value='</div><!--admin_table_cell-->'}
 
 <h3>Certificate Revocation Area</h3>
 
@@ -19,7 +19,7 @@ immediately see a result entry *}
 
 {else}
     <div class="spacer"></div>
-    <form action="?revoke=search_display" method="POST">
+    <form action="?revoke=search_display" method="post">
     <fieldset>
     <legend>CN-search</legend>
 
@@ -35,7 +35,7 @@ immediately see a result entry *}
 
     <div class="spacer"></div>
 
-    <form enctype="multipart/form-data" action="?revoke=search_list_display" method="POST">
+    <form enctype="multipart/form-data" action="?revoke=search_list_display" method="post">
     <fieldset>
     <legend>List upload</legend>
 
@@ -72,8 +72,8 @@ immediately see a result entry *}
                     {$owner}
                 </td>
                 <td>
-                    <form action="?revoke=do_revoke" method="POST">
-
+                    <form action="?revoke=do_revoke" method="post">
+                    <div>
                     {foreach from=$orders[$owner] item=order}
                         <input type="hidden" name="order_numbers[]" value="{$order[0]}" />
                         <input type="hidden" name="valid_untill[]" value="{$order[1]}" />
@@ -82,10 +82,9 @@ immediately see a result entry *}
                     {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
                     <input type="submit" name="submit" value="Revoke all"
                             onclick="return confirm('Revoking {$orders[$owner]|@count} certificates! Are you sure?')" />
+                    </div>
                     </form>
                 </td>
-
-                </form>
             </tr>
         {/foreach}
         </table>
@@ -106,7 +105,7 @@ immediately see a result entry *}
 
         <div class="spacer"></div>
         <div style="text-align: right">
-            <form action="?revoke=do_revoke_list" method="POST">
+            <form action="?revoke=do_revoke_list" method="post">
             Revocation reason:
             {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
             <input type="Submit" value="Revoke all" onclick="return confirm('Are you sure?')" />
