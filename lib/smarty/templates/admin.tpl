@@ -1,17 +1,15 @@
-{if $person->in_admin_mode()}
-{if $person->is_nren_admin() ||  $person->is_subscriber_admin()}
+{if $person->inAdminMode()}
+{if $person->isNRENAdmin() ||  $person->isSubscriberAdmin()}
 	<H3>Add/delete Confusa administrators</H3>
 {/if}
 
-{if $person->is_nren_admin()}
+{if $person->isNRENAdmin()}
 <div class="spacer"></div>
 {* *********************************************************************** *}
 {* ***** NREN-admin/NREN-admin view ***** *}
 {* *********************************************************************** *}
 <fieldset>
-<legend style="cursor:help" title="NREN admins have the same privileges as
- you have. You yourself are highlighted blue in the list. This lets you add/remove
- admins for your NREN '{$nren}'.">
+<legend>
  NREN admins
 </legend>
 
@@ -21,19 +19,43 @@
 </tr>
 
 {if !empty($nren_admins)}
+	<p class="info">
+		Add and delete NREN admins for your NREN '{$nren}'. You yourself are
+		marked with an asterisk (*). NREN admins have many privileges:
+	</p>
+	<br />
+		<ul class="info">
+		<li>Add/delete other NREN admins.</li>
+		<li>Add/delete subscriber admins.</li>
+		<li>Give institutions within the NREN's domain access to Confusa</li>
+		<li>Change the NREN's CA account</li>
+		<li>Change the branding of the portal</li>
+		</ul>
+
+		<br />
+		<p class="info">
+		Overall this is a very powerful role and you should think who you want
+		to give it.
+		</p>
+		<br />
+
 	{foreach from=$nren_admins item=admin}
 		<tr>
 		<td style="width: 30px">
 			<form action="" method="POST">
 				<input type="hidden" name="nren_operation" value="delete_nren_admin" />
-				<input type="hidden" name="nren_admin" value={$admin} />
-				<input type="image" src="graphics/delete.png" alt="Delete entry"
+				<input type="hidden" name="nren_admin" value="{$admin}" />
+		{if ($admin == $self)}
+			<input type="image" src="graphics/delete.png" alt="Delete entry"
+				name="delete" onclick="return confirm('You are about to delete YOURSELF!\nAre you sure?')" />
+			</form>
+			</td>
+			<td >{$admin} <span style="cursor:help" title="That's you!">(*)</span></td>
+		{else}
+			<input type="image" src="graphics/delete.png" alt="Delete entry"
 				name="delete" onclick="return confirm('Delete entry {$admin}?')" />
 			</form>
-		</td>
-		{if ($admin == $self)}
-			<td style="color: blue"><b>{$admin}</b></td>
-		{else}
+			</td>
 			<td>{$admin}</td>
 		{/if}
 		</tr>
@@ -61,12 +83,23 @@
 {* ***** NREN-admin/subscriber-admin view ***** *}
 {* *********************************************************************** *}
 	<fieldset>
-		<legend style="cursor:help" title="Subscriber admins can revoke user
- certificates and appoint other subscriber admins.
- Their scope is limited to an institution and they can not edit
- remote-CA account settings.">
+		<legend>
 		Admins for subscriber {$subscriber}
 		</legend>
+
+		<p class="info">
+		Allows you to add/delete Subscriber admins. Subscriber admins may:
+		</p>
+		<br />
+		<ul class="info">
+		<li>revoke user certificates</li>
+		<li>appoint other subscriber admins.</li>
+		</ul>
+		<br />
+		<p class="info">
+		Their scope is limited to an institution, in this case {$subscriber}.
+		</p>
+		<br />
 
 		{if isset($subscriber_admins)}
 			<table>
@@ -79,8 +112,8 @@
 				<td style="width: 30px">
 						<form action="" method="POST">
 						<input type="hidden" name="nren_operation" value="delete_subs_admin" />
-						<input type="hidden" name="subscriber" value={$subscriber} />
-						<input type="hidden" name="subs_admin" value={$subscriber_admin} />
+						<input type="hidden" name="subscriber" value="{$subscriber}" />
+						<input type="hidden" name="subs_admin" value="{$subscriber_admin}" />
 						<input type="image" src="graphics/delete.png" alt="Delete entry"
 						name="delete" onclick="return confirm('Delete entry {$subscriber_admin}?')" />
 						</form>
@@ -94,7 +127,7 @@
 			<td>
 			<form action="" method="POST">
 				<input type="hidden" name="nren_operation" value="add_subs_admin" />
-				<input type="hidden" name="subscriber" value={$subscriber} />
+				<input type="hidden" name="subscriber" value="{$subscriber}" />
 				<input type="text" name="subs_admin" />
 				<input type="submit" name="add" value="Add new" />
 			</form>
@@ -115,16 +148,28 @@
 
 {/if}
 
-{elseif $person->is_subscriber_admin()}
+{elseif $person->isSubscriberAdmin()}
 	<div class="spacer"></div>
 	<fieldset>
 	{* *********************************************************************** *}
 	{* ***** subscriber-admin/subscriber-admin view ***** *}
 	{* *********************************************************************** *}
-	<legend style="cursor:help" title="Administrators of your own organization
- '{$subscriber}'. You yourself are highlighted blue in the list.">
+	<legend>
  Subscriber admins
 </legend>
+
+	<p class="info">
+	Add/delete administrators for your institution '{$subscriber}'.
+	You yourself are marked with an asterisk (*). Subscriber admins have the
+	following privileges:
+	</p>
+	<br />
+	<ul class="info">
+	<li>Revoke certificates of users of their own institution</li>
+	<li>Add/delete other subscriber admins and subscriber-subadmins</li>
+	</ul>
+	<br />
+
 	<table>
 	<tr>
 	<td style="width: 30px"></td><td><b>Principal identifier</b></td>
@@ -135,15 +180,19 @@
 		<td style="width: 30px">
 		<form action="" method="POST">
 				<input type="hidden" name="subs_operation" value="delete_subs_admin" />
-				<input type="hidden" name="subs_admin" value={$subscriber_admin} />
-				<input type="image" src="graphics/delete.png" alt="Delete entry"
-				name="delete" onclick="return confirm('Delete entry {$subscriber_admin}?')" />
-		</form>
-		</td>
+				<input type="hidden" name="subs_admin" value="{$subscriber_admin}" />
 		{if ($subscriber_admin == $self)}
-		<td style="color: blue"><b>{$subscriber_admin}</b></td>
+			<input type="image" src="graphics/delete.png" alt="Delete entry"
+				name="delete" onclick="return confirm('You are about to delete YOURSELF!\nAre you sure?')" />
+			</form>
+			</td>
+			<td>{$subscriber_admin} <span style="cursor:help" title="That's you!">(*)</span></td>
 		{else}
-		<td>{$subscriber_admin}</td>
+			<input type="image" src="graphics/delete.png" alt="Delete entry"
+				name="delete" onclick="return confirm('Delete entry {$subscriber_admin}?')" />
+			</form>
+			</td>
+			<td>{$subscriber_admin}</td>
 		{/if}
 		</tr>
 		{/foreach}
@@ -170,11 +219,19 @@
 {* ***** subscriber-admin/sub-subscriber-admin view ***** *}
 {* *********************************************************************** *}
 <fieldset>
-<legend style="cursor:help" title="Subscriber sub-admin are admins of your
- institution that are not allowed to perform any administrative tasks except
- for institution-scoped certificate revocation">
+<legend>
 	Subscriber sub-admins
 </legend>
+
+<p class="info">
+Add/delete subscriber-subadmins for your institution '{$subscriber}'.
+Subscriber sub-admins have the following privileges:
+</p>
+<br />
+	<ul class="info">
+	<li>Revoke certificates of users of their own institution</li>
+	</ul>
+<br />
 
 <table>
 
@@ -188,7 +245,7 @@
 		<td style="width: 30px">
 			<form action="" method="POST">
 			<input type="hidden" name="subs_operation" value="delete_subs_sub_admin" />
-			<input type="hidden" name="subs_sub_admin" value={$admin} />
+			<input type="hidden" name="subs_sub_admin" value="{$admin}" />
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
 			name="delete" onclick="return confirm('Delete entry {$admin}?')" />
 		</form>

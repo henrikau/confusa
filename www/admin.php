@@ -26,11 +26,11 @@ class CP_Admin extends FW_Content_Page
 		parent::pre_process($person);
 
 		/* IF user is not subscirber- or nren-admin, we stop here */
-		if (!($this->person->is_subscriber_admin() || $this->person->is_nren_admin()))
+		if (!($this->person->isSubscriberAdmin() || $this->person->isNRENAdmin()))
 			return false;
 
 		if (isset($_POST['nren_operation'])) {
-			if (!$this->person->is_nren_admin()) {
+			if (!$this->person->isNRENAdmin()) {
 				Framework::error_output("You have the wrong permissions for that operation!");
 				return false;
 			}
@@ -43,7 +43,7 @@ class CP_Admin extends FW_Content_Page
 					break;
 				case 'add_nren_admin':
 					$admin = Input::sanitize($_POST['nren_admin']);
-					$nren = $this->person->get_nren();
+					$nren = $this->person->getNREN();
 					$this->addAdmin($admin,2,NULL,$nren);
 					break;
 				case 'delete_subs_admin':
@@ -60,7 +60,7 @@ class CP_Admin extends FW_Content_Page
 			}
 		/* operations called by the subscriber admin */
 		} else if (isset($_POST['subs_operation'])) {
-			if (!$this->person->is_subscriber_admin()) {
+			if (!$this->person->isSubscriberAdmin()) {
 				Framework::error_output("You have the wrong permissions for that operation!");
 				return false;
 			}
@@ -72,7 +72,7 @@ class CP_Admin extends FW_Content_Page
 					break;
 				case 'add_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
-					$subscriber = $this->person->get_orgname();
+					$subscriber = $this->person->getSubscriberOrgName();
 					$this->addAdmin($admin,1,$subscriber,NULL);
 					break;
 				case 'delete_subs_sub_admin':
@@ -81,7 +81,7 @@ class CP_Admin extends FW_Content_Page
 					break;
 				case 'add_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
-					$subscriber = $this->person->get_orgname();
+					$subscriber = $this->person->getSubscriberOrgName();
 					$this->addAdmin($admin,0,$subscriber,NULL);
 					break;
 				default:
@@ -101,16 +101,16 @@ class CP_Admin extends FW_Content_Page
 	public function process()
 	{
 		/* IF user is not subscirber- or nren-admin, we stop here */
-		if (!($this->person->is_subscriber_admin() || $this->person->is_nren_admin())) {
-			Logger::log_event(LOG_NOTICE, "User " . $this->person->get_valid_cn() . " was rejected at the admin-interface");
+		if (!($this->person->isSubscriberAdmin() || $this->person->isNRENAdmin())) {
+			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " was rejected at the admin-interface");
 			$this->tpl->assign('reason', 'You do not have sufficient rights to view this page');
-			$this->tpl->assign('content', 'restricted_access.tpl');
+			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return false;
 		}
 
-		if ($this->person->is_nren_admin()) { /* NREN admin display */
-			$admins=$this->getNRENAdmins($this->person->get_nren());
-			$subscribers=$this->getSubscribers($this->person->get_nren());
+		if ($this->person->isNRENAdmin()) { /* NREN admin display */
+			$admins=$this->getNRENAdmins($this->person->getNREN());
+			$subscribers=$this->getSubscribers($this->person->getNREN());
 			$current_subscriber = "";
 
 			if (isset($_POST['subscriber'])) {
@@ -126,21 +126,21 @@ class CP_Admin extends FW_Content_Page
 			}
 
 			$this->tpl->assign('nren_admins', $admins);
-			$this->tpl->assign('nren', $this->person->get_nren());
+			$this->tpl->assign('nren', $this->person->getNREN());
 			$this->tpl->assign('subscribers', $subscribers);
 
-		} else if ($this->person->is_subscriber_admin()) { /* subscriber admin display */
-			$subscriber = $this->person->get_orgname();
+		} else if ($this->person->isSubscriberAdmin()) { /* subscriber admin display */
+			$subscriber = $this->person->getSubscriberOrgName();
 			$subscriber_admins = $this->getSubscriberAdmins($subscriber, 1);
 			$this->tpl->assign('subscriber', $subscriber);
 			$this->tpl->assign('subscriber_admins', $subscriber_admins);
 
-			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->get_orgname(), 0);
+			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->getSubscriberOrgName(), 0);
 			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
 
 		}
 
-		$this->tpl->assign('self', $this->person->get_common_name());
+		$this->tpl->assign('self', $this->person->getEPPN());
 		$this->tpl->assign('content', $this->tpl->fetch('admin.tpl'));
 	}
 
@@ -328,7 +328,8 @@ class CP_Admin extends FW_Content_Page
 									 "was bad. Please contact an administrator. Server said " . $dbse->getMessage());
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Inserting the admin into the database failed because of problems " .
-									 "with the supplied data. Server said " . $dbqe->getMessage());
+									 "with the supplied data. Server said " . $dbqe->getMessage() .
+									 " Maybe an admin with that name already exists?");
 		}
 	}
 

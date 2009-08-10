@@ -37,19 +37,37 @@ class CertManager_Standalone extends CertManager
 
             $timeout = Config::get_config('cert_default_timeout');
 
-            MDB2Wrapper::update("INSERT INTO cert_cache (cert, auth_key, cert_owner, organization, valid_untill) VALUES(?, ?, ?, ?, timestampadd($timeout[1], $timeout[0],current_timestamp()))",
-                                array('text', 'text', 'text', 'text'),
-                                array($cert, $auth_key, $this->person->get_valid_cn(), $this->person->get_orgname()));
-            Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
-                                $this->person->get_valid_cn() .
-                                " Contacting us from ".
-                                $_SERVER['REMOTE_ADDR']);
+	    try {
+		    $insert  = "INSERT INTO cert_cache (cert, auth_key, cert_owner, organization, valid_untill) ";
+		    $insert .= "VALUES(?, ?, ?, ?, timestampadd($timeout[1], $timeout[0],current_timestamp()))";
+		    MDB2Wrapper::update($insert,
+					array('text', 'text', 'text', 'text'),
+					array($cert,
+					      $auth_key,
+					      $this->person->getX509ValidCN(),
+					      $this->person->getSubscriberOrgName()));
 
+	    } catch (DBStatementException $dbse) {
+		    $error_key = create_pw(8);
+		    Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
+				      " Error in query-syntax. Make sure the query matches the db-schema. ($error_key)");
+		    throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
+	    } catch (DBQueryException $dbqe) {
+		    $error_key = create_pw(8);
+		    Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
+				      " Error with values passed to the query. Check for constraint-violations");
+		    throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
+	    }
+
+            Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
+			      $this->person->getX509ValidCN() .
+			      " Contacting us from ".
+			      $_SERVER['REMOTE_ADDR']);
         } else {
-          Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user ".
-                       $this->person->get_valid_cn() .
-                       " from ip ".$_SERVER['REMOTE_ADDR']);
-          throw new KeySignException("CSR subject verification failed!");
+		Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user ".
+				  $this->person->getX509ValidCN() .
+				  " from ip ".$_SERVER['REMOTE_ADDR']);
+		throw new KeySignException("CSR subject verification failed!");
         }
     } /* end sign-key */
 
@@ -64,11 +82,11 @@ class CertManager_Standalone extends CertManager
         $res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE ".
 				    "cert_owner=? AND valid_untill > current_timestamp()",
 				    array('text'),
-				    array($this->person->get_valid_cn()));
+				    array($this->person->getX509ValidCN()));
         $num_received = count($res);
         if ($num_received > 0 && !(isset($res[0]['auth_key']))) {
             $msg = "Received an unexpected response from the database for user " .
-                     $this->person->get_common_name();
+                     $this->person->getEPPN();
             throw new DBQueryException($msg);
         }
 
@@ -89,7 +107,7 @@ class CertManager_Standalone extends CertManager
      *          array('cert_owner','auth_key')
      */
     public function get_cert_list_for_persons($common_name, $org) {
-        $query = "SELECT auth_key, cert_owner FROM cert_cache WHERE " .
+        $query = "SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE " .
                  "cert_owner LIKE ? AND organization = ?";
         $res = MDB2Wrapper::execute($query, array('text','text'),
                                             array($common_name, $org)
@@ -107,7 +125,7 @@ class CertManager_Standalone extends CertManager
     {
         $res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=? AND valid_untill > current_timestamp()",
                                       array('text', 'text'),
-                                      array($key, $this->person->get_valid_cn()));
+                                      array($key, $this->person->getX509ValidCN()));
 
         if (count($res) == 1) {
 		$msg  = "Sending certificate with hash " . pubkey_hash($res[0]['cert'], false) . " ";
@@ -117,7 +135,7 @@ class CertManager_Standalone extends CertManager
         }
         else {
             $msg = "Error in getting certificate, got " . count($res) . " results\n";
-            $cn = $this->person->get_valid_cn();
+            $cn = $this->person->getX509ValidCN();
             $msg .= "Queried for key $key and CN $cn\n";
             throw new DBQueryException($msg);
         }
@@ -137,6 +155,54 @@ class CertManager_Standalone extends CertManager
          *
         */
 	    Framework::error_output("Revocation for standalone configuration is to be implemented!");
+	    $path		= Config::get_config('install_path') . Config::get_config('ca_cert_base_path');
+	    $ca_config_file	= $path . Config::get_config('ca_conf_name');
+	    $ca_key		= $path . Config::get_config('ca_key_path')  . Config::get_config('ca_key_name');
+	    $ca_cert		= $path . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
+	    $crl_file		= $path . Config::get_config('ca_crl_name');
+	    /*
+	     * Get cert from DB and store in temp-file
+	     */
+	    try {
+		    echo "getting certificate for user " . $this->person->getX509ValidCN() . "<BR />\n";
+		    $query = "SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=?";
+		    $res = MDB2Wrapper::execute($query,
+						array('text', 'text'),
+						array($key, $this->person->getX509ValidCN()));
+		    $cert = $res[0]['cert'];
+		    if (!isset($cert) || $cert === "") {
+			    Framework::error_output("Could not retrieve certificate from database!");
+			    return false;
+		    }
+		    $cert_file_name	= tempnam("/tmp/", "REV_CERT");
+		    $cert_file		= fopen($cert_file_name, "w");
+		    $numbytes		= fwrite($cert_file, $cert);
+		    $revoke_cmd		= "cd $path ; openssl ca -config $ca_config_file -revoke $cert_file_name -keyfile $ca_key -cert $ca_cert";
+		    $crl_cmd		= "cd $path ; openssl ca -config $ca_config_file -gencrl -keyfile $ca_key -cert $ca_cert -out $crl_file";
+
+		    exec($revoke_cmd, $revoke_output,$revoke_res);
+		    if (!$revoke_res) {
+			    Framework::error_output("Could not revoke certificate! $revoke_output");
+		    }
+		    else {
+			    exec($crl_cmd, $crl_output, $crl_res);
+			    if (!$crl_res) {
+				    Framework::error_output("Could not add revoked cert to CRL! $crl_output");
+			    }
+		    }
+	    } catch (Exception $e) {
+		    Framework::error_output($e->getMessage());
+		    return false;
+	    }
+
+	    try {
+		    fclose($cert_file);
+		    unlink($cert_file_name);
+	    } catch (Exception $e) {
+		    ;
+	    }
+
+	    return true;
     }
 
   /* verify_csr()
@@ -181,7 +247,7 @@ class CertManager_Standalone extends CertManager
 
   /* match_dn
    *
-   * This will match the associative array $subject with the constructed DN from person->get_complete_dn()
+   * This will match the associative array $subject with the constructed DN from person->getX509SubjectDN()
    *
    * The best would be to use something like what openssl supports:
    *	openssl x509 -in usercert.pem -subject -noout
@@ -204,9 +270,9 @@ class CertManager_Standalone extends CertManager
 		  $composed_dn .= "/OU=".$subject['OU'];
 	  if (isset($subject['C']))
 		  $composed_dn .= "/CN=".$subject['CN'];
-	  $res = $this->person->get_complete_dn() === $composed_dn;
+	  $res = $this->person->getX509SubjectDN() === $composed_dn;
 	  if (Config::get_config('debug') && !$res) {
-		  Framework::error_output("Supplied (".$composed_dn.") and required subject (".$this->person->get_complete_dn() .") differs!");
+		  Framework::error_output("Supplied (".$composed_dn.") and required subject (".$this->person->getX509SubjectDN() .") differs!");
 	  }
 	  return $res;
   }

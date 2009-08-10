@@ -1,5 +1,5 @@
 
-{if $person->in_admin_mode() && $person->is_nren_admin()}
+{if $person->inAdminMode() && $person->isNRENAdmin()}
 <H3>NREN administration</H3>
 <BR />
 
@@ -10,8 +10,15 @@
  *
  * ---------------------------------------------------------------- *}
 
-<H4>Subscriber accounts administration</H4>
-
+<fieldset>
+<legend>Subscriber accounts for: {$nrenName}</legend>
+<BR />
+<P class="info">
+   Add or change subscriber accounts. A subscriber is an organization
+   belonging to the current NREN ({$nrenName}). This is where the status
+   of these subscribers can be changed, new added or existing deleted.
+</P>
+<BR />
 <table>
 <tr>
 <td style="width: 25px"></td>
@@ -26,7 +33,11 @@
 		<tr>
 			{* Show the delete-subscriber button *}
 			<td style="width: 25px">{$nren->delete_button('subscriber', $row.subscriber)}</td>
-			<td style="width: 200px">{$nren->format_subscr_on_state($row.subscriber, $row.org_state)}</td>
+			<td style="width: 200px">{$nren->format_subscr_on_state($row.subscriber, $row.org_state)}
+				{if $row.subscriber == $self_subscriber}
+						<span title="Your own institution" style="cursor:help">(*)</span>
+				{/if}
+			</td>
 			<td>
 				<form action="" method="POST">
 					<INPUT TYPE="hidden" NAME="subscriber" VALUE="edit" />
@@ -36,21 +47,23 @@
 				</form>
 			</td>
 		</tr>
-		<tr></tr>
 		</table>
 {/foreach}
 
+<BR />
 <form action="" method="POST">
 <table>
 {* Field for adding new subscribers *}
 <tr>
-<div class="spacer"></div>
+	<td style="width: 25px"></td>
+	<td style="width: 200px"></td>
+	<td></td>
+	<td></td>
+	<td></td>
 </tr>
 <tr>
-	<td style="width: 25px">
-		<INPUT TYPE="hidden" NAME="subscriber" VALUE="add" />
-	</td>
-	<td style="width: 200px"><INPUT TYPE="TEXT" NAME="name" /></td>
+	<td><INPUT TYPE="hidden" NAME="subscriber" VALUE="add" /></td>
+	<td><INPUT TYPE="TEXT" NAME="name" /></td>
 	<td>{$nren->createSelectBox('', null, 'state')}</td>
 	<td> {* air *} </td>
 	<td>
@@ -60,14 +73,26 @@
 </tr>
 </table>
 </form>
+<BR />
+</fieldset>
+<BR />
 
+{if $caMode == 1} {* Only display if system is placed in CA-mode *}
 {* ---------------------------------------------------------------- *
  *
  *	Modify current CA-account
  *
  * ---------------------------------------------------------------- *}
 <BR />
-<H4>Change to another CA NREN-account</H4>
+<FIELDSET>
+<LEGEND>Change to another CA-account</LEGEND>
+<BR />
+
+<P CLASS="info">
+This is where you can change the account used for communication with the
+online CA system for this NREN ({$nrenName}).
+It is this account that will be used for all communication with the CA-API.
+</P>
 <FoRM ACTION="" METHOD="POST">
 <table>
 <INPUT TYPE="hidden" NAME="account" VALUE="change">
@@ -76,7 +101,8 @@
 </tr>
 
 <tr>
-<td>
+<td style="width: 25px"></td>
+<td style="width: 200px">
 {$nren->createSelectBox($account_list.account, $account_list.all, 'login_name')}
 </td>
 <td></td>
@@ -87,25 +113,44 @@
 <BR />
 </table>
 </FORM>
+<BR />
+</FIELDSET>
+<BR />
+<BR />
 
 {* ---------------------------------------------------------------- *
  *
  *	Change the CA-account
  *
  * ---------------------------------------------------------------- *}
+
+<FIELDSET>
+<LEGEND>Change password</LEGEND>
 <BR />
-<H4>Change the current CA NREN-account</H4>
+<P class="info">
+This is where you change the password for the account. This password
+<B>must</B> match the credentials set at the CA-site.
+</P>
+<P class="info">
+You can only change the account currently selected for this NREN. If you
+want to change another account, you must first update {$nrenName} to use
+that account and then you can change the password.
+</P><BR />
 
 <table>
 <FoRM ACTION="" METHOD="POST">
 <INPUT TYPE="hidden" NAME="account" VALUE="edit">
 
 <tr>
+<td style="width: 25px"></td>
+<td style="width: 200px"></td>
+<td></td>
+<td></td>
 </tr>
 
 <tr>
-<td style="width: 100px">Account:</td>
 <td></td>
+<td>Account:</td>
 <td>
 <I><B>{$account_list.account}</B></I>
 <INPUT TYPE="hidden" NAME="login_name" VALUE="{$account_list.account}">
@@ -117,8 +162,8 @@
 </tr>
 
 <tr>
-<td style="width: 100px">Password:</td>
 <td></td>
+<td>Password:</td>
 <td><INPUT TYPE="password" NAME="password" VALUE=""></td>
 </tr>
 
@@ -132,24 +177,44 @@
 </tr>
 </FORM>
 </table>
+<BR />
+</FIELDSET>
 
 {* ---------------------------------------------------------------- *
  *
  *	Delete an account from the database
  *
  * ---------------------------------------------------------------- *}
+
 <BR />
-<H4>Delete a CA NREN-account</H4>
+<BR />
+<FIELDSET>
+<LEGEND>Delete a CA NREN-account</LEGEND>
+<BR />
+<P CLASS="info">
+When an CA-account is no longer needed, it should be removed from the
+system all together.
+</P>
+<P CLASS="info">
+<B>Note:</B> it is only possible to delete accounts not used by any NREN
+at all. If another NREN uses this account, it cannot be deleted.
+</P>
+<BR />
+
 <table>
 <FoRM ACTION="" METHOD="POST">
 <INPUT TYPE="hidden" NAME="account" VALUE="delete">
 
 <tr>
+<td style="width: 25px"> </td>
+<td style="width: 200px"></td>
+<td></td>
+<td></td>
 </tr>
 
 <tr>
-<td style="width: 100px">Account:</td>
 <td></td>
+<td>Account:</td>
 <td>
 {$nren->createSelectBox($account_list.account, $account_list.all, 'login_name')}
 </td>
@@ -172,7 +237,8 @@
 </tr>
 </FORM>
 </table>
-
+<BR />
+</FIELDSET>
 {* ---------------------------------------------------------------- *
  *
  *	Add a new CA-account for this NREN
@@ -180,18 +246,31 @@
  * ---------------------------------------------------------------- *}
 
 <BR />
-<H4>Add a new CA NREN-account</H4>
+<BR />
+<FIELDSET>
+<LEGEND>Add a new CA NREN-account</LEGEND>
+<BR />
+<P CLASS="info">
+Add a new CA-account to the list of available accounts in the
+database. In Confusa's current version, this will enable the account for
+<B>all</B> NRENs.
+</P>
+<BR />
 
 <table>
 <FoRM ACTION="" METHOD="POST">
 <INPUT TYPE="hidden" NAME="account" VALUE="add">
 
 <tr>
+<td style="width: 25px"></td>
+<td style="width: 200px"></td>
+<td></td>
+<td></td>
 </tr>
 
 <tr>
-<td style="width: 100px">Name:</td>
 <td></td>
+<td>Name:</td>
 <td><INPUT TYPE="text" NAME="login_name" VALUE=""></td>
 <td></td>
 </tr>
@@ -200,8 +279,8 @@
 </tr>
 
 <tr>
-<td style="width: 100px">Password:</td>
 <td></td>
+<td>Password:</td>
 <td><INPUT TYPE="password" NAME="password" VALUE=""></td>
 </tr>
 
@@ -215,6 +294,11 @@
 </tr>
 </FORM>
 </table>
+<BR />
+</FIELDSET>
 
+{/if} {* if in CA-mode *}
+{/if} {* if user is admin *}
 
-{/if}
+<BR />
+<BR />

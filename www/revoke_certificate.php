@@ -5,6 +5,7 @@ require_once 'person.php';
 require_once 'send_element.php';
 require_once 'csv_lib.php';
 require_once 'input.php';
+require_once 'mdb2_wrapper.php';
 
 class RevokeCertificate extends FW_Content_Page
 {
@@ -41,8 +42,23 @@ class RevokeCertificate extends FW_Content_Page
 		parent::pre_process($person);
 		if(isset($_GET['revoke'])) {
 			switch($_GET['revoke']) {
+
+				/* the revoke single is done via a GET
+				 * request. This is to allow for dedicated urls
+				 * for revocation to be used. */
+			case 'revoke_single':
+				$order_number	= Input::sanitize($_GET['order_number']);
+				$reason		= Input::sanitize($_GET['reason']);
+				if (!isset($order_number) || !isset($reason)) {
+					Framework::error_output("Revoke Certificate: Errors with parameters, not set properly");
+				}
+				elseif (!$this->certManager->revoke_cert($order_number, $reason)) {
+					Framework::error_output("Cannot revoke yet ($order_number) for supplied reason: $reason");
+				}
+				break;
+
 			case 'do_revoke':
-				$this->revoke_certs(Input::sanitize($_POST['order_number']), Input::sanitize($_POST['reason']));
+				$this->revoke_certs(Input::sanitize($_POST['order_numbers']), Input::sanitize($_POST['reason']));
 				break;
 
 			case 'do_revoke_list':
@@ -57,13 +73,13 @@ class RevokeCertificate extends FW_Content_Page
 
 	public function process()
 	{
-		if ($this->person->is_nren_admin() && $this->person->in_admin_mode()) {
+		if ($this->person->isNRENAdmin() && $this->person->inAdminMode()) {
 			$this->tpl->assign('reason', 'You are not allowed to revoke certificates, your clearance is too high.');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
 		}
 
-		if ($this->person->in_admin_mode()) {
+		if ($this->person->inAdminMode()) {
 			$this->admin_revoke();
 		} else {
 			$this->normal_revoke();
@@ -87,13 +103,13 @@ class RevokeCertificate extends FW_Content_Page
 	 */
 	private function admin_revoke()
 	{
-		if (!$this->person->is_admin()) {
-			Logger::log_event(LOG_ALERT, "User " . $this->person->get_valid_cn() . " allowed to set admin-mode, but is not admin");
+		if (!$this->person->isAdmin()) {
+			Logger::log_event(LOG_ALERT, "User " . $this->person->getX509ValidCN() . " allowed to set admin-mode, but is not admin");
 			throw new ConfusaGenException("Impossible condition. NON-Admin user in admin-mode!");
 		}
 
 		/* Test access-rights */
-		if (!$this->person->is_subscriber_admin() && !$this->person->is_subscriber_subadmin())
+		if (!$this->person->isSubscriberAdmin() && !$this->person->is_subscriber_subadmin())
 			throw new ConfusaGenException("Insufficient rights for revocation!");
 
 		$this->tpl->assign('file_name', 'eppn_list');
@@ -129,7 +145,7 @@ class RevokeCertificate extends FW_Content_Page
 	 */
 	 private function normal_revoke()
 	{
-		$this->search_certs_display($this->person->get_common_name());
+		$this->search_certs_display($this->person->getEPPN());
 	}
 
 	/**
@@ -146,7 +162,7 @@ class RevokeCertificate extends FW_Content_Page
 	{
 		$common_name = "%" . $this->sanitize($common_name) . "%";
 
-		$certs = $this->certManager->get_cert_list_for_persons($common_name, $this->person->get_orgname());
+		$certs = $this->certManager->get_cert_list_for_persons($common_name, $this->person->getSubscriberOrgName());
 
 		if (count($certs) > 0) {
 			/* get the certificate owner/order number pairs into a ordering that
@@ -178,6 +194,7 @@ class RevokeCertificate extends FW_Content_Page
 	 */
 	private function revoke_certs($auth_key_list, $reason)
 	{
+
 		$auth_key_list = $this->sanitize($auth_key_list);
 
 		if (array_search($reason, $this->nren_reasons) === FALSE) {
@@ -280,7 +297,7 @@ class RevokeCertificate extends FW_Content_Page
 		foreach($eppn_list as $eppn) {
 			$eppn = $this->sanitize_eppn($eppn);
 			$eppn = "%" . $eppn . "%";
-			$eppn_certs = $this->certManager->get_cert_list_for_persons($eppn, $this->person->get_orgname());
+			$eppn_certs = $this->certManager->get_cert_list_for_persons($eppn, $this->person->getSubscriberOrgName());
 			$certs = array_merge($certs, $eppn_certs);
 		}
 

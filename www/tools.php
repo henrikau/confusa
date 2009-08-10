@@ -24,7 +24,7 @@ class Tools extends FW_Content_Page
 			include_once 'create_keyscript.php';
 			$keyscript = new KeyScript($person);
 			download_file($keyscript->create_script(), "create_cert.sh");
-			Logger::log_event(LOG_NOTICE, "Sending script via file to ". $this->person->get_common_name());
+			Logger::log_event(LOG_NOTICE, "Sending script via file to ". $this->person->getEPPN());
 			exit(0);
 		}
 		parent::pre_process($person);
@@ -56,11 +56,11 @@ class Tools extends FW_Content_Page
 					$body);
 		$mail->add_attachment($keyscript->create_script(), "create_cert.sh");
 		if ($mail->send_mail()) {
-			Framework::message_output("Mail sent to " . $this->person->get_email() . " with new version of create_cert.sh");
+			Framework::message_output("Mail sent to " . $this->person->getEmail() . " with new version of create_cert.sh");
 		} else {
 			$code = create_pw(8);
 			Logger::log_event(LOG_NOTICE, "Could not send email to user, check mail-logs at this time. Session-error-code: $code");
-			Framework::error_output("Could not send mail to " . $this->person->get_email() .
+			Framework::error_output("Could not send mail to " . $this->person->getEmail() .
 						"<BR />Check the server-logs for details. Log-code $code");
 		}
 

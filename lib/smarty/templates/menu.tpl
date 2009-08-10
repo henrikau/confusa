@@ -1,4 +1,4 @@
-{if $person->get_mode() == 0}
+{if $person->getMode() == 0}
 <h3>Certificates</h3>
 <ul>
 	<li><a href="process_csr.php">Request new</a></li>
@@ -10,19 +10,19 @@
 <ul>
 	<li><a href="about_you.php">About you</a></li>
 	<li><a href="tools.php">Tools</a></li>
-	{if $person->is_admin()}
+	{if $person->isAdmin()}
 	<li><a href="{php}$_SERVER['PHP_SELF']{/php}?mode=admin">Admin menu</a></li>
 	{/if}
-{elseif $person->get_mode() == 1}
+{elseif $person->getMode() == 1}
 <h3>Admin</h3>
 <ul>
-	{if $person->is_subscriber_subadmin()}
+	{if $person->isSubscriberSubadmin()}
 	<li><a href="revoke_certificate.php">Revoke Certificates</a></li>
-	{elseif $person->is_subscriber_admin()}
+	{elseif $person->isSubscriberAdmin()}
 	<li><a href="revoke_certificate.php">Revoke certificates</a></li>
 	<li><a href="admin.php">Manage Subscriber Administrators</a></li>
 	<li><a href="robot.php">Robot Interface</a></li>
-	{elseif $person->is_nren_admin()}
+	{elseif $person->isNRENAdmin()}
 	<li><a href="admin.php">Manage Administrators</a></li>
 	<li><a href="nren_admin.php">NREN-Admin</a></li>
 	<li><a href="stylist.php?show=text">Customize appearance</a></li>
@@ -44,7 +44,7 @@
 
 
 <ul>
-	{if !$person->is_auth()}
+	{if !$person->isAuth()}
 	<li><a href="index.php?start_login=yes">Login</a></li>
 	{else}
 	<li><a href="{$logoutUrl}">Log out</a></li>

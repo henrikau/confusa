@@ -41,7 +41,7 @@ function authenticate_user($person)
      */
          $person = is_authenticated($person);
 
-    if (!$person->is_auth()) {
+    if (!$person->isAuth()) {
         /* assert SSO
          * Make sure the feide-login is OK.
          */
@@ -52,7 +52,7 @@ function authenticate_user($person)
 function deauthenticate_user($person)
 {
 	if (isset($person)) {
-		$person->fed_auth(false);
+		$person->setAuth(false);
 	}
 }
 
@@ -72,15 +72,15 @@ function is_authenticated($person = null) {
 	if(Config::get_config('auth_bypass'))
 	{
 		// Set some bogus attributes
-		$person->set_name('Ola Nordmann');
-		$person->set_common_name('ola.nordmann@norge.no');
-		$person->set_email('ola.nordmann@norge.no');
-		$person->set_country('NO');
-		$person->set_orgname('Test');
-		$person->set_idp('Test');
-		$person->set_nren('test');
-		$person->set_entitlement('Test');
-		$person->fed_auth(true);	
+		$person->setName('Ola Nordmann');
+		$person->setEPPN('ola.nordmann@norge.no');
+		$person->setEmail('ola.nordmann@norge.no');
+		$person->setCountry('NO');
+		$person->setSubscriberOrgName('Test');
+		$person->setIdP('test-idp');
+		$person->setNREN('TEST-NREN');
+		$person->setEduPersonEntitlement('confusaAdmin');
+		$person->setAuth(true);
 		
 		return $person;
 	}
@@ -93,16 +93,18 @@ function is_authenticated($person = null) {
 
 	if ($use_oauth) {
 		$oauth = ConfusaOAuth::getInstance();
-		$person->fed_auth($oauth->isAuthorized());
+		$person->setAuth($oauth->isAuthorized());
 	} else {
 		$session = _get_session();
+		$person->setSession(_get_session());
+		$person->setSAMLConfiguration(SimpleSAML_Configuration::getInstance());
 		if (isset($session)) {
-			$person->fed_auth($session->isValid());
+			$person->setAuth($session->isValid());
 		}
 	}
 
-	if ($person->is_fed_auth()) {
-			add_attributes($person);
+	if ($person->isAuth()) {
+		add_attributes($person);
 	}
 
 	return $person;
@@ -125,18 +127,17 @@ function add_attributes($person)
      if (!isset($attributes['eduPersonPrincipalName'][0])) {
 	  $debug_string=__FILE__ .":".__LINE__." -> eduPersonPrincipalName not set!<BR>\n";
 	  Debug::dump($debug_string);
-          $person->fed_auth(false);
+          $person->setAuth(false);
      }
      else {
-	     $person->set_name($attributes['cn'][0]);
-	     $person->set_common_name($attributes['eduPersonPrincipalName'][0]);
-	     $person->set_email($attributes['mail'][0]);
-	     $person->set_country($attributes['country'][0]);
-	     $person->set_orgname($attributes['organization'][0]);
-	     $person->set_idp($attributes['IdP'][0]);
-	     $person->set_entitlement($attributes['eduPersonEntitlement'][0]);
-	     $person->set_nren($attributes['nren'][0]);
-	     $person->fed_auth(true);
+	     $person->setName($attributes['cn'][0]);
+	     $person->setEPPN($attributes['eduPersonPrincipalName'][0]);
+	     $person->setEmail($attributes['mail'][0]);
+	     $person->setCountry($attributes['country'][0]);
+	     $person->setSubscriberOrgName($attributes['organization'][0]);
+	     $person->setEduPersonEntitlement($attributes['eduPersonEntitlement'][0]);
+	     $person->setNREN($attributes['nren'][0]);
+	     $person->setAuth(true);
      }
 } /* end add_attributes() */
 
@@ -178,7 +179,7 @@ function show_sso_debug($person) {
         }
     $config  = _get_config();
     $session = _get_session();
-    if($person->is_auth()) {
+    if($person->isAuth()) {
         $attributes = _get_attributes();
         $time_left = $session->remainingTime();
         $hours_left = (int)($time_left / 3600);
@@ -206,6 +207,7 @@ function show_sso_debug($person) {
  * Parameters: none
  * Returns: config-descriptor from simple-saml
  */
+
 function _get_config() 
 {
     return SimpleSAML_Configuration::getInstance();
@@ -259,7 +261,7 @@ function _assert_sso($person)
   }
 
   /* update person, FIXME: update attributes as well */
-  $person->fed_auth($session->isValid());
+  $person->setAuth($session->isValid());
   add_attributes($person);
 } /* end  _assert_sso() */
 

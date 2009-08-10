@@ -8,7 +8,7 @@ require_once 'person.php';
 class KeyScript {
 	private $person;
 	function __construct($pers) {
-		if (isset($pers) && $pers->is_auth()) {
+		if (isset($pers) && $pers->isAuth()) {
 			$this->person = $pers;
 		}
 	}
@@ -25,8 +25,8 @@ class KeyScript {
 		$script = file_get_contents(Config::get_config('programs_path'));
 
  		/* set variables for the key and CSR/cert */
-		$script = str_replace('common=""'      ,'common="' .$this->person->get_valid_cn() . '"'	, $script);
-		$script = str_replace('full_dn=""'	,'full_dn="'.$this->person->get_complete_dn() . '"'	, $script);
+		$script = str_replace('common=""'      ,'common="' .$this->person->getX509ValidCN() . '"'	, $script);
+		$script = str_replace('full_dn=""'	,'full_dn="'.$this->person->getX509SubjectDN() . '"'	, $script);
 		$script = str_replace('key_length='	,"key_length="	.Config::get_config('key_length')	, $script);
 
 		/* send location and upload related variables */

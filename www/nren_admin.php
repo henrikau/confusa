@@ -21,7 +21,7 @@ class CP_NREN_Admin extends FW_Content_Page
 	{
 		parent::pre_process($person);
 		/* If user is not subscirber- or nren-admin, we stop here */
-		if (!$this->person->is_nren_admin())
+		if (!$this->person->isNRENAdmin())
 			return false;
 
 
@@ -71,17 +71,20 @@ class CP_NREN_Admin extends FW_Content_Page
 
 	public function process()
 	{
-		if (!$this->person->is_nren_admin()) {
-			Logger::log_event(LOG_NOTICE, "User " . $this->person->get_valid_cn() . " tried to access the NREN-area");
+		if (!$this->person->isNRENAdmin()) {
+			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " tried to access the NREN-area");
 			$this->tpl->assign('reason', 'You are not an NREN-admin');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
 		}
 
 		/* get all info from database and publish to template */
+		$this->tpl->assign('caMode'		, Config::get_config('ca_mode'));
+		$this->tpl->assign('nrenName'		, $this->person->getNREN());
 		$this->tpl->assign_by_ref('nren'	, $this);
 		$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
 		$this->tpl->assign('account_list'	, $this->getAccountInfo());
+		$this->tpl->assign('self_subscriber'	, $this->person->getSubscriberOrgName());
 
 		/* render page */
 		$this->tpl->assign('content', $this->tpl->fetch('nren_admin.tpl'));
@@ -108,7 +111,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		try {
 			$res_id = MDB2Wrapper::execute($query_id,
 						       array('text'),
-						       array($this->person->get_nren()));
+						       array($this->person->getNREN()));
 			if (count($res_id) < 1) {
 				throw new DBQueryException("Could not find your NREN! Something seems to be misconfigured.");
 			}
@@ -118,7 +121,7 @@ class CP_NREN_Admin extends FW_Content_Page
 
 			if (count($res_subscribers) > 1) {
 				$msg  = "Database Inconsistency! Got duplicate (identical) subscribers (" . $name . ")";
-				$msg .= " for NREN " . $this->person->get_nren() . ". Got " . count($res_subscribers);
+				$msg .= " for NREN " . $this->person->getNREN() . ". Got " . count($res_subscribers);
 				$msg .= ", should have found 0 or 1";
 				Logger::log_event(LOG_ALERT, $msg);
 				throw new DBQueryException($msg);
@@ -153,8 +156,8 @@ class CP_NREN_Admin extends FW_Content_Page
 	private function addSubscriber($name, $state)
 	{
 		$org_state	= Input::sanitize($state);
-		$org_name	= Input::sanitize($name);
-		$nren		= $this->person->get_nren();
+		$org_name	= strtolower(Input::sanitize($name));
+		$nren		= $this->person->getNREN();
 
 		$select_nrenid		= "(SELECT nren_id FROM nrens WHERE name=?)";
 		$update_subscr_insert	= "INSERT INTO subscribers(name, nren_id, org_state) VALUES(?,?,?)";
@@ -224,7 +227,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		if (!isset($name) || $name === "") {
 			error_output("Cannot delete empty string!");
 		}
-		$nren	= $this->person->get_nren();
+		$nren	= $this->person->getNREN();
 		$sub	= Input::sanitize($name);
 
 		$subselect = "(SELECT nren_id FROM nrens WHERE name=?)";
@@ -257,7 +260,7 @@ class CP_NREN_Admin extends FW_Content_Page
 	{
 		try {
 			$query = "SELECT * FROM nren_subscriber_view WHERE nren=? ORDER BY subscriber ASC";
-			$res = MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
+			$res = MDB2Wrapper::execute($query, array('text'), array($this->person->getNREN()));
 			if (count($res) == 0)
 				return;
 			$result = array();
@@ -291,7 +294,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		 */
 		$query	= "SELECT * FROM nren_account_map_view WHERE nren = ?";
 		try {
-			$res	= MDB2Wrapper::execute($query, array('text'), array($this->person->get_nren()));
+			$res	= MDB2Wrapper::execute($query, array('text'), array($this->person->getNREN()));
 		} catch (DBStatementException $dbse) {
 			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax.";
 			Logger::log_event(LOG_NOTICE, $msg);
@@ -363,7 +366,7 @@ class CP_NREN_Admin extends FW_Content_Page
 	private function editAccount($login_name, $password)
 	{
 		/* FIXME */
-		$nren = $this->person->get_nren();
+		$nren = $this->person->getNREN();
 
 		if (!isset($login_name) || $login_name === "") {
 			Framework::error_output("Login-name not set. This <B>must</B> be available when one wants to edit it.");
@@ -438,7 +441,7 @@ class CP_NREN_Admin extends FW_Content_Page
 			Framework::error_output("Error adding new account.<BR />\n" . $dbqe->getMessage());
 			return;
 		}
-		Framework::message_output("Added new account $login_name to NREN " . $this->person->get_nren());
+		Framework::message_output("Added new account $login_name to NREN " . $this->person->getNREN());
 		return;
 	}
 
@@ -486,7 +489,7 @@ class CP_NREN_Admin extends FW_Content_Page
 
 	private function changeAccount($login_name)
 	{
-		$nren = $this->person->get_nren();
+		$nren = $this->person->getNREN();
 
 		/* Get the current account */
 		try {
@@ -526,6 +529,7 @@ class CP_NREN_Admin extends FW_Content_Page
 	public function format_subscr_on_state($subscriber, $state)
 	{
 		$res = $subscriber;
+
 		switch($state) {
 		case unsubscribed:
 			$res = "<FONT COLOR=\"GRAY\"><B>$res</B></FONT>";
@@ -553,8 +557,17 @@ class CP_NREN_Admin extends FW_Content_Page
 		$res .= "<INPUT TYPE=\"hidden\" NAME=\"". $key . "\" VALUE=\"delete\">\n";
 		$res .= "<INPUT TYPE=\"hidden\" NAME=\"name\" VALUE=\"" . $target . "\" />\n";
 		$res .= "<INPUT TYPE=\"hidden\" NAME=\"state\" VALUE=\"\" />\n"; /* don't need state to delete */
+
 		$res .= "<INPUT TYPE=\"IMAGE\" NAME=\"delete\" ";
-		$res .= "       onclick=\"return confirm('Delete entry? (" . $target . ") ')\" ";
+
+		/* warning upon attempted self-deletion */
+		if ($target === $this->person->getSubscriberOrgName()) {
+			$res .= "onclick=\"return confirm('You are about to delete your OWN INSTITUTION (" . $target . ")!\\n";
+			$res .= "          Are you sure about that?')\"";
+		} else {
+			$res .= "onclick=\"return confirm('Delete entry? (" . $target . ") ')\" ";
+		}
+
 		$res .= "                 value=\"delete\" src=\"graphics/delete.png\"";
 		$res .= "                 alt=\"delete\" />\n";
 		$res .= "</FORM>\n";

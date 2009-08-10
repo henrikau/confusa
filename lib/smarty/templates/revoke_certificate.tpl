@@ -1,7 +1,14 @@
+{assign var='table'	value='<div class="admin_table">'}
+{assign var='table_e'	value='</div><!--admin_table-->'}
+{assign var='tr'	value='<DIV CLASS="admin_table_row">'}
+{assign var='tr_e'	value='</DIV><!--admin_table_row-->'}
+{assign var='td'	value='<DIV CLASS="admin_table_cell">'}
+{assign var='td_e'	value='</DIV><!--admin_table_cell-->'}
+
 <h3>Certificate Revocation Area</h3>
 
 {* The search part *}
-{if $person->get_mode() == 0}
+{if $person->getMode() == 0}
 
 {* A normal person isn't offered any search options. Instead, he/she will
 immediately see a result entry *}
@@ -22,8 +29,8 @@ immediately see a result entry *}
 {/if}
 
 {* The display part *}
+
 {if isset($owners)}
-    {* Revoke the certificates from a single cert-owner *}
     {if $revoke_cert}
         <table>
         <tr>
@@ -45,12 +52,13 @@ immediately see a result entry *}
                     <form action="?revoke=do_revoke" method="POST">
 
                     {foreach from=$orders[$owner] item=order}
-                        <input type="hidden" name="order_numbers[]" value={$order.auth_key} />
-                        <input type="hidden" name="valid_untill[]" value={$order.valid_untill} />
+                        <input type="hidden" name="order_numbers[]" value="{$order[0]}" />
+                        <input type="hidden" name="valid_untill[]" value="{$order[1]}" />
                     {/foreach}
 
                     {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
-                    <input type="submit" name="submit" value="Revoke all" onclick="return confirm('Are you sure?')" />
+                    <input type="submit" name="submit" value="Revoke all"
+                            onclick="return confirm('Revoking {$orders[$owner]|@count} certificates! Are you sure?')" />
                     </form>
                 </td>
 
@@ -82,6 +90,11 @@ immediately see a result entry *}
             </form>
         </div>
 
+    {else}
+	nothing to do
     {/if}
+{else}
+    <div class="spacer"></div>
+    Found no valid certificates to revoke for DN<br /><b>{$person->getX509ValidCN()}</b>!
 {/if}
 

@@ -76,15 +76,15 @@ class Framework {
 
 	public function authenticate() {
 		is_authenticated($this->person);
-		if (!$this->person->is_auth()) {
+		if (!$this->person->isAuth()) {
 			/* if login, trigger SAML-redirect first */
 			if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
 				_assert_sso($this->person);
 			}
 		}
 		$uname = "anonymous";
-		if($this->person->is_auth())
-		$uname = $this->person->get_valid_cn();
+		if($this->person->isAuth())
+		$uname = $this->person->getX509ValidCN();
 		return $this->person;
 	}
 
@@ -111,7 +111,7 @@ class Framework {
 			if (htmlentities($_GET['mode']) == 'admin') {
 				$new_mode = ADMIN_MODE;
 			}
-			$this->person->set_mode($new_mode);
+			$this->person->setMode($new_mode);
 		}
 		$this->tpl->assign('person', $this->person);
 		$this->contentPage->process($this->person);
@@ -121,8 +121,8 @@ class Framework {
 		$this->tpl->assign('messages', self::$messages);
 
 		/* get custom logo if there is any */
-		$logo = Framework::get_logo_for_nren($this->person->get_nren());
-		$css = Framework::get_css_for_nren($this->person->get_nren());
+		$logo = Framework::get_logo_for_nren($this->person->getNREN());
+		$css = Framework::get_css_for_nren($this->person->getNREN());
 		$this->tpl->assign('logo', $logo);
 		$this->tpl->assign('css',$css);
 		$this->tpl->display('site.tpl');
@@ -134,7 +134,7 @@ class Framework {
 	private function user_rendering()
 	{
 		/* check to see if the user wants to log in, if so, start login-procedure */
-		if (!$this->person->is_auth()) {
+		if (!$this->person->isAuth()) {
 			if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
 				authenticate_user($this->person);
 			}

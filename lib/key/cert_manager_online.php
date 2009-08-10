@@ -53,10 +53,10 @@ class CertManager_Online extends CertManager
               "FROM nren_account_map_view a, nren_subscriber_view s " .
               "WHERE s.subscriber = ? AND s.nren = a.nren";
 
-        $org = $this->person->get_orgname();
+        $org = $this->person->getSubscriberOrgName();
         Logger::log_event(LOG_INFO, "Getting the remote-CA login " .
                           "credentials for organization " .
-                          $this->person->get_orgname()
+                          $this->person->getSubscriberOrgName()
                 );
         $res = MDB2Wrapper::execute($login_cred_query, array('text'),
                                     array($org)
@@ -94,7 +94,6 @@ class CertManager_Online extends CertManager
 
 	/* FIXME: conflict, not sure how to resolve, do we need both? */
         Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
-        $_SESSION['list_cached'] = false;
 	/* FIXME: <END> */
     }
 
@@ -106,19 +105,27 @@ class CertManager_Online extends CertManager
      */
     public function get_cert_list()
     {
-        if ($_SESSION['list_cached']) {
-          return $this->_cert_list_from_cache();
-        }
-
-        $common_name = $this->person->get_valid_cn();
+        $common_name = $this->person->getX509ValidCN();
         $params = $this->_capi_get_cert_list($common_name);
         $res=array();
 
-        for ($i = 1; $i <= $params['noOfResults']; $i = $i+1) {
         /* transfer the orders from the string representation in the response
          * to the array representation we use internally */
+        for ($i = 1; $i <= $params['noOfResults']; $i = $i+1) {
+
+            /* for simplicity, format the time just as an SQL server would return it */
+            $valid_untill = $params[$i . '_1_notAfter'];
+
+            /* don't fetch expired certificates, but include pending certificates */
+            if (!empty($valid_untill) && ($valid_untill < time())) {
+                continue;
+            } else if (!empty($valid_untill)) {
+                $valid_untill = date('Y-m-d H:i:s', $valid_untill);
+                $res[$i-1]['valid_untill'] = $valid_untill;
+            }
+
             $res[$i-1]['order_number'] = $params[$i . '_orderNumber'];
-            $res[$i-1]['cert_owner'] = $this->person->get_valid_cn();
+            $res[$i-1]['cert_owner'] = $this->person->getX509ValidCN();
         }
 
         return $res;
@@ -138,6 +145,14 @@ class CertManager_Online extends CertManager
         $params = $this->_capi_get_cert_list($common_name);
         $res = array();
         for ($i = 1; $i <= $params['noOfResults']; $i++) {
+            /* Note that this field will not get exported if the order is not yet authorized */
+            $valid_untill = $params[$i . '_1_notAfter'];
+
+            /* don't consider expired or pending certificates */
+            if ($valid_untill < time()) {
+                continue;
+            }
+
             $subject = $params[$i . '_1_subjectDN'];
             $dn_components = explode(',', $subject);
 
@@ -150,6 +165,11 @@ class CertManager_Online extends CertManager
                 if (array_search($organization, $dn_components) === FALSE) {
                     continue;
                 }
+            }
+
+            if (!empty($valid_untill)) {
+                $valid_untill = date('Y-m-d H:i:s', $valid_untill);
+                $res[$i-1]['valid_untill'] = $valid_untill;
             }
 
             $res[$i-1]['auth_key'] = $params[$i . '_orderNumber'];
@@ -203,32 +223,32 @@ class CertManager_Online extends CertManager
 
         $status=substr($data,0,1);
         switch($status) {
-          case $STATUS_OK:
-              $return_res = substr($data,2);
-              break;
-          case $STATUS_PEND:
-		  error_output("The certificate is being processed and is not yet available");
-		  return null;
-          default:
-              /* extract the error status code which is longer than one character */
-              $pos = stripos($data, "\n");
+        case $STATUS_OK:
+            $return_res = substr($data,2);
+            break;
+        case $STATUS_PEND:
+            Framework::message_output("The certificate is being processed and is not yet available");
+		    return null;
+        default:
+            /* extract the error status code which is longer than one character */
+            $pos = stripos($data, "\n");
 
-              /* potential error: no newline in response */
-              if ($pos === FALSE) {
+            /* potential error: no newline in response */
+            if ($pos === FALSE) {
                 $msg = "Received an unexpected response from the remote API!\n" .
                        "Maybe Confusa is not properly configured?<br />\n";
                 throw new RemoteAPIException($msg);
-              }
+            }
 
-              $status = substr($data,0,$pos);
-              /* potential error: response does not contain status code */
-              if(is_numeric($status)) {
-                throw new RemoteAPIException("Received error message $data\n");
-              } else {
-                $msg = "Received an unexpected response from the remote API!n" .
-                       "Maybe Confusa is not properly configured?\n";
-                throw new RemoteAPIException($msg);
-              }
+            $status = substr($data,0,$pos);
+            /* potential error: response does not contain status code */
+            if(is_numeric($status)) {
+              throw new RemoteAPIException("Received error message $data\n");
+            } else {
+              $msg = "Received an unexpected response from the remote API!n" .
+                     "Maybe Confusa is not properly configured?\n";
+              throw new RemoteAPIException($msg);
+            }
         }
 
         return $return_res;
@@ -298,13 +318,21 @@ class CertManager_Online extends CertManager
                 $status = substr($data, 0, $pos);
 
                 switch($status) {
-                    case $STATUS_OK:  echo "Certificate successfully revoked!<br />\n";
-                                      $_SESSION['list_cached'] = false;
-                                      break;
-                    default: throw new RemoteAPIException("Received error message " .
-                                                          $data . "\n"
-                            );
-                             break;
+                case $STATUS_OK:
+                    Framework::message_output("Certificate with " .
+                                "order number $key successfully revoked!<br />\n");
+
+                              Logger::log_event(LOG_NOTICE, "Revoked certificate with " .
+                                                "order number $key using Comodo's AutoRevoke " .
+                                                "API. User contacted us from " .
+                                                $_SERVER['REMOTE_ADDR']);
+                              break;
+                default:
+                    throw new RemoteAPIException("Received error message $data");
+                    Logger::log_event(LOG_ERROR, "Revocation of certificate with " .
+                                     "order_number $key failed! User contacted us from " .
+                                     $_SERVER['REMOTE_ADDR']);
+                    break;
                 }
             }
         }
@@ -312,7 +340,7 @@ class CertManager_Online extends CertManager
 
     /*
      * Query the remote API for the list of certificates belonging to
-     * common_name $common_name
+     * common_name $common_name. Filter out all the expired certificates.
      *
      * @param $common_name The common-name for which the list is retrieved
      */
@@ -397,10 +425,10 @@ class CertManager_Online extends CertManager
         /* manually compose the subject. Necessary, because we want to have
          * Terena domainComponents */
         $postfields_sign_req["subject_commonName_1"] = $this->TEST_CN_PREFIX .
-            $this->person->get_valid_cn();
+            $this->person->getX509ValidCN();
         $postfields_sign_req["subject_organizationName_2"] = $this->TEST_O_PREFIX .
-            $this->person->get_orgname();
-        $postfields_sign_req["subject_countryName_3"] = $this->person->get_country();
+            $this->person->getSubscriberOrgName();
+        $postfields_sign_req["subject_countryName_3"] = $this->person->getCountry();
         $postfields_sign_req["subject_domainComponent_4"] = "tcs";
         $postfields_sign_req["subject_domainComponent_5"] = "terena";
         $postfields_sign_req["subject_domainComponent_6"] = "org";
@@ -441,7 +469,7 @@ class CertManager_Online extends CertManager
                                         "order number " .
                                         $this->order_number .
                                         " for user " .
-                                        $this->person->get_valid_cn() .
+                                        $this->person->getX509ValidCN() .
                                         " Person contacted us from " .
                                         $_SERVER['REMOTE_ADDR']);
 
@@ -451,7 +479,7 @@ class CertManager_Online extends CertManager
 
           MDB2Wrapper::update($sql_command,
                             array('text', 'text', 'text'),
-                            array($auth_key, $this->person->get_valid_cn(),
+                            array($auth_key, $this->person->getX509ValidCN(),
                             $this->order_number));
         } /* end _capi_upload_csr */
     }
@@ -471,14 +499,14 @@ class CertManager_Online extends CertManager
         */
         return $auth_key;
       } else if(strlen($auth_key) == Config::get_config('auth_length')) {
-          // TODO: Replace get_common_name with get_eppn or whatever...
+          // TODO: Replace getEPPN with get_eppn or whatever...
           $res = MDB2Wrapper::execute("SELECT order_number FROM order_store WHERE auth_key=? AND owner=?",
                                   array('text', 'text'),
-                                  array($auth_key, $this->person->get_common_name()));
+                                  array($auth_key, $this->person->getEPPN()));
 
           if (count($res) < 1) {
             throw new DBQueryException("Could not find order number for $auth_key " .
-                                           "and " . $this->person->get_common_name() .
+                                           "and " . $this->person->getEPPN() .
                                            " in order_store"
             );
           }
@@ -518,7 +546,7 @@ class CertManager_Online extends CertManager
                               array('text', 'text'),
                               array($this->order_number, $this->collection_code));
           Logger::log_event(LOG_NOTICE, "Authorized remote certificate for person ".
-                                        $this->person->get_valid_cn().
+                                        $this->person->getX509ValidCN().
                                         " with order number " .
                                         $this->order_number .
                                         " Person contacted us from ".

@@ -89,7 +89,7 @@ function format_ip($ip, $show_help=false)
 		$pre =  "<FONT COLOR=\"RED\"><B><I>";
 		$post = "</I></B></FONT>";
 		if ($show_help) {
-			$help = " [ " . show_window("?", "messages/diff_ip.php") . " ] ";
+			$help = " [" . show_window("?", "messages/diff_ip.php") . "]";
 		}
 	}
 	return "$pre$ip$post$help";
@@ -98,10 +98,10 @@ function format_ip($ip, $show_help=false)
 
 function show_window($url_name, $target)
 {
-	$help  = " <A HREF=\"\"";
+	$help  = "<A HREF=\"\"";
 	$help .= "onClick =\"window.open('" . $target . "', '', 'width=500,height=400');\"";
 	$help .= ">";
-	$help .=  $url_name . "</A> \n";
+	$help .=  $url_name . "</A>";
 	return $help;
 }
 

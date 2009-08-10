@@ -4,6 +4,7 @@ require_once 'framework.php';
 require_once 'mdb2_wrapper.php';
 require_once 'input.php';
 require_once 'file_upload.php';
+require_once 'logger.php';
 
 class CP_Stylist extends FW_Content_Page
 {
@@ -28,36 +29,36 @@ class CP_Stylist extends FW_Content_Page
 		parent::pre_process($person);
 
 		/* if $person is not a NREN admin we stop here */
-		if (!$this->person->is_nren_admin()) {
+		if (!$this->person->isNRENAdmin()) {
 			return false;
 		}
 
 		if (isset($_POST['stylist_operation'])) {
 			switch(htmlentities($_POST['stylist_operation'])) {
 			case 'change_help_text':
-				$new_text = Input::sanitize($_POST['help_text']);
-				$this->updateNRENHelpText($this->person->get_nren(), $new_text);
+				$new_text = Input::sanitizeText($_POST['help_text']);
+				$this->updateNRENHelpText($this->person->getNREN(), $new_text);
 				break;
 			case 'change_about_text':
-				$new_text = Input::sanitize($_POST['about_text']);
-				$this->updateNRENAboutText($this->person->get_nren(), $new_text);
+				$new_text = Input::sanitizeText($_POST['about_text']);
+				$this->updateNRENAboutText($this->person->getNREN(), $new_text);
 				break;
 			case 'change_css':
 				if (isset($_POST['reset'])) {
-					$this->resetNRENCSS($this->person->get_nren());
+					$this->resetNRENCSS($this->person->getNREN());
 				} else {
 					/* the CSS will not be inserted into the DB or executed in another way.
 					* Hence do not sanitize it. It will contain 'dangerous' string portions,
 					* such as { : ' anyways, so it would be hard to insert it into the DB properly*/
-					$new_css = $_POST['css_content'];
-					$this->updateNRENCSS($this->person->get_nren(), $new_css);
+					$new_css = Input::sanitizeCSS($_POST['css_content']);
+					$this->updateNRENCSS($this->person->getNREN(), $new_css);
 				}
 				break;
 			case 'upload_logo':
 				if (isset($_FILES['nren_logo']['name'])) {
 					/* only allow image uploads */
 					if (eregi('image/', $_FILES['nren_logo']['type'])) {
-						$this->uploadLogo('nren_logo', $this->person->get_nren());
+						$this->uploadLogo('nren_logo', $this->person->getNREN());
 					}
 				}
 				break;
@@ -73,8 +74,8 @@ class CP_Stylist extends FW_Content_Page
 	 */
 	public function process()
 	{
-		if (!$this->person->is_nren_admin()) {
-			Logger::log_event(LOG_NOTICE, "User " . $this->person->get_valid_cn() . " tried to access the NREN-area");
+		if (!$this->person->isNRENAdmin()) {
+			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " tried to access the NREN-area");
 			$this->tpl->assign('reason', 'You are not an NREN-admin');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
@@ -83,7 +84,7 @@ class CP_Stylist extends FW_Content_Page
 		if (isset($_GET['show'])) {
 			switch(htmlentities($_GET['show'])) {
 			case 'text':
-				$texts = $this->getNRENTexts($this->person->get_nren());
+				$texts = $this->getNRENTexts($this->person->getNREN());
 
 				if ($texts != NULL) {
 					$this->tpl->assign('help_text', $texts[0]);
@@ -94,7 +95,7 @@ class CP_Stylist extends FW_Content_Page
 				break;
 			case 'css':
 				$this->tpl->assign('edit_css', true);
-				$css_string = $this->fetchNRENCSS($this->person->get_nren());
+				$css_string = $this->fetchNRENCSS($this->person->getNREN());
 
 				if (!is_null($css_string)) {
 					$this->tpl->assign('css_content', $css_string);
@@ -103,8 +104,10 @@ class CP_Stylist extends FW_Content_Page
 				break;
 			case 'logo':
 				$this->tpl->assign('edit_logo', true);
-				$logo = Framework::get_logo_for_nren($this->person->get_nren());
+				$logo = Framework::get_logo_for_nren($this->person->getNREN());
 				$this->tpl->assign('logo', $logo);
+				$extensions = implode(", ", Framework::$allowed_img_suffixes);
+				$this->tpl->assign('extensions', $extensions);
 				$this->tpl->assign('width', $this->allowed_width);
 				$this->tpl->assign('height', $this->allowed_height);
 				break;
@@ -181,6 +184,9 @@ class CP_Stylist extends FW_Content_Page
 									"probably related to the supplied data. Please verify the data to be inserted! " .
 									"Server said " . $dbqe->getMessage());
 		}
+
+		Logger::log_event(LOG_INFO, "Help-text for NREN $nren was changed. " .
+				  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
 	}
 
 	/*
@@ -205,6 +211,9 @@ class CP_Stylist extends FW_Content_Page
 									"probably related to the supplied data. Please verify the data to be inserted! " .
 									"Server said " . $dbqe->getMessage());
 		}
+
+		Logger::log_event(LOG_INFO, "About-text for NREN $nren was changed. " .
+						  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
 	}
 
 	/**
@@ -249,7 +258,7 @@ class CP_Stylist extends FW_Content_Page
 			$css_string = fread($fd, filesize($main_css_path));
 			fclose($fd);
 
-			return $css_string;
+			return Input::sanitizeCSS($css_string);
 		}
 
 		return NULL;
@@ -283,14 +292,23 @@ class CP_Stylist extends FW_Content_Page
 			return;
 		}
 
+		if (ini_get('magic_quotes_gpc') === "1") {
+			/* no slashes should be introduced into the content */
+			$content = stripslashes($content);
+		}
+
 		$success = fwrite($fd, $content);
 
 		if ($success === FALSE) {
 			Framework::error_output("Could not write to custom CSS file! Please contact an administrator!");
-			return;
+		} else {
+			Logger::log_event(LOG_INFO, "The custom CSS for NREN " . $nren .
+										" was changed. User contacted us from " .
+										$_SERVER['REMOTE_ADDR']);
 		}
 
 		fclose($fd);
+		return;
 	}
 
 	/*
@@ -332,7 +350,12 @@ class CP_Stylist extends FW_Content_Page
 				return;
 			}
 
-			list($width, $height) = getimagesize($_FILES[$filename]['tmp_name']);
+			list($width, $height, $type) = getimagesize($_FILES[$filename]['tmp_name']);
+
+			if (is_null($type) || $type < 0) {
+				Framework::error_output("What you have provided doesn't seem to be an image!");
+				return;
+			}
 
 			if ($width > $this->allowed_width) {
 				Framework::error_output("The width of your image is $width pixel, greater than " .
@@ -358,8 +381,11 @@ class CP_Stylist extends FW_Content_Page
 				mkdir($logo_path, 0755, TRUE);
 			} else {
 				/* delete all the other potential logos that might be there */
-				foreach (Framework::$allowed_img_suffixes as $suffix) {
-					unlink($logo_path . "/custom.$suffix");
+				foreach (Framework::$allowed_img_suffixes as $all_suffix) {
+					$file = $logo_path . "/custom.$all_suffix";
+					if (file_exists($file)) {
+						unlink($file);
+					}
 				}
 			}
 
@@ -372,6 +398,10 @@ class CP_Stylist extends FW_Content_Page
 				Framework::error_output("Could not save the logo on the server. " .
 							"Server said: " . $fexp->getMessage());
 			}
+
+			Logger::log_event(LOG_INFO, "Logo for NREN $nren was changed to new " .
+							  "logo custom.$suffix User contacted us from " .
+							  $_SERVER['REMOTE_ADDR']);
 		}
 	}
 }

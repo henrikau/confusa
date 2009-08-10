@@ -1,5 +1,5 @@
 <h2>About NREN</h2>
-{if $person->is_auth()}
+{if $person->isAuth()}
 <div class="spacer"></div>
 
 {if !is_null($logo)}

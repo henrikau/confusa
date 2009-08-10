@@ -24,12 +24,12 @@ final class Index extends FW_Content_Page
 	 */
 	function process()
 	{
-		if ($this->person->is_auth()) {
-			if ($this->person->get_mode() > 1) {
+		if ($this->person->isAuth()) {
+			if ($this->person->getMode() > 1) {
 				$code = create_pw(8);
 				Framework::error_output("Unknown mode, contact the administrator with this error code " . $code);
 				$msg  = $code . " ";
-				$msg .= "User " . $this->person->get_common_name() . " was given mode " . $this->person->get_mode();
+				$msg .= "User " . $this->person->getEPPN() . " was given mode " . $this->person->getMode();
 				$msg .= ". This is not a valid mode. Verify content in admins-table";
 				Logger::log_event(LOG_WARNING, $msg);
 			}

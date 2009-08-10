@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS nrens (
 CREATE TABLE IF NOT EXISTS subscribers (
     subscriber_id INT PRIMARY KEY AUTO_INCREMENT,
     -- the name of the institution (e.g. KTH, CSC, Univ. of Oslo,...)
-    name VARCHAR(30) NOT NULL,
+    name VARCHAR(30) UNIQUE NOT NULL,
 
     -- the NREN as it is stored in the NREN table
     nren_id INT,
@@ -178,7 +178,7 @@ CREATE TABLE cert_cache (
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS admins (
        admin_id INT PRIMARY KEY AUTO_INCREMENT,
-       admin varchar(128) NOT NULL, -- ePPN of the admin,
+       admin varchar(128) UNIQUE NOT NULL, -- ePPN of the admin,
        -- The level of admin privileges
        -- 2: NREN-admin
        -- 1: Subscriber admin
