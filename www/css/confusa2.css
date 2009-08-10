@@ -204,3 +204,8 @@ a.exphead span.expchar {
 .expcont {
     display: block;
 }
+
+span.wtf {
+    cursor: help;
+    border-bottom: dashed 1px;
+}

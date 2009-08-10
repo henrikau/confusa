@@ -41,7 +41,7 @@ function collapseAll() {
 <br />
 
 <p>
-	The aim of Confusa is to help you obtain a <span style="cursor:help; border-bottom: dashed 1px"
+	The aim of Confusa is to help you obtain a <span class="wtf"
 	title="X.509 certificates help 3rd parties to verify your identity.
 	They are like digital ID cards, containing a statement about your identity by a trusted organization.">
 	X.509 certificate</span> very fast using these two steps:
