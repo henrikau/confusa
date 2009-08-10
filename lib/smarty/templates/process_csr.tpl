@@ -44,7 +44,7 @@
 		<td> </td>
 		<td>
 		{if $csrInspect.auth_token eq $csr.auth_key}
-			[<font color="gray">Inspect</font>]
+			[<span style="color: gray">Inspect</span>]
 		{else}
 			[<a href="process_csr.php?inspect_csr={$csr.auth_key}">Inspect</a>]
 		{/if}
