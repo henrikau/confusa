@@ -10,9 +10,10 @@ Or, if you want to download it directly, press here:
 </p>
 
 <form method="get" action="root_cert.php">
-<fieldset>
+<div>
 <input type="hidden" name="send_file" value="" />
-</fieldset>
+<input type="submit" name="submit" value="Download" />
+</div>
 </form>
 
 <hr />
