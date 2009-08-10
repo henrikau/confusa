@@ -1,5 +1,5 @@
 {if empty($certList)}
-<H3>No certificates in database</H3>
+<h3>No certificates in database</h3>
 {else}
 	<DIV ID="csr">
 	<FIELDSET>
