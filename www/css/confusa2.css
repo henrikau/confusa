@@ -187,3 +187,20 @@ ul.info {
     background-repeat: repeat-x;
     background-position: bottom;
 }
+
+a.exphead {
+    text-decoration: none;
+}
+
+a.exphead:hover {
+    text-decoration: bold;
+}
+
+a.exphead span.expchar {
+    font-family: monospace;
+    font-weight: normal;
+}
+
+.expcont {
+    display: block;
+}
