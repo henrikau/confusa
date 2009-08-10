@@ -20,7 +20,7 @@
 
 	<tr><td><b>Time left</b></td><td>{$timeLeft}</td></tr>
 	<tr><td><b>Time since AuthN</b></td><td>{$timeSinceStart}</td></tr>
-</table><br>
+</table><br />
 <hr />
 We store very little information. What we do keep, is information about certificates issued, combined with the eduPersonPrincipalName
 This is the DN in the certificate, and we <b>have</b> to store this.<br />
