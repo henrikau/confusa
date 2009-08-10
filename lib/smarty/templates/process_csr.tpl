@@ -58,7 +58,7 @@
 </table>
 </legend>
 </div>
-<BR />
+<br />
 {/if}
 
 {if !empty($csrInspect)}
@@ -155,32 +155,32 @@
     </table>
     </fieldset>
     </div>{* inspect_csr *}
-<BR />    
+<br />
 {/if}
 
 {* uploading new certificate via FILE *}
 <div id="csr">
 	<fieldset>
 		<legend>Upload new CSR</legend>
-		<BR />
-		<P>
+		<br />
+		<p>
 		Upload a local CSR for signing by the CA. If you created
 		this with any globus-specific tools, you should look for
 		the folder ".globus" in you home directory.
-		</P>
-		<BR />
+		</p>
+		<br />
 		<table>
 			<tr>
 				<td>
 					<form action="" method="post" enctype="multipart/form-data">
+					<div><!-- XHTML strict won't allow inputs just within forms -->
 					<input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
 					<input type="file" name="user_csr" />
 					<input type="submit" value="Upload CSR" />
+					</div>
 					</form>
 				</td>
 			</tr>
-			<tr></tr>
-			<tr></tr>
 		</table>
 	</fieldset>
 </div> {* id="csr" *}
