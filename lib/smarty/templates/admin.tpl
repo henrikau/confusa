@@ -13,13 +13,7 @@
  NREN admins
 </legend>
 
-<table>
-<tr>
-<td style="width: 30px"></td><td><b>Principal identifier</b></td>
-</tr>
-
-{if !empty($nren_admins)}
-	<p class="info">
+<p class="info">
 		Add and delete NREN admins for your NREN '{$nren}'. You yourself are
 		marked with an asterisk (*). NREN admins have many privileges:
 	</p>
@@ -36,8 +30,15 @@
 		<p class="info">
 		Overall this is a very powerful role and you should think who you want
 		to give it.
-		</p>
-		<br />
+</p>
+<br />
+
+<table>
+<tr>
+<td style="width: 30px"></td><td><b>Principal identifier</b></td>
+</tr>
+
+{if !empty($nren_admins)}
 
 	{foreach from=$nren_admins item=admin}
 		<tr>
