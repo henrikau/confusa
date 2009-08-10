@@ -36,7 +36,10 @@ function collapseAll() {
 <h3>Confusa</h3>
 <br />
 <p>
-	Confusa is a web-service that maps a federated identity into an X.509 certificate.<br />
+	Confusa is a web-service that maps a <span class="wtf" title="In the Internet, a federated identity
+	means that information about a the identity of a person is exchanged automatically between institutions,
+	without further human verification. Imagine Harry P. has login data for university Ravenclaw, but not for university Gryffidor, but he wants to use the electronic library of university Gryffidor. With his federated identity he can login with Ravenclaw to use the services at Gryffidor, because Ravenclaw will tell Gryffidor 'Harry P. has authenticated his identity'.">federated identity</span>
+	into an X.509 certificate.<br />
 </p>
 <br />
 
@@ -54,7 +57,7 @@ function collapseAll() {
 <p>
 	The home institution will relay information about you (name, email, organization) to Confusa.
 	This information and your certificate request will permit Confusa and a backend
-	Online-CA to issue a X.509 certificate to you.
+	<span class="wtf" title="A Certificate Authority (CA) is an organization that issues certificates for people, just like e.g. the state issues ID-cards in the real world. Not everybody can do that, since the organization has to be trusted by service providers.">Online-CA</span> to issue a X.509 certificate to you.
 </p>
 
 <br />
@@ -68,7 +71,7 @@ you when you signed up with it, so why verify the same information twice or thre
 
 <h4><a href="javascript:void(0)" class="exphead" onclick="toggleExpand(this)"><span class="expchar">+</span> How long are the certificates valid?</a></h4>
 <div id="expdiv2" style="expcont">
-<p>Certificates issued by Confusa are valid for 13 months.</p>
+<p>Certificates issued with Confusa are valid for 13 months.</p>
 </div>
 <br />
 
