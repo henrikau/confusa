@@ -1,5 +1,6 @@
 <script type="text/javascript">
 {literal}
+//<![CDATA[
 function collapse(div) {
 	div.style.display = 'none';
 }
@@ -30,6 +31,7 @@ function collapseAll() {
 		}
 	}
 }
+//]]>
 {/literal}
 </script>
 
