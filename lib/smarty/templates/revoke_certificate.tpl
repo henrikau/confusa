@@ -12,6 +12,10 @@
 
 {* A normal person isn't offered any search options. Instead, he/she will
 immediately see a result entry *}
+{if !isset($owners)}
+ <div class="spacer"></div>
+    Found no valid certificates to revoke for DN<br /><b>{$person->getX509ValidCN()}</b>!
+{/if}
 
 {else}
     <div class="spacer"></div>
@@ -112,8 +116,5 @@ immediately see a result entry *}
     {else}
 	nothing to do
     {/if}
-{else}
-    <div class="spacer"></div>
-    Found no valid certificates to revoke for DN<br /><b>{$person->getX509ValidCN()}</b>!
 {/if}
 
