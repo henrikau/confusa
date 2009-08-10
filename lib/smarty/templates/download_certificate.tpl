@@ -1,11 +1,11 @@
 {if empty($certList)}
 <h3>No certificates in database</h3>
 {else}
-	<DIV ID="csr">
-	<FIELDSET>
-	<LEGEND>Available Certificates</LEGEND>
+	<div class="csr">
+	<fieldset>
+	<legend>Available Certificates</legend>
 	<table>
-		<tr></tr>
+		<tr><td></td></tr>
 		{foreach from=$certList item=cert}
 			{assign var='key' value=$cert.auth_key}
 			{assign var='name' value=$cert.cert_owner}
@@ -15,7 +15,7 @@
 				<tr>
 				<td></td>
 				<td>
-				<I>{$key}</I>
+				<i>{$key}</i>
 				</td>
 				</tr>
 				<tr>
@@ -24,7 +24,7 @@
 				[<a href="download_certificate.php?email_cert={$key}">Email</a>]
 				[<a href="download_certificate.php?file_cert={$key}">Download</a>]
 				{if $processingToken eq $key}
-					<FONT COLOR="GRAY">[Inspect]</FONT>
+					<span style="color: gray">[Inspect]</span>
 				{else}
 					[<a href="download_certificate.php?inspect_cert={$key}">Inspect</a>]
 				{/if}
@@ -32,15 +32,17 @@
 				</td>
 				<td>
 					{* Have the form wrap the table, otherwise it will not be legal HTML *}
-				<FORM ACTION="revoke_certificate.php" METHOD="GET">
+				<form action="revoke_certificate.php" method="get">
+				<div>
 				{* Revoke-button *}
-				<INPUT TYPE="hidden" NAME="revoke"		VALUE="revoke_single">
-				<INPUT TYPE="hidden" NAME="order_number"	VALUE="{$key}">
-				<INPUT TYPE="hidden" NAME="reason"		VALUE="unspecified">
-				<INPUT TYPE="submit" NAME="submit"		VALUE="Revoke"
+				<input type="hidden" name="revoke"		value="revoke_single" />
+				<input type="hidden" name="order_number"	value="{$key}" />
+				<input type="hidden" name="reason"		value="unspecified" />
+				<input type="submit" name="submit"		value="Revoke"
 				       		     style=" background-color:#660000; color:#FFFFFF;" 
 						     onclick="return confirm('\t\tReally revoke certificate?\n\nAuth_key:       {$key}\nExpiry date:   {$cert.valid_untill}')" />
-				</FORM>
+				</div>
+				</form>
 				</td>
 				<td></td>
 				</tr>
@@ -71,15 +73,17 @@
 					[<a href="download_certificate.php?inspect_cert={$cert.order_number}">Inspect</a>]
 					</td>
 					<td>
-						<FORM ACTION="revoke_certificate.php" METHOD="GET">
+						<form action="revoke_certificate.php" method="get">
+						<div>
 						{* Revoke-button *}
-						<INPUT TYPE="hidden" NAME="revoke"		VALUE="revoke_single">
-						<INPUT TYPE="hidden" NAME="order_number"	VALUE="{$cert.order_number}">
-						<INPUT TYPE="hidden" NAME="reason"		VALUE="unspecified">
-						<INPUT TYPE="submit" NAME="submit"		VALUE="Revoke"
+						<input type="hidden" name="revoke"		value="revoke_single" />
+						<input type="hidden" name="order_number"	value="{$cert.order_number}" />
+						<input type="hidden" name="reason"		value="unspecified" />
+						<input type="submit" name="submit"		value="Revoke"
 										 style=" background-color:#660000; color:#FFFFFF;"
 										onclick="return confirm('\t\tReally revoke certificate?\n\Order number: {$cert.order_number}\nExpiry date:     {$valid}')" />
-						</FORM>
+						</div>
+						</form>
 					</td>
 				{/if}
 
@@ -88,7 +92,7 @@
 				<tr>
 				<td></td>
 				{if is_null($valid)}
-				<td><font color="gray"><b>Processing pending</b></font></td>
+				<td><span style="color: gray"><b>Processing pending</b></span></td>
 				{else}
 				<td>{$cert.valid_untill}</td>
 				{/if}
@@ -97,7 +101,7 @@
 			<tr><td><br /></td></tr>
 		{/foreach}
 	</table>
-	</FIELDSET>
-	</DIV>
+	</fieldset>
+	</div>
 {/if} {* empty(certList) *}
 {$processingResult}
