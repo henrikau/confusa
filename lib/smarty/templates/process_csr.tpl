@@ -13,27 +13,28 @@
 {if empty($csrList)}
 {* No CSR in database*}
 {else}
-    <div id="csr">
+    <div class="csr">
     <fieldset>
     <legend>List of CSR</legend>
 
 <table>
 	<tr>
+	<td></td>
 	</tr>
 	<tr>
-		<td><B>Upload date</B></td>
+		<td><b>Upload date</b></td>
 		<td></td>
-		<td><B>Common name</B></td>
+		<td><b>Common name</b></td>
 		<td></td>
-		<td><B>Remote IP</B></td>
+		<td><b>Remote IP</b></td>
 		<td></td>
-		<td>{*<B>Inspect</B>*}</td>
+		<td>{*<b>Inspect</b>*}</td>
 		<td></td>
-		<td>{*<B>Delete</B>*}</td>
+		<td>{*<b>Delete</b>*}</td>
 		<td></td>
 	</tr>
 	{foreach from=$csrList item=csr}
-	<tr></tr>
+	<tr><td></td></tr>
 	<tr>
 		<td>{$csr.uploaded_date}</td>
 		<td> </td>
@@ -43,7 +44,7 @@
 		<td> </td>
 		<td>
 		{if $csrInspect.auth_token eq $csr.auth_key}
-			[<FONT COLOR="GRAY">Inspect</FONT>]
+			[<font color="gray">Inspect</font>]
 		{else}
 			[<a href="process_csr.php?inspect_csr={$csr.auth_key}">Inspect</a>]
 		{/if}
@@ -54,9 +55,10 @@
 	</tr>
 	{/foreach}
 	<tr>
+	<td></td>
 	</tr>
 </table>
-</legend>
+</fieldset>
 </div>
 <br />
 {/if}
@@ -66,7 +68,7 @@
     <fieldset>
     <legend>Inspect CSR</legend>
     <table>
-	<tr></tr>
+	<tr><td></td></tr>
 
 	{* Auth Token *}
 	<tr>
@@ -74,7 +76,7 @@
 	<td></td>
 	<td>{$csrInspect.auth_token}</td>
 	</tr>
-	<tr></tr>
+	<tr><td></td></tr>
 
 	{* Country *}
 	{if !empty($csrInspect.countryName)}
@@ -83,7 +85,7 @@
 	<td></td>
 	<td>{$csrInspect.countryName}</td>
 	</tr>
-	<tr></tr>
+	<tr><td></td></tr>
 	{/if}
 
 	{* Organization name *}
@@ -93,7 +95,7 @@
 	<td></td>
 	<td>{$csrInspect.organizationName}</td>
 	</tr>
-	<tr></tr>
+	<tr><td></td></tr>
 	{/if}
 
 	{* Common-Name *}
@@ -103,7 +105,7 @@
 	<td></td>
 	<td>{$csrInspect.commonName}</td>
 	</tr>
-	<tr></tr>
+	<tr><td></td></tr>
 	{/if}
 
 	{* Length of key *}
@@ -113,7 +115,7 @@
 	<td></td>
 	<td>{$csrInspect.length}</td>
 	</tr>
-	<tr></tr>
+	<tr><td></td></tr>
 	{/if}
 
 	{* Uploaded *}
@@ -123,7 +125,7 @@
 	<td></td>
 	<td>{$csrInspect.uploaded}</td>
 	</tr>
-	<tr></tr>
+	<tr><td></td></tr>
 	{/if}
 
 	{* Remote IP *}
@@ -133,19 +135,19 @@
 	<td></td>
 	<td>{$csrInspect.from_ip}</td>
 	</tr>
-	<tr></tr>
+	<tr><td></td></tr>
 	{/if}
 
 	<tr>
 	<td>
-	[<A HREF="?delete_csr={$csrInspect.auth_token}">Delete</A>]
+	[<a href="?delete_csr={$csrInspect.auth_token}">Delete</a>]
 	</td>
 	<td></td>
 	<td>
-	[<A HREF="?sign_csr={$csrInspect.auth_token}">Approve</A>]
+	[<a href="?sign_csr={$csrInspect.auth_token}">Approve</a>]
 	</td>
 	</tr>
-	<tr></tr>
+	<tr><td></td></tr>
 
 	<tr>
 	<td></td>
@@ -159,7 +161,7 @@
 {/if}
 
 {* uploading new certificate via FILE *}
-<div id="csr">
+<div class="csr">
 	<fieldset>
 		<legend>Upload new CSR</legend>
 		<br />
@@ -183,6 +185,6 @@
 			</tr>
 		</table>
 	</fieldset>
-</div> {* id="csr" *}
+</div> {* class="csr" *}
 
 
