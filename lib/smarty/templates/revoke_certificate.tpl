@@ -14,17 +14,36 @@
 immediately see a result entry *}
 
 {else}
-    Search for commonName:
+    <div class="spacer"></div>
     <form action="?revoke=search_display" method="POST">
+    <fieldset>
+    <legend>CN-search</legend>
+
+    <p class="info">Search for a commonName or a eduPersonPrincipalName of a
+    person within your institution whose certificates you want to revoke. Use
+    '%' as a wildcard.
+    </p>
+    <br />
     <input type="text" name="search" value="" />
     <input type="submit" name="Search" value="Search" />
+    </fieldset>
     </form>
 
-    Or upload a list with eduPersonPrincipalNames to revoke:<br />
+    <div class="spacer"></div>
+
     <form enctype="multipart/form-data" action="?revoke=search_list_display" method="POST">
+    <fieldset>
+    <legend>List upload</legend>
+
+    <p class="info">Upload a comma separated list of eduPersonPrincipalNames whose
+    certificates should be revoked. You will be asked for confirmation before the certificates
+    will actually be revoked. Separate the ePPNs in the list with a ',' comma.
+    </p>
+    <br />
     <input type="hidden" name="max_file_size" value="10000000" />
     <input name="{$file_name}" type="file" />
     <input type="submit" value="Upload list" />
+    </fieldset>
     </form>
 {/if}
 
