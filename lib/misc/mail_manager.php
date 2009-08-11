@@ -35,7 +35,7 @@ class MailManager {
         $this->body     = $body;
         $this->attachment_text = "";
         $this->eol = "\r\n";
-        $this->mime_boundary="SLCSWeb_Part_".md5(time());
+        $this->mime_boundary="Confusa_Part_".md5(time());
         $this->alt_mime_boundary = $this->mime_boundary . "_alt";
         $this->header   = "";
 
