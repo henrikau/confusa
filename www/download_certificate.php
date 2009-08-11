@@ -21,7 +21,7 @@ final class DownloadCertificate extends FW_Content_Page
 				try {
 					$cert = $this->certManager->get_cert($authKey);
 					if (isset($cert)) {
-						require_once 'file_download.php';
+						include 'file_download.php';
 						download_file($cert, 'usercert.pem');
 						exit(0);
 					}
