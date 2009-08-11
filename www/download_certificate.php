@@ -8,6 +8,7 @@ final class DownloadCertificate extends FW_Content_Page
 	public function __construct()
 	{
 		parent::__construct("Download Certificates", true);
+		Framework::sensitive_action();
 	}
 	public function pre_process($person)
 	{

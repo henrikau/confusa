@@ -40,6 +40,8 @@ class RevokeCertificate extends FW_Content_Page
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
+		Framework::sensitive_action();
+
 		if(isset($_GET['revoke'])) {
 			switch($_GET['revoke']) {
 
