@@ -82,9 +82,6 @@ class Framework {
 				_assert_sso($this->person);
 			}
 		}
-		$uname = "anonymous";
-		if($this->person->isAuth())
-		$uname = $this->person->getX509ValidCN();
 		return $this->person;
 	}
 
