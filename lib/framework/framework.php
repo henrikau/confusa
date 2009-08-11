@@ -42,6 +42,7 @@ class Framework {
 	private $tpl;
 	private static $errors = array();
 	private static $messages = array();
+	private static $sensitive_action;
 
 	/* Limit the file endings that are going to be accepted.
 	 * There can be images with embedded comments. As the comments can
@@ -82,7 +83,33 @@ class Framework {
 				_assert_sso($this->person);
 			}
 		}
+		if (Framework::$sensitive_action) {
+			/* FIXME */
+			$delta = Config::get_config('protected_session_timeout')*60 - $this->person->getTimeSinceStart();
+			if ($delta < 0) {
+				if (isset($_SESSION))
+					session_destroy();
+				$msg =  __FILE__ . ":" . __LINE__ . " Sensitive action, and your session is too old (";
+				$msg .= ((int)$delta*-1)." seconds passed the limit) ";
+				$msg .= "--- the re-auth has not been implemented yet.";
+
+				Logger::log_event(LOG_NOTICE,$msg);
+				Framework::error_output($msg);
+			}
+		}
 		return $this->person;
+	}
+
+	/**
+	 * sensitive_action() - make sure that the user is recently AuthN
+	 *
+	 * Some actions are more sensitive than others. This function will
+	 * notify the framework that the user should be AuthN recently. The
+	 * limit is configurable.
+	 */
+	public static function sensitive_action()
+	{
+		Framework::$sensitive_action = true;
 	}
 
 	public function start()
