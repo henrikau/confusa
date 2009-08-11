@@ -9,6 +9,7 @@ require_once 'mdb2_wrapper.php';
 require_once 'logger.php';
 require_once 'csr_lib.php';
 require_once 'config.php';
+require_once 'mail_manager.php';
 
 abstract class CertManager
 {
@@ -45,6 +46,7 @@ abstract class CertManager
    *
    * In the future, it will sign the CSR and ship it to the CA, receive the
    * response and notify the user
+   *
    */
   abstract function sign_key($auth_key, $csr);
 
@@ -78,6 +80,35 @@ abstract class CertManager
   public function update_person($pers) {
     $this->person = $pers;
   }
+
+  /**
+   * Send a notification upon the issuance of a new X.509 certificate, as it is
+   * required in section 3.2 of the MICS-profile.
+   *
+   * @param $auth_key The unique identifier of the certificate - good to supply
+   * that to the user
+   * @param $timestamp Also include the time at which the certificate was signed
+   * @param $ip And the IP-address of the contacting endpoint
+   */
+  protected function sendMailNotification($auth_key, $timestamp, $ip)
+  {
+    $subject = "Issued a new certificate for " . $this->person->getX509SubjectDN();
+    $msg = "A new X.509 certificate was just issued to *you*, with subject-DN " . $this->person->getX509SubjectDN() . ".\n\n";
+    $msg .= "The certificate was signed using the Confusa portal (";
+    $msg .= Config::get_config('server_url') . "), at date " . $timestamp . ".\n";
+    $msg .= "The IP address of the contacting user agent was $ip. ";
+    $msg .= "Probably this happened because you requested a certificate by Confusa. If this is not the case, ";
+    $msg .= "please notify " . Config::get_config('sys_from_address') . " or an admin contact in your local ";
+    $msg .= "institution!\n\n";
+    $msg .= "The unique identifier of your certificate is: " . $auth_key . ".\n";
+    $msg .= "\nBest regards,\n";
+    $msg .= "   The Confusa team\n";
+    $mm = new MailManager($this->person,
+			  Config::get_config('sys_from_address'),
+			  $subject,
+			  $msg);
+    $mm->send_mail();
+  } /* end sendMailNotification */
 } /* end class CertManager */
 
 class CertManagerHandler

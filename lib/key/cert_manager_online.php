@@ -92,6 +92,7 @@ class CertManager_Online extends CertManager
         $this->_capi_upload_CSR($auth_key, $csr);
         $this->_capi_authorize_CSR();
 
+        $this->sendMailNotification($auth_key, date('Y-m-d H:i'), $_SERVER['REMOTE_ADDR']);
 	/* FIXME: conflict, not sure how to resolve, do we need both? */
         Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
 	/* FIXME: <END> */
