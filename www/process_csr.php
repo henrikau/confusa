@@ -16,6 +16,8 @@ final class ProcessCsr extends FW_Content_Page
 	function __construct()
 	{
 		parent::__construct("Process CSR", true);
+		Framework::sensitive_action();
+
 		$this->signing_ok = false;
 	}
 
