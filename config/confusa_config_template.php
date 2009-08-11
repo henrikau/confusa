@@ -174,6 +174,14 @@ $confusa_config = array(
          */
         'csr_default_timeout'            => array(10, 'MINUTE'),
 
+	/* protected_session_timeout
+	 *
+	 * When the user is about to do something critical, e.g. revoking or
+	 * applying for a certificate, it is important to make sure that the
+	 * user AuthN 'recently'.
+	 */
+	'protected_session_timeout'	=> '10',
+
 	/**
 	 * When set to true this variable will bypass simplesaml and create fake attributes
 	 * so that the site can be tested without authentication
