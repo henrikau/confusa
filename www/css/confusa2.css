@@ -224,6 +224,7 @@ a.exphead:hover {
 a.exphead span.expchar {
     font-family: monospace;
     font-weight: normal;
+    font-size: inherit;
 }
 
 .expcont {

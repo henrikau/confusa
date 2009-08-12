@@ -294,58 +294,64 @@ Subscriber sub-admins have the following privileges:
 {* ************************************************************************* *}
 {* ************** Subscriber-admin/NREN-admin view ***************           *}
 {* ************************************************************************* *}
-<h3>Your super administrators</h3>
-<div class="spacer"></div>
-<fieldset class="infoblock">
-	<legend>Admins for your NREN {$nren}</legend>
-	<p class="info">
-	NREN-admins are administrating the whole NREN admin domain, i.e. your institution
-	along with other institutions. They can also define, which institutions are
-	hooked up to Confusa and which credentials should be used for communicating
-	with the Online-CA. Below you can find a list of them for your NREN {$nren}:
-	</p>
-	<br />
-	<ul>
-	{foreach from=$nren_admins item=nren_admin}
-		<li>{$nren_admin}</li>
-	{/foreach}
-	</ul>
-</fieldset>
-
-{elseif $person->isSubscriberSubAdmin()}
-<h3>Your super administrators</h3>
-<div class="spacer"></div>
-<fieldset class="infoblock">
-	<legend>Admins for your institution {$subscriber}</legend>
-	<p class="info">
-	The following are the subscriber admins that are administrating your institution:
-	</p>
-	<br />
-	<ul>
-	{foreach from=$subscriber_admins item=subscriber_admin}
-		<li>{$subscriber_admin}</li>
-	{/foreach}
-	</ul>
-</fieldset>
-{* Show infoblock for subscriber sub-admins only if they include any other admins but the admin herself *}
-{if empty($subscriber_sub_admins) === FALSE}
-	<div class="spacer"></div>
-	<div class="spacer"></div>
-	<h3>Your fellow administrators</h3>
+<h3><a href="javascript:void(0)" class="exphead" onclick="toggleExpand(this)"><span class="expchar">+</span> Your super administrators</a></h3>
+<div class="expcont">
 	<div class="spacer"></div>
 	<fieldset class="infoblock">
-		<legend>Subadmins for your institution {$subscriber}</legend>
+		<legend>Admins for your NREN {$nren}</legend>
 		<p class="info">
-		The following are sub-admins for your insitutions, who, like you, may revoke
-		certificates:
+		NREN-admins are administrating the whole NREN admin domain, i.e. your institution
+		along with other institutions. They can also define, which institutions are
+		hooked up to Confusa and which credentials should be used for communicating
+		with the Online-CA. Below you can find a list of them for your NREN {$nren}:
 		</p>
 		<br />
 		<ul>
-		{foreach from=$subscriber_sub_admins item=sub_admin}
-			<li>{$sub_admin}</li>
+		{foreach from=$nren_admins item=nren_admin}
+			<li>{$nren_admin}</li>
 		{/foreach}
 		</ul>
 	</fieldset>
+</div>
+
+{elseif $person->isSubscriberSubAdmin()}
+<h3><a href="javascript:void(0)" onclick="toggleExpand(this)"><span class="expchar">+</span> Your super administrators</a></h3>
+<div class="expcont">
+	<div class="spacer"></div>
+	<fieldset class="infoblock">
+		<legend>Admins for your institution {$subscriber}</legend>
+		<p class="info">
+		The following are the subscriber admins that are administrating your institution:
+		</p>
+		<br />
+		<ul>
+		{foreach from=$subscriber_admins item=subscriber_admin}
+			<li>{$subscriber_admin}</li>
+		{/foreach}
+		</ul>
+	</fieldset>
+	<div class="spacer"></div>
+	<div class="spacer"></div>
+</div>
+{* Show infoblock for subscriber sub-admins only if they include any other admins but the admin herself *}
+{if empty($subscriber_sub_admins) === FALSE}
+	<h3><a href="javascript:void(0)" onclick="toggleExpand(this)"><span class="expchar">+</span> Your fellow administrators</a></h3>
+	<div class="expcont">
+		<div class="spacer"></div>
+		<fieldset class="infoblock">
+			<legend>Subadmins for your institution {$subscriber}</legend>
+			<p class="info">
+			The following are sub-admins for your insitutions, who, like you, may revoke
+			certificates:
+			</p>
+			<br />
+			<ul>
+			{foreach from=$subscriber_sub_admins item=sub_admin}
+				<li>{$sub_admin}</li>
+			{/foreach}
+			</ul>
+		</fieldset>
+	</div>
 {/if}
 {/if}
 
