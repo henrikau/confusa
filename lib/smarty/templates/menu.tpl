@@ -33,7 +33,6 @@
 <ul>
 	<li><a href="index.php?mode=normal">Normal mode</a></li>	
 {/if}
-	<li><a href="index.php">Old Start</a></li>
 	<li><a href="root_cert.php">CA Certificate</a></li>
 </ul>
 
