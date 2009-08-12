@@ -137,7 +137,7 @@ class CertManager_Online extends CertManager
      */
     public function deleteCertFromDB($key)
     {
-	    Framework::error_output(__FILE__ . ":" . __LINE__ " This function (deleteCertFromDB) should not be called in online-mode!");
+	    Framework::error_output(__FILE__ . ":" . __LINE__ . " This function (deleteCertFromDB) should not be called in online-mode!");
 	    return false;
     }
     /*
