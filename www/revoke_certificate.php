@@ -56,6 +56,8 @@ class RevokeCertificate extends FW_Content_Page
 				}
 				elseif (!$this->certManager->revoke_cert($order_number, $reason)) {
 					Framework::error_output("Cannot revoke yet ($order_number) for supplied reason: $reason");
+				} else {
+					Framework::message_output("Certificate ($order_number) successfully revoked.");
 				}
 				break;
 
