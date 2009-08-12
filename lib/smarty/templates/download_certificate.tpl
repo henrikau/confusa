@@ -8,6 +8,7 @@
 		<tr><td></td></tr>
 		{foreach from=$certList item=cert}
 			{assign var='key' value=$cert.auth_key}
+			{assign var='serial' value=$cert.serial}
 			{assign var='name' value=$cert.cert_owner}
 			{assign var='valid' value=$cert.valid_untill}
 			{if $standalone}
@@ -18,6 +19,15 @@
 				<i>{$key}</i>
 				</td>
 				</tr>
+				
+				<tr>
+				<td></td>
+				<td>
+				Serial number: <B>{$serial}</B>
+				</td>
+				</tr>
+
+
 				<tr>
 				<td></td>
 				<td>

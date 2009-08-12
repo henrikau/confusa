@@ -84,7 +84,7 @@ class CertManager_Standalone extends CertManager
      */
     public function get_cert_list()
     {
-        $res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE ".
+        $res = MDB2Wrapper::execute("SELECT cert, auth_key, cert_owner, valid_untill FROM cert_cache WHERE ".
 				    "cert_owner=? AND valid_untill > current_timestamp()",
 				    array('text'),
 				    array($this->person->getX509ValidCN()));
@@ -94,7 +94,10 @@ class CertManager_Standalone extends CertManager
                      $this->person->getEPPN();
             throw new DBQueryException($msg);
         }
-
+	foreach ($res as $key => $cert) {
+		$tmp = openssl_x509_serial($cert['cert']);
+		$res[$key]['serial'] = $tmp;
+	}
         return $res;
     } /* end get_cert_list */
 
