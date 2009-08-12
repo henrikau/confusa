@@ -76,7 +76,7 @@ final class DownloadCertificate extends FW_Content_Page
 		try {
 			$cert = $this->certManager->get_cert($authKey);
 		} catch (ConfusaGenException $cge) {
-			Framework::error_output("Certificate does not exist in cert_cache");
+			Framework::error_output("Problems deleting certificate. Server said:<BR /><I>" . ($cge->getMessage()) . "</I>");
 			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$authKey." from ip ".$_SERVER['REMOTE_ADDR']);
 			return false;
 		}
