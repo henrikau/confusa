@@ -197,56 +197,20 @@ class CertManager_Standalone extends CertManager
 	     * Generously leaving this decision to Henrik ;-)
 	     *
 	     */
-	    Framework::error_output("Revocation for standalone configuration is to be implemented!");
-
-	    $path		= Config::get_config('install_path') . Config::get_config('ca_cert_base_path');
-	    $ca_config_file	= $path . Config::get_config('ca_conf_name');
-	    $ca_key		= $path . Config::get_config('ca_key_path')  . Config::get_config('ca_key_name');
-	    $ca_cert		= $path . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
-	    $crl_file		= $path . Config::get_config('ca_crl_name');
-	    /*
-	     * Get cert from DB and store in temp-file
-	     */
-	    try {
-		    echo "getting certificate for user " . $this->person->getX509ValidCN() . "<BR />\n";
-		    $query = "SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=?";
-		    $res = MDB2Wrapper::execute($query,
-						array('text', 'text'),
-						array($key, $this->person->getX509ValidCN()));
-		    $cert = $res[0]['cert'];
-		    if (!isset($cert) || $cert === "") {
-			    Framework::error_output("Could not retrieve certificate from database!");
-			    return false;
-		    }
-		    $cert_file_name	= tempnam("/tmp/", "REV_CERT");
-		    $cert_file		= fopen($cert_file_name, "w");
-		    $numbytes		= fwrite($cert_file, $cert);
-		    $revoke_cmd		= "cd $path ; openssl ca -config $ca_config_file -revoke $cert_file_name -keyfile $ca_key -cert $ca_cert";
-		    $crl_cmd		= "cd $path ; openssl ca -config $ca_config_file -gencrl -keyfile $ca_key -cert $ca_cert -out $crl_file";
-
-		    exec($revoke_cmd, $revoke_output,$revoke_res);
-		    if (!$revoke_res) {
-			    Framework::error_output("Could not revoke certificate! $revoke_output");
-		    }
-		    else {
-			    exec($crl_cmd, $crl_output, $crl_res);
-			    if (!$crl_res) {
-				    Framework::error_output("Could not add revoked cert to CRL! $crl_output");
-			    }
-		    }
-	    } catch (Exception $e) {
-		    Framework::error_output($e->getMessage());
+	    $cmd = "./../cert_handle/revoke_cert.sh $key";
+	    $res = exec($cmd, $output, $return);
+	    foreach ($output as $line) {
+		    $msg .= $line . "<BR />\n";
+	    }
+	    if ((int)$return != 0) {
+		    Framework::error_output($msg);
+		    Logger::log_event(LOG_NOTICE, "Problems revoking certificate for " .
+				      $this->person->getX509SubjectDN() . "($key)");
 		    return false;
 	    }
-
-	    try {
-		    fclose($cert_file);
-		    unlink($cert_file_name);
-	    } catch (Exception $e) {
-		    ;
-	    }
-
-	    return true;
+	    Logger::log_event(LOG_NOTICE, "Revoked certificate $key for user " .
+			      $this->person->getX509SubjectDN());
+	    return $this->deleteCertFromDB($key);
     }
 
   /* verify_csr()
