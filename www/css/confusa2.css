@@ -227,7 +227,7 @@ a.exphead span.expchar {
 }
 
 .expcont {
-    display: block;
+    display: none;
 }
 
 span.wtf {
