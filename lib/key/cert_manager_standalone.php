@@ -50,7 +50,7 @@ class CertManager_Standalone extends CertManager
 							  $auth_key,
 							  $this->person->getX509ValidCN(),
 							  $this->person->getSubscriberOrgName()));
-			
+				unlink($cert_file_name);
 			} catch (DBStatementException $dbse) {
 				$error_key = create_pw(8);
 				Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
