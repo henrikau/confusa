@@ -99,6 +99,31 @@ legend {
     padding: 2px;
 }
 
+fieldset.infoblock {
+    border: 1px dashed #888888;
+    background-color: #FFFFFF;
+    padding: 5px;
+    padding-left: 20px;
+    width: 90%;
+}
+
+fieldset.infoblock legend {
+    border: 1px solid #888888;
+    background-color: #FFFFFF;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: black;
+    padding: 2px;
+}
+
+fieldset.infoblock ul li {
+    font-weight: bold;
+    color: #222222;
+    margin-left: 40px;
+    list-style-type: none;
+    padding-bottom: 7px;
+}
+
 div.csr {
 	margin-bottom: 5%;
 }

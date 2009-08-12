@@ -100,8 +100,8 @@ class CP_Admin extends FW_Content_Page
 	 */
 	public function process()
 	{
-		/* IF user is not subscirber- or nren-admin, we stop here */
-		if (!($this->person->isSubscriberAdmin() || $this->person->isNRENAdmin())) {
+		/* IF user is not an admin, we stop here */
+		if (!($this->person->isAdmin())) {
 			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " was rejected at the admin-interface");
 			$this->tpl->assign('reason', 'You do not have sufficient rights to view this page');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
@@ -132,12 +132,25 @@ class CP_Admin extends FW_Content_Page
 		} else if ($this->person->isSubscriberAdmin()) { /* subscriber admin display */
 			$subscriber = $this->person->getSubscriberOrgName();
 			$subscriber_admins = $this->getSubscriberAdmins($subscriber, 1);
+			$nren = $this->person->getNREN();
+			$nren_admins = $this->getNRENAdmins($nren);
+			$this->tpl->assign('nren_admins', $nren_admins);
+			$this->tpl->assign('nren', $nren);
 			$this->tpl->assign('subscriber', $subscriber);
 			$this->tpl->assign('subscriber_admins', $subscriber_admins);
 
 			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->getSubscriberOrgName(), 0);
 			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
 
+		} else if ($this->person->isSubscriberSubAdmin()) { /* subscriber-sub-admin display */
+			$subscriber = $this->person->getSubscriberOrgName();
+			$subscriber_admins = $this->getSubscriberAdmins($subscriber, 1);
+			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->getSubscriberOrgName(), 0);
+			/* remove the administrator herself from the list */
+			$subscriber_sub_admins = array_diff($subscriber_sub_admins, array($this->person->getEPPN()));
+			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
+			$this->tpl->assign('subscriber_admins', $subscriber_admins);
+			$this->tpl->assign('subscriber', $subscriber);
 		}
 
 		$this->tpl->assign('self', $this->person->getEPPN());

@@ -288,6 +288,65 @@ Subscriber sub-admins have the following privileges:
 </tr>
 </table>
 </fieldset>
+
+<div class="spacer"></div>
+<div class="spacer"></div>
+{* ************************************************************************* *}
+{* ************** Subscriber-admin/NREN-admin view ***************           *}
+{* ************************************************************************* *}
+<h3>Your super administrators</h3>
+<div class="spacer"></div>
+<fieldset class="infoblock">
+	<legend>Admins for your NREN {$nren}</legend>
+	<p class="info">
+	NREN-admins are administrating the whole NREN admin domain, i.e. your institution
+	along with other institutions. They can also define, which institutions are
+	hooked up to Confusa and which credentials should be used for communicating
+	with the Online-CA. Below you can find a list of them for your NREN {$nren}:
+	</p>
+	<br />
+	<ul>
+	{foreach from=$nren_admins item=nren_admin}
+		<li>{$nren_admin}</li>
+	{/foreach}
+	</ul>
+</fieldset>
+
+{elseif $person->isSubscriberSubAdmin()}
+<h3>Your super administrators</h3>
+<div class="spacer"></div>
+<fieldset class="infoblock">
+	<legend>Admins for your institution {$subscriber}</legend>
+	<p class="info">
+	The following are the subscriber admins that are administrating your institution:
+	</p>
+	<br />
+	<ul>
+	{foreach from=$subscriber_admins item=subscriber_admin}
+		<li>{$subscriber_admin}</li>
+	{/foreach}
+	</ul>
+</fieldset>
+{* Show infoblock for subscriber sub-admins only if they include any other admins but the admin herself *}
+{if empty($subscriber_sub_admins) === FALSE}
+	<div class="spacer"></div>
+	<div class="spacer"></div>
+	<h3>Your fellow administrators</h3>
+	<div class="spacer"></div>
+	<fieldset class="infoblock">
+		<legend>Subadmins for your institution {$subscriber}</legend>
+		<p class="info">
+		The following are sub-admins for your insitutions, who, like you, may revoke
+		certificates:
+		</p>
+		<br />
+		<ul>
+		{foreach from=$subscriber_sub_admins item=sub_admin}
+			<li>{$sub_admin}</li>
+		{/foreach}
+		</ul>
+	</fieldset>
+{/if}
 {/if}
 
 {/if}

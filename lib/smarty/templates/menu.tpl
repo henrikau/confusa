@@ -18,6 +18,7 @@
 <ul>
 	{if $person->isSubscriberSubadmin()}
 	<li><a href="revoke_certificate.php">Revoke Certificates</a></li>
+	<li><a href="admin.php">Show Admins</a></li>
 	{elseif $person->isSubscriberAdmin()}
 	<li><a href="revoke_certificate.php">Revoke certificates</a></li>
 	<li><a href="admin.php">Manage Subscriber Administrators</a></li>
