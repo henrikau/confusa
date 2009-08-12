@@ -88,7 +88,7 @@ class MailManager {
             $msg .= $this->eol;
 
             /* add body */
-            $msg .= $this->body . $this->eol;
+            $msg .= str_replace("\n", $this->eol, $this->body) . $this->eol;
 
             /* add attachments */
             $msg .= $this->eol;
