@@ -73,24 +73,9 @@ final class DownloadCertificate extends FW_Content_Page
 	 */
 	private function deleteCert($authKey)
 	{
-		try {
-			$cert = $this->certManager->get_cert($authKey);
-		} catch (ConfusaGenException $cge) {
-			Framework::error_output("Problems deleting certificate. Server said:<BR /><I>" . ($cge->getMessage()) . "</I>");
-			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$authKey." from ip ".$_SERVER['REMOTE_ADDR']);
-			return false;
+		if ($this->certManager->deleteCertFromDB($authKey)) {
+			$this->tpl->assign('processingResult', 'Certificate deleted');
 		}
-
-		try {
-		MDB2Wrapper::update("DELETE FROM cert_cache WHERE auth_key=? AND cert_owner=?",
-				    array('text', 'text'),
-				    array($authKey, $this->person->getX509ValidCN()));
-		} catch (Exception $e) {
-			/* FIXME: better error-handling */
-			Framework::error_output($e->getMessage);
-		}
-		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$authKey." belonging to ".$this->person->getX509ValidCN());
-		$this->tpl->assign('processingResult', 'Certificate deleted');
 	} /* end deleteCert */
 
 	/**
