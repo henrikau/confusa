@@ -228,7 +228,7 @@ final class ProcessCsr extends FW_Content_Page
 	 */
 	private function listAllCSR()
 	{
-		$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip FROM csr_cache WHERE common_name=? ORDER BY uploaded_date DESC";
+		$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip FROM csr_cache WHERE common_name=? ORDER BY uploaded_date DESC LIMIT 10";
 		$res = MDB2Wrapper::execute($query,
 					    array('text'),
 					    $this->person->getX509ValidCN());
