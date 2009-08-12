@@ -113,7 +113,7 @@ class RevokeCertificate extends FW_Content_Page
 		}
 
 		/* Test access-rights */
-		if (!$this->person->isSubscriberAdmin() && !$this->person->is_subscriber_subadmin())
+		if (!$this->person->isSubscriberAdmin() && !$this->person->isSubscriberSubAdmin())
 			throw new ConfusaGenException("Insufficient rights for revocation!");
 
 		$this->tpl->assign('file_name', 'eppn_list');
