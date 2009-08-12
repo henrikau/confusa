@@ -65,6 +65,12 @@ abstract class CertManager
    */
   abstract function get_cert($key);
 
+  /** deleteCertFromDB()
+   *
+   * @key : the unique identifier for the certififcate in the database
+   */
+  abstract function deleteCertFromDB($key);
+
    /*
    * Revoke a certificate associated to key
    *

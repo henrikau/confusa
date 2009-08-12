@@ -149,6 +149,41 @@ class CertManager_Standalone extends CertManager
         }
     }
 
+    /**
+     * deleteCertFromDB - delete a certificate from the database.
+     */
+    public function deleteCertFromDB($key)
+    {
+	    if (!isset($key) || $key == "")
+		    return;
+
+	    /* remove the certificate from the database */
+	    try {
+		    MDB2Wrapper::update("DELETE FROM cert_cache WHERE auth_key=?", array('text'), array($key));
+		    Logger::log_event(LOG_NOTICE, "Removed the certificate ($key) from the database ");
+
+	    } catch (DBStatementException $dbse) {
+		    $msg  = __FILE__ . ":" . __LINE__ . " Error in query syntax.";
+		    Logger::log_event(LOG_NOTICE, $msg);
+		    $msg .= "<BR />Could not delete the certificate with hash: $key.<br />Try to do a manual deletion.";
+		    $msg .=	"<BR />Server said: " . $dbse->getMessage();
+		    Framework::error_output($msg);
+
+		    /* Even though we fail, the certificate was
+		     * successfully revoked, thus the operation was
+		     * semi-successful. But, true should indicate that
+		     * *everything* went well */
+		    return false;
+	    } catch (DBQueryException $dbqe) {
+		    $msg  = __FILE__ . ":" . __LINE__ . " Query-error. Constraint violoation in query?";
+		    Logger::log_event(LOG_NOTICE, $msg);
+		    $msg .= "<BR />Server said: " . $dbqe->getMessage();
+		    Framework::error_output($msg);
+		    return false;
+	    }
+	    return true;
+    }
+
     /*
      * Revoke the certificate identified by key
      * Key is an auth_var

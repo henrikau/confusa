@@ -131,7 +131,15 @@ class CertManager_Online extends CertManager
 
         return $res;
     }
-
+    /* delete a certificate from the DB (Deprecated)
+     *
+     * May come in handy when we have the cache for online-certificates though.
+     */
+    public function deleteCertFromDB($key)
+    {
+	    Framework::error_output(__FILE__ . ":" . __LINE__ " This function (deleteCertFromDB) should not be called in online-mode!");
+	    return false;
+    }
     /*
      * Search for the certificates of a person with a given common_name.
      * Common_name may include wildcard characters.
