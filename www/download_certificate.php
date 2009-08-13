@@ -3,6 +3,8 @@ require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'person.php';
 require_once 'mail_manager.php';
+require_once 'confusa_gen.php'
+
 final class DownloadCertificate extends FW_Content_Page
 {
 	public function __construct()
