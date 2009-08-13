@@ -40,6 +40,8 @@ class RevokeCertificate extends FW_Content_Page
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
+		Framework::sensitive_action();
+
 		if(isset($_GET['revoke'])) {
 			switch($_GET['revoke']) {
 
@@ -54,6 +56,8 @@ class RevokeCertificate extends FW_Content_Page
 				}
 				elseif (!$this->certManager->revoke_cert($order_number, $reason)) {
 					Framework::error_output("Cannot revoke yet ($order_number) for supplied reason: $reason");
+				} else {
+					Framework::message_output("Certificate ($order_number) successfully revoked.");
 				}
 				break;
 
@@ -109,7 +113,7 @@ class RevokeCertificate extends FW_Content_Page
 		}
 
 		/* Test access-rights */
-		if (!$this->person->isSubscriberAdmin() && !$this->person->is_subscriber_subadmin())
+		if (!$this->person->isSubscriberAdmin() && !$this->person->isSubscriberSubAdmin())
 			throw new ConfusaGenException("Insufficient rights for revocation!");
 
 		$this->tpl->assign('file_name', 'eppn_list');

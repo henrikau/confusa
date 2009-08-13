@@ -8,12 +8,21 @@
 	<meta http-equiv="Content-Style-Type" content="text/css" />
 	<link rel="shortcut icon" href="graphics/icon.gif" type="image/gif" />
 	<link rel="stylesheet" href="css/confusa2.css" type="text/css" />
+	<script type="text/javascript" src="js/expand_collapse.js"></script>
 
 	{if !is_null($css)}
 		<link rel="stylesheet" href="{$css}" type ="text/css" />
 	{/if}
 
 	{$extraHeader}
+
+	{literal}
+	 <script type="text/javascript">
+		//<![CDATA[
+		document.write('<style type="text/css">.expcont{display:none}</style>');
+		//]]>
+	</script>
+	{/literal}
 </head>
 
 <body>

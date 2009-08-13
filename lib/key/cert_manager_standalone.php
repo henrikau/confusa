@@ -5,6 +5,9 @@ require_once 'cert_manager.php';
 require_once 'key_sign.php';
 require_once 'mdb2_wrapper.php';
 require_once 'db_query.php';
+require_once 'pw.php';
+require_once 'cert_lib.php';
+
 /*
  * CertManager_Standalone Standalone-CA extension for CertManager.
  *
@@ -17,59 +20,61 @@ require_once 'db_query.php';
  */
 class CertManager_Standalone extends CertManager
 {
-    /**
-     * Verify if the subject DN matches the received sets of attributes.
-     * Sign a key using the local CA-key.
-     * Store the public key of the request in the database.
-     *
-     * @throws: KeySignException
-     */
-    public function sign_key($auth_key, $csr)
-    {
-        if ($this->verify_csr($csr)) {
-            $cert_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
-            $ca_priv_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_key_path') . Config::get_config('ca_key_name');
+	/**
+	 * Verify if the subject DN matches the received sets of attributes.
+	 * Sign a key using the local CA-key.
+	 * Store the public key of the request in the database.
+	 *
+	 * @throws: KeySignException
+	 */
+	public function sign_key($auth_key, $csr)
+	{
+		if ($this->verify_csr($csr)) {
+			$cert_file_name	= tempnam("/tmp/", "REV_CERT");
+			$cert_file = fopen($cert_file_name, "w");
+			fclose($cert_file);
+			$cmd = "./../cert_handle/sign_key.sh $auth_key $cert_file_name";
+			$res = shell_exec($cmd);
+			$cert = file_get_contents($cert_file_name);
 
-            $cert = null;
-            $sign_days = 11;
-            $tmp_cert = openssl_csr_sign($csr, $cert_path, $ca_priv_path, $sign_days , array('digest_alg' => 'sha1'));
-            openssl_x509_export($tmp_cert, $cert, true);
+			$cert_array = openssl_x509_parse($cert);
+			$diff = (int)$cert_array['validTo_time_t'] - (int)$cert_array['validFrom_time_t'];
+			$timeout = array($diff, 'SECOND');
 
-            $timeout = Config::get_config('cert_default_timeout');
-
-	    try {
-		    $insert  = "INSERT INTO cert_cache (cert, auth_key, cert_owner, organization, valid_untill) ";
-		    $insert .= "VALUES(?, ?, ?, ?, timestampadd($timeout[1], $timeout[0],current_timestamp()))";
-		    MDB2Wrapper::update($insert,
-					array('text', 'text', 'text', 'text'),
-					array($cert,
-					      $auth_key,
-					      $this->person->getX509ValidCN(),
-					      $this->person->getSubscriberOrgName()));
-
-	    } catch (DBStatementException $dbse) {
-		    $error_key = create_pw(8);
-		    Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
-				      " Error in query-syntax. Make sure the query matches the db-schema. ($error_key)");
-		    throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
-	    } catch (DBQueryException $dbqe) {
-		    $error_key = create_pw(8);
-		    Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
-				      " Error with values passed to the query. Check for constraint-violations");
-		    throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
-	    }
-
-            Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
-			      $this->person->getX509ValidCN() .
-			      " Contacting us from ".
-			      $_SERVER['REMOTE_ADDR']);
-        } else {
-		Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user ".
-				  $this->person->getX509ValidCN() .
-				  " from ip ".$_SERVER['REMOTE_ADDR']);
-		throw new KeySignException("CSR subject verification failed!");
-        }
-    } /* end sign-key */
+			try {
+				$insert  = "INSERT INTO cert_cache (cert, auth_key, cert_owner, organization, valid_untill) ";
+				$insert .= "VALUES(?, ?, ?, ?, timestampadd($timeout[1], $timeout[0],current_timestamp()))";
+				MDB2Wrapper::update($insert,
+						    array('text', 'text', 'text', 'text'),
+						    array($cert,
+							  $auth_key,
+							  $this->person->getX509ValidCN(),
+							  $this->person->getSubscriberOrgName()));
+				unlink($cert_file_name);
+			} catch (DBStatementException $dbse) {
+				$error_key = create_pw(8);
+				Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
+						  " Error in query-syntax. Make sure the query matches the db-schema. ($error_key)");
+				throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
+			} catch (DBQueryException $dbqe) {
+				$error_key = create_pw(8);
+				Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
+						  " Error with values passed to the query. Check for constraint-violations");
+				throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
+			}
+		
+			$this->sendMailNotification($auth_key, date('Y-m-d H:i'), $_SERVER['REMOTE_ADDR']);
+			Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
+					  $this->person->getX509ValidCN() .
+					  " Contacting us from ".
+					  $_SERVER['REMOTE_ADDR']);
+		} else {
+			Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user ".
+					  $this->person->getX509ValidCN() .
+					  " from ip ".$_SERVER['REMOTE_ADDR']);
+			throw new KeySignException("CSR subject verification failed!");
+		}
+	} /* end sign-key */
 
     /**
      * Retrieve a list of the certificates associated with the managed person
@@ -79,7 +84,7 @@ class CertManager_Standalone extends CertManager
      */
     public function get_cert_list()
     {
-        $res = MDB2Wrapper::execute("SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE ".
+        $res = MDB2Wrapper::execute("SELECT cert, auth_key, cert_owner, valid_untill FROM cert_cache WHERE ".
 				    "cert_owner=? AND valid_untill > current_timestamp()",
 				    array('text'),
 				    array($this->person->getX509ValidCN()));
@@ -89,7 +94,10 @@ class CertManager_Standalone extends CertManager
                      $this->person->getEPPN();
             throw new DBQueryException($msg);
         }
-
+	foreach ($res as $key => $cert) {
+		$tmp = openssl_x509_serial($cert['cert']);
+		$res[$key]['serial'] = $tmp;
+	}
         return $res;
     } /* end get_cert_list */
 
@@ -141,68 +149,68 @@ class CertManager_Standalone extends CertManager
         }
     }
 
+    /**
+     * deleteCertFromDB - delete a certificate from the database.
+     */
+    public function deleteCertFromDB($key)
+    {
+	    if (!isset($key) || $key == "")
+		    return;
+
+	    /* remove the certificate from the database */
+	    try {
+		    MDB2Wrapper::update("DELETE FROM cert_cache WHERE auth_key=?", array('text'), array($key));
+		    Logger::log_event(LOG_NOTICE, "Removed the certificate ($key) from the database ");
+
+	    } catch (DBStatementException $dbse) {
+		    $msg  = __FILE__ . ":" . __LINE__ . " Error in query syntax.";
+		    Logger::log_event(LOG_NOTICE, $msg);
+		    $msg .= "<BR />Could not delete the certificate with hash: $key.<br />Try to do a manual deletion.";
+		    $msg .=	"<BR />Server said: " . $dbse->getMessage();
+		    Framework::error_output($msg);
+
+		    /* Even though we fail, the certificate was
+		     * successfully revoked, thus the operation was
+		     * semi-successful. But, true should indicate that
+		     * *everything* went well */
+		    return false;
+	    } catch (DBQueryException $dbqe) {
+		    $msg  = __FILE__ . ":" . __LINE__ . " Query-error. Constraint violoation in query?";
+		    Logger::log_event(LOG_NOTICE, $msg);
+		    $msg .= "<BR />Server said: " . $dbqe->getMessage();
+		    Framework::error_output($msg);
+		    return false;
+	    }
+	    return true;
+    }
+
     /*
      * Revoke the certificate identified by key
      * Key is an auth_var
      */
     public function revoke_cert($key, $reason)
     {
-        /* TODO: method stub
-         *
-         * At a first glance there seems to be no revoke function in php-openssl.
-         * shell_exec('openssl ca -revoke...') would be possible but... eew...
-         * Generously leaving this decision to Henrik ;-)
-         *
-        */
-	    Framework::error_output("Revocation for standalone configuration is to be implemented!");
-	    $path		= Config::get_config('install_path') . Config::get_config('ca_cert_base_path');
-	    $ca_config_file	= $path . Config::get_config('ca_conf_name');
-	    $ca_key		= $path . Config::get_config('ca_key_path')  . Config::get_config('ca_key_name');
-	    $ca_cert		= $path . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
-	    $crl_file		= $path . Config::get_config('ca_crl_name');
-	    /*
-	     * Get cert from DB and store in temp-file
+	    /* TODO: method stub
+	     *
+	     * At a first glance there seems to be no revoke function in php-openssl.
+	     * shell_exec('openssl ca -revoke...') would be possible but... eew...
+	     * Generously leaving this decision to Henrik ;-)
+	     *
 	     */
-	    try {
-		    echo "getting certificate for user " . $this->person->getX509ValidCN() . "<BR />\n";
-		    $query = "SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=?";
-		    $res = MDB2Wrapper::execute($query,
-						array('text', 'text'),
-						array($key, $this->person->getX509ValidCN()));
-		    $cert = $res[0]['cert'];
-		    if (!isset($cert) || $cert === "") {
-			    Framework::error_output("Could not retrieve certificate from database!");
-			    return false;
-		    }
-		    $cert_file_name	= tempnam("/tmp/", "REV_CERT");
-		    $cert_file		= fopen($cert_file_name, "w");
-		    $numbytes		= fwrite($cert_file, $cert);
-		    $revoke_cmd		= "cd $path ; openssl ca -config $ca_config_file -revoke $cert_file_name -keyfile $ca_key -cert $ca_cert";
-		    $crl_cmd		= "cd $path ; openssl ca -config $ca_config_file -gencrl -keyfile $ca_key -cert $ca_cert -out $crl_file";
-
-		    exec($revoke_cmd, $revoke_output,$revoke_res);
-		    if (!$revoke_res) {
-			    Framework::error_output("Could not revoke certificate! $revoke_output");
-		    }
-		    else {
-			    exec($crl_cmd, $crl_output, $crl_res);
-			    if (!$crl_res) {
-				    Framework::error_output("Could not add revoked cert to CRL! $crl_output");
-			    }
-		    }
-	    } catch (Exception $e) {
-		    Framework::error_output($e->getMessage());
+	    $cmd = "./../cert_handle/revoke_cert.sh $key";
+	    $res = exec($cmd, $output, $return);
+	    foreach ($output as $line) {
+		    $msg .= $line . "<BR />\n";
+	    }
+	    if ((int)$return != 0) {
+		    Framework::error_output($msg);
+		    Logger::log_event(LOG_NOTICE, "Problems revoking certificate for " .
+				      $this->person->getX509SubjectDN() . "($key)");
 		    return false;
 	    }
-
-	    try {
-		    fclose($cert_file);
-		    unlink($cert_file_name);
-	    } catch (Exception $e) {
-		    ;
-	    }
-
-	    return true;
+	    Logger::log_event(LOG_NOTICE, "Revoked certificate $key for user " .
+			      $this->person->getX509SubjectDN());
+	    return $this->deleteCertFromDB($key);
     }
 
   /* verify_csr()

@@ -1,8 +1,14 @@
 <?php
 require_once 'confusa_include.php';	/* get path */
+require_once 'config.php';
+
+if (!Config::get_config('auth_bypass')) {
+	include 'not_found.php';
+	not_found($_SERVER['SCRIPT_NAME']);
+}
+
 require_once 'mdb2_wrapper.php';
 require_once 'logger.php';
-require_once 'config.php';
 require_once 'csr_lib.php';
 
   /* key_upload.php
