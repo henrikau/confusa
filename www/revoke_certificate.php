@@ -84,7 +84,7 @@ class RevokeCertificate extends FW_Content_Page
 		}
 
 		if ($this->person->inAdminMode()) {
-			$this->admin_revoke();
+			$this->showAdminRevokeTable();
 		} else {
 			$this->normal_revoke();
 		}
@@ -97,7 +97,7 @@ class RevokeCertificate extends FW_Content_Page
 	}
 
 	/**
-	 * admin_revoke - Render a revocation interface for the sublime of users.
+	 * showAdminRevokeTable - Render a revocation interface for the sublime of users.
 	 *
 	 * But not for the sublimest. I.e. a NREN-admin will not be able to revoke
 	 * certificates, but an institution-admin, and the beings of her grace,
@@ -105,7 +105,7 @@ class RevokeCertificate extends FW_Content_Page
 	 * by a wildcard-search for an ePPN or by uplading a CSV with ePPNs which
 	 * will be searched wrapped into wildcards
 	 */
-	private function admin_revoke()
+	private function showAdminRevokeTable()
 	{
 		if (!$this->person->isAdmin()) {
 			Logger::log_event(LOG_ALERT, "User " . $this->person->getX509ValidCN() . " allowed to set admin-mode, but is not admin");
@@ -138,7 +138,7 @@ class RevokeCertificate extends FW_Content_Page
 			break;
 		}
 
-	} /* end admin_revoke */
+	} /* end showAdminRevokeTable */
 
 	/**
 	 * normal_revoke() - certificate revocation for the ordinary man
