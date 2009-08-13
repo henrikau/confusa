@@ -20,61 +20,6 @@ require_once 'cert_lib.php';
  */
 class CertManager_Standalone extends CertManager
 {
-<<<<<<< HEAD:lib/key/cert_manager_standalone.php
-    /**
-     * Verify if the subject DN matches the received sets of attributes.
-     * Sign a key using the local CA-key.
-     * Store the public key of the request in the database.
-     *
-     * @throws: KeySignException
-     */
-    public function sign_key($auth_key, $csr)
-    {
-        if ($this->verify_csr($csr)) {
-            $cert_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_cert_path') . Config::get_config('ca_cert_name');
-            $ca_priv_path = 'file://'.dirname(WEB_DIR) . Config::get_config('ca_key_path') . Config::get_config('ca_key_name');
-
-            $cert = null;
-            $sign_days = 11;
-            $tmp_cert = openssl_csr_sign($csr, $cert_path, $ca_priv_path, $sign_days , array('digest_alg' => 'sha1'));
-            openssl_x509_export($tmp_cert, $cert, true);
-
-            $timeout = Config::get_config('cert_default_timeout');
-
-	    try {
-		    $insert  = "INSERT INTO cert_cache (cert, auth_key, cert_owner, organization, valid_untill) ";
-		    $insert .= "VALUES(?, ?, ?, ?, timestampadd($timeout[1], $timeout[0],current_timestamp()))";
-		    MDB2Wrapper::update($insert,
-					array('text', 'text', 'text', 'text'),
-					array($cert,
-					      $auth_key,
-					      $this->person->getX509ValidCN(),
-					      $this->person->getSubscriberOrgName()));
-
-	    } catch (DBStatementException $dbse) {
-		    $error_key = create_pw(8);
-		    Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
-				      " Error in query-syntax. Make sure the query matches the db-schema. ($error_key)");
-		    throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
-	    } catch (DBQueryException $dbqe) {
-		    $error_key = create_pw(8);
-		    Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
-				      " Error with values passed to the query. Check for constraint-violations");
-		    throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
-	    }
-
-            Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
-			      $this->person->getX509ValidCN() .
-			      " Contacting us from ".
-			      $_SERVER['REMOTE_ADDR']);
-        } else {
-		Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user ".
-				  $this->person->getX509ValidCN() .
-				  " from ip ".$_SERVER['REMOTE_ADDR']);
-		throw new KeySignException("CSR subject verification failed!");
-        }
-    } /* end sign-key */
-=======
 	/**
 	 * Verify if the subject DN matches the received sets of attributes.
 	 * Sign a key using the local CA-key.
@@ -130,7 +75,6 @@ class CertManager_Standalone extends CertManager
 			throw new KeySignException("CSR subject verification failed!");
 		}
 	} /* end sign-key */
->>>>>>> origin/master:lib/key/cert_manager_standalone.php
 
     /**
      * Retrieve a list of the certificates associated with the managed person
