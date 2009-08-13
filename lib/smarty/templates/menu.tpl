@@ -18,6 +18,7 @@
 <ul>
 	{if $person->isSubscriberSubadmin()}
 	<li><a href="revoke_certificate.php">Revoke Certificates</a></li>
+	<li><a href="admin.php">Show Admins</a></li>
 	{elseif $person->isSubscriberAdmin()}
 	<li><a href="revoke_certificate.php">Revoke certificates</a></li>
 	<li><a href="admin.php">Manage Subscriber Administrators</a></li>
@@ -32,7 +33,6 @@
 <ul>
 	<li><a href="index.php?mode=normal">Normal mode</a></li>	
 {/if}
-	<li><a href="index.php">Old Start</a></li>
 	<li><a href="root_cert.php">CA Certificate</a></li>
 </ul>
 

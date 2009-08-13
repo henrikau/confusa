@@ -27,14 +27,14 @@
 	together with a generic help message shown by Confusa. If there is anything
 	specific that users within the domain of your NREN should know, define it
 	here.
-	<p>
+	</p>
 	<br />
 	<p class="info">
 	Note: Currently, the field accepts UTF-8 characters. No HTML or other markup
 	is supported.
 	</p>
 	<br />
-	<form action="" method="POST">
+	<form action="" method="post">
 	<table>
 		<tr>
 		<td>
@@ -65,7 +65,7 @@
 	is supported.
   </p>
   <br />
-  <form action="" method="POST">
+  <form action="" method="post">
   <table>
 	<tr>
 	<td>
@@ -101,7 +101,7 @@
 	This also means that url() is not supported.
 	</p>
 	<br />
-	<form action="" method="POST">
+	<form action="" method="post">
 	<table>
 	<tr>
 	<td>
@@ -144,10 +144,10 @@
 	{if is_null($logo) === FALSE}
 		<p><i>Your current logo:</i></p>
 		<div class="spacer"></div>
-		<img src={$logo} alt="Currently uploaded NREN logo" name="logo" />
+		<img src="{$logo}" alt="Currently uploaded NREN logo" />
 		<div class="spacer"></div>
 	{/if}
-	<form action="" method="POST" enctype="multipart/form-data">
+	<form action="" method="post" enctype="multipart/form-data">
 	<table>
 	<tr>
 	<td>

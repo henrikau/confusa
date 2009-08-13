@@ -142,8 +142,10 @@ class CP_NREN_Admin extends FW_Content_Page
 
 		} catch (DBStatementException $dbse) {
 			Framework::error_output(__FILE__ . ":" . __LINE__ . " Error in query-syntax.<BR />Server said " . $dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, "Problem occured when editing the state of subscriber $name: " . $dbse->getMessage());
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output(__FILE__ . ":" . __LINE__ . " Problems with query.<BR />Server said " . $dbqe->getMessage());
+			Logger::log_event(LOG_NOTICE, "Problem occured when editing subscriber $name: " . $dbse->getMessage());
 		}
 	}
 
@@ -175,13 +177,13 @@ class CP_NREN_Admin extends FW_Content_Page
 						    array($nren));
 		} catch (DBStatementException $dbse) {
 			$msg  = __FILE__ . ":" . __LINE__ . " Error in query syntax.";
-			Logger::log_event(LOG_INFO, $msg);
+			Logger::log_event(LOG_NOTICE, $msg);
 			$msg .=	"<BR />Server said: " . $dbse->getMessage();
 			Framework::error_output($msg);
 			return;
 		} catch (DBQueryException $dbqe) {
 			$msg  = __FILE__ . ":" . __LINE__ . " Query-error. Constraint violoation in query?";
-			Logger::log_event(LOG_INFO, $msg);
+			Logger::log_event(LOG_NOTICE, $msg);
 			$msg .= "<BR />Server said: " . $dbqe->getMessage();
 			Framework::error_output($msg);
 			return;
@@ -369,7 +371,8 @@ class CP_NREN_Admin extends FW_Content_Page
 		$nren = $this->person->getNREN();
 
 		if (!isset($login_name) || $login_name === "") {
-			Framework::error_output("Login-name not set. This <B>must</B> be available when one wants to edit it.");
+			Framework::error_output("Login-name not set. This <b>must</b> be available when one wants to edit it.");
+			Logger::log_event(LOG_INFO, "Tried to edit account with login name not set!");
 			return;
 		}
 
@@ -385,9 +388,11 @@ class CP_NREN_Admin extends FW_Content_Page
 			}
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Error in query at " . __FILE__ . ":" . __LINE__ . ". This should be handled by some developer.");
+			Logger::log_event(LOG_ERROR, "Account $login_name could not be edited. Server said: " . $dbqe->getMessage());
 			return;
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Error in statement at " . __FILE__ . ":" . __LINE__ . ". This should be handled by some developer.");
+			Logger::log_event(LOG_ERROR, "Account $login_name could not be edited. Server said: " . $dbse->getMessage());
 			return;
 		}
 
@@ -406,12 +411,15 @@ class CP_NREN_Admin extends FW_Content_Page
 					    array($cryptpw, base64_encode($iv), $login_name));
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Could not update table. Some error in the constraints? " . $dbqe->getMessage());
+			Logger::log_event(LOG_NOTICE, "Could not update account $login_name because of the following error: " . $dbqe->getMessage());
 			return;
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Could not update table. Some error in the syntax? " . $dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, "Could not update account $login_name because of the following error: " . $dbse->getMessage());
 			return;
 		}
 		Framework::message_output("Password for account '$login_name' updated successfully");
+		Logger::log_event(LOG_INFO, "Password for account $login_name was changed.");
 		return;
 	}
 
@@ -442,6 +450,7 @@ class CP_NREN_Admin extends FW_Content_Page
 			return;
 		}
 		Framework::message_output("Added new account $login_name to NREN " . $this->person->getNREN());
+		Logger::log_event(LOG_INFO, "Added new account $login_name to NREN " . $this->person->getNREN());
 		return;
 	}
 
@@ -476,6 +485,8 @@ class CP_NREN_Admin extends FW_Content_Page
 			$update = "DELETE FROM account_map WHERE login_name=?";
 			MDB2Wrapper::update($update, array('text'), array($login_name));
 			Framework::message_output("Deleted account $login_name from account_map.");
+			Logger::log_event(LOG_INFO, "Deleted account $login_name from account_map. " .
+						"Admin contacted us from " . $_SERVER['REMOTE_ADDR']);
 		} catch (DBStatementException $dbse) {
 			$msg = __FILE__ . ":" . __LINE__ . " Error in db-statement. Check syntax.";
 			Logger::log_event(LOG_NOTICE, $msg);
@@ -498,7 +509,7 @@ class CP_NREN_Admin extends FW_Content_Page
 						    array($nren));
 			if (count($res) > 1) {
 				Framework::error_output("Too many hits in database! " . count($res) . " Database inconsistency.");
-				Logger::log_event(LOG_NOTICE, "Inconsistency detected in the database. $org has " . count($res) . " accounts");
+				Logger::log_event(LOG_WARNING, "Inconsistency detected in the database. $org has " . count($res) . " accounts");
 				return;
 			}
 
@@ -517,11 +528,17 @@ class CP_NREN_Admin extends FW_Content_Page
 					    array('text', 'text'),
 					    array($login_name, $nren));
 			Framework::message_output("Changed account for $org to $login_name");
+			Logger::log_event(LOG_INFO, "Changed account for $org to $login_name. " .
+					"Admin contacted us from " . $_SERVER['REMOTE_ADDR']);
 		} catch (DBStatementException $dbqe) {
 			Framework::error_output("Query syntax errors. Server said: " . $dbqe->getMessage());
+			Logger::log_event(LOG_INFO, "Syntax error when trying to change the used account of NREN " .
+						$this->person->getNREN() . ": " . $dbqe->getMessage());
 			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Database-server problems. Server said: " . $dbqe->getMessage());
+			Logger::log_event(LOG_NOTICE, "Database problems when trying to change the used account of NREN " .
+			$this->person->getNREN() . ": " . $dbqe->getMessage());
 			return;
 		}
 	} /* end changeAccount() */
@@ -532,12 +549,12 @@ class CP_NREN_Admin extends FW_Content_Page
 
 		switch($state) {
 		case unsubscribed:
-			$res = "<FONT COLOR=\"GRAY\"><B>$res</B></FONT>";
+			$res = "<span style=\"color: gray\"><b>$res</b></span>";
 			break;
 		case suspended:
-			$res = "<FONT COLOR=\"RED\"><B>$res</B></FONT>";
+			$res = "<span style=\"color: red\"><b>$res</b></span>";
 		case subscribed:
-			$res = "<I>$res</I>";
+			$res = "<i>$res</i>";
 			break;
 		default:
 			break;
@@ -553,12 +570,13 @@ class CP_NREN_Admin extends FW_Content_Page
 		if ($key === "" || $target === "")
 			return"";
 
-		$res  = "<FORM ACTION=\"\" METHOD=\"POST\">\n";
-		$res .= "<INPUT TYPE=\"hidden\" NAME=\"". $key . "\" VALUE=\"delete\">\n";
-		$res .= "<INPUT TYPE=\"hidden\" NAME=\"name\" VALUE=\"" . $target . "\" />\n";
-		$res .= "<INPUT TYPE=\"hidden\" NAME=\"state\" VALUE=\"\" />\n"; /* don't need state to delete */
+		$res  = "<form action=\"\" method=\"post\">\n";
+		$res .= "<div>\n";
+		$res .= "<input type=\"hidden\" name=\"". $key . "\" value=\"delete\" />\n";
+		$res .= "<input type=\"hidden\" name=\"name\" value=\"" . $target . "\" />\n";
+		$res .= "<input type=\"hidden\" name=\"state\" value=\"\" />\n"; /* don't need state to delete */
 
-		$res .= "<INPUT TYPE=\"IMAGE\" NAME=\"delete\" ";
+		$res .= "<input type=\"image\" name=\"delete\" ";
 
 		/* warning upon attempted self-deletion */
 		if ($target === $this->person->getSubscriberOrgName()) {
@@ -570,7 +588,8 @@ class CP_NREN_Admin extends FW_Content_Page
 
 		$res .= "                 value=\"delete\" src=\"graphics/delete.png\"";
 		$res .= "                 alt=\"delete\" />\n";
-		$res .= "</FORM>\n";
+		$res .= "</div>\n";
+		$res .= "</form>\n";
 		echo $res;
 	}
 

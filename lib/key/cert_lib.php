@@ -24,4 +24,11 @@ function openssl_x509_fingerprint($x509cert, $hashOnly = true)
 	return $fprint;
 }
 
+function openssl_x509_serial($x509cert)
+{
+
+	$cmd ="echo \"" . $x509cert . "\" | openssl x509  -serial -noout|cut -d '=' -f2";
+	$sprint = shell_exec($cmd);
+	return $sprint;
+}
 ?>

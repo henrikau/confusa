@@ -1,0 +1,22 @@
+<h3>How do I create a CSR?</h3>
+
+<p>You should consider using the <a href="http://www.openssl.org">OpenSSL</a> toolkit for
+the creation of certificate signing requests. OpenSSL comes pre-installed with most
+Linux distributions and MacOS X. The OpenSSL project also offers an <a href="http://www.openssl.org/related/binaries.html">
+OpenSSL for Windows</a> download.</p>
+<p>Once you have OpenSSL installed on your platform, use it to generate a CSR by typing:</p>
+<p class="example">
+	openssl req -new -newkey rsa:2048 -keyout userkey.pem -out usercert_request.pem -subj /CN=bla
+</p>
+
+<ul class="help">
+<li>The generated file <b>userkey.pem</b> is your private key and should during all the
+validity time of the certificate be kept by you and <b>only</b> you.</li>
+<li>You should
+also define a <span class="wtf" title="more than 8 characters, not in the dictionary, include numbers">strong password</span> when asked for it.</li>
+<li>The file, which you upload to
+Confusa to request a certificate is <b>usercert_request.pem</b>.</li>
+</ul>
+<b>Note</b>: If Confusa operates in online mode, the subject of the request can
+be arbitrary, as shown above, because Confusa will replace it with real values
+matching you, once it issues the certificate!

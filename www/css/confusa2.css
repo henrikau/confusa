@@ -99,6 +99,31 @@ legend {
     padding: 2px;
 }
 
+fieldset.infoblock {
+    border: 1px dashed #888888;
+    background-color: #FFFFFF;
+    padding: 5px;
+    padding-left: 20px;
+    width: 90%;
+}
+
+fieldset.infoblock legend {
+    border: 1px solid #888888;
+    background-color: #FFFFFF;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: black;
+    padding: 2px;
+}
+
+fieldset.infoblock ul li {
+    font-weight: bold;
+    color: #222222;
+    margin-left: 40px;
+    list-style-type: none;
+    padding-bottom: 7px;
+}
+
 div.csr {
 	margin-bottom: 5%;
 }
@@ -116,6 +141,20 @@ ul.info {
     padding-left: inherit;
     width: 80%;
     font-style: italic;
+}
+
+ul.help {
+    margin-top: 8px;
+    margin-left: 20px;
+    margin-bottom: 8px;
+}
+
+p.example {
+    border: 1px dashed #000000;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-family: Courier;
+    background-color: #DDDDEE;
 }
 
 /* powered by http://mierendo.com/software/rounded_css_boxes/ */
@@ -186,4 +225,27 @@ ul.info {
     background-image: url("../graphics/confusa_corners_border.png");
     background-repeat: repeat-x;
     background-position: bottom;
+}
+
+a.exphead {
+    text-decoration: none;
+}
+
+a.exphead:hover {
+    text-decoration: bold;
+}
+
+a.exphead span.expchar {
+    font-family: monospace;
+    font-weight: normal;
+    font-size: inherit;
+}
+
+.expcont {
+    display: block;
+}
+
+span.wtf {
+    cursor: help;
+    border-bottom: dashed 1px;
 }

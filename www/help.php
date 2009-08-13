@@ -12,9 +12,11 @@ class Help extends FW_Content_Page
 
 	public function process()
 	{
-		$help_text = $this->getNRENHelpText($this->person->getNREN());
+		$nren = $this->person->getNREN();
+		$help_text = $this->getNRENHelpText($nren);
+		$this->tpl->assign('nren', $nren);
 		$this->tpl->assign('nren_help_text', $help_text);
-		$this->tpl->assign('help_file', file_get_contents('../include/ipso_lorem.html'));
+		$this->tpl->assign('help_file', file_get_contents('../include/help.html'));
 		$this->tpl->assign('content', $this->tpl->fetch('help.tpl'));
 
 	}

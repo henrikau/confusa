@@ -100,8 +100,8 @@ class CP_Admin extends FW_Content_Page
 	 */
 	public function process()
 	{
-		/* IF user is not subscirber- or nren-admin, we stop here */
-		if (!($this->person->isSubscriberAdmin() || $this->person->isNRENAdmin())) {
+		/* IF user is not an admin, we stop here */
+		if (!($this->person->isAdmin())) {
 			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " was rejected at the admin-interface");
 			$this->tpl->assign('reason', 'You do not have sufficient rights to view this page');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
@@ -132,12 +132,25 @@ class CP_Admin extends FW_Content_Page
 		} else if ($this->person->isSubscriberAdmin()) { /* subscriber admin display */
 			$subscriber = $this->person->getSubscriberOrgName();
 			$subscriber_admins = $this->getSubscriberAdmins($subscriber, 1);
+			$nren = $this->person->getNREN();
+			$nren_admins = $this->getNRENAdmins($nren);
+			$this->tpl->assign('nren_admins', $nren_admins);
+			$this->tpl->assign('nren', $nren);
 			$this->tpl->assign('subscriber', $subscriber);
 			$this->tpl->assign('subscriber_admins', $subscriber_admins);
 
 			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->getSubscriberOrgName(), 0);
 			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
 
+		} else if ($this->person->isSubscriberSubAdmin()) { /* subscriber-sub-admin display */
+			$subscriber = $this->person->getSubscriberOrgName();
+			$subscriber_admins = $this->getSubscriberAdmins($subscriber, 1);
+			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->getSubscriberOrgName(), 0);
+			/* remove the administrator herself from the list */
+			$subscriber_sub_admins = array_diff($subscriber_sub_admins, array($this->person->getEPPN()));
+			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
+			$this->tpl->assign('subscriber_admins', $subscriber_admins);
+			$this->tpl->assign('subscriber', $subscriber);
 		}
 
 		$this->tpl->assign('self', $this->person->getEPPN());
@@ -235,7 +248,8 @@ class CP_Admin extends FW_Content_Page
 										array($nren));
 		} catch(DBStatementException $dbse) {
 			Framework::error_output("Cannot retrieve subscriber from database!<BR /> " .
-				"Probably wrong syntax for query, ask an admin to investigate. Server said: " . $dbse->getMessage());
+				"Probably wrong syntax for query, ask an admin to investigate." .
+				"Server said: " . $dbse->getMessage());
 			return null;
 		} catch(DBQueryException $dbqe) {
 			Framework::error_output("Query failed. This probably means that the values passed to the "
@@ -292,6 +306,9 @@ class CP_Admin extends FW_Content_Page
 				} else {
 					Framework::error_output("Could not retrieve exactly one NREN" .
 							" with name $nren WHEN inserting a new admin! Got " . count($res) . "results!");
+					Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": User tried to insert an " .
+									"admin for NREN $nren. When looking up " .
+									"the nren_id, " .count($res) . " results were returned!");
 				}
 			} else { /* insert a subscriber-admin or subscriber-sub-admin */
 				$query = "SELECT subscriber_id FROM subscribers WHERE name=?";
@@ -304,16 +321,23 @@ class CP_Admin extends FW_Content_Page
 				} else {
 					Framework::error_output("Could not retrieve exactly one subscriber" .
 							" with name $subscriber WHEN inserting a new admin! Got " . count($res) . "results!");
+					Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": User tried to insert an " .
+									"admin for subscriber $subscriber. " .
+									"When looking up the subscriber_id, " . count($res) . " results were returned!");
 				}
 			}
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Could not retrieve NREN/subscriber for which you are " .
 									"trying to add an admin. Probably there's a server side problem, contact " .
 									"an administrator! Server said " . $dbse->getMessage());
+			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Error occured when " .
+								  "looking up NREN/subscriber: " . $dbse->getMessage());
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Could not retrieve NREN/subscriber for which you are " .
 									 "trying to add an admin! There seems to be a problem with the " .
 									 "received data. Server said " . $dbqe->getMessage());
+			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Error occured when " .
+								"looking up NREN/subscriber in: " . $dbqe->getMessage());
 		}
 
 		$query = "INSERT INTO admins(admin, admin_level, nren, subscriber) ";
@@ -323,13 +347,18 @@ class CP_Admin extends FW_Content_Page
 			MDB2Wrapper::update($query,
 								 array('text','text','text','text'),
 								 array($admin,$level,$nren_id,$subscriber_id));
+			Logger::log_event(LOG_NOTICE, "Inserted admin $admin with level $level for NREN/subscriber $nren_id/$subscriber_id");
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Inserting the admin into the database failed, because the statement " .
 									 "was bad. Please contact an administrator. Server said " . $dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . ": Tried to insert admin $admin with level $level, " .
+								"but an SQL error occured: " . $dbse->getMessage());
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Inserting the admin into the database failed because of problems " .
 									 "with the supplied data. Server said " . $dbqe->getMessage() .
 									 " Maybe an admin with that name already exists?");
+			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Problem when trying to insert admin $admin ".
+								"with level $level: " . $dbqe->getMessage());
 		}
 	}
 
@@ -349,12 +378,17 @@ class CP_Admin extends FW_Content_Page
 			MDB2Wrapper::update($query,
 								array('text','text'),
 								array($admin, $level));
+			Logger::log_event(LOG_INFO, "Successfully deleted admin $admin with level $level");
 		} catch(DBStatementException $dbse) {
 			Framework::error_output("Could not delete the admin because the statement was bad " .
 									 "Please contact an administrator. Server said " . $dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . ": Problem occured when trying to delete " .
+								"admin $admin with level $level: " . $dbse->getMessage());
 		} catch(DBQueryException $dbqe) {
 			Framework::error_output("Could not delete the admin because of problems with the " .
 									 "received data. Server said " . $dbqe->getMessage());
+			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Problem occured when tyring to delete " .
+									"admin $admin with level $level: " . $dbqe->getMessage());
 		}
 	}
 }

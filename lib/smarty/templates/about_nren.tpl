@@ -4,7 +4,7 @@
 
 {if !is_null($logo)}
 	<div id="logo_in_text">
-		<img src={$logo} alt="NREN logo"</img>
+		<img src="{$logo}" alt="NREN logo" />
 	</div>
 {/if}
 

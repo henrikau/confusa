@@ -16,6 +16,8 @@ final class ProcessCsr extends FW_Content_Page
 	function __construct()
 	{
 		parent::__construct("Process CSR", true);
+		Framework::sensitive_action();
+
 		$this->signing_ok = false;
 	}
 
@@ -46,7 +48,7 @@ final class ProcessCsr extends FW_Content_Page
 			$this->tpl->assign('signingOk', $this->signing_ok);
 			$this->tpl->assign('sign_csr', htmlentities($_GET['sign_csr']));
 		}
-		$this->tpl->assign('csrList', $this->ListAllCSR($this->person));
+		$this->tpl->assign('csrList', $this->listAllCSR($this->person));
 		$this->tpl->assign('content', $this->tpl->fetch('process_csr.tpl'));
 	}
 
@@ -226,7 +228,7 @@ final class ProcessCsr extends FW_Content_Page
 	 */
 	private function listAllCSR()
 	{
-		$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip FROM csr_cache WHERE common_name=? ORDER BY uploaded_date DESC";
+		$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip FROM csr_cache WHERE common_name=? ORDER BY uploaded_date DESC LIMIT 10";
 		$res = MDB2Wrapper::execute($query,
 					    array('text'),
 					    $this->person->getX509ValidCN());

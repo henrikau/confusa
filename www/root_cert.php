@@ -6,7 +6,7 @@ class Root_Certificate extends FW_Content_Page
 	private $cert_file;
 	function __construct()
 	{
-		parent::__construct("Root Certificate(s)", true);
+		parent::__construct("Root Certificate(s)", false);
 		$this->cert_file = Config::get_config('install_path') .
 			Config::get_config('ca_cert_base_path') .
 			Config::get_config('ca_cert_path') .

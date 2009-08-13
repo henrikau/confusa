@@ -145,7 +145,7 @@ CREATE TABLE csr_cache (
        -- for the challenge-response cycle. when we ask the user to approve
        -- the system will generate a one-time password and encrypt it with the
        -- uploaded public-key.
-       auth_key char(40) NOT NULL
+       auth_key char(40) UNIQUE NOT NULL
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
@@ -162,7 +162,7 @@ CREATE TABLE cert_cache (
 	cert TEXT NOT NULL,
 
 	-- the auth key for remote download of script
-	auth_key char(64) NOT NULL,
+	auth_key char(64) UNIQUE NOT NULL,
 	cert_owner varchar(64) NOT NULL,
 	-- the organization of the cert_owner. Useful for querying for certificates
 	-- to-be-revoked e.g. when operating in stand-alone mode

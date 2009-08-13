@@ -92,6 +92,7 @@ class CertManager_Online extends CertManager
         $this->_capi_upload_CSR($auth_key, $csr);
         $this->_capi_authorize_CSR();
 
+        $this->sendMailNotification($auth_key, date('Y-m-d H:i'), $_SERVER['REMOTE_ADDR']);
 	/* FIXME: conflict, not sure how to resolve, do we need both? */
         Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
 	/* FIXME: <END> */
@@ -130,7 +131,15 @@ class CertManager_Online extends CertManager
 
         return $res;
     }
-
+    /* delete a certificate from the DB (Deprecated)
+     *
+     * May come in handy when we have the cache for online-certificates though.
+     */
+    public function deleteCertFromDB($key)
+    {
+	    Framework::error_output(__FILE__ . ":" . __LINE__ . " This function (deleteCertFromDB) should not be called in online-mode!");
+	    return false;
+    }
     /*
      * Search for the certificates of a person with a given common_name.
      * Common_name may include wildcard characters.

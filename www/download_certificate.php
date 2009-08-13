@@ -8,6 +8,7 @@ final class DownloadCertificate extends FW_Content_Page
 	public function __construct()
 	{
 		parent::__construct("Download Certificates", true);
+		Framework::sensitive_action();
 	}
 	public function pre_process($person)
 	{
@@ -20,7 +21,7 @@ final class DownloadCertificate extends FW_Content_Page
 				try {
 					$cert = $this->certManager->get_cert($authKey);
 					if (isset($cert)) {
-						require_once 'file_download.php';
+						include 'file_download.php';
 						download_file($cert, 'usercert.pem');
 						exit(0);
 					}
@@ -72,24 +73,9 @@ final class DownloadCertificate extends FW_Content_Page
 	 */
 	private function deleteCert($authKey)
 	{
-		try {
-			$cert = $this->certManager->get_cert($authKey);
-		} catch (ConfusaGenException $cge) {
-			Framework::error_output("Certificate does not exist in cert_cache");
-			Logger::log_event(LOG_NOTICE, "Could not delete given CSR with id ".$authKey." from ip ".$_SERVER['REMOTE_ADDR']);
-			return false;
+		if ($this->certManager->deleteCertFromDB($authKey)) {
+			$this->tpl->assign('processingResult', 'Certificate deleted');
 		}
-
-		try {
-		MDB2Wrapper::update("DELETE FROM cert_cache WHERE auth_key=? AND cert_owner=?",
-				    array('text', 'text'),
-				    array($authKey, $this->person->getX509ValidCN()));
-		} catch (Exception $e) {
-			/* FIXME: better error-handling */
-			Framework::error_output($e->getMessage);
-		}
-		Logger::log_event(LOG_NOTICE, "Dropping CERT with ID ".$authKey." belonging to ".$this->person->getX509ValidCN());
-		$this->tpl->assign('processingResult', 'Certificate deleted');
 	} /* end deleteCert */
 
 	/**
