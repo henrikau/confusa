@@ -3,6 +3,7 @@ ini_set("include_path", ini_get('include_path') . ":../config/:../lib/misc:../li
 
 require_once 'mdb2_wrapper.php';
 require_once 'config.php';
+require_once 'db_query.php';
 
 /**
  *  Bootstrap script for remote-CA accounts of NRENs.
@@ -75,7 +76,7 @@ function insert_credentials($nren_name, $login_name, $login_password)
 	echo "Could not insert the supplied login name into the account-map table! Problem " . $dbse->getMessage();
 	exit(5);
     } catch (DBQueryException $dbqe) {
-	echo "Could not insert the supplied login name into the account-map table! Problem " . $dbse->getMessage();
+	echo "Could not insert the supplied login name into the account-map table! Problem " . $dbqe->getMessage();
 	exit(5);
     }
 
