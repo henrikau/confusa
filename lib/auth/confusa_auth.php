@@ -163,7 +163,8 @@ function logout_link($logout_location="logout.php")
      $base = SimpleSAML_Utilities::selfURL();
      if (strpos($base, ".php"))
           $base = dirname($base);
-     $link_base =  dirname($base).'/simplesaml/saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
+     $link_base =  '/' . SimpleSAML_Configuration::getInstance()->getValue('baseurlpath') .
+			'saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
 	return $link_base;
 } // end get_logout_link()
 
