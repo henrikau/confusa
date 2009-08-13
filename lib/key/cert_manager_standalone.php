@@ -210,8 +210,73 @@ class CertManager_Standalone extends CertManager
 	    }
 	    Logger::log_event(LOG_NOTICE, "Revoked certificate $key for user " .
 			      $this->person->getX509SubjectDN());
-	    return $this->deleteCertFromDB($key);
-    }
+
+	    if (!$this->deleteCertFromDB($key)) {
+		    Logger::log_event(LOG_NOTICE, "Could not delete certificate ($key) from database, revocation only partially completed.");
+	    }
+
+	    /* Publish the updated CRL */
+	    $crlFile	= Config::get_config('install_path') . Config::get_config('ca_cert_base_path') . Config::get_config('ca_crl_name');
+	    $pubCADir	= Config::get_config('install_path') . "www/ca";
+	    $pubCrlFile	= $pubCADir . Config::get_config('ca_crl_name');
+	    if (file_exists($crlFile)) {
+		    if (!is_dir($pubCADir)) {
+			    if (!is_writable(dirname($pubCADir))) {
+				    $msg  = "CA-dir does not exist, and the webserver does not have write-access to web-dir.<BR />";
+				    $msg .= "Please contact a site-administrator and notify about this problem.";
+				    $msg .= "We are unable to publish the CRL's at this time.<BR />";
+				    Framework::error_output($msg);
+				    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . " www/ca dir not present and cannot create. Check Confusa configuration");
+				    return false;
+			    }
+			    /* Should work, but in case it fails, return */
+			    if (!mkdir($pubCADir, 0755, true)) {
+				    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ .
+						      " tried to create www/ca and thought the permissions where in order, but alas! They weren't.");
+				    return false;
+			    }
+		    }
+
+		    /* First time we publish, public CRL does not exist. */
+		    if (!file_exists($pubCrlFile)) {
+			    if (is_writable($pubCADir)) {
+				    if (!copy($crlFile, $pubCrlFile)) {
+					    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . " " .
+							      "Could not write to $crlFile, not allowed to create file. " .
+							      "CRLs will not be published until this is fixed.");
+					    return false;
+				    }
+			    } else {
+				    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . " " .
+						      "Want to publish CRL but not allowed to create new file in $pubCADir. " .
+						      "Need this to public CRLs. Please create file $pubCrlFile writable for the webserver.");
+				    return false;
+			    }
+		    } else if (filemtime($crlFile) > filemtime($pubCrlFile)) {
+			    /* Need to update CRL (will be true in most cases) */
+
+			    if (!is_writable($pubCrlFile)) {
+				    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . " "  .
+						      "Want to publish CRL but not allowed to write to $pubCrlFile. " .
+						      "Please make this file writable for " . get_current_user());
+				    return false;
+			    }
+			    if (!copy($crlFile, $pubCrlFile)) {
+				    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . " "  .
+						      "Could not write to $crlFile, not allowed to create file. "  .
+						      "CRLs will not be published until this is fixed.");
+				    return false;
+			    }
+		    }
+	    } else {
+		    Logger::log_event(LOG_ALERT, "Expected to find $crlFile, but it is nowhere to be found!");
+		    return false;
+	    }
+	    Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . " "  .
+			      "Successfully updated $pubCrlFile.");
+	    return true;
+    } /* end revoke_cert() */
+
 
   /* verify_csr()
    *
