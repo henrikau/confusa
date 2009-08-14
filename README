@@ -1,58 +1,50 @@
 			       Confusa
-			Copyright (C) 2007,2008
+			Copyright (C) 2007,2008,2009
 			   UNINETT Sigma A/S
+				NDGF
 
 
-   Confusa shall provide an easy way of creating an ARC-compatible
-   identity token from an existing (federated) identity. 
+Confusa shall provide an easy way of creating an X.509 identity token
+from an existing (federated) identity.
 
-   It shall do so, by providing a secure login environment for the user,
-   scripts for creating the required cryptographic keys and means for
-   uploading certificate signing requests (CSRs) in an easy and secure 
-   manner. Furthermore; the system shall automate the process of signing
-   valid CSR and returning these to the user.
+It shall do so, by providing a secure login environment for the user, a
+way of uploading a singing-request to the Confusa database.
 
-   This software is provided 'as is', and the developers are, under no
-   cirumstances, responsible for any loss or corruption of data or
-   hardware you may encouter. It is, however, presented in the most
-   stable manner possible at this stage, and we work very hard to ensure
-   that only stable releases reach the public domain.
-   Please report any bugs to the developers (henrik@austad.us)
+Note: the system *will* check all attributes in the subject of the
+CSR and drop the CSR if any of these attributes does not correspond
+with attributes obtained from the federated identity.
 
+Current attributes that are checked:
+ - key length. Keys shorter than key_length in
+   config/confusa_config.php will be discarded when the key is
+   uploaded.
+ - Subject in key. CommonName *must* correspond to
+   eduPersonPrincipalName.
+ - A certificate will never be reissued. For this reason, Confusa will
+   check that the public-key does not belong to a previously signed
+   certificate.
 
-The automated signing-process can be split into 2 separate ways
+The user will then be presented with a list of available (uploaded)
+CSRs and the opportunity to inspect, delete or approve for signing.
+The latter will either ship the CSR off to an online CA, or to the
+internal signing engine (standalone mode).
 
-1) After the CSR has been created and uploaded, the script will present
-   the user with an authentication URL. By following this URL, the user
-   will be authenticated and the signing will be authorized.
+The signed certificate is then made available to the user, and the
+user can choose to download, ship it via email, delete it or revoke it.
 
-   After the CSR has been created and uploaded, the user can log in to
-   the system and go to the 'Key' page. Here he/she will be presented
-   with a summary of all uploaded CSRs for this user. By inspecting
-   these, the user may approve signing or delete the CSR from the
-   database.
+This software is provided 'as is', and the developers are, under no
+circumstances, responsible for any loss or corruption of data or
+hardware you may encounter. It is, however, presented in the most
+stable manner possible at this stage, and we work very hard to ensure
+that only stable releases reach the public domain.
+Please report any bugs to the developers (henrik@austad.us)
 
-2) As an option, the user may create the key and CSR manually and then
-   choose to upload the CSR via the web interface. 
-
-   Note: the system *will* check all attributes in the subject of the
-   CSR and drop the CSR if any of these attributes does not correspond
-   with attributes obtained from the federated identity.
-
-   Current attributes that are checked:
-   - key length. Keys shorter than key_length in
-     config/confusa_config.php will be discarded when the key is
-     uploaded.
-   - Subject in key. CommonName *must* correspond to
-     eduPersonPrincipalName.
-   - A certificate will never be reissued. For this reason, Confusa will
-     check that the public-key does not belong to a previously signed
-     certificate.
 
 
 The file INSTALL contains instructions to how to install and configure
 the system. Note that Confusa depends upon simpleSAMLphp. INSTALL
 also contains the software requirements Confusa pose on the system
+
 
 LICENSE state the license under which Confusa is released (GPLv3). Read
 this before you start using the system, in case it invokes any
