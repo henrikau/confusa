@@ -51,6 +51,27 @@ function test_content($content, $auth_url)
   }
 
   /*
+   * test CSR to blacklist. It is safe to call exec as we have tested the
+   * content of the CSR.
+   */
+  $cmd = "echo \"$content\" | openssl-vulnkey -";
+  exec($cmd, $output, $return_val);
+  switch ($return_val) {
+  case 0:
+	  /* key is not blacklisted */
+	  break;
+  case 1:
+       echo "Uploaded CSR is blacklisted!<BR>\n";
+       return false;
+  case 127:
+       Logger::log_event(LOG_ERR, __FILE__ . ":" . __LINE__ . " openssl-vulnkey not installed");
+       break;
+  default:
+       Logger::log_event(LOG_DEBUG, __FILE__ . ":" . __LINE__ . " Unknown return ($return_val) value from shell");
+       break;
+  }
+
+  /*
    * test authenticity of auth_url
    */
   $hash = pubkey_hash($content, true);
