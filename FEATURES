@@ -1,9 +1,0 @@
-Features of Confusa
-
-- uses simplesamlPHP for authN to federations
-- optional login with extra SMS-layer
-- custom design of script for creating, uploading and downloading
-- key-material (private key, CSR and certificate)
-- extensive use of database for storage
-- using temporary files to create download capabilities through the
-  browser (or via the script).

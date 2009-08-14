@@ -31,4 +31,12 @@ function openssl_x509_serial($x509cert)
 	$sprint = shell_exec($cmd);
 	return $sprint;
 }
+function openssl_crl_export($crl)
+{
+	if (!isset($crl)) {
+		return;
+	}
+	$cmd ="echo \"" . $crl . "\" | openssl crl -text -noout";
+	return shell_exec($cmd);
+}
 ?>

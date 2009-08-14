@@ -25,8 +25,8 @@ function test_content($content, $auth_url)
   global $person;
   $testres = true;
   /* check for start */
-  $start = substr($content, 0, 35);
-  $end = substr($content, -34, -1);
+  $start = substr($content, 0, strlen("-----BEGIN CERTIFICATE REQUEST-----"));
+  $end = substr($content, -(strlen("-----END CERTIFICATE REQUEST-----")+1), -1);
 
   /* test start and ending of certificate */
   if (strcmp("-----BEGIN CERTIFICATE REQUEST-----", $start)!==0 &&
@@ -48,6 +48,27 @@ function test_content($content, $auth_url)
   if (csr_pubkey_length($content) < $length) {
        echo "uploaded key is not long enough. Please download a proper keyscript and try again<BR>\n";
        return false;
+  }
+
+  /*
+   * test CSR to blacklist. It is safe to call exec as we have tested the
+   * content of the CSR.
+   */
+  $cmd = "echo \"$content\" | openssl-vulnkey -";
+  exec($cmd, $output, $return_val);
+  switch ($return_val) {
+  case 0:
+	  /* key is not blacklisted */
+	  break;
+  case 1:
+       echo "Uploaded CSR is blacklisted!<BR>\n";
+       return false;
+  case 127:
+       Logger::log_event(LOG_ERR, __FILE__ . ":" . __LINE__ . " openssl-vulnkey not installed");
+       break;
+  default:
+       Logger::log_event(LOG_DEBUG, __FILE__ . ":" . __LINE__ . " Unknown return ($return_val) value from shell");
+       break;
   }
 
   /*

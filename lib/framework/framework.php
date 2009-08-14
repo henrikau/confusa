@@ -73,6 +73,12 @@ class Framework {
 		$this->tpl->config_dir	= Config::get_config('install_path').'lib/smarty/configs';
 		$this->tpl->cache_dir	= Config::get_config('install_path').'lib/smarty/cache';
 		$this->tpl->assign('title', Config::get_config('system_name').' - '.$this->contentPage->get_title());
+		if (Config::get_config('maint')) {
+			$this->tpl->assign('instance', Config::get_config('system_name'));
+			$this->tpl->assign('maint', $this->tpl->fetch('maint.tpl'));
+			$this->tpl->display('site.tpl');
+			exit(0);
+		}
 	}
 
 	public function authenticate() {
