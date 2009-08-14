@@ -80,11 +80,11 @@ webhost=`grep "mysql_host" ../config/confusa_config.php | cut -d '=' -f 2 \
 grants="SELECT, INSERT, DELETE, UPDATE, USAGE"
 
 # test to see if the user is already present. If not, add
-user=`$MYSQL -Dmysql -e "SELECT user FROM user WHERE user='$webuser'"`
+user=`$MYSQL -Dmysql -e "SELECT user FROM user WHERE user='$webuser' AND host='$webhost'"`
 if [ -z "$user" ]; then
-    echo "did not find user ($webuser) in database, creating"
-    crtu_query="CREATE USER $webuser IDENTIFIED BY '$pw'";
-    `$MYSQL -D$database -e"$crtu_query"`
+    echo "did not find user ($webuser@$webhost) in database, creating"
+    create_u="CREATE USER '$webuser'@'$webhost' IDENTIFIED BY '$pw'";
+    `$MYSQL -D$database -e"$create_u"`
     query="GRANT $grants on $database.* TO '$webuser'@'$webhost' IDENTIFIED BY '$pw'"
     `$MYSQL -D$database -e"$query"`
     res=$?
@@ -97,7 +97,7 @@ if [ -z "$user" ]; then
     fi
 
 else
-    echo "Found user ($webuser)."
+    echo "Found user ($webuser@$webhost)."
 fi
 
 echo "Confusa-setup complete, adding views"
