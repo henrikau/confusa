@@ -25,8 +25,8 @@
 	<li><a href="robot.php">Robot Interface</a></li>
 	{elseif $person->isNRENAdmin()}
 	<li><a href="admin.php">Manage Administrators</a></li>
-	<li><a href="nren_admin.php">NREN-Admin</a></li>
-	<li><a href="stylist.php?show=text">Customize appearance</a></li>
+	<li><a href="nren_admin.php">Manage subscribers</a></li>
+	<li><a href="stylist.php?show=text">Manage appearance</a></li>
 	{/if}
 </ul>
 <h3>Other</h3>
