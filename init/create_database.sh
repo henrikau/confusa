@@ -83,6 +83,8 @@ grants="SELECT, INSERT, DELETE, UPDATE, USAGE"
 user=`$MYSQL -Dmysql -e "SELECT user FROM user WHERE user='$webuser'"`
 if [ -z "$user" ]; then
     echo "did not find user ($webuser) in database, creating"
+    crtu_query="CREATE USER $webuser IDENTIFIED BY '$pw'";
+    `$MYSQL -D$database -e"$crtu_query"`
     query="GRANT $grants on $database.* TO '$webuser'@'$webhost' IDENTIFIED BY '$pw'"
     `$MYSQL -D$database -e"$query"`
     res=$?
