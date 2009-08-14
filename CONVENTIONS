@@ -1,5 +1,7 @@
 	Conventions for working with the Confusa source
 
+	This is part of the developer's documentation.
+
 In order to keep a clean codebase and a tidy repository with browsable
 history, the following set of conventions govern the workflow in
 Confusa:
@@ -58,6 +60,10 @@ Confusa:
     www/root_cert.php:               exit(1);
     www/tools.php:                   exit(1);
 
+  Note: in some settings (when downloading files etc), using exit is the
+  'right thing' to do, but any function that stumbles across an
+  erroneous condition should either return a value to indicate this, or
+  throw an exception.
 
 4) OO-model where-ever possible.
 
