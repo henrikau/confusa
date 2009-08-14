@@ -25,8 +25,8 @@ function test_content($content, $auth_url)
   global $person;
   $testres = true;
   /* check for start */
-  $start = substr($content, 0, 35);
-  $end = substr($content, -34, -1);
+  $start = substr($content, 0, strlen("-----BEGIN CERTIFICATE REQUEST-----"));
+  $end = substr($content, -(strlen("-----END CERTIFICATE REQUEST-----")+1), -1);
 
   /* test start and ending of certificate */
   if (strcmp("-----BEGIN CERTIFICATE REQUEST-----", $start)!==0 &&
