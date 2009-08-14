@@ -7,6 +7,12 @@ if (!Config::get_config('auth_bypass')) {
 	not_found($_SERVER['SCRIPT_NAME']);
 }
 
+if (Config::get_config('maint')) {
+	echo "1\n";
+	echo "<h2>Under maintenance. Come back later.</h2>\n";
+	exit(0);
+}
+
 require_once 'mdb2_wrapper.php';
 require_once 'logger.php';
 require_once 'csr_lib.php';

@@ -82,7 +82,14 @@ div.success {
 	background-color: #009900;
 	border: 1px solid #508c0a;
 }
-
+div.info {
+           width: 80%;
+           padding: 10px;
+           margin-bottom: 10px;
+           background-color: #FFDD33;
+           border: 2px solid black;
+           font-size: 2em;
+}
 fieldset {
     border: 1px solid #000000;
     background-color: #EEEEEE;

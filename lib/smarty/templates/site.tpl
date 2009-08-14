@@ -36,7 +36,6 @@
 	      <div class="confusa_corners_bl">
 		<div class="confusa_corners_br">
 		  <div class="confusa_corners">
-
 		    <div id="header">
 		      {if is_null($logo)}
 		      <div id="logo"><img src="graphics/logo-sigma.png" alt="UNINETT Sigma Logo" /></div>
@@ -52,8 +51,10 @@
 		    <div id="menu">
 		      {$menu}
 		    </div> <!-- menu -->
-		    
 		    <div id="content">
+		    {if $maint}
+		    {$maint}
+		    {else}
 		      {foreach from=$errors item=error}
 		      <div class="error">{$error}</div>
 		      {/foreach}
@@ -61,8 +62,8 @@
 		      <div class="success">{$msg}</div>
 		      {/foreach}
 		      {$content}
+		    {/if} {* maint *}
 		    </div> <!-- content -->
-
 		  </div> <!-- rounded borders -->
 		</div>
 	      </div>

@@ -8,6 +8,18 @@ $confusa_config = array(
 	 */
 	'debug'			=> true,
 
+	/* maintenance switch
+	 *
+	 * When this is set to true, Confusa will enter Maintenance mode,
+	 * showing a default 'under maintenance, check back later' message to
+	 * all users.
+	 *
+	 * It will primarily be used by scripts and should not be
+	 * manually set to anything but false (unless you have a very good
+	 * reason to do so, and you know what you're doing (-; ).
+	 */
+	'maint'			=> false,
+
         /* install path */
         'install_path'                  => '/var/www/confusa/',
 
