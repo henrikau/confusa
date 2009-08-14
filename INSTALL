@@ -20,7 +20,7 @@ To install Confusa
  - Apache2
  - PHP5
  - PEAR with MDB2.MySQL
- - php5-curl (when using remote CA for accessing the REST API)
+ - Smarty (the PHP template engine)
 
 === Install process ===
 
@@ -36,12 +36,12 @@ To install Confusa
 
      libapache2-php5
      php5-mysql
-     php5-curl
      PEAR::MDB2_mysql_driver
      
-3 b) When using online, you will also need the mcrypt library:
+3 b) When using online, you will also need the mcrypt and curl libraries:
 
      php5-mcrypt
+     php5-curl
 
 4) Configure Apache to use SSL, use the following lines in your 
    apache2/sites-enabled/appropriate.config.file and php5-openssl
@@ -148,10 +148,28 @@ f) Add a cron-job that takes backup of the database. The most critical
    A sample script lies in confusa/programs. Note that this is a simple
    mysqldump script that dumps the database specified in confusa_config
 
-7) Test and verify that the system is operational before you allow
+7) If you want NREN-admins to be able to customize the appearance of Confusa,
+you have to give the apache user write permissions to the "custom" folders in
+www/css and www/graphics. The apache user is often called 'www-data', sometimes
+also 'apache' or something else.
+If you are unsure about the user-name and have apache running, try to find it
+out by executing
+
+ps aux | grep apache | awk '{print $1}'
+or
+ps aux | grep httpd | awk '{print $1}'
+
+If your apache username is www-data, execute
+
+chown -R www-data /usr/share/confusa/www/css/custom
+chown -R www-data /usr/share/confusa/www/graphics/custom
+chmod -R 0755 /usr/share/confusa/www/css/custom
+chmod -R 0755 /usr/share/confusa/www/graphics/custom
+
+8) Test and verify that the system is operational before you allow
    public access.
 
-8*) Enable OAuth authorization for third party applications. OAuth has the 
+9*) Enable OAuth authorization for third party applications. OAuth has the
 advantage that Confusa-based non-browser applications won't need to maintain cookies any more
 and that it protects against replay attacks. Simplesamlphp supports OAuth in more recent versions.
 
@@ -165,7 +183,7 @@ You can just copy the default one, yielding for instance:
 'https://slcs.example.com/simplesaml/module.php/saml2/sp/metadata.php?source=saml2' => array(
   'host'  => '__DEFAULT__',
   'authproc' => array(
-    50 => 'core:IdPMap',
+    50 => 'core:NRENMap',
     60 => 'core:ConfusaAttributeMap',
     61 => 'core:CountryMap'
   ),
