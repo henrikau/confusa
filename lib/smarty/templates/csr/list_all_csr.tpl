@@ -33,7 +33,7 @@
 	</td>
 	<td></td>
 	<td>
-	  <a href="?delete_csr={$csrInspect.auth_token}"><img src="graphics/delete.png"
+	  <a href="?delete_csr={$csr.auth_key}"><img src="graphics/delete.png"
 	  alt="Delete" title="Delete CSR from database" class="url"/></a>
 	</td>
 	<td></td>
