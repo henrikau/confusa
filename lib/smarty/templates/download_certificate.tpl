@@ -31,14 +31,32 @@
 				<tr>
 				<td></td>
 				<td>
-				[<a href="download_certificate.php?email_cert={$key}">Email</a>]
-				[<a href="download_certificate.php?file_cert={$key}">Download</a>]
-				{if $processingToken eq $key}
-					<span style="color: gray">[Inspect]</span>
-				{else}
-					[<a href="download_certificate.php?inspect_cert={$key}">Inspect</a>]
-				{/if}
-				[<a href="download_certificate.php?delete_cert={$key}">Delete</a>]
+				  <a href="download_certificate.php?email_cert={$key}">
+				    <img src="graphics/email.png" alt=""
+					 title="Send certificate via email" class ="url"> Email
+				  </a><br />
+				  
+				  <a href="download_certificate.php?file_cert={$key}">
+				    <img src="graphics/disk.png"
+					 alt=""
+					 title="Save certificate directly to disk"
+					 class="url">
+				    Download Certificate
+				  </a><br />
+				  <a href="download_certificate.php?inspect_cert={$key}">
+				    <img src="graphics/information.png"
+					 alt=""
+					 title="Inspect certificate details"
+					 class="url">
+				    Inspect
+				  </a><br />
+				  <a href="download_certificate.php?delete_cert={$key}">
+				    <img src="graphics/delete.png"
+					 alt=""
+					 title="Delete certificate from the database"
+					 class="url">
+				    Delete
+				  </a><br />
 				</td>
 				<td>
 					{* Have the form wrap the table, otherwise it will not be legal HTML *}
@@ -77,10 +95,30 @@
 					[Inspect]
 					</td>
 				{else}
-					<td>
-					[<a href="download_certificate.php?email_cert={$cert.order_number}">Email</a>]
-					[<a href="download_certificate.php?file_cert={$cert.order_number}">Download</a>]
-					[<a href="download_certificate.php?inspect_cert={$cert.order_number}">Inspect</a>]
+				<td>
+				  <a href="download_certificate.php?email_cert={$cert.order_number}">
+				    <img src="graphics/email.png" alt=""
+					 title="Send certificate via email" class ="url"> Email
+				  </a><br />
+				  
+				  <a href="download_certificate.php?file_cert={$cert.order_number}">
+				    <img src="graphics/disk.png"
+					 alt=""
+					 title="Save certificate directly to disk"
+					 class="url">
+				    Download Certificate
+				  </a>
+				  <br />
+
+				  <a href="download_certificate.php?inspect_cert={$cert.order_number}">
+				    <img src="graphics/information.png"
+					 alt=""
+					 title="Inspect certificate details"
+					 class="url">
+				    Inspect
+				  </a>
+				  <br />
+
 					</td>
 					<td>
 						<form action="revoke_certificate.php" method="get">
