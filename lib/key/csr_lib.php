@@ -235,3 +235,36 @@ function get_csr_details($person, $auth_key)
 	return $result;
 }
 ?>
+
+/* match_dn
+ *
+ * This will match the associative array $subject with the constructed DN from person->getX509SubjectDN()
+ *
+ * The best would be to use something like what openssl supports:
+ *	openssl x509 -in usercert.pem -subject -noout
+ * which returns the subject string as we construct it below. However,
+ * php5_openssl has no obvious way of doing that.
+ *
+ * Eventually, we have to add severeal extra fields to handle all different
+ * cases, but for now, this will do.
+ */
+function match_dn($subject, $person)
+{
+	/* Compose the DN in the 'correct' order, only use the fields set in
+	 * the subject */
+	$composed_dn = "";
+	if (isset($subject['C']))
+		$composed_dn .= "/C=".$subject['C'];
+	if (isset($subject['O']))
+		$composed_dn .= "/O=".$subject['O'];
+	if (isset($subject['OU']))
+		$composed_dn .= "/OU=".$subject['OU'];
+	if (isset($subject['C']))
+		$composed_dn .= "/CN=".$subject['CN'];
+	$res = $person->getX509SubjectDN() === $composed_dn;
+	if (Config::get_config('debug') && !$res) {
+		Framework::error_output("Supplied (".$composed_dn.") and required subject (".$person->getX509SubjectDN() .") differs!");
+	}
+	return $res;
+}
+
