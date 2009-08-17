@@ -13,9 +13,9 @@
 	<td></td>
 	<td><b>Remote IP</b></td>
 	<td></td>
-	<td>{*<b>Inspect</b>*}</td>
+	<td width="20px">{*<b>Inspect</b>*}</td>
 	<td></td>
-	<td>{*<b>Delete</b>*}</td>
+	<td width="20px">{*<b>Delete</b>*}</td>
 	<td></td>
       </tr>
       {foreach from=$csrList item=csr}
