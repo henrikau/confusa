@@ -44,6 +44,10 @@ a:hover {
 	color: #000;
 }
 
+img.url {
+            border: none;
+}
+
 #content {
 	border: 1px solid #00000;
 	margin-left: 20%;
