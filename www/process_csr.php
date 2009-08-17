@@ -89,16 +89,15 @@ final class ProcessCsr extends FW_Content_Page
 			$fu = new FileUpload('user_csr', true, true, 'test_content');
 			if ($fu->file_ok()) {
 				$csr = $fu->get_content();
-				$authvar = pubkey_hash($fu->get_content(), true);
-			
-
+				$subject = openssl_csr_get_subject($csr, true);
+				$authvar = substr(pubkey_hash($fu->get_content(), true), 0, (int)Config::get_config('auth_length'));
 				/* is the CSR already uploaded? */
 				$res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE csr=?",
 							    array('text'),
 							    array($csr));
 				if (count($res)>0) {
 					Framework::error_output("CSR already present in the database, no need for second upload");
-				} else {
+				} else if (test_content($csr, $authvar) && match_dn($subject, $this->person)) {
 					$ip	= $_SERVER['REMOTE_ADDR'];
 					$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
 					$query .= " common_name, auth_key)";
@@ -114,8 +113,9 @@ final class ProcessCsr extends FW_Content_Page
 				}
 			} else {
 				/* File NOT OK */
-				Framework::error_output("There were errors encountered when processing the file.");
-				Framework::error_output("Please create a new keypair and upload a new CSR to the server.");
+					$msg  = "There were errors encountered when processing the file.<br />";
+					$msg .= "Please create a new keypair and upload a new CSR to the server.";
+					Framework::error_output($msg);
 			}
 		}
 	}
