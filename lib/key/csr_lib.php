@@ -30,14 +30,14 @@ function test_content($content, $auth_url)
   /* test start and ending of certificate */
   if (strcmp("-----BEGIN CERTIFICATE REQUEST-----", $start)!==0 &&
       strcmp("-----END CERTIFICATE REQUEST-----", $end) !== 0) {
-	  echo "malformed CSR. Please upload a proper CSR to the system <BR>\n";
-       return false;
+	  Framework::error_output("malformed CSR. Please upload a proper CSR to the system.");
+	  return false;
   }
   
   /* test type. IGTF will soon change the charter to *not* issue DSA
    * certificates */
   if (get_algorithm($content) !== "rsa") {
-	  echo "Will only accept RSA keys!<BR>\n";
+	  Framework::error_putput("Will only accept RSA keys!");
 	  return false;
   }
   /*
@@ -45,7 +45,7 @@ function test_content($content, $auth_url)
    */
   $length = Config::get_config('key_length');
   if (csr_pubkey_length($content) < $length) {
-       echo "uploaded key is not long enough. Please download a proper keyscript and try again<BR>\n";
+	  Framework::error_putput("Uploaded key is not long enough. Please download a proper keyscript and try again.");
        return false;
   }
 
@@ -60,7 +60,7 @@ function test_content($content, $auth_url)
 	  /* key is not blacklisted */
 	  break;
   case 1:
-       echo "Uploaded CSR is blacklisted!<BR>\n";
+	  Framework::error_output("Uploaded CSR is blacklisted!");
        return false;
   case 127:
        Logger::log_event(LOG_ERR, __FILE__ . ":" . __LINE__ . " openssl-vulnkey not installed");
@@ -75,11 +75,13 @@ function test_content($content, $auth_url)
    */
   $hash = pubkey_hash($content, true);
   if (substr($hash, 0, (int)Config::get_config('auth_length')) != $auth_url) {
-	  echo "Uploaded key and auth_url does not match. Please download a new keyscript and try again<BR>\n";
+	  Framework::error_output("Uploaded key ($ħash) and auth_url ($auth_url) does not match");
 	  return false;
   }
+
   return true;
 }
+
 function get_algorithm($csr)
 {
 	$cmd = "exec echo \"$csr\" | openssl req -noout -text |grep 'Public Key Algorithm'|sed 's/\(.*\:\)[\ ]*\([a-z]*\)Encryption/\\2/g'";
@@ -233,7 +235,6 @@ function get_csr_details($person, $auth_key)
 
 	return $result;
 }
-?>
 
 /* match_dn
  *
@@ -267,3 +268,4 @@ function match_dn($subject, $person)
 	return $res;
 }
 
+?>
