@@ -90,55 +90,55 @@ fccn=$script_folder/$ca_cert_name
 # ------------------------------------------------------------- #
 function test_automagic_variables {
     error_tail="\nDownload a new version and try again"
-    if [ -z $common ]; then
+    if [ -z "$common" ]; then
 	exit_error "Need a common-name. Please download a recent version of the script from slcsweb!"
     fi
-    if [ -z $full_dn ]; then
+    if [ -z "$full_dn" ]; then
 	exit_error "Full DN (\DN) for certificate not set $error_tail"
     fi
-    if [ -z $key_length ]; then
+    if [ -z "$key_length" ]; then
 	exit_error "Length for key not set $error_tail"
     fi
-    if [ -z $server_loc ]; then
+    if [ -z "$server_loc" ]; then
 	exit_error "No server-address provided $error_tail"
     fi
-    if [ -z $down_page ]; then
+    if [ -z "$down_page" ]; then
 	exit_error "No download page for signed certificates provided $error_tail"
     fi
-    if [ -z $up_page ]; then
+    if [ -z "$up_page" ]; then
 	exit_error "No upload page for CSRs provided $error_tail"
     fi
-    if [ -z $approve_page ]; then
+    if [ -z "$approve_page" ]; then
 	echo "No approve page provided. This is not a critical error,"
 	echo "but it means that *you* must know where to find it - this"
 	echo "script will not be able to tell you"
 	echo ""
     fi
-    if [ -z $ca_cert_name ]; then
+    if [ -z "$ca_cert_name" ]; then
 	echo "Cannot verify CA-certificates - do not know the name of "
 	echo "the CA certificate"
 	echo ""
     fi
-    if [ -z $ca_cert_path ]; then
+    if [ -z "$ca_cert_path" ]; then
 	echo "Cannot verify CA ertificates - do not know the path to"
 	echo "the CA certificate"
 	echo ""
     fi
-    if [ -z $wget_options ]; then
+    if [ -z "$wget_options" ]; then
 	echo "No wget-options set - are you sure this is intentional?"
 	echo ""
     fi
-    if [ -z $error_addr ]; then
+    if [ -z "$error_addr" ]; then
 	echo "No error-address set"
 	echo ""
     fi
-    if [ -z $csr_var ]; then
+    if [ -z "$csr_var" ]; then
 	exit_error "No name for CSR set - cannot upload CSR to server $error_tail"
     fi
-    if [ -z $auth_var ]; then
+    if [ -z "$auth_var" ]; then
 	exit_error "No name for auth-var - cannot upload CSR or download certificates $error_tail"
     fi
-    if [ -z $auth_length ]; then
+    if [ -z "$auth_length" ]; then
 	exit_error "Length of auth_var not set - cannot determine proper authentication variable $error_tail"
     fi
 }
@@ -245,7 +245,7 @@ function push_csr {
 }
 
 function get_cert {
-    if [ -z $1 ]; then
+    if [ -z "$1" ]; then
 	if [ ! -f $token_file ]; then
 	    echo "Cannot download without auth_url"
 	    return
