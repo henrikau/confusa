@@ -1,0 +1,10 @@
+Credits
+
+This is some of the various resources we have used when creating Confusa.
+
+SimpleSAMLphp is used to handle the authentication (for both SAML 2 and
+Shib 1.3):
+	http://rnd.feide.no/simplesamlphp
+
+Most of the icons are from the pacakge by Silk Icons:
+	http://www.famfamfam.com/lab/icons/silk/
