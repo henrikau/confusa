@@ -28,8 +28,8 @@
 	<td>{$csr.from_ip}</td>
 	<td> </td>
 	<td>
-	  {if ! ($csrInspect.auth_token eq $csr.auth_key)}
-	  [<a href="process_csr.php?inspect_csr={$csr.auth_key}">Inspect</a>]
+	  <a href="process_csr.php?inspect_csr={$csr.auth_key}"><img src="graphics/information.png"
+	  alt="Inspect" title="Inspect CSR" class="url" /></a>
 	</td>
 	<td></td>
 	<td>
@@ -37,7 +37,6 @@
 	  alt="Delete" title="Delete CSR from database" class="url"/></a>
 	</td>
 	<td></td>
-	{/if}
 
       </tr>
 
