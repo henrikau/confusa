@@ -14,10 +14,6 @@
 {$list_all_csr}
 {/if}
 
-{if !empty($csrInspect)}
-{$inspect_csr}
-{/if}
-
 {* uploading new certificate via FILE *}
 {$upload_csr_file}
 

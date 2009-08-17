@@ -28,17 +28,29 @@
 	<td>{$csr.from_ip}</td>
 	<td> </td>
 	<td>
-	  {if $csrInspect.auth_token eq $csr.auth_key}
-	  {* do nothing *}
-	  [<span style="color: gray">Inspect</span>]
-	  {else}
+	  {if ! ($csrInspect.auth_token eq $csr.auth_key)}
 	  [<a href="process_csr.php?inspect_csr={$csr.auth_key}">Inspect</a>]
-	  {/if}
 	</td>
 	<td></td>
 	<td>[<a href="process_csr.php?delete_csr={$csr.auth_key}" alt="delete">Delete</a>]</td>
 	<td></td>
+	{else}
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	{/if}
+
       </tr>
+
+      {if $csrInspect.auth_token eq $csr.auth_key}
+    </table>
+    <br />
+    {$inspect_csr}
+    <table>
+      {else}
+
+      {/if}
       {/foreach}
       <tr>
 	<td></td>

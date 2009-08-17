@@ -106,6 +106,25 @@ legend {
     padding: 2px;
 }
 
+fieldset.inpsect_csr {
+    border-left: 1px solid GRAY;
+    border-right: 2px solid GRAY;
+    border-top: 1px solid GRAY;
+    border-bottom: 2px solid GRAY;
+    background-color: #EEEEEE;
+    padding: 10px;
+    padding-left: 50px;
+    width: 85%;
+}
+legend.inpsect_csr {
+    border: 1px solid #000000;
+    background-color: #EEEEEE;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: black;
+    padding: 2px;
+}
+
 fieldset.infoblock {
     border: 1px dashed #888888;
     background-color: #FFFFFF;
