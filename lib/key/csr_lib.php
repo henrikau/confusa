@@ -22,7 +22,6 @@ require_once 'csr_not_found.php';
  */
 function test_content($content, $auth_url)
 {
-  global $person;
   $testres = true;
   /* check for start */
   $start = substr($content, 0, strlen("-----BEGIN CERTIFICATE REQUEST-----"));
