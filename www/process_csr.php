@@ -48,8 +48,16 @@ final class ProcessCsr extends FW_Content_Page
 			$this->tpl->assign('signingOk', $this->signing_ok);
 			$this->tpl->assign('sign_csr', htmlentities($_GET['sign_csr']));
 		}
-		$this->tpl->assign('csrList', $this->listAllCSR($this->person));
-		$this->tpl->assign('content', $this->tpl->fetch('process_csr.tpl'));
+		$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
+		$this->tpl->assign('list_all_csr',	$this->tpl->fetch('csr/list_all_csr.tpl'));
+
+
+		$this->tpl->assign('inspect_csr',	$this->tpl->fetch('csr/inspect_csr.tpl'));
+
+		$this->tpl->assign('upload_csr_file',	$this->tpl->fetch('csr/upload_csr_file.tpl'));
+
+		$this->tpl->assign('content',		$this->tpl->fetch('csr/process_csr.tpl'));
+		
 	}
 
 	/**
