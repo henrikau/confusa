@@ -78,7 +78,8 @@
 	</td>
 	<td></td>
 	<td>
-	  [<a href="?sign_csr={$csrInspect.auth_token}">Approve</a>]
+	  <a href="?sign_csr={$csrInspect.auth_token}"><img src="graphics/accept.png"
+	  alt="Approve" title="Approve CSR for signing" class="url"/> Sign certificate</a>
 	</td>
       </tr>
       <tr><td></td></tr>
