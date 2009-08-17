@@ -82,17 +82,14 @@ function db_array_debug($array, $msg=null)
 
 function format_ip($ip, $show_help=false)
 {
-	$pre = "";
-	$post = "";
-	$help = "";
+	$ipmsg = $ip;
 	if ($_SERVER['REMOTE_ADDR'] != $ip){
-		$pre =  "<span style=\"color: red\"><b><i>";
-		$post = "</i></b></span>";
+		$ipmsg = "<span style=\"color: red\"><i>$ip</i></span>";
 		if ($show_help) {
-			$help = " [" . show_window("?", "messages/diff_ip.php") . "]";
+			$ipmsg = show_window("<img src=\"graphics/flag_red.png\" class=\"url\" title=\"IP addresses differ!\"> $ipmsg", "messages/diff_ip.php");
 		}
 	}
-	return "$pre$ip$post$help";
+	return $ipmsg;
 
 }
 
