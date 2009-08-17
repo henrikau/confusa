@@ -32,12 +32,10 @@
 	  [<a href="process_csr.php?inspect_csr={$csr.auth_key}">Inspect</a>]
 	</td>
 	<td></td>
-	<td>[<a href="process_csr.php?delete_csr={$csr.auth_key}" alt="delete">Delete</a>]</td>
-	<td></td>
-	{else}
-	<td></td>
-	<td></td>
-	<td></td>
+	<td>
+	  <a href="?delete_csr={$csrInspect.auth_token}"><img src="graphics/delete.png"
+	  alt="Delete" title="Delete CSR from database" class="url"/></a>
+	</td>
 	<td></td>
 	{/if}
 
