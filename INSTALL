@@ -96,7 +96,7 @@ anything else.
         62 => 'core:CharacterMap',
 	63 => 'core:NRENMap',
     ),
-	ForceAuthn	 => true
+    'ForceAuthn'	 => true
 
    You will have to either copy or symlink these into
 	simplesamlphp/modules/core/lib/Auth/
