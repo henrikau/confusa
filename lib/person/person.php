@@ -217,6 +217,16 @@ class Person{
     }
 
     /**
+     * Get the session of a person
+     *
+     * @return The session that is associated with the person
+     */
+    public function getSession()
+    {
+	return $this->session;
+    }
+
+    /**
      * setEmail - set a email-address for the person
      *
      * @email : the (new) email address for the person
