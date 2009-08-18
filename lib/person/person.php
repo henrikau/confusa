@@ -174,6 +174,10 @@ class Person{
      */
     public function getName() { return $this->given_name; }
 
+    public function getSAMLConfiguration() {
+	return $this->saml_config;
+    }
+
     /* setEPPN - set the ePPN for the person
      *
      * The eduPersonPrincipalName is a guaranteed unique key, and is widely used
