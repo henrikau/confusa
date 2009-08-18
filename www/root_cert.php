@@ -62,7 +62,7 @@ class Root_Certificate extends FW_Content_Page
 		}
 
 		$this->tpl->assign('crl_file', "ca" . Config::get_config('ca_crl_name'));
-		$this->tpl->assign('ca_file', "ca/ca_cert.pem");
+		$this->tpl->assign('ca_file', "ca/" . Config::get_config('ca_cert_name'));
 		$this->tpl->assign('content', $this->tpl->fetch('root_cert.tpl'));
 	}
 }
