@@ -88,6 +88,42 @@ abstract class CertManager
   }
 
   /**
+   * Convert from DER certificates to PEM certificates.
+   * This is needed because TERENA/Comodo publish their CA-certificate in
+   * DER format, while PHP's openssl can only process PEM formatted certs
+   *
+   * @param $der the certificate in DER format
+   * @param $type the type of certificate. One of:
+   * 				* 'cert' - a X509 certificate
+   * 				* 'crl' - a certificate revocation list
+   * @return $pem the certificate in PEM format
+   */
+  public static function DERtoPEM($der, $type)
+  {
+    $header = "";
+    $trailer = "";
+
+    switch($type) {
+    case 'cert':
+      $header = "-----BEGIN CERTIFICATE-----\n";
+      $trailer = "-----END CERTIFICATE-----\n";
+      break;
+    case 'crl':
+      $header = "-----BEGIN X509 CRL-----\n";
+      $trailer = "-----END X509 CRL-----\n";
+      break;
+    default:
+      /* nothing we can do for the caller */
+      return "Transcoding from DER to PEM failed!";
+    }
+
+    $pem = chunk_split(base64_encode($der), 64, "\n");
+    $pem =  $header . $pem . $trailer;
+
+    return $pem;
+  }
+
+  /**
    * Send a notification upon the issuance of a new X.509 certificate, as it is
    * required in section 3.2 of the MICS-profile.
    *

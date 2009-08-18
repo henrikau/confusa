@@ -4,7 +4,7 @@
 This is the Certificate we use for signing the CSRs we receive.
 </p>
 <br />
-<ul>
+<ul style="margin-left: 18px">
 <li>
 	To view the certificate in the browser, press <a href="root_cert.php?show_root_cert=yes">here</a>.
 </li>
@@ -37,7 +37,9 @@ This is the Certificate we use for signing the CSRs we receive.
 The CRL (Certificate Revocation List) is a list of all revoked (invalid)
 certificates published by this CA.
 </p>
-<ul>
+
+<br />
+<ul style="margin-left: 18px">
 <li>View the CRL in the brower: 
 <a href="root_cert.php?show_crl=yes">here </a></li>
 <li>Direct link to crl: <a href="{$crl_file}">here</a>.</li>
