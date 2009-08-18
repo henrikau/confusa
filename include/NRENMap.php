@@ -15,6 +15,7 @@ class sspmod_core_Auth_Process_NRENMap extends SimpleSAML_Auth_ProcessingFilter 
 		/* set the known idps */
 		$this->known_nrens = array('https://openidp.feide.no'		=> 'uninett',
 					  'https://idp-test.feide.no'		=> 'uninett',
+					   'https://idp.feide.no'		=> 'uninett',
 					  'edugain.showcase.surfnet.nl'		=> 'surfnet',
 					  'https://testidp.wayf.dk'		=> 'wayf',
 					  'https://betawayf.wayf.dk'		=> 'wayf',
