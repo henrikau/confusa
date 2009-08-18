@@ -169,7 +169,7 @@ div.spacer
 }
 
 ul.info {
-    padding-left: inherit;
+    margin-left: 15px;
     width: 80%;
     font-style: italic;
 }
