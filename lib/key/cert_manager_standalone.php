@@ -33,10 +33,28 @@ class CertManager_Standalone extends CertManager
 			$cert_file_name	= tempnam("/tmp/", "REV_CERT");
 			$cert_file = fopen($cert_file_name, "w");
 			fclose($cert_file);
-			$cmd = "./../cert_handle/sign_key.sh $auth_key $cert_file_name";
-			$res = shell_exec($cmd);
-			$cert = file_get_contents($cert_file_name);
 
+			$path = dirname(dirname(dirname(__FILE__))) . "/cert_handle/sign_key.sh";
+			if (!file_exists($path)) {
+				throw new KeySignException("sign_key.sh does not exist!");
+			}
+			$cmd = "$path $auth_key $cert_file_name";
+			$res = shell_exec($cmd);
+			$val = split("\n", $res);
+
+			/* FIXME: add better logic here.
+			 */
+			switch((int)$val[0]) {
+			case 0:
+				break;
+			default:
+				throw new KeySignException("Unable to sign certificate (" . $val[1] . ")");
+			}
+
+			$cert = file_get_contents($cert_file_name);
+			if ($cert == null || $cert == "") {
+				throw new KeySignException("Unable to sign certificate using backend scripts.");
+			}
 			$cert_array = openssl_x509_parse($cert);
 			$diff = (int)$cert_array['validTo_time_t'] - (int)$cert_array['validFrom_time_t'];
 			$timeout = array($diff, 'SECOND');
