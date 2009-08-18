@@ -80,6 +80,42 @@ class CertManager_Online extends CertManager
     }
 
     /**
+     * Lookup a list of user certificates from cache
+     * The cache is tied to a user simplesamlphp session
+     *
+     * @return the list of unprocessed certificates as they were received from
+     *         the online CA
+     */
+    private function cacheLookupList()
+    {
+        $session = $this->person->getSession();
+        $raw_list = $session->getData('array', 'rawCertList');
+        return $raw_list;
+    }
+
+    /**
+     * Insert a list of user certificates into the cache
+     *
+     * @param $raw_list the (unprocessed) array of certificates as they were
+     *        received
+     */
+    private function cacheInsertList($raw_list)
+    {
+        $session = $this->person->getSession();
+        $session->setData('array','rawCertList', $raw_list, NULL);
+    }
+
+    /**
+     * Delete the certificate list from cache. Useful if there were changes
+     * (Revocation, insertion)
+     */
+    private function cacheInvalidate()
+    {
+        $session = $this->person->getSession();
+        $session->deleteData('array', 'rawCertList');
+    }
+
+    /**
      * Sign the CSR identified by auth_key using the Online-CA's remote API
      * @throws ConfusaGenException
     */
@@ -92,6 +128,7 @@ class CertManager_Online extends CertManager
         $this->_capi_upload_CSR($auth_key, $csr);
         $this->_capi_authorize_CSR();
 
+        $this->cacheInvalidate();
         $this->sendMailNotification($auth_key, date('Y-m-d H:i'), $_SERVER['REMOTE_ADDR']);
 	/* FIXME: conflict, not sure how to resolve, do we need both? */
         Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
@@ -330,7 +367,7 @@ class CertManager_Online extends CertManager
                 case $STATUS_OK:
                     Framework::message_output("Certificate with " .
                                 "order number $key successfully revoked!<br />\n");
-
+                    $this->cacheInvalidate();
                               Logger::log_event(LOG_NOTICE, "Revoked certificate with " .
                                                 "order number $key using Comodo's AutoRevoke " .
                                                 "API. User contacted us from " .
@@ -355,6 +392,12 @@ class CertManager_Online extends CertManager
      */
     private function _capi_get_cert_list($common_name)
     {
+        $raw_list = $this->cacheLookupList();
+
+        if (!is_null($raw_list)) {
+            return $raw_list;
+        }
+
         if (!isset($this->login_name) || !isset($this->login_pw)) {
           $this->_get_account_information();
         }
@@ -388,6 +431,7 @@ class CertManager_Online extends CertManager
         }
 
         if ($params['errorCode'] == "0") {
+            $this->cacheInsertList($params);
             return $params;
         } else {
             throw new RemoteAPIException("Received error when trying to list " .
