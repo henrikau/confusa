@@ -2,7 +2,7 @@
   <fieldset>
     <legend>Upload new CSR</legend>
     <br />
-    <p>
+    <p class="info">
       Upload a local CSR for signing by the CA. If you created
       this with any globus-specific tools, you should look for
       the folder ".globus" in you home directory.
