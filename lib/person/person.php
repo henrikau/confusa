@@ -1,4 +1,5 @@
 <?php
+require_once 'input.php';
 /* Person
  *
  * Person is the object describing the user in the system
@@ -163,7 +164,7 @@ class Person{
      */
     public function setName($cn) {
 	    if (isset($cn)) {
-		    $this->given_name = trim(htmlentities($cn));
+		    $this->given_name = Input::sanitize(trim(htmlentities($cn)));
 	    }
     }
 
@@ -184,7 +185,7 @@ class Person{
     public function setEPPN($eppn)
     {
         if (isset($eppn)) {
-             $this->eppn = htmlentities(str_replace("'", "", $eppn));
+		$this->eppn = Input::sanitize(htmlentities($eppn));
          }
     }
 
@@ -234,7 +235,7 @@ class Person{
     public function setEmail($email)
     {
         if (isset($email)) {
-            $this->email = htmlentities($email);
+		$this->email = Input::sanitize($email);
         }
     }
 
@@ -253,7 +254,7 @@ class Person{
     public function setSubscriberOrgName($subscriber)
     {
 	    if (isset($subscriber))
-		    $this->subsriberName = $subscriber;
+		    $this->subsriberName = strtolower(Input::sanitize($subscriber));
     }
 
     /**
@@ -317,7 +318,7 @@ class Person{
     public function setCountry($country)
     {
 	    if (isset($country)) {
-		    $this->country = strtoupper(substr(htmlentities($country),0, 2));
+		    $this->country = strtoupper(substr(Input::sanitize($country),0, 2));
 	    }
     }
 
@@ -345,7 +346,7 @@ class Person{
 		    if (!Config::get_config('auth_bypass')) {
 			    Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . " setting idp in ! auth_bypass!");
 		    }
-		    $this->idp = htmlentities($idp);
+		    $this->idp = Input::sanitize($idp);
 	    }
     }
 
@@ -385,7 +386,7 @@ class Person{
      */
     public function setNREN($nren) {
 	    if (isset($nren)) {
-		    $this->nren = strtolower(htmlentities($nren));
+		    $this->nren = strtolower(Input::sanitize($nren));
 	    }
     }
 
