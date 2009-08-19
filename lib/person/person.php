@@ -286,9 +286,9 @@ class Person{
     {
 	    if (isset($entitlement)) {
 		    if (is_array($entitlement)) {
-			    $this->entitlement = $entitlement[0];
+			    $this->setEduPersonEntitlement($entitlement[0]);
 		    } else {
-			    $this->entitlement = $entitlement;
+			    $this->entitlement = strtolower(Input::sanitize($entitlement));
 		    }
 	    }
     }
