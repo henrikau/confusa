@@ -62,11 +62,22 @@ class RevokeCertificate extends FW_Content_Page
 				break;
 
 			case 'do_revoke':
-				$this->revoke_certs(Input::sanitize($_POST['order_numbers']), Input::sanitize($_POST['reason']));
+
+				try {
+					$this->revoke_certs(Input::sanitize($_POST['order_numbers']), Input::sanitize($_POST['reason']));
+				} catch (ConfusaGenExcpetion $cge) {
+					Framework::error_message("Could not revoke certificates because of the " .
+											"following problem: " . $cge->getMessage());
+				}
 				break;
 
 			case 'do_revoke_list':
-				$this->revoke_list(Input::sanitize($_POST['reason']));
+				try {
+					$this->revoke_list(Input::sanitize($_POST['reason']));
+				} catch (ConfusaGenException $cge) {
+					Framework::error_message("Could not revoke certificates because of the " .
+											"following problem: " . $cge->getMessage());
+				}
 				break;
 
 			default:
@@ -83,17 +94,20 @@ class RevokeCertificate extends FW_Content_Page
 			return;
 		}
 
-		if ($this->person->inAdminMode()) {
-			$this->showAdminRevokeTable();
-		} else {
-			$this->normal_revoke();
-		}
+		try {
+			if ($this->person->inAdminMode()) {
+				$this->showAdminRevokeTable();
+			} else {
+				$this->normal_revoke();
+			}
 
 		$this->tpl->assign('textual', $textual);
 		$this->tpl->assign('content', $this->tpl->fetch('revoke_certificate.tpl'));
 
-
-
+		} catch (ConfusaGenException $cge) {
+			Framework::error_output("Can not display revocation options! Server " .
+									"said: " . $cge->getMessage());
+		}
 	}
 
 	/**
