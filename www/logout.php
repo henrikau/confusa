@@ -8,13 +8,20 @@ class Logout extends FW_Content_Page
 		parent::__construct("Logout", false);
 	}
 
-	public function process()
+	public function pre_process()
 	{
-		if (isset($_GET['edu_name'])) {
-			require_once 'confusa_auth.php';
-			deauthenticate_user($this->person);
+		if (is_null($this->person)) {
+			$this->person = new Person();
 		}
 
+		$auth = AuthHandler::getAuthManager($this->person);
+		if ($auth->checkAuthentication()) {
+			$auth->deAuthenticateUser('logout.php');
+		}
+	}
+
+	public function process()
+	{
 		$this->tpl->assign('person', $this->person);
 		$this->tpl->assign('content', $this->tpl->fetch('logout.tpl'));
 	}

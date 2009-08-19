@@ -82,13 +82,19 @@ class Framework {
 	}
 
 	public function authenticate() {
-		is_authenticated($this->person);
-		if (!$this->person->isAuth()) {
-			/* if login, trigger SAML-redirect first */
+		/* if login, trigger SAML-redirect first */
+
+		$auth = AuthHandler::getAuthManager($person);
+
+		if (!$auth->checkAuthentication()) {
 			if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-				_assert_sso($this->person);
+				$auth->authenticateUser();
 			}
 		}
+
+		/* get the updated person object back from the authentication framework */
+		$this->person = $auth->getPerson();
+
 		if (Framework::$sensitive_action) {
 			/* FIXME */
 			$delta = Config::get_config('protected_session_timeout')*60 - $this->person->getTimeSinceStart();
@@ -123,8 +129,13 @@ class Framework {
 		/* check the authentication-thing, catch the login-hook
 		 * This is done via confusa_auth
 		 */
-		$this->authenticate();
-		
+		try {
+			$this->authenticate();
+		} catch (ConfusaGenException $cge) {
+			Framework::error_output("Could not authenticate you! Error was: " .
+									$cge->getMessage());
+		}
+
 		/* Set tpl object to content page */
 		$this->contentPage->setTpl($this->tpl);
 
@@ -143,9 +154,10 @@ class Framework {
 			}
 			$this->person->setMode($new_mode);
 		}
+
 		$this->tpl->assign('person', $this->person);
 		$this->contentPage->process($this->person);
-		$this->tpl->assign('logoutUrl', logout_link());
+		$this->tpl->assign('logoutUrl', 'logout.php');
 		$this->tpl->assign('menu', $this->tpl->fetch('menu.tpl')); // see render_menu($this->person)
 		$this->tpl->assign('errors', self::$errors);
 		$this->tpl->assign('messages', self::$messages);
@@ -163,13 +175,14 @@ class Framework {
 
 	private function user_rendering()
 	{
+		$auth = AuthHandler::getAuthManager($this->person);
 		/* check to see if the user wants to log in, if so, start login-procedure */
 		if (!$this->person->isAuth()) {
 			if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-				authenticate_user($this->person);
+				$auth->authenticateUser();
 			}
 			if (isset($_POST['start_login']) && $_POST['start_login'] == 'yes')
-			authenticate_user($this->person);
+				$auth->authenticateUser();
 		}
 
 		$func = $this->f_content;
