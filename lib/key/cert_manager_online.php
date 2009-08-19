@@ -89,8 +89,13 @@ class CertManager_Online extends CertManager
     private function cacheLookupList()
     {
         $session = $this->person->getSession();
-        $raw_list = $session->getData('array', 'rawCertList');
-        return $raw_list;
+
+        if (isset($session)) {
+            $raw_list = $session->getData('array', 'rawCertList');
+            return $raw_list;
+        } else {
+            return NULL;
+        }
     }
 
     /**
@@ -102,7 +107,10 @@ class CertManager_Online extends CertManager
     private function cacheInsertList($raw_list)
     {
         $session = $this->person->getSession();
-        $session->setData('array','rawCertList', $raw_list, NULL);
+        /* session can be null, e.g. when in auth_bypass mode */
+        if (isset($session)) {
+            $session->setData('array','rawCertList', $raw_list, NULL);
+        }
     }
 
     /**
@@ -112,7 +120,10 @@ class CertManager_Online extends CertManager
     private function cacheInvalidate()
     {
         $session = $this->person->getSession();
-        $session->deleteData('array', 'rawCertList');
+
+        if (isset($session)) {
+            $session->deleteData('array', 'rawCertList');
+        }
     }
 
     /**
