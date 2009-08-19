@@ -100,6 +100,8 @@ $confusa_config = array(
         'capi_test'                             => true,
         /* will encrypt the (sub)-account passwords in the DB with this key */
         'capi_enc_pw'                           => '',
+	'capi_root_cert'			=> 'http://crt.tcs.terena.org/TERENAeSciencePersonalCA.crt',
+	'capi_crl'				=> 'http://crl.tcs.terena.org/TERENAeSciencePersonalCA.crl',
 
 	/* Values needed for standalone-mode
 	 * The names should be self-explanatory. All paths are relative to the
