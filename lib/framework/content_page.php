@@ -6,17 +6,20 @@ abstract class FW_Content_Page
 	protected $tpl;
 	protected $certManager;
 	protected $person;
+	protected $dictionary;
 	/**
 	 * Constructor - create the Content Page.
 	 *
 	 * @title	- the title to display in the header of the page.
 	 * @protected	- If the page required an AuthN' user or not.
+	 *
 	 */
-	function __construct($title = "", $protected = true)
+	function __construct($title = "", $protected = true, $dictionary = NULL)
 	{
 		$this->title = $title;
 		$this->protected = $protected;
 		$this->certManager = null;
+		$this->dictionary = $dictionary;
 	}
 
 	function __destruct()
@@ -73,6 +76,14 @@ abstract class FW_Content_Page
 	{
 		$this->setPerson($person);
 		$this->setManager();
+
+		/* If we have a dictionary for this component, translate the entries */
+		if (isset($this->dictionary)) {
+			/* Get the translation in place */
+			$trans = new Translator($person);
+			$this->tpl = $trans->decorateTemplate($this->tpl, $this->dictionary);
+		}
+
 		return false;
 	}
 
