@@ -10,7 +10,7 @@ final class Index extends FW_Content_Page
 
 	function __construct()
 	{
-		parent::__construct("Index", false);
+		parent::__construct("Index", false, "index.php");
 	}
 
 	/**
@@ -34,6 +34,7 @@ final class Index extends FW_Content_Page
 				Logger::log_event(LOG_WARNING, $msg);
 			}
 		}
+
 		$this->tpl->assign('content', $this->tpl->fetch('index.tpl'));
 	} /* end process() */
 }
