@@ -23,10 +23,12 @@
 	<li><a href="revoke_certificate.php">Revoke certificates</a></li>
 	<li><a href="admin.php">Manage Subscriber Administrators</a></li>
 	<li><a href="robot.php">Robot Interface</a></li>
+	<li><a href="language_selector.php">Manage preferred language</a></li>
 	{elseif $person->isNRENAdmin()}
 	<li><a href="admin.php">Manage Administrators</a></li>
 	<li><a href="nren_admin.php">Manage subscribers</a></li>
 	<li><a href="stylist.php?show=text">Manage appearance</a></li>
+	<li><a href="language_selector.php">Manage preferred language</a></li>
 	{/if}
 </ul>
 <h3>Other</h3>
