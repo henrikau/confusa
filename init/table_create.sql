@@ -70,6 +70,9 @@ CREATE TABLE IF NOT EXISTS nrens (
     help TEXT,
     -- a customized about-message that the NREN may display to its constituency
     about TEXT,
+    -- the preferred language for the users within the NREN's domain.
+    -- Code according to ISO 639-1, with possible annotation like in de-AT, en-US
+    lang VARCHAR(5),
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) type=InnoDB;
 
@@ -92,6 +95,9 @@ CREATE TABLE IF NOT EXISTS subscribers (
 
     -- the current subscription state to the service
     org_state ENUM('subscribed', 'suspended', 'unsubscribed') NOT NULL,
+    -- the preferred language for users belonging to the subscriber
+    -- overrides NREN's preferred language for a certain user
+    lang VARCHAR(5),
     FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
 
