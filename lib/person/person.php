@@ -258,7 +258,7 @@ class Person{
     public function setSubscriberOrgName($subscriber)
     {
 	    if (isset($subscriber))
-		    $this->subsriberName = strtolower(Input::sanitize($subscriber));
+		    $this->subscriberName = strtolower(Input::sanitize($subscriber));
     }
 
     /**
@@ -270,7 +270,7 @@ class Person{
      */
     public function getSubscriberOrgName()
     {
-	    return $this->subsriberName;
+	    return $this->subscriberName;
     }
 
 
