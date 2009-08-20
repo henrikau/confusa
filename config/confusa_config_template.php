@@ -204,6 +204,12 @@ $confusa_config = array(
 	 */
 	'auth_bypass'		=> false,
 
+	/*
+	 * Languages available and what language is default
+	 */
+	'language.available'	=> array('en', 'sv', 'de'),
+	'language.default'	=> 'en',
+
 	/* this should be set to true when config is verified (or the file has
 	 * been updated and not just copied)
 	 * This should also find all the users that doesn't read the config file
