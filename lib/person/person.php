@@ -515,10 +515,16 @@ class Person{
     }
     public function isSubscriberAdmin()
     {
+	    if (!$this->entitlement == "confusaAdmin") {
+		    return false;
+	    }
 	    return (int)$this->getAdminStatus() == SUBSCRIBER_ADMIN;
     }
     public function isSubscriberSubAdmin()
     {
+	    if (!$this->entitlement == "confusaAdmin") {
+		    return false;
+	    }
 	    return (int)$this->getAdminStatus() == SUBSCRIBER_SUB_ADMIN;
     }
 
@@ -533,10 +539,6 @@ class Person{
 	    if (!$this->isAuth()) {
 		    return NORMAL_USER;
 	    }
-	    if (!$this->entitlement == "confusaAdmin") {
-		    return NORMAL_USER;
-	    }
-
 	    require_once 'mdb2_wrapper.php';
 	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->eppn));
 	    $size	= count($res);
