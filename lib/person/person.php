@@ -1,5 +1,6 @@
 <?php
 require_once 'input.php';
+require_once 'CriticalAttributeException.php';
 /* Person
  *
  * Person is the object describing the user in the system
@@ -188,9 +189,10 @@ class Person{
      */
     public function setEPPN($eppn)
     {
-        if (isset($eppn)) {
-		$this->eppn = Input::sanitize(htmlentities($eppn));
-         }
+        if (!isset($eppn)) {
+		throw new CriticalAttributeException("eduPersonPrincipalName (or equvivalent token) not set for person!");
+	}
+	$this->eppn = Input::sanitize(htmlentities($eppn));
     }
 
     /**
