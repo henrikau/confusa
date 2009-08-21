@@ -75,6 +75,20 @@ img.url {
 	font-size: 28px;
 }
 
+#language_bar {
+	margin-top: 10px;
+	margin-bottom: 14px;
+	font-size: 12px;
+}
+
+#language_bar a {
+	color: #888888;
+}
+
+#language_bar a:hover {
+	border-bottom: dashed 1px;
+}
+
 div.error {
 	padding: 4px;
 	margin-bottom: 4px;
