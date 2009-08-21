@@ -20,7 +20,7 @@
 </p>
 <br />
 <p class="info">
-	Note: The ID is assigned automatically by Confusa and the unique identifier
+	Note: The ID is assigned automatically by Confusa and is the unique identifier
 	of the organization.
 </p>
 <br />
