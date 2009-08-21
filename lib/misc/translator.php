@@ -64,7 +64,6 @@ class Translator {
 		$this->person = $person;
 		$this->defaultLanguage = Config::get_config('language.default');
 		$this->language = $this->getBestLanguage();
-		Framework::message_output("Language: " . $this->language);
 	}
 
 	/**
