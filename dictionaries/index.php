@@ -5,23 +5,29 @@ $lang = array(
 		'en' => 'Confusa is a system that maps a federated identity into a X.509 certificate.',
 		'de' => 'Confusa ist ein System, welches eine föderierte Identität auf ein X.509 Zertifikat abbildet.',
 		'sv' => 'Confusa är ett system, som skapper en X.509 certifikat av ett federerad identitet.',
+		'lb' => 'Confusa ass ee System fir federéiert Identitéiten op ee X.509 Zertifikat ofzebillen.',
 	),
 
 	'index_summary_line2' => array(
 		'alig' => 'Da aim hof confusa iz to help yous obtain da x.509 certificate well fast usin\' dees two steps:',
 		'en' => 'The aim of Confusa is to help you obtain a  X.509 certificate very fast using these two steps:',
 		'de' => 'Das Ziel von Confusa ist, Ihnen zu helfen, sehr schnell an ein X.509 Zertifikat zu gelangen. Dazu genügen die folgenden zwei Schritte:',
-		'sv' => 'Målet av Confusa är, att hjälpa dig att snabbt få en X.509 certificat. De följande två steger är nödvändig:', 
+		'sv' => 'Målet av Confusa är, att hjälpa dig att snabbt få en X.509 certificat. De följande två steger är nödvändig:',
+		'lb' => 'D\'Zil vu Confusa ass, Iech ze hëllefen, séier ee X.509 Zertifikat ze kréien. Dofir misst dir dat folgend maachen:',
 	),
 
 	'index_enum_line1' => array(
 		'alig' => 'Loggin in to ya turf institushun.',
 		'en' => 'Logging in to your home institution',
+		'de' => 'Login zu Ihrer Heiminstitution',
+		'sv' => 'Logga in till din heminstitution',
 	),
 
 	'index_enum_line2' => array(
 		'alig' => 'Uploadin da certificate request.',
 		'en' => 'Uploading a certificate request',
+		'de' => 'Upload eines certificate signing requests',
+		'sv' => 'Uplad av en certificate signing request',
 	),
 
 	'index_summary_line3' => array(
