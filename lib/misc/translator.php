@@ -53,7 +53,7 @@ class Translator {
 								'ru' => 'Русский язык (Russian)',
 								'sk' => 'Slovenčina (Slovak)',
 								'sl' => 'Slovenščina (Slovenian)',
-								'sv' => 'Svenska (Swedish)',
+								'sv' => 'Svenska (Swedish)'
 		);
 
 	/**
@@ -163,7 +163,12 @@ class Translator {
 
 		foreach($iso_codes as $code) {
 			$language = Translator::$code_language_map[$code];
-			$full_names[$code] = $language;
+
+			if (isset($language)) {
+				$full_names[$code] = $language;
+			} else {
+				$full_names[$code] = '[' . $code . ']';
+			}
 		}
 
 		return $full_names;
