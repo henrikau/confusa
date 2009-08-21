@@ -79,7 +79,8 @@ class Translator {
 	/**
 	 * Decorate a given template with the tags from the dictornary in the
 	 * right language. This is nothing more than repeated consulation of a
-	 * LUT:
+	 * LUT. Don't decorate the template if the passed dictionary is null or
+	 * the file does not exists.
 	 *
 	 * @param $template The template that is to be decorated
 	 * @param $dictionary The dictionary from which the texts are taken
@@ -88,7 +89,18 @@ class Translator {
 	 */
 	public function decorateTemplate($template, $dictionary)
 	{
-		include(Config::get_config('install_path') . "/dictionaries/" . $dictionary);
+		/* if the dictionary is null or does not exist, don't decorate the template */
+		if (is_null($dictionary)) {
+			return $template;
+		}
+
+		$dictionaryPath = Config::get_config('install_path') . "/dictionaries/" . $dictionary;
+
+		if (file_exists($dictionaryPath) === FALSE) {
+			return $template;
+		}
+
+		include($dictionaryPath);
 		foreach($lang as $tag => $entry) {
 			if (isset($entry[$this->language])) {
 				$template->assign($tag, $entry[$this->language]);
