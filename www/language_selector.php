@@ -4,6 +4,7 @@ require_once 'framework.php';
 require_once 'input.php';
 require_once 'logger.php';
 require_once 'mdb2_wrapper.php';
+require_once 'translator.php';
 
 final class CP_Language_Selector extends FW_Content_Page
 {
