@@ -6,10 +6,12 @@
 -- ---------------------------------------------------------
 CREATE OR REPLACE ALGORITHM = TEMPTABLE
 VIEW nren_subscriber_view
-	(subscriber,
+	(subscriber_id,
+	subscriber,
 	org_state,
 	nren)
 AS SELECT
+	s.subscriber_id,
 	s.name,
 	s.org_state,
 	n.name

@@ -27,20 +27,24 @@ class CP_NREN_Admin extends FW_Content_Page
 
 		/* handle nren-flags */
 		if (isset($_POST['subscriber'])) {
-			if (isset($_POST['name']))
-				$name	= Input::sanitize($_POST['name']);
+			if (isset($_POST['id']))
+				$id	= Input::sanitize($_POST['id']);
+
 			if (isset($_POST['state']))
 				$state	= Input::sanitize($_POST['state']);
 
+			if (isset($_POST['name']))
+				$name	= Input::sanitize($_POST['name']);
+
 			switch(htmlentities($_POST['subscriber'])) {
 			case 'edit':
-				$this->editSubscriber($name, $state);
+				$this->editSubscriber($id, $state);
 				break;
 			case 'add':
 				$this->addSubscriber($name, $state);
 				break;
 			case 'delete':
-				$this->delSubscriber($name);
+				$this->delSubscriber($id);
 				break;
 			}
 		} else if (isset($_POST['account'])) {
@@ -102,11 +106,10 @@ class CP_NREN_Admin extends FW_Content_Page
 	 * @name	: The name of the subscriber.
 	 * @state	: New state.
 	 */
-	private function editSubscriber($name, $state)
+	private function editSubscriber($id, $state)
 	{
 		$query_id		= "SELECT nren_id FROM nrens WHERE name=?";
-		$query_subscribers	= "SELECT * FROM subscribers WHERE name = ? AND nren_id = ?";
-		$update			= "UPDATE subscribers SET org_state=? WHERE name=? AND nren_id=?";
+		$update			= "UPDATE subscribers SET org_state=? WHERE subscriber_id=? AND nren_id=?";
 
 		try {
 			$res_id = MDB2Wrapper::execute($query_id,
@@ -115,37 +118,25 @@ class CP_NREN_Admin extends FW_Content_Page
 			if (count($res_id) < 1) {
 				throw new DBQueryException("Could not find your NREN! Something seems to be misconfigured.");
 			}
-			$res_subscribers = MDB2Wrapper::execute($query_subscribers,
-								array('text', 'text'),
-								array($name, $res_id[0]['nren_id']));
-
-			if (count($res_subscribers) > 1) {
-				$msg  = "Database Inconsistency! Got duplicate (identical) subscribers (" . $name . ")";
-				$msg .= " for NREN " . $this->person->getNREN() . ". Got " . count($res_subscribers);
-				$msg .= ", should have found 0 or 1";
-				Logger::log_event(LOG_ALERT, $msg);
-				throw new DBQueryException($msg);
-			}
 
 			/* only thing you can change is state.
-			 * If the subscriber is unknown or the new state
-			 * is identical to the current, there's no point in
-			 * going further. */
-			if (count($res_subscribers) != 1 || $res_subscribers[0]['org_state'] === $state) {
+			 * If new state is identical to the current,
+			 * there's no point in going further. */
+			if ($res_subscribers[0]['org_state'] === $state) {
 				return;
 			}
 			MDB2Wrapper::update($update,
 					    array('text', 'text', 'text'),
-					    array($state, $name, $res_id[0]['nren_id']));
+					    array($state, $id, $res_id[0]['nren_id']));
 
-			Logger::log_event(LOG_NOTICE, "Changed state for $name from " . $res[0]['org_state'] . " to $state");
+			Logger::log_event(LOG_NOTICE, "Changed state for subscriber with ID $id from " . $res[0]['org_state'] . " to $state");
 
 		} catch (DBStatementException $dbse) {
 			Framework::error_output(__FILE__ . ":" . __LINE__ . " Error in query-syntax.<BR />Server said " . $dbse->getMessage());
-			Logger::log_event(LOG_NOTICE, "Problem occured when editing the state of subscriber $name: " . $dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, "Problem occured when editing the state of subscriber $id: " . $dbse->getMessage());
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output(__FILE__ . ":" . __LINE__ . " Problems with query.<BR />Server said " . $dbqe->getMessage());
-			Logger::log_event(LOG_NOTICE, "Problem occured when editing subscriber $name: " . $dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, "Problem occured when editing subscriber $id: " . $dbse->getMessage());
 		}
 	}
 
@@ -225,21 +216,20 @@ class CP_NREN_Admin extends FW_Content_Page
 	 * @name  : the name of the institution/subscriber
 	 *
 	 */
-	private function delSubscriber($name) {
-		if (!isset($name) || $name === "") {
-			error_output("Cannot delete empty string!");
+	private function delSubscriber($id) {
+		if (!isset($id) || $id === "") {
+			Framework::error_output("Cannot delete subscriber with unknown id!");
 		}
 		$nren	= $this->person->getNREN();
-		$sub	= Input::sanitize($name);
 
 		$subselect = "(SELECT nren_id FROM nrens WHERE name=?)";
 
 		try {
 			/* FIXME: add switch to force the query to fail if the
 			 * subscriber does not exist. */
-			MDB2Wrapper::execute("DELETE FROM subscribers WHERE name = ? AND nren_id = $subselect",
+			MDB2Wrapper::execute("DELETE FROM subscribers WHERE subscriber_id = ? AND nren_id = $subselect",
 					     array('text', 'text'),
-					     array($sub, $nren));
+					     array($id, $nren));
 
 			Logger::log_event(LOG_INFO, "Deleted subscriber $sub in organization $org.\n");
 			Framework::message_output("Successfully deleted subscriber $sub in organization $org.");
@@ -267,7 +257,7 @@ class CP_NREN_Admin extends FW_Content_Page
 				return;
 			$result = array();
 			foreach($res as $row)
-				$result[] = array('subscriber' => $row['subscriber'], 'org_state' => $row['org_state']);
+				$result[] = array('subscriber' => $row['subscriber'], 'org_state' => $row['org_state'], 'subscriber_id' => $row['subscriber_id']);
 		} catch (DBStatementException $dbse) {
 			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax. Verify that the query matches the database!";
 			Logger::log_event(LOG_NOTICE, $msg);
@@ -543,26 +533,26 @@ class CP_NREN_Admin extends FW_Content_Page
 		}
 	} /* end changeAccount() */
 
-	public function format_subscr_on_state($subscriber, $state)
+	public function format_subscr_on_state($state)
 	{
-		$res = $subscriber;
-
 		switch($state) {
 		case unsubscribed:
-			$res = "<span style=\"color: gray\"><b>$res</b></span>";
+			$styling = "color: gray; font-weight: bold;";
 			break;
 		case suspended:
-			$res = "<span style=\"color: red\"><b>$res</b></span>";
+			$styling = "color: red; font-weight: bold;";
+			break;
 		case subscribed:
-			$res = "<i>$res</i>";
+			$styling .= "font-style: italic;";
 			break;
 		default:
 			break;
 		}
-		return $res;
+
+		return $styling;
 	}
 
-	public function delete_button($key, $target)
+	public function delete_button($key, $target, $id)
 	{
 		if (!isset($key) || !isset($target))
 			return;
@@ -575,7 +565,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		$res .= "<input type=\"hidden\" name=\"". $key . "\" value=\"delete\" />\n";
 		$res .= "<input type=\"hidden\" name=\"name\" value=\"" . $target . "\" />\n";
 		$res .= "<input type=\"hidden\" name=\"state\" value=\"\" />\n"; /* don't need state to delete */
-
+		$res .= "<input type=\"hidden\" name=\"id\" value=\"" . $id . "\" />\n";
 		$res .= "<input type=\"image\" name=\"delete\" ";
 
 		/* warning upon attempted self-deletion */
@@ -583,7 +573,7 @@ class CP_NREN_Admin extends FW_Content_Page
 			$res .= "onclick=\"return confirm('You are about to delete your OWN INSTITUTION (" . $target . ")!\\n";
 			$res .= "          Are you sure about that?')\"";
 		} else {
-			$res .= "onclick=\"return confirm('Delete entry? (" . $target . ") ')\" ";
+			$res .= "onclick=\"return confirm('Delete entry with ID $id? (" . $target . ") ')\" ";
 		}
 
 		$res .= "                 value=\"delete\" src=\"graphics/delete.png\"";
