@@ -12,7 +12,7 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
 		       $request['Attributes']['organization'][0] = "feide";
 		       break;
                case "https://openidp.feide.no":
-		       $request['Attributes']['organization'][0]= "openidp";
+		       $request['Attributes']['eduPersonOrgDN'][0]= "o=openidp";
 		       $request['Attributes']['nren'][0]	= "uninett";
                     break;
                case "edugain.showcase.surfnet.nl":
