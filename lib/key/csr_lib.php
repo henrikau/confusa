@@ -45,7 +45,7 @@ function test_content($content, $auth_url)
    */
   $length = Config::get_config('key_length');
   if (csr_pubkey_length($content) < $length) {
-	  Framework::error_putput("Uploaded key is not long enough. Please download a proper keyscript and try again.");
+	  Framework::error_output("Uploaded key is not long enough. Please download a proper keyscript and try again.");
        return false;
   }
 
