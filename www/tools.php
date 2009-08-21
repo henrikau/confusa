@@ -9,7 +9,7 @@ class Tools extends FW_Content_Page
 {
 	public function __construct()
 	{
-		parent::__construct("Revoke Certificate(s)", true);
+		parent::__construct("Revoke Certificate(s)", true, "tools.php");
 	}
 
 	function __destruct()
