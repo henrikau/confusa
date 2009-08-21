@@ -15,6 +15,47 @@ class Translator {
 	private $defaultLanguage;
 	private $person;
 
+	private static $code_language_map = array(
+								'bg' => 'Български език (Bulgarian)',
+								'ca' => 'Català (Catalan)',
+								'cs' => 'Česky (Czech)',
+								'de' => 'Deutsch (German)',
+								'de-AT' => 'Deutsch Österreich (German)',
+								'de-CH' => 'Deutsch Schweiz (German)',
+								'de-DE' => 'Deutsch Deutschland (German)',
+								'dk' => 'Dansk (Danish)',
+								'el' => 'Ελληνικά (Greek)',
+								'en' => 'English',
+								'en-GB' => 'British English',
+								'en-US' => 'US English',
+								'es' => 'Castellano (Spanish)',
+								'et' => 'Eesti keel (Estonian)',
+								'eu' => 'Euskara (Basque)',
+								'fi' => 'Suomi (Finnish)',
+								'fr' => 'Français (French)',
+								'fr-BE' => 'Français Belgique (French)',
+								'fr-FR' => 'Français France (French)',
+								'ga' => 'Gaeilge (Irish)',
+								'hu' => 'Magyar (Hungarian)',
+								'is' => 'Íslenska (Icelandic)',
+								'it' => 'Italiano (Italian)',
+								'lb' => 'Lëtzebuergesch (Luxembourgish)',
+								'lt' => 'Lietuvių kalba (Lithuanian)',
+								'lv' => 'Latviešu valoda (Latvian)',
+								'mt' => 'Malti (Maltese)',
+								'nb' => 'Norsk bokmål (Norwegian)',
+								'nl' => 'Nederlands (Dutch)',
+								'nn' => 'Norsk nynorsk (Norwegian)',
+								'no' => 'Norsk (Norwegian)',
+								'pl' => 'Polski (Polish)',
+								'pt' => 'Português (Portuguese)',
+								'ro' => 'Română (Romanian)',
+								'ru' => 'Русский язык (Russian)',
+								'sk' => 'Slovenčina (Slovak)',
+								'sl' => 'Slovenščina (Slovenian)',
+								'sv' => 'Svenska (Swedish)',
+		);
+
 	/**
 	 * Construct a new translator. Guess the best language
 	 */
@@ -104,6 +145,28 @@ class Translator {
 		}
 
 		return $this->defaultLanguage;
+	}
+
+	/**
+	 * Return the name of a ISO 639-1 language code in verbose, human-readable
+	 * form.
+	 *
+	 * The current list is not comprehensive, but should contain the
+	 * codes we are expecting to need in the foreseeable future.
+	 *
+	 * @param $iso_codes An array with the ISO-codes that should be mapped
+	 * @return Array with full description of the passed ISO-codes
+	 */
+	public static function getFullNamesForISOCodes($iso_codes)
+	{
+		$full_names = array();
+
+		foreach($iso_codes as $code) {
+			$language = Translator::$code_language_map[$code];
+			$full_names[$code] = $language;
+		}
+
+		return $full_names;
 	}
 }
 

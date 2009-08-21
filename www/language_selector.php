@@ -59,65 +59,11 @@ final class CP_Language_Selector extends FW_Content_Page
 		}
 
 		$available_languages = Config::get_config('language.available');
-		$full_names = $this->getFullNamesForISOCodes($available_languages);
+		$full_names = Translator::getFullNamesForISOCodes($available_languages);
 		$this->tpl->assign('languages', $full_names);
 		$this->tpl->assign('current_language', $current_language);
 		$this->tpl->assign('language_codes', $available_languages);
 		$this->tpl->assign('content', $this->tpl->fetch('language_selector.tpl'));
-	}
-
-	private function getFullNamesForISOCodes($iso_codes)
-	{
-
-		$full_names = array();
-
-		$code_language_map = array (
-								'bg' => 'Български език (Bulgarian)',
-								'ca' => 'Català (Catalan)',
-								'cs' => 'Česky (Czech)',
-								'de' => 'Deutsch (German)',
-								'de-AT' => 'Deutsch Österreich (German)',
-								'de-CH' => 'Deutsch Schweiz (German)',
-								'de-DE' => 'Deutsch Deutschland (German)',
-								'dk' => 'Dansk (Danish)',
-								'el' => 'Ελληνικά (Greek)',
-								'en' => 'English',
-								'en-GB' => 'British English',
-								'en-US' => 'US English',
-								'es' => 'Castellano (Spanish)',
-								'et' => 'Eesti keel (Estonian)',
-								'eu' => 'Euskara (Basque)',
-								'fi' => 'Suomi (Finnish)',
-								'fr' => 'Français (French)',
-								'fr-BE' => 'Français Belgique (French)',
-								'fr-FR' => 'Français France (French)',
-								'ga' => 'Gaeilge (Irish)',
-								'hu' => 'Magyar (Hungarian)',
-								'is' => 'Íslenska (Icelandic)',
-								'it' => 'Italiano (Italian)',
-								'lb' => 'Lëtzebuergesch (Luxembourgish)',
-								'lt' => 'Lietuvių kalba (Lithuanian)',
-								'lv' => 'Latviešu valoda (Latvian)',
-								'mt' => 'Malti (Maltese)',
-								'nb' => 'Norsk bokmål (Norwegian)',
-								'nl' => 'Nederlands (Dutch)',
-								'nn' => 'Norsk nynorsk (Norwegian)',
-								'no' => 'Norsk (Norwegian)',
-								'pl' => 'Polski (Polish)',
-								'pt' => 'Português (Portuguese)',
-								'ro' => 'Română (Romanian)',
-								'ru' => 'Русский язык (Russian)',
-								'sk' => 'Slovenčina (Slovak)',
-								'sl' => 'Slovenščina (Slovenian)',
-								'sv' => 'Svenska (Swedish)',
-		);
-
-		foreach($iso_codes as $code) {
-			$language = $code_language_map[$code];
-			$full_names[] = $language;
-		}
-
-		return $full_names;
 	}
 
 	private function updateNRENLanguage($nren, $new_language)
