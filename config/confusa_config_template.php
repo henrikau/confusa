@@ -207,7 +207,7 @@ $confusa_config = array(
 	/*
 	 * Languages available and what language is default
 	 */
-	'language.available'	=> array('en', 'sv', 'de'),
+	'language.available'	=> array('en', 'sv', 'de', 'lb'),
 	'language.default'	=> 'en',
 
 	/* this should be set to true when config is verified (or the file has
