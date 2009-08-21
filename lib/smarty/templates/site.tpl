@@ -48,6 +48,11 @@
 		      <!-- fix for adjusting the header's height to the image's height. Breaks in IE6 -->
 		      <div style="clear: left"></div>
 		    </div> <!-- header -->
+		    <div id="language_bar">
+		    {foreach from=$available_languages key=code item=lang}
+			<a href="?lang={$code}">{$lang}</a> |
+		    {/foreach}
+		    </div>
 		    <div id="menu">
 		      {$menu}
 		    </div> <!-- menu -->

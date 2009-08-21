@@ -1,4 +1,6 @@
 <?php
+require_once 'translator.php';
+
 abstract class FW_Content_Page
 {
 	private $title;
@@ -77,11 +79,22 @@ abstract class FW_Content_Page
 		$this->setPerson($person);
 		$this->setManager();
 
+		/* show the available languages in the template */
+		$available_languages = Config::get_config('language.available');
+		$this->tpl->assign('available_languages',
+							Translator::getFullNamesForISOCodes($available_languages));
+
+		if (isset($_GET['lang'])) {
+			$lang = Input::sanitize($_GET['lang']);
+			$_SESSION['language'] = $lang;
+		}
+
 		/* If we have a dictionary for this component, translate the entries */
 		if (isset($this->dictionary)) {
 			/* Get the translation in place */
 			$trans = new Translator($person);
 			$this->tpl = $trans->decorateTemplate($this->tpl, $this->dictionary);
+
 		}
 
 		return false;
