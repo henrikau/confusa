@@ -231,3 +231,20 @@ CREATE TABLE IF NOT EXISTS user_crls (
        cert_sn INT NOT NULL,
        valid_untill DATETIME NOT NULL
 ) type=InnoDB;
+
+-- ---------------------------------------------------------
+-- 
+-- 
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS attribute_mapping (
+       id INT PRIMARY KEY AUTO_INCREMENT,
+       nren_id INT NOT NULL,
+       subscriber_id INT,
+       eppn varchar(64) NOT NULL,
+       epodn varchar(64) NOT NULL,
+       cn varchar(64) NOT NULL,
+       mail varchar(64) NOT NULL,
+       entitlement varchar(64) NOT NULL,
+       FOREIGN KEY(subscriber_id) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
+       FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
+) type=InnoDB;
