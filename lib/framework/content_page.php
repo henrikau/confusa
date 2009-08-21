@@ -94,7 +94,7 @@ abstract class FW_Content_Page
 			/* Get the translation in place */
 			$trans = new Translator($person);
 			$this->tpl = $trans->decorateTemplate($this->tpl, $this->dictionary);
-
+			$this->tpl->assign('selected_language', $trans->getLanguage());
 		}
 
 		return false;

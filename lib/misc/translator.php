@@ -67,6 +67,16 @@ class Translator {
 	}
 
 	/**
+	 * Return the currently set language
+	 *
+	 * @return The language that is currently set
+	 */
+	public function getLanguage()
+	{
+		return $this->language;
+	}
+
+	/**
 	 * Decorate a given template with the tags from the dictornary in the
 	 * right language. This is nothing more than repeated consulation of a
 	 * LUT:

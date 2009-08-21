@@ -50,7 +50,11 @@
 		    </div> <!-- header -->
 		    <div id="language_bar">
 		    {foreach from=$available_languages key=code item=lang}
-			<a href="?lang={$code}">{$lang}</a> |
+			{if $code == $selected_language}
+				{$lang} |
+			{else}
+				<a href="?lang={$code}">{$lang}</a> |
+			{/if}
 		    {/foreach}
 		    </div>
 		    <div id="menu">
