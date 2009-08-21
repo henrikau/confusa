@@ -7,7 +7,7 @@ class About_NREN extends FW_Content_Page
 {
 	function __construct()
 	{
-		parent::__construct("About NREN", false);
+		parent::__construct("About NREN", false, "index.php");
 	}
 
 
