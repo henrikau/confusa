@@ -152,7 +152,8 @@ class CP_NREN_Admin extends FW_Content_Page
 		$org_name	= strtolower(Input::sanitize($name));
 		$nren		= $this->person->getNREN();
 
-		$select_nrenid		= "(SELECT nren_id FROM nrens WHERE name=?)";
+		$select_nrenid		= "SELECT nren_id FROM nrens WHERE name=?";
+		$constraint_query	= "SELECT subscriber_id FROM subscribers WHERE name=? and nren_id = ?";
 		$update_subscr_insert	= "INSERT INTO subscribers(name, nren_id, org_state) VALUES(?,?,?)";
 
 		if (!isset($org_state) || $org_state === "")
@@ -184,6 +185,27 @@ class CP_NREN_Admin extends FW_Content_Page
 			Framework::error_output("Your NREN is unknown to Confusa! " .
 						"Probably something is wrong with the configuration");
 			return;
+		}
+
+		try {
+		    $check = MDB2Wrapper::execute($constraint_query,
+					array('text', 'text'),
+					array($name, $res[0]['nren_id']));
+
+		    if (count($check) > 0) {
+			Framework::error_output("Subscriber names must be unique per NREN! " .
+				"Found an existing subscriber with the name '$name' and " .
+				"id " . $check[0]['subscriber_id'] . "!");
+			return;
+		    }
+		} catch (DBStatementException $dbse) {
+		    $msg = __FILE__ . ":" . __LINE__ . " syntax error in constraint check, server said: " . $dbse->getMessage();
+		    Logger::log_event(LOG_NOTICE, $msg);
+		    Framework::error_output($msg);
+		} catch (DBQueryException $dbqe) {
+		    $msg = __FILE__ . ":" . __LINE__ . " cannot add row, duplicate entry?";
+		    Logger::log_event(LOG_NOTICE, $msg);
+		    Framework::error_output($msg);
 		}
 
 		try {
