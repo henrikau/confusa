@@ -59,8 +59,14 @@ abstract class Confusa_Auth
 		 */
 		$nren = $attributes['nren'][0];
 		$subscr = $attributes['subscriber'][0];
-		$map = AuthHandler::getMap($nren, $subscr);
-
+		try {
+			$map = AuthHandler::getMap($nren, $subscr);
+		} catch (DBStatementException $dbse) {
+			$msg  = "Your confusa installation is not properly configured. <br />\n";
+			$msg .= "You need to create all tables needed by in order to find the correct attribute-mapping.<br />\n";
+			Framework::error_output($msg);
+			throw new CriticalAttributeException("Cannot get any maps from the database (db not properly initialized)");
+		}
 		/* has the subscriber-name been updated, i.e. can we find a new map? */
 		if ($subscr != $attributes[$map['epodn']][0]) {
 			try {
