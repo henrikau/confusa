@@ -21,6 +21,11 @@
 	<tr><td><b>Time since AuthN</b></td><td>{$timeSinceStart}</td></tr>
 </table><br />
 <hr />
-We store very little information. What we do keep, is information about certificates issued, combined with the eduPersonPrincipalName
-This is the DN in the certificate, and we <b>have</b> to store this.<br />
+
+We store very little information. What we do keep, is information about
+certificates issued, combined with the <a
+href=http://rnd.feide.no/attribute/edupersonprincipalname"">eduPersonPrincipalName</a>. This
+is part of teh DN in the certificate (it is the unique identifier for
+<i>you</i> in the namespace of your organization), and we <b>have</b> to
+store this.<br />
 {/if}
