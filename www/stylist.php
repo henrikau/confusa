@@ -90,11 +90,10 @@ class CP_Stylist extends FW_Content_Page
 					$this->tpl->assign('help_text', $texts[0]);
 					$this->tpl->assign('about_text', $texts[1]);
 				}
-
-				$this->tpl->assign('edit_help_text', true);
+				$this->tpl->assign('edit_help_text', $this->tpl->fetch('stylist/edit_help_text.tpl'));
 				break;
 			case 'css':
-				$this->tpl->assign('edit_css', true);
+				$this->tpl->assign('edit_css', $this->tpl->fetch('stylist/edit_css.tpl'));
 				$css_string = $this->fetchNRENCSS($this->person->getNREN());
 
 				if (!is_null($css_string)) {
@@ -103,7 +102,7 @@ class CP_Stylist extends FW_Content_Page
 
 				break;
 			case 'logo':
-				$this->tpl->assign('edit_logo', true);
+				$this->tpl->assign('edit_logo', $this->tpl->fetch('stylist/edit_logo.tpl'));
 				$logo = Framework::get_logo_for_nren($this->person->getNREN());
 				$this->tpl->assign('logo', $logo);
 				$extensions = implode(", ", Framework::$allowed_img_suffixes);
