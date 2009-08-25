@@ -40,6 +40,7 @@ class Framework {
 	private $person;
 	private $contentPage;
 	private $tpl;
+	private $renderError = false;
 	private static $errors = array();
 	private static $messages = array();
 	private static $sensitive_action = false;
@@ -85,12 +86,18 @@ class Framework {
 		/* if login, trigger SAML-redirect first */
 		$auth = AuthHandler::getAuthManager($this->person);
 
-		if (!$auth->checkAuthentication()) {
-			if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-				$auth->authenticateUser();
+		try {
+			if (!$auth->checkAuthentication()) {
+				if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
+					$auth->authenticateUser();
+				}
 			}
 		}
-
+		catch (ConfusaGenException $cge) {
+			Framework::error_output($cge->getMessage());
+			$this->renderError = true;
+			return;
+		}
 		/* get the updated person object back from the authentication framework */
 		$this->person = $auth->getPerson();
 
@@ -107,7 +114,6 @@ class Framework {
 				exit(0);
 			}
 		}
-		return $this->person;
 	}
 
 	/**
@@ -144,9 +150,7 @@ class Framework {
 			$msg .= "Please contact your local IT-support, and ask them to resolve this issue.";
 			$msg .= "</center>";
 			Framework::error_output($msg);
-			$this->tpl->assign('errors', self::$errors);
-			$this->tpl->display('site.tpl');
-			exit(0);
+			$this->renderError = true;
 		} catch (MapNotFoundException $mnfe) {
 			$msg  = "<center>\n";
 			$msg .= "<b>Error(s) with attributes</b><br /><br />";
@@ -154,13 +158,16 @@ class Framework {
 			$msg .= "Please contact your local IT-departement and ask them to forward the request ";
 			$msg .= "to the registred NREN administrator for your domain.";
 			Framework::error_output($msg);
-			$this->tpl->assign('errors', self::$errors);
-			$this->tpl->display('site.tpl');
-			exit(0);
+			$this->renderError = true;
 		} catch (ConfusaGenException $cge) {
 			Framework::error_output("Could not authenticate you! Error was: " .
 									$cge->getMessage());
+			$this->renderError = true;
+		} catch (Exception $e) {
+			Framework::error_output("Uncaught exception occured!<br />\n" . $e->getMessage());
+			$this->renderError = true;
 		}
+
 		/* Mode-hook, to catch mode-change regardless of target-page (not only
 		 * index) */
 		if (isset($_GET['mode'])) {
@@ -172,7 +179,9 @@ class Framework {
 		}
 
 		$this->tpl->assign('person', $this->person);
-		$this->contentPage->process($this->person);
+		if (!$this->renderError) {
+			$this->contentPage->process($this->person);
+		}
 		$this->tpl->assign('logoutUrl', 'logout.php');
 		$this->tpl->assign('menu', $this->tpl->fetch('menu.tpl')); // see render_menu($this->person)
 		$this->tpl->assign('errors', self::$errors);
@@ -185,6 +194,7 @@ class Framework {
 		$this->tpl->assign('css',$css);
 		$this->tpl->display('site.tpl');
 		
+
 		$this->contentPage->post_process($this->person);
 		
 	} /* end render_page */
