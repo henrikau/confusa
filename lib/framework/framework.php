@@ -181,10 +181,17 @@ class Framework {
 		$this->tpl->assign('person', $this->person);
 
 		/* If we have a renderError, do not allow the user-page to
-		 * render.
+		 * render, otherwise, run it, and catch all unhandled exception
+		 *
+		 * The general idea, is that the process() should be
+		 * self-contained wrt to exceptions.
 		 */
 		if (!$this->renderError) {
-			$this->contentPage->process($this->person);
+			try {
+				$this->contentPage->process($this->person);
+			} catch (Exception $e) {
+				Framework::error_output("Unhandled exception found in user-function!<br />\n" . $e->getMessage());
+			}
 		}
 		$this->tpl->assign('logoutUrl', 'logout.php');
 		$this->tpl->assign('menu', $this->tpl->fetch('menu.tpl')); // see render_menu($this->person)
