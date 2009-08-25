@@ -83,8 +83,7 @@ class Framework {
 
 	public function authenticate() {
 		/* if login, trigger SAML-redirect first */
-
-		$auth = AuthHandler::getAuthManager($person);
+		$auth = AuthHandler::getAuthManager($this->person);
 
 		if (!$auth->checkAuthentication()) {
 			if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
@@ -96,12 +95,11 @@ class Framework {
 		$this->person = $auth->getPerson();
 
 		if (Framework::$sensitive_action) {
-			/* FIXME */
 			$delta = Config::get_config('protected_session_timeout')*60 - $this->person->getTimeSinceStart();
 			if ($delta < 0) {
+				$auth->softLogout();
+
 				require_once 'refresh.html';
-				if (isset($_SESSION))
-					session_destroy();
 				$msg =  __FILE__ . ":" . __LINE__ . " Sensitive action, and your session is too old (";
 				$msg .= ((int)$delta*-1)." seconds passed the limit) ";
 				$msg .= "--- the re-auth has not been implemented yet.";

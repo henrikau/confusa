@@ -85,6 +85,38 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		}
 	}
 
+	public function softLogout()
+	{
+	    if(isset($this->session)) {
+		    /* adapt to HAKA */
+		    $attribs = $this->session->getAttributes();
+		    if (isset($attribs['urn:mace:funet.fi:haka:logout-url'])) {
+			    $logout_url = $attribs['urn:mace:funet.fi:haka:logout-url'];
+			    $safecounter = 10;
+			    while ($safecounter > 0 && is_array($logout_url)) {
+				    $safecounter -= 1;
+				    $logout_url = $logout_url[0];
+			    }
+		    }
+		    /* Find the redirect-link for surfnet/EduGAIN users */
+
+		    /* Do it the Feide way */
+		    $this->session->doLogout();
+	    }
+	    if (isset($_SESSION)) {
+		    session_destroy();
+	    }
+	    $this->person->isAuth(false);
+	    $this->person->clearAttributes();
+
+	    if (isset($logout_url) && $logout_url != "")
+	    {
+		    $base_url = $this->person->getSAMLConfiguration()->getBaseURL();
+		    $relay = Config::get_config('server_url') . $SERVER['PHP_SELF'];
+		    SimpleSAML_Utilities::redirect('/' . $base_url . 'saml2/sp/initSLO.php', array('RelayState' => $relay));
+	    }
+	} /* end softLogout */
+
 	/**
 	 * Poll the subsystem for user authentication
 	 * Decorate the person object with the attributes received from the subsystem.

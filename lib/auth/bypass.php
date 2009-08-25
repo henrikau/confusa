@@ -53,6 +53,11 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	 */
 	public function deAuthenticateUser($logout_loc = 'logout.php')
 	{
+		Framework::error_output("Cannot log out, you're in bypass-mode!");
+	}
+	public function softLogout()
+	{
+		;
 	}
 }
 
