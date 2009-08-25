@@ -35,7 +35,6 @@ class Person{
     /* The name of the subscriber, e.g. 'ntnu', 'uio', 'uninett' */
     private $subscriberName;
 
-    private $idp;
     private $nren;
     private $entitlement;
 
@@ -80,9 +79,6 @@ class Person{
 
 	    $this->subscriberName = null;
 	    unset($this->subscriberName);
-
-	    $this->idp = null;
-	    unset($this->idp);
 
 	    $this->nren = null;
 	    unset($this->nren);
@@ -384,36 +380,6 @@ class Person{
     public function getCountry()
     {
 	    return $this->country;
-    }
-
-
-    /* setIdP - set the IdP for the person
-     *
-     * @deprecated -	this function is deprecated as the IdP can be found in the
-     *			session-array exported by SimpleSAML. It is still around
-     *			due to the auth_bypass-mode.
-     *
-     * @idp : the idp to set.
-     */
-    public function setIdP($idp) {
-	    if (isset($idp)) {
-		    if (!Config::get_config('auth_bypass')) {
-			    Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . " setting idp in ! auth_bypass!");
-		    }
-		    $this->idp = Input::sanitize($idp);
-	    }
-    }
-
-    /* getIdP - get the IdP the user has authenticated to.
-     *
-     * @return : string with the name of the IdP
-     */
-    public function getIdP()
-    {
-	    if (Config::get_config('auth_bypass')) {
-		    return $this->idp;
-	    }
-	    return $this->session->getIdP();
     }
 
 

@@ -12,7 +12,6 @@
 	<tr><td><b>Country:</b></td><td>{$person->getCountry()}</td></tr>
 	<tr><td><b>OrganizationalName:</b></td><td>{$person->getSubscriberOrgName()}</td></tr>
 	<tr><td><b>Entitlement:</b></td><td>{$person->getEduPersonEntitlement()}</td></tr>
-	<tr><td><b>IdP:</b></td><td>{$person->getIdP()}</td></tr>
 	<tr><td><b>NREN:</b></td><td>{$person->getNREN()}</td></tr>
 	<tr><td><b>Complete /DN:</b></td><td>{$person->getX509SubjectDN()}</td></tr>
 
