@@ -1,6 +1,6 @@
 <?php
 require_once 'confusa_auth.php';
-
+require_once 'MapNotFoundException.php';
 /**
  * Confusa_Auth_Bypass - The dummy authentication source.
  *
@@ -10,10 +10,20 @@ require_once 'confusa_auth.php';
  */
 class Confusa_Auth_Bypass extends Confusa_Auth
 {
+	private $attributes;
 
 	function __construct($person)
 	{
 		parent::__construct($person);
+		$this->attributes = array(
+			'cn2'				=> array('Ola Nordmann'),
+			'eduPersonPrincipalName'	=> array('ola.nordmann@norge.no'),
+			'mail2'				=> array('ola.nordmann@norge.no'),
+			'country'			=> array('NO'),
+			'organization'			=> array('test_subscriber'),
+			'nren'				=> array('testnren'),
+			'eduPersonEntitlement2'		=> array('confusaAdmin')
+			);
 	}
 
 	/**
@@ -21,16 +31,9 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	 */
 	public function authenticateUser()
 	{
-		$this->person->setName('Ola Nordmann');
-		$this->person->setEPPN('ola.nordmann@norge.no');
-		$this->person->setEmail('ola.nordmann@norge.no');
-		$this->person->setCountry('NO');
-		$this->person->setSubscriberOrgName('Test');
-		$this->person->setIdP('test-idp');
-		$this->person->setNREN('TEST-NREN');
-		$this->person->setEduPersonEntitlement('confusaAdmin');
 		$this->person->setAuth(true);
-
+		$this->decoratePerson($this->attributes);
+		return $this->person->isAuth();
 	}
 
 	/**
@@ -38,8 +41,9 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	 */
 	public function checkAuthentication()
 	{
+		$this->person->setAuth(true);
 		$this->authenticateUser();
-		return true;
+		return $this->person->isAuth();
 	}
 
 	/**
