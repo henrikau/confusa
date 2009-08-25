@@ -126,25 +126,43 @@ class Framework {
 
 	public function start()
 	{
+		/* Set tpl object to content page */
+		$this->contentPage->setTpl($this->tpl);
+
 		/* check the authentication-thing, catch the login-hook
 		 * This is done via confusa_auth
 		 */
 		try {
 			$this->authenticate();
+			$res = $this->contentPage->pre_process($this->person);
+			if ($res) {
+				$this->tpl->assign('extraHeader', $res);
+			}
+		} catch (CriticalAttributeException $cae) {
+			$msg  = "<center>";
+			$msg .= "<b>Error(s) with attributes</b><br /><br />";
+			$msg .= $cae->getMessage() . "<br /><br />";
+			$msg .= "<b>Cannot continue</b><br /><br />";
+			$msg .= "Please contact your local IT-support, and ask them to resolve this issue.";
+			$msg .= "</center>";
+			Framework::error_output($msg);
+			$this->tpl->assign('errors', self::$errors);
+			$this->tpl->display('site.tpl');
+			exit(0);
+		} catch (MapNotFoundException $mnfe) {
+			$msg  = "<center>\n";
+			$msg .= "<b>Error(s) with attributes</b><br /><br />";
+			$msg .= "No map has been configured for your subscriber. ";
+			$msg .= "Please contact your local IT-departement and ask them to forward the request ";
+			$msg .= "to the registred NREN administrator for your domain.";
+			Framework::error_output($msg);
+			$this->tpl->assign('errors', self::$errors);
+			$this->tpl->display('site.tpl');
+			exit(0);
 		} catch (ConfusaGenException $cge) {
 			Framework::error_output("Could not authenticate you! Error was: " .
 									$cge->getMessage());
 		}
-
-		/* Set tpl object to content page */
-		$this->contentPage->setTpl($this->tpl);
-
-		/* Allow content-page to do pre-process */
-		$res = $this->contentPage->pre_process($this->person);
-		if ($res) {
-			$this->tpl->assign('extraHeader', $res);
-		}
-
 		/* Mode-hook, to catch mode-change regardless of target-page (not only
 		 * index) */
 		if (isset($_GET['mode'])) {
