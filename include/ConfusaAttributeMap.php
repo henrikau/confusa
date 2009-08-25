@@ -89,14 +89,6 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
       */
      private function fixSubscriberName(&$request)
      {
-	     /* Is ePODN set? */
-	     if (!isset($request['Attributes']['eduPersonOrgDN'][0]) || $request['Attributes']['eduPersonOrgDN'][0] == "") {
-		     echo "<h3>Error!</h3>\n";
-		     echo "Your IdP does not export all required attributes. The attribute ";
-		     echo "<a href=\"http://rnd.feide.no/attribute/edupersonorgdn\">eduPersonOrgDN</a> is not set!<br /><br />\n";
-		     echo "Please notify your local IT-support about this problem.\n";
-		     exit(1);
-	     }
 	     $org = explode(",", $request['Attributes']['eduPersonOrgDN'][0]);
 	     if (is_array($org)) {
 		     $org = explode("=", $org[0]);
