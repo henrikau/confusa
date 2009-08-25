@@ -128,30 +128,12 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		$session = SimpleSAML_Session::getInstance();
 		$this->person->setSession($session);
 		$this->person->setAuth($session->isValid());
-
 		if ($this->person->isAuth()) {
-			$this->assertAttributes($session->getAttributes());
+			/* Do not add try-catch here as framework will trigger
+			 * on that and adapt. */
+			$this->decoratePerson($session->getAttributes());
 		}
-
 		return $this->person->isAuth();
 	}
-
-	/**
-	 * Convenience function for decoration of the person object with
-	 * attributes.
-	 *
-	 * @param $attributes The attributes with which the person object should
-	 * be decorated
-	 */
-	private function assertAttributes($attributes)
-	{
-		$this->person->setName($attributes['cn'][0]);
-		$this->person->setEPPN($attributes['eduPersonPrincipalName'][0]);
-		$this->person->setEmail($attributes['mail'][0]);
-		$this->person->setCountry($attributes['country'][0]);
-		$this->person->setSubscriberOrgName($attributes['organization'][0]);
-		$this->person->setEduPersonEntitlement($attributes['eduPersonEntitlement'][0]);
-		$this->person->setNREN($attributes['nren'][0]);
-	}
-}
+} /* end class IdP */
 ?>
