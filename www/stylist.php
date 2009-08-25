@@ -110,6 +110,10 @@ class CP_Stylist extends FW_Content_Page
 				$this->tpl->assign('width', $this->allowed_width);
 				$this->tpl->assign('height', $this->allowed_height);
 				break;
+			case 'map':
+				$this->tpl->assign('nren_name', $this->person->getNREN());
+				$this->tpl->assign('handle_map', $this->tpl->fetch('stylist/handle_map.tpl'));
+				break;
 			default:
 				Framework::error_output("Unsupported operation chosen!");
 				break;

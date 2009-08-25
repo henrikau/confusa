@@ -24,5 +24,7 @@
 	{$edit_css}
   {elseif $edit_logo}
 	{$edit_logo}
+  {elseif $handle_map}
+	{$handle_map}
   {/if}
 {/if}
