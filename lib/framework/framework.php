@@ -197,23 +197,7 @@ class Framework {
 
 		$this->contentPage->post_process($this->person);
 		
-	} /* end render_page */
-
-	private function user_rendering()
-	{
-		$auth = AuthHandler::getAuthManager($this->person);
-		/* check to see if the user wants to log in, if so, start login-procedure */
-		if (!$this->person->isAuth()) {
-			if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-				$auth->authenticateUser();
-			}
-			if (isset($_POST['start_login']) && $_POST['start_login'] == 'yes')
-				$auth->authenticateUser();
-		}
-
-		$func = $this->f_content;
-		$func($this->person);
-	} /* end user-rendering */
+	} /* end start() */
 
 	public static function error_output($message)
 	{
