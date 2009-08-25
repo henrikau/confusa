@@ -179,6 +179,10 @@ class Framework {
 		}
 
 		$this->tpl->assign('person', $this->person);
+
+		/* If we have a renderError, do not allow the user-page to
+		 * render.
+		 */
 		if (!$this->renderError) {
 			$this->contentPage->process($this->person);
 		}
