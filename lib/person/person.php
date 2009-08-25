@@ -61,6 +61,48 @@ class Person{
         $this->isAuthenticated = false;
         } /* end constructor */
 
+
+    /**
+     * clearAttributes() - reset all attributes known to Person
+     *
+     * This function will effectively reset the person.
+     */
+    private function clearAttributes()
+    {
+	    
+	    $this->given_name = null;
+	    unset($this->given_name);
+
+	    $this->eppn = null;
+	    unset($this->eppn);
+
+	    $this->email = null;
+	    unset($this->email);
+
+	    $this->country = null;
+	    unset($this->country);
+
+	    $this->subscriberName = null;
+	    unset($this->subscriberName);
+
+	    $this->idp = null;
+	    unset($this->idp);
+
+	    $this->nren = null;
+	    unset($this->nren);
+
+	    $this->entitlement = null;
+	    unset($this->entitlement);
+
+	    $this->session = null;
+	    unset($this->session);
+
+	    $this->saml_config = null;
+	    unset($this->saml_config);
+
+	    $this->isAuthenticated = false;
+    }
+
     /**
      * setSession - set a reference to the current session
      *
