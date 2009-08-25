@@ -52,16 +52,12 @@ class Person{
     private $isAuthenticated;
 
     function __construct() {
-        $this->given_name = null;
-        $this->eppn = null;
-        $this->email = null;
-        $this->entitlement = null;
+	    $this->clearAttributes();
+    } /* end constructor */
 
-        /* we're suspicious by nature */
-        $this->isAuthenticated = false;
-        } /* end constructor */
-
-
+    function __destruct() {
+	    $this->clearAttributes();
+    }
     /**
      * clearAttributes() - reset all attributes known to Person
      *
