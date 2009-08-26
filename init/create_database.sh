@@ -42,7 +42,7 @@ echo "Found ../config/confusa_config.php OK. Continuing"
 # if not, create it
 database=`grep "mysql_db" ../config/confusa_config.php | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
-if [ ! -n $databaase ]; then
+if [ -z $database ]; then
     echo "mysql-db not set in config-file!"
     echo "Please set this value and try again"
     exit
