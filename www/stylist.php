@@ -90,11 +90,12 @@ class CP_Stylist extends FW_Content_Page
 					$this->tpl->assign('help_text', $texts[0]);
 					$this->tpl->assign('about_text', $texts[1]);
 				}
-				$this->tpl->assign('edit_help_text', $this->tpl->fetch('stylist/edit_help_text.tpl'));
+				$this->tpl->assign('edit_help_text', true);
 				break;
 			case 'css':
-				$this->tpl->assign('edit_css', $this->tpl->fetch('stylist/edit_css.tpl'));
+				$this->tpl->assign('edit_css', true);
 				$css_string = $this->fetchNRENCSS($this->person->getNREN());
+				echo $css_string;
 
 				if (!is_null($css_string)) {
 					$this->tpl->assign('css_content', $css_string);
@@ -102,7 +103,7 @@ class CP_Stylist extends FW_Content_Page
 
 				break;
 			case 'logo':
-				$this->tpl->assign('edit_logo', $this->tpl->fetch('stylist/edit_logo.tpl'));
+				$this->tpl->assign('edit_logo', true);
 				$logo = Framework::get_logo_for_nren($this->person->getNREN());
 				$this->tpl->assign('logo', $logo);
 				$extensions = implode(", ", Framework::$allowed_img_suffixes);
@@ -112,7 +113,7 @@ class CP_Stylist extends FW_Content_Page
 				break;
 			case 'map':
 				$this->tpl->assign('nren_name', $this->person->getNREN());
-				$this->tpl->assign('handle_map', $this->tpl->fetch('stylist/handle_map.tpl'));
+				$this->tpl->assign('handle_map', true);
 				break;
 			default:
 				Framework::error_output("Unsupported operation chosen!");
