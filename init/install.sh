@@ -636,7 +636,7 @@ function perform_postinstallation_steps
 
 	if [ ! $res -eq 0 ]; then
 		echo "Failed in setting the right permissions for the installation path!"
-		echo "Please ensure yourself that www-data has write access to"
+		echo "Please ensure yourself that $custom_apache_user has write access to"
 		echo "${install_path}www/css/custom"
 		echo "${install_path}www/graphics/custom"
 		perror $res
