@@ -342,6 +342,17 @@ function configure_confusa_settings
 
 	echo ""
 
+	# Specify the name of the server certificate and key (hardcode to servkey.pem,
+	# servercert.pem for the sake of simplicity)
+	#
+	# c'mon... don't be picky
+	############################################################################
+
+	if [ $mode = "standalone" ]; then
+		replace_config_entry "ca_cert_name" "servercert.pem"
+		replace_config_entry "ca_key_name"  "serverkey.pem"
+	fi
+
 	# Specify the minimum keylength for Confusa
 	###############################################################################
 	key_length=`grep "'key_length'" $working_template | cut -d '=' -f 2 \
@@ -600,6 +611,7 @@ function perform_postinstallation_steps
 
 	install_path=`grep "'install_path'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 	simplesaml_path=`grep "'simplesaml_path'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
+	ca_mode=`grep "'ca_mode'" $config | cut -d "=" -f 2 | cut -d "_" -f 2 | cut -d "," -f 1`
 
 	# Link the necessary AuthProc filters
 	ln -s -f ${install_path}include/CharacterMap.php ${simplesaml_path}modules/core/lib/Auth/Process/CharacterMap.php
@@ -642,6 +654,77 @@ function perform_postinstallation_steps
 		perror $res
 		exit $res
 	fi
+
+	# Setup the permissions for the cert-handling stuff
+	if [ $ca_mode = "STANDALONE" ]; then
+		ca_cert_base_path=`grep "'ca_cert_base_path'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
+		ca_cert_path=`grep "'ca_cert_path'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
+		ca_crl_name=`grep "'ca_crl_name'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
+		ca_cert_name=`grep "'ca_cert_name'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
+		ca_key_path=`grep "'ca_key_path'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
+		ca_key_name=`grep "'ca_key_name'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
+
+		get_user_alternative "Do you want to copy a certificate/key pair for signing from your filesystem to Confusa (y/n)?"
+
+		if [[ $answer = "y" && -n $ca_key_name && -n $ca_cert_name ]]; then
+			while [ -z $custom_cert_pos ]; do
+				echo -n "Full path to a CA-cert on your computer (e.g. /etc/apache2/ca/ca.crt): "
+				read custom_cert_pos
+
+				if [ ! -f $custom_cert_pos ]; then
+					custom_cert_pos=""
+				fi
+			done
+
+			cp $custom_cert_pos ${install_path}${ca_cert_base_path}/${ca_cert_path}/${ca_cert_name}
+
+			while [ -z $custom_key_pos ]; do
+				echo -n "Full path to a CA-private key on your computer (e.g. /etc/apache2/ca/ca.key): "
+				read custom_key_pos
+
+				if [ ! -f $custom_key_pos ]; then
+					custom_key_pos=""
+				fi
+			done
+
+			cp $custom_key_pos ${install_path}${ca_cert_base_path}/${ca_key_path}/${ca_key_name}
+		elif [ -z $ca_key_name ]; then
+			echo "Error: The name of CA-key is not set in the configuration!"
+		elif [ -z $ca_cert_name ]; then
+			echo "Error: The name of the CA-cert is not set in the configuration!"
+		fi
+
+		echo ""
+		echo "Trying to set the right permissions for the ca execution directory"
+
+
+		touch ${install_path}${ca_cert_base_path}/ca.db.index
+		res=$?
+		chown $custom_apache_user ${install_path}${ca_cert_base_path}/ca.db.index
+		res=`expr $res + $?`
+		touch ${install_path}${ca_cert_base_path}/ca.db.index.attr
+		res=`expr $res + $?`
+		chown $custom_apache_user ${install_path}${ca_cert_base_path}/ca.db.index.attr
+		res=`expr $res + $?`
+		touch ${install_path}${ca_cert_base_path}/${ca_crl_name}
+		res=`expr $res + $?`
+		chown $custom_apache_user ${install_path}${ca_cert_base_path}/${ca_crl_name}
+		res=`expr $res + $?`
+		# Create the serial number
+		cert_prefix=`echo ${ca_cert_name} | cut -d '.' -f 1`
+		res=`expr $res + $?`
+		touch ${install_path}${ca_cert_base_path}/${ca_cert_path}/${cert_prefix}.srl
+		res=`expr $res + $?`
+		chown $custom_apache_user ${install_path}${ca_cert_base_path}/${ca_cert_path}/${cert_prefix}.srl
+		res=`expr $res + $?`
+
+		if [ ! $res -eq 0 ]; then
+			echo "Something went wrong when trying to assign the right permissions to the CA keys/files"
+			echo "Please make yourself sure that the files in ${install_path}${ca_cert_base_path} have "
+			echo "the right permissions!"
+		fi
+	fi # standalone handling
+
 
 	echo ""
 	echo "Do you want the Confusa setup to install simplesamlphp metadata (y/n)?"
