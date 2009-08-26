@@ -85,6 +85,13 @@ if [ -z "$user" ]; then
     echo "did not find user ($webuser@$webhost) in database, creating"
     create_u="CREATE USER '$webuser'@'$webhost' IDENTIFIED BY '$pw'";
     `$MYSQL -D$database -e"$create_u"`
+    res=$?
+    if [ ! $res -eq 0 ]; then
+        perror $res
+        echo "Trouble adding user, aborting..."
+        exit $res
+    fi
+
     query="GRANT $grants on $database.* TO '$webuser'@'$webhost' IDENTIFIED BY '$pw'"
     `$MYSQL -D$database -e"$query"`
     res=$?
