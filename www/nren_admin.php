@@ -349,7 +349,7 @@ class CP_NREN_Admin extends FW_Content_Page
 				return null;
 			}
 
-		} catch (DBStatemenetException $dbse) {
+		} catch (DBStatementException $dbse) {
 			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax.";
 			Logger::log_event(LOG_NOTICE, $msg);
 			Framework::error_output($msg . "<BR />Server said: " . $dbse->getMessage());
