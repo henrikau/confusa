@@ -43,6 +43,8 @@ class Framework {
 	private $renderError = false;
 	private static $errors = array();
 	private static $messages = array();
+	private static $warnings = array();
+	private static $successes = array();
 	private static $sensitive_action = false;
 
 	/* Limit the file endings that are going to be accepted.
@@ -197,6 +199,8 @@ class Framework {
 		$this->tpl->assign('menu', $this->tpl->fetch('menu.tpl')); // see render_menu($this->person)
 		$this->tpl->assign('errors', self::$errors);
 		$this->tpl->assign('messages', self::$messages);
+		$this->tpl->assign('successes', self::$successes);
+		$this->tpl->assign('warnings', self::$warnings);
 
 		/* get custom logo if there is any */
 		$logo = Framework::get_logo_for_nren($this->person->getNREN());
@@ -217,6 +221,16 @@ class Framework {
 	public static function message_output($message)
 	{
 		self::$messages[] = $message;
+	}
+
+	public static function success_output($message)
+	{
+		self::$successes[] = $message;
+	}
+
+	public static function warning_output($message)
+	{
+		self::$warnings[] = $message;
 	}
 
 	/*
