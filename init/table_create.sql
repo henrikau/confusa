@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS account_map (
 CREATE TABLE IF NOT EXISTS nrens (
     nren_id INT PRIMARY KEY AUTO_INCREMENT,
     -- the name of the NREN (e.g. SUNET, UNINETT, FUNET)
-    name VARCHAR(30) NOT NULL,
+    name VARCHAR(30) UNIQUE NOT NULL,
 
     -- if a remote signing CA is used, the ID of the subaccont there
     login_account INT,
