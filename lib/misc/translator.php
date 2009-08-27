@@ -100,12 +100,25 @@ class Translator {
 			return $template;
 		}
 
+		/* warn only *once* if dictionary entries are missing */
+		$warn_missing=FALSE;
 		include($dictionaryPath);
 		foreach($lang as $tag => $entry) {
 			if (isset($entry[$this->language])) {
 				$template->assign($tag, $entry[$this->language]);
 			} else {
 				$template->assign($tag, $entry[$this->defaultLanguage]);
+
+				if (!isset($entry[$this->defaultLanguage])) {
+					Logger::log_event(LOG_WARNING, "Missing tranlsation entry for $tag in " . __FILE__);
+
+					if ($warn_missing === FALSE) {
+						Framework::warning_output("Translation problem: The dictionary " .
+												"for this page does not contain any entry for " .
+												"certain texts! Some parts of the page may appear blank.");
+						$warn_missing = TRUE;
+					}
+				}
 			}
 		}
 
