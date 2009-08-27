@@ -612,6 +612,7 @@ function perform_postinstallation_steps
 	install_path=`grep "'install_path'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 	simplesaml_path=`grep "'simplesaml_path'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 	ca_mode=`grep "'ca_mode'" $config | cut -d "=" -f 2 | cut -d "_" -f 2 | cut -d "," -f 1`
+	confusa_log=`grep "'default_log'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 
 	# Link the necessary AuthProc filters
 	ln -s -f ${install_path}include/CharacterMap.php ${simplesaml_path}modules/core/lib/Auth/Process/CharacterMap.php
@@ -653,6 +654,20 @@ function perform_postinstallation_steps
 		echo "${install_path}www/graphics/custom"
 		perror $res
 		exit $res
+	fi
+
+	# Set the right permissions on the Confusa log
+	mkdir -p `dirname $confusa_log`
+	res=$?
+	touch $confusa_log
+	res=`expr $res + $?`
+	chown $custom_apache_user $confusa_log
+	res=`expr $res + $?`
+
+	if [ ! $res -eq 0 ]; then
+		echo "Failed to set the right permissions on the confusa-log in $confusa_log"
+		echo "Please make sure yourself that $custom_apache_user has write access to "
+		echo "$confusa_log"
 	fi
 
 	# Setup the permissions for the cert-handling stuff
