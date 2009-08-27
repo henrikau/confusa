@@ -89,18 +89,49 @@ img.url {
 	border-bottom: dashed 1px;
 }
 
+div.message_container {
+	padding: 4px;
+	margin-bottom: 4px;
+	float: left;
+	width: 95%;
+}
+
 div.error {
-	padding: 4px;
-	margin-bottom: 4px;
-	background-color: #cf5448;
-	border: 1px solid #961a0e;
+	border: 2px solid #cf5448;
 }
+
 div.success {
-	padding: 4px;
-	margin-bottom: 4px;
-	background-color: #009900;
-	border: 1px solid #508c0a;
+	border: 2px solid #009900;
 }
+
+div.warning {
+	border: 2px solid #FBB117;
+}
+
+div.message {
+	border: 2px solid black;
+}
+
+div.message_icon {
+	margin-right: 6px;
+	margin-bottom: 2px;
+	float: left;
+	/* seems like, according to standard, floats must have a width */
+	width: 16px;
+	height: 16px;
+}
+
+div.message_body {
+	float: left;
+	width: 90%;
+}
+
+.clear {
+	clear:both;
+	height: 1px;
+	overflow: hidden;
+}
+
 div.info {
            width: 80%;
            padding: 10px;
@@ -109,6 +140,7 @@ div.info {
            border: 2px solid black;
            font-size: 2em;
 }
+
 fieldset {
     border: 1px solid #000000;
     background-color: #EEEEEE;
