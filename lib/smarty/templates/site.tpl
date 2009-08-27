@@ -65,10 +65,40 @@
 		    {$maint}
 		    {else}
 		      {foreach from=$errors item=error}
-		      <div class="error">{$error}</div>
+		      <div class="message_container error">
+			<div class="message_icon">
+			<img src="graphics/exclamation.png" alt="Error: " />
+			</div>
+			<div class="message_body">{$error}</div>
+			<div class="clear"></div>
+			</div>
+		      {/foreach}
+		      {foreach from=$successes item=success}
+		      <div class="message_container success">
+			<div class="message_icon">
+			<img src="graphics/accept.png" alt="Information: " />
+			</div>
+			{$success}
+			<div class="clear"></div>
+		      </div>
+		      {/foreach}
+		      {foreach from=$warnings item=warning}
+		      <div class="message_container warning">
+			<div class="message_icon">
+				<img src="graphics/warning.png" alt="Warning: " />
+			</div>
+			{$warning}
+			<div class="clear"></div>
+		      </div>
 		      {/foreach}
 		      {foreach from=$messages item=msg}
-		      <div class="success">{$msg}</div>
+		      <div class="message_container message">
+			<div class="message_icon">
+			<img src="graphics/information.png" alt="Information: " />
+			</div>
+			{$msg}
+			<div class="clear"></div>
+		      </div>
 		      {/foreach}
 		      {$content}
 		    {/if} {* maint *}
