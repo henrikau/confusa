@@ -615,6 +615,14 @@ function postinstall_standalone
 		ca_key_path=`grep "'ca_key_path'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
 		ca_key_name=`grep "'ca_key_name'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
 
+		mkdir -p ${install_path}www/ca
+
+		if [ ! $? -eq 0 ]; then
+			echo "Error creating the directory from which the custom certificates will be available"
+			echo "(Tried to create ${install_path}www/ca)"
+			perror $?
+		fi
+
 		get_user_alternative "Do you want to copy a certificate/key pair for signing from your filesystem to Confusa (y/n)?"
 
 		if [[ $answer = "y" && -n $ca_key_name && -n $ca_cert_name ]]; then
@@ -628,6 +636,7 @@ function postinstall_standalone
 			done
 
 			cp $custom_cert_pos ${install_path}${ca_cert_base_path}/${ca_cert_path}/${ca_cert_name}
+			cp $custom_cert_pos ${install_path}www/ca/servercert.pem
 
 			while [ -z $custom_key_pos ]; do
 				echo -n "Full path to a CA-private key on your computer (e.g. /etc/apache2/ca/ca.key): "
