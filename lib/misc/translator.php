@@ -133,24 +133,33 @@ class Translator {
 		}
 
 		if ($this->person->isAuth()) {
-			$query = "SELECT lang FROM subscribers WHERE name=?";
-			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($this->person->getSubscriberOrgName()));
 
-			if (isset($res[0]['lang'])) {
-				$_SESSION['language'] = $res[0]['lang'];
-				return $res[0]['lang'];
-			}
+			try {
+				$query = "SELECT lang FROM subscribers WHERE name=?";
+				$res = MDB2Wrapper::execute($query,
+											array('text'),
+											array($this->person->getSubscriberOrgName()));
 
-			$query = "SELECT lang FROM nrens WHERE name=?";
-			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($this->person->getNREN()));
+				if (isset($res[0]['lang'])) {
+					$_SESSION['language'] = $res[0]['lang'];
+					return $res[0]['lang'];
+				}
 
-			if (isset($res[0]['lang'])) {
-				$_SESSION['language'] = $res[0]['lang'];
-				return $res[0]['lang'];
+				$query = "SELECT lang FROM nrens WHERE name=?";
+				$res = MDB2Wrapper::execute($query,
+											array('text'),
+											array($this->person->getNREN()));
+
+				if (isset($res[0]['lang'])) {
+					$_SESSION['language'] = $res[0]['lang'];
+					return $res[0]['lang'];
+				}
+			} catch (DBQueryException $dbqe) {
+				Logger::log_event(LOG_WARNING, "Could not query subscriber/NREN default language. " .
+								  "Falling back to system language default! " . $dbqe->getMessage());
+			} catch (DBStatementException $dbse) {
+				Logger::log_event(LOG_WARNING, "Could not query subscriber/NREN default language. " .
+								  "Falling back to system default! " . $dbse->getMessage());
 			}
 		}
 
