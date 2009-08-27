@@ -154,6 +154,33 @@ function configure_confusa_settings
 
 	echo ""
 
+	# Autoconfigure:
+	# Set some config flags to feasible values
+	###############################################################################
+	if [ $mode = "online" ]; then
+		sed s\|"'capi_test'[ \t]*=>.*"\|"'capi_test'    => false,"\| < $working_template > $config
+		cp $config $working_template
+	elif [ $mode = "standalone" ]; then
+		# hardcode for the sake of simplicity
+		# c'mon don't be picky :)
+		replace_config_entry "ca_cert_name" "servercert.pem"
+		replace_config_entry "ca_key_name"  "serverkey.pem"
+	fi
+
+	sed s\|"'debug'[ \t]*=>.*"\|"'debug'    => false,"\| < $working_template > $config
+	cp $config $working_template
+	sed s\|"'maint'[ \t]*=>.*"\|"'maint'    => false,"\| < $working_template > $config
+	cp $config $working_template
+	sed s\|"'script_check_ssl'[ \t]*=>.*"\|"'script_check_ssl'    => true,"\| < $working_template > $config
+	cp $config $working_template
+	sed s\|"'auth_bypass'[ \t]*=>.*"\|"'auth_bypass'    => false,"\| < $working_template > $config
+	cp $config $working_template
+	replace_config_entry "language.default" "en"
+	replace_config_entry "default_log" "/var/log/confusa.log"
+
+	cp $config $working_template
+
+
 	# Guess the installation path of Confusa to use it as default (assuming bash)
 	#############################################################################
 	script_dir=`pwd`
@@ -344,16 +371,6 @@ function configure_confusa_settings
 
 	echo ""
 
-	# Specify the name of the server certificate and key (hardcode to servkey.pem,
-	# servercert.pem for the sake of simplicity)
-	#
-	# c'mon... don't be picky
-	############################################################################
-
-	if [ $mode = "standalone" ]; then
-		replace_config_entry "ca_cert_name" "servercert.pem"
-		replace_config_entry "ca_key_name"  "serverkey.pem"
-	fi
 
 	# Specify the minimum keylength for Confusa
 	###############################################################################
