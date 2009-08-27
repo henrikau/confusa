@@ -41,6 +41,16 @@ class CP_Admin extends FW_Content_Page
 					$admin = Input::sanitize($_POST['nren_admin']);
 					$this->deleteAdmin($admin, 2);
 					break;
+				case 'downgrade_self':
+					$this->downgradeNRENAdmin($this->person->getEPPN(),
+											$this->person->getNREN(),
+											$this->person->getSubscriberOrgName());
+					break;
+				case 'upgrade_subs_admin':
+					$admin = Input::sanitize($_POST['subs_admin']);
+					$this->upgradeSubscriberAdmin($admin,
+												$this->person->getNREN());
+					break;
 				case 'add_nren_admin':
 					$admin = Input::sanitize($_POST['nren_admin']);
 					$nren = $this->person->getNREN();
@@ -360,6 +370,133 @@ class CP_Admin extends FW_Content_Page
 			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Problem when trying to insert admin $admin ".
 								"with level $level: " . $dbqe->getMessage());
 		}
+	}
+
+	/*
+	 * Downgrade a NREN admin to the status of a subscriber admin
+	 *
+	 * @param $admin The admin that should be downgraded to subscriber level
+	 * @param $nren The NREN to which the admin belongs
+	 * @param $subscriber The subscriber of which the is to become admin
+	 */
+	private function downgradeNRENAdmin($admin, $nren, $subscriber)
+	{
+		if (is_null($subscriber)) {
+			Logger::log_event(LOG_NOTICE, "Tried to downgrade NREN admin $admin " .
+							" from NREN $nren to subscriber admin, but admin's subscriber affiliaton is unknown!");
+			Framework::error_output("Tried to downgrade your admin status, but your subscriber affiliation is unknown! " .
+									"Please check your attributes and try again!");
+		}
+
+		$sid_query="SELECT subscriber_id FROM nren_subscriber_view WHERE subscriber=? AND nren=?";
+
+		try {
+			$res = MDB2Wrapper::execute($sid_query,
+										array('text','text'),
+										array($subscriber, $nren));
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Problem getting the ID of your subscriber, server said: " .
+									$dbqe->getMessage());
+			Logger::log_event(LOG_NOTICE, "ADMIN: Did not get subscriber_id for admin $admin, nren $nren, " .
+							 "subscriber $subscriber. Error is " . $dbqe->getMessage());
+			return;
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Problem getting the ID of your subscriber, server said: " .
+									$dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, "ADMIN: Did not get subscriber_id for admin $admin, nren $nren, " .
+				 "subscriber $subscriber. Error is " . $dsqe->getMessage());
+			return;
+		}
+
+		if (count($res) == 1) {
+			$sid=$res[0]['subscriber_id'];
+		} else {
+			Framework::error_ouput("Did not find your subscriber ID!");
+			/* Log the (hopefully) rare inconsistency case */
+			if (count($res) > 1) {
+				Logger::log_event(LOG_WARNING, "ADMIN: Database inconsistency when looking for " .
+								"the subscriber-ID linked to subscriber $subscriber and NREN $nren");
+			}
+
+			return;
+		}
+
+		$query="UPDATE admins SET admin_level='1', subscriber=? WHERE admin=?";
+
+		try {
+			$res2 = MDB2Wrapper::update($query,
+										array('text','text'),
+										array($sid,$admin));
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Problem updating your admin status. Server said: " . $dbqe->getMessage());
+			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
+							" of subscriber $subscriber");
+			return;
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Problem updating your admin status. Server said: " . $dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
+							" of subscriber $subscriber");
+			return;
+		}
+
+		Logger::log_event(LOG_NOTICE, "Admin: NREN admin $admin downgraded his/her status to subscriber admin of " .
+						"subscriber $subscriber");
+	}
+
+	private function upgradeSubscriberAdmin($admin, $nren)
+	{
+		$snren_id = "SELECT nren_id FROM nrens WHERE name=?";
+
+		try {
+			$res=MDB2Wrapper::execute($snren_id,
+									array('text'),
+									array($nren));
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Problem determining the ID of your NREN! Server said " .
+									$dbqe->getMessage());
+			Logger::log_event(LOG_NOTICE, "ADMIN: Problem getting NREN-ID for NREN $nren " .
+								$dbqe->getMessage());
+			return;
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Problem determining the ID of your NREN! Server said " .
+									$dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, "ADMIN: Problem getting NREN-ID for NREN $nren " .
+								$dbse->getMessage());
+			return;
+		}
+
+		if (count($res) == 1) {
+			$nren_id=$res[0]['nren_id'];
+		} else {
+			Framework::error_output("Could not retrieve your NREN in the DB!");
+
+			if (count($res) > 1) {
+				Logger::log_event(LOG_WARNING, "ADMIN: Database inconsistency when looking for " .
+								"the nren-ID linked to nren $nren");
+			}
+
+			return;
+		}
+
+		$update="UPDATE admins SET admin_level='2',nren=? WHERE admin=?";
+
+		try {
+			$res2 = MDB2Wrapper::update($update,
+										array('text','text'),
+										array($nren_id, $admin));
+		} catch (DBStatementException $dbse) {
+			Logger::log_event(LOG_NOTICE, "ADMIN: Problem when trying to upgrade subscriber admin " .
+							"$admin to NREN-admin in NREN $nren: " . $dbse->getMessage());
+			Framework::error_output("Problem when upgrading the admin. Server said: " . $dbse->getMessage());
+			return;
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_NOTICE, "ADMIN: Problem when trying to upgrade subscriber admin " .
+							"$admin to NREN-admin in NREN $nren: " . $dbqe->getMessage());
+			Framework::error_output("Problem when upgrading the admin. Server said: " . $dbqe->getMessage());
+			return;
+		}
+
+		Logger::log_event(LOG_NOTICE, "ADMIN: Subscriber admin $admin upgraded to NREN level (NREN $nren)");
 	}
 
 	/*

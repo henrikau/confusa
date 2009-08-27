@@ -28,12 +28,22 @@
 
 <table>
 <tr>
-<td style="width: 30px"></td><td><b>Principal identifier</b></td>
+<td style="width: 30px"></td><td style="width: 30px"></td><td><b>Principal identifier</b></td>
 </tr>
 
 {if !empty($nren_admins)}
 	{foreach from=$nren_admins item=admin}
 		<tr>
+		<td style="width: 30px">
+			{if ($admin == $self)}
+				<form action ="" method="post">
+					<input type="hidden" name="nren_operation" value="downgrade_self" />
+					<input type="image" src="graphics/arrow_down.png" alt="Downgrade admin"
+					name="Downgrade" title="Downgrade admin"
+					onclick="return confirm('Do you want to downgrade YOURSELF to a subscriber admin?')" />
+				</form>
+			{/if}
+		</td>
 		<td style="width: 30px">
 			<form action="" method="post">
 				<div>
@@ -59,6 +69,8 @@
 {/if}
 
 <tr>
+	<td style="width: 30px">
+	</td>
 	<td style="width: 30px">
 	</td>
 	<td>
@@ -103,10 +115,21 @@
 		<table>
 		<tr>
 			<td></td>
+			<td></td>
 			<td><b>Principal identifier</b></td><td></td>
 		</tr>
 		{foreach from=$subscriber_admins item=subscriber_admin}
 			<tr>
+			<td style="width: 30px">
+				<form action="" method="post">
+				<input type="hidden" name="nren_operation" value="upgrade_subs_admin" />
+				<input type="hidden" name="subscriber" value="{$subscriber}" />
+				<input type="hidden" name="subs_admin" value="{$subscriber_admin}" />
+				<input type="image" src="graphics/arrow_up.png" alt="Upgrade admin"
+				name="Upgrade" title="Upgrade admin"
+				onclick="return confirm('Upgrade {$subscriber_admin} to a NREN-admin of NREN {$nren}?')" />
+				</form>
+			</td>
 			<td style="width: 30px">
 					<form action="" method="post">
 					<div>
@@ -122,6 +145,8 @@
 		{/foreach}
 
 		<tr>
+			<td style="width: 30px">
+			</td>
 			<td style="width: 30px">
 			</td>
 		<td>
