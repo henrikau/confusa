@@ -62,7 +62,7 @@ class Person{
      *
      * This function will effectively reset the person.
      */
-    private function clearAttributes()
+    public function clearAttributes()
     {
 	    
 	    $this->given_name = null;
