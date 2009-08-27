@@ -51,6 +51,7 @@
 				<input type="hidden" name="nren_admin" value="{$admin}" />
 		{if ($admin == $self)}
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
+				title="Delete admin"
 				name="delete" onclick="return confirm('You are about to delete YOURSELF!\nAre you sure?')" />
 			</div>
 			</form>
@@ -58,6 +59,7 @@
 			<td >{$admin} <span style="cursor:help" title="That's you!">(*)</span></td>
 		{else}
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
+				title="Delete admin"
 				name="delete" onclick="return confirm('Delete entry {$admin}?')" />
 			</div>
 			</form>
@@ -137,6 +139,7 @@
 					<input type="hidden" name="subscriber" value="{$subscriber}" />
 					<input type="hidden" name="subs_admin" value="{$subscriber_admin}" />
 					<input type="image" src="graphics/delete.png" alt="Delete entry"
+					title="Delete admin"
 					name="delete" onclick="return confirm('Delete entry {$subscriber_admin}?')" />
 					</div>
 					</form>

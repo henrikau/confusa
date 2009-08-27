@@ -32,6 +32,7 @@
 				<input type="hidden" name="subs_admin" value="{$subscriber_admin}" />
 		{if ($subscriber_admin == $self)}
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
+				title="Delete admin"
 				name="delete" onclick="return confirm('You are about to delete YOURSELF!\nAre you sure?')" />
 			</div>
 			</form>
@@ -39,6 +40,7 @@
 			<td>{$subscriber_admin} <span style="cursor:help" title="That's you!">(*)</span></td>
 		{else}
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
+				title="Delete admin"
 				name="delete" onclick="return confirm('Delete entry {$subscriber_admin}?')" />
 			</div>
 			</form>
@@ -101,6 +103,7 @@ Subscriber sub-admins have the following privileges:
 			<input type="hidden" name="subs_operation" value="delete_subs_sub_admin" />
 			<input type="hidden" name="subs_sub_admin" value="{$admin}" />
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
+			title="Delete admin"
 			name="delete" onclick="return confirm('Delete entry {$admin}?')" />
 			</div>
 		</form>
