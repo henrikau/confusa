@@ -34,7 +34,7 @@ function replace_interval_in_config
 {
 	LEGAL_VALUES=("SECOND" "MINUTE" "HOUR" "DAY" "WEEK" "MONTH" "YEAR")
 
-	while [ -z $unit ]; do
+	while [ -z $unit ] || [ -z $value ]; do
 		echo "Please specify the format in the notation \$time \$unit, where unit can be one of"
 		echo -n "(SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR) [$2 $3]: "
 		read tmp_timeout
@@ -64,6 +64,8 @@ function replace_interval_in_config
 
 	sed s\|"'$1'[ \t]*=>.*"\|"'$1'		=> array($value,'$unit'),"\| < $working_template > $config
 	cp $config $working_template
+	unit=""
+	value=""
 }
 
 function configure_confusa_settings
