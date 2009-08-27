@@ -108,7 +108,7 @@ $confusa_config = array(
 	 * install_path
 	 */
 	'ca_cert_base_path'	=> '/cert_handle',
-	'ca_cert_path'		=> '/cert',
+	'ca_cert_path'		=> '/certs',
 	'ca_cert_name'		=> '',
 	'ca_key_path'		=> '/priv',
 	'ca_key_name'		=> '',
@@ -119,7 +119,7 @@ $confusa_config = array(
          * SSL-man-in-the-middle attac! However, as a workaround for testsystems
          * (which normally does not hav e properly signed SSL-certificate),
          * force user-script to disregard invalid/self-signed certs. */
-	'script_check_ssl'	=> False, 
+	'script_check_ssl'	=> False,
 
         /* default length of client key. This is minimum keylength, a user can
          * upload a longer key, if he/she wants that */
