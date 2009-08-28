@@ -85,6 +85,16 @@ class CP_Admin extends FW_Content_Page
 					$subscriber = $this->person->getSubscriberOrgName();
 					$this->addAdmin($admin,1,$subscriber,NULL);
 					break;
+				case 'downgrade_subs_admin':
+					$admin = Input::sanitize($_POST['subs_admin']);
+					$subscriber = $this->person->getSubscriberOrgName();
+					$this->downgradeSubscriberAdmin($admin, $subscriber);
+					break;
+				case 'upgrade_subs_sub_admin':
+					$admin = Input::sanitize($_POST['subs_sub_admin']);
+					$subscriber = $this->person->getSubscriberOrgName();
+					$this->upgradeSubscriberSubAdmin($admin, $subscriber);
+					break;
 				case 'delete_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
 					$this->deleteAdmin($admin,0);
@@ -443,6 +453,43 @@ class CP_Admin extends FW_Content_Page
 						"subscriber $subscriber");
 	}
 
+	/*
+	 * "Downgrade" a subscriber admin to the level of a subscriber-sub-admin
+	 *
+	 * @param $admin The eduPersonPN of the subscriber that is downgrader
+	 * @param $subscriber The subscriber within which that happens
+	 */
+	private function downgradeSubscriberAdmin($admin, $subscriber)
+	{
+		$update = "UPDATE admins SET admin_level='0' WHERE admin=? ";
+		$update .= "AND subscriber=(SELECT subscriber_id FROM subscribers WHERE name=?)";
+
+		try {
+			MDB2Wrapper::update($update,
+								array('text', 'text'),
+								array($admin, $subscriber));
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("ADMIN: Could not downgrade admin $admin! Seems like a problem " .
+									"with the configuration of Confusa! Server said: " .
+									$dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, "ADMIN: Could not downgrade subscriber-admin $admin of subscriber " .
+							"$subscriber to a subscriber-sub-admin. Something seems to " .
+							"be wrong with the statement: " . $dbse->getMessage());
+			return;
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("ADMIN: Could not downgrade admin $admin! Seems like a problem " .
+									"with the supplied data! Server said: " .
+									$dbqe->getMessage());
+			Logger::log_event(LOG_NOTICE, "ADMIN: Could not downgrade subscriber-admin $admin of subscriber " .
+							"$subscriber to a subscriber-sub-admin. Error with the " .
+							"supplied data: " . $dbqe->getMessage());
+			return;
+		}
+
+		Logger::log_event(LOG_NOTICE, "ADMIN: Downgraded admin $admin from subscriber-admin to subscriber-" .
+						"sub-admin in subscriber $subscriber.");
+	}
+
 	private function upgradeSubscriberAdmin($admin, $nren)
 	{
 		$snren_id = "SELECT nren_id FROM nrens WHERE name=?";
@@ -497,6 +544,41 @@ class CP_Admin extends FW_Content_Page
 		}
 
 		Logger::log_event(LOG_NOTICE, "ADMIN: Subscriber admin $admin upgraded to NREN level (NREN $nren)");
+	}
+
+	/*
+	 * "Upgrade" a subscriber-sub-admin to a subscriber admin
+	 *
+	 * @param $admin The ePPN of the admin
+	 * @param $subscriber The name of the subscriber within which everything happens
+	 */
+	private function upgradeSubscriberSubAdmin($admin, $subscriber)
+	{
+		$update="UPDATE admins SET admin_level='1' WHERE admin=? and subscriber=";
+		$update .= "(SELECT subscriber_id FROM subscribers WHERE name=?)";
+
+		try {
+			MDB2Wrapper::update($update,
+								array('text','text'),
+								array($admin,$subscriber));
+		} catch (DBStatementException $dbse) {
+			Logger::log_event(LOG_NOTICE, "ADMIN: Problem when trying to upgrade subscriber-sub-admin " .
+							"$admin in subscriber $subscriber. Error with the statement: " .
+							$dbse->getMessage());
+			Framework::error_output("Problem when upgrading sub-admin $admin. Probably an error with the " .
+									"configuration! Server said: " . $dbse->getMessage());
+			return;
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_NOTICE, "ADMIN: Problem when trying to upgrade subscriber-sub-admin " .
+							"$admin in subscriber $subscriber. Error with supplied data: " .
+							$dbqe->getMessage());
+			Framework::error_output("Problem when upgrading sub_admin $admin. Probably a problem with the " .
+									"supplied data! Server said: " . $dbqe->getMessage());
+			return;
+		}
+
+		Logger::log_event(LOG_NOTICE, "ADMIN: Upgraded subscriber-sub-admin $admin to a subscriber-admin " .
+						"within subscriber $subscriber");
 	}
 
 	/*
