@@ -92,7 +92,7 @@ class CP_NREN_Admin extends FW_Content_Page
 						       array('text'),
 						       array($this->person->getNREN()));
 			if (count($res_id) < 1) {
-				Framework::error_message("Could not find your NREN! Something seems to be misconfigured.");
+				Framework::error_output("Could not find your NREN! Something seems to be misconfigured.");
 			}
 
 			/* only thing you can change is state.
