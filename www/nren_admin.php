@@ -260,6 +260,12 @@ class CP_NREN_Admin extends FW_Content_Page
 			$msg = "Could not delete subscriber with ID $id from DB.";
 			Logger::log_event(LOG_NOTICE, $msg);
 			Framework::message_output($msg . "<BR />Server said: " . $dbqe->getMessage());
+		} catch (DBStatementException $dbse) {
+			$msg = "Could not delete subsriber with ID $id from DB, due to problems with the " .
+				"statement. Probably this is a configuration error. Server said: " .
+				$dbse->getMessage();
+			Logger::log_event(LOG_NOTICE, "ADMIN: " . $msg);
+			Framework::message_output($msg);
 		}
 	} /* end delSubscriber */
 
@@ -428,7 +434,7 @@ class CP_NREN_Admin extends FW_Content_Page
 			return;
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Could not update table. Some error in the syntax? " . $dbse->getMessage());
-			Logger::log_event(LOG_NOTICE, "Could not update account $login_name because of the following error: " . $dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update account $login_name because of the following error: " . $dbse->getMessage());
 			return;
 		}
 		Framework::message_output("Password for account '$login_name' updated successfully");
@@ -461,9 +467,14 @@ class CP_NREN_Admin extends FW_Content_Page
 				    array($login_name, $cryptpw, base64_encode($iv), $ap_name));
 
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Error adding new account.<BR />\n" . $dbqe->getMessage());
+			Framework::error_output("Error adding new account." . $dbqe->getMessage());
+			return;
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Error adding new account $login_name. " .
+						"Server said: " . $dbse->getMessage());
 			return;
 		}
+
 		Framework::message_output("Added new account $login_name to NREN " . $this->person->getNREN());
 		Logger::log_event(LOG_INFO, "Added new account $login_name to NREN " . $this->person->getNREN());
 		return;
