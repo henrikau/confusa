@@ -5,8 +5,11 @@
  *
  * ---------------------------------------------------------------- *}
 <br />
+
 <fieldset>
-<legend>Change to another CA-account</legend>
+<legend><a href="javascript:void(0)" onclick="toggleExpand(this)"><span class="expchar">-</span> Change to another CA-account</a></legend>
+{* expand the first block, so that the behaviour becomes a bit more clear to the user *}
+<div class="expcont" style="display: block">
 <br />
 
 <p class="info">
@@ -35,6 +38,7 @@ It is this account that will be used for all communication with the CA-API.
 </table>
 </form>
 <br />
+</div>
 </fieldset>
 <br />
 <br />
@@ -45,10 +49,11 @@ It is this account that will be used for all communication with the CA-API.
  *
  * ---------------------------------------------------------------- *}
 <fieldset>
-<legend>Change the AP name</legend>
+<legend><a href="javascript:void(0)" onclick="toggleExpand(this)"><span class="expchar">+</span> Change the AP name</a></legend>
+<div class="expcont">
 <br />
 <p class="info">
-The AP-name must be
+The AP-name <strong>must</strong> be
 the alliance partner name assigned to your NREN. If you don't know about that
 name, please contact TERENA and ask for it. Alternatively, you can find it in your
 reseller URLs on the Comodo administrative interface.
@@ -61,7 +66,7 @@ reseller URLs on the Comodo administrative interface.
 	<td style="width: 200px">AP-Name:</td>
 	<td>
 		<input type="hidden" name="account" value="change_ap_name" />
-		<input type="ap_name" name="ap_name" value="{$account_list.ap_name}" />
+		<input type="text" name="ap_name" value="{$account_list.ap_name}" />
 	</td>
 	</tr>
 	<tr>
@@ -73,6 +78,7 @@ reseller URLs on the Comodo administrative interface.
 </table>
 </form>
 <br />
+</div>
 </fieldset>
 
 <br />
@@ -85,7 +91,8 @@ reseller URLs on the Comodo administrative interface.
  * ---------------------------------------------------------------- *}
 
 <fieldset>
-<legend>Change password</legend>
+<legend><a href="javascript:void(0)" onclick="toggleExpand(this)"><span class="expchar">+</span> Change password</a></legend>
+<div class="expcont">
 <br />
 <p class="info">
 This is where you change the password for the account. This password
@@ -140,6 +147,7 @@ that account and then you can change the password.
 </table>
 </form>
 <br />
+</div>
 </fieldset>
 
 {* ---------------------------------------------------------------- *
@@ -151,7 +159,8 @@ that account and then you can change the password.
 <br />
 <br />
 <fieldset>
-<legend>Delete a CA NREN-account</legend>
+<legend><a href="javascript:void(0)" onclick="toggleExpand(this)"><span class="expchar">+</span> Delete a CA NREN-account</a></legend>
+<div class="expcont">
 <br />
 <p class="info">
 When an CA-account is no longer needed, it should be removed from the
@@ -201,6 +210,7 @@ at all. If another NREN uses this account, it cannot be deleted.
 </table>
 </form>
 <br />
+</div>
 </fieldset>
 {* ---------------------------------------------------------------- *
  *
@@ -211,7 +221,8 @@ at all. If another NREN uses this account, it cannot be deleted.
 <br />
 <br />
 <fieldset>
-<legend>Add a new CA NREN-account</legend>
+<legend><a href="javascript:void(0)" onclick="toggleExpand(this)"><span class="expchar">+</span> Add a new CA NREN-account</a></legend>
+<div class="expcont">
 <br />
 <p class="info">
 Add a new CA-account to the list of available accounts in the
@@ -251,7 +262,7 @@ database. In Confusa's current version, this will enable the account for
 <td></td>
 <td><span class="wtf"
 	title="The AP-name is used by the remote-CA for identifying the reseller. You should have received this from TERENA.">
-	AP-Name:</a></td>
+	AP-Name:</span></td>
 <td><input type="text" name="ap_name" value="" /></td>
 </tr>
 
@@ -270,6 +281,7 @@ database. In Confusa's current version, this will enable the account for
 </table>
 </form>
 <br />
+</div>
 </fieldset>
 
 {/if} {* if in CA-mode *}
