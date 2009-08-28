@@ -316,9 +316,6 @@ class CP_Accountant extends FW_Content_Page
 
 			if (count($res) == 1) {
 				if ($res[0]['account_login_name'] === $login_name) {
-					/* FIXME: remove this error-output? Or
-					 * is the feedback valuable? */
-					Framework::error_output("Will not update NREN with the same account");
 					return;
 				}
 			}
