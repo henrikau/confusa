@@ -42,7 +42,10 @@ CREATE TABLE IF NOT EXISTS account_map (
     -- the initialization vector used for encryption the vector must be
     -- random, but need not be confidential. The encryption key (or
     -- passphrase) is stored in the config-file.
-    ivector TINYBLOB NOT NULL
+    ivector TINYBLOB NOT NULL,
+    -- the alliance partner (AP name) by which Comodo identifies it's resellers
+    -- this is handed out by Terena in a NREN-specific manner
+    ap_name VARCHAR(30) NOT NULL
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
