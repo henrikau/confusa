@@ -262,7 +262,7 @@ function match_dn($subject, $person)
 	if (isset($subject['C']))
 		$composed_dn .= "/CN=".$subject['CN'];
 	$res = $person->getX509SubjectDN() === $composed_dn;
-	if (Config::get_config('debug') && !$res) {
+	if (!$res) {
 		Framework::error_output("Supplied (".$composed_dn.") and required subject (".$person->getX509SubjectDN() .") differs!");
 	}
 	return $res;
