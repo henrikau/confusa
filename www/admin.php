@@ -329,6 +329,7 @@ class CP_Admin extends FW_Content_Page
 					Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": User tried to insert an " .
 									"admin for NREN $nren. When looking up " .
 									"the nren_id, " .count($res) . " results were returned!");
+					return;
 				}
 			} else { /* insert a subscriber-admin or subscriber-sub-admin */
 				$query = "SELECT subscriber_id FROM subscribers WHERE name=?";
@@ -344,6 +345,7 @@ class CP_Admin extends FW_Content_Page
 					Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": User tried to insert an " .
 									"admin for subscriber $subscriber. " .
 									"When looking up the subscriber_id, " . count($res) . " results were returned!");
+					return;
 				}
 			}
 		} catch (DBStatementException $dbse) {
@@ -352,12 +354,14 @@ class CP_Admin extends FW_Content_Page
 									"an administrator! Server said " . $dbse->getMessage());
 			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Error occured when " .
 								  "looking up NREN/subscriber: " . $dbse->getMessage());
+			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Could not retrieve NREN/subscriber for which you are " .
 									 "trying to add an admin! There seems to be a problem with the " .
 									 "received data. Server said " . $dbqe->getMessage());
 			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Error occured when " .
 								"looking up NREN/subscriber in: " . $dbqe->getMessage());
+			return;
 		}
 
 		$query = "INSERT INTO admins(admin, admin_level, nren, subscriber) ";
@@ -368,18 +372,29 @@ class CP_Admin extends FW_Content_Page
 								 array('text','text','text','text'),
 								 array($admin,$level,$nren_id,$subscriber_id));
 			Logger::log_event(LOG_NOTICE, "Inserted admin $admin with level $level for NREN/subscriber $nren_id/$subscriber_id");
+
+			if (isset($nren)) {
+				Framework::success_output("Inserted new admin $admin for NREN $nren");
+			} else if (isset($subscriber)) {
+				Framework::success_output("Inserted new admin $admin for subscriber $subscriber");
+			}
+
+			return;
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Inserting the admin into the database failed, because the statement " .
 									 "was bad. Please contact an administrator. Server said " . $dbse->getMessage());
 			Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . ": Tried to insert admin $admin with level $level, " .
 								"but an SQL error occured: " . $dbse->getMessage());
+			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Inserting the admin into the database failed because of problems " .
 									 "with the supplied data. Server said " . $dbqe->getMessage() .
 									 " Maybe an admin with that name already exists?");
 			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Problem when trying to insert admin $admin ".
 								"with level $level: " . $dbqe->getMessage());
+			return;
 		}
+
 	}
 
 	/*
@@ -451,6 +466,7 @@ class CP_Admin extends FW_Content_Page
 
 		Logger::log_event(LOG_NOTICE, "Admin: NREN admin $admin downgraded his/her status to subscriber admin of " .
 						"subscriber $subscriber");
+		Framework::success_ouput("Downgraded you to subscriber admin of subscriber $subscriber");
 	}
 
 	/*
@@ -488,6 +504,7 @@ class CP_Admin extends FW_Content_Page
 
 		Logger::log_event(LOG_NOTICE, "ADMIN: Downgraded admin $admin from subscriber-admin to subscriber-" .
 						"sub-admin in subscriber $subscriber.");
+		Framework::success_output("Downgraded $admin from subscriber admin to subscriber-sub-admin");
 	}
 
 	private function upgradeSubscriberAdmin($admin, $nren)
@@ -544,6 +561,7 @@ class CP_Admin extends FW_Content_Page
 		}
 
 		Logger::log_event(LOG_NOTICE, "ADMIN: Subscriber admin $admin upgraded to NREN level (NREN $nren)");
+		Framework::success_output("Upgraded subscriber-admin $admin to NREN level $nren");
 	}
 
 	/*
@@ -579,6 +597,7 @@ class CP_Admin extends FW_Content_Page
 
 		Logger::log_event(LOG_NOTICE, "ADMIN: Upgraded subscriber-sub-admin $admin to a subscriber-admin " .
 						"within subscriber $subscriber");
+		Framework::success_output("Upgraded subscriber-sub-admin $admin to a subscriber-admin");
 	}
 
 	/*
@@ -609,6 +628,8 @@ class CP_Admin extends FW_Content_Page
 			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Problem occured when tyring to delete " .
 									"admin $admin with level $level: " . $dbqe->getMessage());
 		}
+
+		Framework::success_output("Deleted admin $admin");
 	}
 }
 
