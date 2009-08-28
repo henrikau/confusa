@@ -128,6 +128,11 @@ class CP_NREN_Admin extends FW_Content_Page
 		$org_name	= strtolower(Input::sanitize($name));
 		$nren		= $this->person->getNREN();
 
+		if (empty($org_name)) {
+		    Framework::error_output("Please specify a name for the subscriber!");
+		    return;
+		}
+
 		$select_nrenid		= "SELECT nren_id FROM nrens WHERE name=?";
 		$constraint_query	= "SELECT subscriber_id FROM subscribers WHERE name=? and nren_id = ?";
 		$update_subscr_insert	= "INSERT INTO subscribers(name, nren_id, org_state) VALUES(?,?,?)";
