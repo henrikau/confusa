@@ -72,6 +72,24 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		return $this->person->getSession()->getAttributes();
 	}
 
+	public function getAttributeKeys()
+	{
+		$res = array();
+		$attrs = $this->person->getSession()->getAttributes();
+		foreach ($attrs as $key => $value) {
+			switch ($key) {
+			case "country":
+			case "nren":
+			case "eduPersonPrincipalName":
+				break;
+			default:
+				$res[] = $key;
+				break;
+			}
+		}
+		return $res;
+	}
+
 	/**
 	 * Use the subsystem to perform a single logout (SLO)
 	 */

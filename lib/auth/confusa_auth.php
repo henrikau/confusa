@@ -131,6 +131,21 @@ abstract class Confusa_Auth
 	 * @return True or false, reflecting the authN status
 	 */
 	public abstract function checkAuthentication();
+
+	/**
+	 * getAttributes() - return the attribute-keys found in attributes
+	 *
+	 * This function is created solely to help the
+	 * attribute-mapping. Instead of exposing *all* attributes, we return
+	 * the relevant keys found.
+	 *
+	 * The function shall perform rudimentary filtering, keys suchs as
+	 * 'country' and 'nren' should not be exposed. Neither should any other
+	 * Confusa-specific keys be exported.
+	 * 
+	 */
+	public abstract function getAttributeKeys();
+
 	/**
 	 * "Logout" the user, possibly using the subsystem. To be implemented by
 	 * subclasses

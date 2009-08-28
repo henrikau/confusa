@@ -46,6 +46,28 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 		return $this->person->isAuth();
 	}
 
+
+	public function getAttributeKeys($isNRENAdmin = false)
+	{
+		$res = array();
+		foreach ($this->attributes as $key => $value) {
+			switch ($key) {
+			case "country":
+			case "nren":
+			case "eduPersonPrincipalName":
+				break;
+			case "organization":
+				if (!$isNRENAdmin) {
+					break;
+				}
+			default:
+				$res[] = $key;
+				break;
+			}
+		}
+		return $res;
+	}
+
 	/**
 	 * no operation
 	 *
