@@ -60,7 +60,8 @@ class CP_NREN_Admin extends FW_Content_Page
 				$this->editAccount($login_name, $password);
 				break;
 			case 'add':
-				$this->addAccount($login_name, $password);
+				$ap_name = Input::sanitize($_POST['ap_name']);
+				$this->addAccount($login_name, $password, $ap_name);
 				break;
 			case 'delete':
 				$this->deleteAccount($login_name);
@@ -441,8 +442,9 @@ class CP_NREN_Admin extends FW_Content_Page
 	 *		 by Comodo)
 	 * @password   : a strong password, and must be the same as set in the
 	 *		 remote CA.
+	 * @ap_name    : The "alliance partner" name used to identify a reseller
 	 */
-	private function addAccount($login_name, $password)
+	private function addAccount($login_name, $password, $ap_name)
 	{
 		try {
 		$enckey	= Config::get_config('capi_enc_pw');
@@ -453,9 +455,10 @@ class CP_NREN_Admin extends FW_Content_Page
 							$enckey,$pw,
 							MCRYPT_MODE_CFB,
 							$iv));
-		MDB2Wrapper::update("INSERT INTO account_map (login_name, password, ivector) VALUES(?, ?, ?)",
-				    array('text','text','text'),
-				    array($login_name, $cryptpw, base64_encode($iv)));
+		MDB2Wrapper::update("INSERT INTO account_map (login_name, password, ivector, ap_name) " .
+				    "VALUES(?, ?, ?, ?)",
+				    array('text','text','text', 'text'),
+				    array($login_name, $cryptpw, base64_encode($iv), $ap_name));
 
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Error adding new account.<BR />\n" . $dbqe->getMessage());

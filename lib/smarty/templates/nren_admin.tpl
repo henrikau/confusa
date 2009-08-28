@@ -306,6 +306,14 @@ database. In Confusa's current version, this will enable the account for
 
 <tr>
 <td></td>
+<td><span class="wtf"
+	title="The AP-name is used by the remote-CA for identifying the reseller. You should have received this from TERENA.">
+	AP-Name:</a></td>
+<td><input type="text" name="ap_name" value="" /></td>
+</tr>
+
+<tr>
+<td></td>
 </tr>
 
 <tr>
