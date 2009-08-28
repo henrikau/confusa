@@ -181,7 +181,7 @@ class Framework {
 		}
 
 		$this->tpl->assign('person', $this->person);
-
+		$this->tpl->assign('is_online', (Config::get_config('ca_mode') === CA_ONLINE));
 		/* If we have a renderError, do not allow the user-page to
 		 * render, otherwise, run it, and catch all unhandled exception
 		 *

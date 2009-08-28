@@ -29,6 +29,10 @@
 	<li><a href="nren_admin.php">Manage subscribers</a></li>
 	<li><a href="stylist.php?show=text">Manage appearance</a></li>
 	<li><a href="language_selector.php">Manage preferred language</a></li>
+
+	{if $is_online === TRUE}
+		<li><a href="accountant.php">Manage CA accounts</a></li>
+	{/if}
 	{/if}
 </ul>
 <h3>Other</h3>
