@@ -29,6 +29,8 @@ class CertManager_Online extends CertManager
     /* login-name and password for the remote-signing CA */
     private $login_name;
     private $login_pw;
+    /* alliance-partner name for the remote-signing CA */
+    private $ap_name;
 
 
     function __construct($pers)
@@ -49,7 +51,7 @@ class CertManager_Online extends CertManager
      * (institution of) the managed person.
      */
     private function _get_account_information() {
-        $login_cred_query = "SELECT a.account_login_name, a.account_password, a.account_ivector " .
+        $login_cred_query = "SELECT a.account_login_name, a.account_password, a.account_ivector, a.ap_name " .
               "FROM nren_account_map_view a, nren_subscriber_view s " .
               "WHERE s.subscriber = ? AND s.nren = a.nren";
 
@@ -70,6 +72,8 @@ class CertManager_Online extends CertManager
         }
 
         $this->login_name = $res[0]['account_login_name'];
+        $this->ap_name = $res[0]['ap_name'];
+
         $encrypted_pw = base64_decode($res[0]['account_password']);
         $ivector = base64_decode($res[0]['account_ivector']);
         $encryption_key = Config::get_config('capi_enc_pw');
@@ -464,7 +468,6 @@ class CertManager_Online extends CertManager
     private function _capi_upload_CSR($auth_key, $csr)
     {
         $sign_endpoint = Config::get_config('capi_apply_endpoint');
-        $ap = Config::get_config('capi_ap_name');
         $ca_cert_id = Config::get_config('capi_escience_id');
 
         $postfields_sign_req=array();
@@ -480,7 +483,7 @@ class CertManager_Online extends CertManager
         }
 
         /* set all the required post parameters for upload */
-        $postfields_sign_req["ap"] = $ap;
+        $postfields_sign_req["ap"] = $this->ap_name;
         $postfields_sign_req["csr"] = $csr;
         $postfields_sign_req["days"] = $days;
         $postfields_sign_req["successURL"] = "none";
