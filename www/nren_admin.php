@@ -69,6 +69,10 @@ class CP_NREN_Admin extends FW_Content_Page
 			case 'change':
 				$this->changeAccount($login_name);
 				break;
+			case 'change_ap_name':
+				$ap_name = Input::sanitize($_POST['ap_name']);
+				$this->changeAPName($ap_name);
+				break;
 			}
 		}
 
@@ -117,7 +121,7 @@ class CP_NREN_Admin extends FW_Content_Page
 						       array('text'),
 						       array($this->person->getNREN()));
 			if (count($res_id) < 1) {
-				throw new DBQueryException("Could not find your NREN! Something seems to be misconfigured.");
+				Framework::error_message("Could not find your NREN! Something seems to be misconfigured.");
 			}
 
 			/* only thing you can change is state.
@@ -328,13 +332,14 @@ class CP_NREN_Admin extends FW_Content_Page
 			return null;
 		}
 
-		if (count($res) == 1)
+		if (count($res) == 1) {
 			$curr_account = $res[0]['account_login_name'];
-		else if (count($res) > 1) {
+			$ap_name = $res[0]['ap_name'];
+		} else if (count($res) > 1) {
 			$msg  = "Inconsistency in the database,  more than one account tied to a single NREN. ";
 			$msg .= "Got " . count($res) . " results back from the database";
 			Logger::log_event(LOG_ALERT, $msg);
-			throw new DBQueryException($msg);
+			Framework::error_message($msg);
 		}
 
 		/*
@@ -350,7 +355,7 @@ class CP_NREN_Admin extends FW_Content_Page
 				foreach($res as $row) {
 					$accounts[] = $row['login_name'];
 				}
-				$return_res = array('account' => $curr_account, 'all' => $accounts);
+				$return_res = array('account' => $curr_account, 'ap_name' =>  $ap_name, 'all' => $accounts);
 			} else {
 				Framework::error_output("No account-maps set for Confusa!");
 				return null;
@@ -425,9 +430,9 @@ class CP_NREN_Admin extends FW_Content_Page
 							MCRYPT_MODE_CFB,
 							$iv));
 		try {
-			MDB2Wrapper::update("UPDATE account_map SET password=?, ivector=? WHERE login_name=?",
-					    array('text','text','text'),
-					    array($cryptpw, base64_encode($iv), $login_name));
+			MDB2Wrapper::update("UPDATE account_map SET password=?, ivector=?, ap_name=? WHERE login_name=?",
+					    array('text','text','text', 'text'),
+					    array($cryptpw, base64_encode($iv), $login_name, $ap_name));
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Could not update table. Some error in the constraints? " . $dbqe->getMessage());
 			Logger::log_event(LOG_NOTICE, "Could not update account $login_name because of the following error: " . $dbqe->getMessage());
@@ -568,6 +573,40 @@ class CP_NREN_Admin extends FW_Content_Page
 			return;
 		}
 	} /* end changeAccount() */
+
+	/*
+	 * Change the "Alliance Partner Name" to the supplied value
+	 *
+	 * @param $ap_name The new alliance partner name
+	 */
+	private function changeAPName($ap_name)
+	{
+	    $nren = $this->person->getNREN();
+
+	    /* TODO: maybe that subselect can be optimized */
+	    $update = "UPDATE account_map SET ap_name=? WHERE account_map_id=";
+	    $update .= "(SELECT login_account from nrens WHERE name=?)";
+
+	    try {
+		    MDB2Wrapper::update($update,
+					array('text','text'),
+					array($ap_name, $nren));
+	    } catch (DBQueryException $dbqe) {
+		Logger::log_event(LOG_NOTICE, "ADMIN: Could not change ap_name to $ap_name for " .
+				"NREN $nren. Problem with data: " . $dbqe->getMessage());
+		Framework::error_output("Could not change ap_name to $ap_name! Maybe a problem " .
+					"with the supplied data? Server said: " . $dbqe->getMessage());
+		return;
+	    } catch (DBStatementException $dbse) {
+		Logger::log_event(LOG_NOTICE, "ADMIN: Could not change ap_name to $ap_name for " .
+				"NREN $nren. Problem with data: " . $dbse->getMessage());
+		Framework::error_output("Could not change ap_name to $ap_name! Maybe a configuration " .
+					"problem! Server said: " . $dbse->getMessage());
+		return;
+	    }
+
+	    Framework::success_output("Successfully changed AP-name to $ap_name");
+	}
 
 	public function format_subscr_on_state($state)
 	{

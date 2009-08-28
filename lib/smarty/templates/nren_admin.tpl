@@ -137,6 +137,45 @@ It is this account that will be used for all communication with the CA-API.
 
 {* ---------------------------------------------------------------- *
  *
+ * Change the AP-Name
+ *
+ * ---------------------------------------------------------------- *}
+<fieldset>
+<legend>Change the AP name</legend>
+<br />
+<p class="info">
+The AP-name must be
+the alliance partner name assigned to your NREN. If you don't know about that
+name, please contact TERENA and ask for it. Alternatively, you can find it in your
+reseller URLs on the Comodo administrative interface.
+</p><br />
+
+<form action="" method="post">
+<table>
+	<tr>
+	<td style="width: 25px"></td>
+	<td style="width: 200px">AP-Name:</td>
+	<td>
+		<input type="hidden" name="account" value="change_ap_name" />
+		<input type="ap_name" name="ap_name" value="{$account_list.ap_name}" />
+	</td>
+	</tr>
+	<tr>
+	<td style="width: 25px"></td>
+	<td style="width: 200px"></td>
+	<td><input type="submit" name="submit" value="Change" /></td>
+	</tr>
+
+</table>
+</form>
+<br />
+</fieldset>
+
+<br />
+<br />
+
+{* ---------------------------------------------------------------- *
+ *
  *	Change the CA-account
  *
  * ---------------------------------------------------------------- *}
