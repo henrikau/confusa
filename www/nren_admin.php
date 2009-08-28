@@ -642,7 +642,7 @@ class CP_NREN_Admin extends FW_Content_Page
 		$res .= "<input type=\"hidden\" name=\"state\" value=\"\" />\n"; /* don't need state to delete */
 		$res .= "<input type=\"hidden\" name=\"id\" value=\"" . $id . "\" />\n";
 		$res .= "<input type=\"image\" name=\"delete\" ";
-
+		$res .= "title=\"Delete\" ";
 		/* warning upon attempted self-deletion */
 		if ($target === $this->person->getSubscriberOrgName()) {
 			$res .= "onclick=\"return confirm('You are about to delete your OWN INSTITUTION (" . $target . ")!\\n";
