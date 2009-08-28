@@ -127,7 +127,7 @@ div.message_body {
 }
 
 .clear {
-	clear:both;
+	clear: both;
 	height: 1px;
 	overflow: hidden;
 }
@@ -202,6 +202,7 @@ fieldset.infoblock ul li {
 }
 
 div.csr {
+	clear: right;
 	margin-bottom: 5%;
 }
 
