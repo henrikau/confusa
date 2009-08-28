@@ -86,7 +86,7 @@ user=`$MYSQL -Dmysql -e "SELECT user FROM user WHERE user='$webuser' AND host='$
 # this can make sense to make sure that the password defined in config is
 # updated for the DB-user (otherwise the password stays the same as before,
 # even if it has changed in the config)
-if  [ -n "$user" ] && [ $1 = "--delete_user" ]; then
+if  [ -n "$user" ] && [ $# -eq 1 ] && [ $1 = "--delete_user" ]; then
     echo "Dropping user"
     `$MYSQL -Dmysql -e "DROP user '$webuser'@'$webhost'"`
     user=""
