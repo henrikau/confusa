@@ -211,7 +211,13 @@ class Framework {
 		
 
 		$this->contentPage->post_process($this->person);
-		
+		if (Config::get_config('debug')) {
+			echo "<center>\n";
+			echo "<address>\n";
+			echo "During this session, we had " . MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
+			echo "</address>\n";
+			echo "</center>\n";
+		}
 	} /* end start() */
 
 	public static function error_output($message)

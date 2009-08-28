@@ -22,7 +22,7 @@ require_once 'db_query.php';
 class MDB2Wrapper
 {
      private static $conn;
-
+     private static $connCounter;
      /* public static execute()
       *
       * params:
@@ -64,7 +64,7 @@ class MDB2Wrapper
                $results[$i] = $row;
                $i = $i+1;
           }
-
+	  MDB2Wrapper::$connCounter += 1;
           return $results;
      } /* end execute */
 
@@ -119,5 +119,8 @@ class MDB2Wrapper
                }
 
           } /* end construct MDB2Wrapper */
-
+     public static function getConnCounter()
+     {
+	     return MDB2Wrapper::$connCounter;
+     }
 } /* end MDB2Wrapper */
