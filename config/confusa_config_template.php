@@ -92,7 +92,6 @@ $confusa_config = array(
         'capi_collect_endpoint'        => 'https://secure.comodo.net/products/download/CollectCCC',
         'capi_listing_endpoint'             => 'https://secure.comodo.net/products/!Tier2ResellerReport',
         'capi_revoke_endpoint'              => 'https://secure.comodo.net/products/!AutoRevokeCCC',
-        'capi_ap_name'                 => '',
         'capi_escience_id'                      => '285',
         /* if we ever want to issue e-mail certificates */
         'capi_personal_id'                      => '284',
