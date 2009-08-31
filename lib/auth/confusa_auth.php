@@ -95,12 +95,15 @@ abstract class Confusa_Auth
 			 */
 			if (isset($attributes['eduPersonPrincipalName'][0])) {
 				$this->person->setEPPN($attributes['eduPersonPrincipalName'][0]);
+				$this->person->setEPPNKey('eduPersonPrincipalName');
 			} else if (isset($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0])) {
 				/* EduGAIN, Surfnet */
 				$this->person->setEPPN($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0]);
+				$this->person->setEPPNKey('urn:mace:dir:attribute-def:eduPersonPrincipalName');
 			} else if (isset($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'][0])) {
 				/* HAKA */
 				$this->person->setEPPN($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'][0]);
+				$this->person->setEPPNKey('urn:oid:1.3.6.1.4.1.5923.1.1.1.6');
 			}
 			/* is ePPN registred as NREN admin (from bootstrap) */
 			if ($this->person->isNRENAdmin()) {
