@@ -28,6 +28,7 @@ class Person{
 
     /* eduPersonPrincipalName - unique name within the namespace for *all* users */
     private $eppn;
+    private $eppnKey;
 
     private $email;
     private $country;
@@ -62,7 +63,7 @@ class Person{
      *
      * This function will effectively reset the person.
      */
-    public function clearAttributes()
+    private function clearAttributes()
     {
 	    
 	    $this->given_name = null;
@@ -70,6 +71,9 @@ class Person{
 
 	    $this->eppn = null;
 	    unset($this->eppn);
+
+	    $this->eppnKey = null;
+	    unset($this->eppnKey);
 
 	    $this->email = null;
 	    unset($this->email);
@@ -249,6 +253,16 @@ class Person{
 	    return $this->eppn;
     }
 
+    public function setEPPNKey($eppnKey)
+    {
+	    if (isset($eppnKey)) {
+		    $this->eppnKey = $eppnKey;
+	    }
+    }
+    public function getEPPNKey()
+    {
+	    return $this->eppnKey;
+    }
     /** getX509ValidCN - get a valid /CN for a X.509 /DN
      *
      * This will return the common-name attribute for the X.509 subject. As not
