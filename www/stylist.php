@@ -64,6 +64,15 @@ class CP_Stylist extends FW_Content_Page
 					}
 				}
 				break;
+			case 'update_map_nren':
+				$epodn		= Input::sanitize($_POST['epodn']);
+				$cn		= Input::sanitize($_POST['cn']);
+				$mail		= Input::sanitize($_POST['mail']);
+				$entitlement	= Input::sanitize($_POST['entitlement']);
+				if ($this->updateMapNREN($epodn, $cn, $mail, $entitlement)) {
+					Framework::message_output("Updated map OK");
+				}
+				break;
 			default:
 				Framework::error_output("Unknown operation chosen in the stylist!");
 				break;
@@ -425,6 +434,62 @@ class CP_Stylist extends FW_Content_Page
 							  $_SERVER['REMOTE_ADDR']);
 			Framework::success_output("Logo successfully updated!");
 		}
+	}
+	/**
+	 * updateMapNREN() - take the new values and update/create the map for
+	 * an NREN
+	 */
+	private function updateMapNREN($epodn, $cn, $mail, $entitlement)
+	{
+		/* Does the map exist? */
+		$nren_id_query = "SELECT nren_id FROM nrens WHERE name=?";
+		$query = "SELECT id FROM attribute_mapping WHERE nren_id=? AND subscriber_id IS NULL";
+		try {
+			$nren_id = MDB2Wrapper::execute($nren_id_query, array('text'), $this->person->getNREN());
+			if (count($nren_id) != 1) {
+				$errorMsg = __FILE__ . ":" . __LINE__ . " ";
+				$errorMsg .= "Problems finding the NREN in the database. Got " . count($nren_id) . " from the DB";
+				Framework::error_output($errorMsg);
+				return false;
+			}
+			$res = MDB2Wrapper::execute($query,
+						    array('text'),
+						    $nren_id[0]['nren_id']);
+		} catch (DBStatementException $dbse) {
+			/* FIXME */
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . $dbse->getMessage());
+			return false;
+		} catch (DBQueryException $dbqe) {
+			/* FIXME */
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . $dbqe->getMessage());
+			return false;
+		}
+
+		switch(count($res)) {
+		case 0:
+			try {
+				$update = "INSERT INTO attribute_mapping(nren_id, eppn, epodn, cn, mail, entitlement) VALUES(?, ?, ?, ?, ?, ?)";
+				MDB2Wrapper::update($update,
+						    array('text', 'text', 'text', 'text', 'text', 'text'),
+						    array($nren_id[0]['nren_id'], $this->person->getEPPNKey(), $epodn, $cn, $mail, $entitlement));
+			} catch (DBQueryException $dbqe) {
+				Framework::error_output("Could not create new map.<br />Server said: " . $dbqe->getMessage());
+				return false;
+			}
+			break;
+		case 1:
+			echo __FILE__ . ":" . __LINE__ . " Updating existing map (".$res[0]['id'].").<br />\n";
+			$update = "UPDATE attribute_mapping SET epodn=?, cn=?, mail=?, entitlement=? WHERE id=?";
+			MDB2Wrapper::update($update,
+					    array('text', 'text', 'text', 'text', 'text'),
+					    array($epodn, $cn, $mail, $entitlement, $res[0]['id']));
+			break;
+		default:
+			Framework::error_output("Error in getting the correct ID, it looks like the NREN has several (".count($res).") in the database");
+			return false;
+		}
+
+		return true;
 	}
 }
 
