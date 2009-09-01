@@ -2,6 +2,7 @@
 require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'person.php';
+require_once 'classTextile.php';
 
 class Help extends FW_Content_Page
 {
@@ -49,7 +50,12 @@ class Help extends FW_Content_Page
 		}
 
 		if (count($res) > 0) {
-			return $res[0]['help'];
+			$help_text=$res[0]['help'];
+
+			$help_text=stripslashes($help_text);
+			$help_text=Input::br2nl($help_text);
+			$textile = new Textile();
+			return $textile->TextileRestricted($help_text,0);
 		}
 	}
 }
