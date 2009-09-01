@@ -3,6 +3,7 @@ require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'mdb2_wrapper.php';
 require_once 'input.php';
+require_once 'file_io.php';
 require_once 'file_upload.php';
 require_once 'logger.php';
 require_once 'classTextile.php';
@@ -264,17 +265,13 @@ class CP_Stylist extends FW_Content_Page
 		$css_path .= 'custom/' . $nren . '/custom.css';
 
 		if (file_exists($css_path) === TRUE) {
-			$fd = fopen($css_path, 'r');
-
-			if ($fd === FALSE) {
-				Framework::error_output('Could not open NREN-specific CSS file! Please contact an administrator!');
-				return;
+			try {
+				$css_string = File_IO::readFromFile($css_path);
+				return Input::sanitizeCSS($css_string);
+			} catch (FileException $fexp) {
+				Framework::error_output("Could not open NREN-specific CSS file! Server said "
+										. $fexp->getMessage() . "!");
 			}
-
-			$css_string = fread($fd, filesize($css_path));
-			fclose($fd);
-
-			return $css_string;
 		}
 
 		/* if the search for a custom CSS did not return a result, search for
@@ -283,21 +280,14 @@ class CP_Stylist extends FW_Content_Page
 		$main_css_path = Config::get_config('install_path') . 'www/css/';
 		$main_css_path .= 'confusa2.css';
 
-		if (file_exists($main_css_path) === TRUE) {
-			$fd = fopen($main_css_path, 'r');
-
-			if ($fd === FALSE) {
-				Framework::error_output("Could not open Confusa's main CSS file! Please contact an administrator!");
-				return;
-			}
-
-			$css_string = fread($fd, filesize($main_css_path));
-			fclose($fd);
-
+		try {
+			$css_string = File_IO::readFromFile($main_css_path);
 			return Input::sanitizeCSS($css_string);
+		} catch (FileException $fexp) {
+			Framework::error_output("Could not open Confusa's main CSS file! Server said "
+									. $fexp->getMessage() . "!");
+			return;
 		}
-
-		return NULL;
 	}
 
 	/*
@@ -312,40 +302,28 @@ class CP_Stylist extends FW_Content_Page
 		$css_path = Config::get_config('install_path') . 'www/css/';
 		$css_path .= 'custom/' . $nren;
 
-		/* if the path to the NREN's CSS file does not exist, create the
-		 * respective folders
-		 * This should have been done by the bootstrap script, though
-		 */
-		if (!file_exists($css_path)) {
-			mkdir($css_path, 0755, TRUE);
-		}
-
 		$css = $css_path . '/custom.css';
-		$fd = fopen($css, "w");
-
-		if ($fd === FALSE) {
-			Framework::error_output("Could not write to custom CSS file! Please contact an administrator!");
-			return;
-		}
 
 		if (ini_get('magic_quotes_gpc') === "1") {
 			/* no slashes should be introduced into the content */
 			$content = stripslashes($content);
 		}
 
-		$success = fwrite($fd, $content);
-
-		if ($success === FALSE) {
+		try {
+			/* if the path to the NREN's CSS file does not exist, create the
+			 * respective folders
+			 * This should have been done by the bootstrap script, though
+			 */
+			File_IO::writeToFile($css, $content, TRUE, TRUE);
+		} catch (FileException $fexp) {
 			Framework::error_output("Could not write to custom CSS file! Please contact an administrator!");
-		} else {
-			Logger::log_event(LOG_INFO, "The custom CSS for NREN " . $nren .
-										" was changed. User contacted us from " .
-										$_SERVER['REMOTE_ADDR']);
-			Framework::success_output("Custom CSS for your NREN successfully updated!");
+			return;
 		}
 
-		fclose($fd);
-		return;
+		Logger::log_event(LOG_INFO, "The custom CSS for NREN " . $nren .
+									" was changed. User contacted us from " .
+									$_SERVER['REMOTE_ADDR']);
+		Framework::success_output("Custom CSS for your NREN successfully updated!");
 	}
 
 	/*
