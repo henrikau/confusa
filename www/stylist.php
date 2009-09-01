@@ -5,6 +5,7 @@ require_once 'mdb2_wrapper.php';
 require_once 'input.php';
 require_once 'file_upload.php';
 require_once 'logger.php';
+require_once 'classTextile.php';
 
 class CP_Stylist extends FW_Content_Page
 {
@@ -133,6 +134,21 @@ class CP_Stylist extends FW_Content_Page
 	 */
 	private function getNRENTexts($nren)
 	{
+		$sample_text ="h4. A heading\n\nMake a *strong* point on something\n\n";
+		$sample_text .= "_Emphasize_ a point, -invalidate it-, +insert replacement+\n\n";
+		$sample_text .= "* Enumerate\n";
+		$sample_text .= "* all the\n";
+		$sample_text .= "* advantages\n";
+		$sample_text .= "# list-items\n";
+		$sample_text .= "## and even subadvantages\n\n\n";
+		$sample_text .= "|ung|äldre|äldst|\n";
+		$sample_text .= "|barn|mor|mormor|\n";
+		$sample_text .= "|tables|are|nice|\n\n";
+		$sample_text .= "Appear smart, use footnotes[1]\n\n";
+		$sample_text .= "\"Present a link\":http://beta.confusa.org\n\n";
+		$sample_text .= "fn1. Roddenberry, G.: Where no man has gone before\n";
+
+
 		$query = "SELECT help, about FROM nrens WHERE name=?";
 
 		$res = NULL;
@@ -155,8 +171,19 @@ class CP_Stylist extends FW_Content_Page
 
 		if (count($res) === 1) {
 			$result = array();
-			$result[0] = $res[0]['help'];
-			$result[1] = $res[0]['about'];
+
+			if (is_null($res[0]['help'])) {
+				$result[0] = $sample_text;
+			} else {
+				$result[0] = Input::br2nl(stripslashes($res[0]['help']));
+			}
+
+			if (is_null($res[0]['about']) || empty($res[0]['about'])) {
+				$result[1] = $sample_text;
+			} else {
+				$result[1] = Input::br2nl(stripslashes($res[0]['about']));
+			}
+
 			return $result;
 		} else if (count($res) > 1) { /* conflict!! */
 			Framework::error_output("More than one pair of about and help texts in the DB." .
