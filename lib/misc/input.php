@@ -50,16 +50,17 @@ class Input
 			}
 		}
 
-		$input = htmlentities($input, ENT_QUOTES, 'UTF-8');
-		/* remove paragraphs */
-		$input = preg_replace('/(\r|\n)+/','', $input);
-
 		if (ini_get("magic_quotes_gpc") === "1") {
 			/* strip the slashes automatically inserted before doing more complete
 			 * escaping */
 			$input = stripslashes($input);
 		}
 
+		/* in text is feasible to want newlines, to format the appearance of the
+		 * text. Since it is undesired to directly insert newlines into the DB
+		 * convert them to <br /> tags. Direct HTML insertion has been dealt
+		 * with using htmlentities*/
+		$input = strtr(strip_tags($input), array("\n" => '<br />', "\r\n" =>'<br />'));
 		$output = mysql_real_escape_string($input);
 		return $output;
 	}
@@ -81,6 +82,19 @@ class Input
 		/* execute this after the URL removal, since it will break the CSS.
 		 * this is for the leftover hardcore cases such as expression(...) */
 		$output = preg_replace('/(.)*(\()+(.)*/', '', $output);
+		return $output;
+	}
+
+	/**
+	 * Convert a break <br /> back to a newline.
+	 * <br /> is a relatively safe way to store linebreaks in the DB. That's why
+	 * we use it as a storage format for linebreaks. In certain cases, however,
+	 * we need back the old newlines, for instance for a textarea, as input
+	 * to the Textile transcoder or before passing data through htmlentities.
+	 */
+	static function br2nl($input)
+	{
+		$output = strtr($input, array("<br />" => "\n"));
 		return $output;
 	}
 }
