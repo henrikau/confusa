@@ -210,14 +210,17 @@ class CP_Stylist extends FW_Content_Page
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem updating the help text of your NREN! " .
 									"Please contact an administrator to resolve this! Server said " . $dbse->getMessage());
+			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating the help text of your NREN, " .
 									"probably related to the supplied data. Please verify the data to be inserted! " .
 									"Server said " . $dbqe->getMessage());
+			return;
 		}
 
 		Logger::log_event(LOG_INFO, "Help-text for NREN $nren was changed. " .
 				  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
+		Framework::success_output("Help-text successfully updated");
 	}
 
 	/*
@@ -237,14 +240,17 @@ class CP_Stylist extends FW_Content_Page
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem updating the about text of your NREN! " .
 									"Please contact an administrator to resolve this! Server said " . $dbse->getMessage());
+			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating the about text of your NREN, " .
 									"probably related to the supplied data. Please verify the data to be inserted! " .
 									"Server said " . $dbqe->getMessage());
+			return;
 		}
 
 		Logger::log_event(LOG_INFO, "About-text for NREN $nren was changed. " .
 						  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
+		Framework::success_output("About-text successfully updated!");
 	}
 
 	/**
@@ -336,6 +342,7 @@ class CP_Stylist extends FW_Content_Page
 			Logger::log_event(LOG_INFO, "The custom CSS for NREN " . $nren .
 										" was changed. User contacted us from " .
 										$_SERVER['REMOTE_ADDR']);
+			Framework::success_output("Custom CSS for your NREN successfully updated!");
 		}
 
 		fclose($fd);
@@ -360,6 +367,8 @@ class CP_Stylist extends FW_Content_Page
 				Framework::error_output("Could not reset the CSS file! Please contact an administrator!");
 			}
 		}
+
+		Framework::message_output("CSS-file reset to Confusa settings");
 	}
 
 	/*
@@ -428,11 +437,13 @@ class CP_Stylist extends FW_Content_Page
 			} catch (FileException $fexp) {
 				Framework::error_output("Could not save the logo on the server. " .
 							"Server said: " . $fexp->getMessage());
+				return;
 			}
 
 			Logger::log_event(LOG_INFO, "Logo for NREN $nren was changed to new " .
 							  "logo custom.$suffix User contacted us from " .
 							  $_SERVER['REMOTE_ADDR']);
+			Framework::success_output("Logo successfully updated!");
 		}
 	}
 }
