@@ -96,7 +96,6 @@ class CP_Stylist extends FW_Content_Page
 			case 'css':
 				$this->tpl->assign('edit_css', true);
 				$css_string = $this->fetchNRENCSS($this->person->getNREN());
-				echo $css_string;
 
 				if (!is_null($css_string)) {
 					$this->tpl->assign('css_content', $css_string);
