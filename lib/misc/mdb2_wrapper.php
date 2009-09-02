@@ -52,10 +52,16 @@ class MDB2Wrapper
 	       throw new DBStatementException("query failed: "	. $stmnt->getMessage() . ".");
           }
 
-          $res = $stmnt->execute($data);
+	  $res = $stmnt->execute($data);
           if (PEAR::isError($res)) {
-               Logger::log_event(LOG_NOTICE, "Query failed: $res->getMessage()");
-	       throw new DBQueryException($res->getMessage());
+		  $errorCode = create_pw(8);
+		  $logMsg  = "[$errorCode] Query failed: $res->getMessage() - "  . $res->getUserInfo();
+		  if (Config::get_config('debug')) {
+			  $logMsg .= "[Debug]: " . $res->getDebugInfo();
+		  }
+		  Logger::log_event(LOG_NOTICE, $logMsg);
+		  $stmnt->free();
+		  throw new DBQueryException("Error-code: [$errorCode] " . $res->getMessage());
           }
           $stmnt->free();
 
