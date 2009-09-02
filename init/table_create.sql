@@ -236,8 +236,12 @@ CREATE TABLE IF NOT EXISTS user_crls (
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
--- 
--- 
+-- The map of the attributes.
+--
+-- We want to allow each NREN (and possibly each subscriber) to create
+-- an individual mapping for the attributes. In most cases, it will be
+-- one map pr. NREN and none for the subscribers, but experience has
+-- taught us that what we think does not always map directly to reality.
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS attribute_mapping (
        id INT PRIMARY KEY AUTO_INCREMENT,
