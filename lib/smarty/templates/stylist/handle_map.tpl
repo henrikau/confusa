@@ -59,7 +59,7 @@
 	<td align="center">
 	  <select {if ! $person->isNRENAdmin()} DISABLED{/if} name="epodn">
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $map.epodn}selected="yes"{/if} value="{$element}">
+	    <option {if $element eq $NRENMap.epodn}selected="yes"{/if} value="{$element}">
 	      {$element}
 	    </option>
 	    {/foreach}
@@ -81,7 +81,7 @@
 	  <select name="cn">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $map.cn}selected="yes"{/if} value="{$element}">
+	    <option {if $element eq $NRENMap.cn}selected="yes"{/if} value="{$element}">
 	      {$element}
 	    </option>
 	    {/foreach}
@@ -102,7 +102,7 @@
 	  <select name="mail">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $map.mail}selected="yes"{/if} value="{$element}">
+	    <option {if $element eq $NRENMap.mail}selected="yes"{/if} value="{$element}">
 	      {$element}
 	    </option>
 	    {/foreach}
@@ -123,7 +123,7 @@
 	  <select name="entitlement">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $map.entitlement}selected="yes"{/if} value="{$element}">
+	    <option {if $element eq $NRENMap.entitlement}selected="yes"{/if} value="{$element}">
 	      {$element}
 	    </option>
 	    {/foreach}

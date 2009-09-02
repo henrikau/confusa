@@ -122,10 +122,10 @@ class CP_Stylist extends FW_Content_Page
 				$this->tpl->assign('height', $this->allowed_height);
 				break;
 			case 'map':
-				$this->tpl->assign('handle_map', true);
-				$this->tpl->assign('map',	AuthHandler::getMap($this->person->getNREN(), $this->person->getSubscriberOrgName()));
-				$this->tpl->assign('keys',	AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
-				$this->tpl->assign('organization', $this->person->getSubscriberOrgName());
+				$this->tpl->assign('handle_map',	true);
+				$this->tpl->assign('NRENMap',		AuthHandler::getNRENMap($this->person->getNREN()));
+				$this->tpl->assign('keys',		AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
+				$this->tpl->assign('organization',	$this->person->getSubscriberOrgName());
 				break;
 			default:
 				Framework::error_output("Unsupported operation chosen!");
