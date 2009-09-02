@@ -197,53 +197,61 @@ class AuthHandler
 		if (!isset($nren) || $nren == "")
 			throw new MapNotFoundException("No NREN supplied to AuthHandler::getMap(). This is a required value.");
 
-		if (!isset($subscriber) || $subscriber == "") {
-			$fullID = MDB2Wrapper::execute("SELECT nren_id FROM nrens WHERE name=?",
-						       array('text'),
-						       array(strtolower($nren)));
-		} else {
-			$query  = "select subscribers.nren_id, subscribers.subscriber_id from subscribers left join nrens on ";
-			$query .= "subscribers.nren_id = nrens.nren_id where subscribers.name=? and nrens.name=?";
-			$fullID = MDB2Wrapper::execute($query,
-						       array('text', 'text'),
-						       array(strtolower($subscriber), strtolower($nren)));
-		}
-
-		if (count($fullID) != 1) {
-			if (count($fullID) == 0) {
-				$msg  = "Did not find subscriber/nren combination in the database! ";
-				$msg .= "Are you sure the subscriber has been added?";
-				throw new ConfusaGenException($msg);
-			} else {
-				throw new ConfusaGenException("Too many hits! (" . count($fullID) . ")");
+		if (isset($subscriber) && $subscriber != "") {
+			$map = AuthHandler::getSubscriberMap($nren, $subscriber);
+			if (isset($map)) {
+				return $map;
 			}
 		}
-		/* See if subscriber has set a dedicated map */
-		$map = array();
-		if (isset($fullID[0]['subscriber_id']) && $fullID[0]['subscriber_id'] != "")  {
-			$query	= "SELECT eppn, epodn, cn, mail, entitlement ";
-			$query .= "FROM attribute_mapping WHERE subscriber_id=? and nren_id=?";
-			$map	= MDB2Wrapper::execute($query,
-						       array('text', 'text'),
-						       array($fullID[0]['subscriber_id'], $fullID[0]['nren_id']));
-		}
+		return AuthHandler::getNrenMap($nren);
+	} /* end getMap() */
 
-		/* Did not find a map for the subscriber-id, or the
-		 * subscriber-id was not set, so map is emtpy */
-		if (count($map) != 1) {
-			$query  = "SELECT eppn, epodn, cn, mail, entitlement ";
-			$query .= "FROM attribute_mapping WHERE nren_id=? AND subscriber_id IS NULL";
-			$map = MDB2Wrapper::execute($query,
-						    array('text'),
-						    array($fullID[0]['nren_id']));
+	static function getSubscriberMap($nren, $subscriber)
+	{
+		$query  = "SELECT a.eppn, a.epodn, a.cn, a.mail, a.entitlement";
+		$query .= " FROM subscribers s, nrens n, attribute_mapping a";
+		$query .= " WHERE s.nren_id=n.nren_id AND s.subscriber_id=a.subscriber_id";
+		$query .= " AND n.name=? AND s.name=? ";
+		$values = array('text', 'text');
+		$data	= array($nren, $subscriber);
+		try {
+			$map	= MDB2Wrapper::execute($query, $values, $data);
+		} catch (Exception $e) {
+			echo $query . "<br />\n";
+			print_r($values);
+			print_r($data);
+			return null;
 		}
 		if (count($map) > 0) {
 			if (count($map) == 1) {
+				$map['type'] = 'subscriber';
 				return $map[0];
 			}
-			throw new ConfusaGenException("Too many maps found. Database inconsistency");
+			throw new ConfusaGenException("Got " . count($map) . " hits when looking for the subscriber-map ($subscriber for nren $nren)");
 		}
 		return null;
-	} /* end getMap() */
+	}
+
+	static function getNRENMap($nren)
+	{
+			$query  = "SELECT a.eppn, a.epodn, a.cn, a.mail, a.entitlement";
+			$query .= " FROM attribute_mapping a, nrens n WHERE n.nren_id=a.nren_id AND n.name=? AND subscriber_id IS NULL";
+			try {
+				$map = MDB2Wrapper::execute($query,
+							    array('text'),
+							    array($nren));
+			} catch (Exception $e) {
+				return null;
+			}
+
+		if (count($map) > 0) {
+			if (count($map) == 1) {
+				$map['type'] = 'nren';
+				return $map[0];
+			}
+			throw new ConfusaGenException("Got " . count($map) . " hits when looking for the map for NREN $nren");
+		}
+		return null;
+	}
 }
 ?>
