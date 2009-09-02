@@ -443,7 +443,7 @@ class CP_Stylist extends FW_Content_Page
 	{
 		/* Does the map exist? */
 		$nren_id_query = "SELECT nren_id FROM nrens WHERE name=?";
-		$query = "SELECT id FROM attribute_mapping WHERE nren_id=? AND subscriber_id IS NULL";
+		$query = "SELECT * FROM attribute_mapping WHERE nren_id=? AND subscriber_id IS NULL";
 		try {
 			$nren_id = MDB2Wrapper::execute($nren_id_query, array('text'), $this->person->getNREN());
 			if (count($nren_id) != 1) {
@@ -478,11 +478,18 @@ class CP_Stylist extends FW_Content_Page
 			}
 			break;
 		case 1:
-			echo __FILE__ . ":" . __LINE__ . " Updating existing map (".$res[0]['id'].").<br />\n";
-			$update = "UPDATE attribute_mapping SET epodn=?, cn=?, mail=?, entitlement=? WHERE id=?";
-			MDB2Wrapper::update($update,
-					    array('text', 'text', 'text', 'text', 'text'),
-					    array($epodn, $cn, $mail, $entitlement, $res[0]['id']));
+			if ($epodn	!= $res[0]['epodn'] ||
+			    $cn		!= $res[0]['cn'] ||
+			    $mail	!= $res[0]['mail'] ||
+			    $entitlement	!= $res[0]['entitlement']) {
+				$update = "UPDATE attribute_mapping SET epodn=?, cn=?, mail=?, entitlement=? WHERE id=?";
+				MDB2Wrapper::update($update,
+						    array('text', 'text', 'text', 'text', 'text'),
+						    array($epodn, $cn, $mail, $entitlement, $res[0]['id']));
+			} else {
+				Framework::error_output("No need to update row with identical elements");
+				return false;
+			}
 			break;
 		default:
 			Framework::error_output("Error in getting the correct ID, it looks like the NREN has several (".count($res).") in the database");
