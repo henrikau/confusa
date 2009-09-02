@@ -610,8 +610,8 @@ class CertManager_Online extends CertManager
         if (substr($data,0,1) == "0") {
           /* update the database-entry to reflect the autorization-state */
           MDB2Wrapper::update("UPDATE order_store SET authorized='authorized' WHERE order_number=?",
-                              array('text', 'text'),
-                              array($this->order_number, $this->collection_code));
+                              array('text'),
+                              array($this->order_number));
           Logger::log_event(LOG_NOTICE, "Authorized remote certificate for person ".
                                         $this->person->getX509ValidCN().
                                         " with order number " .
