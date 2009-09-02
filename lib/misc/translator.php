@@ -1,6 +1,4 @@
 <?php
-$sspdir = Config::get_config('simplesaml_path');
-require_once $sspdir . '/lib/_autoload.php';
 /**
  * Translator - lookup dictionary entries for a page and decorate the template
  * with the right texts
@@ -176,16 +174,34 @@ class Translator {
 			}
 		}
 
-		$accept_languages = SimpleSAML_Utilities::getAcceptLanguage();
-		$available_languages = Config::get_config('language.available');
+		$sspdir = Config::get_config('simplesaml_path');
+		/* turn off warnings to keep the page header tidy */
+		error_reporting(E_ERROR);
 
-		foreach($accept_languages as $key => $value) {
-			if (array_search($key, $available_languages) === FALSE) {
-				continue;
-			} else {
-				return $key;
+		/* poll the accept languages only, if we can load simplesamlphp
+		 * simplesamlphp *should* always be enabled (otherwise no authN :)),
+		 * But there can be configurations in bypass auth-mode without a working
+		 * simplesamlphp instance
+		 */
+		if (include_once $sspdir . '/lib/_autoload.php') {
+			$accept_languages = SimpleSAML_Utilities::getAcceptLanguage();
+			$available_languages = Config::get_config('language.available');
+			Logger::log_event(LOG_DEBUG, "Simplesamlphp instance seems to be not " .
+									"configured, or not configured properly. Translator " .
+									"will not use the browser's accept-header to determine " .
+									"language settings.");
+
+			foreach($accept_languages as $key => $value) {
+				if (array_search($key, $available_languages) === FALSE) {
+					continue;
+				} else {
+					return $key;
+				}
 			}
 		}
+
+		/* turn on warnings again */
+		error_reporting(E_ALL ^ E_NOTICE);
 
 		return $this->defaultLanguage;
 	}
