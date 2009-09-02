@@ -50,7 +50,7 @@
        *}
       <tr>
 	<td align="right">Organization<br /></td>
-	<td align="center">
+	<td align="right">
 	  <select {if ! $person->isNRENAdmin()} DISABLED{/if} name="epodn">
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $NRENMap.epodn}selected="yes"{/if} value="{$element}">
@@ -68,7 +68,7 @@
        *}
       <tr>
 	<td align="right">Full Name<br /></td>
-	<td align="center">
+	<td align="right">
 	  <select name="cn">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
@@ -86,7 +86,7 @@
        *}
       <tr>
 	<td align="right">E-Mail<br /></td>
-	<td align="center">
+	<td align="right">
 	  <select name="mail">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
@@ -104,7 +104,7 @@
        *}
       <tr>
 	<td align="right">entitlement<br /></td>
-	<td align="center">
+	<td align="right">
 	  <select name="entitlement">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
@@ -122,12 +122,13 @@
       </tr>
 
       <tr>
-	<td></td>
-	<td><input type="reset" value="reset"/></td>
-	<td>
+	<td align="right"><input type="reset" value="reset"/></td>
+	<td align="right">
 	  <input type="submit" value="update map" onclick="return confirm('\tAre you sure?\n\nThis will potentianally affect all users affiliated with {$person->getSubscriberOrgName()}')" />
 	</td>
       </tr>
     </table>
   </form>
+  <br />
 </fieldset>
+<br />
