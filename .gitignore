@@ -4,3 +4,4 @@ confusa_config.php
 *.dia.autosave
 /devdocs/seq_fw.png
 lib/smarty/templates_c
+/devdocs/AttribMap.png
