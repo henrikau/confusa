@@ -25,13 +25,11 @@
       <input type="hidden" name="stylist_operation" value="update_map_nren" />
       <tr>
 	<th align="left">Category</th>
-	<th align="center">Current</th>
-	<th align="center">Change</th>
+	<th align="center">Current Key</th>
 	<th align="left">Result</th>
       </tr>
       <tr>
 	<td align="right">Country</td>
-	<td align="center"><b><font color="darkgray">N/A</font></b></td>
 	<td align="center"><b><font color="darkgray">N/A</font></b></td>
 	<td>{$person->getCountry()}</td>
       </tr>
@@ -44,7 +42,6 @@
       <tr>
 	<td align="right">Unique identifier</td>
 	<td align="center"><b><font color="darkgray">{$person->getEPPNKey()}</font></b></td>
-	<td align="center"><b><font color="darkgray">N/A</font></b></td>
 	<td>{$person->getEPPN()}</td>
       </tr>
 
@@ -53,9 +50,6 @@
        *}
       <tr>
 	<td align="right">Organization<br /></td>
-	<td align="center">
-	  <i>{$map.epodn}</i>
-	</td>
 	<td align="center">
 	  <select {if ! $person->isNRENAdmin()} DISABLED{/if} name="epodn">
 	    {foreach from=$keys item=element}
@@ -75,9 +69,6 @@
       <tr>
 	<td align="right">Full Name<br /></td>
 	<td align="center">
-	  <i>{$map.cn}</i>
-	</td>
-	<td align="center">
 	  <select name="cn">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
@@ -96,9 +87,6 @@
       <tr>
 	<td align="right">E-Mail<br /></td>
 	<td align="center">
-	  <i>{$map.mail}</i>
-	</td>
-	<td align="center">
 	  <select name="mail">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
@@ -116,9 +104,6 @@
        *}
       <tr>
 	<td align="right">entitlement<br /></td>
-	<td align="center">
-	  <i>{$map.entitlement}</i>
-	</td>
 	<td align="center">
 	  <select name="entitlement">
 	    <option value=""></option>
