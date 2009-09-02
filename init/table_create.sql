@@ -255,3 +255,48 @@ CREATE TABLE IF NOT EXISTS attribute_mapping (
        FOREIGN KEY(subscriber_id) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
        FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
+
+
+-- ---------------------------------------------------------
+-- Robotic Interface Certificate storage area
+--
+-- This is where the subscriber-admins will have the uploaded
+-- certificate stored when using the robotic upload module.
+--
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS robot_cert (
+	-- Internal id
+       id INT PRIMARY KEY AUTO_INCREMENT,
+
+       -- Reference to the subscriber using this certificate to talk to
+       -- confusa
+       subscriber_id INT NOT NULL,
+
+       -- ref to the person/admin that uploaded the certificate and most
+       -- likely has access to the keypair
+       uploaded_by INT NOT NULL,
+
+       -- When the certificate was uploaded
+       uploaded_date DATETIME NOT NULL,
+
+       -- This can be found by parsing the certificate, but we should
+       -- store this directly in the database as it allows easy testing
+       -- for soon-to-expire certificates (as well as finding
+       -- certificates with insanely long expiry date).
+       valid_until DATETIME NOT NULL,
+
+       -- When the certificate is about to expire, a warning should be
+       -- sent to the subscriber in periodic intervals. If the
+       -- certificate is about to expire, this is the last time a
+       -- warning was sent.
+       last_warning_sent DATETIME NOT NULL,
+
+       cert TEXT NOT NULL,
+
+       -- Allow for a comment/description to be stored alongside the
+       -- certificate.
+       comment TEXT,
+
+       FOREIGN KEY(subscriber_id) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
+       FOREIGN KEY(uploaded_by) REFERENCES admins(admin_id) ON DELETE CASCADE
+) type=InnoDB;
