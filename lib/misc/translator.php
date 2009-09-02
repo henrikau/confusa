@@ -176,7 +176,7 @@ class Translator {
 
 		$sspdir = Config::get_config('simplesaml_path');
 		/* turn off warnings to keep the page header tidy */
-		error_reporting(E_ERROR);
+		$level = error_reporting(E_ERROR);
 
 		/* poll the accept languages only, if we can load simplesamlphp
 		 * simplesamlphp *should* always be enabled (otherwise no authN :)),
@@ -201,7 +201,7 @@ class Translator {
 		}
 
 		/* turn on warnings again */
-		error_reporting(E_ALL ^ E_NOTICE);
+		error_reporting($level);
 
 		return $this->defaultLanguage;
 	}
