@@ -83,7 +83,26 @@ abstract class Confusa_Auth
 		/* Normal mapping, this is what we want. */
 		if (isset($map) && is_array($map)) {
 			$this->person->setEPPN($attributes[$map['eppn']][0]);
-			$this->person->setSubscriberOrgName($attributes[$map['epodn']][0]);
+
+			/* slow down and parse the name properly */
+			$parsed = $attributes[$map['epodn']][0];
+			$orgname= split(',', $parsed);
+			if (isset($orgname)) {
+				$parsed = "";
+				foreach ($orgname as $key => $value) {
+					$tmp = split('=', $value);
+					if (isset($tmp[1])) {
+						$parsed .= strtolower(str_replace(' ', '', $tmp[1])) . ".";
+					} else {
+						$parsed .= strtolower(str_replace(' ', '', $tmp[0])) . ".";
+					}
+				}
+				if ($parsed[strlen($parsed)-1] == ".") {
+					$parsed = substr($parsed, 0, strlen($parsed)-1);
+				}
+			}
+			$this->person->setSubscriberOrgName($parsed);
+
 			$this->person->setName($attributes[$map['cn']][0]);
 			$this->person->setEmail($attributes[$map['mail']][0]);
 			$this->person->setEduPersonEntitlement($attributes[$map['entitlement']][0]);
