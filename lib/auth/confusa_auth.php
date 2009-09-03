@@ -109,7 +109,7 @@ abstract class Confusa_Auth
 			if ($this->person->isNRENAdmin()) {
 				$msg  = "No map for your NREN (".$attributes['nren'][0].") is set <br />\n";
 				$msg .= "You need to do this <b>now</b> so the normal users can utilize Confusa's functionality.<br />\n";
-				$msg .= "<br /><center>Go <a href=\"stylist.php?show=map\">here</a> to update the map.</center><br />\n";
+				$msg .= "<br /><center>Go <a href=\"stylist.php?mode=admin&show=map\">here</a> to update the map.</center><br />\n";
 				Framework::error_output($msg);
 			}
 		}
