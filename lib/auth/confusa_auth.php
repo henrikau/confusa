@@ -83,6 +83,7 @@ abstract class Confusa_Auth
 		/* Normal mapping, this is what we want. */
 		if (isset($map) && is_array($map)) {
 			$this->person->setEPPN($attributes[$map['eppn']][0]);
+			$this->person->setEPPNKey($map['eppn']);
 
 			/* slow down and parse the name properly */
 			$parsed = $attributes[$map['epodn']][0];
