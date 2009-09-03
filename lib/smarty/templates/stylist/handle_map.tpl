@@ -30,7 +30,7 @@
       </tr>
       <tr>
 	<td align="right">Country</td>
-	<td align="center"><b><font color="darkgray">N/A</font></b></td>
+	<td align="center"><b><font color="darkgray">-</font></b></td>
 	<td>{$person->getCountry()}</td>
       </tr>
 
@@ -41,7 +41,7 @@
       *}
       <tr>
 	<td align="right">Unique identifier</td>
-	<td align="center"><b><font color="darkgray">{$person->getEPPNKey()}</font></b></td>
+	<td align="center"><font color="darkgray">{$person->getEPPNKey()}</font></td>
 	<td>{$person->getEPPN()}</td>
       </tr>
 
