@@ -67,7 +67,7 @@
 		      {foreach from=$errors item=error}
 		      <div class="message_container error">
 			<div class="message_icon">
-			<img src="graphics/exclamation.png" alt="Error: " />
+			<img src="graphics/exclamation.png" alt="" />
 			</div>
 			<div class="message_body">{$error}</div>
 			<div class="clear"></div>
