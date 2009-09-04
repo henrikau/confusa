@@ -372,6 +372,19 @@ class Person{
 	    return $this->entitlement;
     }
 
+    /**
+     * testEntitlementAttribute test to see if a given attribute is part of the entitlement field.
+     *
+     * @param String The attribute to test for in the supplied entitlement field
+     *
+     * @return Boolean $hasAttribute indicating if the queried attribute has been set 
+     */
+    public function testEntitlementAttribute($attribute)
+    {
+	    $hasAttribute = false;
+	    $attr = strtolower(Input::sanitize($attribute));
+	    return isset($this->entitlement[$attr]);
+    }
 
     /**
      * setCountry() - set the country the user belongs to.
