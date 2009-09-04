@@ -135,45 +135,4 @@ final class CP_DownloadCertificate extends FW_Content_Page
 $fw = new Framework(new CP_DownloadCertificate());
 $fw->start();
 
-
-function list_remote_certs($person)
-{
-  $list_endpoint = Config::get_config('capi_listing_endpoint');
-  $postfields_list["loginName"] = Config::get_config('capi_login_name');
-  $postfields_list["loginPassword"] = Config::get_config('capi_login_pw');
-
-  $test_prefix = "";
-  if (Config::get_config('capi_test')) {
-    /* TODO: this should go into a constant. However, I don't want to put it into confusa_config, since people shouldn't directly fiddle with it */
-    $test_prefix = "TEST PERSON ";
-  }
-
-  $postfields_list["commonName"] = $test_prefix . $person->getX509ValidCN();
-  $ch = curl_init($list_endpoint);
-  curl_setopt($ch, CURLOPT_HEADER,0);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-  curl_setopt($ch, CURLOPT_POST,1);
-  curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_list);
-  $data=curl_exec($ch);
-  curl_close($ch);
-
-  $params=array();
-  $res = array();
-  parse_str($data, $params);
-
-  if ($params["errorCode"] == "0") {
-    for ($i = 1; $i <= $params['noOfResults']; $i = $i+1) {
-      $res[$i-1]['order_number'] = $params[$i . "_orderNumber"];
-      $res[$i-1]['cert_owner'] = $person->getX509ValidCN();
-    }
-  } else {
-    Framework::error_output("Errors occured when listing user certificates: " . $params["errorMessage"]);
-  }
-
-  return $res;
-
-} /* end list_remote_certs() */
-
 ?>
