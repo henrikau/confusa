@@ -2,7 +2,7 @@
 require_once 'confusa_include.php';
 require_once 'framework.php';
 
-class AboutYou extends FW_Content_Page
+class CP_AboutYou extends FW_Content_Page
 {
 	function __construct()
 	{
@@ -22,7 +22,7 @@ class AboutYou extends FW_Content_Page
 	}
 }
 
-$fw = new Framework(new AboutYou());
+$fw = new Framework(new CP_AboutYou());
 $fw->start();
 
 ?>

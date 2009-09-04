@@ -9,7 +9,12 @@ require_once 'config.php';
 require_once 'send_element.php';
 require_once 'input.php';
 
-final class ProcessCsr extends FW_Content_Page
+/**
+ * ProcessCsr - the web frontend for handling of CSRs
+ *
+ * @author Henrik Austad <henrik.austad@uninett.no>
+ */
+final class CP_ProcessCsr extends FW_Content_Page
 {
 	private $signing_ok;
 
@@ -244,7 +249,7 @@ final class ProcessCsr extends FW_Content_Page
 
 }
 
-$fw = new Framework(new ProcessCsr());
+$fw = new Framework(new CP_ProcessCsr());
 $fw->start();
 
 ?>

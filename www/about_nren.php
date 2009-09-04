@@ -4,7 +4,7 @@ require_once 'framework.php';
 require_once 'person.php';
 require_once 'classTextile.php';
 
-class About_NREN extends FW_Content_Page
+class CP_About_NREN extends FW_Content_Page
 {
 	function __construct()
 	{
@@ -53,7 +53,7 @@ class About_NREN extends FW_Content_Page
 
 }
 
-$fw = new Framework(new About_NREN());
+$fw = new Framework(new CP_About_NREN());
 $fw->start();
 
 ?>

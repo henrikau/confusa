@@ -5,7 +5,7 @@ include_once 'logger.php';
 require_once 'output.php';
 require_once 'pw.php';
 
-final class Index extends FW_Content_Page
+final class CP_Index extends FW_Content_Page
 {
 
 	function __construct()
@@ -39,8 +39,7 @@ final class Index extends FW_Content_Page
 	} /* end process() */
 }
 
-$ind = new Index();
-$fw  = new Framework($ind);
+$fw  = new Framework(new CP_Index());
 $fw->start();
 unset($fw);
 unset($ind);

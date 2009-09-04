@@ -5,7 +5,7 @@ require_once 'person.php';
 require_once 'mail_manager.php';
 require_once 'confusa_gen.php';
 
-final class DownloadCertificate extends FW_Content_Page
+final class CP_DownloadCertificate extends FW_Content_Page
 {
 	public function __construct()
 	{
@@ -132,7 +132,7 @@ final class DownloadCertificate extends FW_Content_Page
 
 } /* end class DownloadCertificate */
 
-$fw = new Framework(new DownloadCertificate());
+$fw = new Framework(new CP_DownloadCertificate());
 $fw->start();
 
 
