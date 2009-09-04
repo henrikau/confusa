@@ -61,8 +61,17 @@ final class CP_DownloadCertificate extends FW_Content_Page
 		else if (isset($_GET['inspect_cert']))
 			$this->inspectCert(htmlentities($_GET['inspect_cert']));
 
-		else if (isset($_GET['email_cert']))
-			$this->mailCert(htmlentities($_GET['email_cert']));
+		else if (isset($_GET['email_cert'])) {
+			$mail = $this->person->getEmail();
+			if (!isset($mail) || $mail === "") {
+				$msg = "No email-address is set. Cannot email certificate to you!<br />\n";
+				$msg .= "This is a required attribute for many operations, and you should therefore contact ";
+				$msg .= "your local IT-support and ask them to verify your user-cerdentials.<br />\n";
+				Framework::error_output($msg);
+			} else {
+				$this->mailCert(htmlentities($_GET['email_cert']));
+			}
+		}
 
 	} /* end process_db_cert */
 
