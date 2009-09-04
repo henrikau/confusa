@@ -655,6 +655,14 @@ class Person{
 	    if (!$this->isAuth()) {
 		    return NORMAL_USER;
 	    }
+
+	    /* If the user has no subscriber set, he/she *cannot* be a
+	     * administrator */
+	    $epodn = $this->person->getSubscriberOrgName();
+	    if (!isset($epodn) || $epodn === "") {
+		    return NORMAL_USER;
+	    }
+
 	    require_once 'mdb2_wrapper.php';
 	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->eppn));
 	    $size	= count($res);
