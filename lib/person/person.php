@@ -561,14 +561,14 @@ class Person{
     }
     public function isSubscriberAdmin()
     {
-	    if (!$this->entitlement == "confusaAdmin") {
+	    if (!$this->testEntitlementAttribute("confusaAdmin")) {
 		    return false;
 	    }
 	    return (int)$this->getAdminStatus() == SUBSCRIBER_ADMIN;
     }
     public function isSubscriberSubAdmin()
     {
-	    if (!$this->entitlement == "confusaAdmin") {
+	    if (!$this->testEntitlementAttribute("confusaAdmin")) {
 		    return false;
 	    }
 	    return (int)$this->getAdminStatus() == SUBSCRIBER_SUB_ADMIN;
