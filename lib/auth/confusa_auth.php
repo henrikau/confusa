@@ -154,10 +154,8 @@ abstract class Confusa_Auth
 						$tabs = "\t";
 						if (strlen($key) < 8)
 							$tabs .= "\t\t";
-						
 						else if (strlen($key) < 16)
 							$tabs .= "\t";
-						
 						$msg .= "$key$tabs{$val[0]}\n";
 					}
 					$msg .= "</pre><br />\n";
