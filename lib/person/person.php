@@ -658,7 +658,7 @@ class Person{
 
 	    /* If the user has no subscriber set, he/she *cannot* be a
 	     * administrator */
-	    $epodn = $this->person->getSubscriberOrgName();
+	    $epodn = $this->getSubscriberOrgName();
 	    if (!isset($epodn) || $epodn === "") {
 		    return NORMAL_USER;
 	    }
