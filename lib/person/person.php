@@ -341,18 +341,21 @@ class Person{
      * for admins. This is not a sufficicent conditions, but is is a necessary
      * one.
      *
-     * @entitlement: the entitlement for the person
-     *
-     * TODO:	how to handle the case when several entitlement-attributes are
-     *		set.
+     * @param mixed $entitlement for the person.
      */
     public function setEntitlement($entitlement)
     {
 	    if (isset($entitlement)) {
+		    if (!isset($this->entitlement)) {
+			    $this->entitlement = array();
+		    }
 		    if (is_array($entitlement)) {
-			    $this->setEntitlement($entitlement[0]);
+			    foreach ($entitlement as $key => $value) {
+				    $this->setEntitlement($value);
+			    }
 		    } else {
-			    $this->entitlement = strtolower(Input::sanitize($entitlement));
+			    $val = Input::sanitize($entitlement);
+			    $this->entitlement[strtolower($val)] = $val;
 		    }
 	    }
     }
