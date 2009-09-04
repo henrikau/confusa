@@ -114,7 +114,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td>{$person->getEduPersonEntitlement()}</td>
+	<td>{$person->getEntitlement()}</td>
       </tr>
 
       <tr>

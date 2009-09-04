@@ -335,7 +335,7 @@ class Person{
 
 
     /**
-     * setEduPersonEntitlement - store the entitlement
+     * setEntitlement - store the entitlement
      *
      * The entitlement is set by the IdP for the user, and we use this to test
      * for admins. This is not a sufficicent conditions, but is is a necessary
@@ -346,11 +346,11 @@ class Person{
      * TODO:	how to handle the case when several entitlement-attributes are
      *		set.
      */
-    public function setEduPersonEntitlement($entitlement)
+    public function setEntitlement($entitlement)
     {
 	    if (isset($entitlement)) {
 		    if (is_array($entitlement)) {
-			    $this->setEduPersonEntitlement($entitlement[0]);
+			    $this->setEntitlement($entitlement[0]);
 		    } else {
 			    $this->entitlement = strtolower(Input::sanitize($entitlement));
 		    }
@@ -358,13 +358,13 @@ class Person{
     }
 
     /**
-     * getEduPersonEntitlement - return the entitlement.
+     * getEntitlement - return the entitlement.
      *
      * This results the (relevant) entitlement(s).
      *
      * @return string with the entitlement.
      */
-    public function getEduPersonEntitlement()
+    public function getEntitlement()
     {
 	    return $this->entitlement;
     }

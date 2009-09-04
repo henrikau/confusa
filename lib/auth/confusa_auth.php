@@ -106,7 +106,7 @@ abstract class Confusa_Auth
 
 			$this->person->setName($attributes[$map['cn']][0]);
 			$this->person->setEmail($attributes[$map['mail']][0]);
-			$this->person->setEduPersonEntitlement($attributes[$map['entitlement']][0]);
+			$this->person->setEntitlement($attributes[$map['entitlement']][0]);
 		} else {
 			/* At this point we're on shaky ground as we have to
 			 * 'see if we can find anything'
