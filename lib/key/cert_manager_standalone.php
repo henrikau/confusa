@@ -30,7 +30,7 @@ class CertManager_Standalone extends CertManager
 	public function sign_key($auth_key, $csr)
 	{
 		if ($this->verify_csr($csr)) {
-			$cert_file_name	= tempnam("/tmp/", "REV_CERT");
+			$cert_file_name	= tempnam("/tmp/", "REV_CERT_");
 			$cert_file = fopen($cert_file_name, "w");
 			fclose($cert_file);
 
@@ -51,9 +51,22 @@ class CertManager_Standalone extends CertManager
 				throw new KeySignException("Unable to sign certificate (" . $val[1] . ")");
 			}
 
+			if (!file_exists($cert_file_name)) {
+				$errorCode = create_pw(8);
+				$msg     = "Cannot find temporar certificate file. Please forward the following ";
+				$msg    .= "error-code to the aministrators: [$errorCode]";
+				$logMsg	 = "Temporary certificate file vanished before it could be read. ";
+				$logMsg .= "Please investigate.";
+				Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . "[errorCode] $logMsg");
+				throw new FileNotFoundException($msg);
+			}
 			$cert = file_get_contents($cert_file_name);
+			unlink($cert_file_name);
+
 			if ($cert == null || $cert == "") {
-				throw new KeySignException("Unable to sign certificate using backend scripts.");
+				$msg  = "Unable to sign certificate using backend scripts.<br />\n";
+				$msg .= "The certificate was not found in local file ($cert_file_name) where it was expected to be.<br />\n";
+				throw new KeySignException($msg);
 			}
 			$cert_array = openssl_x509_parse($cert);
 			$diff = (int)$cert_array['validTo_time_t'] - (int)$cert_array['validFrom_time_t'];
@@ -68,7 +81,6 @@ class CertManager_Standalone extends CertManager
 							  $auth_key,
 							  $this->person->getX509ValidCN(),
 							  $this->person->getSubscriberOrgName()));
-				unlink($cert_file_name);
 			} catch (DBStatementException $dbse) {
 				$error_key = create_pw(8);
 				Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
