@@ -182,6 +182,24 @@ class Person{
 	    return $dn;
     }
 
+    function getBrowserFriendlyDN()
+    {
+	$dn = "";
+	$country	= $this->getCountry();
+	$son		= $this->getSubscriberOrgName();
+
+	if (isset($country)) {
+	    $dn .= "C=$country, ";
+	}
+
+	if (isset($son)) {
+	    $dn .= "O=$son, ";
+	}
+
+	$dn .= "CN=" . $this->getX509ValidCN();
+	return $dn;
+
+    }
     /**
      * isAuth - return a boolean value indicating if the person is AuthN
      *
