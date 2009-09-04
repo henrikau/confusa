@@ -92,9 +92,9 @@ abstract class Confusa_Auth
 			$map = AuthHandler::getMap($nren, $subscr);
 		} catch (DBStatementException $dbse) {
 			$msg  = "Your confusa installation is not properly configured. <br />\n";
+			$msg .= "The attribute_mapping table is either missing or malformed.<br />\n";
 			$msg .= "You need to create all tables needed by in order to find the correct attribute-mapping.<br />\n";
-			Framework::error_output($msg);
-			throw new CriticalAttributeException("Cannot get any maps from the database (db not properly initialized)");
+			throw new CriticalAttributeException($msg);
 		}
 
 		/* Normal mapping, this is what we want. */
@@ -147,6 +147,21 @@ abstract class Confusa_Auth
 				$msg  = "No map for your NREN (".$attributes['nren'][0].") is set <br />\n";
 				$msg .= "You need to do this <b>now</b> so the normal users can utilize Confusa's functionality.<br />\n";
 				$msg .= "<br /><center>Go <a href=\"stylist.php?mode=admin&show=map\">here</a> to update the map.</center><br />\n";
+				if (Config::get_config('debug')) {
+					$msg .= "Raw-dump of supplied attrributes:<br />\n";
+					$msg .= "<br /><pre>\n";
+					foreach ($attributes as $key => $val) {
+						$tabs = "\t";
+						if (strlen($key) < 8)
+							$tabs .= "\t\t";
+						
+						else if (strlen($key) < 16)
+							$tabs .= "\t";
+						
+						$msg .= "$key$tabs{$val[0]}\n";
+					}
+					$msg .= "</pre><br />\n";
+				}
 				Framework::error_output($msg);
 			}
 		}
