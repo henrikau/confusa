@@ -69,16 +69,6 @@ abstract class Confusa_Auth
 			Framework::error_output($msg);
 			throw new CriticalAttributeException("Cannot get any maps from the database (db not properly initialized)");
 		}
-		/* has the subscriber-name been updated, i.e. can we find a new map? */
-		if ($subscr != $attributes[$map['epodn']][0]) {
-			try {
-				$map = AuthHandler::getMap($attributes['nren'][0], $attributes[$map['epodn']][0]);
-			} catch (MapNotFoundException $mnfe) {
-				; /* ignore, if the subscriber-map is
-				   * not found, we do not care */
-				;
-			}
-		}
 
 		/* Normal mapping, this is what we want. */
 		if (isset($map) && is_array($map)) {
