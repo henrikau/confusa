@@ -151,6 +151,25 @@ class CertManager_Online extends CertManager
     }
 
     /**
+     * @return the order_number of the certificate, so its status can be
+     * polled from the graphical interface */
+    public function signBrowserCSR($csr)
+    {
+        if (!isset($this->login_name) || !isset($this->login_pw)) {
+            $this->_get_account_information();
+        }
+        /* use the last 64-characters of the CRMF as an auth_key */
+		$auth_key = substr($csr, strlen($csr)-65, strlen($csr)-1);
+        /* FIXME: Recognize IE format, that is PKCS10 */
+        $this->_capi_upload_CSR($auth_key, $csr, 'crmf');
+        $this->_capi_authorize_CSR();
+        $this->cacheInvalidate();
+        $this->sendMailNotification($auth_key, date('Y-m-d H:i'), $_SERVER['REMOTE_ADDR']);
+        Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
+        return $this->order_number;
+    }
+
+    /**
      * Return an array with all the certificates obtained by the person managed by this
      * CertManager.
      * TODO: Retrieve that list once per session and cache it
@@ -239,6 +258,35 @@ class CertManager_Online extends CertManager
         return $res;
     }
 
+    public function pollCertStatus($key)
+    {
+        $key = $this->_transform_to_order_number($key);
+
+        if (!isset($this->login_name) || !isset($this->login_pw)) {
+            $this->_get_account_information();
+        }
+
+        $polling_endpoint = Config::get_config('capi_collect_endpoint') .
+                        "?loginName=" . $this->login_name .
+                        "&loginPassword=" . $this->login_pw .
+                        "&orderNumber=" . $key .
+                        "&queryType=0";
+
+        $ch = curl_init($polling_endpoint);
+        curl_setopt($ch, CURLOPT_HEADER,0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+        $data=curl_exec($ch);
+        curl_close($ch);
+
+        if ($data == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Retrieve a certificate from a remote endpoint (e.g. Comodo).
      * TODO cache the certs locally for 30 minutes, in order
@@ -246,11 +294,12 @@ class CertManager_Online extends CertManager
      *
      * @params key either an order-number that can be used to retrieve a certificate
      * directly or an auth-key with which we can retrieve the order-number
+     *
+     * @param $key The order-number or an auth_key that can be transformed to order_number
      * @throws ConfusaGenException
      */
     public function get_cert($key)
     {
-
         $key = $this->_transform_to_order_number($key);
 
         if (!isset($this->login_name) || !isset($this->login_pw)) {
@@ -289,7 +338,7 @@ class CertManager_Online extends CertManager
             break;
         case $STATUS_PEND:
             Framework::message_output("The certificate is being processed and is not yet available");
-		    return null;
+            return null;
         default:
             /* extract the error status code which is longer than one character */
             $pos = stripos($data, "\n");
@@ -311,7 +360,6 @@ class CertManager_Online extends CertManager
               throw new RemoteAPIException($msg);
             }
         }
-
         return $return_res;
     }
 
@@ -399,6 +447,47 @@ class CertManager_Online extends CertManager
         }
     }
 
+    public function getCertDeploymentScript($key, $browser)
+    {
+
+        $key = $this->_transform_to_order_number($key);
+
+        if (!isset($this->login_name) || !isset($this->login_pw)) {
+          $this->_get_account_information();
+        }
+
+        switch ($browser) {
+        case "firefox":
+            /* if the generating software of the request was firefox, export the
+             * certificate in CMMF format embedded in JavaScript */
+            $collect_endpoint = Config::get_config('capi_collect_endpoint') .
+                                "?loginName=" . $this->login_name .
+                                "&loginPassword=" . $this->login_pw .
+                                "&orderNumber=" . $key .
+                                "&queryType=1" .
+                                "&responseType=4" . /* CMMF */
+                                "&responseEncoding=2" . /* encode in Javascript */
+                                "&responseMimeType=text/javascript" .
+                                /* call that function after the JS variable-declarations */
+                                "&callbackFunctionName=installCertificate";
+
+            $ch = curl_init($collect_endpoint);
+            curl_setopt($ch, CURLOPT_HEADER,0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+            $data=curl_exec($ch);
+            curl_close($ch);
+            file_put_contents("/tmp/deployment.js",$data);
+            return "<script type=\"text/javascript\">$data</script>";
+            break;
+
+        default:
+            throw new ConfusaGenException("Deployment in browser $browser not supported");
+            break;
+        }
+    }
+
     /*
      * Query the remote API for the list of certificates belonging to
      * common_name $common_name. Filter out all the expired certificates.
@@ -463,9 +552,13 @@ class CertManager_Online extends CertManager
      * It is recommended to have this information backed up and
      * stored permanently to keep track of Comodo-issued certificates.
      *
+     * @param $auth_key Identifier for the cert. Usually a sha1sum over the public key.
+     * @param $csr The certificate signing request
+     * @param $csr_format Exactly one of "csr" (PKCS10), "crmf" or "spkac"
+     *
      * @throws ConfusaGenException
     */
-    private function _capi_upload_CSR($auth_key, $csr)
+    private function _capi_upload_CSR($auth_key, $csr, $csr_format = "csr")
     {
         $sign_endpoint = Config::get_config('capi_apply_endpoint');
         $ca_cert_id = Config::get_config('capi_escience_id');
@@ -484,7 +577,7 @@ class CertManager_Online extends CertManager
 
         /* set all the required post parameters for upload */
         $postfields_sign_req["ap"] = $this->ap_name;
-        $postfields_sign_req["csr"] = $csr;
+        $postfields_sign_req[$csr_format] = $csr;
         $postfields_sign_req["days"] = $days;
         $postfields_sign_req["successURL"] = "none";
         $postfields_sign_req["errorURL"] = "none";
@@ -518,13 +611,13 @@ class CertManager_Online extends CertManager
          */
         if (isset($params['errorCode'])) {
             $msg = "Received an error when uploading the CSR to the remote CA: " .
-                $params['errorMessage'] . "\n";
+                $params['errorMessage'] . " " . $params['errorItem'] . "\n";
             throw new RemoteAPIException($msg);
         }
 
         else {
 
-            if (!isset($params['orderNumber']) || !isset($params['collectionCode'])) {
+            if (!isset($params['orderNumber'])) {
                 $msg = "Response looks malformed. Maybe there is a configuration " .
                        "error in Confusa's online-CA configuration!";
                 throw new RemoteAPIException($msg);

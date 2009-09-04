@@ -9,6 +9,7 @@
 	<link rel="shortcut icon" href="graphics/icon.gif" type="image/gif" />
 	<link rel="stylesheet" href="css/confusa2.css" type="text/css" />
 	<script type="text/javascript" src="js/expand_collapse.js"></script>
+	<script type="text/javascript" src="js/cert_request.js"></script>
 
 	{if !is_null($css)}
 		<link rel="stylesheet" href="{$css}" type ="text/css" />

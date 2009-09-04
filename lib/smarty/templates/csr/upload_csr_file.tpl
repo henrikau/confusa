@@ -22,5 +22,36 @@
       </tr>
     </table>
   </fieldset>
-</div> <!-- upload csr -->
 
+<div class="spacer"></div>
+
+<fieldset>
+<legend>Apply for a certificate in browser</legend>
+<div id="info_view">
+	Press the start button to generate a certificate request in your browser
+</div>
+
+<br />
+<form name="reqForm" id="reqForm" onSubmit="return createRequest('{$dn}', {$keysize});" method="post" action="process_csr.php">
+<input id="reqField" type="hidden" name="browserRequest" value="" />
+<input type="submit" name="Send" id="startButton" value="Start" />
+</form>
+</fieldset>
+
+{if isset($order_number)}
+<script type="text/javascript">
+	{if $done === TRUE}
+		statusDone({$order_number});
+	{else}
+		{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
+		setTimeout('window.location="{$status_poll_endpoint}";', 10000);
+		pollStatus('Processing order number {$order_number}.');
+	{/if}
+</script>
+{/if}
+
+{* This part will be JavaScript or another script executable by the browser (ActiveX?) *}
+{if isset($deployment_script)}
+	{$deployment_script}
+{/if}
+</div> <!-- upload csr -->
