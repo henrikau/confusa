@@ -27,13 +27,42 @@ final class ProcessCsr extends FW_Content_Page
 		$res = false;
 		if (isset($_GET['sign_csr'])) {
 			$res = $this->approveCsr(htmlentities($_GET['sign_csr']));
+
+		} else if (isset($_GET['status_poll'])) {
+			$order_number = htmlentities($_GET['status_poll']);
+			/* assign the order_number again */
+			$this->tpl->assign('order_number', $order_number);
+
+			if ($this->certManager->pollCertStatus($order_number)) {
+			    $this->tpl->assign('done', TRUE);
+			}
+		} else if (isset($_GET['install_cert'])) {
+			$order_number = Input::sanitize($_GET['install_cert']);
+			// FIXME: I am a hardcoded parameter and I don't like that state!
+			$script = $this->certManager->getCertDeploymentScript($order_number, "firefox");
+			$this->tpl->assign('deployment_script', $script);
 		}
+
+
+		if (isset($_POST['browserRequest'])) {
+			$request = trim($_POST['browserRequest']);
+			$request = str_replace(array("\n","\r"),array('',''),$request);
+			if (!empty($request)) {
+				$order_number = $this->approveBrowserGenerated($request);
+				$this->tpl->assign('order_number', $order_number);
+				$poll_endpoint = $_SERVER['PHP_SELF'] . "?status_poll=$order_number";
+				$this->tpl->assign('status_poll_endpoint', $poll_endpoint);
+				$res = true;
+			}
+		}
+
 		return $res;
 
 	}
-	
+
 	public function process()
 	{
+
 		/* show upload-form. If it returns false, no uploaded CSRs were processed */
 		$this->processFileCSR($this->person);
 
@@ -48,6 +77,10 @@ final class ProcessCsr extends FW_Content_Page
 			$this->tpl->assign('signingOk', $this->signing_ok);
 			$this->tpl->assign('sign_csr', htmlentities($_GET['sign_csr']));
 		}
+
+		$browser_adapted_dn = $this->person->getBrowserFriendlyDN();
+		$this->tpl->assign('dn',		$browser_adapted_dn);
+		$this->tpl->assign('keysize',		Config::get_config('key_length'));
 		$this->tpl->assign('inspect_csr',	$this->tpl->fetch('csr/inspect_csr.tpl'));
 		$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
 		$this->tpl->assign('list_all_csr',	$this->tpl->fetch('csr/list_all_csr.tpl'));
@@ -158,9 +191,16 @@ final class ProcessCsr extends FW_Content_Page
 				return false;
 			}	
 		}
+
 		return $res;
 	}
 
+
+	private function approveBrowserGenerated($csr)
+	{
+		$order_number = $this->certManager->signBrowserCSR($csr);
+		return $order_number;
+	}
 
 	/**
 	 * approveCsr - send the CSR to cert-manager for signing
