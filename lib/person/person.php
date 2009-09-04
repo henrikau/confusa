@@ -555,9 +555,7 @@ class Person{
     public function isNRENAdmin()
     {
 	    /* test attribute to see if the person is NREN-admin */
-	    if ((int)$this->getAdminStatus() == NREN_ADMIN) {
-		    return true;
-            }
+	    return $this->getAdminStatus() == NREN_ADMIN;
     }
     public function isSubscriberAdmin()
     {
