@@ -26,11 +26,54 @@ final class CP_ProcessCsr extends FW_Content_Page
 		$this->signing_ok = false;
 	}
 
+	/**
+	 * pre_process - run before the template-system is called into action.
+	 *
+	 * We use this to test for pending certificate requests in the
+	 * POST-hold.
+	 *
+	 * @param Person $person
+	 */
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
 		$res = false;
 		if (isset($_GET['sign_csr'])) {
+			/* assert attributes
+			 * eppn		: tested when the person is decorated
+			 * epodn	: must be set, cannot determine anything
+			 *		  else (the signing will match it to a
+			 *		  set of known rules etc)
+			 * mail
+			 * full name
+			 * entitlement
+			 */
+			$error_msg = null;
+			$epodn = $this->person->getSubscriberOrgName();
+			if (!isset($epodn) || $epodn === "") {
+				$error_msg .= "<li>Need a properly formatted Subscriber name, got: $epodn</li>\n";
+			}
+			$mail = $this->person->getEmail();
+			if (!isset($mail) || $mail === "") {
+				$error_msg .= "<li>Need an email-address to send notifications to, got $mail</li>\n";
+			}
+			$cn = $this->person->getX509ValidCN();
+			if (!isset($cn) || $cn === "") {
+				$error_msg .= "<li>Need the common-name to place in the certificate, Got $cn</li>\n";
+			}
+			if (!$this->person->testEntitlementAttribute('confusa')) {
+				$error_msg .= "<li>The 'confusa' attribute is not set in the list of available entitleement attributes. ";
+				$error_msg .= "You are not eligble to use Confusa for certificate signing!</li>\n";
+			}
+			if (isset($error_msg)) {
+				$msg  = "Error(s) with attributes!<br />\n";
+				$msg .= "<ul>$error_msg</ul>\n";
+				$msg .= "<br />\n";
+				$msg .= "This means that you do <b>not</b> qualify for certificates at this point in time.<br />\n";
+				$msg .= "Please contact your local IT-support to resolve this issue.<br />\n";
+				Framework::error_output($msg);
+				return false;
+			}
 			$res = $this->approveCsr(htmlentities($_GET['sign_csr']));
 		}
 		return $res;
@@ -173,6 +216,10 @@ final class CP_ProcessCsr extends FW_Content_Page
 	 * This function approves a CSR for signing. It uses the auth-token as a
 	 * paramenter to find the CSR in the database coupled with the valid CN for the
 	 * user.
+	 *
+	 * @param String $authToken the unique id of the CSR the user wants to
+	 * approve for signing.
+	 *
 	 */
 	private function approveCSR($authToken)
 	{
