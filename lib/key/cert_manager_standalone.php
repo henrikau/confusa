@@ -142,6 +142,16 @@ class CertManager_Standalone extends CertManager
         return $res;
     }
 
+    public function signBrowserCSR($csr)
+    {
+	/* I am feeling all stubby */
+    }
+
+    public function pollCertStatus($key)
+    {
+	/* I am feeling all stubby */
+    }
+
     /*
      * Get the certificate bound to key $key from the database
      *
@@ -165,6 +175,12 @@ class CertManager_Standalone extends CertManager
             $msg .= "Queried for key $key and CN $cn\n";
             throw new DBQueryException($msg);
         }
+    }
+
+    public function getCertDeploymentScript($key, $browser)
+    {
+	/* TODO: I am feeling all stubby */
+	return "<script type=\"text/javascript\">var g_ccc=\"\"</script>";
     }
 
     /**

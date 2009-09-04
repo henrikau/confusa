@@ -50,6 +50,18 @@ abstract class CertManager
    */
   abstract function sign_key($auth_key, $csr);
 
+   /**
+    * Sign a CSR as received from the browser's crypto mechanisms.
+    * Since these cert requests are not always in PKCS#10 format, handle them
+    * specifically to the browser from which they originate
+    */
+  abstract function signBrowserCSR($csr);
+
+  /**
+   * Get the (browser-specific) deployment script for a certain certificate
+   * Usually this should return some JavaScript that will call installCertificate()
+   */
+  abstract function getCertDeploymentScript($key, $browser);
   /*
    * Get a list of all the certificates issued for the managed person.
    * Note that the returned list is implementation dependant.
@@ -58,6 +70,8 @@ abstract class CertManager
    */
   abstract function get_cert_list();
 
+
+  abstract function pollCertStatus($key);
   /*
    * Return the certificate associated to key $key
    *
