@@ -15,10 +15,16 @@ require_once 'MapNotFoundException.php';
 /**
  * Confusa_Auth - base class for all authentication managers
  *
- * classes providing authN are supposed to implement all three of
+ * Classes providing authN are supposed to implement:
  * 		- authenticateUser()
+ *
  * 		- checkAuthentication()
+ *
+ *		- getAttributeKeys()
+ *
  * 		- deAuthenticateUser()
+ *
+ *		- softLogout()
  */
 abstract class Confusa_Auth
 {
@@ -49,6 +55,27 @@ abstract class Confusa_Auth
 		return $this->person;
 	}
 
+	/**
+	 * decoratePerson - get the supplied attributes and add to the correct
+	 * fields in person
+	 *
+	 * This function is a bit fragile. The reason for this, is that it needs
+	 * to 'bootstrap' the map for person-identifier (eduPersonPrincipalName)
+	 * through various encodings.
+	 *
+	 * One way would be to add a specific mapping for all known NRENs, but
+	 * we'd rather add a generic approach and just try the known encodings
+	 * and see if we find something there.
+	 *
+	 * If, for some reason, a new NREN/IdP fails to correctly decorate the
+	 * person-object, the problem most likely starts here.
+	 *
+	 * @author Henrik Austad <henrik.austad@uninett.no>
+	 * @author Thomas Zangerl <tzangerl@pdc.kth.se>
+	 *
+	 * @param array $attributes
+	 * @throws MapNotFoundException
+	 */
 	public function decoratePerson($attributes)
 	{
 		if (!isset($attributes)) {
@@ -140,11 +167,15 @@ abstract class Confusa_Auth
 	/**
 	 * Authenticate the idenitity of a user, using a free-of-choice method to be
 	 * implemented by subclasses
+	 *
+	 * @return boolean $authN indicating if the user was successfully authenticated
 	 */
 	public abstract function authenticateUser();
+
 	/**
 	 * Check (possibly by polling a subsystem), if a user is still authN.
-	 * @return True or false, reflecting the authN status
+	 *
+	 * @return boolean $authN describing whether user is authenticated or not.
 	 */
 	public abstract function checkAuthentication();
 
@@ -158,18 +189,23 @@ abstract class Confusa_Auth
 	 * The function shall perform rudimentary filtering, keys suchs as
 	 * 'country' and 'nren' should not be exposed. Neither should any other
 	 * Confusa-specific keys be exported.
-	 * 
+	 *
+	 * @return array of attribute-keys.
 	 */
 	public abstract function getAttributeKeys();
 
 	/**
 	 * "Logout" the user, possibly using the subsystem. To be implemented by
 	 * subclasses
+	 *
+	 * @return void
 	 */
 	public abstract function deAuthenticateUser();
 
 	/**
 	 * softLogout() - try to bump the authenticated session to force re-authN.
+	 *
+	 * @return void
 	 */
 	public abstract function softLogout();
 }
