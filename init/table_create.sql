@@ -293,7 +293,8 @@ CREATE TABLE IF NOT EXISTS robot_cert (
        -- sent to the subscriber in periodic intervals. If the
        -- certificate is about to expire, this is the last time a
        -- warning was sent.
-       last_warning_sent DATETIME NOT NULL,
+       -- If no warning has been sent, this field should be NULL
+       last_warning_sent DATETIME,
 
        cert TEXT NOT NULL,
 
