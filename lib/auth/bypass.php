@@ -22,7 +22,7 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 			'country'			=> array('NO'),
 			'organization'			=> array('test_subscriber'),
 			'nren'				=> array('testnren'),
-			'eduPersonEntitlement2'		=> array('confusaAdmin')
+			'eduPersonEntitlement2'		=> array('confusaAdmin', 'confusa')
 			);
 	}
 
