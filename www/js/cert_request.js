@@ -53,7 +53,11 @@ function statusDone(key) {
 function createRequest(dn, keysize)
 {
 	if (window.crypto) {
-		crmf=crypto.generateCRMFRequest(dn, "regToken", "authenticator", null, "checkCRMF();" , keysize, null, "rsa-dual-use");
+		try {
+			crmf=crypto.generateCRMFRequest(dn, "regToken", "authenticator", null, "checkCRMF();" , keysize, null, "rsa-dual-use");
+		} catch (e) {
+		    alert("Could not generate a new certificate signing request.\nProblem is " + e);
+		}
 
 		if (crmf.request.substring(0,6) == "error:") {
 			alert("Error occured: " + crmf);
@@ -75,15 +79,10 @@ function createRequest(dn, keysize)
  */
 function installCertificate()
 {
-	var error = window.crypto.importUserCertificates("Confusa certificate", g_ccc, true);
-
-	/* there seems to be a bug in the crypto-API causing Firefox to not return an error
-	 * code
-	 *
-	 * TODO: figure out some other way to find out if the import worked or failed
-	 * */
-	if (error != "") {
-		alert("The following error occured when trying to install the certificate: " +
-				error);
+	try {
+		var error = window.crypto.importUserCertificates("Confusa certificate", g_ccc, true);
+	} catch (e) {
+		alert("Installation FAILED!\nNote that you can only install " +
+		"certificates for which your browser has\nthe respective private key! ");
 	}
 }
