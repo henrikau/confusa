@@ -73,6 +73,8 @@ final class CP_DownloadCertificate extends FW_Content_Page
 			}
 		}
 
+		else if (isset($_GET['install_cert']))
+			$this->installCert(htmlentities($_GET['install_cert']));
 	} /* end process_db_cert */
 
 	/**
@@ -88,6 +90,11 @@ final class CP_DownloadCertificate extends FW_Content_Page
 			$this->tpl->assign('processingResult', 'Certificate deleted');
 		}
 	} /* end deleteCert */
+
+	private function installCert($authKey)
+	{
+	    $this->tpl->assign("script", $this->certManager->getCertDeploymentScript($authKey, "firefox"));
+	}
 
 	/**
 	 * inspectCert - take a given authKey and inspect the certificate it

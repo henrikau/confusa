@@ -93,6 +93,7 @@
 					[Email]
 					[Download]
 					[Inspect]
+					[Install]
 					</td>
 				{else}
 				<td>
@@ -116,6 +117,14 @@
 					 title="Inspect certificate details"
 					 class="url">
 				    Inspect
+				  </a>
+				  <br />
+				  <a href="download_certificate.php?install_cert={$cert.order_number}">
+				    <img src="graphics/database_add.png"
+				    alt=""
+				    title="Install certificate to keystore"
+				    class="url" />
+				    Install to keystore
 				  </a>
 				  <br />
 
@@ -153,3 +162,6 @@
 	</div>
 {/if} {* empty(certList) *}
 {$processingResult}
+{if isset($script)}
+{$script}
+{/if}
