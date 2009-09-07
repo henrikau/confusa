@@ -8,6 +8,7 @@ require_once 'file_upload.php';
 require_once 'config.php';
 require_once 'send_element.php';
 require_once 'input.php';
+require_once 'output.php';
 
 /**
  * ProcessCsr - the web frontend for handling of CSRs
@@ -51,8 +52,7 @@ final class CP_ProcessCsr extends FW_Content_Page
 			}
 		} else if (isset($_GET['install_cert'])) {
 			$order_number = Input::sanitize($_GET['install_cert']);
-			// FIXME: I am a hardcoded parameter and I don't like that state!
-			$script = $this->certManager->getCertDeploymentScript($order_number, "firefox");
+			$script = $this->certManager->getCertDeploymentScript($order_number, getUserAgent());
 			$this->tpl->assign('deployment_script', $script);
 		}
 
@@ -60,8 +60,9 @@ final class CP_ProcessCsr extends FW_Content_Page
 		if (isset($_POST['browserRequest'])) {
 			$request = trim($_POST['browserRequest']);
 			$request = str_replace(array("\n","\r"),array('',''),$request);
+			$browser = $_POST['browser'];
 			if (!empty($request)) {
-				$order_number = $this->approveBrowserGenerated($request);
+				$order_number = $this->approveBrowserGenerated($request, getUserAgent());
 				$this->tpl->assign('order_number', $order_number);
 				$poll_endpoint = $_SERVER['PHP_SELF'] . "?status_poll=$order_number";
 				$this->tpl->assign('status_poll_endpoint', $poll_endpoint);
@@ -208,10 +209,9 @@ final class CP_ProcessCsr extends FW_Content_Page
 		return $res;
 	}
 
-
-	private function approveBrowserGenerated($csr)
+	private function approveBrowserGenerated($csr, $browser)
 	{
-		$order_number = $this->certManager->signBrowserCSR($csr);
+		$order_number = $this->certManager->signBrowserCSR($csr, $browser);
 		return $order_number;
 	}
 
