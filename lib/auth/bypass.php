@@ -20,7 +20,8 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 			'eduPersonPrincipalName'	=> array('ola.nordmann@norge.no'),
 			'mail2'				=> array('ola.nordmann@norge.no'),
 			'country'			=> array('NO'),
-			'organization'			=> array('test_subscriber'),
+			/* 'organization'			=> array('test_subscriber'), */
+			'organization'			=> array('o=Hogwarts, dc=hsww, dc=wiz'),
 			'nren'				=> array('testnren'),
 			'eduPersonEntitlement2'		=> array('confusaAdmin', 'confusa')
 			);
