@@ -55,7 +55,7 @@ abstract class CertManager
     * Since these cert requests are not always in PKCS#10 format, handle them
     * specifically to the browser from which they originate
     */
-  abstract function signBrowserCSR($csr);
+  abstract function signBrowserCSR($csr, $browser);
 
   /**
    * Get the (browser-specific) deployment script for a certain certificate

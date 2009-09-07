@@ -165,7 +165,7 @@ class CertManager_Standalone extends CertManager
         return $res;
     }
 
-    public function signBrowserCSR($csr)
+    public function signBrowserCSR($csr, $browser)
     {
 	/* I am feeling all stubby */
     }

@@ -164,7 +164,7 @@ class CertManager_Online extends CertManager
     /**
      * @return the order_number of the certificate, so its status can be
      * polled from the graphical interface */
-    public function signBrowserCSR($csr)
+    public function signBrowserCSR($csr, $browser)
     {
         if (!isset($this->login_name) || !isset($this->login_pw)) {
             $this->_get_account_information();
@@ -172,7 +172,21 @@ class CertManager_Online extends CertManager
         /* use the last 64-characters of the CRMF as an auth_key */
 		$auth_key = substr($csr, strlen($csr)-65, strlen($csr)-1);
         /* FIXME: Recognize IE format, that is PKCS10 */
-        $this->_capi_upload_CSR($auth_key, $csr, 'crmf');
+
+        switch($browser) {
+        case "firefox":
+            $this->_capi_upload_CSR($auth_key, $csr, 'crmf');
+            break;
+
+        case "msie_post_vista":
+            $this->_capi_upload_CSR($auth_key, $csr, 'csr');
+            break;
+
+        default:
+            throw new ConfusaGenException("Browser $browser is unsupported!");
+            break;
+        }
+
         $this->_capi_authorize_CSR();
         $this->cacheInvalidate();
         $this->sendMailNotification($auth_key, date('Y-m-d H:i'), $_SERVER['REMOTE_ADDR']);
@@ -489,7 +503,27 @@ class CertManager_Online extends CertManager
             curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
             $data=curl_exec($ch);
             curl_close($ch);
-            file_put_contents("/tmp/deployment.js",$data);
+            return "<script type=\"text/javascript\">$data</script>";
+            break;
+
+        case "msie_post_vista":
+            $collect_endpoint = Config::get_config('capi_collect_endpoint') .
+                                   "?loginName=" . $this->login_name .
+                                "&loginPassword=" . $this->login_pw .
+                                "&orderNumber=" . $key .
+                                "&queryType=1" .
+                                "&responseType=2" . /* PKCS#7 */
+                                "&responseEncoding=2" . /* encode in Javascript */
+                                "&responseMimeType=text/javascript" .
+                                /* call that function after the JS variable-declarations */
+                                "&callbackFunctionName=installCertificate";
+            $ch = curl_init($collect_endpoint);
+            curl_setopt($ch, CURLOPT_HEADER,0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+            $data=curl_exec($ch);
+            curl_close($ch);
             return "<script type=\"text/javascript\">$data</script>";
             break;
 
