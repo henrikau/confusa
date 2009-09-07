@@ -4,6 +4,7 @@ require_once 'framework.php';
 require_once 'person.php';
 require_once 'mail_manager.php';
 require_once 'confusa_gen.php';
+require_once 'output.php';
 
 final class CP_DownloadCertificate extends FW_Content_Page
 {
@@ -93,7 +94,7 @@ final class CP_DownloadCertificate extends FW_Content_Page
 
 	private function installCert($authKey)
 	{
-	    $this->tpl->assign("script", $this->certManager->getCertDeploymentScript($authKey, "firefox"));
+	    $this->tpl->assign("script", $this->certManager->getCertDeploymentScript($authKey, getUserAgent()));
 	}
 
 	/**
