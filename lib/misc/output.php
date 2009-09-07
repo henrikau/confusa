@@ -102,5 +102,26 @@ function show_window($url_name, $target)
 	return $help;
 }
 
+/**
+ * getUserAgent - return the browser of the user
+ * certificate deployment scripts and similar javascript functionality
+ * needs browser-specific treatment
+ *
+ * @return The name of the user-agent of the user
+ */
+function getUserAgent()
+{
+	$userAgent=$_SERVER['HTTP_USER_AGENT'];
+
+	if (strstr(strtolower($userAgent), "firefox")) {
+		 return "firefox";
+	} else if (strstr(strtolower($userAgent), "msie")) {
+		if (strstr(strtolower($userAgent), "Windows NT 5.")) {
+			return "msie_pre_vista";
+		} else {
+			return "msie_post_vista";
+		}
+	}
+}
 
 ?>
