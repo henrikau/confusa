@@ -165,6 +165,48 @@ abstract class CertManager
 			  $msg);
     $mm->send_mail();
   } /* end sendMailNotification */
+
+  /**
+   * verifyAttributes()	test the attributes set for person to see if all is set properly.
+   *
+   *
+   * Test to see if the attributes are valid for the user, and if all required
+   * attributes are set.
+   *
+   * @param void
+   * @return String|null List of errors with attributes, null if no errors found
+   */
+  public function verifyAttributes()
+  {
+	  /* assert attributes
+	   * eppn		: tested when the person is decorated
+	   * epodn	: must be set, cannot determine anything
+	   *		  else (the signing will match it to a
+	   *		  set of known rules etc)
+	   * mail
+	   * full name
+	   * entitlement
+	   */
+	  $error_msg = null;
+	  $epodn = $this->person->getSubscriberOrgName();
+	  if (!isset($epodn) || $epodn === "") {
+		  $error_msg .= "<li>Need a properly formatted Subscriber name, got: $epodn</li>\n";
+	  }
+	  $mail = $this->person->getEmail();
+	  if (!isset($mail) || $mail === "") {
+		  $error_msg .= "<li>Need an email-address to send notifications to, got $mail</li>\n";
+	  }
+	  $cn = $this->person->getX509ValidCN();
+	  if (!isset($cn) || $cn === "") {
+		  $error_msg .= "<li>Need the common-name to place in the certificate, Got $cn</li>\n";
+	  }
+	  if (!$this->person->testEntitlementAttribute('confusa')) {
+		  $error_msg .= "<li>The 'confusa' attribute is not set in the list of available entitlement attributes. ";
+		  $error_msg .= "You are not eligble to use Confusa for certificate signing!</li>\n";
+	  }
+	  return $error_msg;
+  } /* end verifyAttributes() */
+
 } /* end class CertManager */
 
 class CertManagerHandler
