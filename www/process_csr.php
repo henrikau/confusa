@@ -62,7 +62,7 @@ final class CP_ProcessCsr extends FW_Content_Page
 				$error_msg .= "<li>Need the common-name to place in the certificate, Got $cn</li>\n";
 			}
 			if (!$this->person->testEntitlementAttribute('confusa')) {
-				$error_msg .= "<li>The 'confusa' attribute is not set in the list of available entitleement attributes. ";
+				$error_msg .= "<li>The 'confusa' attribute is not set in the list of available entitlement attributes. ";
 				$error_msg .= "You are not eligble to use Confusa for certificate signing!</li>\n";
 			}
 			if (isset($error_msg)) {
