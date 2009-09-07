@@ -21,7 +21,11 @@ function checkCRMF() {
 function pollStatus(message) {
 	var info_view = document.getElementById("info_view");
 
-	info_view.innerHTML = message;
+	info_view.innerHTML = message + "<br /><br />Please don't close the window " +
+	"and wait until processing is finished. That will take, depending on load " +
+	"about <b>2 minutes</b>. Then, install the certificate.<br /><br />" +
+	"If something goes wrong, you can install the certificate later from the " +
+	"download area!";
 	var numDots = message.substring(message.indexOf("."), message.length).length;
 
 	if (numDots >= 5) {
@@ -52,7 +56,13 @@ function statusDone(key) {
  */
 function createRequest(dn, keysize)
 {
+
 	if (window.crypto) {
+
+		if (!confirm("Really request and sign a new X.509 certificate for\nDN " + dn + "?")) {
+		    return false;
+		}
+
 		try {
 			crmf=crypto.generateCRMFRequest(dn, "regToken", "authenticator", null, "checkCRMF();" , keysize, null, "rsa-dual-use");
 		} catch (e) {
@@ -83,6 +93,6 @@ function installCertificate()
 		var error = window.crypto.importUserCertificates("Confusa certificate", g_ccc, true);
 	} catch (e) {
 		alert("Installation FAILED!\nNote that you can only install " +
-		"certificates for which your browser has\nthe respective private key! ");
+		"certificates for browser-generated requests! ");
 	}
 }
