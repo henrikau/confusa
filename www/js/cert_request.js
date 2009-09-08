@@ -128,11 +128,12 @@ function installIEVistaCertificate()
 {
     var classFactory = new ActiveXObject("X509Enrollment.CX509EnrollmentWebClassFactory");
     var objEnroll = classFactory.CreateObject("X509Enrollment.CX509Enrollment");
+    objEnroll.Initialize(1) /* the request is for a user */
     /*
      * 0x4 in the first parameter: allow untrusted root
      * 0x1 in the last paremeter: certificate is base-64 encoded
      */
-    objEnroll.installResponse(0x4, g_ccc, 0x1);
+    objEnroll.InstallResponse(4, g_ccc, 1, "");
 }
 
 function installMozillaCertificate()
