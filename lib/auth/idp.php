@@ -61,7 +61,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		}
 
 		$this->assertAttributes($attributes);
-		$this->person->setAuth(true);
+		$this->person->setAuth($this->person->getSession()->isValid());
 	}
 
 	/**
