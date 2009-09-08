@@ -428,14 +428,21 @@ class Person{
     /**
      * getEntitlement()  Returns the (relevant) entitlement(s).
      *
-     * @fixme Need to return a string describing the entitlements, not the array.
-     *
-     * @param void
+     * @param  Boolean True if we want a string-representation of the entitlement
      * @return String with the entitlement.
      */
-    public function getEntitlement()
+    public function getEntitlement($stringify = true)
     {
-	    return $this->entitlement;
+	    if ($stringify) {
+		    $res = "";
+		    foreach($this->entitlement as $key => $val) {
+			    $res .= "$val, ";
+		    }
+		    $res = substr($res, 0, strlen($res)-2);
+	    } else {
+		    $res = $this->entitlement;
+	    }
+	    return $res;
     }
 
     /**
