@@ -41,7 +41,10 @@
 {if isset($order_number)}
 <script type="text/javascript">
 	{* No need to press "Start" once the order number is set *}
-	document.getElementById("startButton").setAttribute("style","display: none");
+	var startButton = document.getElementById("startButton");
+	startButton.setAttribute("style","display: none");
+	{* IE workaround *}
+	startButton.style.cssText = "display: none";
 	{if $done === TRUE}
 		statusDone({$order_number});
 	{else}
