@@ -58,27 +58,35 @@ function statusDone(key) {
 
 function createIEVistaRequest(dn, keysize)
 {
-    var classFactory = new ActiveXObject("X509Enrollment.CX509EnrollmentWebClassFactory");
+    try {
+	var classFactory = new ActiveXObject("X509Enrollment.CX509EnrollmentWebClassFactory");
 
-    // Declaration of the objects
-    var objEnroll = classFactory.CreateObject("X509Enrollment.CX509Enrollment");
-    var objPrivateKey = classFactory.CreateObject("X509Enrollment.CX509PrivateKey");
-    var objRequest = classFactory.CreateObject("X509Enrollment.CX509CertificateRequestPkcs10");
-    var objDN = classFactory.CreateObject("X509Enrollment.CX500DistinguishedName");
+	// Declaration of the objects
+	var objEnroll = classFactory.CreateObject("X509Enrollment.CX509Enrollment");
+	var objPrivateKey = classFactory.CreateObject("X509Enrollment.CX509PrivateKey");
+	var objRequest = classFactory.CreateObject("X509Enrollment.CX509CertificateRequestPkcs10");
+	var objDN = classFactory.CreateObject("X509Enrollment.CX500DistinguishedName");
 
-    // Specify the name of the cryptographic provider.
-    objPrivateKey.ProviderName = "Microsoft Enhanced RSA and AES Cryptographic Provider";
+	// Specify the name of the cryptographic provider.
+	objPrivateKey.ProviderName = "Microsoft Enhanced RSA and AES Cryptographic Provider";
 
-    /* allow signing */
-    objPrivateKey.KeySpec = 0x2;
-    objPrivateKey.Length=keysize;
-    /* use "RSA-full" as the key algorithm */
-    objPrivateKey.ProviderType = "1";
-    objRequest.InitializeFromPrivateKey(1, objPrivateKey, "");
-    objDN.Encode(dn, 0);
-    objRequest.Subject = objDN;
-    objEnroll.InitializeFromRequest(objRequest);
-    request = objEnroll.CreateRequest(1);
+	/* allow signing */
+	objPrivateKey.KeySpec = 0x2;
+	objPrivateKey.Length=keysize;
+	/* use "RSA-full" as the key algorithm */
+	objPrivateKey.ProviderType = "1";
+	objRequest.InitializeFromPrivateKey(1, objPrivateKey, "");
+	objDN.Encode(dn, 0);
+	objRequest.Subject = objDN;
+	objEnroll.InitializeFromRequest(objRequest);
+	request = objEnroll.CreateRequest(1);
+    } catch (e) {
+	var message="Hit the following error upon key generation: " + e.description
+	+ "\nIs the Confusa instance configured as a trusted site?";
+	alert(message);
+	return false;
+    }
+
     checkWindowsRequest(request);
     return false;
 }
@@ -126,14 +134,20 @@ function createRequest(dn, keysize)
 
 function installIEVistaCertificate()
 {
-    var classFactory = new ActiveXObject("X509Enrollment.CX509EnrollmentWebClassFactory");
-    var objEnroll = classFactory.CreateObject("X509Enrollment.CX509Enrollment");
-    objEnroll.Initialize(1) /* the request is for a user */
-    /*
-     * 0x4 in the first parameter: allow untrusted root
-     * 0x1 in the last paremeter: certificate is base-64 encoded
-     */
-    objEnroll.InstallResponse(4, g_ccc, 1, "");
+    try {
+	var classFactory = new ActiveXObject("X509Enrollment.CX509EnrollmentWebClassFactory");
+	var objEnroll = classFactory.CreateObject("X509Enrollment.CX509Enrollment");
+	objEnroll.Initialize(1) /* the request is for a user */
+	/*
+	 * 0x4 in the first parameter: allow untrusted root
+	 * 0x1 in the last paremeter: certificate is base-64 encoded
+	 */
+	objEnroll.InstallResponse(4, g_ccc, 1, "");
+    } catch (e) {
+	var message="Hit the following problem when trying to install the cert: " + e.description
+	+ "\nIs the Confusa instance configured as a trusted site?";
+	alert(message);
+    }
 }
 
 function installMozillaCertificate()
