@@ -23,7 +23,8 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 			/* 'organization'			=> array('test_subscriber'), */
 			'organization'			=> array('o=Hogwarts, dc=hsww, dc=wiz'),
 			'nren'				=> array('testnren'),
-			'eduPersonEntitlement2'		=> array('confusaAdmin', 'confusa')
+			'eduPersonEntitlement2'		=> array('urn:mace:feide.no:sigma.uninett.no:confusaAdmin',
+								 'urn:mace:feide.no:sigma.uninett.no:confusa')
 			);
 	}
 
