@@ -63,3 +63,20 @@ actions.
   </form>
 </fieldset>
 
+<br />
+<fieldset>
+  <legend>Upload new certificate for <i>{$person->getSubscriberOrgName()}</i></legend>
+  <br />
+  <form enctype="multipart/form-data" action="" METHOD="POST">
+    <input type="hidden" name="robot_action" value="upload_new" />
+    <input type="hidden"
+	   name="MAX_FILE_SIZE"
+	   value="2000000" />
+    <input name="cert" TYPE="file" />
+    <input type="submit" value="Upload Certificate" />
+  </form>
+  <br />
+</fieldset>
+
+<br />
+
