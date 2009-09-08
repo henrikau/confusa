@@ -429,11 +429,18 @@ class Person{
     /**
      * getEntitlement()  Returns the (relevant) entitlement(s).
      *
+     * The function will return either a string-represenatation of the
+     * entitlement if $strigify is true, otherwise it will return the array as
+     * it is stored internally by person.
+     *
      * @param  Boolean True if we want a string-representation of the entitlement
-     * @return String with the entitlement.
+     * @return mixed The entitlement if set. null otherwise
      */
     public function getEntitlement($stringify = true)
     {
+	    if (!isset($this->entitlement) || !is_array($this->entitlement)) {
+		    return null;
+	    }
 	    if ($stringify) {
 		    $res = "";
 		    foreach($this->entitlement as $key => $val) {
