@@ -402,8 +402,9 @@ class Person{
      * setEntitlement() store the entitlement
      *
      * The entitlement is set by the IdP for the user, and we use this to test
-     * for admins. This is not a sufficicent conditions, but is is a necessary
-     * one.
+     * for admins and eligble users. This is not something Person should care
+     * about, so all we do here is adding the entitlements into an associative
+     * array so we can search for explicit attributes later.
      *
      * @param mixed $entitlement for the person.
      * @return void
