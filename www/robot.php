@@ -12,8 +12,11 @@ class CP_Robot_Interface extends Content_Page
 		if (isset($_POST['robot_action'])) {
 			$action = Input::sanitize($_POST['robot_action']);
 			switch($action) {
-			case 'add_new':
-				Framework::message_output("Adding new certificate!");
+			case 'paste_new':
+				$this->handlePasteCertificate(Input::sanitize($_POST['cert']));
+				break;
+			case 'upload_new':
+				$this->handleFileCertificate();
 				break;
 			default:
 				Framework::error_output("Unknown robot-action ($action)");
@@ -54,6 +57,23 @@ class CP_Robot_Interface extends Content_Page
 		print_r($res);
 		echo "</pre>\n";
 		return $res;
+	}
+
+	private function handlePasteCertificate($cert)
+	{
+		if (!isset($cert) || $cert == "") {
+			Framework::error_output("no certificate found in uploaded data!");
+			return false;
+		}
+		Framework::message_output("Adding new certificate! (paste)");
+	}
+	private function handleFileCertificate()
+	{
+		Framework::message_output("Adding new certificate! (file)");
+	}
+	private function insertNewCertificate($cert)
+	{
+		echo "insertint certificate, running tests etc before accepting<br />\n";
 	}
 }
 
