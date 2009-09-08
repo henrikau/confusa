@@ -209,6 +209,21 @@ $confusa_config = array(
 	'language.available'	=> array('en', 'sv', 'de', 'lb'),
 	'language.default'	=> 'en',
 
+	/* entitlement namespace
+	 *
+	 * This is to allow an instance to configure another namespace. This
+	 * should be the entire string except the actual attribute.
+	 *
+	 * If the entire attribute is
+	 *
+	 *	urn:mace:some.idp.org:some.sub.domain:confusa
+	 *
+	 * the namespace-value should be:
+	 *
+	 *	urn:mace:some.idp.org:some.sub.domain
+	 */
+	'entitlement_namespace'	=> null,
+
 	/* this should be set to true when config is verified (or the file has
 	 * been updated and not just copied)
 	 * This should also find all the users that doesn't read the config file

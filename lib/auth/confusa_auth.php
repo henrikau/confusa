@@ -123,7 +123,30 @@ abstract class Confusa_Auth
 
 			$this->person->setName($attributes[$map['cn']][0]);
 			$this->person->setEmail($attributes[$map['mail']][0]);
-			$this->person->setEntitlement($attributes[$map['entitlement']]);
+
+
+			/* test namespace
+			 *
+			 * we are looking for (atm)
+			 * urn:mace:feide.no:sigma.uninett.no:<attribute>
+			 */
+			$entitlements = $attributes[$map['entitlement']];
+			foreach ($entitlements as $key => $entitlementValue) {
+				$namespace = Config::get_config('entitlement_namespace');
+				$pos = strpos($entitlementValue, $namespace);
+				/* Note: we *must* check for both false *and*
+				 * type, as we want pos to be 0 */
+				if ($pos === false || (int)$pos != 0) {
+					continue;
+				} else {
+					$val = explode(":", $entitlementValue);
+					if (count($val) !== (count(explode(":", $namespace))+1)) {
+						Framework::error_output("Error with namespace, too manu objects in namespace (" . count($val) . ")");
+						continue;
+					}
+					$this->person->setEntitlement($val[count($val)-1]);
+				}
+			}
 		} else {
 			/* At this point we're on shaky ground as we have to
 			 * 'see if we can find anything'
