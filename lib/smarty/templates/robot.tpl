@@ -1,17 +1,17 @@
 <h3>Robot Interface</h3>
 <br />
 <p class="info">
-This is where you administer the robotic interface for your
-institution. You can upload new certificates that will be accepted by
-Confusa, or you can delete certificates from the store. When you delete
-a certificate, that certificate will no longer be accepted for robotic
-actions.
+In this section you will find information about already uploaded
+certificates for your organization. You can modify ownership if the
+certificate is listed as an orphan, or you can remove it all
+together. You may also upload a new certificate, either by pasting into
+the window below, or by uploading a local file.
 </p>
+
 <br />
 <fieldset>
 <legend>Manage certificates</legend>
 <br />
-<p class="info">List of uploaded certificates with details.</p>
 {if $robotCerts}
 <table>
 {foreach from=$robotCerts item=element}
@@ -38,21 +38,24 @@ actions.
   </tr>
 {/foreach}
 </table>
+{else}
+No available certificates in Database.
+<br />
 {/if}
 <br />
 </fieldset>
 
 <br />
 <fieldset>
-  <legend>Add new certificate for <i>{$person->getSubscriberOrgName()}</i></legend>
+  <legend>Paste new certificate for <i>{$person->getSubscriberOrgName()}</i></legend>
   <br />
   <form action="" method="post">
-    <input type="hidden" name="robot_action" value="add_new" />
+    <input type="hidden" name="robot_action" value="paste_new" />
     <table>
       <tr>
 	<td colspan="2">
 	  <textarea name="cert" value="" rows="20" cols="70"
-	  wrap="off">Paste your certificate here...</textarea><br />
+	  wrap="off"></textarea><br />
 	</td>
       </tr>
       <tr>
