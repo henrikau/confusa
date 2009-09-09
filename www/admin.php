@@ -101,7 +101,7 @@ class CP_Admin extends FW_Content_Page
 				case 'add_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
 					$subscriber = $this->person->getSubscriberOrgName();
-					$this->addSubscriberAdmin($admin,SUBSCRIBER_SUB_ADMIN,$subscriber)
+					$this->addSubscriberAdmin($admin,SUBSCRIBER_SUB_ADMIN,$subscriber);
 					break;
 				default:
 					break;
