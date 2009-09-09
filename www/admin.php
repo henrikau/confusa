@@ -631,23 +631,89 @@ class CP_Admin extends FW_Content_Page
 	 */
 	private function deleteAdmin($admin, $level)
 	{
-		$query = "DELETE FROM admins WHERE admin=? AND admin_level=? AND nren=?";
+		/* does the current user have the rights? */
+		try {
+			$query = "SELECT a.* FROM admins a LEFT JOIN nrens n on n.nren_id = a.nren";
+			$query .= " WHERE (a.admin=? OR a.admin=?) AND n.name=?";
+			$res = MDB2Wrapper::execute($query,
+						    array('text', 'text', 'text'),
+						    array($admin, $this->person->getEPPN(), $this->person->getNREN()));
+			switch (count($res)) {
+			case 0:
+				Framework::error_output("Did not find neither the admin to delete or the current admin in the database. Cannot continue.");
+				return;
+			case 1:
+				if ($res[0]['admin'] != $admin) {
+					Framework::error_output("Cannot find the admin to delete in the admins-table. Cannot continue.");
+					return;
+				}
+				break;
+			case 2:
+				$id = 0;
+				if ($res[1]['admin'] == $admin) {
+					$id = 1;
+				}
+				$nrenID		= $res[$id]['nren'];
+				$subscriberID	= $res[$id]['subscriber'];
+				break;
+			default:
+				Framework::error_output("Too many hits in the database. Cannot decide where to go from here.");
+				return;
+			}
+			if (count($res) != 2) {
+				
+			}
+			
+		} catch (DBStatementException $dbse) {
+			$msg = "Cannot find id-values in the database due to server problems. Server said: " . $dbse->getMessage();
+			Framework::error_output($msg);
+			return;
+		} catch (DBQueryException $dbqe) {
+			$msg = "Cannot find id-values due to data inconsistency. Server said: " . $dbqe->getMessage();
+			Framework::error_output($msg);
+			return;
+		}
+
+		/* Find the admin-level of both admins and make sure that the
+		 * enforcer (the admin performing the deletion) has the rights
+		 * to do so. */
+		if ($res[0]['admin'] == $admin) {
+			$targetLevel	= (int)$res[0]['admin_level'];
+			$enforcerLevel	= (int)$res[1]['admin_level'];
+		} else {
+			$targetLevel	= (int)$res[1]['admin_level'];
+			$enforcerLevel	= (int)$res[0]['admin_level'];
+		}
+
+		if ($enforcerLevel < $targetLevel) {
+			Framework::error_output("Cannot delete admin with higher admin-level.");
+			return;
+		}
+
+		if ($targetLevel == NREN_ADMIN) {
+			$query	= "DELETE FROM admins WHERE admin=? AND nren=?";
+			$params	= array('text', 'text');
+			$data	= array($admin, $nrenID);
+		} else {
+			$query	= "DELETE FROM admins WHERE admin=? AND nren=? AND subscriber=?";
+			$params	= array('text', 'text', 'text');
+			$data	= array($admin, $nrenID, $subscriberID);
+		}
+
 
 		try {
-			MDB2Wrapper::update($query,
-					    array('text','text', 'text'),
-					    array($admin, $level, $this->person->getNREN()));
-			Logger::log_event(LOG_INFO, "Successfully deleted admin $admin with level $level");
+			MDB2Wrapper::update($query, $params, $data);
+			Logger::log_event(LOG_INFO, "Successfully deleted admin $admin with level $targetLevel");
 		} catch(DBStatementException $dbse) {
 			Framework::error_output("Could not delete the admin because the statement was bad " .
-									 "Please contact an administrator. Server said " . $dbse->getMessage());
+						"Please contact an administrator. Server said " . $dbse->getMessage());
 			Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . ": Problem occured when trying to delete " .
-								"admin $admin with level $level: " . $dbse->getMessage());
+					  "admin $admin with level $level: " . $dbse->getMessage());
 		} catch(DBQueryException $dbqe) {
 			Framework::error_output("Could not delete the admin because of problems with the " .
-									 "received data. Server said " . $dbqe->getMessage());
+						"received data. Server said " . $dbqe->getMessage());
 			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Problem occured when tyring to delete " .
-									"admin $admin with level $level: " . $dbqe->getMessage());
+					  "admin $admin with level $level: " . $dbqe->getMessage());
 		}
 
 		Framework::success_output("Deleted admin $admin");
