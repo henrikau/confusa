@@ -53,8 +53,7 @@ class CP_Admin extends FW_Content_Page
 					break;
 				case 'add_nren_admin':
 					$admin = Input::sanitize($_POST['nren_admin']);
-					$nren = $this->person->getNREN();
-					$this->addAdmin($admin,2,NULL,$nren);
+					$this->addNRENAdmin($admin);
 					break;
 				case 'delete_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
@@ -63,7 +62,7 @@ class CP_Admin extends FW_Content_Page
 				case 'add_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
 					$subscriber = Input::sanitize($_POST['subscriber']);
-					$this->addAdmin($admin,1,$subscriber,NULL);
+					$this->addSubscriberAdmin($admin, SUBSCRIBER_ADMIN, $subscriber);
 					break;
 				default:
 					break;
@@ -83,7 +82,7 @@ class CP_Admin extends FW_Content_Page
 				case 'add_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
 					$subscriber = $this->person->getSubscriberOrgName();
-					$this->addAdmin($admin,1,$subscriber,NULL);
+					$this->addSubscriberAdmin($admin,SUBSCRIBER_ADMIN,$subscriber);
 					break;
 				case 'downgrade_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
@@ -102,7 +101,7 @@ class CP_Admin extends FW_Content_Page
 				case 'add_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
 					$subscriber = $this->person->getSubscriberOrgName();
-					$this->addAdmin($admin,0,$subscriber,NULL);
+					$this->addSubscriberAdmin($admin,SUBSCRIBER_SUB_ADMIN,$subscriber)
 					break;
 				default:
 					break;
@@ -289,112 +288,134 @@ class CP_Admin extends FW_Content_Page
 		return $subscribers;
 	}
 
-	/*
-	 * Add an admin to the DB, either a subscriber or a NREN admin.
-	 * One of subscriber or nren must be specified, and it must match the
-	 * specified administrator level
+	/**
+	 * addNRENAdmin() add a new NREN administrator to the admin-table.
 	 *
-	 * @param $admin The principal identifier of the admin
-	 * @param $level The level of the admin (2 - NREN-admin, 1 - subscriber-admin,
-	 *	0 - subscriber-sub-admin)
-	 * @param $subscriber The name of the subscriber of which this is the admin,
-	 *		level must be 0 or 1
-	 * @param $nren The name of the NREN of which this is a admin, level must 2
+	 * @param String The unique name of the new admin (typically ePPN).
+	 * @param String The name of the NREN for the new administrator.
 	 */
-	private function addAdmin($admin, $level, $subscriber=NULL, $nren=NULL)
+	private function addNRENAdmin($admin) {
+		if (!isset($admin)) {
+			Framework::error_output("Need to have the name of the new admin in order to add a new NREN-admin!");
+			return;
+		}
+		try {
+			$res = MDB2Wrapper::execute("SELECT nren_id FROM nrens WHERE name=?",
+						    array('text'),
+						    array($this->person->getNREN()));
+			if (count($res)!=1) {
+				Framepwork::error_output("Could not find a unique NREN based on name ($nren). Cannot contine.");
+				return;
+			}
+			$nrenID=$res[0]['nren_id'];
+			/* See if ADMIN is unique within NREN_umbrella */
+			$res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND nren=?",
+						    array('text', 'text'),
+						    array($admin, $nrenID));
+			if (count($res) != 0) {
+				$msg = "Admin $admin already present as admin in table.\n<ul>";
+				foreach ($res as $key => $val) {
+					$msg .= "<li>" . $val['admin'] . " in NREN: " . $val['nren'] . " for subscriber " . $val['subscriber'] . "</li>\n";
+				}
+				$msg .= "</ul>\n";
+				Framework::error_output($msg);
+				return;
+			}
+
+			MDB2Wrapper::update("INSERT INTO admins (admin, admin_level, last_mode, nren) VALUES(?,?,?,?)",
+					    array('text', 'text', 'text', 'Integer'),
+					    array($admin, '2', '0', $nrenID));
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Problem with statement, probably server-issues. Server said " . $dbse->getMessage());
+			return;
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Problem with query, probably issues with supplied data. Server said " . $dbqe->getMessage());
+			return;
+		}
+	} /* end addNRENAdmin() */
+
+	private function addSubscriberAdmin($admin, $level, $subscriber)
 	{
-		$nren_id = NULL;
-		$subscriber_id = NULL;
-
-		if ($nren === NULL && $subscriber === NULL) {
-			Framework::error_output("Not both NREN and subscriber can be empty when adding an admin!");
+		if (!isset($admin)) {
+			Framework::error_output("Need the name of the new admin.");
 			return;
-		} else if ($admin == NULL) {
-			Framework::error_output("The name of the admin must not be empty!");
+		}
+		if (!isset($subscriber)) {
+			Framework::error_output("Need the subscriber-name in order to add a new subscriber admin.");
+		}
+		if (!isset($level)) {
+			Framework::error_output("Need the access-level for the new Admin.");
 			return;
 		}
 
+		/* Assert level */
+		if (!($level == SUBSCRIBER_ADMIN || $level == SUBSCRIBER_SUB_ADMIN)) {
+			Framework::error_output("Cannot add administrator with mangled admin-level. Got $level, which is not a subscriber admin code.");
+			return;
+		}
+
+		/* get nren and subscriber id */
+		$query = "SELECT * FROM nrens n LEFT JOIN subscribers s ON s.nren_id = n.nren_id WHERE n.name=? AND s.name=?";
 		try {
-			if ($level == 2) { /* Insert a NREN-admin */
-				$query = "SELECT nren_id FROM nrens WHERE name=?";
-				$res = MDB2Wrapper::execute($query,
-											array('text'),
-											array($nren));
-
-				if (count($res) === 1) {
-					$nren_id = $res[0]['nren_id'];
-				} else {
-					Framework::error_output("Could not retrieve exactly one NREN" .
-							" with name $nren WHEN inserting a new admin! Got " . count($res) . "results!");
-					Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": User tried to insert an " .
-									"admin for NREN $nren. When looking up " .
-									"the nren_id, " .count($res) . " results were returned!");
-					return;
-				}
-			} else { /* insert a subscriber-admin or subscriber-sub-admin */
-				$query = "SELECT subscriber_id FROM subscribers WHERE name=?";
-				$res = MDB2Wrapper::execute($query,
-											array('text'),
-											array($subscriber));
-
-				if (count($res) === 1) {
-					$subscriber_id = $res[0]['subscriber_id'];
-				} else {
-					Framework::error_output("Could not retrieve exactly one subscriber" .
-							" with name $subscriber WHEN inserting a new admin! Got " . count($res) . "results!");
-					Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": User tried to insert an " .
-									"admin for subscriber $subscriber. " .
-									"When looking up the subscriber_id, " . count($res) . " results were returned!");
-					return;
-				}
-			}
+			$res = MDB2Wrapper::execute($query, array('text', 'text'), array($this->person->getNREN(), $subscriber));
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Could not retrieve NREN/subscriber for which you are " .
-									"trying to add an admin. Probably there's a server side problem, contact " .
-									"an administrator! Server said " . $dbse->getMessage());
-			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Error occured when " .
-								  "looking up NREN/subscriber: " . $dbse->getMessage());
+			$msg =  "Serverside issues. Cannot find IDs for NREN and subscriber in database. ";
+			$msg .= "Server said: " . $dbse->getMessage();
+			Framework::error_output($msg);
 			return;
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Could not retrieve NREN/subscriber for which you are " .
-									 "trying to add an admin! There seems to be a problem with the " .
-									 "received data. Server said " . $dbqe->getMessage());
-			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Error occured when " .
-								"looking up NREN/subscriber in: " . $dbqe->getMessage());
+			$msg = "Cannot find IDs for NREN and subscriber in database, probably problems with supplied data. ";
+			$msg .= "Server said: " . $dbqe->getMessage();
+			Framework::error_output($msg);
 			return;
 		}
 
-		$query = "INSERT INTO admins(admin, admin_level, nren, subscriber) ";
-		$query .= "VALUES(?,?,?,?)";
-
-		try {
-			MDB2Wrapper::update($query,
-								 array('text','text','text','text'),
-								 array($admin,$level,$nren_id,$subscriber_id));
-			Logger::log_event(LOG_NOTICE, "Inserted admin $admin with level $level for NREN/subscriber $nren_id/$subscriber_id");
-
-			if (isset($nren)) {
-				Framework::success_output("Inserted new admin $admin for NREN $nren");
-			} else if (isset($subscriber)) {
-				Framework::success_output("Inserted new admin $admin for subscriber $subscriber");
-			}
-
+		if (count($res) != 1) {
+			$msg  = "Could not find unique subscriber/nren combination for subscriber $subscriber ";
+			$msg .= "and NREN ".$this->person->getNREN() . ". Cannot continue.";
+			Framework::error_output($msg);
 			return;
+		}
+		$nrenID		= $res[0]['nren_id'];
+		$subscriberID	= $res[0]['subscriber_id'];
+
+		/* make sure that the admin is not already present in the database */
+		try {
+			$res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND subscriber=? AND nren=?",
+						    array('text', 'text', 'text'),
+						    array($admin, $subscriberID, $nrenID));
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Inserting the admin into the database failed, because the statement " .
-									 "was bad. Please contact an administrator. Server said " . $dbse->getMessage());
-			Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . ": Tried to insert admin $admin with level $level, " .
-								"but an SQL error occured: " . $dbse->getMessage());
+			$msg  = "Serverside issues. Cannot find admin in database. ";
+			$msg .= "Server said: " . $dbse->getMessage();
+			Framework::error_output($msg);
 			return;
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Inserting the admin into the database failed because of problems " .
-									 "with the supplied data. Server said " . $dbqe->getMessage() .
-									 " Maybe an admin with that name already exists?");
-			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Problem when trying to insert admin $admin ".
-								"with level $level: " . $dbqe->getMessage());
+			$msg  = "Cannot find admin in database, probably problems with supplied data. ";
+			$msg .= "Server said: " . $dbqe->getMessage();
+			Framework::error_output($msg);
+			return;
+		}
+		if (count($res) != 0) {
+			Framework::error_output("Cannot add subscriber(sub) admin as an administrator with that name is already present in the database.");
 			return;
 		}
 
+		/* Insert admin */
+		try {
+			MDB2Wrapper::update("INSERT INTO admins (admin, admin_level, last_mode, subscriber, nren) VALUES (?, ?, ?, ?, ?)",
+					    array('text', 'text', 'text', 'text', 'text'),
+					    array($admin, $level, '0', $subscriberID, $nrenID));
+		} catch (DBStatementException $dbse) {
+			$msg  = "Cannot add Admin to database, probably serverside problems.<br />";
+			$msg .= "Server said " . $dbse->getMessage();
+			Framework::error_output($msg);
+			return;
+		} catch (DBQueryException $dqse) {
+			$msg  = "Cannot add Admin to database, probably problems with supplied data. <br />";
+			$msg .= "Server said: " . $dbqe->getMessage();
+			Framework::error_output($msg);
+			return;
+		}
 	}
 
 	/*
