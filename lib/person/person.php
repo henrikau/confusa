@@ -701,8 +701,7 @@ class Person{
 	    $size	= count($res);
 	    db_array_debug($res);
 	    if ($size == 1) {
-		    if ($res[0]['admin'] == $this->getEPPN())
-			    $adminRes = $res[0]['admin_level'];
+		    $adminRes = $res[0]['admin_level'];
 	    }
 	    return $adminRes;
     }
