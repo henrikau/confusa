@@ -112,6 +112,34 @@ function createMozillaRequest(dn, keysize)
 }
 
 /**
+ * Create a certificate from a "keygen"-capable browser. Such browsers include
+ * Mozilla, Opera, Webkit-based browsers (Safari, Google Chrome).
+ *
+ * Note that currently Safari on iPhone does not support the keygen tag, but it
+ * is, according to Apple, not impossible that it will be implemented in the
+ * future
+ */
+function createKeygenTag(dn, keysize)
+{
+      var keygen_tag = "<form method=\"post\" action=\"process_csr.php\">" +
+			"<table>" +
+			"<tr>" +
+			"<td width=\"20%\">" +
+			"<keygen name=\"browserRequest\" keytype=\"RSA\"></kegygen>" +
+			"</td><td>" +
+			"<p class=\"info\">We strongly recommend to choose a key with keysize " +
+			"<b>" + keysize +
+			" bits.</b> Please check which keysizes correspond to which \"grades\" in your browser!</p>" +
+			"</td>" +
+			"</tr><tr><td>" +
+			"<input type=\"submit\" value=\"Send\" />" +
+			"</td></tr></table></form>";
+    document.getElementById("info_view").innerHTML = keygen_tag;
+    document.getElementById("reqForm").style.display = "none";
+    return false;
+}
+
+/**
  * Create a request from the respective DN
  * Firefox currently only supports doing that with the CRMF and Netscape SPKAC
  * protocols. Still better to use RFC-specified CRMF protocol.
@@ -127,7 +155,8 @@ function createRequest(dn, keysize)
 			return createIEVistaRequest(dn, keysize);
 		}
 	} else {
-		alert("Your browser is currently not supported.\nSupported browsers: Firefox/Mozilla");
+		 alert("Your browser is currently not supported.\nSupported browsers\nFirefox, Mozilla\n" +
+			"Internet Explorer (Vista, Windows 7)");
 		return false;
 	}
 }
