@@ -437,11 +437,12 @@ class CP_Admin extends FW_Content_Page
 		$sid_query = "SELECT subscriber_id AS sid FROM subscribers s LEFT JOIN nrens n on n.nren_id=s.nren_id WHERE n.name=? AND s.name=?";
 		try {
 			$res = MDB2Wrapper::execute($sid_query,
-										array('text','text'),
-										array($subscriber, $nren));
+						    array('text','text'),
+						    array($nren, $subscriber));
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Problem getting the ID of your subscriber, server said: " .
-									$dbqe->getMessage());
+			$msg  = "Problem getting the ID of your subscriber, probably serverside issues. ";
+			$msg .= " Server said: " . $dbqe->getMessage();
+			Framework::error_output($msg);
 			Logger::log_event(LOG_NOTICE, "ADMIN: Did not get subscriber_id for admin $admin, nren $nren, " .
 							 "subscriber $subscriber. Error is " . $dbqe->getMessage());
 			return;
