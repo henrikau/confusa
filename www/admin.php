@@ -434,8 +434,7 @@ class CP_Admin extends FW_Content_Page
 									"Please check your attributes and try again!");
 		}
 
-		$sid_query="SELECT subscriber_id FROM nren_subscriber_view WHERE subscriber=? AND nren=?";
-
+		$sid_query = "SELECT subscriber_id AS sid FROM subscribers s LEFT JOIN nrens n on n.nren_id=s.nren_id WHERE n.name=? AND s.name=?";
 		try {
 			$res = MDB2Wrapper::execute($sid_query,
 										array('text','text'),
@@ -455,7 +454,7 @@ class CP_Admin extends FW_Content_Page
 		}
 
 		if (count($res) == 1) {
-			$sid=$res[0]['subscriber_id'];
+			$sid=$res[0]['sid'];
 		} else {
 			Framework::error_ouput("Did not find your subscriber ID!");
 			/* Log the (hopefully) rare inconsistency case */
