@@ -91,6 +91,28 @@ function createIEVistaRequest(dn, keysize)
     return false;
 }
 
+function createIEXPRequest(dn, keysize)
+{
+    var info_view = document.getElementById("info_view");
+    info_view.innerHTML= info_view.innerHTML + "<OBJECT id=\"XEnroll\"\n" +
+        "classid=\"clsid:127698e4-e730-4e5c-a2b1-21490a70c8a1\"" +
+        "codebase=\"xenroll.dll\"></OBJECT>";
+
+    XEnroll.Reset();
+    XEnroll.ProviderType = 1;
+    /* Note that the "base provider" will only allow for RSA keys with a maximum
+     * of 512 bits due to former export restrictions - therefore use the
+     * enhanced cryptographic provider */
+    XEnroll.ProviderName = "Microsoft Enhanced Cryptographic Provider v1.0";
+    /* create the key with the right keysize */
+    XEnroll.GenKeyFlags=keysize<<16;
+    XEnroll.HashAlgID = 0x8004;
+    XEnroll.KeySpec = 1;
+    var request = XEnroll.CreatePKCS10(dn, "1.3.6.1.4.1.311.2.1.21");
+    checkWindowsRequest(request);
+    return false;
+}
+
 function createMozillaRequest(dn, keysize)
 {
     if (!confirm("Really request and sign a new X.509 certificate for\nDN " + dn + "?")) {
@@ -151,8 +173,10 @@ function createRequest(dn, keysize)
 		return createMozillaRequest(dn, keysize);
 
 	} else if (navigator.userAgent.indexOf("MSIE") > -1) {	/* Internet explorer */
-		if (navigator.userAgent.indexOf("Windows NT 5.1") == -1) { /* Windows Vista and later */
+		if (navigator.userAgent.indexOf("Windows NT 5.") == -1) { /* Windows Vista and later */
 			return createIEVistaRequest(dn, keysize);
+		} else {
+			return createIEXPRequest(dn, keysize);
 		}
 	} else {
 		 alert("Your browser is currently not supported.\nSupported browsers\nFirefox, Mozilla\n" +
@@ -179,6 +203,18 @@ function installIEVistaCertificate()
     }
 }
 
+function installIEXPCertificate()
+{
+    document.writeln("<OBJECT id=\"XEnroll\"\n" +
+	    "classid=\"clsid:127698e4-e730-4e5c-a2b1-21490a70c8a1\"" +
+	    "codebase=\"xenroll.dll\"></OBJECT>");
+    try {
+	XEnroll.acceptPKCS7(g_ccc);
+    } catch (e) {
+	alert("Hit the following exception " + e);
+    }
+}
+
 function installMozillaCertificate()
 {
     try {
@@ -201,8 +237,10 @@ function installCertificate()
 	if (window.crypto) {
 	    installMozillaCertificate();
 	} else if (navigator.userAgent.indexOf("MSIE") > -1) {	/* Internet explorer */
-		if (navigator.userAgent.indexOf("Windows NT 5.1") == -1) { /* Windows Vista and later */
+		if (navigator.userAgent.indexOf("Windows NT 5.") == -1) { /* Windows Vista and later */
 			installIEVistaCertificate();
+		} else {
+			installIEXPCertificate();
 		}
 	} else {
 		alert("Your browser is currently not supported.\nSupported browsers: Firefox/Mozilla");
