@@ -173,6 +173,7 @@ DROP TABLE IF EXISTS cert_cache;
 CREATE TABLE cert_cache (
 	cert_id INT PRIMARY KEY AUTO_INCREMENT,
 	cert TEXT NOT NULL,
+	fingerprint char(40) NOT NULL,
 
 	-- the auth key for remote download of script
 	auth_key char(64) UNIQUE NOT NULL,
@@ -297,6 +298,7 @@ CREATE TABLE IF NOT EXISTS robot_certs (
        last_warning_sent DATETIME,
 
        cert TEXT NOT NULL,
+       fingerprint char(60) NOT NULL,
 
        -- Allow for a comment/description to be stored alongside the
        -- certificate.
