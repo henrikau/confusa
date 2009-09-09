@@ -31,7 +31,7 @@ class CP_Admin extends FW_Content_Page
 
 		if (isset($_POST['nren_operation'])) {
 			if (!$this->person->isNRENAdmin()) {
-				Framework::error_output("You have the wrong permissions for that operation!");
+				Framework::error_output("You need NREN-administrator privileges in order to complete this request.");
 				return false;
 			}
 
@@ -43,13 +43,13 @@ class CP_Admin extends FW_Content_Page
 					break;
 				case 'downgrade_self':
 					$this->downgradeNRENAdmin($this->person->getEPPN(),
-											$this->person->getNREN(),
-											$this->person->getSubscriberOrgName());
+								  $this->person->getNREN(),
+								  $this->person->getSubscriberOrgName());
 					break;
 				case 'upgrade_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
 					$this->upgradeSubscriberAdmin($admin,
-												$this->person->getNREN());
+								      $this->person->getNREN());
 					break;
 				case 'add_nren_admin':
 					$admin = Input::sanitize($_POST['nren_admin']);
@@ -70,7 +70,7 @@ class CP_Admin extends FW_Content_Page
 		/* operations called by the subscriber admin */
 		} else if (isset($_POST['subs_operation'])) {
 			if (!$this->person->isSubscriberAdmin()) {
-				Framework::error_output("You have the wrong permissions for that operation!");
+				Framework::error_output("You do not have sufficient permissions in order to complete this transaction.");
 				return false;
 			}
 
