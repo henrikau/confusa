@@ -214,7 +214,7 @@ CREATE TABLE IF NOT EXISTS admins (
        -- hard, if the subscriber for each NREN-admin was to be known.
        -- The field can be left NULL or filled in if the admin is a subscriber
        -- admin.
-       nren INT,
+       nren INT NOT NULL,
        FOREIGN KEY(subscriber) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
        FOREIGN KEY(nren) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
