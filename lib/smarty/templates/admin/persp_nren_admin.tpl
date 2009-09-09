@@ -2,34 +2,32 @@
 {* ***** NREN-admin/NREN-admin view ***** *}
 {* *********************************************************************** *}
 <fieldset>
-<legend>
- NREN admins
-</legend>
+  <legend>NREN admins</legend>
 
-<p class="info">
-		Add and delete NREN admins for your NREN '{$nren}'. You yourself are
-		marked with an asterisk (*). NREN admins have many privileges:
-	</p>
-	<br />
-		<ul class="info">
-		<li>Add/delete other NREN admins.</li>
-		<li>Add/delete subscriber admins.</li>
-		<li>Give institutions within the NREN's domain access to Confusa</li>
-		<li>Change the NREN's CA account</li>
-		<li>Change the branding of the portal</li>
-		</ul>
+  <p class="info">
+    Add and delete NREN admins for your NREN '{$nren}'. You yourself are
+    marked with an asterisk (*). NREN admins have many privileges:
+  </p>
+  <br />
+  <ul class="info">
+    <li>Add/delete other NREN admins.</li>
+    <li>Add/delete subscriber admins.</li>
+    <li>Give institutions within the NREN's domain access to Confusa</li>
+    <li>Change the NREN's CA account</li>
+    <li>Change the branding of the portal</li>
+  </ul>
+  <br />
+  <p class="info">
+    This role has a large impact on the available
+    power. Thus, you should not grant this level to
+    everybody, but only to persons who you trust implicitly.
+  </p>
+  <br />
 
-		<br />
-		<p class="info">
-		Overall this is a very powerful role and you should think who you want
-		to give it.
-</p>
-<br />
-
-<table>
-<tr>
-<td style="width: 30px"></td><td style="width: 30px"></td><td><b>Principal identifier</b></td>
-</tr>
+  <table>
+    <tr>
+      <td style="width: 30px"></td><td style="width: 30px"></td><td><b>Principal identifier</b></td>
+    </tr>
 
 {if !empty($nren_admins)}
 	{foreach from=$nren_admins item=admin}
