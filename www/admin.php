@@ -610,12 +610,12 @@ class CP_Admin extends FW_Content_Page
 	 */
 	private function deleteAdmin($admin, $level)
 	{
-		$query = "DELETE FROM admins WHERE admin=? and admin_level=?";
+		$query = "DELETE FROM admins WHERE admin=? AND admin_level=? AND nren=?";
 
 		try {
 			MDB2Wrapper::update($query,
-								array('text','text'),
-								array($admin, $level));
+					    array('text','text', 'text'),
+					    array($admin, $level, $this->person->getNREN()));
 			Logger::log_event(LOG_INFO, "Successfully deleted admin $admin with level $level");
 		} catch(DBStatementException $dbse) {
 			Framework::error_output("Could not delete the admin because the statement was bad " .
