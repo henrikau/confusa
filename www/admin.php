@@ -450,7 +450,7 @@ class CP_Admin extends FW_Content_Page
 			Framework::error_output("Problem getting the ID of your subscriber, server said: " .
 									$dbse->getMessage());
 			Logger::log_event(LOG_NOTICE, "ADMIN: Did not get subscriber_id for admin $admin, nren $nren, " .
-				 "subscriber $subscriber. Error is " . $dsqe->getMessage());
+					  "subscriber $subscriber. Error is " . $dbse->getMessage());
 			return;
 		}
 
