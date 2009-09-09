@@ -101,7 +101,11 @@ class CP_Robot_Interface extends Content_Page
 			$res = MDB2Wrapper::execute($query, array('text', 'text'), array($this->person->getSubscriberOrgName(), $this->person->getNREN()));
 			switch(count($res)) {
 			case 0:
-				Framework::error_output("No hits - subscriber not in database! The Subscriber must be added by an NREN-admin. Something is seriously wrong");
+				$msg  = "No hits - subscriber not in database! <br />\n";
+				$msg .= "The Subscriber (".$this->person->getSubscriberOrgName().") ";
+				$msg .= "must be added by an NREN-admin for nren '" .$this->person->getNREN(). "'. Something is seriously wrong.";
+
+				Framework::error_output($msg);
 				/* fixme: add logging and proper
 				 * error-message. DB inconsistency */
 				return false;
