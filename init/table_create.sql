@@ -268,7 +268,7 @@ CREATE TABLE IF NOT EXISTS attribute_mapping (
 -- certificate stored when using the robotic upload module.
 --
 -- ---------------------------------------------------------
-CREATE TABLE IF NOT EXISTS robot_cert (
+CREATE TABLE IF NOT EXISTS robot_certs (
 	-- Internal id
        id INT PRIMARY KEY AUTO_INCREMENT,
 
