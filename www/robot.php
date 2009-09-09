@@ -40,7 +40,6 @@ class CP_Robot_Interface extends Content_Page
 	{
 		/* get a list of certificates and assign to template */
 		$this->tpl->assign('robotCerts', $this->getRobotCertList());
-		/* tet main template */
 		$this->tpl->assign('content', $this->tpl->fetch('robot.tpl'));
 	}
 
@@ -61,27 +60,68 @@ class CP_Robot_Interface extends Content_Page
 			/* fixme */
 			Framework::error_output("Errors getting robot-certificates from DB.<br />" . $e->getMessage());
 		}
-		echo "<pre>\n";
-		print_r($res);
-		echo "</pre>\n";
 		return $res;
 	}
 
-	private function handlePasteCertificate($cert)
-	{
-		if (!isset($cert) || $cert == "") {
-			Framework::error_output("no certificate found in uploaded data!");
-			return false;
-		}
-		Framework::message_output("Adding new certificate! (paste)");
-	}
 	private function handleFileCertificate()
 	{
 		Framework::message_output("Adding new certificate! (file)");
 	}
-	private function insertNewCertificate($cert)
+
+	/**
+	 * insertNewCertificate() insert the new certificate into the robot hold
+	 *
+	 * Take a string holding the certificate and insert it into the keyhold
+	 * given that the string is actually holding a valid certificate.
+	 *
+	 * @param String base64 encoded PEM formatted X.509 certificate
+	 * @return boolean indicating the success of the opreation (true means inserted OK)
+	 */
+	private function insertCertificate($cert)
 	{
-		echo "insertint certificate, running tests etc before accepting<br />\n";
+		/* validate certificate */
+		/* FIXME */
+
+		/* is the certificate already in the robot_certs */
+		$fingerprint = openssl_x509_fingerprint($cert);
+		try {
+			$query  = "SELECT subscriber_id, uploaded_by, uploaded_date, valid_until, fingerprint ";
+			$query .= "FROM robot_certs WHERE fingerprint = ?";
+			$res = MDB2Wrapper::execute($query, array('text'), array($fingerprint));
+			if (count($res) > 0) {
+				Framework::error_output("Certificate already present in Database. Cannot upload.");
+				return false;
+			}
+		} catch (Exception $e) {
+			/* FIXME, add better exception mask & handling */
+		}
+		/* Get subscriber and nren id */
+		try {
+			$query = "SELECT * FROM subscribers s LEFT JOIN nrens n ON n.nren_id = s.nren_id WHERE s.name=? AND n.name=?";
+			$res = MDB2Wrapper::execute($query, array('text', 'text'), array($this->person->getSubscriberOrgName(), $this->person->getNREN()));
+			switch(count($res)) {
+			case 0:
+				Framework::error_output("No hits - subscriber not in database! The Subscriber must be added by an NREN-admin. Something is seriously wrong");
+				/* fixme: add logging and proper
+				 * error-message. DB inconsistency */
+				return false;
+			case 1:
+				$nren_id = $res[0]['nren_id'];
+				$subscriber_id = $res[0]['subscriber_id'];
+				break;
+			default:
+				/* FIXME: DB-inconsistency */
+				return false;
+			}
+		} catch (Exception $e) {
+			/* Fixme, add proper exception handling */
+			return false;
+		}
+		/* get admin_id */
+		$res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?",
+					    array('text'), array($this->person->getEPPN()));
+		Framework::message_output("No errors found wile uploading certificate to keystore");
+		return true;
 	}
 }
 
