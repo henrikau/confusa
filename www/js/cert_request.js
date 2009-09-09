@@ -94,6 +94,8 @@ function createIEVistaRequest(dn, keysize)
 function createIEXPRequest(dn, keysize)
 {
     var info_view = document.getElementById("info_view");
+    /* don't remove that, because IE will need that *on* the page to be able
+     * to address XEnroll */
     info_view.innerHTML= info_view.innerHTML + "<OBJECT id=\"XEnroll\"\n" +
         "classid=\"clsid:127698e4-e730-4e5c-a2b1-21490a70c8a1\"" +
         "codebase=\"xenroll.dll\"></OBJECT>";
