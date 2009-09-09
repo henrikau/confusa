@@ -39,7 +39,7 @@ class CP_Admin extends FW_Content_Page
 			switch(htmlentities($_POST['nren_operation'])) {
 				case 'delete_nren_admin':
 					$admin = Input::sanitize($_POST['nren_admin']);
-					$this->deleteAdmin($admin, 2);
+					$this->deleteAdmin($admin, NREN_ADMIN);
 					break;
 				case 'downgrade_self':
 					$this->downgradeNRENAdmin($this->person->getEPPN(),
@@ -58,7 +58,7 @@ class CP_Admin extends FW_Content_Page
 					break;
 				case 'delete_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
-					$this->deleteAdmin($admin,1);
+					$this->deleteAdmin($admin,SUBSCRIBER_ADMIN);
 					break;
 				case 'add_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
@@ -78,7 +78,7 @@ class CP_Admin extends FW_Content_Page
 			switch(htmlentities($_POST['subs_operation'])) {
 				case 'delete_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
-					$this->deleteAdmin($admin,1);
+					$this->deleteAdmin($admin, SUBSCRIBER_ADMIN);
 					break;
 				case 'add_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
@@ -97,7 +97,7 @@ class CP_Admin extends FW_Content_Page
 					break;
 				case 'delete_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
-					$this->deleteAdmin($admin,0);
+					$this->deleteAdmin($admin,SUBSCRIBER_SUB_ADMIN);
 					break;
 				case 'add_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
