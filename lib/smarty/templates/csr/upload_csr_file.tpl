@@ -28,7 +28,9 @@
 <fieldset>
 <legend>Apply for a certificate in browser</legend>
 <div id="info_view">
-	Press the start button to generate a certificate request in your browser
+	Press the start button <b>once</b> to generate a certificate request in your browser.<br /><br />
+	Sometimes it will take a little while until you can see a browser reaction and there
+	can be delays between browser actions.
 </div>
 
 <br />
