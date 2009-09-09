@@ -107,7 +107,7 @@ class CP_Admin extends FW_Content_Page
 					break;
 			}
 		}
-	}
+	} /* End pre_process() */
 
 	/*
 	 * Direct the user to the respective operations she may perform
