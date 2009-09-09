@@ -53,7 +53,7 @@ class CP_Robot_Interface extends Content_Page
 	private function getRobotCertList()
 	{
 		$query = "SELECT uploaded_date, a.admin, valid_until, last_warning_sent, cert, comment ";
-		$query .= " FROM robot_cert rc, admins a,  subscribers s where s.subscriber_id=rc.subscriber_id ";
+		$query .= " FROM robot_certs rc, admins a,  subscribers s where s.subscriber_id=rc.subscriber_id ";
 		$query .= "AND rc.uploaded_by=a.admin_id AND s.name=?";
 		try {
 			$res = MDB2Wrapper::execute($query, array('text'), array($this->person->getSubscriberOrgName()));
