@@ -182,6 +182,10 @@ class CertManager_Online extends CertManager
             $this->_capi_upload_CSR($auth_key, $csr, 'csr');
             break;
 
+        case "msie_pre_vista":
+            $this->_capi_upload_CSR($auth_key, $csr, 'csr');
+            break;
+
         default:
             throw new ConfusaGenException("Browser $browser is unsupported!");
             break;
@@ -507,6 +511,27 @@ class CertManager_Online extends CertManager
             break;
 
         case "msie_post_vista":
+            $collect_endpoint = Config::get_config('capi_collect_endpoint') .
+                                   "?loginName=" . $this->login_name .
+                                "&loginPassword=" . $this->login_pw .
+                                "&orderNumber=" . $key .
+                                "&queryType=1" .
+                                "&responseType=2" . /* PKCS#7 */
+                                "&responseEncoding=2" . /* encode in Javascript */
+                                "&responseMimeType=text/javascript" .
+                                /* call that function after the JS variable-declarations */
+                                "&callbackFunctionName=installCertificate";
+            $ch = curl_init($collect_endpoint);
+            curl_setopt($ch, CURLOPT_HEADER,0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+            $data=curl_exec($ch);
+            curl_close($ch);
+            return "<script type=\"text/javascript\">$data</script>";
+            break;
+
+        case "msie_pre_vista":
             $collect_endpoint = Config::get_config('capi_collect_endpoint') .
                                    "?loginName=" . $this->login_name .
                                 "&loginPassword=" . $this->login_pw .
