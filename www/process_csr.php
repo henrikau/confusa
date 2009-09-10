@@ -46,32 +46,35 @@ final class CP_ProcessCsr extends FW_Content_Page
 			$order_number = htmlentities($_GET['status_poll']);
 			/* assign the order_number again */
 			$this->tpl->assign('order_number', $order_number);
+			$this->tpl->assign('status_poll', true);
 
 			if ($this->certManager->pollCertStatus($order_number)) {
 			    $this->tpl->assign('done', TRUE);
 			}
+
 		} else if (isset($_GET['install_cert'])) {
 			$order_number = Input::sanitize($_GET['install_cert']);
-			$script = $this->certManager->getCertDeploymentScript($order_number, getUserAgent());
-			$this->tpl->assign('deployment_script', $script);
+			$ua = getUserAgent();
+			$script = $this->certManager->getCertDeploymentScript($order_number, $ua);
+
+			if ($ua == "keygen") {
+			    include_once 'file_download.php';
+			    download_certificate($script, "install.crt");
+			    exit(0);
+			} else {
+				$this->tpl->assign('deployment_script', $script);
+			}
 		}
 
 
 		if (isset($_POST['browserRequest'])) {
 			$request = trim($_POST['browserRequest']);
 			$request = str_replace(array("\n","\r"),array('',''),$request);
-			$browser = $_POST['browser'];
 			if (!empty($request)) {
 				$order_number = $this->approveBrowserGenerated($request, getUserAgent());
 				$this->tpl->assign('order_number', $order_number);
-				$poll_endpoint = $_SERVER['PHP_SELF'] . "?status_poll=$order_number";
-				$this->tpl->assign('status_poll_endpoint', $poll_endpoint);
-				$res = true;
 			}
 		}
-
-		return $res;
-
 	}
 
 	public function process()

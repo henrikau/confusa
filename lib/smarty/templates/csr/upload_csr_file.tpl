@@ -28,13 +28,24 @@
 <fieldset>
 <legend>Apply for a certificate in browser</legend>
 <div id="info_view">
-	Press the start button to generate a certificate request in your browser
+	<p class="info">Press the start button <b>once</b> to generate a certificate request in your browser.<br /><br />
+	Sometimes it will take a little while until you can see a browser reaction and there
+	can be delays between browser actions.</p>
 </div>
 
 <br />
 <form name="reqForm" id="reqForm" onSubmit="return createRequest('{$dn}', {$keysize});" method="post" action="process_csr.php">
 <input id="reqField" type="hidden" name="browserRequest" value="" />
-<input type="submit" name="Send" id="startButton" value="Start" />
+{if $person->testEntitlementAttribute('Confusa')}
+	<input type="submit" name="Send" id="startButton" value="Start" />
+{else}
+	{* Disable the element if the user does not have the right entitlement *}
+	<input disabled type="submit" name=Send" id="startButton" value="Start" />
+{/if}
+
+<noscript>
+	<b>Please activate JavaScript to enable browser key generation!</b>
+</noscript>
 </form>
 </fieldset>
 
@@ -45,12 +56,12 @@
 	startButton.setAttribute("style","display: none");
 	{* IE workaround *}
 	startButton.style.cssText = "display: none";
+	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
+	setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
+	pollStatus('Processing order number {$order_number}.');
+
 	{if $done === TRUE}
 		statusDone({$order_number});
-	{else}
-		{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
-		setTimeout('window.location="{$status_poll_endpoint}";', 10000);
-		pollStatus('Processing order number {$order_number}.');
 	{/if}
 </script>
 {/if}

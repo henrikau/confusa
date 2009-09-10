@@ -76,6 +76,7 @@ final class CP_DownloadCertificate extends FW_Content_Page
 
 		else if (isset($_GET['install_cert']))
 			$this->installCert(htmlentities($_GET['install_cert']));
+
 	} /* end process_db_cert */
 
 	/**
@@ -94,7 +95,18 @@ final class CP_DownloadCertificate extends FW_Content_Page
 
 	private function installCert($authKey)
 	{
-	    $this->tpl->assign("script", $this->certManager->getCertDeploymentScript($authKey, getUserAgent()));
+		$ua = getUserAgent();
+		$script = $this->certManager->getCertDeploymentScript($authKey, $ua);
+
+		if ($ua == "keygen") {
+			include 'file_download.php';
+			download_certificate($script, "install.crt");
+			exit(0);
+		} else {
+			$script .= "<noscript><b>Please enable JavaScript to install certificates ";
+			$script .= "in your browser's keystore!</b></noscript>";
+			$this->tpl->assign("script", $script);
+		}
 	}
 
 	/**

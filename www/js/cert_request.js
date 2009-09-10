@@ -91,12 +91,32 @@ function createIEVistaRequest(dn, keysize)
     return false;
 }
 
+function createIEXPRequest(dn, keysize)
+{
+    var info_view = document.getElementById("info_view");
+    /* don't remove that, because IE will need that *on* the page to be able
+     * to address XEnroll */
+    info_view.innerHTML= info_view.innerHTML + "<OBJECT id=\"XEnroll\"\n" +
+        "classid=\"clsid:127698e4-e730-4e5c-a2b1-21490a70c8a1\"" +
+        "codebase=\"xenroll.dll\"></OBJECT>";
+
+    XEnroll.Reset();
+    XEnroll.ProviderType = 1;
+    /* Note that the "base provider" will only allow for RSA keys with a maximum
+     * of 512 bits due to former export restrictions - therefore use the
+     * enhanced cryptographic provider */
+    XEnroll.ProviderName = "Microsoft Enhanced Cryptographic Provider v1.0";
+    /* create the key with the right keysize */
+    XEnroll.GenKeyFlags=keysize<<16;
+    XEnroll.HashAlgID = 0x8004;
+    XEnroll.KeySpec = 1;
+    var request = XEnroll.CreatePKCS10(dn, "1.3.6.1.4.1.311.2.1.21");
+    checkWindowsRequest(request);
+    return false;
+}
+
 function createMozillaRequest(dn, keysize)
 {
-    if (!confirm("Really request and sign a new X.509 certificate for\nDN " + dn + "?")) {
-	return false;
-    }
-
     try {
 	crmf=crypto.generateCRMFRequest(dn, "regToken", "authenticator", null, "checkCRMF();" , keysize, null, "rsa-dual-use");
     } catch (e) {
@@ -112,22 +132,63 @@ function createMozillaRequest(dn, keysize)
 }
 
 /**
+ * Create a certificate from a "keygen"-capable browser. Such browsers include
+ * Mozilla, Opera, Webkit-based browsers (Safari, Google Chrome).
+ *
+ * Note that currently Safari on iPhone does not support the keygen tag, but it
+ * is, according to Apple, not impossible that it will be implemented in the
+ * future
+ */
+function createKeygenTag(dn, keysize)
+{
+      var keygen_tag = "<form method=\"post\" action=\"process_csr.php\">" +
+			"<table>" +
+			"<tr>" +
+			"<td width=\"20%\">" +
+			"<keygen name=\"browserRequest\" keytype=\"RSA\"></kegygen>" +
+			"</td><td>" +
+			"<p class=\"info\">We strongly recommend to choose a key with keysize " +
+			"<b>" + keysize +
+			" bits.</b> Please check which keysizes correspond to which \"grades\" in your browser!</p>" +
+			"</td>" +
+			"</tr><tr><td>" +
+			"<input type=\"submit\" value=\"Send\" />" +
+			"</td><td><br /><p class=\"info\">Please press the send button only <b>once</b>.</p></td>" +
+			"</tr></table></form>";
+    document.getElementById("info_view").innerHTML = keygen_tag;
+    document.getElementById("reqForm").style.display = "none";
+    return false;
+}
+
+/**
  * Create a request from the respective DN
  * Firefox currently only supports doing that with the CRMF and Netscape SPKAC
  * protocols. Still better to use RFC-specified CRMF protocol.
  */
 function createRequest(dn, keysize)
 {
+	if (!confirm("Really request and sign a new X.509 certificate for\nDN " + dn + "?")) {
+		return false;
+	}
+
 	/* Firefox, Mozilla */
 	if (window.crypto) {
 		return createMozillaRequest(dn, keysize);
 
 	} else if (navigator.userAgent.indexOf("MSIE") > -1) {	/* Internet explorer */
-		if (navigator.userAgent.indexOf("Windows NT 5.1") == -1) { /* Windows Vista and later */
+		if (navigator.userAgent.indexOf("Windows NT 5.") == -1) { /* Windows Vista and later */
 			return createIEVistaRequest(dn, keysize);
+		} else {
+			return createIEXPRequest(dn, keysize);
 		}
+	} else if ((navigator.userAgent.indexOf("Opera") > -1) ||
+		  (navigator.userAgent.indexOf("AppleWebKit") > -1)) {
+		      createKeygenTag(dn, keysize);
+		      return false;
 	} else {
-		alert("Your browser is currently not supported.\nSupported browsers: Firefox/Mozilla");
+		 alert("Your browser is currently not supported.\nSupported browsers\nFirefox, Mozilla\n" +
+			"Internet Explorer (XP, Vista, Windows 7)\n" +
+			"Opera, Safari\n");
 		return false;
 	}
 }
@@ -145,8 +206,21 @@ function installIEVistaCertificate()
 	objEnroll.InstallResponse(4, g_ccc, 1, "");
     } catch (e) {
 	var message="Hit the following problem when trying to install the cert: " + e.description
-	+ "\nIs the Confusa instance configured as a trusted site?";
+	+ "\nDid you generate the request with exactly that browser?";
 	alert(message);
+    }
+}
+
+function installIEXPCertificate()
+{
+    document.writeln("<OBJECT id=\"XEnroll\"\n" +
+	    "classid=\"clsid:127698e4-e730-4e5c-a2b1-21490a70c8a1\"" +
+	    "codebase=\"xenroll.dll\"></OBJECT>");
+    try {
+	XEnroll.acceptPKCS7(g_ccc);
+    } catch (e) {
+	alert("Hit an exception when installing.\nDid you generate the certificate request with exactly" +
+		" this browser?");
     }
 }
 
@@ -172,11 +246,15 @@ function installCertificate()
 	if (window.crypto) {
 	    installMozillaCertificate();
 	} else if (navigator.userAgent.indexOf("MSIE") > -1) {	/* Internet explorer */
-		if (navigator.userAgent.indexOf("Windows NT 5.1") == -1) { /* Windows Vista and later */
+		if (navigator.userAgent.indexOf("Windows NT 5.") == -1) { /* Windows Vista and later */
 			installIEVistaCertificate();
+		} else {
+			installIEXPCertificate();
 		}
 	} else {
-		alert("Your browser is currently not supported.\nSupported browsers: Firefox/Mozilla");
+		alert("Your browser is currently not supported.\nSupported browsers:\nFirefox/Mozilla" +
+			"IE (XP, Vista, Windows 7)\n" +
+			"Safari, Opera");
 		return false;
 	}
 
