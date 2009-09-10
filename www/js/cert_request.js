@@ -62,6 +62,8 @@ function createIEVistaRequest(dn, keysize)
 	/* allow signing */
 	objPrivateKey.KeySpec = 0x2;
 	objPrivateKey.Length=keysize;
+	/* allow archival and plaintext export */
+	objPrivateKey.ExportPolicy = 0x1;
 	/* use "RSA-full" as the key algorithm */
 	objPrivateKey.ProviderType = "1";
 	objRequest.InitializeFromPrivateKey(1, objPrivateKey, "");
@@ -95,11 +97,12 @@ function createIEXPRequest(dn, keysize)
      * of 512 bits due to former export restrictions - therefore use the
      * enhanced cryptographic provider */
     XEnroll.ProviderName = "Microsoft Enhanced Cryptographic Provider v1.0";
-    /* create the key with the right keysize */
-    XEnroll.GenKeyFlags=keysize<<16;
+    /* create the key with the right keysize (upper 16 bits)
+     * flag 1 (crypt_exportable) as the export policy for the private key */
+    XEnroll.GenKeyFlags=(keysize<<16)+1;
     XEnroll.HashAlgID = 0x8004;
     XEnroll.KeySpec = 1;
-    var request = XEnroll.CreatePKCS10(dn, "1.3.6.1.4.1.311.2.1.21");
+    var request = XEnroll.CreatePKCS10(dn, "1.3.6.1.5.5.7.3.2");
     checkWindowsRequest(request);
     return false;
 }
