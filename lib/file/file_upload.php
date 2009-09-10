@@ -178,8 +178,6 @@ class FileUpload {
    */
   private function trivial_test($content, $auth_url) {return $this->file_ok(); }
 
-}
-?>
 
 	/**
 	 * testError() see if any known error-conditions are set for the file
@@ -234,3 +232,5 @@ class FileUpload {
 			return null;
 		}
 	}
+}
+?>
