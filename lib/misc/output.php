@@ -113,16 +113,15 @@ function getUserAgent()
 {
 	$userAgent=$_SERVER['HTTP_USER_AGENT'];
 
-	if (strstr(strtolower($userAgent), "firefox")) {
-		 return "firefox";
-	} else if (strstr(strtolower($userAgent), "msie")) {
+	if (strstr(strtolower($userAgent), "msie")) {
 		if (strstr(strtolower($userAgent), "Windows NT 5.")) {
 			return "msie_pre_vista";
 		} else {
 			return "msie_post_vista";
 		}
 	} else if (strstr(strtolower($userAgent), "applewebkit") ||
-				strstr(strtolower($userAgent), "opera")) {
+				strstr(strtolower($userAgent), "opera") ||
+				strstr(strtolower($userAgent), "firefox")) {
 			return "keygen";
 	} else {
 		return "other";

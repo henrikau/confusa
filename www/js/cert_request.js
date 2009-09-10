@@ -3,17 +3,6 @@
 var crmf="";
 var timer="";
 
-/**
- * Submit the form request, but decorate the POST object with the certificate
- * request in CRMF format first
- */
-function checkCRMF() {
-    with (document.reqForm) {
-        browserRequest.value = crmf.request;
-        submit();
-    }
-}
-
 function checkWindowsRequest(request) {
     with (document.reqForm) {
 	browserRequest.value = request;
@@ -115,22 +104,6 @@ function createIEXPRequest(dn, keysize)
     return false;
 }
 
-function createMozillaRequest(dn, keysize)
-{
-    try {
-	crmf=crypto.generateCRMFRequest(dn, "regToken", "authenticator", null, "checkCRMF();" , keysize, null, "rsa-dual-use");
-    } catch (e) {
-	alert("Could not generate a new certificate signing request.\nProblem is " + e);
-    }
-
-    if (crmf.request.substring(0,6) == "error:") {
-	    alert("Error occured: " + crmf);
-	    return false;
-    }
-
-    return false;
-}
-
 /**
  * Create a certificate from a "keygen"-capable browser. Such browsers include
  * Mozilla, Opera, Webkit-based browsers (Safari, Google Chrome).
@@ -171,18 +144,15 @@ function createRequest(dn, keysize)
 		return false;
 	}
 
-	/* Firefox, Mozilla */
-	if (window.crypto) {
-		return createMozillaRequest(dn, keysize);
-
-	} else if (navigator.userAgent.indexOf("MSIE") > -1) {	/* Internet explorer */
+	if (navigator.userAgent.indexOf("MSIE") > -1) {	/* Internet explorer */
 		if (navigator.userAgent.indexOf("Windows NT 5.") == -1) { /* Windows Vista and later */
 			return createIEVistaRequest(dn, keysize);
 		} else {
 			return createIEXPRequest(dn, keysize);
 		}
 	} else if ((navigator.userAgent.indexOf("Opera") > -1) ||
-		  (navigator.userAgent.indexOf("AppleWebKit") > -1)) {
+		  (navigator.userAgent.indexOf("AppleWebKit") > -1) ||
+		  (navigator.userAgent.indexOf("Firefox") > -1)) {
 		      createKeygenTag(dn, keysize);
 		      return false;
 	} else {
@@ -224,16 +194,6 @@ function installIEXPCertificate()
     }
 }
 
-function installMozillaCertificate()
-{
-    try {
-	var error = window.crypto.importUserCertificates("Confusa certificate", g_ccc, true);
-    } catch (e) {
-	    alert("Installation FAILED!\nNote that you can only install " +
-	    "certificates for browser-generated requests! ");
-    }
-}
-
 /**
  * Import the certificate
  * Note that this expects the certificate to be in a format already known to
@@ -242,10 +202,7 @@ function installMozillaCertificate()
 function installCertificate()
 {
 
-	/* Firefox, Mozilla */
-	if (window.crypto) {
-	    installMozillaCertificate();
-	} else if (navigator.userAgent.indexOf("MSIE") > -1) {	/* Internet explorer */
+	if (navigator.userAgent.indexOf("MSIE") > -1) {	/* Internet explorer */
 		if (navigator.userAgent.indexOf("Windows NT 5.") == -1) { /* Windows Vista and later */
 			installIEVistaCertificate();
 		} else {
