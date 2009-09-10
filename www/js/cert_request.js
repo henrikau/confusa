@@ -180,9 +180,14 @@ function createRequest(dn, keysize)
 		} else {
 			return createIEXPRequest(dn, keysize);
 		}
+	} else if ((navigator.userAgent.indexOf("Opera") > -1) ||
+		  (navigator.userAgent.indexOf("AppleWebKit") > -1)) {
+		      createKeygenTag(dn, keysize);
+		      return false;
 	} else {
 		 alert("Your browser is currently not supported.\nSupported browsers\nFirefox, Mozilla\n" +
-			"Internet Explorer (Vista, Windows 7)");
+			"Internet Explorer (XP, Vista, Windows 7)\n" +
+			"Opera, Safari\n");
 		return false;
 	}
 }
