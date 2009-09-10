@@ -54,8 +54,16 @@ final class CP_ProcessCsr extends FW_Content_Page
 
 		} else if (isset($_GET['install_cert'])) {
 			$order_number = Input::sanitize($_GET['install_cert']);
-			$script = $this->certManager->getCertDeploymentScript($order_number, getUserAgent());
-			$this->tpl->assign('deployment_script', $script);
+			$ua = getUserAgent();
+			$script = $this->certManager->getCertDeploymentScript($order_number, $ua);
+
+			if ($ua == "keygen") {
+			    include_once 'file_download.php';
+			    download_certificate($script, "install.crt");
+			    exit(0);
+			} else {
+				$this->tpl->assign('deployment_script', $script);
+			}
 		}
 
 
