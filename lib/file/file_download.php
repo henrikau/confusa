@@ -35,7 +35,9 @@ function download_certificate($cert_content, $filename)
 {
     header('Content-Type: application/x-x509-user-cert');
     header('Accept-Ranges: bytes');
-    header('Content-Length: ' . strlen($file));
-    echo $file;
+    header('Content-Length: ' . strlen($cert_content));
+    header('Content-Disposition: inline; filename="'. $filename. '"');
+
+    echo $cert_content;
 }
 ?>
