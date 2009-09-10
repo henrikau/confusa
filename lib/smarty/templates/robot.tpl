@@ -17,22 +17,32 @@ the window below, or by uploading a local file.
 {foreach from=$robotCerts item=element}
   <tr></tr>
   <tr>
+    <td width="20px"></td>
+    <td>Fingerprint</td>
+    <td width="30px"></td>
+    <td>{$element.fingerprint}</td>
+  </tr>
+  <tr>
+    <td><img src="https://slcstest.uninett.no/silk_icons/date.png" /></td>
     <td>Uploaded:</td>
     <td width="30px"></td>
     <td>{$element.uploaded_date}</td>
   </tr>
   <tr>
+    <td><img src="https://slcstest.uninett.no/silk_icons/user_suit.png"/></td>
     <td>Uploaded by</td>
     <td></td>
     <td>{$element.admin}</td>
   </tr>
   <tr>
+    <td><img src="https://slcstest.uninett.no/silk_icons/date_delete.png" /></td>
     <td>Valid until:</td>
     <td></td>
     <td>{$element.valid_until}</td>
   </tr>
   <tr>
-    <td>comment</td>
+    <td><img src="https://slcstest.uninett.no/silk_icons/comment.png" /></td>
+    <td>comment:</td>
     <td></td>
     <td>{$element.comment}</td>
   </tr>
