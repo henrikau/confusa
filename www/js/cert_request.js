@@ -157,7 +157,8 @@ function createKeygenTag(dn, keysize)
 			"</td>" +
 			"</tr><tr><td>" +
 			"<input type=\"submit\" value=\"Send\" />" +
-			"</td></tr></table></form>";
+			"</td><td><br /><p class=\"info\">Please press the send button only <b>once</b>.</p></td>" +
+			"</tr></table></form>";
     document.getElementById("info_view").innerHTML = keygen_tag;
     document.getElementById("reqForm").style.display = "none";
     return false;
