@@ -4,6 +4,7 @@ require_once 'framework.php';
 require_once 'person.php';
 require_once 'mdb2_wrapper.php';
 require_once 'cert_lib.php';
+require_once 'file_upload.php';
 
 class CP_Robot_Interface extends Content_Page
 {
@@ -65,7 +66,12 @@ class CP_Robot_Interface extends Content_Page
 
 	private function handleFileCertificate()
 	{
-		Framework::message_output("Adding new certificate! (file)");
+		if (FileUpload::testError('cert')) {
+			$cert = openssl_x509_read(FileUpload::getContent('cert'));
+			if (openssl_x509_export($cert, $certDump, true)) {
+				return $this->insertCertificate($certDump);
+			}
+		}
 	}
 
 	/**
