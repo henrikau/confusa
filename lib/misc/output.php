@@ -121,6 +121,11 @@ function getUserAgent()
 		} else {
 			return "msie_post_vista";
 		}
+	} else if (strstr(strtolower($userAgent), "applewebkit") ||
+				strstr(strtolower($userAgent), "opera")) {
+			return "keygen";
+	} else {
+		return "other";
 	}
 }
 
