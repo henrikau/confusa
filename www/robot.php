@@ -101,10 +101,21 @@ class CP_Robot_Interface extends Content_Page
 		} catch (Exception $e) {
 			/* FIXME, add better exception mask & handling */
 		}
-		/* Get subscriber and nren id */
+		/* Get subscriber,  nren and admin_id */
 		try {
-			$query = "SELECT * FROM subscribers s LEFT JOIN nrens n ON n.nren_id = s.nren_id WHERE s.name=? AND n.name=?";
-			$res = MDB2Wrapper::execute($query, array('text', 'text'), array($this->person->getSubscriberOrgName(), $this->person->getNREN()));
+			$query  = "SELECT anj.admin AS admin, anj.admin_id AS aid, ";
+			$query .= "anj.name AS nren_name, s.name AS subscriber_name, ";
+			$query .= "s.subscriber_id, anj.nren_id AS nren_id FROM  ";
+			$query .= "(SELECT * FROM ";
+			$query .= "admins a LEFT JOIN nrens n ON n.nren_id = a.nren WHERE ";
+			$query .= "subscriber IS NOT NULL) anj left join subscribers s ON ";
+			$query .= "s.subscriber_id = anj.subscriber ";
+			$query .= "WHERE admin=? AND s.name=? AND anj.name=?";
+			$params = array('text', 'text', 'text');
+			$data = array($this->person->getEPPN(),
+				      $this->person->getSubscriberOrgName(),
+				      $this->person->getNREN());
+			$res = MDB2Wrapper::execute($query, $params, $data);
 			switch(count($res)) {
 			case 0:
 				$msg  = "No hits - subscriber not in database! <br />\n";
@@ -116,8 +127,9 @@ class CP_Robot_Interface extends Content_Page
 				 * error-message. DB inconsistency */
 				return false;
 			case 1:
-				$nren_id = $res[0]['nren_id'];
-				$subscriber_id = $res[0]['subscriber_id'];
+				$admin_id	= $res[0]['aid'];
+				$nren_id	= $res[0]['nren_id'];
+				$subscriber_id	= $res[0]['subscriber_id'];
 				break;
 			default:
 				/* FIXME: DB-inconsistency */
