@@ -103,6 +103,8 @@ final class CP_DownloadCertificate extends FW_Content_Page
 			download_certificate($script, "install.crt");
 			exit(0);
 		} else {
+			$script .= "<noscript><b>Please enable JavaScript to install certificates ";
+			$script .= "in your browser's keystore!</b></noscript>";
 			$this->tpl->assign("script", $script);
 		}
 	}
