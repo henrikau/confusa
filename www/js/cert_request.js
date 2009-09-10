@@ -206,7 +206,7 @@ function installIEVistaCertificate()
 	objEnroll.InstallResponse(4, g_ccc, 1, "");
     } catch (e) {
 	var message="Hit the following problem when trying to install the cert: " + e.description
-	+ "\nIs the Confusa instance configured as a trusted site?";
+	+ "\nDid you generate the request with exactly that browser?";
 	alert(message);
     }
 }
@@ -252,7 +252,9 @@ function installCertificate()
 			installIEXPCertificate();
 		}
 	} else {
-		alert("Your browser is currently not supported.\nSupported browsers: Firefox/Mozilla");
+		alert("Your browser is currently not supported.\nSupported browsers:\nFirefox/Mozilla" +
+			"IE (XP, Vista, Windows 7)\n" +
+			"Safari, Opera");
 		return false;
 	}
 
