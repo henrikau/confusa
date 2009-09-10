@@ -117,10 +117,6 @@ function createIEXPRequest(dn, keysize)
 
 function createMozillaRequest(dn, keysize)
 {
-    if (!confirm("Really request and sign a new X.509 certificate for\nDN " + dn + "?")) {
-	return false;
-    }
-
     try {
 	crmf=crypto.generateCRMFRequest(dn, "regToken", "authenticator", null, "checkCRMF();" , keysize, null, "rsa-dual-use");
     } catch (e) {
@@ -171,6 +167,10 @@ function createKeygenTag(dn, keysize)
  */
 function createRequest(dn, keysize)
 {
+	if (!confirm("Really request and sign a new X.509 certificate for\nDN " + dn + "?")) {
+		return false;
+	}
+
 	/* Firefox, Mozilla */
 	if (window.crypto) {
 		return createMozillaRequest(dn, keysize);
