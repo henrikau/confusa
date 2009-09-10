@@ -131,20 +131,22 @@ abstract class Confusa_Auth
 			 * urn:mace:feide.no:sigma.uninett.no:<attribute>
 			 */
 			$entitlements = $attributes[$map['entitlement']];
-			foreach ($entitlements as $key => $entitlementValue) {
-				$namespace = Config::get_config('entitlement_namespace');
-				$pos = strpos($entitlementValue, $namespace);
-				/* Note: we *must* check for both false *and*
-				 * type, as we want pos to be 0 */
-				if ($pos === false || (int)$pos != 0) {
-					continue;
-				} else {
-					$val = explode(":", $entitlementValue);
-					if (count($val) !== (count(explode(":", $namespace))+1)) {
-						Framework::error_output("Error with namespace, too manu objects in namespace (" . count($val) . ")");
+			if (isset($entitlements)) {
+				foreach ($entitlements as $key => $entitlementValue) {
+					$namespace = Config::get_config('entitlement_namespace');
+					$pos = strpos($entitlementValue, $namespace);
+					/* Note: we *must* check for both false *and*
+					 * type, as we want pos to be 0 */
+					if ($pos === false || (int)$pos != 0) {
 						continue;
+					} else {
+						$val = explode(":", $entitlementValue);
+						if (count($val) !== (count(explode(":", $namespace))+1)) {
+							Framework::error_output("Error with namespace, too manu objects in namespace (" . count($val) . ")");
+							continue;
+						}
+						$this->person->setEntitlement($val[count($val)-1]);
 					}
-					$this->person->setEntitlement($val[count($val)-1]);
 				}
 			}
 		} else {
