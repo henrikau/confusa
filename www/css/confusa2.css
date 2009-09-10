@@ -91,9 +91,10 @@ img.url {
 
 div.message_container {
 	padding: 4px;
-	margin-bottom: 4px;
+	margin-bottom: 8px;
+	padding-right: 20px;
 	float: left;
-	width: 95%;
+	width: 90%;
 }
 
 div.error {
