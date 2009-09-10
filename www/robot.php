@@ -88,6 +88,8 @@ class CP_Robot_Interface extends Content_Page
 		/* validate certificate */
 		/* FIXME */
 
+		/* Find valid_until for cert */
+		$valid_until = '2020-01-01 23:59:59';
 		/* is the certificate already in the robot_certs */
 		$fingerprint = openssl_x509_fingerprint($cert);
 		try {
@@ -136,12 +138,22 @@ class CP_Robot_Interface extends Content_Page
 				return false;
 			}
 		} catch (Exception $e) {
-			/* Fixme, add proper exception handling */
+			echo $e->getMessage();
+			/* FIXME, add proper exception handling */
 			return false;
 		}
-		/* get admin_id */
-		$res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?",
-					    array('text'), array($this->person->getEPPN()));
+
+		try {
+			$update  = "INSERT INTO robot_certs (subscriber_id, uploaded_by, uploaded_date, valid_until, cert, fingerprint)";
+			$update .= " VALUES(?, ?, current_timestamp(), ?, ?, ?)";
+			MDB2Wrapper::update($update,
+					    array('text', 'text', 'text', 'text', 'text'),
+					    array($subscriber_id, $admin_id, $valid_until, $cert, $fingerprint));
+		} catch (Exception $e) {
+			/* FIXME */
+			Framework::error_output("coultn't update robot_certs, server said:<br />\n" . $e->getMessage());
+			return false;
+		}
 		Framework::message_output("No errors found wile uploading certificate to keystore");
 		return true;
 	}
