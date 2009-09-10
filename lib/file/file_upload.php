@@ -180,3 +180,57 @@ class FileUpload {
 
 }
 ?>
+
+	/**
+	 * testError() see if any known error-conditions are set for the file
+	 *
+	 * @param void
+	 * @return boolean true when <b>no</b> errors are detected.
+	 */
+	static function testError($fname)
+	{
+		if (isset($_FILES[$fname])) {
+			switch($_FILES[$fname]['error']) {
+			case UPLOAD_ERR_OK:
+				return true;
+			case UPLOAD_ERR_INI_SIZE:
+			case UPLOAD_ERR_FORM_SIZE:
+				Framework::error_output("Size of file exceeds maximum allowed filesize.");
+				return false;
+			case UPLOAD_ERR_PARTIAL:
+				Framework::error_output("Upload did not finish properly, incomplete file. Try again");
+				return false;
+			case UPLOAD_ERR_NO_FILE:
+				Framework::error_output("No file given to upload-handler!");
+				return false;
+			default:
+				Framework::error_output("Unknown error condition!");
+				return false;
+			}
+			/* if nothing bad detected, assume it's OK (we still do the supplied test-function) */
+			return true;
+		}
+	}
+
+	/**
+	 * getContent() return the content of the file
+	 *
+	 * Note: this function assumes assumes that testError has returned no
+	 * errors. The only test is to see if the supplied name actually exists
+	 * in the FILE-array
+	 *
+	 * @param  String the name of the upload-file name from the form.
+	 * @return String|null the file read from /tmp
+	 */
+	static function getContent($fname)
+	{
+		if (isset($_FILES[$fname]['tmp_name'])) {
+			$fsize	= filesize($_FILES[$fname]['tmp_name']);
+			$fd	= fopen($_FILES[$fname]['tmp_name'],'r');
+			$content= fread($fd, $fsize);
+			fclose($fd);
+			return $content;
+		} else {
+			return null;
+		}
+	}
