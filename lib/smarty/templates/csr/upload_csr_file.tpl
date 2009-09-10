@@ -52,16 +52,12 @@
 	startButton.setAttribute("style","display: none");
 	{* IE workaround *}
 	startButton.style.cssText = "display: none";
+	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
+	setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
+	pollStatus('Processing order number {$order_number}.');
 
 	{if $done === TRUE}
 		statusDone({$order_number});
-	{elseif isset($status_poll)}
-		{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
-		setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
-		pollStatus('Processing order number {$order_number}.');
-	{else}
-		setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
-		pollStatus('Processing order number {$order_number}.');
 	{/if}
 </script>
 {/if}
