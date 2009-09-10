@@ -228,6 +228,29 @@ ul.help {
     margin-bottom: 8px;
 }
 
+/* Very simple table of contents block */
+.toc {
+    border: 2px solid black;
+    padding: 4px;
+    margin-bottom: 16px;
+    font-size: 95%;
+}
+
+.toc h2 {
+    font-size: 100%;
+    font-weight: bold;
+}
+
+ul.toc {
+    list-style-type: none;
+    width: 60%;
+}
+
+ul.toc li {
+    padding-left: 8px;/* small indentation for the items */
+}
+/* end very simple table of contents block */
+
 p.example {
     border: 1px dashed #000000;
     margin-top: 8px;

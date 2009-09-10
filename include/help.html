@@ -1,4 +1,13 @@
-<h3>How do I create a CSR?</h3>
+<ul class="toc">
+<h2>Table of contents</h2>
+<li><span><a href="#csr_create">How do I create a CSR?</a></span><br /></li>
+<li><span><a href="#vista_ie">Windows Vista (or newer) browser requests</a></span><br /></li>
+<li><span><a href="#export">How to export certificates from the keystore</a></span><br /></li>
+<li><span><a href="#pkcs12">How to convert between PKCS#12 and X.509</a></span><br /></li>
+</ul>
+
+
+<h3 id="csr_create">How do I create a CSR?</h3>
 
 <p>You should consider using the <a href="http://www.openssl.org">OpenSSL</a> toolkit for
 the creation of certificate signing requests. OpenSSL comes pre-installed with most
@@ -20,3 +29,59 @@ Confusa to request a certificate is <b>usercert_request.pem</b>.</li>
 <b>Note</b>: If Confusa operates in online mode, the subject of the request can
 be arbitrary, as shown above, because Confusa will replace it with real values
 matching you, once it issues the certificate!
+<br /><br />
+<h3 id="vista_ie">Windows Vista (or newer) browser requests</h3>
+
+<p>On Windows Vista (or newer) you have to add Confusa explicitly to the security zone of "<em>Trusted
+Sites</em>", or otherwise Windows will refuse to execute the key generation script for security reasons.</p>
+<br />
+<p>To add Confusa to the Internet-Explorer trusted sites, do the following:</p><br />
+
+<ol style="margin-left: 20px;">
+<li>On the status bar, double-click the security zone name (such as Internet) to open the Internet Security dialog box.</li>
+<li>Click Trusted sites, and then click Sites.</li>
+<li>In the Trusted sites dialog box, click Add to add the site to the list, and then click Close.</li>
+<li>Refresh the page to view the site from its new zone.</li>
+<li>Check the status bar of the browser to confirm that the site is in the Trusted sites zone.</li>
+</ol>
+<br />
+<p>You can also find the "Trusted sites" in Extras -> Internet options -> Security.</p>
+<br />
+<p>If you still fail to execute the browser certificate request script, lower the security level for the
+Trusted Site zone in the Internet Options from "Medium" to "Medium-low".</p>
+<br /><br />
+
+<h3 id="export">How to export certificates from the keystore</h3>
+
+<b>Firefox:</b> Go to "Preferences/Advanced/Encryption/View Certificates/Your certificates".
+Then press "Backup" on the certificate you want to backup, which will create a PKCS#12 file on your
+harddisk. Then follow the steps <a href="#pkcs12">here</a>.<br />
+<b>Opera:</b> Go to "Preferences/Advanced/Security/Manage Certificates". Select your certificate and
+click "Export". Select PKCS#12 format. If you need the certificate for Grid submission, follow the
+steps <a href="#pkcs12">here</a>.<br />
+<b>Internet Explorer:</b> Go to "Internet options/Content/Certificates". Click the certificate you
+want to export and click "export". When asked, whether to include the private key, confirm the message.
+Select PKCS#12 format and "enable strong protection". If you need the certificate for Grid submission, follow the
+steps <a href="#pkcs12">here</a>.
+<br />
+<br />
+
+<h3 id="pkcs12">How to convert between PKCS#12 and X.509</h3>
+If you have a PKCS#12 certificate but want it in PEM format (e.g. for Grid job submission), do the following:
+<br />
+<br />
+Private key:
+<p class="example">
+openssl pkcs12  -nocerts -in cert.p12 -out ~user/.globus/userkey.pem
+</p>
+<br />
+Public key:
+<p class="example">
+openssl pkcs12 -clcerts  -nokeys -in cert.p12 -out ~user/.globus/usercert.pem
+</p>
+<br />
+Subsequently, give them the right permissions:<br />
+<p class="example">
+chmod 0600 userkey.pem<br />
+chmod 0644 usercert.pem
+</p>
