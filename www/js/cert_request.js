@@ -219,7 +219,8 @@ function installIEXPCertificate()
     try {
 	XEnroll.acceptPKCS7(g_ccc);
     } catch (e) {
-	alert("Hit the following exception " + e);
+	alert("Hit an exception when installing.\nDid you generate the certificate request with exactly" +
+		" this browser?");
     }
 }
 
