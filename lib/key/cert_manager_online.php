@@ -197,6 +197,10 @@ class CertManager_Online extends CertManager
             $this->_capi_upload_CSR($auth_key, $csr, 'csr');
             break;
 
+        case "keygen":
+            $this->_capi_upload_CSR($auth_key, $csr, 'spkac');
+            break;
+
         default:
             throw new ConfusaGenException("Browser $browser is unsupported!");
             break;
@@ -561,6 +565,25 @@ class CertManager_Online extends CertManager
             $data=curl_exec($ch);
             curl_close($ch);
             return "<script type=\"text/javascript\">$data</script>";
+            break;
+
+        case "keygen":
+            $collect_endpoint = Config::get_config('capi_collect_endpoint') .
+                                   "?loginName=" . $this->login_name .
+                                    "&loginPassword=" . $this->login_pw .
+                                    "&orderNumber=" . $key .
+                                    "&queryType=2" .
+                                    "&responseType=3" . /* PKCS#7 */
+                                    "&responseEncoding=0"; /* encode base-64 */
+
+            $ch = curl_init($collect_endpoint);
+            curl_setopt($ch, CURLOPT_HEADER,0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+            $data=curl_exec($ch);
+            curl_close($ch);
+            return trim(substr($data,2));
             break;
 
         default:
