@@ -26,25 +26,29 @@ the window below, or by uploading a local file.
     <td><img src="https://slcstest.uninett.no/silk_icons/date.png" /></td>
     <td>Uploaded:</td>
     <td width="30px"></td>
-    <td>{$element.uploaded_date}</td>
+    <td>{$element->serial()}</td>
   </tr>
   <tr>
     <td><img src="https://slcstest.uninett.no/silk_icons/user_suit.png"/></td>
     <td>Uploaded by</td>
     <td></td>
-    <td>{$element.admin}</td>
+    <td>{$element->getOwner()}</td>
   </tr>
   <tr>
     <td><img src="https://slcstest.uninett.no/silk_icons/date_delete.png" /></td>
     <td>Valid until:</td>
     <td></td>
-    <td>{$element.valid_until}</td>
+    <td>Uploaded:</td>
+    <td width="30px"></td>
+    <td>{$element->madeAvailable()}</td>
   </tr>
   <tr>
     <td><img src="https://slcstest.uninett.no/silk_icons/comment.png" /></td>
     <td>comment:</td>
     <td></td>
-    <td>{$element.comment}</td>
+    <td>Valid until:</td>
+    <td></td>
+    <td>{$element->validTo()}</td>
   </tr>
 {/foreach}
 </table>

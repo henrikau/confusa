@@ -5,6 +5,7 @@ require_once 'person.php';
 require_once 'mdb2_wrapper.php';
 require_once 'cert_lib.php';
 require_once 'file_upload.php';
+require_once 'certificate.php';
 
 class CP_Robot_Interface extends Content_Page
 {
@@ -61,7 +62,14 @@ class CP_Robot_Interface extends Content_Page
 			/* fixme */
 			Framework::error_output("Errors getting robot-certificates from DB.<br />" . $e->getMessage());
 		}
-		return $res;
+		$certs = array();
+		foreach ($res as $key => $val) {
+			$cert = new Certificate($val['cert']);
+			$cert->setMadeAvailable($val['uploaded_date']);
+			$cert->setOwner($val['admin']);
+			$certs[] = $cert;
+		}
+		return $certs;
 	}
 
 	private function handleFileCertificate()
@@ -86,16 +94,20 @@ class CP_Robot_Interface extends Content_Page
 	private function insertCertificate($cert)
 	{
 		/* validate certificate */
-		/* FIXME */
+		try {
+			$cert = new Certificate($certificate);
+		} catch (KeyNotFoundException $knfe) {
+			Framework::error_output($knfe->getMessage());
+			return false;
+		}
 
 		/* Find valid_until for cert */
-		$valid_until = '2020-01-01 23:59:59';
-		/* is the certificate already in the robot_certs */
-		$fingerprint = openssl_x509_fingerprint($cert);
 		try {
 			$query  = "SELECT subscriber_id, uploaded_by, uploaded_date, valid_until, fingerprint ";
-			$query .= "FROM robot_certs WHERE fingerprint = ?";
-			$res = MDB2Wrapper::execute($query, array('text'), array($fingerprint));
+			$query .= "FROM robot_certs WHERE fingerprint = ? OR serial=?";
+			$res = MDB2Wrapper::execute($query,
+						    array('text', 'text'),
+						    array($cert->fingerprint(), $cert->serial()));
 			if (count($res) > 0) {
 				Framework::error_output("Certificate already present in Database. Cannot upload.");
 				return false;
@@ -144,11 +156,12 @@ class CP_Robot_Interface extends Content_Page
 		}
 
 		try {
-			$update  = "INSERT INTO robot_certs (subscriber_id, uploaded_by, uploaded_date, valid_until, cert, fingerprint)";
-			$update .= " VALUES(?, ?, current_timestamp(), ?, ?, ?)";
-			MDB2Wrapper::update($update,
-					    array('text', 'text', 'text', 'text', 'text'),
-					    array($subscriber_id, $admin_id, $valid_until, $cert, $fingerprint));
+			$update  = "INSERT INTO robot_certs (subscriber_id, uploaded_by, uploaded_date, valid_until, cert, fingerprint, serial)";
+			$update .= " VALUES(?, ?, current_timestamp(), ?, ?, ?, ?)";
+			$params	= array('text', 'text', 'text', 'text', 'text', 'text');
+			$data	= array($subscriber_id, $admin_id, $cert->validTo(), $cert->getCert(), $cert->fingerprint(), $cert->serial());
+			MDB2Wrapper::update($update, $params, $data);
+
 		} catch (Exception $e) {
 			/* FIXME */
 			Framework::error_output("coultn't update robot_certs, server said:<br />\n" . $e->getMessage());
