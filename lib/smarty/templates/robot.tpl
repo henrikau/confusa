@@ -15,36 +15,50 @@ the window below, or by uploading a local file.
 {if $robotCerts}
 <table>
 {foreach from=$robotCerts item=element}
-  <tr></tr>
   <tr>
-    <td width="20px"></td>
-    <td>Fingerprint</td>
-    <td width="30px"></td>
-    <td>{$element.fingerprint}</td>
+    <td><div class="spacer"></div></td>
+    <td></td>
+    <td></td>
+    <td></td>
   </tr>
   <tr>
-    <td><img src="https://slcstest.uninett.no/silk_icons/date.png" /></td>
-    <td>Uploaded:</td>
+    <td></td>
+    <td>
+      <a href="?action=delete&serial={$element->serial()}">
+	<img src="https://slcstest.uninett.no/silk_icons/delete.png"/
+	alt="Delete" title="Delete Robot Certificate" class="url">
+	Delete
+    </a>
+    </td>
+    <td>
+    </td>
+    <td>
+      <a href="?action=info&serial={$element->serial()}">
+	<img src="https://slcstest.uninett.no/silk_icons/information.png"
+	alt="Info" title="Get more information about certificate" class="url"/>
+	Information
+    </a>
+    </td>
+  </tr>
+  <tr>
+    <td width="20px"></td>
+    <td>Serial number:</td>
     <td width="30px"></td>
     <td>{$element->serial()}</td>
   </tr>
   <tr>
-    <td><img src="https://slcstest.uninett.no/silk_icons/user_suit.png"/></td>
+    <td></td>
     <td>Uploaded by</td>
     <td></td>
     <td>{$element->getOwner()}</td>
   </tr>
   <tr>
-    <td><img src="https://slcstest.uninett.no/silk_icons/date_delete.png" /></td>
-    <td>Valid until:</td>
     <td></td>
     <td>Uploaded:</td>
     <td width="30px"></td>
     <td>{$element->madeAvailable()}</td>
   </tr>
   <tr>
-    <td><img src="https://slcstest.uninett.no/silk_icons/comment.png" /></td>
-    <td>comment:</td>
     <td></td>
     <td>Valid until:</td>
     <td></td>
@@ -68,6 +82,7 @@ No available certificates in Database.
     <table>
       <tr>
 	<td colspan="2">
+	  Paste your certificate here:
 	  <textarea name="cert" value="" rows="20" cols="70"
 	  wrap="off"></textarea><br />
 	</td>
