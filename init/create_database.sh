@@ -120,7 +120,5 @@ fi
 
 echo "Confusa-setup complete, adding views"
 $MYSQL -D$database  < views_create.sql
-echo "Views created. Almost there... creating triggers"
-$MYSQL -D$database < triggers_create.sql
-echo "Triggers created. Database bootstrap complete."
+echo "Views created. Database bootstrap complete."
 echo ""
