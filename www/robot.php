@@ -19,14 +19,15 @@ class CP_Robot_Interface extends Content_Page
 		parent::pre_process($person);
 		if (isset($_POST['robot_action'])) {
 			$action = Input::sanitize($_POST['robot_action']);
+			$comment = Input::sanitize($_POST['comment']);
 			switch($action) {
 			case 'paste_new':
 				if (isset($_POST['cert']) && $_POST['cert'] != "") {
-					$this->insertCertificate($_POST['cert']);
+					$this->insertCertificate($_POST['cert'], $comment);
 				}
 				break;
 			case 'upload_new':
-				$this->handleFileCertificate();
+				$this->handleFileCertificate($comment);
 				break;
 			default:
 				Framework::error_output("Unknown robot-action ($action)");
@@ -72,7 +73,7 @@ class CP_Robot_Interface extends Content_Page
 		return $certs;
 	}
 
-	private function handleFileCertificate()
+	private function handleFileCertificate($comment)
 	{
 		if (FileUpload::testError('cert')) {
 			$cert = openssl_x509_read(FileUpload::getContent('cert'));
@@ -91,7 +92,7 @@ class CP_Robot_Interface extends Content_Page
 	 * @param String base64 encoded PEM formatted X.509 certificate
 	 * @return boolean indicating the success of the opreation (true means inserted OK)
 	 */
-	private function insertCertificate($cert)
+	private function insertCertificate($certificate, $comment)
 	{
 		/* validate certificate */
 		try {
@@ -114,7 +115,10 @@ class CP_Robot_Interface extends Content_Page
 			}
 		} catch (Exception $e) {
 			/* FIXME, add better exception mask & handling */
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " FIXME: " . $e->getMessage());
+			return false;
 		}
+
 		/* Get subscriber,  nren and admin_id */
 		try {
 			$query  = "SELECT anj.admin AS admin, anj.admin_id AS aid, ";

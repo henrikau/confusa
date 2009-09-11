@@ -84,6 +84,17 @@ No available certificates in Database.
 	<td colspan="2">
 	  Paste your certificate here:
 	  <textarea name="cert" value="" rows="20" cols="70"
+		    wrap="off"></textarea><br />
+	</td>
+      </tr>
+      <tr>
+	<td><div class="spacer"></div></td>
+	<td></td>
+      </tr>
+      <tr>
+	<td colspan="2">
+	  Add an additional comment:
+	  <textarea name="comment" value="" rows="10" cols="70"
 	  wrap="off"></textarea><br />
 	</td>
       </tr>
@@ -104,9 +115,30 @@ No available certificates in Database.
     <input type="hidden"
 	   name="MAX_FILE_SIZE"
 	   value="2000000" />
-    <input name="cert" TYPE="file" />
-    <input type="submit" value="Upload Certificate" />
+    <table>
+      <tr>
+	<td colspan="2">
+	  <input name="cert" TYPE="file" />
+	</td>
+      </tr>
+      <tr>
+	<td><div class="spacer"></div></td>
+	<td></td>
+      </tr>
+
+      <tr>
+	<td colspan="2">
+	  Add an additional comment:
+	  <textarea name="comment" value="" rows="10" cols="70"
+	  wrap="off"></textarea>
+	</td>
+      </tr>
+      <tr>
+	<td><input type="reset" class="button" value="Reset form" /></td>
+	<td><input type="submit" value="Upload Certificate" /></td>
+      </tr>
   </form>
+  </table>
   <br />
 </fieldset>
 
