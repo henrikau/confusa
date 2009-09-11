@@ -27,6 +27,9 @@ function openssl_x509_fingerprint($x509cert, $hashOnly = true)
 function openssl_x509_serial($x509cert)
 {
 
+	if (!isset($x509cert) || $x509cert == "") {
+		return null;
+	}
 	$cmd ="echo \"" . $x509cert . "\" | openssl x509  -serial -noout|cut -d '=' -f2";
 	$sprint = shell_exec($cmd);
 	return $sprint;
