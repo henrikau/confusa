@@ -657,6 +657,13 @@ class Person{
 	    if (!$this->testEntitlementAttribute("confusaAdmin")) {
 		    return false;
 	    }
+	    /* If the user has no subscriber set, he/she *cannot* be a
+	     * administrator */
+	    $epodn = $this->getSubscriberOrgName();
+	    if (!isset($epodn) || $epodn === "") {
+		    return false;
+	    }
+
 	    return (int)$this->getAdminStatus() == SUBSCRIBER_ADMIN;
     }
 
@@ -669,6 +676,10 @@ class Person{
     public function isSubscriberSubAdmin()
     {
 	    if (!$this->testEntitlementAttribute("confusaAdmin")) {
+		    return false;
+	    }
+	    $epodn = $this->getSubscriberOrgName();
+	    if (!isset($epodn) || $epodn === "") {
 		    return false;
 	    }
 	    return (int)$this->getAdminStatus() == SUBSCRIBER_SUB_ADMIN;
@@ -686,13 +697,6 @@ class Person{
     {
 	    $adminRes = NORMAL_USER;
 	    if (!$this->isAuth()) {
-		    return NORMAL_USER;
-	    }
-
-	    /* If the user has no subscriber set, he/she *cannot* be a
-	     * administrator */
-	    $epodn = $this->getSubscriberOrgName();
-	    if (!isset($epodn) || $epodn === "") {
 		    return NORMAL_USER;
 	    }
 
