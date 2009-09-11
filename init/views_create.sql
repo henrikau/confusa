@@ -9,12 +9,14 @@ VIEW nren_subscriber_view
 	(subscriber_id,
 	subscriber,
 	org_state,
-	nren)
+	nren,
+	nren_id)
 AS SELECT
 	s.subscriber_id,
 	s.name,
 	s.org_state,
-	n.name
+	n.name,
+	n.nren_id
 FROM
 	subscribers s
 LEFT JOIN
