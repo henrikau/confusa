@@ -5,12 +5,12 @@ include_once 'logger.php';
 require_once 'output.php';
 require_once 'pw.php';
 
-final class Index extends FW_Content_Page
+final class CP_Index extends FW_Content_Page
 {
 
 	function __construct()
 	{
-		parent::__construct("Index", false);
+		parent::__construct("Index", false, "index.php");
 	}
 
 	/**
@@ -34,12 +34,12 @@ final class Index extends FW_Content_Page
 				Logger::log_event(LOG_WARNING, $msg);
 			}
 		}
+
 		$this->tpl->assign('content', $this->tpl->fetch('index.tpl'));
 	} /* end process() */
 }
 
-$ind = new Index();
-$fw  = new Framework($ind);
+$fw  = new Framework(new CP_Index());
 $fw->start();
 unset($fw);
 unset($ind);

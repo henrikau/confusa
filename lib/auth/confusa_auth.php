@@ -1,269 +1,342 @@
 <?php
-  /* Author: Henrik Austad <henrik.austad@uninett.no>
-   *
-   * Part of Confusa.
-   *
-   * This is the main authentication module of Confusa.
-   */
-/* get simplesaml */
+
+require_once 'person.php';
+require_once 'confusa_config.php';
 require_once 'config.php';
 
-if(!Config::get_config('auth_bypass'))
-{
-	/* Use the new autoloader functionality in SimpleSAMLphp */
+if (!Config::get_config('auth_bypass')) {
 	$sspdir = Config::get_config('simplesaml_path');
 	require_once $sspdir . '/lib/_autoload.php';
 	SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
 }
-require_once 'oauth_auth.php';
-require_once 'person.php';
-require_once 'logger.php';
-require_once 'debug.php';
-require_once 'mdb2_wrapper.php';
-/* global variable to check if the session has been started or not (avoid
- * multiple calls to simple_saml's session_start()
- */
-$session_started = false;
-/* global variable to determine if OAuth is used for authN
- */
-$use_oauth = false;
 
+require_once 'MapNotFoundException.php';
 
-/* authenticate_user()
+/**
+ * Confusa_Auth - base class for all authentication managers
  *
- * This is the main function for checking if the user is authenticated.
+ * Classes providing authN are supposed to implement:
+ * 		- authenticateUser()
+ *
+ * 		- checkAuthentication()
+ *
+ *		- getAttributeKeys()
+ *
+ * 		- deAuthenticateUser()
+ *
+ *		- softLogout()
  */
-function authenticate_user($person)
-    {
-    /* check to see if the person is authenticated. If the person is
-     * authenticated OK, is_authenticated will update the auth-fields of person,
-     * but also fill in all the remaining fields. 
-     */
-         $person = is_authenticated($person);
-
-    if (!$person->isAuth()) {
-        /* assert SSO
-         * Make sure the feide-login is OK.
-         */
-         _assert_sso($person);
-    }
-} /* end authenticate_user */
-
-function deauthenticate_user($person)
+abstract class Confusa_Auth
 {
-	if (isset($person)) {
-		$person->setAuth(false);
-	}
-}
+	/* the person that is authenticated by Confusa */
+	protected $person;
 
-/* is_authenticated()
- *
- * This function takes as argument a person, and checks if this person is authenticated.
- * *NOTE* this function does not check the fields of the person-object, it will
- * check the subsystem and *update* the values in person to reflect this.
- *
- * Hence; this is the authoriative-authentication source for any person.
- */
-function is_authenticated($person = null) {
-	if (!isset($person))
-		$person = new Person();
-
-	// Bypass auth
-	if(Config::get_config('auth_bypass'))
+	function __construct($person = NULL)
 	{
-		// Set some bogus attributes
-		$person->setName('Ola Nordmann');
-		$person->setEPPN('ola.nordmann@norge.no');
-		$person->setEmail('ola.nordmann@norge.no');
-		$person->setCountry('NO');
-		$person->setSubscriberOrgName('Test');
-		$person->setIdP('test-idp');
-		$person->setNREN('TEST-NREN');
-		$person->setEduPersonEntitlement('confusaAdmin');
-		$person->setAuth(true);
-		
-		return $person;
-	}
-		
-	/* check to see if the person is authN */
-	$config = _get_config();
-
-	global $use_oauth;
-	$use_oauth = (SimpleSAML_Module::isModuleEnabled('oauth') and isset($_REQUEST['oauth_consumer_key']));
-
-	if ($use_oauth) {
-		$oauth = ConfusaOAuth::getInstance();
-		$person->setAuth($oauth->isAuthorized());
-	} else {
-		$session = _get_session();
-		$person->setSession(_get_session());
-		$person->setSAMLConfiguration(SimpleSAML_Configuration::getInstance());
-		if (isset($session)) {
-			$person->setAuth($session->isValid());
+		if (is_null($person)) {
+			$this->person = new Person();
+		} else {
+			$this->person = $person;
 		}
 	}
 
-	if ($person->isAuth()) {
-		add_attributes($person);
+	function __destruct()
+	{
+		unset($this->person);
 	}
 
-	return $person;
-} /* end is_authenticated */
+	/**
+	 * Get the person object associated with this authN class
+	 *
+	 * @return the person member of this class
+	 */
+	public function getPerson()
+	{
+		return $this->person;
+	}
+
+	/**
+	 * decoratePerson - get the supplied attributes and add to the correct
+	 * fields in person
+	 *
+	 * This function is a bit fragile. The reason for this, is that it needs
+	 * to 'bootstrap' the map for person-identifier (eduPersonPrincipalName)
+	 * through various encodings.
+	 *
+	 * One way would be to add a specific mapping for all known NRENs, but
+	 * we'd rather add a generic approach and just try the known encodings
+	 * and see if we find something there.
+	 *
+	 * If, for some reason, a new NREN/IdP fails to correctly decorate the
+	 * person-object, the problem most likely starts here.
+	 *
+	 * @author Henrik Austad <henrik.austad@uninett.no>
+	 * @author Thomas Zangerl <tzangerl@pdc.kth.se>
+	 *
+	 * @param array $attributes
+	 * @throws MapNotFoundException
+	 */
+	public function decoratePerson($attributes)
+	{
+		if (!isset($attributes)) {
+			throw new CrititicalAttributeException("Cannot find <b>any</b> attributes!");
+		}
+
+		/* Get the map
+		 * Warning: this may throw the MapNotFoundException if the nren
+		 * is new.
+		 */
+		$nren = $attributes['nren'][0];
+		$subscr = $attributes['subscriber'][0];
+		try {
+			$map = AuthHandler::getMap($nren, $subscr);
+		} catch (DBStatementException $dbse) {
+			$msg  = "Your confusa installation is not properly configured. <br />\n";
+			$msg .= "The attribute_mapping table is either missing or malformed.<br />\n";
+			$msg .= "You need to create all tables needed by in order to find the correct attribute-mapping.<br />\n";
+			throw new CriticalAttributeException($msg);
+		}
+
+		/* Normal mapping, this is what we want. */
+		if (isset($map) && is_array($map)) {
+			$this->person->setEPPN($attributes[$map['eppn']][0]);
+			$this->person->setEPPNKey($map['eppn']);
+
+			/* slow down and parse the name properly */
+			$parsed = $attributes[$map['epodn']][0];
+			$orgname= split(',', $parsed);
+			if (isset($orgname)) {
+				$parsed = "";
+				foreach ($orgname as $key => $value) {
+					$tmp = split('=', $value);
+					if (isset($tmp[1])) {
+						$parsed .= strtolower(str_replace(' ', '', $tmp[1])) . ".";
+					} else {
+						$parsed .= strtolower(str_replace(' ', '', $tmp[0])) . ".";
+					}
+				}
+				if ($parsed[strlen($parsed)-1] == ".") {
+					$parsed = substr($parsed, 0, strlen($parsed)-1);
+				}
+			}
+			$this->person->setSubscriberOrgName($parsed);
+
+			$this->person->setName($attributes[$map['cn']][0]);
+			$this->person->setEmail($attributes[$map['mail']][0]);
 
 
-/* add_attributes
- *
- * This function decorates a person-object, which must be non-null in order to
- * provide some sane abstraction away from the attributes-array.
- *
- * This in itself is not a good reason for using a dedicated object, but we try
- * to tie as many strings together (like attributes, authentication status etc)
- * and provide a sane interface to the outside world.
- */
-function add_attributes($person)
-{
-     $attributes = _get_attributes();
+			/* test namespace
+			 *
+			 * we are looking for (atm)
+			 * urn:mace:feide.no:sigma.uninett.no:<attribute>
+			 */
+			$entitlements = $attributes[$map['entitlement']];
+			if (isset($entitlements)) {
+				foreach ($entitlements as $key => $entitlementValue) {
+					$namespace = Config::get_config('entitlement_namespace');
+					$pos = strpos($entitlementValue, $namespace);
+					/* Note: we *must* check for both false *and*
+					 * type, as we want pos to be 0 */
+					if ($pos === false || (int)$pos != 0) {
+						continue;
+					} else {
+						$val = explode(":", $entitlementValue);
+						if (count($val) !== (count(explode(":", $namespace))+1)) {
+							Framework::error_output("Error with namespace, too manu objects in namespace (" . count($val) . ")");
+							continue;
+						}
+						$this->person->setEntitlement($val[count($val)-1]);
+					}
+				}
+			}
+		} else {
+			/* At this point we're on shaky ground as we have to
+			 * 'see if we can find anything'
+			 * 
+			 *		no map is set, can we find the ePPN in there?
+			 */
+			if (isset($attributes['eduPersonPrincipalName'][0])) {
+				$this->person->setEPPN($attributes['eduPersonPrincipalName'][0]);
+				$this->person->setEPPNKey('eduPersonPrincipalName');
+			} else if (isset($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0])) {
+				/* EduGAIN, Surfnet */
+				$this->person->setEPPN($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0]);
+				$this->person->setEPPNKey('urn:mace:dir:attribute-def:eduPersonPrincipalName');
+			} else if (isset($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'][0])) {
+				/* HAKA */
+				$this->person->setEPPN($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'][0]);
+				$this->person->setEPPNKey('urn:oid:1.3.6.1.4.1.5923.1.1.1.6');
+			}
+			/* is ePPN registred as NREN admin (from bootstrap) */
+			if ($this->person->isNRENAdmin()) {
+				$msg  = "No map for your NREN (".$attributes['nren'][0].") is set <br />\n";
+				$msg .= "You need to do this <b>now</b> so the normal users can utilize Confusa's functionality.<br />\n";
+				$msg .= "<br /><center>Go <a href=\"stylist.php?mode=admin&show=map\">here</a> to update the map.</center><br />\n";
+				if (Config::get_config('debug')) {
+					$msg .= "Raw-dump of supplied attrributes:<br />\n";
+					$msg .= "<br /><pre>\n";
+					foreach ($attributes as $key => $val) {
+						$tabs = "\t";
+						if (strlen($key) < 8)
+							$tabs .= "\t\t";
+						else if (strlen($key) < 16)
+							$tabs .= "\t";
+						$msg .= "$key$tabs{$val[0]}\n";
+					}
+					$msg .= "</pre><br />\n";
+				}
+				Framework::error_output($msg);
+			}
+		}
+		$eppn = $this->person->getEPPN();
+		if (!isset($eppn) || $eppn == "") {
+			/* couldn't decorate person */
+			$msg  = "Could not retrieve the config for you subscriber.<br />";
+			$msg .= "Please contact your local IT department and forward the request to the NREN administrators.<br /><br />";
+			$msg .= "Configure NREN Attribute Map for Your NREN.<br /><br />";
+			throw new MapNotFoundException($msg);
+		}
+		/* in the attributes, but not exported by the nrens (we
+		 * deduce this in the NREN/Country map */
+		$this->person->setCountry($attributes['country'][0]);
+		$this->person->setNREN($attributes['nren'][0]);
+	}
 
-     if (!isset($attributes['eduPersonPrincipalName'][0])) {
-	  $debug_string=__FILE__ .":".__LINE__." -> eduPersonPrincipalName not set!<BR>\n";
-	  Debug::dump($debug_string);
-          $person->setAuth(false);
-     }
-     else {
-	     $person->setName($attributes['cn'][0]);
-	     $person->setEPPN($attributes['eduPersonPrincipalName'][0]);
-	     $person->setEmail($attributes['mail'][0]);
-	     $person->setCountry($attributes['country'][0]);
-	     $person->setSubscriberOrgName($attributes['organization'][0]);
-	     $person->setEduPersonEntitlement($attributes['eduPersonEntitlement'][0]);
-	     $person->setNREN($attributes['nren'][0]);
-	     $person->setAuth(true);
-     }
-} /* end add_attributes() */
+	/**
+	 * Authenticate the idenitity of a user, using a free-of-choice method to be
+	 * implemented by subclasses
+	 *
+	 * @return boolean $authN indicating if the user was successfully authenticated
+	 */
+	public abstract function authenticateUser();
 
-/** logout_link
- *
- * params:
- * @logout_location:	If secondary logout is needed, or some logout-success
- *			message needs to be displayed, this is the page that the user will be
- *			redirected to.
- * @logout_name:	Content of the logout-link
- * @edu_name:		The unique feide name of the person we're logging out (so
- *			that the logout-form can remove info from the database).
- */
-function logout_link($logout_location="logout.php")
-{
-	if(Config::get_config('auth_bypass'))
-		return $logout_location;
+	/**
+	 * Check (possibly by polling a subsystem), if a user is still authN.
+	 *
+	 * @return boolean $authN describing whether user is authenticated or not.
+	 */
+	public abstract function checkAuthentication();
 
-     $config = _get_config();
+	/**
+	 * getAttributes() - return the attribute-keys found in attributes
+	 *
+	 * This function is created solely to help the
+	 * attribute-mapping. Instead of exposing *all* attributes, we return
+	 * the relevant keys found.
+	 *
+	 * The function shall perform rudimentary filtering, keys suchs as
+	 * 'country' and 'nren' should not be exposed. Neither should any other
+	 * Confusa-specific keys be exported.
+	 *
+	 * @return array of attribute-keys.
+	 */
+	public abstract function getAttributeKeys();
 
-     /* need to find the url, and handle some quirks in the result from selfURL
-      * in order to get proper url-base */
-     $base = SimpleSAML_Utilities::selfURL();
-     if (strpos($base, ".php"))
-          $base = dirname($base);
-     $link_base =  '/' . SimpleSAML_Configuration::getInstance()->getValue('baseurlpath') .
-			'saml2/sp/initSLO.php?RelayState='.$base .'/'. $logout_location;
-	return $link_base;
-} // end get_logout_link()
+	/**
+	 * "Logout" the user, possibly using the subsystem. To be implemented by
+	 * subclasses
+	 *
+	 * @return void
+	 */
+	public abstract function deAuthenticateUser();
 
-
-function show_sso_debug($person) {
-	if(!Config::get_config('auth_bypass'))
-		return;
-		
-    if (!isset($person)) {
-        echo __FILE__ . ":" . __LINE__ . " person does not exist<BR>\n";
-        return;
-        
-        }
-    $config  = _get_config();
-    $session = _get_session();
-    if($person->isAuth()) {
-        $attributes = _get_attributes();
-        $time_left = $session->remainingTime();
-        $hours_left = (int)($time_left / 3600);
-        $mins_left = (int)(($time_left % 3600)/60);
-        $secs_left = (int)(($time_left % 3600) % 60);
-        printn("<HR>");
-        printBRn("<B>session and attributes from SimpleSAML debug info:</B>");
-        printBRn("Your session is valid for ". 
-                 $hours_left . "h " . 
-                 $mins_left  . "min " . 
-                 $secs_left  . "seconds<BR>");
-
-        printn("<table>");
-        foreach ($attributes AS $name => $value) {
-            /* several values in the field */
-            echo "\t<tr>\n\t\t<td>$name</td>\n\t\t<td>" . $value[0] . "</td>\n\t</tr>\n";
-        }
-        printn("</table>");
-        printn("<HR>");
-    }
+	/**
+	 * softLogout() - try to bump the authenticated session to force re-authN.
+	 *
+	 * @return void
+	 */
+	public abstract function softLogout();
 }
-/* gets the config from the SimpleSAML-package. (abstract layer, don't want this
- * in general code.
+
+/**
+ * AuthHandler - return the right authentication manager for the configuration
  *
- * Parameters: none
- * Returns: config-descriptor from simple-saml
+ * The handler should abstract that decision away from the calling functions
+ * and consult on its own on the configuration or environment
  */
-
-function _get_config() 
+require_once 'idp.php';
+require_once 'bypass.php';
+class AuthHandler
 {
-    return SimpleSAML_Configuration::getInstance();
-}
+	private static $auth;
+	/**
+	 * Get the auth manager based on the request
+	 *
+	 * @param $person The person for which the auth_manager should be created
+	 * @return an instance of Confusa_Auth
+	 */
+	public static function getAuthManager($person)
+	{
+		if (!isset(AuthHandler::$auth)) {
+			if (Config::get_config('auth_bypass') === TRUE) {
+				AuthHandler::$auth = new Confusa_Auth_Bypass($person);
+			} else {
+				AuthHandler::$auth = new Confusa_Auth_IdP($person);
+			}
+		}
+		return AuthHandler::$auth;
+	}
 
-/* _get_session()
- *
- * Returns: the session-descriptor from SimpelSAML. If the session has not been
- * started, this function will also start a new session for you. :-)
- */
-function _get_session() 
-{
-    // ensure that session_start() is only called once
-    global $session_started;
-    if (!$session_started) {
-        session_start();
-        $session_started=true;
-    }
-    return SimpleSAML_Session::getInstance();
-}
+	static function getMap($nren, $subscriber = null)
+	{
+		if (!isset($nren) || $nren == "")
+			throw new MapNotFoundException("No NREN supplied to AuthHandler::getMap(). This is a required value.");
 
-function _get_attributes()
-{ 
-	global $use_oauth;
-	if ($use_oauth) {
-		return ConfusaOAuth::getInstance()->getAttributes();
-	} else {
-		return _get_session()->getAttributes();
+		if (isset($subscriber) && $subscriber != "") {
+			$map = AuthHandler::getSubscriberMap($nren, $subscriber);
+			if (isset($map)) {
+				return $map;
+			}
+		}
+		return AuthHandler::getNrenMap($nren);
+	} /* end getMap() */
+
+	static function getSubscriberMap($nren, $subscriber)
+	{
+		$query  = "SELECT a.eppn, a.epodn, a.cn, a.mail, a.entitlement";
+		$query .= " FROM subscribers s, nrens n, attribute_mapping a";
+		$query .= " WHERE s.nren_id=n.nren_id AND s.subscriber_id=a.subscriber_id";
+		$query .= " AND n.name=? AND s.name=? ";
+		$values = array('text', 'text');
+		$data	= array($nren, $subscriber);
+		try {
+			$map	= MDB2Wrapper::execute($query, $values, $data);
+		} catch (Exception $e) {
+			echo $query . "<br />\n";
+			print_r($values);
+			print_r($data);
+			return null;
+		}
+		if (count($map) > 0) {
+			if (count($map) == 1) {
+				$map['type'] = 'subscriber';
+				return $map[0];
+			}
+			throw new ConfusaGenException("Got " . count($map) . " hits when looking for the subscriber-map ($subscriber for nren $nren)");
+		}
+		return null;
+	}
+
+	static function getNRENMap($nren)
+	{
+			$query  = "SELECT a.eppn, a.epodn, a.cn, a.mail, a.entitlement";
+			$query .= " FROM attribute_mapping a, nrens n WHERE n.nren_id=a.nren_id AND n.name=? AND subscriber_id IS NULL";
+			try {
+				$map = MDB2Wrapper::execute($query,
+							    array('text'),
+							    array($nren));
+			} catch (Exception $e) {
+				return null;
+			}
+
+		if (count($map) > 0) {
+			if (count($map) == 1) {
+				$map['type'] = 'nren';
+				return $map[0];
+			}
+			throw new ConfusaGenException("Got " . count($map) . " hits when looking for the map for NREN $nren");
+		}
+		return null;
 	}
 }
-
-
-function _assert_sso($person)
-{
-  $config  = _get_config();
-  $session = _get_session();
-
-  /* Check if valid local session exists..
-   *
-   * If not:
-   *	session set
-   *	session valid
-   * Do:
-   *	set new header
-   * http://rnd.feide.no/content/using-simplesamlphp-service-provider#id436365
-   */
-  if (!isset($session) || !$session->isValid() ) {
-       $relay = Config::get_config('server_url') . Config::get_config('post_login_page');
-       SimpleSAML_Utilities::redirect('/' . $config->getBaseURL() . 'saml2/sp/initSSO.php',array('RelayState' => $relay));
-       exit(0);
-  }
-
-  /* update person, FIXME: update attributes as well */
-  $person->setAuth($session->isValid());
-  add_attributes($person);
-} /* end  _assert_sso() */
-
 ?>

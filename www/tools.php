@@ -5,11 +5,11 @@ include_once 'mail_manager.php';
 include_once 'logger.php';
 require_once 'pw.php';
 
-class Tools extends FW_Content_Page
+class CP_Tools extends FW_Content_Page
 {
 	public function __construct()
 	{
-		parent::__construct("Revoke Certificate(s)", true);
+		parent::__construct("Revoke Certificate(s)", true, "tools.php");
 	}
 
 	function __destruct()
@@ -66,7 +66,7 @@ class Tools extends FW_Content_Page
 
 	}
 }
-$fw = new Framework(new Tools());
+$fw = new Framework(new CP_Tools());
 $fw->start();
 
 ?>

@@ -40,8 +40,11 @@ class Framework {
 	private $person;
 	private $contentPage;
 	private $tpl;
+	private $renderError = false;
 	private static $errors = array();
 	private static $messages = array();
+	private static $warnings = array();
+	private static $successes = array();
 	private static $sensitive_action = false;
 
 	/* Limit the file endings that are going to be accepted.
@@ -82,20 +85,40 @@ class Framework {
 	}
 
 	public function authenticate() {
-		is_authenticated($this->person);
-		if (!$this->person->isAuth()) {
-			/* if login, trigger SAML-redirect first */
-			if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-				_assert_sso($this->person);
+		/* if login, trigger SAML-redirect first */
+		$auth = AuthHandler::getAuthManager($this->person);
+
+		try {
+			if (!$auth->checkAuthentication()) {
+				if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
+					$auth->authenticateUser();
+				}
 			}
 		}
+		catch (ConfusaGenException $cge) {
+			Framework::error_output($cge->getMessage());
+			$this->renderError = true;
+			return;
+		}
+		/* get the updated person object back from the authentication framework */
+		$this->person = $auth->getPerson();
+		/* show a warning if the person does not have Confusa entitlement and ConfusaAdmin entitlement */
+		if ($this->person->isAuth()) {
+			if ($this->person->testEntitlementAttribute("Confusa") == false) {
+				if ($this->person->testEntitlementAttribute("ConfusaAdmin") == false) {
+					Framework::message_output("'Confusa' Entitlement not set. You do not qualify " .
+								"to request certificates at this time. Please ask an IT-administrator at your " .
+								"institution to resolve this issue.");
+				}
+			}
+		}
+
 		if (Framework::$sensitive_action) {
-			/* FIXME */
 			$delta = Config::get_config('protected_session_timeout')*60 - $this->person->getTimeSinceStart();
 			if ($delta < 0) {
+				$auth->softLogout();
+
 				require_once 'refresh.html';
-				if (isset($_SESSION))
-					session_destroy();
 				$msg =  __FILE__ . ":" . __LINE__ . " Sensitive action, and your session is too old (";
 				$msg .= ((int)$delta*-1)." seconds passed the limit) ";
 				$msg .= "--- the re-auth has not been implemented yet.";
@@ -103,7 +126,6 @@ class Framework {
 				exit(0);
 			}
 		}
-		return $this->person;
 	}
 
 	/**
@@ -120,18 +142,42 @@ class Framework {
 
 	public function start()
 	{
-		/* check the authentication-thing, catch the login-hook
-		 * This is done via confusa_auth
-		 */
-		$this->authenticate();
-		
 		/* Set tpl object to content page */
 		$this->contentPage->setTpl($this->tpl);
 
-		/* Allow content-page to do pre-process */
-		$res = $this->contentPage->pre_process($this->person);
-		if ($res) {
-			$this->tpl->assign('extraHeader', $res);
+		/* check the authentication-thing, catch the login-hook
+		 * This is done via confusa_auth
+		 */
+		try {
+			$this->authenticate();
+			$res = $this->contentPage->pre_process($this->person);
+			if ($res) {
+				$this->tpl->assign('extraHeader', $res);
+			}
+		} catch (CriticalAttributeException $cae) {
+			$msg  = "<center>";
+			$msg .= "<b>Error(s) with attributes</b><br /><br />";
+			$msg .= $cae->getMessage() . "<br /><br />";
+			$msg .= "<b>Cannot continue</b><br /><br />";
+			$msg .= "Please contact your local IT-support, and ask them to resolve this issue.";
+			$msg .= "</center>";
+			Framework::error_output($msg);
+			$this->renderError = true;
+		} catch (MapNotFoundException $mnfe) {
+			$msg  = "<center>\n";
+			$msg .= "<b>Error(s) with attributes</b><br /><br />";
+			$msg .= "No map has been configured for your subscriber. ";
+			$msg .= "Please contact your local IT-departement and ask them to forward the request ";
+			$msg .= "to the registred NREN administrator for your domain.";
+			Framework::error_output($msg);
+			$this->renderError = true;
+		} catch (ConfusaGenException $cge) {
+			Framework::error_output("Could not authenticate you! Error was: " .
+									$cge->getMessage());
+			$this->renderError = true;
+		} catch (Exception $e) {
+			Framework::error_output("Uncaught exception occured!<br />\n" . $e->getMessage());
+			$this->renderError = true;
 		}
 
 		/* Mode-hook, to catch mode-change regardless of target-page (not only
@@ -143,12 +189,28 @@ class Framework {
 			}
 			$this->person->setMode($new_mode);
 		}
+
 		$this->tpl->assign('person', $this->person);
-		$this->contentPage->process($this->person);
-		$this->tpl->assign('logoutUrl', logout_link());
+		$this->tpl->assign('is_online', (Config::get_config('ca_mode') === CA_ONLINE));
+		/* If we have a renderError, do not allow the user-page to
+		 * render, otherwise, run it, and catch all unhandled exception
+		 *
+		 * The general idea, is that the process() should be
+		 * self-contained wrt to exceptions.
+		 */
+		if (!$this->renderError) {
+			try {
+				$this->contentPage->process($this->person);
+			} catch (Exception $e) {
+				Framework::error_output("Unhandled exception found in user-function!<br />\n" . $e->getMessage());
+			}
+		}
+		$this->tpl->assign('logoutUrl', 'logout.php');
 		$this->tpl->assign('menu', $this->tpl->fetch('menu.tpl')); // see render_menu($this->person)
 		$this->tpl->assign('errors', self::$errors);
 		$this->tpl->assign('messages', self::$messages);
+		$this->tpl->assign('successes', self::$successes);
+		$this->tpl->assign('warnings', self::$warnings);
 
 		/* get custom logo if there is any */
 		$logo = Framework::get_logo_for_nren($this->person->getNREN());
@@ -157,24 +219,16 @@ class Framework {
 		$this->tpl->assign('css',$css);
 		$this->tpl->display('site.tpl');
 		
+
 		$this->contentPage->post_process($this->person);
-		
-	} /* end render_page */
-
-	private function user_rendering()
-	{
-		/* check to see if the user wants to log in, if so, start login-procedure */
-		if (!$this->person->isAuth()) {
-			if ($this->flogin || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-				authenticate_user($this->person);
-			}
-			if (isset($_POST['start_login']) && $_POST['start_login'] == 'yes')
-			authenticate_user($this->person);
+		if (Config::get_config('debug')) {
+			echo "<center>\n";
+			echo "<address>\n";
+			echo "During this session, we had " . MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
+			echo "</address>\n";
+			echo "</center>\n";
 		}
-
-		$func = $this->f_content;
-		$func($this->person);
-	} /* end user-rendering */
+	} /* end start() */
 
 	public static function error_output($message)
 	{
@@ -183,6 +237,16 @@ class Framework {
 	public static function message_output($message)
 	{
 		self::$messages[] = $message;
+	}
+
+	public static function success_output($message)
+	{
+		self::$successes[] = $message;
+	}
+
+	public static function warning_output($message)
+	{
+		self::$warnings[] = $message;
 	}
 
 	/*

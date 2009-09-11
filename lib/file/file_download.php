@@ -22,4 +22,22 @@ function download_file($file, $filename)
      header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
      echo $file;
 }
+
+/**
+ * download a certificate - set the header flags accordingly
+ * Note that this is for installation in browsers where the certificate was
+ * generated with keygen
+ *
+ * @param $cert_content The content of the certificate
+ * @param $filename The filename with which the certificate will be installed
+ */
+function download_certificate($cert_content, $filename)
+{
+    header('Content-Type: application/x-x509-user-cert');
+    header('Accept-Ranges: bytes');
+    header('Content-Length: ' . strlen($cert_content));
+    header('Content-Disposition: inline; filename="'. $filename. '"');
+
+    echo $cert_content;
+}
 ?>

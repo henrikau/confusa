@@ -42,7 +42,7 @@ echo "Found ../config/confusa_config.php OK. Continuing"
 # if not, create it
 database=`grep "mysql_db" ../config/confusa_config.php | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
-if [ ! -n $databaase ]; then
+if [ -z $database ]; then
     echo "mysql-db not set in config-file!"
     echo "Please set this value and try again"
     exit
@@ -80,9 +80,29 @@ webhost=`grep "mysql_host" ../config/confusa_config.php | cut -d '=' -f 2 \
 grants="SELECT, INSERT, DELETE, UPDATE, USAGE"
 
 # test to see if the user is already present. If not, add
-user=`$MYSQL -Dmysql -e "SELECT user FROM user WHERE user='$webuser'"`
+user=`$MYSQL -Dmysql -e "SELECT user FROM user WHERE user='$webuser' AND host='$webhost'"`
+
+# if the script is called with --delete_user option, first get rid of the user
+# this can make sense to make sure that the password defined in config is
+# updated for the DB-user (otherwise the password stays the same as before,
+# even if it has changed in the config)
+if  [ -n "$user" ] && [ $# -eq 1 ] && [ $1 = "--delete_user" ]; then
+    echo "Dropping user"
+    `$MYSQL -Dmysql -e "DROP user '$webuser'@'$webhost'"`
+    user=""
+fi
+
 if [ -z "$user" ]; then
-    echo "did not find user ($webuser) in database, creating"
+    echo "did not find user ($webuser@$webhost) in database, creating"
+    create_u="CREATE USER '$webuser'@'$webhost' IDENTIFIED BY '$pw'";
+    `$MYSQL -D$database -e"$create_u"`
+    res=$?
+    if [ ! $res -eq 0 ]; then
+        perror $res
+        echo "Trouble adding user, aborting..."
+        exit $res
+    fi
+
     query="GRANT $grants on $database.* TO '$webuser'@'$webhost' IDENTIFIED BY '$pw'"
     `$MYSQL -D$database -e"$query"`
     res=$?
@@ -95,10 +115,12 @@ if [ -z "$user" ]; then
     fi
 
 else
-    echo "Found user ($webuser)."
+    echo "Found user ($webuser@$webhost)."
 fi
 
 echo "Confusa-setup complete, adding views"
 $MYSQL -D$database  < views_create.sql
-echo "Vies created. Database bootstrap complete"
+echo "Views created. Almost there... creating triggers"
+$MYSQL -D$database < triggers_create.sql
+echo "Triggers created. Database bootstrap complete."
 echo ""

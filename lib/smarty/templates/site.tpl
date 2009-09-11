@@ -9,6 +9,7 @@
 	<link rel="shortcut icon" href="graphics/icon.gif" type="image/gif" />
 	<link rel="stylesheet" href="css/confusa2.css" type="text/css" />
 	<script type="text/javascript" src="js/expand_collapse.js"></script>
+	<script type="text/javascript" src="js/cert_request.js"></script>
 
 	{if !is_null($css)}
 		<link rel="stylesheet" href="{$css}" type ="text/css" />
@@ -48,6 +49,15 @@
 		      <!-- fix for adjusting the header's height to the image's height. Breaks in IE6 -->
 		      <div style="clear: left"></div>
 		    </div> <!-- header -->
+		    <div id="language_bar">
+		    {foreach from=$available_languages key=code item=lang}
+			{if $code == $selected_language}
+				{$lang} |
+			{else}
+				<a href="?lang={$code}">{$lang}</a> |
+			{/if}
+		    {/foreach}
+		    </div>
 		    <div id="menu">
 		      {$menu}
 		    </div> <!-- menu -->
@@ -56,10 +66,40 @@
 		    {$maint}
 		    {else}
 		      {foreach from=$errors item=error}
-		      <div class="error">{$error}</div>
+		      <div class="message_container error">
+			<div class="message_icon">
+			<img src="graphics/exclamation.png" alt="" />
+			</div>
+			<div class="message_body">{$error}</div>
+			<div class="clear"></div>
+			</div>
+		      {/foreach}
+		      {foreach from=$successes item=success}
+		      <div class="message_container success">
+			<div class="message_icon">
+			<img src="graphics/accept.png" alt="Information: " />
+			</div>
+			{$success}
+			<div class="clear"></div>
+		      </div>
+		      {/foreach}
+		      {foreach from=$warnings item=warning}
+		      <div class="message_container warning">
+			<div class="message_icon">
+				<img src="graphics/warning.png" alt="Warning: " />
+			</div>
+			{$warning}
+			<div class="clear"></div>
+		      </div>
 		      {/foreach}
 		      {foreach from=$messages item=msg}
-		      <div class="success">{$msg}</div>
+		      <div class="message_container message">
+			<div class="message_icon">
+			<img src="graphics/information.png" alt="Information: " />
+			</div>
+			{$msg}
+			<div class="clear"></div>
+		      </div>
 		      {/foreach}
 		      {$content}
 		    {/if} {* maint *}

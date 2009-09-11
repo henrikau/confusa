@@ -42,7 +42,10 @@ CREATE TABLE IF NOT EXISTS account_map (
     -- the initialization vector used for encryption the vector must be
     -- random, but need not be confidential. The encryption key (or
     -- passphrase) is stored in the config-file.
-    ivector TINYBLOB NOT NULL
+    ivector TINYBLOB NOT NULL,
+    -- the alliance partner (AP name) by which Comodo identifies it's resellers
+    -- this is handed out by Terena in a NREN-specific manner
+    ap_name VARCHAR(30) NOT NULL
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
@@ -62,7 +65,7 @@ CREATE TABLE IF NOT EXISTS account_map (
 CREATE TABLE IF NOT EXISTS nrens (
     nren_id INT PRIMARY KEY AUTO_INCREMENT,
     -- the name of the NREN (e.g. SUNET, UNINETT, FUNET)
-    name VARCHAR(30) NOT NULL,
+    name VARCHAR(30) UNIQUE NOT NULL,
 
     -- if a remote signing CA is used, the ID of the subaccont there
     login_account INT,
@@ -70,6 +73,9 @@ CREATE TABLE IF NOT EXISTS nrens (
     help TEXT,
     -- a customized about-message that the NREN may display to its constituency
     about TEXT,
+    -- the preferred language for the users within the NREN's domain.
+    -- Code according to ISO 639-1, with possible annotation like in de-AT, en-US
+    lang VARCHAR(5),
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) type=InnoDB;
 
@@ -92,6 +98,9 @@ CREATE TABLE IF NOT EXISTS subscribers (
 
     -- the current subscription state to the service
     org_state ENUM('subscribed', 'suspended', 'unsubscribed') NOT NULL,
+    -- the preferred language for users belonging to the subscriber
+    -- overrides NREN's preferred language for a certain user
+    lang VARCHAR(5),
     FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
 
@@ -205,7 +214,7 @@ CREATE TABLE IF NOT EXISTS admins (
        -- hard, if the subscriber for each NREN-admin was to be known.
        -- The field can be left NULL or filled in if the admin is a subscriber
        -- admin.
-       nren INT,
+       nren INT NOT NULL,
        FOREIGN KEY(subscriber) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
        FOREIGN KEY(nren) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
@@ -224,4 +233,70 @@ CREATE TABLE IF NOT EXISTS user_crls (
        owner varchar(128), -- ePPN of the owner
        cert_sn INT NOT NULL,
        valid_untill DATETIME NOT NULL
+) type=InnoDB;
+
+-- ---------------------------------------------------------
+-- The map of the attributes.
+--
+-- We want to allow each NREN (and possibly each subscriber) to create
+-- an individual mapping for the attributes. In most cases, it will be
+-- one map pr. NREN and none for the subscribers, but experience has
+-- taught us that what we think does not always map directly to reality.
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS attribute_mapping (
+       id INT PRIMARY KEY AUTO_INCREMENT,
+       nren_id INT NOT NULL,
+       subscriber_id INT,
+       eppn varchar(64) NOT NULL,
+       epodn varchar(64) NOT NULL,
+       cn varchar(64) NOT NULL,
+       mail varchar(64) NOT NULL,
+       entitlement varchar(64) NOT NULL,
+       FOREIGN KEY(subscriber_id) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
+       FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
+) type=InnoDB;
+
+
+-- ---------------------------------------------------------
+-- Robotic Interface Certificate storage area
+--
+-- This is where the subscriber-admins will have the uploaded
+-- certificate stored when using the robotic upload module.
+--
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS robot_cert (
+	-- Internal id
+       id INT PRIMARY KEY AUTO_INCREMENT,
+
+       -- Reference to the subscriber using this certificate to talk to
+       -- confusa
+       subscriber_id INT NOT NULL,
+
+       -- ref to the person/admin that uploaded the certificate and most
+       -- likely has access to the keypair
+       uploaded_by INT NOT NULL,
+
+       -- When the certificate was uploaded
+       uploaded_date DATETIME NOT NULL,
+
+       -- This can be found by parsing the certificate, but we should
+       -- store this directly in the database as it allows easy testing
+       -- for soon-to-expire certificates (as well as finding
+       -- certificates with insanely long expiry date).
+       valid_until DATETIME NOT NULL,
+
+       -- When the certificate is about to expire, a warning should be
+       -- sent to the subscriber in periodic intervals. If the
+       -- certificate is about to expire, this is the last time a
+       -- warning was sent.
+       last_warning_sent DATETIME NOT NULL,
+
+       cert TEXT NOT NULL,
+
+       -- Allow for a comment/description to be stored alongside the
+       -- certificate.
+       comment TEXT,
+
+       FOREIGN KEY(subscriber_id) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
+       FOREIGN KEY(uploaded_by) REFERENCES admins(admin_id) ON DELETE CASCADE
 ) type=InnoDB;

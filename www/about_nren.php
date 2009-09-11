@@ -2,12 +2,13 @@
 require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'person.php';
+require_once 'classTextile.php';
 
-class About_NREN extends FW_Content_Page
+class CP_About_NREN extends FW_Content_Page
 {
 	function __construct()
 	{
-		parent::__construct("About NREN", false);
+		parent::__construct("About NREN", false, "index.php");
 	}
 
 
@@ -43,7 +44,8 @@ class About_NREN extends FW_Content_Page
 		}
 
 		if (count($res) > 0) {
-			return $res[0]['about'];
+			$textile = new Textile();
+			return $textile->TextileRestricted(Input::br2nl(stripslashes($res[0]['about'])),0);
 		} else {
 			return "";
 		}
@@ -51,7 +53,7 @@ class About_NREN extends FW_Content_Page
 
 }
 
-$fw = new Framework(new About_NREN());
+$fw = new Framework(new CP_About_NREN());
 $fw->start();
 
 ?>

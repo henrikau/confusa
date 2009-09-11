@@ -11,8 +11,7 @@
 	<tr><td><b>email:</b></td><td>{$person->getEmail()}</td></tr>
 	<tr><td><b>Country:</b></td><td>{$person->getCountry()}</td></tr>
 	<tr><td><b>OrganizationalName:</b></td><td>{$person->getSubscriberOrgName()}</td></tr>
-	<tr><td><b>Entitlement:</b></td><td>{$person->getEduPersonEntitlement()}</td></tr>
-	<tr><td><b>IdP:</b></td><td>{$person->getIdP()}</td></tr>
+	<tr><td><b>Entitlement:</b></td><td>{$person->getEntitlement()}</td></tr>
 	<tr><td><b>NREN:</b></td><td>{$person->getNREN()}</td></tr>
 	<tr><td><b>Complete /DN:</b></td><td>{$person->getX509SubjectDN()}</td></tr>
 
@@ -22,6 +21,11 @@
 	<tr><td><b>Time since AuthN</b></td><td>{$timeSinceStart}</td></tr>
 </table><br />
 <hr />
-We store very little information. What we do keep, is information about certificates issued, combined with the eduPersonPrincipalName
-This is the DN in the certificate, and we <b>have</b> to store this.<br />
+
+We store very little information. What we do keep, is information about
+certificates issued, combined with the <a
+href=http://rnd.feide.no/attribute/edupersonprincipalname"">eduPersonPrincipalName</a>. This
+is part of teh DN in the certificate (it is the unique identifier for
+<i>you</i> in the namespace of your organization), and we <b>have</b> to
+store this.<br />
 {/if}

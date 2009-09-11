@@ -29,14 +29,56 @@ class CertManager_Standalone extends CertManager
 	 */
 	public function sign_key($auth_key, $csr)
 	{
+		/* Is the requried attributes present? */
+		$testAttrs = $this->verifyAttributes();
+		if ($testAttrs != null) {
+			$msg  = "Error(s) with attributes:<br />\n";
+			$msg .= "<ul>$testAttrs</ul>\n";
+			$msg .= "<br />\n";
+			$msg .= "This means that you do <b>not</b> qualify for certificates at this point in time.<br />\n";
+			$msg .= "Please contact your local IT-support to resolve this issue.<br />\n";
+			throw new KeySignException($msg);
+		}
+
 		if ($this->verify_csr($csr)) {
-			$cert_file_name	= tempnam("/tmp/", "REV_CERT");
+			$cert_file_name	= tempnam("/tmp/", "REV_CERT_");
 			$cert_file = fopen($cert_file_name, "w");
 			fclose($cert_file);
-			$cmd = "./../cert_handle/sign_key.sh $auth_key $cert_file_name";
-			$res = shell_exec($cmd);
-			$cert = file_get_contents($cert_file_name);
 
+			$path = dirname(dirname(dirname(__FILE__))) . "/cert_handle/sign_key.sh";
+			if (!file_exists($path)) {
+				throw new KeySignException("sign_key.sh does not exist!");
+			}
+			$cmd = "$path $auth_key $cert_file_name";
+			$res = shell_exec($cmd);
+			$val = split("\n", $res);
+
+			/* FIXME: add better logic here.
+			 */
+			switch((int)$val[0]) {
+			case 0:
+				break;
+			default:
+				throw new KeySignException("Unable to sign certificate (" . $val[1] . ")");
+			}
+
+			if (!file_exists($cert_file_name)) {
+				$errorCode = create_pw(8);
+				$msg     = "Cannot find temporar certificate file. Please forward the following ";
+				$msg    .= "error-code to the aministrators: [$errorCode]";
+				$logMsg	 = "Temporary certificate file vanished before it could be read. ";
+				$logMsg .= "Please investigate.";
+				Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . "[errorCode] $logMsg");
+				throw new FileNotFoundException($msg);
+			}
+			$cert = file_get_contents($cert_file_name);
+			unlink($cert_file_name);
+
+			if ($cert == null || $cert == "") {
+				$msg  = "Unable to sign certificate using backend scripts.<br />\n";
+				$msg .= "The certificate was not found in local file ($cert_file_name) where it was expected to be.<br />\n";
+				throw new KeySignException($msg);
+			}
 			$cert_array = openssl_x509_parse($cert);
 			$diff = (int)$cert_array['validTo_time_t'] - (int)$cert_array['validFrom_time_t'];
 			$timeout = array($diff, 'SECOND');
@@ -50,7 +92,6 @@ class CertManager_Standalone extends CertManager
 							  $auth_key,
 							  $this->person->getX509ValidCN(),
 							  $this->person->getSubscriberOrgName()));
-				unlink($cert_file_name);
 			} catch (DBStatementException $dbse) {
 				$error_key = create_pw(8);
 				Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
@@ -124,6 +165,16 @@ class CertManager_Standalone extends CertManager
         return $res;
     }
 
+    public function signBrowserCSR($csr, $browser)
+    {
+	/* I am feeling all stubby */
+    }
+
+    public function pollCertStatus($key)
+    {
+	/* I am feeling all stubby */
+    }
+
     /*
      * Get the certificate bound to key $key from the database
      *
@@ -147,6 +198,12 @@ class CertManager_Standalone extends CertManager
             $msg .= "Queried for key $key and CN $cn\n";
             throw new DBQueryException($msg);
         }
+    }
+
+    public function getCertDeploymentScript($key, $browser)
+    {
+	/* TODO: I am feeling all stubby */
+	return "<script type=\"text/javascript\">var g_ccc=\"\"</script>";
     }
 
     /**
@@ -278,12 +335,16 @@ class CertManager_Standalone extends CertManager
     } /* end revoke_cert() */
 
 
-  /* verify_csr()
-   *
-   * This function will test the CSR against several fields.
-   * It will test the subject against the person-attributes (which in turn are
-   * gathered from simplesamlphp-attributes (Feide, surfnet etc).
-   */
+    /**
+     * verify_csr()
+     *
+     * This function will test the CSR against several fields.
+     * It will test the subject against the person-attributes (which in turn are
+     * gathered from simplesamlphp-attributes (Feide, surfnet etc).
+     *
+     * @param String The CSR in base64 PEM format
+     * @return Boolean True if valid CSR
+     */
   private function verify_csr($csr)
   {
        /* by default, the CSR is valid, we then try to prove that it's invalid
@@ -306,7 +367,7 @@ class CertManager_Standalone extends CertManager
 		       Framework::error_output("will not accept email in DN of certificate. Download latest version of script.");
 		    return false;
                }
-	       else if (!$this->match_dn($subject)) {
+	       else if (!match_dn($subject, $this->person)) {
 		       $msg = "";
 		       $msg .= "Error in subject! <BR/>\n";
 		       $msg .= "The fields in your CSR was not set properly.<BR>\n";
@@ -318,37 +379,6 @@ class CertManager_Standalone extends CertManager
 	       return true;
     } /* end verify_csr */
 
-  /* match_dn
-   *
-   * This will match the associative array $subject with the constructed DN from person->getX509SubjectDN()
-   *
-   * The best would be to use something like what openssl supports:
-   *	openssl x509 -in usercert.pem -subject -noout
-   * which returns the subject string as we construct it below. However,
-   * php5_openssl has no obvious way of doing that.
-   *
-   * Eventually, we have to add severeal extra fields to handle all different
-   * cases, but for now, this will do.
-   */
-  private function match_dn($subject)
-  {
-	  /* Compose the DN in the 'correct' order, only use the fields set in
-	   * the subject */
-	  $composed_dn = "";
-	  if (isset($subject['C']))
-		  $composed_dn .= "/C=".$subject['C'];
-	  if (isset($subject['O']))
-		  $composed_dn .= "/O=".$subject['O'];
-	  if (isset($subject['OU']))
-		  $composed_dn .= "/OU=".$subject['OU'];
-	  if (isset($subject['C']))
-		  $composed_dn .= "/CN=".$subject['CN'];
-	  $res = $this->person->getX509SubjectDN() === $composed_dn;
-	  if (Config::get_config('debug') && !$res) {
-		  Framework::error_output("Supplied (".$composed_dn.") and required subject (".$this->person->getX509SubjectDN() .") differs!");
-	  }
-	  return $res;
-  }
 
 } /* end class CertManager_Standalone */
 ?>

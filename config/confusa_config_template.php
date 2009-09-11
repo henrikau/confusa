@@ -92,7 +92,6 @@ $confusa_config = array(
         'capi_collect_endpoint'        => 'https://secure.comodo.net/products/download/CollectCCC',
         'capi_listing_endpoint'             => 'https://secure.comodo.net/products/!Tier2ResellerReport',
         'capi_revoke_endpoint'              => 'https://secure.comodo.net/products/!AutoRevokeCCC',
-        'capi_ap_name'                 => '',
         'capi_escience_id'                      => '285',
         /* if we ever want to issue e-mail certificates */
         'capi_personal_id'                      => '284',
@@ -100,13 +99,15 @@ $confusa_config = array(
         'capi_test'                             => true,
         /* will encrypt the (sub)-account passwords in the DB with this key */
         'capi_enc_pw'                           => '',
+	'capi_root_cert'			=> 'http://crt.tcs.terena.org/TERENAeSciencePersonalCA.crt',
+	'capi_crl'				=> 'http://crl.tcs.terena.org/TERENAeSciencePersonalCA.crl',
 
 	/* Values needed for standalone-mode
 	 * The names should be self-explanatory. All paths are relative to the
 	 * install_path
 	 */
 	'ca_cert_base_path'	=> '/cert_handle',
-	'ca_cert_path'		=> '/cert',
+	'ca_cert_path'		=> '/certs',
 	'ca_cert_name'		=> '',
 	'ca_key_path'		=> '/priv',
 	'ca_key_name'		=> '',
@@ -117,7 +118,7 @@ $confusa_config = array(
          * SSL-man-in-the-middle attac! However, as a workaround for testsystems
          * (which normally does not hav e properly signed SSL-certificate),
          * force user-script to disregard invalid/self-signed certs. */
-	'script_check_ssl'	=> False, 
+	'script_check_ssl'	=> False,
 
         /* default length of client key. This is minimum keylength, a user can
          * upload a longer key, if he/she wants that */
@@ -201,6 +202,27 @@ $confusa_config = array(
 	 * The auth-bypass should be off by default:config/confusa_config_template.php
 	 */
 	'auth_bypass'		=> false,
+
+	/*
+	 * Languages available and what language is default
+	 */
+	'language.available'	=> array('en', 'sv', 'de', 'lb'),
+	'language.default'	=> 'en',
+
+	/* entitlement namespace
+	 *
+	 * This is to allow an instance to configure another namespace. This
+	 * should be the entire string except the actual attribute.
+	 *
+	 * If the entire attribute is
+	 *
+	 *	urn:mace:some.idp.org:some.sub.domain:confusa
+	 *
+	 * the namespace-value should be:
+	 *
+	 *	urn:mace:some.idp.org:some.sub.domain
+	 */
+	'entitlement_namespace'	=> null,
 
 	/* this should be set to true when config is verified (or the file has
 	 * been updated and not just copied)

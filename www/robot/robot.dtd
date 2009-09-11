@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- ========================================== -->
+<!--	Confusa Robotic Interface XML DTD	-->
+<!-- ========================================== -->
+
+<!ELEMENT ConfusaRobot (userList|revocationList) >
+<!--ConfusaRobot attribute listing				-->
+<!-- date:	the date when the list was created. This is not	-->
+<!--		necessary, but from a processing perspecitve, we-->
+<!--		need to ignore stale records			-->
+<!--		The format should be in RFC-3339 with second	-->
+<!--		granularity					-->
+<!---->
+<!-- subscriber:	The name of the subscriber. This *Must*	-->
+<!--			be an unique identifier and should match-->
+<!--			the DN of the certificate used to upload-->
+<!--			the XML					-->
+<!---->
+<!-- elementCount:	The number of elements found in the record-->
+<!---->
+<!-- version:	the version of DTD used. In case the DTD is updated,-->
+<!--		Confusa can adapt. The current version is "1.0"	-->
+<!---->
+
+<!ATTLIST ConfusaRobot
+	  date		CDATA	#IMPLIED
+	  subscriber	CDATA	#IMPLIED
+	  elementCount	CDATA	#REQUIRED
+	  version	CDATA	"1.0">
+
+<!-- General element attribute -->
+<!-- eppn:	The unique identifier used in Confusa, normally	-->
+<!--		the eduPersonPrincipalName			-->
+<!---->
+<!-- fullDN:	The DN of the certificate. This is the DN returned by -->
+<!--		openssl, and not the constructing DN, i.e.	-->
+<!--		C=NO, O=subscriber, CN=John Doe johndoe@subscriber.org-->
+<!---->
+<!-- count:	The number of issued and valid certificates for this-->
+<!--		particular user					-->
+<!ELEMENT listElement EMPTY>
+<!ATTLIST listElement
+	  eppn		CDATA	#REQUIRED
+	  fullDN	CDATA	#IMPLIED
+	  count		CDATA	#IMPLIED>
+
+<!-- List of users for this subscriber. This is the list returned to the -->
+<!-- subscriber by confusa-->
+<!ELEMENT userList	(listElement+)>
+
+<!-- list of users to revoke *all* certificates to. This is what the -->
+<!-- subscriber (or rather the IdM routines) should send to Confusa -->
+<!-- whenever a user quits the organization. -->
+<!ELEMENT revocationList (listElement+)>

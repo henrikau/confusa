@@ -22,8 +22,8 @@ require_once 'db_query.php';
  */
 
 echo "Running " . $argv[0] . " to bootstrap the database with values\n";
-if ($argc === 4) {
-	insert_credentials($argv[1], $argv[2], $argv[3]);
+if ($argc === 5) {
+	insert_credentials($argv[1], $argv[2], $argv[3], $argv[4]);
 }
 else {
 	show_help($argv);
@@ -38,8 +38,10 @@ else {
  *			  account_map, which means that an NREN can only have *one*
  *			  account, but one account can have many NRENS
  * @login_password	: password for the login to comodo
+ * @ap_name		: the alliance partner (AP) name by which Comodo identifies
+ * 			its resellers
  */
-function insert_credentials($nren_name, $login_name, $login_password)
+function insert_credentials($nren_name, $login_name, $login_password, $ap_name)
 {
 	/* The the encryption key */
 	$enckey		= Config::get_config('capi_enc_pw');
@@ -65,13 +67,13 @@ function insert_credentials($nren_name, $login_name, $login_password)
 					    $iv
 				     ));
 
-    $query  = "INSERT INTO account_map (login_name, password, ivector)";
-    $query .= "VALUES(?, ?, ?)";
+    $query  = "INSERT INTO account_map (login_name, password, ivector, ap_name)";
+    $query .= "VALUES(?, ?, ?, ?)";
 
     try {
 	MDB2Wrapper::update($query,
-			    array('text','text','text'),
-			    array($login_name, $cryptpw, base64_encode($iv)));
+			    array('text','text','text', 'text'),
+			    array($login_name, $cryptpw, base64_encode($iv), $ap_name));
     } catch (DBStatementException $dbse) {
 	echo "Could not insert the supplied login name into the account-map table! Problem " . $dbse->getMessage();
 	exit(5);
@@ -124,10 +126,11 @@ function insert_credentials($nren_name, $login_name, $login_password)
 
 function show_help($argv)
 {
-	echo "Usage: " . $argv[0] . "<nren_name> <login_name> <login_password>\n";
+	echo "Usage: " . $argv[0] . " <nren_name> <login_name> <login_password> <ap_name>\n";
 	echo "\tnren_name:\tThe name of the NREN, e.g. UNINETT\n";
 	echo "\tlogin_name:\tThe username for the CA-account name\n";
 	echo "\tlogin_password:\tThe password tied tot he CA-account\n";
+	echo "\tap_name:\tThe alliacne partner (AP) name for the NREN\n";
 }
 
 ?>

@@ -3,8 +3,10 @@ require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'mdb2_wrapper.php';
 require_once 'input.php';
+require_once 'file_io.php';
 require_once 'file_upload.php';
 require_once 'logger.php';
+require_once 'classTextile.php';
 
 class CP_Stylist extends FW_Content_Page
 {
@@ -62,6 +64,15 @@ class CP_Stylist extends FW_Content_Page
 					}
 				}
 				break;
+			case 'update_map_nren':
+				$epodn		= Input::sanitize($_POST['epodn']);
+				$cn		= Input::sanitize($_POST['cn']);
+				$mail		= Input::sanitize($_POST['mail']);
+				$entitlement	= Input::sanitize($_POST['entitlement']);
+				if ($this->updateMapNREN($epodn, $cn, $mail, $entitlement)) {
+					Framework::message_output("Updated map OK");
+				}
+				break;
 			default:
 				Framework::error_output("Unknown operation chosen in the stylist!");
 				break;
@@ -90,7 +101,6 @@ class CP_Stylist extends FW_Content_Page
 					$this->tpl->assign('help_text', $texts[0]);
 					$this->tpl->assign('about_text', $texts[1]);
 				}
-
 				$this->tpl->assign('edit_help_text', true);
 				break;
 			case 'css':
@@ -111,6 +121,12 @@ class CP_Stylist extends FW_Content_Page
 				$this->tpl->assign('width', $this->allowed_width);
 				$this->tpl->assign('height', $this->allowed_height);
 				break;
+			case 'map':
+				$this->tpl->assign('handle_map',	true);
+				$this->tpl->assign('NRENMap',		AuthHandler::getNRENMap($this->person->getNREN()));
+				$this->tpl->assign('keys',		AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
+				$this->tpl->assign('organization',	$this->person->getSubscriberOrgName());
+				break;
 			default:
 				Framework::error_output("Unsupported operation chosen!");
 				break;
@@ -129,6 +145,21 @@ class CP_Stylist extends FW_Content_Page
 	 */
 	private function getNRENTexts($nren)
 	{
+		$sample_text ="h4. A heading\n\nMake a *strong* point on something\n\n";
+		$sample_text .= "_Emphasize_ a point, -invalidate it-, +insert replacement+\n\n";
+		$sample_text .= "* Enumerate\n";
+		$sample_text .= "* all the\n";
+		$sample_text .= "* advantages\n";
+		$sample_text .= "# list-items\n";
+		$sample_text .= "## and even subadvantages\n\n\n";
+		$sample_text .= "|ung|äldre|äldst|\n";
+		$sample_text .= "|barn|mor|mormor|\n";
+		$sample_text .= "|tables|are|nice|\n\n";
+		$sample_text .= "Appear smart, use footnotes[1]\n\n";
+		$sample_text .= "\"Present a link\":http://beta.confusa.org\n\n";
+		$sample_text .= "fn1. Roddenberry, G.: Where no man has gone before\n";
+
+
 		$query = "SELECT help, about FROM nrens WHERE name=?";
 
 		$res = NULL;
@@ -151,8 +182,19 @@ class CP_Stylist extends FW_Content_Page
 
 		if (count($res) === 1) {
 			$result = array();
-			$result[0] = $res[0]['help'];
-			$result[1] = $res[0]['about'];
+
+			if (is_null($res[0]['help'])) {
+				$result[0] = $sample_text;
+			} else {
+				$result[0] = Input::br2nl(stripslashes($res[0]['help']));
+			}
+
+			if (is_null($res[0]['about']) || empty($res[0]['about'])) {
+				$result[1] = $sample_text;
+			} else {
+				$result[1] = Input::br2nl(stripslashes($res[0]['about']));
+			}
+
 			return $result;
 		} else if (count($res) > 1) { /* conflict!! */
 			Framework::error_output("More than one pair of about and help texts in the DB." .
@@ -179,14 +221,17 @@ class CP_Stylist extends FW_Content_Page
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem updating the help text of your NREN! " .
 									"Please contact an administrator to resolve this! Server said " . $dbse->getMessage());
+			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating the help text of your NREN, " .
 									"probably related to the supplied data. Please verify the data to be inserted! " .
 									"Server said " . $dbqe->getMessage());
+			return;
 		}
 
 		Logger::log_event(LOG_INFO, "Help-text for NREN $nren was changed. " .
 				  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
+		Framework::success_output("Help-text successfully updated");
 	}
 
 	/*
@@ -206,14 +251,17 @@ class CP_Stylist extends FW_Content_Page
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem updating the about text of your NREN! " .
 									"Please contact an administrator to resolve this! Server said " . $dbse->getMessage());
+			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating the about text of your NREN, " .
 									"probably related to the supplied data. Please verify the data to be inserted! " .
 									"Server said " . $dbqe->getMessage());
+			return;
 		}
 
 		Logger::log_event(LOG_INFO, "About-text for NREN $nren was changed. " .
 						  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
+		Framework::success_output("About-text successfully updated!");
 	}
 
 	/**
@@ -228,17 +276,13 @@ class CP_Stylist extends FW_Content_Page
 		$css_path .= 'custom/' . $nren . '/custom.css';
 
 		if (file_exists($css_path) === TRUE) {
-			$fd = fopen($css_path, 'r');
-
-			if ($fd === FALSE) {
-				Framework::error_output('Could not open NREN-specific CSS file! Please contact an administrator!');
-				return;
+			try {
+				$css_string = File_IO::readFromFile($css_path);
+				return Input::sanitizeCSS($css_string);
+			} catch (FileException $fexp) {
+				Framework::error_output("Could not open NREN-specific CSS file! Server said "
+										. $fexp->getMessage() . "!");
 			}
-
-			$css_string = fread($fd, filesize($css_path));
-			fclose($fd);
-
-			return $css_string;
 		}
 
 		/* if the search for a custom CSS did not return a result, search for
@@ -247,21 +291,14 @@ class CP_Stylist extends FW_Content_Page
 		$main_css_path = Config::get_config('install_path') . 'www/css/';
 		$main_css_path .= 'confusa2.css';
 
-		if (file_exists($main_css_path) === TRUE) {
-			$fd = fopen($main_css_path, 'r');
-
-			if ($fd === FALSE) {
-				Framework::error_output("Could not open Confusa's main CSS file! Please contact an administrator!");
-				return;
-			}
-
-			$css_string = fread($fd, filesize($main_css_path));
-			fclose($fd);
-
+		try {
+			$css_string = File_IO::readFromFile($main_css_path);
 			return Input::sanitizeCSS($css_string);
+		} catch (FileException $fexp) {
+			Framework::error_output("Could not open Confusa's main CSS file! Server said "
+									. $fexp->getMessage() . "!");
+			return;
 		}
-
-		return NULL;
 	}
 
 	/*
@@ -276,39 +313,28 @@ class CP_Stylist extends FW_Content_Page
 		$css_path = Config::get_config('install_path') . 'www/css/';
 		$css_path .= 'custom/' . $nren;
 
-		/* if the path to the NREN's CSS file does not exist, create the
-		 * respective folders
-		 * This should have been done by the bootstrap script, though
-		 */
-		if (!file_exists($css_path)) {
-			mkdir($css_path, 0755, TRUE);
-		}
-
 		$css = $css_path . '/custom.css';
-		$fd = fopen($css, "w");
-
-		if ($fd === FALSE) {
-			Framework::error_output("Could not write to custom CSS file! Please contact an administrator!");
-			return;
-		}
 
 		if (ini_get('magic_quotes_gpc') === "1") {
 			/* no slashes should be introduced into the content */
 			$content = stripslashes($content);
 		}
 
-		$success = fwrite($fd, $content);
-
-		if ($success === FALSE) {
+		try {
+			/* if the path to the NREN's CSS file does not exist, create the
+			 * respective folders
+			 * This should have been done by the bootstrap script, though
+			 */
+			File_IO::writeToFile($css, $content, TRUE, TRUE);
+		} catch (FileException $fexp) {
 			Framework::error_output("Could not write to custom CSS file! Please contact an administrator!");
-		} else {
-			Logger::log_event(LOG_INFO, "The custom CSS for NREN " . $nren .
-										" was changed. User contacted us from " .
-										$_SERVER['REMOTE_ADDR']);
+			return;
 		}
 
-		fclose($fd);
-		return;
+		Logger::log_event(LOG_INFO, "The custom CSS for NREN " . $nren .
+									" was changed. User contacted us from " .
+									$_SERVER['REMOTE_ADDR']);
+		Framework::success_output("Custom CSS for your NREN successfully updated!");
 	}
 
 	/*
@@ -329,6 +355,8 @@ class CP_Stylist extends FW_Content_Page
 				Framework::error_output("Could not reset the CSS file! Please contact an administrator!");
 			}
 		}
+
+		Framework::message_output("CSS-file reset to Confusa settings");
 	}
 
 	/*
@@ -397,12 +425,77 @@ class CP_Stylist extends FW_Content_Page
 			} catch (FileException $fexp) {
 				Framework::error_output("Could not save the logo on the server. " .
 							"Server said: " . $fexp->getMessage());
+				return;
 			}
 
 			Logger::log_event(LOG_INFO, "Logo for NREN $nren was changed to new " .
 							  "logo custom.$suffix User contacted us from " .
 							  $_SERVER['REMOTE_ADDR']);
+			Framework::success_output("Logo successfully updated!");
 		}
+	}
+	/**
+	 * updateMapNREN() - take the new values and update/create the map for
+	 * an NREN
+	 */
+	private function updateMapNREN($epodn, $cn, $mail, $entitlement)
+	{
+		/* Does the map exist? */
+		$nren_id_query = "SELECT nren_id FROM nrens WHERE name=?";
+		$query = "SELECT * FROM attribute_mapping WHERE nren_id=? AND subscriber_id IS NULL";
+		try {
+			$nren_id = MDB2Wrapper::execute($nren_id_query, array('text'), $this->person->getNREN());
+			if (count($nren_id) != 1) {
+				$errorMsg = __FILE__ . ":" . __LINE__ . " ";
+				$errorMsg .= "Problems finding the NREN in the database. Got " . count($nren_id) . " from the DB";
+				Framework::error_output($errorMsg);
+				return false;
+			}
+			$res = MDB2Wrapper::execute($query,
+						    array('text'),
+						    $nren_id[0]['nren_id']);
+		} catch (DBStatementException $dbse) {
+			/* FIXME */
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . $dbse->getMessage());
+			return false;
+		} catch (DBQueryException $dbqe) {
+			/* FIXME */
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . $dbqe->getMessage());
+			return false;
+		}
+
+		switch(count($res)) {
+		case 0:
+			try {
+				$update = "INSERT INTO attribute_mapping(nren_id, eppn, epodn, cn, mail, entitlement) VALUES(?, ?, ?, ?, ?, ?)";
+				MDB2Wrapper::update($update,
+						    array('text', 'text', 'text', 'text', 'text', 'text'),
+						    array($nren_id[0]['nren_id'], $this->person->getEPPNKey(), $epodn, $cn, $mail, $entitlement));
+			} catch (DBQueryException $dbqe) {
+				Framework::error_output("Could not create new map.<br />Server said: " . $dbqe->getMessage());
+				return false;
+			}
+			break;
+		case 1:
+			if ($epodn	!= $res[0]['epodn'] ||
+			    $cn		!= $res[0]['cn'] ||
+			    $mail	!= $res[0]['mail'] ||
+			    $entitlement	!= $res[0]['entitlement']) {
+				$update = "UPDATE attribute_mapping SET epodn=?, cn=?, mail=?, entitlement=? WHERE id=?";
+				MDB2Wrapper::update($update,
+						    array('text', 'text', 'text', 'text', 'text'),
+						    array($epodn, $cn, $mail, $entitlement, $res[0]['id']));
+			} else {
+				Framework::error_output("No need to update row with identical elements");
+				return false;
+			}
+			break;
+		default:
+			Framework::error_output("Error in getting the correct ID, it looks like the NREN has several (".count($res).") in the database");
+			return false;
+		}
+
+		return true;
 	}
 }
 

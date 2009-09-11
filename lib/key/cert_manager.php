@@ -50,6 +50,18 @@ abstract class CertManager
    */
   abstract function sign_key($auth_key, $csr);
 
+   /**
+    * Sign a CSR as received from the browser's crypto mechanisms.
+    * Since these cert requests are not always in PKCS#10 format, handle them
+    * specifically to the browser from which they originate
+    */
+  abstract function signBrowserCSR($csr, $browser);
+
+  /**
+   * Get the (browser-specific) deployment script for a certain certificate
+   * Usually this should return some JavaScript that will call installCertificate()
+   */
+  abstract function getCertDeploymentScript($key, $browser);
   /*
    * Get a list of all the certificates issued for the managed person.
    * Note that the returned list is implementation dependant.
@@ -58,6 +70,8 @@ abstract class CertManager
    */
   abstract function get_cert_list();
 
+
+  abstract function pollCertStatus($key);
   /*
    * Return the certificate associated to key $key
    *
@@ -88,6 +102,42 @@ abstract class CertManager
   }
 
   /**
+   * Convert from DER certificates to PEM certificates.
+   * This is needed because TERENA/Comodo publish their CA-certificate in
+   * DER format, while PHP's openssl can only process PEM formatted certs
+   *
+   * @param $der the certificate in DER format
+   * @param $type the type of certificate. One of:
+   * 				* 'cert' - a X509 certificate
+   * 				* 'crl' - a certificate revocation list
+   * @return $pem the certificate in PEM format
+   */
+  public static function DERtoPEM($der, $type)
+  {
+    $header = "";
+    $trailer = "";
+
+    switch($type) {
+    case 'cert':
+      $header = "-----BEGIN CERTIFICATE-----\n";
+      $trailer = "-----END CERTIFICATE-----\n";
+      break;
+    case 'crl':
+      $header = "-----BEGIN X509 CRL-----\n";
+      $trailer = "-----END X509 CRL-----\n";
+      break;
+    default:
+      /* nothing we can do for the caller */
+      return "Transcoding from DER to PEM failed!";
+    }
+
+    $pem = chunk_split(base64_encode($der), 64, "\n");
+    $pem =  $header . $pem . $trailer;
+
+    return $pem;
+  }
+
+  /**
    * Send a notification upon the issuance of a new X.509 certificate, as it is
    * required in section 3.2 of the MICS-profile.
    *
@@ -115,6 +165,48 @@ abstract class CertManager
 			  $msg);
     $mm->send_mail();
   } /* end sendMailNotification */
+
+  /**
+   * verifyAttributes()	test the attributes set for person to see if all is set properly.
+   *
+   *
+   * Test to see if the attributes are valid for the user, and if all required
+   * attributes are set.
+   *
+   * @param void
+   * @return String|null List of errors with attributes, null if no errors found
+   */
+  public function verifyAttributes()
+  {
+	  /* assert attributes
+	   * eppn		: tested when the person is decorated
+	   * epodn	: must be set, cannot determine anything
+	   *		  else (the signing will match it to a
+	   *		  set of known rules etc)
+	   * mail
+	   * full name
+	   * entitlement
+	   */
+	  $error_msg = null;
+	  $epodn = $this->person->getSubscriberOrgName();
+	  if (!isset($epodn) || $epodn === "") {
+		  $error_msg .= "<li>Need a properly formatted Subscriber name, got: $epodn</li>\n";
+	  }
+	  $mail = $this->person->getEmail();
+	  if (!isset($mail) || $mail === "") {
+		  $error_msg .= "<li>Need an email-address to send notifications to, got $mail</li>\n";
+	  }
+	  $cn = $this->person->getX509ValidCN();
+	  if (!isset($cn) || $cn === "") {
+		  $error_msg .= "<li>Need the common-name to place in the certificate, Got $cn</li>\n";
+	  }
+	  if (!$this->person->testEntitlementAttribute('confusa')) {
+		  $error_msg .= "<li>The 'confusa' attribute is not set in the list of available entitlement attributes. ";
+		  $error_msg .= "You are not eligble to use Confusa for certificate signing!</li>\n";
+	  }
+	  return $error_msg;
+  } /* end verifyAttributes() */
+
 } /* end class CertManager */
 
 class CertManagerHandler

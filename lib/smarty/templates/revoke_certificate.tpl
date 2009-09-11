@@ -8,16 +8,11 @@
 <h3>Certificate Revocation Area</h3>
 
 {* The search part *}
-{if $person->getMode() == 0}
+{if $person->isSubscriberAdmin() && $person->inAdminMode()}
 
 {* A normal person isn't offered any search options. Instead, he/she will
 immediately see a result entry *}
-{if !isset($owners)}
- <div class="spacer"></div>
-    Found no valid certificates to revoke for DN<br /><b>{$person->getX509ValidCN()}</b>!
-{/if}
 
-{else}
     <div class="spacer"></div>
     <form action="?revoke=search_display" method="post">
     <fieldset>
@@ -113,10 +108,11 @@ immediately see a result entry *}
         </div>
 
     {else}
-	nothing to do
     {/if}
-{else}
-    <div class="spacer"></div>
-    Found no valid certificates to revoke for DN<br /><b>{$person->getX509ValidCN()}</b>!
+    {else}
+        {if !$person->inAdminMode()}
+            <div class="spacer"></div>
+            Found no valid certificates to revoke for DN<br /><b>{$person->getX509ValidCN()}</b>!
+        {/if}
 {/if}
 

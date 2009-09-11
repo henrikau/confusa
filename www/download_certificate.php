@@ -4,8 +4,9 @@ require_once 'framework.php';
 require_once 'person.php';
 require_once 'mail_manager.php';
 require_once 'confusa_gen.php';
+require_once 'output.php';
 
-final class DownloadCertificate extends FW_Content_Page
+final class CP_DownloadCertificate extends FW_Content_Page
 {
 	public function __construct()
 	{
@@ -61,8 +62,20 @@ final class DownloadCertificate extends FW_Content_Page
 		else if (isset($_GET['inspect_cert']))
 			$this->inspectCert(htmlentities($_GET['inspect_cert']));
 
-		else if (isset($_GET['email_cert']))
-			$this->mailCert(htmlentities($_GET['email_cert']));
+		else if (isset($_GET['email_cert'])) {
+			$mail = $this->person->getEmail();
+			if (!isset($mail) || $mail === "") {
+				$msg = "No email-address is set. Cannot email certificate to you!<br />\n";
+				$msg .= "This is a required attribute for many operations, and you should therefore contact ";
+				$msg .= "your local IT-support and ask them to verify your user-cerdentials.<br />\n";
+				Framework::error_output($msg);
+			} else {
+				$this->mailCert(htmlentities($_GET['email_cert']));
+			}
+		}
+
+		else if (isset($_GET['install_cert']))
+			$this->installCert(htmlentities($_GET['install_cert']));
 
 	} /* end process_db_cert */
 
@@ -79,6 +92,22 @@ final class DownloadCertificate extends FW_Content_Page
 			$this->tpl->assign('processingResult', 'Certificate deleted');
 		}
 	} /* end deleteCert */
+
+	private function installCert($authKey)
+	{
+		$ua = getUserAgent();
+		$script = $this->certManager->getCertDeploymentScript($authKey, $ua);
+
+		if ($ua == "keygen") {
+			include 'file_download.php';
+			download_certificate($script, "install.crt");
+			exit(0);
+		} else {
+			$script .= "<noscript><b>Please enable JavaScript to install certificates ";
+			$script .= "in your browser's keystore!</b></noscript>";
+			$this->tpl->assign("script", $script);
+		}
+	}
 
 	/**
 	 * inspectCert - take a given authKey and inspect the certificate it
@@ -132,48 +161,7 @@ final class DownloadCertificate extends FW_Content_Page
 
 } /* end class DownloadCertificate */
 
-$fw = new Framework(new DownloadCertificate());
+$fw = new Framework(new CP_DownloadCertificate());
 $fw->start();
-
-
-function list_remote_certs($person)
-{
-  $list_endpoint = Config::get_config('capi_listing_endpoint');
-  $postfields_list["loginName"] = Config::get_config('capi_login_name');
-  $postfields_list["loginPassword"] = Config::get_config('capi_login_pw');
-
-  $test_prefix = "";
-  if (Config::get_config('capi_test')) {
-    /* TODO: this should go into a constant. However, I don't want to put it into confusa_config, since people shouldn't directly fiddle with it */
-    $test_prefix = "TEST PERSON ";
-  }
-
-  $postfields_list["commonName"] = $test_prefix . $person->getX509ValidCN();
-  $ch = curl_init($list_endpoint);
-  curl_setopt($ch, CURLOPT_HEADER,0);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-  curl_setopt($ch, CURLOPT_POST,1);
-  curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_list);
-  $data=curl_exec($ch);
-  curl_close($ch);
-
-  $params=array();
-  $res = array();
-  parse_str($data, $params);
-
-  if ($params["errorCode"] == "0") {
-    for ($i = 1; $i <= $params['noOfResults']; $i = $i+1) {
-      $res[$i-1]['order_number'] = $params[$i . "_orderNumber"];
-      $res[$i-1]['cert_owner'] = $person->getX509ValidCN();
-    }
-  } else {
-    Framework::error_output("Errors occured when listing user certificates: " . $params["errorMessage"]);
-  }
-
-  return $res;
-
-} /* end list_remote_certs() */
 
 ?>

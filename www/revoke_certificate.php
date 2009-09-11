@@ -7,7 +7,7 @@ require_once 'csv_lib.php';
 require_once 'input.php';
 require_once 'mdb2_wrapper.php';
 
-class RevokeCertificate extends FW_Content_Page
+class CP_RevokeCertificate extends FW_Content_Page
 {
 	/*
 	 * CRL reason codes according to RFC 3280.
@@ -62,11 +62,22 @@ class RevokeCertificate extends FW_Content_Page
 				break;
 
 			case 'do_revoke':
-				$this->revoke_certs(Input::sanitize($_POST['order_numbers']), Input::sanitize($_POST['reason']));
+
+				try {
+					$this->revoke_certs(Input::sanitize($_POST['order_numbers']), Input::sanitize($_POST['reason']));
+				} catch (ConfusaGenExcpetion $cge) {
+					Framework::error_message("Could not revoke certificates because of the " .
+											"following problem: " . $cge->getMessage());
+				}
 				break;
 
 			case 'do_revoke_list':
-				$this->revoke_list(Input::sanitize($_POST['reason']));
+				try {
+					$this->revoke_list(Input::sanitize($_POST['reason']));
+				} catch (ConfusaGenException $cge) {
+					Framework::error_message("Could not revoke certificates because of the " .
+											"following problem: " . $cge->getMessage());
+				}
 				break;
 
 			default:
@@ -83,17 +94,20 @@ class RevokeCertificate extends FW_Content_Page
 			return;
 		}
 
-		if ($this->person->inAdminMode()) {
-			$this->showAdminRevokeTable();
-		} else {
-			$this->normal_revoke();
-		}
+		try {
+			if ($this->person->inAdminMode()) {
+				$this->showAdminRevokeTable();
+			} else {
+				$this->normal_revoke();
+			}
 
 		$this->tpl->assign('textual', $textual);
 		$this->tpl->assign('content', $this->tpl->fetch('revoke_certificate.tpl'));
 
-
-
+		} catch (ConfusaGenException $cge) {
+			Framework::error_output("Can not display revocation options! Server " .
+									"said: " . $cge->getMessage());
+		}
 	}
 
 	/**
@@ -109,12 +123,12 @@ class RevokeCertificate extends FW_Content_Page
 	{
 		if (!$this->person->isAdmin()) {
 			Logger::log_event(LOG_ALERT, "User " . $this->person->getX509ValidCN() . " allowed to set admin-mode, but is not admin");
-			throw new ConfusaGenException("Impossible condition. NON-Admin user in admin-mode!");
+			Framework::error_output("Impossible condition. NON-Admin user in admin-mode!");
 		}
 
 		/* Test access-rights */
 		if (!$this->person->isSubscriberAdmin() && !$this->person->isSubscriberSubAdmin())
-			throw new ConfusaGenException("Insufficient rights for revocation!");
+			Framework::error_output("Insufficient rights for revocation!");
 
 		$this->tpl->assign('file_name', 'eppn_list');
 
@@ -193,8 +207,6 @@ class RevokeCertificate extends FW_Content_Page
 	 *                       revoked
 	 * @param $reason The reason for revocation as defined in RFC 3280
 	 *
-	 * @throws ConfusaGenException If revocation fails or the revocation reason is
-	 *                             unrecognized
 	 */
 	private function revoke_certs($auth_key_list, $reason)
 	{
@@ -202,7 +214,7 @@ class RevokeCertificate extends FW_Content_Page
 		$auth_key_list = $this->sanitize($auth_key_list);
 
 		if (array_search($reason, $this->nren_reasons) === FALSE) {
-			throw new ConfusaGenException("Encountered an unknown revocation " .
+			Framework::error_output("Encountered an unknown revocation " .
 										  "reason!"
 			);
 		}
@@ -231,9 +243,6 @@ class RevokeCertificate extends FW_Content_Page
 	 *
 	 * @param string $reason The reason for revocation (as in RFC 3280)
 	 *
-	 * @throws ConfusaGenException If the auth_keys are not found in the session,
-	 *                             there is a problem with revocation or if the
-	 *                             reason is unknown
 	 */
 	private function revoke_list($reason)
 	{
@@ -243,12 +252,12 @@ class RevokeCertificate extends FW_Content_Page
 			$auth_keys = $_SESSION['auth_keys'];
 			unset($_SESSION['auth_keys']);
 		} else {
-			throw new ConfusaGenException("Lost session! Please log-out of Confusa, " .
-										  "log-in again and try again!\n");
+			Framework::error_output("Lost session! Please log-out of Confusa, " .
+									"log-in again and try again!\n");
 		}
 
 		if (array_search($reason, $this->nren_reasons) === false) {
-			throw new ConfusaGenException("Unknown reason for certificate revocation!");
+			Framework::error_output("Unknown reason for certificate revocation!");
 		}
 
 		$num_certs = count($auth_keys);
@@ -279,7 +288,6 @@ class RevokeCertificate extends FW_Content_Page
 	 *                          CSV of eduPersonPrincipalNames
 	 * @param Person $person The person calling this function
 	 *
-	 * @throws FileException if something goes wrong in parsing the CSV file
 	 */
 	private function search_list_display($eppn_file)
 	{
@@ -362,7 +370,7 @@ class RevokeCertificate extends FW_Content_Page
 	}
 }
 
-$fw = new Framework(new RevokeCertificate());
+$fw = new Framework(new CP_RevokeCertificate());
 $fw->start();
 
 ?>

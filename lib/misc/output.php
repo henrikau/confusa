@@ -82,17 +82,14 @@ function db_array_debug($array, $msg=null)
 
 function format_ip($ip, $show_help=false)
 {
-	$pre = "";
-	$post = "";
-	$help = "";
+	$ipmsg = $ip;
 	if ($_SERVER['REMOTE_ADDR'] != $ip){
-		$pre =  "<span style=\"color: red\"><b><i>";
-		$post = "</i></b></span>";
+		$ipmsg = "<span style=\"color: red\"><i>$ip</i></span>";
 		if ($show_help) {
-			$help = " [" . show_window("?", "messages/diff_ip.php") . "]";
+			$ipmsg = show_window("<img src=\"graphics/flag_red.png\" class=\"url\" title=\"IP addresses differ!\"> $ipmsg", "messages/diff_ip.php");
 		}
 	}
-	return "$pre$ip$post$help";
+	return $ipmsg;
 
 }
 
@@ -105,5 +102,30 @@ function show_window($url_name, $target)
 	return $help;
 }
 
+/**
+ * getUserAgent - return the browser of the user
+ * certificate deployment scripts and similar javascript functionality
+ * needs browser-specific treatment
+ *
+ * @return The name of the user-agent of the user
+ */
+function getUserAgent()
+{
+	$userAgent=$_SERVER['HTTP_USER_AGENT'];
+
+	if (strstr(strtolower($userAgent), "msie")) {
+		if (strstr(strtolower($userAgent), "Windows NT 5.")) {
+			return "msie_pre_vista";
+		} else {
+			return "msie_post_vista";
+		}
+	} else if (strstr(strtolower($userAgent), "applewebkit") ||
+				strstr(strtolower($userAgent), "opera") ||
+				strstr(strtolower($userAgent), "firefox")) {
+			return "keygen";
+	} else {
+		return "other";
+	}
+}
 
 ?>

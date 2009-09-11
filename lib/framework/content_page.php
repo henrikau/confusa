@@ -1,4 +1,6 @@
 <?php
+require_once 'translator.php';
+
 abstract class FW_Content_Page
 {
 	private $title;
@@ -6,17 +8,20 @@ abstract class FW_Content_Page
 	protected $tpl;
 	protected $certManager;
 	protected $person;
+	protected $dictionary;
 	/**
 	 * Constructor - create the Content Page.
 	 *
 	 * @title	- the title to display in the header of the page.
 	 * @protected	- If the page required an AuthN' user or not.
+	 *
 	 */
-	function __construct($title = "", $protected = true)
+	function __construct($title = "", $protected = true, $dictionary = NULL)
 	{
 		$this->title = $title;
 		$this->protected = $protected;
 		$this->certManager = null;
+		$this->dictionary = $dictionary;
 	}
 
 	function __destruct()
@@ -73,6 +78,22 @@ abstract class FW_Content_Page
 	{
 		$this->setPerson($person);
 		$this->setManager();
+
+		/* show the available languages in the template */
+		$available_languages = Config::get_config('language.available');
+		$this->tpl->assign('available_languages',
+							Translator::getFullNamesForISOCodes($available_languages));
+
+		if (isset($_GET['lang'])) {
+			$lang = Input::sanitize($_GET['lang']);
+			$_SESSION['language'] = $lang;
+		}
+
+		/* Get the translation in place */
+		$trans = new Translator($person);
+		$this->tpl = $trans->decorateTemplate($this->tpl, $this->dictionary);
+		$this->tpl->assign('selected_language', $trans->getLanguage());
+
 		return false;
 	}
 

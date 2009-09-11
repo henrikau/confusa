@@ -8,8 +8,14 @@ require_once 'file_upload.php';
 require_once 'config.php';
 require_once 'send_element.php';
 require_once 'input.php';
+require_once 'output.php';
 
-final class ProcessCsr extends FW_Content_Page
+/**
+ * ProcessCsr - the web frontend for handling of CSRs
+ *
+ * @author Henrik Austad <henrik.austad@uninett.no>
+ */
+final class CP_ProcessCsr extends FW_Content_Page
 {
 	private $signing_ok;
 
@@ -21,19 +27,64 @@ final class ProcessCsr extends FW_Content_Page
 		$this->signing_ok = false;
 	}
 
+	/**
+	 * pre_process - run before the template-system is called into action.
+	 *
+	 * We use this to test for pending certificate requests in the
+	 * POST-hold.
+	 *
+	 * @param Person $person
+	 */
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
 		$res = false;
 		if (isset($_GET['sign_csr'])) {
 			$res = $this->approveCsr(htmlentities($_GET['sign_csr']));
-		}
-		return $res;
 
+		} else if (isset($_GET['status_poll'])) {
+			$order_number = htmlentities($_GET['status_poll']);
+			/* assign the order_number again */
+			$this->tpl->assign('order_number', $order_number);
+			$this->tpl->assign('status_poll', true);
+
+			if ($this->certManager->pollCertStatus($order_number)) {
+			    $this->tpl->assign('done', TRUE);
+			}
+
+		} else if (isset($_GET['install_cert'])) {
+			$order_number = Input::sanitize($_GET['install_cert']);
+			$ua = getUserAgent();
+			$script = $this->certManager->getCertDeploymentScript($order_number, $ua);
+
+			if ($ua == "keygen") {
+			    include_once 'file_download.php';
+			    download_certificate($script, "install.crt");
+			    exit(0);
+			} else {
+				$this->tpl->assign('deployment_script', $script);
+			}
+		}
+
+
+		if (isset($_POST['browserRequest'])) {
+			$request = trim($_POST['browserRequest']);
+			$request = str_replace(array("\n","\r"),array('',''),$request);
+			if (!empty($request)) {
+				$order_number = $this->approveBrowserGenerated($request, getUserAgent());
+				$this->tpl->assign('order_number', $order_number);
+			}
+		}
+		/* If $res is false, we risk that a '1' is printed, we do not
+		 * want that :-) */
+		if (!$res)
+			return;
+		return $res;
 	}
-	
+
 	public function process()
 	{
+
 		/* show upload-form. If it returns false, no uploaded CSRs were processed */
 		$this->processFileCSR($this->person);
 
@@ -48,8 +99,15 @@ final class ProcessCsr extends FW_Content_Page
 			$this->tpl->assign('signingOk', $this->signing_ok);
 			$this->tpl->assign('sign_csr', htmlentities($_GET['sign_csr']));
 		}
-		$this->tpl->assign('csrList', $this->listAllCSR($this->person));
-		$this->tpl->assign('content', $this->tpl->fetch('process_csr.tpl'));
+
+		$browser_adapted_dn = $this->person->getBrowserFriendlyDN();
+		$this->tpl->assign('dn',		$browser_adapted_dn);
+		$this->tpl->assign('keysize',		Config::get_config('key_length'));
+		$this->tpl->assign('inspect_csr',	$this->tpl->fetch('csr/inspect_csr.tpl'));
+		$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
+		$this->tpl->assign('list_all_csr',	$this->tpl->fetch('csr/list_all_csr.tpl'));
+		$this->tpl->assign('upload_csr_file',	$this->tpl->fetch('csr/upload_csr_file.tpl'));
+		$this->tpl->assign('content',		$this->tpl->fetch('csr/process_csr.tpl'));
 	}
 
 	/**
@@ -86,16 +144,15 @@ final class ProcessCsr extends FW_Content_Page
 			$fu = new FileUpload('user_csr', true, true, 'test_content');
 			if ($fu->file_ok()) {
 				$csr = $fu->get_content();
-				$authvar = pubkey_hash($fu->get_content(), true);
-			
-
+				$subject = openssl_csr_get_subject($csr, true);
+				$authvar = substr(pubkey_hash($fu->get_content(), true), 0, (int)Config::get_config('auth_length'));
 				/* is the CSR already uploaded? */
 				$res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE csr=?",
 							    array('text'),
 							    array($csr));
 				if (count($res)>0) {
 					Framework::error_output("CSR already present in the database, no need for second upload");
-				} else {
+				} else if (test_content($csr, $authvar) && match_dn($subject, $this->person)) {
 					$ip	= $_SERVER['REMOTE_ADDR'];
 					$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
 					$query .= " common_name, auth_key)";
@@ -111,8 +168,9 @@ final class ProcessCsr extends FW_Content_Page
 				}
 			} else {
 				/* File NOT OK */
-				Framework::error_output("There were errors encountered when processing the file.");
-				Framework::error_output("Please create a new keypair and upload a new CSR to the server.");
+					$msg  = "There were errors encountered when processing the file.<br />";
+					$msg .= "Please create a new keypair and upload a new CSR to the server.";
+					Framework::error_output($msg);
 			}
 		}
 	}
@@ -155,9 +213,15 @@ final class ProcessCsr extends FW_Content_Page
 				return false;
 			}	
 		}
+
 		return $res;
 	}
 
+	private function approveBrowserGenerated($csr, $browser)
+	{
+		$order_number = $this->certManager->signBrowserCSR($csr, $browser);
+		return $order_number;
+	}
 
 	/**
 	 * approveCsr - send the CSR to cert-manager for signing
@@ -165,6 +229,10 @@ final class ProcessCsr extends FW_Content_Page
 	 * This function approves a CSR for signing. It uses the auth-token as a
 	 * paramenter to find the CSR in the database coupled with the valid CN for the
 	 * user.
+	 *
+	 * @param String $authToken the unique id of the CSR the user wants to
+	 * approve for signing.
+	 *
 	 */
 	private function approveCSR($authToken)
 	{
@@ -198,7 +266,7 @@ final class ProcessCsr extends FW_Content_Page
 			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" . $rapie);
 			return false;
 		} catch (ConfusaGenException $e) {
-			$msg = __FILE__ .":".__LINE__." Error signing key.<BR />\nRemote said: " . $e;
+			$msg = "Error signing key, remote said: <br /><br /><i>" . $e->getMessage() . "</i><br />";
 			Framework::error_output($msg);
 			return false;
 		} catch (KeySigningException $kse) {
@@ -241,7 +309,7 @@ final class ProcessCsr extends FW_Content_Page
 
 }
 
-$fw = new Framework(new ProcessCsr());
+$fw = new Framework(new CP_ProcessCsr());
 $fw->start();
 
 ?>

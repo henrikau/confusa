@@ -8,11 +8,12 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
 	     if (isset($request['Source']['entityid'])) {
                switch($request['Source']['entityid']) {
 	       case "https://idp-test.feide.no":
+	       case "https://idp.feide.no":
 		       $request['Attributes']['organization'][0] = "feide";
 		       break;
                case "https://openidp.feide.no":
-		    $request['Attributes']['organization'][0] = "openidp";
-            $request['Attributes']['nren'][0] = "uninett";
+		       $request['Attributes']['eduPersonOrgDN'][0]= "o=openidp";
+		       $request['Attributes']['nren'][0]	= "uninett";
                     break;
                case "edugain.showcase.surfnet.nl":
                     $this->fix_surfnet($request);
@@ -28,7 +29,7 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                     echo "Unknown IdP - $idp<BR>\n";
                }
 	     }
-	     $this->fix_entitlement($request);
+	     $this->fixSubscriberName($request);
      }
 
      private function fix_surfnet(&$request) {
@@ -42,7 +43,6 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
           if (isset($request['Attributes']['urn:mace:dir:attribute-def:mail'][0]))
                $request['Attributes']['mail'] = $request['Attributes']['urn:mace:dir:attribute-def:mail'];
 
-          $request['Attributes']['organization'][0] = "surfnet";
      }
 
      private function fix_haka(&$request) {
@@ -53,7 +53,6 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
           if (isset($request['Attributes']['urn:oid:0.9.2342.19200300.100.1.3'][0]))
                $request['Attributes']['mail'] = $request['Attributes']['urn:oid:0.9.2342.19200300.100.1.3'];
 
-          $request['Attributes']['organization'][0] = "Haka";
      }
 
      private function fix_wayf(&$request) {
@@ -64,14 +63,36 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
           if (isset($request['Attributes']['mail'][0]))
                $request['Attributes']['mail'][0] = array(base64_decode($request['Attributes']['mail'][0]));
 
-          $request['Attributes']['organization'][0] = "WAYF";
      }
 
-     private function fix_entitlement(&$request)
+     /**
+      * fixSubscriberName() - parse the ePODN to find the subscriber name
+      *
+      * We expect the IdP to export the eduPersonOrgDN (ePODN) as described in
+      *
+      *			http://rnd.feide.no/attribute/edupersonorgdn
+      *
+      * and the expected form is:
+      *
+      *			o=Hogwarts, dc=hsww, dc=wiz
+      *
+      * We want the 'highest' attribute, i.e. the attribute first in the chain
+      * as this normally describes the institution.
+      */
+     private function fixSubscriberName(&$request)
      {
-	     if (!isset($request['Attributes']['eduPersonEntitlement'][0])) {
-		     $request['Attributes']['eduPersonEntitlement'][0] = "confusaAdmin";
+	     $org = explode(",", $request['Attributes']['eduPersonOrgDN'][0]);
+	     if (is_array($org)) {
+		     $org = explode("=", $org[0]);
+		     if (is_array($org)) {
+			     $request['Attributes']['organization'][0] = $org[1];
+		     } else {
+			     $request['Attributes']['organization'][0] = $org;
+		     }
+	     } else {
+		     $request['Attributes']['organization'][0] = "__error__";
 	     }
-     }
+	     $request['Attributes']['organization'][0] = strtolower($request['Attributes']['organization'][0]);
+     } /* end fixSusbscriberName() */
 }
 ?>

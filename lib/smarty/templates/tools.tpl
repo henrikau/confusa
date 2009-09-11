@@ -1,13 +1,12 @@
 <?php /* Smarty version 2.6.22, created on 2009-07-17 16:52:51
          compiled from tools.tpl */ ?>
 
-<h3>Tools of the trade</h3>
-<P>
-This is where you find the tools needed when using Confusa.
-</P>
-<P>
-These tools will not help you obtain certificates in one step, but they will ease the work.
-</P>
+<h3>{$heading}</h3>
+<hr />
+<br />
+<p class="info">
+{$tools_explanation1}
+</p>
 
 <BR />
 <HR />

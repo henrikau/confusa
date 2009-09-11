@@ -35,6 +35,7 @@ body {
 }
 #menu li {
 	margin-left: 8px;
+	width: 70%;
 }
 a:link,a:visited	{
 	text-decoration: none;
@@ -42,6 +43,10 @@ a:link,a:visited	{
 }
 a:hover {
 	color: #000;
+}
+
+img.url {
+            border: none;
 }
 
 #content {
@@ -70,18 +75,64 @@ a:hover {
 	font-size: 28px;
 }
 
+#language_bar {
+	margin-top: 10px;
+	margin-bottom: 14px;
+	font-size: 12px;
+}
+
+#language_bar a {
+	color: #888888;
+}
+
+#language_bar a:hover {
+	border-bottom: dashed 1px;
+}
+
+div.message_container {
+	padding: 4px;
+	margin-bottom: 8px;
+	padding-right: 20px;
+	float: left;
+	width: 90%;
+}
+
 div.error {
-	padding: 4px;
-	margin-bottom: 4px;
-	background-color: #cf5448;
-	border: 1px solid #961a0e;
+	border: 2px solid #cf5448;
 }
+
 div.success {
-	padding: 4px;
-	margin-bottom: 4px;
-	background-color: #009900;
-	border: 1px solid #508c0a;
+	border: 2px solid #009900;
 }
+
+div.warning {
+	border: 2px solid #FBB117;
+}
+
+div.message {
+	border: 2px solid black;
+}
+
+div.message_icon {
+	margin-right: 6px;
+	margin-bottom: 2px;
+	float: left;
+	/* seems like, according to standard, floats must have a width */
+	width: 16px;
+	height: 16px;
+}
+
+div.message_body {
+	float: left;
+	width: 90%;
+}
+
+.clear {
+	clear: both;
+	height: 1px;
+	overflow: hidden;
+}
+
 div.info {
            width: 80%;
            padding: 10px;
@@ -90,6 +141,7 @@ div.info {
            border: 2px solid black;
            font-size: 2em;
 }
+
 fieldset {
     border: 1px solid #000000;
     background-color: #EEEEEE;
@@ -98,6 +150,25 @@ fieldset {
     width: 90%;
 }
 legend {
+    border: 1px solid #000000;
+    background-color: #EEEEEE;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: black;
+    padding: 2px;
+}
+
+fieldset.inpsect_csr {
+    border-left: 1px solid GRAY;
+    border-right: 2px solid GRAY;
+    border-top: 1px solid GRAY;
+    border-bottom: 2px solid GRAY;
+    background-color: #EEEEEE;
+    padding: 10px;
+    padding-left: 50px;
+    width: 85%;
+}
+legend.inpsect_csr {
     border: 1px solid #000000;
     background-color: #EEEEEE;
     font-size: 1.2em;
@@ -132,6 +203,7 @@ fieldset.infoblock ul li {
 }
 
 div.csr {
+	clear: right;
 	margin-bottom: 5%;
 }
 
@@ -145,7 +217,7 @@ div.spacer
 }
 
 ul.info {
-    padding-left: inherit;
+    margin-left: 15px;
     width: 80%;
     font-style: italic;
 }
@@ -155,6 +227,29 @@ ul.help {
     margin-left: 20px;
     margin-bottom: 8px;
 }
+
+/* Very simple table of contents block */
+.toc {
+    border: 2px solid black;
+    padding: 4px;
+    margin-bottom: 16px;
+    font-size: 95%;
+}
+
+.toc h2 {
+    font-size: 100%;
+    font-weight: bold;
+}
+
+ul.toc {
+    list-style-type: none;
+    width: 60%;
+}
+
+ul.toc li {
+    padding-left: 8px;/* small indentation for the items */
+}
+/* end very simple table of contents block */
 
 p.example {
     border: 1px dashed #000000;

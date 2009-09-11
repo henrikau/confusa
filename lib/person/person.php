@@ -1,4 +1,6 @@
 <?php
+require_once 'input.php';
+require_once 'CriticalAttributeException.php';
 /* Person
  *
  * Person is the object describing the user in the system
@@ -26,6 +28,7 @@ class Person{
 
     /* eduPersonPrincipalName - unique name within the namespace for *all* users */
     private $eppn;
+    private $eppnKey;
 
     private $email;
     private $country;
@@ -33,7 +36,6 @@ class Person{
     /* The name of the subscriber, e.g. 'ntnu', 'uio', 'uninett' */
     private $subscriberName;
 
-    private $idp;
     private $nren;
     private $entitlement;
 
@@ -50,19 +52,60 @@ class Person{
     private $isAuthenticated;
 
     function __construct() {
-        $this->given_name = null;
-        $this->eppn = null;
-        $this->email = null;
-        $this->entitlement = null;
+	    $this->clearAttributes();
+    } /* end constructor */
 
-        /* we're suspicious by nature */
-        $this->isAuthenticated = false;
-        } /* end constructor */
+    function __destruct() {
+	    $this->clearAttributes();
+    }
+    /**
+     * clearAttributes() resets all attributes known to Person
+     *
+     * This function will effectively reset the person.
+     *
+     * @param void
+     * @return void
+     */
+    private function clearAttributes()
+    {
+	    
+	    $this->given_name = null;
+	    unset($this->given_name);
+
+	    $this->eppn = null;
+	    unset($this->eppn);
+
+	    $this->eppnKey = null;
+	    unset($this->eppnKey);
+
+	    $this->email = null;
+	    unset($this->email);
+
+	    $this->country = null;
+	    unset($this->country);
+
+	    $this->subscriberName = null;
+	    unset($this->subscriberName);
+
+	    $this->nren = null;
+	    unset($this->nren);
+
+	    $this->entitlement = null;
+	    unset($this->entitlement);
+
+	    $this->session = null;
+	    unset($this->session);
+
+	    $this->saml_config = null;
+	    unset($this->saml_config);
+
+	    $this->isAuthenticated = false;
+    }
 
     /**
-     * setSession - set a reference to the current session
+     * setSession() sets a reference to the current sessionn
      *
-     * @session : the current session for this (authN) user
+     * @param array The current session for this (authN) user
      */
     function setSession($session)
     {
@@ -71,13 +114,15 @@ class Person{
 	    }
 	    $this->session = $session;
     }
+
     /**
-     * setSAMLConfiguration - add a reference to the config
+     * setSAMLConfiguration() adds a reference to the config
      *
      * The configuration contains a lot of useful information, some of which is
      * directly related to the lifespan of the session.
      *
-     * @config - the configuration object for this session/instance.
+     * @param array The configuration object/array for this session/instance.
+     * @return void
      */
     function setSAMLConfiguration($config)
     {
@@ -88,7 +133,7 @@ class Person{
     }
 
     /**
-     * getTimeLeft - the time in seconds until the session expires.
+     * getTimeLeft() Time in seconds until the session expires.
      *
      * Each session has a pre-determined lifespan. Confusa (and in return,
      * SimpleSAMLphp) can ask for a particular timeframe, but it is the IdP that
@@ -96,6 +141,9 @@ class Person{
      *
      * This function returns the time in seconds until the session expires and
      * the user must re-AuthN.
+     *
+     * @param void
+     * @return void
      */
     function getTimeLeft()
     {
@@ -105,9 +153,10 @@ class Person{
     }
 
     /**
-     * getTimeSinceStart - get the seconds since the session started.
+     * getTimeSinceStart() The seconds since the session started.
      *
-     * The session started when the user last authenticated.
+     * @param void
+     * @return Integer|null Number of seconds since the session started
      */
     function getTimeSinceStart()
     {
@@ -122,20 +171,49 @@ class Person{
     }
 
     /**
-     * getX509SubjectDN - construct the complete /DN for a certificate/CSR
+     * getX509SubjectDN()  Complete /DN for a certificate/CSR
      *
-     * @return: generated /DN from attributes to use in the certificate subject.
+     * @return: String The DN in an X.509 certificate
      */
     function getX509SubjectDN()
     {
-	    $dn = "/C=" . $this->getCountry() . "/O=" . $this->getSubscriberOrgName() . "/CN=" . $this->getX509ValidCN();
+	    $dn = "";
+	    $country	= $this->getCountry();
+	    $son	= $this->getSubscriberOrgName();
+
+	    if (isset($country)) {
+		    $dn .= "/C=$country";
+	    }
+	    if (isset($son)) {
+		    $dn .= "/O=$son";
+	    }
+	    $dn .= "/CN=" . $this->getX509ValidCN();
 	    return $dn;
     }
 
+    function getBrowserFriendlyDN()
+    {
+	$dn = "";
+	$country	= $this->getCountry();
+	$son		= $this->getSubscriberOrgName();
+
+	if (isset($country)) {
+	    $dn .= "C=$country, ";
+	}
+
+	if (isset($son)) {
+	    $dn .= "O=$son, ";
+	}
+
+	$dn .= "CN=" . $this->getX509ValidCN();
+	return $dn;
+
+    }
     /**
-     * isAuth - return a boolean value indicating if the person is AuthN
+     * isAuth() Indicating if the person is AuthN
      *
-     * @return boolean (true when person *is* authenticated)
+     * @param void
+     * @return boolean Value indicating the AuthN-status for a person.
      */
     public function isAuth()
     {
@@ -143,9 +221,10 @@ class Person{
     }
 
     /**
-     * setAuth - set the authN status of the person
+     * setAuth() Sets the authN status of the person
      *
-     * @auth: a boolean describing the AuthN-status.
+     * @param $auth a boolean describing the AuthN-status.
+     * @return void
      */
     public function setAuth($auth = true)
     {
@@ -153,57 +232,103 @@ class Person{
     }
 
     /**
-     * setName - set the (full) name for the user.
+     * setName() Sets the (full) name for the user.
      *
      * A full name, is the name on the form 'John Doe'
      *
      *		http://rnd.feide.no/content/cn
      *
-     * @given_name : the full name of the person.
+     * @param String given_name (the full name of the person)
+     * @return void
      */
     public function setName($cn) {
 	    if (isset($cn)) {
-		    $this->given_name = trim(htmlentities($cn));
+		    $this->given_name = Input::sanitize(trim(htmlentities($cn)));
 	    }
     }
 
     /**
-     * getName - return the full name for the person.
+     * getName() Get the full name of the person
      *
-     * @return : full, given name, for the person.
+     * @param void
+     * @return String the full given name for the person.
      */
-    public function getName() { return $this->given_name; }
+    public function getName()
+    {
+	    return $this->given_name;
+    }
 
-    /* setEPPN - set the ePPN for the person
+    /**
+     * getSAMLConfiguration find the configuration for this session
+     *
+     * @param void
+     * @return array the configuration items for the currently active session.
+     */
+    public function getSAMLConfiguration()
+    {
+	return $this->saml_config;
+    }
+
+    /**
+     * setEPPN() Sets the ePPN for the person
      *
      * The eduPersonPrincipalName is a guaranteed unique key, and is widely used
      * within in Confusa for drilling down the identity of the user.
      *
-     * @eppn: the ePPN.
+     * @param String the eduPersonPrincipalName for this person
+     * @return void
      */
     public function setEPPN($eppn)
     {
-        if (isset($eppn)) {
-             $this->eppn = htmlentities(str_replace("'", "", $eppn));
-         }
+        if (!isset($eppn)) {
+		throw new CriticalAttributeException("eduPersonPrincipalName (or equvivalent token) not set for person!");
+	}
+	$this->eppn = Input::sanitize(htmlentities($eppn));
     }
 
     /**
-     * getEPPN - return the ePPN for the person.
+     * getEPPN() returns the ePPN for the person.
      *
-     * @return : string containing the ePPN for the user
+     * @param void
+     * @return String The ePPN for the user
      */
     public function getEPPN()
     {
 	    return $this->eppn;
     }
 
-    /** getX509ValidCN - get a valid /CN for a X.509 /DN
+    /**
+     * setEPPNKey() set the key in the attributes where the ePPN is located
      *
-     * This will return the common-name attribute for the X.509 subject. As not
-     * all characters are printable, this function will also strip those away.
+     * @param String the key in the attribute array where ePPN can be found
+     * @return void
+     */
+    public function setEPPNKey($eppnKey)
+    {
+	    if (isset($eppnKey)) {
+		    $this->eppnKey = $eppnKey;
+	    }
+    }
+
+    /**
+     * getEPPNKey() find the key in the attribute-array holding the ePPN-value
      *
-     * @return: a X.509 printable /CN attribute
+     * @param void
+     * @return String the key for ePPN
+     */
+    public function getEPPNKey()
+    {
+	    return $this->eppnKey;
+    }
+
+    /** getX509ValidCN()  get a valid /CN for a X.509 /DN
+     *
+     * This will return the CommonName-attribute in a X.509 certificate
+     * subject. As not all characters are printable, this function will also
+     * strip these away, possibly altering the expected content slightly.
+     *
+     * @param void
+     * @return String the X.509 printable /CN attribute
      */
     public function getX509ValidCN()
     {
@@ -217,104 +342,152 @@ class Person{
     }
 
     /**
-     * setEmail - set a email-address for the person
+     * getSession() the session of a person
      *
-     * @email : the (new) email address for the person
+     * @param void
+     * @return array The session that is associated with the person
+     */
+    public function getSession()
+    {
+	return $this->session;
+    }
+
+    /**
+     * setEmail() set a email-address for the person
+     *
+     * @param String the (new) email address for the person
+     * @return void
      */
     public function setEmail($email)
     {
         if (isset($email)) {
-            $this->email = htmlentities($email);
+		$this->email = Input::sanitize($email);
         }
     }
 
     /**
-     * getEmail - return the registred email-address
+     * getEmail() return the registred email-address
      *
+     * @param void
      * @return: string containing the email-address
      */
     public function getEmail() { return $this->email; }
 
 
-    /** setSubscriberOrgName - set the name of the subscriber organization
+    /** setSubscriberOrgName()- set the name of the subscriber organization
      *
-     * @subscriber
+     * @param String the subscriber (organization) name
+     * @return void
      */
     public function setSubscriberOrgName($subscriber)
     {
 	    if (isset($subscriber))
-		    $this->subsriberName = $subscriber;
+		    $this->subscriberName = strtolower(Input::sanitize($subscriber));
     }
 
     /**
-     * getSusbscriberOrgName - return the name of the person's subscriber organization name. 
+     * getSusbscriberOrgName() The name of the person's subscriber organization name. 
      *
      * This is a name of the home-institution, e.g. 'ntnu',  'uio'.
      *
-     * @return: string holding the subscriber's name.
+     * @param void
+     * @return String The subscriber's name.
      */
     public function getSubscriberOrgName()
     {
-	    return $this->subsriberName;
+	    return $this->subscriberName;
     }
 
-
     /**
-     * setEduPersonEntitlement - store the entitlement
+     * setEntitlement() store the entitlement
      *
      * The entitlement is set by the IdP for the user, and we use this to test
-     * for admins. This is not a sufficicent conditions, but is is a necessary
-     * one.
+     * for admins and eligble users. This is not something Person should care
+     * about, so all we do here is adding the entitlements into an associative
+     * array so we can search for explicit attributes later.
      *
-     * @entitlement: the entitlement for the person
-     *
-     * TODO:	how to handle the case when several entitlement-attributes are
-     *		set.
+     * @param mixed $entitlement for the person.
+     * @return void
      */
-    public function setEduPersonEntitlement($entitlement)
+    public function setEntitlement($entitlement)
     {
 	    if (isset($entitlement)) {
+		    if (!isset($this->entitlement)) {
+			    $this->entitlement = array();
+		    }
 		    if (is_array($entitlement)) {
-			    $this->entitlement = $entitlement[0];
+			    foreach ($entitlement as $key => $value) {
+				    $this->setEntitlement($value);
+			    }
 		    } else {
-			    $this->entitlement = $entitlement;
+			    $val = Input::sanitize($entitlement);
+			    $this->entitlement[strtolower($val)] = $val;
 		    }
 	    }
     }
 
     /**
-     * getEduPersonEntitlement - return the entitlement.
+     * getEntitlement()  Returns the (relevant) entitlement(s).
      *
-     * This results the (relevant) entitlement(s).
+     * The function will return either a string-represenatation of the
+     * entitlement if $strigify is true, otherwise it will return the array as
+     * it is stored internally by person.
      *
-     * @return string with the entitlement.
+     * @param  Boolean True if we want a string-representation of the entitlement
+     * @return mixed The entitlement if set. null otherwise
      */
-    public function getEduPersonEntitlement()
+    public function getEntitlement($stringify = true)
     {
-	    return $this->entitlement;
+	    if (!isset($this->entitlement) || !is_array($this->entitlement)) {
+		    return null;
+	    }
+	    if ($stringify) {
+		    $res = "";
+		    foreach($this->entitlement as $key => $val) {
+			    $res .= "$val, ";
+		    }
+		    $res = substr($res, 0, strlen($res)-2);
+	    } else {
+		    $res = $this->entitlement;
+	    }
+	    return $res;
     }
 
+    /**
+     * testEntitlementAttribute() If a given attribute is part of the entitlement field.
+     *
+     * @param String The attribute to test for in the supplied entitlement field
+     * @return Boolean $hasAttribute indicating if the queried attribute has been set 
+     */
+    public function testEntitlementAttribute($attribute)
+    {
+	    $hasAttribute = false;
+	    $attr = strtolower(Input::sanitize($attribute));
+	    return isset($this->entitlement[$attr]);
+    }
 
     /**
-     * setCountry() - set the country the user belongs to.
+     * setCountry() Sets the country the user belongs to.
      *
      * This is actually a potential problem, as this country is the country
      * where the *NREN* is located. As most federations are national (hence the
      * name), it should be accurate most of the time.
      *
-     * @country : the country of the NREN (and in effect, person)
+     * @param String The country of the NREN (and in effect, person)
+     * @return void
      */
     public function setCountry($country)
     {
 	    if (isset($country)) {
-		    $this->country = strtoupper(substr(htmlentities($country),0, 2));
+		    $this->country = strtoupper(substr(Input::sanitize($country),0, 2));
 	    }
     }
 
     /**
-     * getCountry() - return the country for the user
+     * getCountry() - return the country-code for the user's country.
      *
-     * @return string with the two-letter
+     * @param void
+     * @return String two-letter country code
      */
     public function getCountry()
     {
@@ -322,38 +495,8 @@ class Person{
     }
 
 
-    /* setIdP - set the IdP for the person
-     *
-     * @deprecated -	this function is deprecated as the IdP can be found in the
-     *			session-array exported by SimpleSAML. It is still around
-     *			due to the auth_bypass-mode.
-     *
-     * @idp : the idp to set.
-     */
-    public function setIdP($idp) {
-	    if (isset($idp)) {
-		    if (!Config::get_config('auth_bypass')) {
-			    Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . " setting idp in ! auth_bypass!");
-		    }
-		    $this->idp = htmlentities($idp);
-	    }
-    }
-
-    /* getIdP - get the IdP the user has authenticated to.
-     *
-     * @return : string with the name of the IdP
-     */
-    public function getIdP()
-    {
-	    if (Config::get_config('auth_bypass')) {
-		    return $this->idp;
-	    }
-	    return $this->session->getIdP();
-    }
-
-
     /**
-     * setNREN - set the National Research and Education Network for the user.
+     * setNREN() set the National Research and Education Network for the user.
      *
      * the NREN is found via the IdP. One user can only belong to one IdP and
      * one IdP can only belong to one NREN.
@@ -371,18 +514,20 @@ class Person{
      * The nren will be stored as lowercase only to make sure things are
      * consistent all the way through confusa.
      *
-     * @nren : the NREN the user ultimately belongs to.
+     * @param String the name of the NREN the user ultimately belongs to.
+     * @return void
      */
     public function setNREN($nren) {
 	    if (isset($nren)) {
-		    $this->nren = strtolower(htmlentities($nren));
+		    $this->nren = strtolower(Input::sanitize($nren));
 	    }
     }
 
     /**
-     * getNREN - return the NREN
+     * getNREN() return the NREN the user belongs to.
      *
-     * @return string with the name of the nren
+     * @param void
+     * @return String The name of the nren
      */
     public function getNREN()
     {
@@ -391,7 +536,7 @@ class Person{
 
 
     /**
-     * getMode() - get the current modus for the user
+     * getMode() Gets the current modus for the user
      *
      * This returns the mode the user displays the page in. Even an
      * administrator (of any kind) can view the page as a normal user, and this
@@ -407,7 +552,8 @@ class Person{
      * NORMAL_MODE: 0
      * ADMIN_MODE:  1
      *
-     * @return integer indicating the mode of the user
+     * @param void
+     * @return Integer The mode of the user
      */
     public function getMode()
     {
@@ -436,12 +582,13 @@ class Person{
     }
 
     /**
-     * inAdminMode() - test to see if person is currently in *any* admin-mode
+     * inAdminMode() If person is currently in *any* admin-mode
      *
      * This function is intended as a convenient way of getting a yes/no answer
      * to whether or not we should show the user the admin-menu.
      *
-     * @return boolean true when the user is in admin-mode, false otherwise
+     * @param void
+     * @return boolean True if user is admin, false otherwise
      */
     public function inAdminMode()
     {
@@ -456,7 +603,8 @@ class Person{
      *
      *		i.e. either ADMIN_MODE or NORMAL_MODE
      *
-     * @new_mode: the new mode for the user.
+     * @param String the new mode for the user.
+     * @return void
      */
     public function setMode($new_mode)
     {
@@ -472,12 +620,13 @@ class Person{
     }
 
     /**
-     * isAadmin() - test to see if the user is an admin (of any kind)
+     * isAadmin() Test to see if the user is an admin (of any kind)
      *
      * Test to see if the user is part of the admin-crowd. This will allow the
      * user to add news entries.
      *
-     * @return boolean, true if person has admin-privileges in the Confusa instance.
+     * @param void
+     * @return boolean True if person has admin-privileges in the Confusa instance.
      */
     public function isAdmin()
     {
@@ -486,31 +635,52 @@ class Person{
 
 
     /**
-     * is(NREN|Subscriber|SubscriberSub)Admin()
+     * isNRENAdmin() Test to see if the user has NRENAdmin-rights
      *
-     *
-     * @return : boolean true when person is the given admin
+     * @param void
+     * @return boolean true when person is NREN-Administrator
      */
     public function isNRENAdmin()
     {
 	    /* test attribute to see if the person is NREN-admin */
-	    if ((int)$this->getAdminStatus() == NREN_ADMIN) {
-		    return true;
-            }
+	    return $this->getAdminStatus() == NREN_ADMIN;
     }
+
+    /**
+     * isSubscriberAdmin() Test to see if the user has SubscriberAdmin-rights
+     *
+     * @param void
+     * @return boolean true when person is the Subscriber-Admin
+     */
     public function isSubscriberAdmin()
     {
+	    if (!$this->testEntitlementAttribute("confusaAdmin")) {
+		    return false;
+	    }
 	    return (int)$this->getAdminStatus() == SUBSCRIBER_ADMIN;
     }
+
+    /**
+     * isSubscriberSubAdmin() Test to see if the user is subadmin for a subscriber.
+     *
+     * @param void
+     * @return boolean true when person is subscriber sub-admin
+     */
     public function isSubscriberSubAdmin()
     {
+	    if (!$this->testEntitlementAttribute("confusaAdmin")) {
+		    return false;
+	    }
 	    return (int)$this->getAdminStatus() == SUBSCRIBER_SUB_ADMIN;
     }
 
     /**
-     * getAdminStatus - get the admin-level from the database
+     * getAdminStatus() get the admin-level from the database
      *
      * This function assumes isAuth() has been verified.
+     *
+     * @param void
+     * @return Integer value indication the admin-level
      */
     private function getAdminStatus()
     {
@@ -518,7 +688,11 @@ class Person{
 	    if (!$this->isAuth()) {
 		    return NORMAL_USER;
 	    }
-	    if (!$this->entitlement == "confusaAdmin") {
+
+	    /* If the user has no subscriber set, he/she *cannot* be a
+	     * administrator */
+	    $epodn = $this->getSubscriberOrgName();
+	    if (!isset($epodn) || $epodn === "") {
 		    return NORMAL_USER;
 	    }
 
@@ -527,8 +701,7 @@ class Person{
 	    $size	= count($res);
 	    db_array_debug($res);
 	    if ($size == 1) {
-		    if ($res[0]['admin'] == $this->getEPPN())
-			    $adminRes = $res[0]['admin_level'];
+		    $adminRes = $res[0]['admin_level'];
 	    }
 	    return $adminRes;
     }
