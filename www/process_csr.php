@@ -75,6 +75,11 @@ final class CP_ProcessCsr extends FW_Content_Page
 				$this->tpl->assign('order_number', $order_number);
 			}
 		}
+		/* If $res is false, we risk that a '1' is printed, we do not
+		 * want that :-) */
+		if (!$res)
+			return;
+		return $res;
 	}
 
 	public function process()
