@@ -16,6 +16,7 @@ class CP_Robot_Interface extends Content_Page
 	}
 	function pre_process($person)
 	{
+		$res = false;
 		parent::pre_process($person);
 		if (isset($_POST['robot_action'])) {
 			$action = Input::sanitize($_POST['robot_action']);
@@ -23,19 +24,35 @@ class CP_Robot_Interface extends Content_Page
 			switch($action) {
 			case 'paste_new':
 				if (isset($_POST['cert']) && $_POST['cert'] != "") {
-					$this->insertCertificate($_POST['cert'], $comment);
+					$res = $this->insertCertificate($_POST['cert'], $comment);
 				}
 				break;
 			case 'upload_new':
-				$this->handleFileCertificate($comment);
+				$res = $this->handleFileCertificate($comment);
 				break;
 			default:
 				Framework::error_output("Unknown robot-action ($action)");
-				return false;
+				$res = false;
 			}
-			return true;
+		} else if (isset($_GET['robot_action'])) {
+			$action = Input::sanitize($_GET['robot_action']);
+			$serial = Input::sanitize($_GET['serial']);
+			if (!isset($serial) || $serial=="") {
+				$res = false;
+			}
+			switch($action) {
+			case 'delete':
+				$res = $this->deleteCertificate($serial);
+				break;
+			case 'info':
+				$res = $this->dumpInfo($serial);
+				break;
+			default:
+				Framework::error_output("Unknown action");
+				$res = false;
+			}
 		}
-		return false;
+		return $res;
 	}
 
 
@@ -154,7 +171,7 @@ class CP_Robot_Interface extends Content_Page
 				return false;
 			}
 		} catch (Exception $e) {
-			echo $e->getMessage();
+			Framework::error_output($e->getMessage());
 			/* FIXME, add proper exception handling */
 			return false;
 		}
@@ -173,6 +190,26 @@ class CP_Robot_Interface extends Content_Page
 		}
 		Framework::message_output("No errors found wile uploading certificate to keystore");
 		return true;
+	}
+
+	private function deleteCertificate($serial)
+	{
+		$query  = "SELECT * FROM robot_certs rc LEFT JOIN nren_subscriber_view nsv";
+		$query .= " ON nsv.subscriber_id = rc.subscriber_id WHERE ";
+		$query .= " nren=? AND subscriber=? AND serial=?";
+
+		$params = array('text', 'text', 'text');
+		$data	= array($this->person->getNREN(), $this->person->getSubscriberOrgName(), $serial);
+		try {
+			$res = MDB2Wrapper::execute($query,$params, $data);
+			if (count($res)!= 1) {
+				return false;
+			}
+			MDB2Wrapper::update("DELETE FROM robot_certs WHERE id=? AND serial=?", array('text','text'), array($res[0]['id'], $serial));
+		} catch (Exception $e) {
+			Framework::error_output("Could not find cert. Server said: " . $e->getMessage());
+			return false;
+		}
 	}
 }
 
