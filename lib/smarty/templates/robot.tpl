@@ -24,7 +24,7 @@ the window below, or by uploading a local file.
   <tr>
     <td></td>
     <td>
-      <a href="?action=delete&serial={$element->serial()}">
+      <a href="?robot_action=delete&serial={$element->serial()}">
 	<img src="https://slcstest.uninett.no/silk_icons/delete.png"/
 	alt="Delete" title="Delete Robot Certificate" class="url">
 	Delete
@@ -33,7 +33,7 @@ the window below, or by uploading a local file.
     <td>
     </td>
     <td>
-      <a href="?action=info&serial={$element->serial()}">
+      <a href="?robot_action=info&serial={$element->serial()}">
 	<img src="https://slcstest.uninett.no/silk_icons/information.png"
 	alt="Info" title="Get more information about certificate" class="url"/>
 	Information
