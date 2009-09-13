@@ -65,10 +65,10 @@ class CP_Stylist extends FW_Content_Page
 				}
 				break;
 			case 'update_map_nren':
-				$epodn		= Input::sanitize($_POST['epodn']);
-				$cn		= Input::sanitize($_POST['cn']);
-				$mail		= Input::sanitize($_POST['mail']);
-				$entitlement	= Input::sanitize($_POST['entitlement']);
+				$epodn		= $_POST['epodn'];
+				$cn		= $_POST['cn'];
+				$mail		= $_POST['mail'];
+				$entitlement	= $_POST['entitlement'];
 				if ($this->updateMapNREN($epodn, $cn, $mail, $entitlement)) {
 					Framework::message_output("Updated map OK");
 				}
