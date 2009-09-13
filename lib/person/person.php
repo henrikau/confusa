@@ -66,7 +66,7 @@ class Person{
      * @param void
      * @return void
      */
-    private function clearAttributes()
+    public function clearAttributes()
     {
 	    
 	    $this->given_name = null;
