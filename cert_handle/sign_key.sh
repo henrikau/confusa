@@ -65,6 +65,10 @@ if [ ! -r "$cakey" ]; then
     error_exit "127" "CA-key not readable for webserver"
 fi
 
+if [ ! -w "$2" ]; then
+    error_exit "128" "Target certificate-file is not writable for webserver user!"
+fi
+
 openssl x509 -req -days 395 -in $tmpfile -CA $cacert -CAkey $cakey -CAcreateserial -out $2
 
 # Remove the tmp-file and return to original dir (just to be sure)
