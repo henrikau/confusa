@@ -13,7 +13,7 @@ include_once 'input.php';
  * Each NREN has a set of NREN-admins and subscriber-admins. Each subscriber may
  * manage its own subuscriber admins and subadmin.
  */
-class CP_Admin extends FW_Content_Page
+class CP_Admin extends Content_Page
 {
 
 	function __construct()

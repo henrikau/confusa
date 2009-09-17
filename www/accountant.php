@@ -11,7 +11,7 @@ require_once 'input.php';
  * Accountant - Graphical class for managing the account information for
  * hooking up with the remote CA (e.g. Comodo).
  */
-class CP_Accountant extends FW_Content_Page
+class CP_Accountant extends Content_Page
 {
 	function __construct()
 	{

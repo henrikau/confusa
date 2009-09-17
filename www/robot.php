@@ -3,7 +3,7 @@ require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'person.php';
 
-class CP_Robot_Interface extends FW_Content_Page
+class CP_Robot_Interface extends Content_Page
 {
 	function __construct()
 	{

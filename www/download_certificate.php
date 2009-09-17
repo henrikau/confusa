@@ -6,7 +6,7 @@ require_once 'mail_manager.php';
 require_once 'confusa_gen.php';
 require_once 'output.php';
 
-final class CP_DownloadCertificate extends FW_Content_Page
+final class CP_DownloadCertificate extends Content_Page
 {
 	public function __construct()
 	{

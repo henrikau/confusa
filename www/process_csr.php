@@ -15,7 +15,7 @@ require_once 'output.php';
  *
  * @author Henrik Austad <henrik.austad@uninett.no>
  */
-final class CP_ProcessCsr extends FW_Content_Page
+final class CP_ProcessCsr extends Content_Page
 {
 	private $signing_ok;
 

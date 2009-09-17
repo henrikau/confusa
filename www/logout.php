@@ -1,7 +1,7 @@
 <?php
 require_once 'confusa_include.php';
 include_once 'framework.php';
-class Logout extends FW_Content_Page
+class Logout extends Content_Page
 {
 	public function __construct()
 	{

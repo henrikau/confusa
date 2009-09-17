@@ -7,7 +7,7 @@ require_once 'csv_lib.php';
 require_once 'input.php';
 require_once 'mdb2_wrapper.php';
 
-class CP_RevokeCertificate extends FW_Content_Page
+class CP_RevokeCertificate extends Content_Page
 {
 	/*
 	 * CRL reason codes according to RFC 3280.

@@ -4,7 +4,7 @@ require_once 'framework.php';
 require_once 'person.php';
 require_once 'classTextile.php';
 
-class CP_About_NREN extends FW_Content_Page
+class CP_About_NREN extends Content_Page
 {
 	function __construct()
 	{

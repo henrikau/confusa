@@ -7,7 +7,7 @@ require_once 'logger.php';
 require_once 'output.php';
 require_once 'input.php';
 
-class CP_NREN_Admin extends FW_Content_Page
+class CP_NREN_Admin extends Content_Page
 {
 	private $state;
 	function __construct()

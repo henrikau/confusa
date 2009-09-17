@@ -6,7 +6,7 @@ require_once 'logger.php';
 require_once 'mdb2_wrapper.php';
 require_once 'translator.php';
 
-final class CP_Language_Selector extends FW_Content_Page
+final class CP_Language_Selector extends Content_Page
 {
 
 	private $full_names;

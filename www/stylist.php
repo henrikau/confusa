@@ -8,7 +8,7 @@ require_once 'file_upload.php';
 require_once 'logger.php';
 require_once 'classTextile.php';
 
-class CP_Stylist extends FW_Content_Page
+class CP_Stylist extends Content_Page
 {
 
 	/* maximum width for custom logos */

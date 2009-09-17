@@ -1,7 +1,7 @@
 <?php
 require_once 'translator.php';
 
-abstract class FW_Content_Page
+abstract class Content_Page
 {
 	private $title;
 	private $protected;

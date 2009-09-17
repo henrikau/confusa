@@ -60,8 +60,8 @@ class Framework {
 			Framework::error_output("Error! content_page not provided to Framework constructor");
 			exit(0);
 		}
-		if (!($contentPage instanceof FW_Content_Page)) {
-			Framework::error_output("Supplied contentPage is not of class FW_Content_Page");
+		if (!($contentPage instanceof Content_Page)) {
+			Framework::error_output("Supplied contentPage is not of class Content_Page");
 			exit(0);
 		}
 		if (!Config::get_config('valid_install')) {
