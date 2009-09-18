@@ -142,7 +142,7 @@ abstract class Confusa_Auth
 					} else {
 						$val = explode(":", $entitlementValue);
 						if (count($val) !== (count(explode(":", $namespace))+1)) {
-							Framework::error_output("Error with namespace, too manu objects in namespace (" . count($val) . ")");
+							Framework::error_output("Error with namespace, too many objects in namespace (" . count($val) . ")");
 							continue;
 						}
 						$this->person->setEntitlement($val[count($val)-1]);
