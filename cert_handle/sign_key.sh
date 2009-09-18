@@ -50,7 +50,7 @@ fi
 # Sign the CSR and write to provided file
 cacert="`pwd``get_config_entry 'ca_cert_path'``get_config_entry 'ca_cert_name'`"
 if [ ! -f "$cacert" ]; then
-    error_exit "123" "CA-cert not set"
+    error_exit "123" "CA-cert not set, was expecting $cacert."
 fi
 if [ ! -r "$cacert" ]; then
     error_exit "125" "CA-cert not readable for webserver"
