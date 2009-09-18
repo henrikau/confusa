@@ -69,7 +69,7 @@ if [ ! -w "$2" ]; then
     error_exit "128" "Target certificate-file is not writable for webserver user!"
 fi
 
-openssl x509 -req -days 395 -in $tmpfile -CA $cacert -CAkey $cakey -CAcreateserial -out $2
+openssl x509 -req -days 395 -in $tmpfile -CA $cacert -CAkey $cakey -CAcreateserial -sha512 -out $2
 
 # Remove the tmp-file and return to original dir (just to be sure)
 rm -f $tmpfile
