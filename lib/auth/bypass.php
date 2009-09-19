@@ -15,17 +15,48 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	function __construct($person)
 	{
 		parent::__construct($person);
-		$this->attributes = array(
-			'cn2'				=> array('Ola Nordmann'),
-			'eduPersonPrincipalName'	=> array('ola.nordmann@norge.no'),
-			'mail2'				=> array('ola.nordmann@norge.no'),
-			'country'			=> array('NO'),
-			/* 'organization'			=> array('test_subscriber'), */
-			'organization'			=> array('o=Hogwarts, dc=hsww, dc=wiz'),
-			'nren'				=> array('testnren'),
-			'eduPersonEntitlement2'		=> array('urn:mace:feide.no:sigma.uninett.no:confusaAdmin',
-								 'urn:mace:feide.no:sigma.uninett.no:confusa')
-			);
+		$this->attributes = array();
+		$personIndex = 0;
+		try {
+			$personIndex = (int)Config::get_config('bypass_id');
+		} catch (KeyNotFoundException $knfe) {
+			Logger::log_even(LOG_NOTICE, __FILE__ . ":" . __LINE__ . " bypass_id not set in config. Using default ID.");
+		}
+		switch ($personIndex) {
+		case 0:
+			$this->attributes = array(
+				'cn2'				=> array('John Doe'),
+				'eduPersonPrincipalName'	=> array('jdoe@example.org'),
+				'mail2'				=> array('john.doe@example.org'),
+				'country'			=> array('NN'),
+				'organization'			=> array('o=Hogwarts, dc=hsww, dc=wiz'),
+				'nren'				=> array('testnren'),
+				'eduPersonEntitlement2'		=> array('urn:mace:feide.no:sigma.uninett.no:confusa'));
+			break;
+		case 1:
+			$this->attributes = array(
+				'cn2'				=> array('Jane Doe'),
+				'eduPersonPrincipalName'	=> array('janedoe@example.org'),
+				'mail2'				=> array('jane.doe@example.org'),
+				'country'			=> array('NN'),
+				'organization'			=> array('o=Hogwarts, dc=hsww, dc=wiz'),
+				'nren'				=> array('testnren'),
+				'eduPersonEntitlement2'		=> array('urn:mace:feide.no:sigma.uninett.no:confusaAdmin',
+									 'urn:mace:feide.no:sigma.uninett.no:confusa'));
+			break;
+		case 2:
+		default:
+			$this->attributes = array(
+				'cn2'				=> array('Ola Nordmann'),
+				'eduPersonPrincipalName'	=> array('onordmann@example.org'),
+				'mail2'				=> array('ola.nordmann@example.org'),
+				'country'			=> array('NO'),
+				'organization'			=> array('o=Hogwarts, dc=hsww, dc=wiz'),
+				'nren'				=> array('testnren'),
+				'eduPersonEntitlement2'		=> array('urn:mace:feide.no:sigma.uninett.no:confusa'));
+			break;
+		}
+
 	}
 
 	/**
