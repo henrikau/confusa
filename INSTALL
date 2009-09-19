@@ -43,6 +43,16 @@ To install Confusa
      php5-mcrypt
      php5-curl
 
+3 c) When in standalone, you will need to configure the CA aspect slightly.
+     One thing is to generate the key and certificate for the CA operation.
+
+     One alternative is to just use the apache SSL-keys, generating this
+     is really left as an exercise for the reader.
+     The ca_* elements in the config/confusa_config.php must be set.
+
+
+     openssl-blacklist
+
 4) Configure Apache to use SSL, use the following lines in your 
    apache2/sites-enabled/appropriate.config.file and php5-openssl
 
