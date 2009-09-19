@@ -226,8 +226,15 @@ $confusa_config = array(
 	 * the namespace-value should be:
 	 *
 	 *	urn:mace:some.idp.org:some.sub.domain
+	 *
+	 * WARNING: at the moment, this part is a bit fragile, so do *not* add a
+	 * trailing ':' at the end. If your namespace, including entitlement, is
+	 * 'urn:mace:example.org:confusa, do *not* add the last ':' between .org
+	 * and confusa.
 	 */
 	'entitlement_namespace'	=> null,
+	'entitlement_user'	=> 'user',
+	'entitlement_admin'	=> 'admin',
 
 	/* this should be set to true when config is verified (or the file has
 	 * been updated and not just copied)
