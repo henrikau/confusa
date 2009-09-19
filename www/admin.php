@@ -402,9 +402,11 @@ class CP_Admin extends Content_Page
 
 		/* Insert admin */
 		try {
-			MDB2Wrapper::update("INSERT INTO admins (admin, admin_level, last_mode, subscriber, nren) VALUES (?, ?, ?, ?, ?)",
-					    array('text', 'text', 'text', 'text', 'text'),
-					    array($admin, $level, '0', $subscriberID, $nrenID));
+			$query	= "INSERT INTO admins (admin, admin_level, last_mode, subscriber, nren) VALUES (?, ?, ?, ?, ?)";
+			$params	= array('text', 'text', 'text', 'text', 'text');
+			$data	= array($admin, $level, '0', $subscriberID, $nrenID);
+			MDB2Wrapper::update($query, $params, $data);
+
 		} catch (DBStatementException $dbse) {
 			$msg  = "Cannot add Admin to database, probably serverside problems.<br />";
 			$msg .= "Server said " . $dbse->getMessage();
