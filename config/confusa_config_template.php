@@ -111,7 +111,7 @@ $confusa_config = array(
 	'ca_cert_name'		=> '',
 	'ca_key_path'		=> '/priv',
 	'ca_key_name'		=> '',
-	'ca_conf_name'		=> '/conf/confusa_openssl.cnf',
+	'ca_conf_name'		=> '/conf/confusa_openssl.conf',
 	'ca_crl_name'		=> '/confusa_crl.pem',
 
         /* this *should* be true, as you really* want wget to detect a
