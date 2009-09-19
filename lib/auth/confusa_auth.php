@@ -132,8 +132,8 @@ abstract class Confusa_Auth
 			 */
 			$entitlements = $attributes[$map['entitlement']];
 			if (isset($entitlements)) {
+				$namespace = Config::get_config('entitlement_namespace');
 				foreach ($entitlements as $key => $entitlementValue) {
-					$namespace = Config::get_config('entitlement_namespace');
 					$pos = strpos($entitlementValue, $namespace);
 					/* Note: we *must* check for both false *and*
 					 * type, as we want pos to be 0 */
