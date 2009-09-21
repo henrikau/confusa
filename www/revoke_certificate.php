@@ -61,7 +61,7 @@ class CP_RevokeCertificate extends Content_Page
 						Framework::message_output("Certificate ($order_number) successfully revoked.");
 					}
 				} catch (ConfusaGenException $cge) {
-					Framework::error_message("Revocation failed, the following problem was reported: " .
+					Framework::error_output("Revocation failed, the following problem was reported: " .
 											$cge->getMessage());
 				}
 				break;
@@ -71,7 +71,7 @@ class CP_RevokeCertificate extends Content_Page
 				try {
 					$this->revoke_certs(Input::sanitize($_POST['order_numbers']), Input::sanitize($_POST['reason']));
 				} catch (ConfusaGenExcpetion $cge) {
-					Framework::error_message("Could not revoke certificates because of the " .
+					Framework::error_output("Could not revoke certificates because of the " .
 											"following problem: " . $cge->getMessage());
 				}
 				break;
@@ -80,7 +80,7 @@ class CP_RevokeCertificate extends Content_Page
 				try {
 					$this->revoke_list(Input::sanitize($_POST['reason']));
 				} catch (ConfusaGenException $cge) {
-					Framework::error_message("Could not revoke certificates because of the " .
+					Framework::error_output("Could not revoke certificates because of the " .
 											"following problem: " . $cge->getMessage());
 				}
 				break;
