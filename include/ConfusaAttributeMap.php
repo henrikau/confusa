@@ -14,6 +14,7 @@ class sspmod_core_Auth_Process_ConfusaAttributeMap extends SimpleSAML_Auth_Proce
                case "https://openidp.feide.no":
 		       $request['Attributes']['eduPersonOrgDN'][0]= "o=openidp";
 		       $request['Attributes']['nren'][0]	= "uninett";
+               $request['Attributes']['eduPersonEntitlement'][0] = "urn:mace:feide.no:sigma.uninett.no:confusa";
                     break;
                case "edugain.showcase.surfnet.nl":
                     $this->fix_surfnet($request);
