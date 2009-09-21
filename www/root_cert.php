@@ -36,8 +36,8 @@ class CP_Root_Certificate extends Content_Page
 			case CA_ONLINE:
 				$this->cert_url = Config::get_config('capi_root_cert');
 				$this->crl_url = Config::get_config('capi_crl');
-				$this->cert_path = "/tmp/" . Config::get_config('ca_cert_name');
-				$this->crl_path = "/tmp/" . Config::get_config('ca_crl_name');
+				$this->cert_path = "/tmp/cert.pem";
+				$this->crl_path = "/tmp/comodo.crl";
 				break;
 
 			default:
@@ -57,11 +57,11 @@ class CP_Root_Certificate extends Content_Page
 			switch(htmlentities($_GET['send_file'])) {
 			case 'cacert':
 				$this->makeCertAvailable();
-				download_file(file_get_contents($this->cert_path), Config::get_config('ca_cert_name'));
+				download_file(file_get_contents($this->cert_path), "confusa_cert.pem");
 				break;
 			case 'crl':
 				$this->makeCRLAvailable();
-				download_file(file_get_contents($this->crl_path), Config::get_config('ca_crl_name'));
+				download_file(file_get_contents($this->crl_path), "confusa.crl");
 				break;
 			default:
 				return;
