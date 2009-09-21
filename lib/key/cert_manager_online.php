@@ -225,7 +225,8 @@ class CertManager_Online extends CertManager
     /**
      * Return an array with all the certificates obtained by the person managed by this
      * CertManager.
-     * TODO: Retrieve that list once per session and cache it
+     *
+     * Don't include expired, revoked and rejected certificates in the list
      * @throws RemoteAPIException
      */
     public function get_cert_list()
@@ -238,13 +239,19 @@ class CertManager_Online extends CertManager
          * to the array representation we use internally */
         for ($i = 1; $i <= $params['noOfResults']; $i = $i+1) {
 
+            $status = $params[$i . "_1_status"];
+            $orderStatus = $params[$i . "_orderStatus"];
+
+            /* don't include expired certificates */
+            if (($status == "Expired") || ($status == "Revoked") ||
+                ($orderStatus == "Rejected")) {
+                    continue;
+            }
+
             /* for simplicity, format the time just as an SQL server would return it */
             $valid_untill = $params[$i . '_1_notAfter'];
 
-            /* don't fetch expired certificates, but include pending certificates */
-            if (!empty($valid_untill) && ($valid_untill < time())) {
-                continue;
-            } else if (!empty($valid_untill)) {
+            if (!empty($valid_untill)) {
                 $valid_untill = date('Y-m-d H:i:s', $valid_untill);
                 $res[$i-1]['valid_untill'] = $valid_untill;
             }
@@ -280,9 +287,10 @@ class CertManager_Online extends CertManager
         for ($i = 1; $i <= $params['noOfResults']; $i++) {
             /* Note that this field will not get exported if the order is not yet authorized */
             $valid_untill = $params[$i . '_1_notAfter'];
+            $status = $params[$i . '_1_status'];
 
-            /* don't consider expired or pending certificates */
-            if ($valid_untill < time()) {
+            /* don't consider expired, revoked or pending certificates */
+            if ($status != "Valid") {
                 continue;
             }
 
