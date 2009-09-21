@@ -44,13 +44,14 @@ class CertManager_Online extends CertManager
         }
 
         parent::__construct($pers);
+        $this->getAccountInformation();
     }
 
     /**
      * Get username and password for the remote-CA account of the
      * (NREN of) the managed person.
      */
-    private function _get_account_information() {
+    private function getAccountInformation() {
         $login_cred_query = "SELECT a.account_login_name, a.account_password, a.account_ivector, a.ap_name " .
               "FROM nren_account_map_view a WHERE a.nren=?";
 
@@ -146,10 +147,6 @@ class CertManager_Online extends CertManager
 		    throw new KeySignException($msg);
 	    }
 
-        if (!isset($this->login_name) || !isset($this->login_pw)) {
-            $this->_get_account_information();
-        }
-
         $this->_capi_upload_CSR($auth_key, $csr);
         $this->_capi_authorize_CSR();
 
@@ -185,9 +182,6 @@ class CertManager_Online extends CertManager
 		    throw new KeySignException($msg);
 	    }
 
-        if (!isset($this->login_name) || !isset($this->login_pw)) {
-            $this->_get_account_information();
-        }
         /* use the last 64-characters of the CRMF as an auth_key */
 		$auth_key = substr($csr, strlen($csr)-65, strlen($csr)-1);
         /* FIXME: Recognize IE format, that is PKCS10 */
@@ -329,10 +323,6 @@ class CertManager_Online extends CertManager
     {
         $key = $this->_transform_to_order_number($key);
 
-        if (!isset($this->login_name) || !isset($this->login_pw)) {
-            $this->_get_account_information();
-        }
-
         $polling_endpoint = Config::get_config('capi_collect_endpoint') .
                         "?loginName=" . $this->login_name .
                         "&loginPassword=" . $this->login_pw .
@@ -368,10 +358,6 @@ class CertManager_Online extends CertManager
     public function get_cert($key)
     {
         $key = $this->_transform_to_order_number($key);
-
-        if (!isset($this->login_name) || !isset($this->login_pw)) {
-          $this->_get_account_information();
-        }
 
         Logger::log_event(LOG_NOTICE, "Trying to retrieve certificate with order number " .
                                       $key .
@@ -444,10 +430,6 @@ class CertManager_Online extends CertManager
         $key = $this->_transform_to_order_number($key);
 
         $return_res = NULL;
-
-        if (!isset($this->login_name) || !isset($this->login_pw)) {
-          $this->_get_account_information();
-        }
 
         Logger::log_event(LOG_NOTICE, "Trying to revoke certificate with order number " .
                                       $key .
@@ -533,10 +515,6 @@ class CertManager_Online extends CertManager
     {
 
         $key = $this->_transform_to_order_number($key);
-
-        if (!isset($this->login_name) || !isset($this->login_pw)) {
-          $this->_get_account_information();
-        }
 
         switch ($browser) {
         case "firefox":
@@ -642,10 +620,6 @@ class CertManager_Online extends CertManager
 
         if (!is_null($raw_list)) {
             return $raw_list;
-        }
-
-        if (!isset($this->login_name) || !isset($this->login_pw)) {
-          $this->_get_account_information();
         }
 
         Logger::log_event(LOG_DEBUG, "Trying to get the list with the certificates " .
