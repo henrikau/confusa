@@ -11,6 +11,7 @@
 			{assign var='serial' value=$cert.serial}
 			{assign var='name' value=$cert.cert_owner}
 			{assign var='valid' value=$cert.valid_untill}
+			{assign var='revoked' value=$cert.revoked}
 			{if $standalone}
 
 				<tr>
@@ -88,7 +89,7 @@
 
 				<tr>
 				<td></td>
-				{if is_null($valid)}
+				{if is_null($valid) || $revoked === true}
 					<td>
 					[Email]
 					[Download]
@@ -150,6 +151,8 @@
 				<td></td>
 				{if is_null($valid)}
 				<td><span style="color: gray"><b>Processing pending</b></span></td>
+				{elseif $revoked === true}
+				<td><span style="color: red"><b>Revoked!!</b></span></td>
 				{else}
 				<td>{$cert.valid_untill}</td>
 				{/if}

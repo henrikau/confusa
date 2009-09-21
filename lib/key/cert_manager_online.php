@@ -236,7 +236,7 @@ class CertManager_Online extends CertManager
             $orderStatus = $params[$i . "_orderStatus"];
 
             /* don't include expired certificates */
-            if (($status == "Expired") || ($status == "Revoked") ||
+            if (($status == "Expired") ||
                 ($orderStatus == "Rejected")) {
                     continue;
             }
@@ -247,6 +247,10 @@ class CertManager_Online extends CertManager
             if (!empty($valid_untill)) {
                 $valid_untill = date('Y-m-d H:i:s', $valid_untill);
                 $res[$i-1]['valid_untill'] = $valid_untill;
+            }
+
+            if ($status == "Revoked") {
+                $res[$i-1]['revoked'] = true;
             }
 
             $res[$i-1]['order_number'] = $params[$i . '_orderNumber'];
