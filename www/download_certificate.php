@@ -29,7 +29,7 @@ final class CP_DownloadCertificate extends Content_Page
 						exit(0);
 					}
 				} catch(ConfusaGenException $cge) {
-					;
+					Framework::error_output("Could not download the certificate, server said: " . $cge->getMessage());
 				}
 			}
 		}
@@ -131,7 +131,7 @@ final class CP_DownloadCertificate extends Content_Page
 				}
 			}
 		} catch (ConfusaGenException $e) {
-			echo $e->getMessage();
+			Framework::error_output("Could not retrieve the certificate, server said: " . $e->getMessage());
 		}
 		
 		$this->tpl->assign('processingToken',  $authKey);
@@ -154,7 +154,7 @@ final class CP_DownloadCertificate extends Content_Page
 				}
 			}
 		} catch (ConfusaGenException $e) {
-			echo $e->getMessage();
+			Framework::error_output("Could not mail the certificate, server said: " . $e->getMessage());
 		}
 		$this->tpl->assign('processingResult', 'Email sent OK');
 	} /* end send_cert */
