@@ -488,14 +488,13 @@ class CertManager_Online extends CertManager
 
                 switch($status) {
                 case $STATUS_OK:
-                    Framework::message_output("Certificate with " .
-                                "order number $key successfully revoked!<br />\n");
                     $this->cacheInvalidate();
-                              Logger::log_event(LOG_NOTICE, "Revoked certificate with " .
-                                                "order number $key using Comodo's AutoRevoke " .
-                                                "API. User contacted us from " .
-                                                $_SERVER['REMOTE_ADDR']);
-                              break;
+                    Logger::log_event(LOG_NOTICE, "Revoked certificate with " .
+                                      "order number $key using Comodo's AutoRevoke " .
+                                      "API. User contacted us from " .
+                                      $_SERVER['REMOTE_ADDR']);
+                    return true;
+                    break;
                 default:
                     throw new RemoteAPIException("Received error message $data");
                     Logger::log_event(LOG_ERROR, "Revocation of certificate with " .

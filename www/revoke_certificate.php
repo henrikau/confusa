@@ -51,13 +51,18 @@ class CP_RevokeCertificate extends Content_Page
 			case 'revoke_single':
 				$order_number	= Input::sanitize($_GET['order_number']);
 				$reason		= Input::sanitize($_GET['reason']);
-				if (!isset($order_number) || !isset($reason)) {
-					Framework::error_output("Revoke Certificate: Errors with parameters, not set properly");
-				}
-				elseif (!$this->certManager->revoke_cert($order_number, $reason)) {
-					Framework::error_output("Cannot revoke yet ($order_number) for supplied reason: $reason");
-				} else {
-					Framework::message_output("Certificate ($order_number) successfully revoked.");
+				try {
+					if (!isset($order_number) || !isset($reason)) {
+						Framework::error_output("Revoke Certificate: Errors with parameters, not set properly");
+					}
+					elseif (!$this->certManager->revoke_cert($order_number, $reason)) {
+						Framework::error_output("Cannot revoke yet ($order_number) for supplied reason: $reason");
+					} else {
+						Framework::message_output("Certificate ($order_number) successfully revoked.");
+					}
+				} catch (ConfusaGenException $cge) {
+					Framework::error_message("Revocation failed, the following problem was reported: " .
+											$cge->getMessage());
 				}
 				break;
 
