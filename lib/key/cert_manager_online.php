@@ -46,29 +46,28 @@ class CertManager_Online extends CertManager
         parent::__construct($pers);
     }
 
-    /*
+    /**
      * Get username and password for the remote-CA account of the
-     * (institution of) the managed person.
+     * (NREN of) the managed person.
      */
     private function _get_account_information() {
         $login_cred_query = "SELECT a.account_login_name, a.account_password, a.account_ivector, a.ap_name " .
-              "FROM nren_account_map_view a, nren_subscriber_view s " .
-              "WHERE s.subscriber = ? AND s.nren = a.nren";
+              "FROM nren_account_map_view a WHERE a.nren=?";
 
-        $org = $this->person->getSubscriberOrgName();
+        $nren = $this->person->getNREN();
         Logger::log_event(LOG_INFO, "Getting the remote-CA login " .
-                          "credentials for organization " .
-                          $this->person->getSubscriberOrgName()
+                          "credentials for NREN " .
+                          $this->person->getNREN()
                 );
         $res = MDB2Wrapper::execute($login_cred_query, array('text'),
-                                    array($org)
+                                    array($nren)
         );
 
         if (count($res) != 1) {
-		Logger::log_event(LOG_NOTICE, "Could not extract the suitable remote CA credentials for organization $org!");
-		throw new DBQueryException("Could not extract the suitable " .
-					   "remote CA credentials for organization $org!"
-			);
+            Logger::log_event(LOG_NOTICE, "Could not extract the suitable remote CA credentials for NREN $nren!");
+            throw new DBQueryException("Could not extract the suitable " .
+                           "remote CA credentials for NREN $nren!"
+                );
         }
 
         $this->login_name = $res[0]['account_login_name'];
