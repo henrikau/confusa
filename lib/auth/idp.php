@@ -91,19 +91,17 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	}
 
 	/**
-	 * Use the subsystem to perform a single logout (SLO)
+	 * Use the subsystem to perform a single logout (SLO).
+	 *
+	 * For those IdPs with which single logout does not work, try to use the
+	 * IdP-specific mechanisms, but fallback on SingleLogout for all other
+	 * scenarios
+	 *
+	 * @param $logout_loc string the location to which the user will be
+	 * redirected after logout
+	 * @return void
 	 */
 	public function deAuthenticateUser($logout_loc = 'logout.php')
-	{
-		$base_url = $this->person->getSAMLConfiguration()->getBaseURL();
-		$relay = Config::get_config('server_url') . $logout_loc;
-		if ($this->person->isAuth()) {
-			SimpleSAML_Utilities::redirect('/' . $base_url . 'saml2/sp/initSLO.php',
-											array('RelayState' => $relay));
-		}
-	}
-
-	public function softLogout()
 	{
 	    if(isset($this->session)) {
 		    /* adapt to HAKA */
@@ -129,11 +127,12 @@ class Confusa_Auth_IdP extends Confusa_Auth
 
 	    if (isset($logout_url) && $logout_url != "")
 	    {
-		    $base_url = $this->person->getSAMLConfiguration()->getBaseURL();
-		    $relay = Config::get_config('server_url') . $SERVER['PHP_SELF'];
-		    SimpleSAML_Utilities::redirect('/' . $base_url . 'saml2/sp/initSLO.php', array('RelayState' => $relay));
+			$base_url = $this->person->getSAMLConfiguration()->getBaseURL();
+			$relay = Config::get_config('server_url') . $logout_url;
+			SimpleSAML_Utilities::redirect('/' . $base_url . 'saml2/sp/initSLO.php',
+											array('RelayState' => $relay));
 	    }
-	} /* end softLogout */
+	} /* end deAuthenticateUser */
 
 	/**
 	 * Poll the subsystem for user authentication

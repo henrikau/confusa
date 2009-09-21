@@ -239,13 +239,6 @@ abstract class Confusa_Auth
 	 * @return void
 	 */
 	public abstract function deAuthenticateUser();
-
-	/**
-	 * softLogout() - try to bump the authenticated session to force re-authN.
-	 *
-	 * @return void
-	 */
-	public abstract function softLogout();
 }
 
 /**
