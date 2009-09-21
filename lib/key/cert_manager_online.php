@@ -113,7 +113,10 @@ class CertManager_Online extends CertManager
         $session = $this->person->getSession();
         /* session can be null, e.g. when in auth_bypass mode */
         if (isset($session)) {
-            $session->setData('array','rawCertList', $raw_list, NULL);
+            $session->setData('array',
+                              'rawCertList',
+                              $raw_list,
+                              SimpleSAML_Session::DATA_TIMEOUT_LOGOUT);
         }
     }
 
