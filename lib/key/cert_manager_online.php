@@ -336,13 +336,7 @@ class CertManager_Online extends CertManager
                         "&orderNumber=" . $key .
                         "&queryType=0";
 
-        $ch = curl_init($polling_endpoint);
-        curl_setopt($ch, CURLOPT_HEADER,0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-        $data=curl_exec($ch);
-        curl_close($ch);
+		$data = $this->curlContact($polling_endpoint);
 
         if ($data == 1) {
             return true;
@@ -378,13 +372,7 @@ class CertManager_Online extends CertManager
                             "&queryType=2" .
                             "&responseMimeType=application/x-x509-user-cert";
 
-        $ch = curl_init($collect_endpoint);
-        curl_setopt($ch, CURLOPT_HEADER,0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-        $data=curl_exec($ch);
-        curl_close($ch);
+		$data = $this->curlContact($collect_endpoint);
 
         $STATUS_PEND="0";
         $STATUS_OK="2";
@@ -401,19 +389,12 @@ class CertManager_Online extends CertManager
             return null;
         default:
             /* extract the error status code which is longer than one character */
-            $pos = stripos($data, "\n");
+            $error_parts = explode("\n", $data, 2);
 
-            /* potential error: no newline in response */
-            if ($pos === FALSE) {
-                $msg = "Received an unexpected response from the remote API!\n" .
-                       "Maybe Confusa is not properly configured?<br />\n";
-                throw new RemoteAPIException($msg);
-            }
-
-            $status = substr($data,0,$pos);
             /* potential error: response does not contain status code */
-            if(is_numeric($status)) {
-              throw new RemoteAPIException("Received error message $data\n");
+            if(is_numeric($error_parts[0])) {
+				$msg = $this->capiErrorMessage($error_parts[0], $error_parts[1]);
+				throw new RemoteAPIException("Received error message $data $msg\n");
             } else {
               $msg = "Received an unexpected response from the remote API!n" .
                      "Maybe Confusa is not properly configured?\n";
@@ -471,36 +452,35 @@ class CertManager_Online extends CertManager
                                         "Check Confusa configuration!\n"
             );
         } else {
-            $pos = stripos($data, "\n");
+			$error_parts = explode("\n", $data, 2);
+			$STATUS_OK = "0";
 
-            if ($pos == FALSE) {
-                throw new RemoteAPIException("Response from RevokeAPI unexpected! " .
-                                             "Check Confusa configuration\n."
-                );
-            } else {
-                $STATUS_OK = "0";
+			if (!is_numeric($error_parts[0])) {
+				throw new RemoteAPIException("Received an unexpected response from " .
+											"the remote API. Probably Confusa is " .
+											"misconfigured! Please contact an " .
+											"administrator!");
+			}
 
-                $status = substr($data, 0, $pos);
-
-                switch($status) {
-                case $STATUS_OK:
-                    $this->cacheInvalidate();
-                    Logger::log_event(LOG_NOTICE, "Revoked certificate with " .
-                                      "order number $key using Comodo's AutoRevoke " .
-                                      "API. User contacted us from " .
-                                      $_SERVER['REMOTE_ADDR']);
-                    return true;
-                    break;
-                default:
-                    throw new RemoteAPIException("Received error message $data");
-                    Logger::log_event(LOG_ERROR, "Revocation of certificate with " .
-                                     "order_number $key failed! User contacted us from " .
-                                     $_SERVER['REMOTE_ADDR']);
-                    break;
-                }
-            }
-        }
-    }
+			switch($error_parts[0]) {
+			case $STATUS_OK:
+				$this->cacheInvalidate();
+				Logger::log_event(LOG_NOTICE, "Revoked certificate with " .
+								  "order number $key using Comodo's AutoRevoke " .
+								  "API. User contacted us from " .
+								  $_SERVER['REMOTE_ADDR']);
+				return true;
+				break;
+			default:
+				$msg = $this->capiErrorMessage($error_parts[0], $error_parts[1]);
+				throw new RemoteAPIException("Received error message $data. $msg");
+				Logger::log_event(LOG_ERROR, "Revocation of certificate with " .
+								 "order_number $key failed! User contacted us from " .
+								 $_SERVER['REMOTE_ADDR']);
+				break;
+			}
+		}
+	}
 
     /**
      * Get the certificate with key $key in a deployable from for the specified
@@ -538,13 +518,7 @@ class CertManager_Online extends CertManager
                                 /* call that function after the JS variable-declarations */
                                 "&callbackFunctionName=installCertificate";
 
-            $ch = curl_init($collect_endpoint);
-            curl_setopt($ch, CURLOPT_HEADER,0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-            $data=curl_exec($ch);
-            curl_close($ch);
+			$data = $this->curlContact($collect_endpoint);
             return "<script type=\"text/javascript\">$data</script>";
             break;
 
@@ -559,13 +533,8 @@ class CertManager_Online extends CertManager
                                 "&responseMimeType=text/javascript" .
                                 /* call that function after the JS variable-declarations */
                                 "&callbackFunctionName=installCertificate";
-            $ch = curl_init($collect_endpoint);
-            curl_setopt($ch, CURLOPT_HEADER,0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-            $data=curl_exec($ch);
-            curl_close($ch);
+
+			$data = $this->curlContact($collect_endpoint);
             return "<script type=\"text/javascript\">$data</script>";
             break;
 
@@ -580,13 +549,8 @@ class CertManager_Online extends CertManager
                                 "&responseMimeType=text/javascript" .
                                 /* call that function after the JS variable-declarations */
                                 "&callbackFunctionName=installCertificate";
-            $ch = curl_init($collect_endpoint);
-            curl_setopt($ch, CURLOPT_HEADER,0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-            $data=curl_exec($ch);
-            curl_close($ch);
+
+			$data = $this->curlContact($collect_endpoint);
             return "<script type=\"text/javascript\">$data</script>";
             break;
 
@@ -599,13 +563,7 @@ class CertManager_Online extends CertManager
                                     "&responseType=3" . /* PKCS#7 */
                                     "&responseEncoding=0"; /* encode base-64 */
 
-            $ch = curl_init($collect_endpoint);
-            curl_setopt($ch, CURLOPT_HEADER,0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-            $data=curl_exec($ch);
-            curl_close($ch);
+			$data = $this->curlContact($collect_endpoint);
             return trim(substr($data,2));
             break;
 
@@ -636,34 +594,26 @@ class CertManager_Online extends CertManager
         $postfields_list["loginName"]		= $this->login_name;
         $postfields_list["loginPassword"]	= $this->login_pw;
         $postfields_list["commonName"]		= $this->TEST_CN_PREFIX . $common_name;
-        $ch = curl_init($list_endpoint);
 
-        curl_setopt($ch, CURLOPT_HEADER,0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-        curl_setopt($ch, CURLOPT_POST,1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_list);
-        $data=curl_exec($ch);
-        curl_close($ch);
-
+        $data = $this->curlContact($list_endpoint, "post", $postfields_list);
         $params=array();
         parse_str($data, $params);
 
         if (!isset($params['errorCode'])) {
-		$msg  = "Unexpected response from remote endpoint. ";
-		$msg .= "Perhaps some configuration-switch is not properly set.";
-		$msg .= "Server gave no error-code.";
-		throw new RemoteAPIException($msg);
+			$msg  = "Unexpected response from remote endpoint. ";
+			$msg .= "Perhaps some configuration-switch is not properly set.";
+			$msg .= "Server gave no error-code.";
+			throw new RemoteAPIException($msg);
         }
 
         if ($params['errorCode'] == "0") {
             $this->cacheInsertList($params);
             return $params;
         } else {
+			$msg = $this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
             throw new RemoteAPIException("Received error when trying to list " .
                                          "certificates from the remote-API: " .
-                                         $params['errorMessage']
+                                         $params['errorMessage'] . $msg
             );
         }
     }
@@ -716,15 +666,7 @@ class CertManager_Online extends CertManager
         $postfields_sign_req["subject_domainComponent_5"] = "terena";
         $postfields_sign_req["subject_domainComponent_6"] = "org";
 
-        $ch = curl_init($sign_endpoint);
-        curl_setopt($ch, CURLOPT_HEADER,0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2);
-        curl_setopt($ch, CURLOPT_POST,1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$postfields_sign_req);
-        $data=curl_exec($ch);
-        curl_close($ch);
+		$data = $this->curlContact($sign_endpoint, "post", $postfields_sign_req);
 
         $params=array();
         parse_str($data, $params);
@@ -734,7 +676,8 @@ class CertManager_Online extends CertManager
          */
         if (isset($params['errorCode'])) {
             $msg = "Received an error when uploading the CSR to the remote CA: " .
-                $params['errorMessage'] . " " . $params['errorItem'] . "\n";
+                $params['errorMessage'] . " " . $params['errorItem'] .
+				$this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
             throw new RemoteAPIException($msg);
         }
 
@@ -766,6 +709,92 @@ class CertManager_Online extends CertManager
                             $this->order_number));
         } /* end _capi_upload_csr */
     }
+
+	/**
+	 * Send a POST message containing $postData to the endpoint in $url
+	 *
+	 * @param $url string the endpoint to which the POST message should be sent
+	 * @param $method string whether GET or POST should be used to conact the
+	 * 				remote site
+	 * @param $postData array the POST variables that are to be send
+	 *
+	 * @return string the result of the communication
+	 */
+	private function curlContact($url, $method="get", $postData=null)
+	{
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+
+		if ($method == "post") {
+			curl_setopt($ch, CURLOPT_POST,1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+		}
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $data = curl_exec($ch);
+		$status = curl_errno($ch);
+        curl_close($ch);
+
+		if ($status != 0) {
+			throw new RemoteAPIException("Could not connect properly to remote API " .
+										"endpoint $url! Maybe the Confusa instance is misconfigured? " .
+										"Please contact an administrator!");
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Return a textual and user-understandable message for common remote-API
+	 * errors.
+	 *
+	 * @param $errorCode int a usually 2-3 digits long error code returned by the Comodo API
+	 * @return string a verbose message corresponding to the error code
+	 */
+	private function capiErrorMessage($errorCode, $errorMessage)
+	{
+		$msg = "";
+
+		switch($errorCode) {
+		case "-3":
+		case "-4":
+			if (strpos($errorMessage, "loginPassword") !== FALSE ||
+				strpos($errorMessage, "loginName") !== FALSE ||
+				strpos($errorMessage, "ap") !== FALSE) {
+					$msg .= "<br /><br />Probably this error message means that something is wrong ";
+					$msg .= "with the credentials with which Confusa connects to the remote CA.";
+					$msg .= " The credentials are defined per NREN, ";
+					$msg .= "in your case for " . $this->person->getNREN() . ".";
+					$msg .= " Please ask an administrator to configure this properly.";
+			}
+			break;
+		case "-16":
+			$msg .= "<br /><br />Probably this error message means that something is wrong ";
+			$msg .= "with the credentials with which Confusa connects to the remote CA.";
+			$msg .= " The credentials are defined per NREN, ";
+			$msg .= "in your case for " . $this->person->getNREN() . ".";
+			$msg .= " Please ask an administrator to configure this properly.";
+			break;
+		case "-13":
+			$msg .= "<br /><br />You created a certificate with a non-standard keysize! Please ";
+			$msg .= "create your certificate requests with a keysize of " . Config::get_config('key_length');
+			$msg .= " bits!";
+			break;
+		case "-20":
+			$msg .= "<br /><br />Your certificate request has been rejected, either by mistake ";
+			$msg .= "or because you are not entitled to get certificates. Please contact an ";
+			$msg .= "administrator.";
+			break;
+		case "-21":
+			$msg .= "<br /><br />The certificate has been revoked, either by yourself or an ";
+			$msg .= "administrator. You can not use it anymore and you should not download it ";
+			$msg .= "anymore!";
+			break;
+		}
+
+		return $msg;
+	}
 
     /**
      * Check if key $auth_key is an order-number or an authvar.
@@ -809,18 +838,11 @@ class CertManager_Online extends CertManager
     {
         $authorize_endpoint = Config::get_config('capi_auth_endpoint');
 
-        $ch = curl_init($authorize_endpoint);
         $postfields_auth = array();
         $postfields_auth["loginName"] = $this->login_name;
         $postfields_auth["loginPassword"] = $this->login_pw;
         $postfields_auth["orderNumber"] = $this->order_number;
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_POST,1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_auth);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $data = curl_exec($ch);
-        curl_close($ch);
+		$data = $this->curlContact($authorize_endpoint, "post", $postfields_auth);
 
         /* the only formal restriction we have is if the API returns 0 for the query */
         if (substr($data,0,1) == "0") {
@@ -837,6 +859,8 @@ class CertManager_Online extends CertManager
         } else {
             $msg = "Received an error when authorizing the CSR with orderNumber " .
                    $this->order_number . $data . "\n";
+				   $error_parts = explode("\n", $data, 2);
+			$msg .= $this->capiErrorMessage($error_parts[0], $error_parts[1]);
             throw new RemoteAPIException($msg);
         }
 
