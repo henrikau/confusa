@@ -191,6 +191,14 @@ class Person{
 	    return $dn;
     }
 
+	/**
+	 * Return the DN of the person, but in a more "browser-friendly" format,
+	 * i.e. separated by commas in the form of C=SE, O=EvilMasterminds, CN= Dr. Evil
+	 * instead of /C=SE/O=EvilMastermindes/CN=Dr. Evil
+	 *
+	 * This is needed for in-browser request signing
+	 * @return string the DN in comma-separated format
+	 */
     function getBrowserFriendlyDN()
     {
 	$dn = "";
