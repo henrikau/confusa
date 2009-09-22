@@ -103,10 +103,15 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	 */
 	public function deAuthenticateUser($logout_loc = 'logout.php')
 	{
+
+		$soft=false;
+		$logout_url="";
+
 	    if(isset($this->session)) {
 		    /* adapt to HAKA */
 		    $attribs = $this->session->getAttributes();
 		    if (isset($attribs['urn:mace:funet.fi:haka:logout-url'])) {
+				$soft=true;
 			    $logout_url = $attribs['urn:mace:funet.fi:haka:logout-url'];
 			    $safecounter = 10;
 			    while ($safecounter > 0 && is_array($logout_url)) {
@@ -122,13 +127,15 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	    if (isset($_SESSION)) {
 		    session_destroy();
 	    }
-	    $this->person->isAuth(false);
-	    $this->person->clearAttributes();
+		$this->person->isAuth(false);
+		$base_url = $this->person->getSAMLConfiguration()->getBaseURL();
+		$this->person->clearAttributes();
 
-	    if (isset($logout_url) && $logout_url != "")
-	    {
-			$base_url = $this->person->getSAMLConfiguration()->getBaseURL();
-			$relay = Config::get_config('server_url') . $logout_url;
+		/*
+		 * If we are to perform soft logout, a logout_url must be set
+		 */
+		if (!$soft || !isempty($logout_url)) {
+			$relay = Config::get_config('server_url') . $logout_loc;
 			SimpleSAML_Utilities::redirect('/' . $base_url . 'saml2/sp/initSLO.php',
 											array('RelayState' => $relay));
 	    }
