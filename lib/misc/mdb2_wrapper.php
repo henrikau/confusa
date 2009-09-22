@@ -23,7 +23,7 @@ require_once 'pw.php';
 class MDB2Wrapper
 {
      private static $conn;
-     private static $connCounter;
+     private static $connCounter = 0;
      /* public static execute()
       *
       * params:
