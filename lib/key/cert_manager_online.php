@@ -52,6 +52,12 @@ class CertManager_Online extends CertManager
      * (NREN of) the managed person.
      */
     private function getAccountInformation() {
+
+		/* can only get the account if we have NREN information */
+		if (is_null($this->person->getNREN())) {
+			return;
+		}
+
         $login_cred_query = "SELECT a.account_login_name, a.account_password, a.account_ivector, a.ap_name " .
               "FROM nren_account_map_view a WHERE a.nren=?";
 
