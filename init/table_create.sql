@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- Code according to ISO 639-1, with possible annotation like in de-AT, en-US
     lang VARCHAR(5),
     -- an e-mail-address of somebody who will receive notifications for the NREN
-    contact VARCHAR(30) NOT NULL,
+    contact VARCHAR(30),
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) type=InnoDB;
 
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS subscribers (
     -- overrides NREN's preferred language for a certain user
     lang VARCHAR(5),
     -- an e-mail address of somebody who will receive notifications for the subscriber
-    contact VARCHAR(30) NOT NULL,
+    contact VARCHAR(30),
     FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
 
