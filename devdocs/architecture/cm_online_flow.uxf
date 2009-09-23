@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><umlet_diagram><help_text>// Uncomment the following line to change the fontsize:
+// fontsize=14
+
+// Welcome to UMLet!
+//
+// Double-click on UML elements to add them to the diagram.
+// Edit element properties by modifying the text in this panel.
+// Edit the files in the 'palettes' directory to create your own element palettes.
+// Hold down Ctrl to select multiple elements.
+// Press Del to delete elements.
+// Press Ctrl-c to copy an element, and to store the whole UML diagram to the system clipboard.
+// Select "Custom elements &gt; New..." to create new element types.
+//
+// This text will be stored with each diagram;  use it for notes.</help_text><element><type>com.umlet.element.base.Class</type><coordinates><x>50</x><y>160</y><w>520</w><h>50</h></coordinates><panel_attributes>CertManager_Online
+--
++sign_key()
+
+</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>50</x><y>380</y><w>530</w><h>30</h></coordinates><panel_attributes>Process_CSR</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>50</x><y>480</y><w>530</w><h>30</h></coordinates><panel_attributes>Browser</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>42</x><y>389</y><w>76</w><h>111</h></coordinates><panel_attributes>lt=&lt;-
+1 CSR</panel_attributes><additional_attributes>38;20;38;91</additional_attributes></element><element><type>com.umlet.element.base.Class</type><coordinates><x>50</x><y>290</y><w>120</w><h>30</h></coordinates><panel_attributes>csr_lib.php</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>14</x><y>299</y><w>132</w><h>101</h></coordinates><panel_attributes>lt=&lt;-
+2 test content
+match DN</panel_attributes><additional_attributes>66;20;66;81</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>128</x><y>299</y><w>44</w><h>101</h></coordinates><panel_attributes>lt=&lt;-
+3</panel_attributes><additional_attributes>22;81;22;20</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>151</x><y>259</y><w>98</w><h>141</h></coordinates><panel_attributes>lt=&lt;-
+4
+insert
+auth_key</panel_attributes><additional_attributes>49;20;49;121</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>218</x><y>259</y><w>44</w><h>141</h></coordinates><panel_attributes>lt=&lt;-
+5</panel_attributes><additional_attributes>22;121;22;20</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>181</x><y>389</y><w>98</w><h>111</h></coordinates><panel_attributes>lt=&lt;-
+6
+show
+auth_key</panel_attributes><additional_attributes>49;91;49;20</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>261</x><y>389</y><w>98</w><h>111</h></coordinates><panel_attributes>lt=&lt;-
+7
+approve
+auth_key</panel_attributes><additional_attributes>49;20;49;91</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>221</x><y>259</y><w>98</w><h>141</h></coordinates><panel_attributes>lt=&lt;-
+8
+delete
+auth_key</panel_attributes><additional_attributes>49;20;49;121</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>285</x><y>189</y><w>130</w><h>211</h></coordinates><panel_attributes>lt=&lt;-
+9 sign_key
+csr+auth_key</panel_attributes><additional_attributes>65;20;65;191</additional_attributes></element><element><type>com.umlet.element.base.Note</type><coordinates><x>470</x><y>530</y><w>110</w><h>40</h></coordinates><panel_attributes>auth_key=
+pubkey_hash</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>50</x><y>40</y><w>520</w><h>30</h></coordinates><panel_attributes>Comodo API</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>308</x><y>49</y><w>104</w><h>131</h></coordinates><panel_attributes>lt=&lt;-
+10 upload</panel_attributes><additional_attributes>52;20;52;111</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>375</x><y>49</y><w>90</w><h>131</h></coordinates><panel_attributes>lt=&lt;-
+11
+order
+number</panel_attributes><additional_attributes>45;111;45;20</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>404</x><y>189</y><w>52</w><h>81</h></coordinates><panel_attributes>lt=&lt;-
+12</panel_attributes><additional_attributes>26;61;26;20</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>439</x><y>49</y><w>102</w><h>131</h></coordinates><panel_attributes>lt=&lt;-
+13
+authorize</panel_attributes><additional_attributes>51;20;51;111</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>503</x><y>50</y><w>54</w><h>130</h></coordinates><panel_attributes>lt=&lt;-
+14</panel_attributes><additional_attributes>27;110;27;20</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>475</x><y>190</y><w>110</w><h>80</h></coordinates><panel_attributes>lt=&lt;-
+14
+authorized</panel_attributes><additional_attributes>55;60;55;20</additional_attributes></element><element><type>com.umlet.element.base.Class</type><coordinates><x>160</x><y>250</y><w>150</w><h>30</h></coordinates><panel_attributes>DB::csr_cache</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>410</x><y>250</y><w>150</w><h>30</h></coordinates><panel_attributes>DB::order_store</panel_attributes><additional_attributes/></element></umlet_diagram>
