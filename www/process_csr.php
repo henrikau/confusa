@@ -152,7 +152,10 @@ final class CP_ProcessCsr extends Content_Page
 							    array($csr));
 				if (count($res)>0) {
 					Framework::error_output("CSR already present in the database, no need for second upload");
-				} else if (test_content($csr, $authvar) && match_dn($subject, $this->person)) {
+				/* match the DN only when in standalone mode, no need to do it in online mode */
+				} else if (test_content($csr, $authvar) &&
+						 (Config::get_config('ca_mode') == CA_ONLINE ||
+						 match_dn($subject, $this->person))) {
 					$ip	= $_SERVER['REMOTE_ADDR'];
 					$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
 					$query .= " common_name, auth_key)";
