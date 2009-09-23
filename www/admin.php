@@ -489,7 +489,7 @@ class CP_Admin extends Content_Page
 
 		Logger::log_event(LOG_NOTICE, "Admin: NREN admin $admin downgraded his/her status to subscriber admin of " .
 						"subscriber $subscriber");
-		Framework::message_ouput("Downgraded you to subscriber admin of subscriber $subscriber");
+		Framework::message_output("Downgraded you to subscriber admin of subscriber $subscriber");
 	}
 
 	/*
