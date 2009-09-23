@@ -1,13 +1,17 @@
 <?php
 require_once 'confusa_include.php';
-require_once('content_page.php');
-require_once('framework.php');
+require_once 'content_page.php';
+require_once 'framework.php';
+require_once 'translator.php';
+require_once 'mdb2_wrapper.php';
 
 class CP_NREN_Subs_Settings extends Content_Page
 {
 	function __construct()
 	{
 		parent::__construct("NREN_Subs_Settings", true);
+		$available_languages = Config::get_config('language.available');
+		$this->full_names = Translator::getFullNamesForISOCodes($available_languages);
 	}
 
 	public function pre_process($person)
@@ -33,17 +37,49 @@ class CP_NREN_Subs_Settings extends Content_Page
 
 				break;
 			}
-		}
+		} else if (isset($_POST['language_operation'])) {
+				switch ($_POST['language_operation']) {
+					case 'update':
+						if (isset($_POST['language'])) {
+							$new_language = Input::sanitize($_POST['language']);
+
+							if ($person->isSubscriberAdmin()) {
+								$this->updateSubscriberLanguage($person->getSubscriberOrgName(),
+																$new_language);
+							} else if ($person->isNRENAdmin()) {
+								$this->updateNRENLanguage($person->getNREN(),
+														  $new_language);
+							}
+						}
+
+						break;
+
+					default:
+						Framework::error_output("Unknown operation");
+						break;
+				}
+			} else {
+				return;
+			}
 	}
 
 	public function process()
 	{
 		if ($this->person->isNRENAdmin()) {
 			$contact = $this->getNRENContact($this->person->getNREN());
+			$current_language = $this->getNRENLanguage($this->person->getNREN());
 		} else {
 			$contact = $this->getSubscriberContact($this->person->getSubscriberOrgName());
+			$current_language = $this->getSubscriberLanguage($this->person->getSubscriberOrgName());
 		}
 
+		if (is_null($current_language)) {
+			$current_language = Config::get_config('language.default');
+		}
+
+		$this->tpl->assign('languages', $this->full_names);
+		$this->tpl->assign('current_language', $current_language);
+		$this->tpl->assign('language_codes', array_keys($this->full_names));
 		$this->tpl->assign('contact', $contact);
 		$this->tpl->assign('content', $this->tpl->fetch('nren_subs_settings.tpl'));
 	}
@@ -170,6 +206,119 @@ class CP_NREN_Subs_Settings extends Content_Page
 								"to $contact.");
 		Logger::log_event(LOG_DEBUG, "[sadm] Updated contact for subscriber $subscriber to $contact");
 	} /* end updateSubscriberContact */
+
+	/**
+	 * Update the default language for a NREN
+	 *
+	 * @param $nren string The name of the NREN
+	 * @param $new_language string the ISO 639-1 code for the new default language of the NREN
+	 */
+	private function updateNRENLanguage($nren, $new_language)
+	{
+		$query = "UPDATE nrens SET lang=? WHERE name=?";
+
+		try {
+			MDB2Wrapper::update($query,
+								array('text','text'),
+								array($new_language, $nren));
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_NOTICE, "Updating the language to $new_language " .
+							"failed for NREN $nren. Error was: " . $dbqe->getMessage());
+			Framework::error_output("Updating the language to $new_language for your " .
+									"NREN $nren failed, probably due to problems with " .
+									"the supplied data. Server said: " . $dbqe->getMessage());
+			return;
+		} catch (DBStatementException $dbse) {
+			Logger::log_event(LOG_NOTICE, "Updating the language to $new_language " .
+							"failed for NREN $nren. Error was: " . $dbse->getMessage());
+			Framework::error_output("Updating the language to $new_language for your " .
+									"NREN $nren failed, probably due to problems with the " .
+									"server configuration! Server said: " . $dbse->getMessage());
+			return;
+		}
+
+		Logger::log_event(LOG_DEBUG, "Default language changed to $new_language for NREN $nren");
+		Framework::success_output("Default language for your NREN successfully changed to " .
+									$this->full_names[$new_language]);
+	} /* end updateNRENLanguage */
+
+	/**
+	 * Update the default language for a subscriber
+	 *
+	 * @param $nren string The name of the subscriber
+	 * @param $new_language string the ISO 639-1 code for the new default language of the subscriber
+	 */
+	private function updateSubscriberLanguage($subscriber, $new_language)
+	{
+		$query = "UPDATE subscribers SET lang=? WHERE name=?";
+
+		try {
+			MDB2Wrapper::update($query,
+								array('text', 'text'),
+								array($new_language, $subscriber));
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_NOTICE, "Updating the language to $new_language " .
+							 "failed for subscriber $subscriber. Error was: " . $dbqe->getMessage());
+			Framework::error_output("Updating the language to $new_language failed " .
+									"for subscriber $subscriber, probably due to problems " .
+									"with the supplied data. Server said: " . $dbqe->getMessage());
+			return;
+		} catch (DBStatementException $dbse) {
+			Logger::log_event(LOG_NOTICE, "Updating the language to $new_language " .
+							"faield for subscriber $subscriber. Error was: " . $dbse->getMessage());
+			Framework::error_output("Updating the language to $new_language failed " .
+									"for subscriber $subscriber, probably due to problems " .
+									"with the server configuration. Server said: " . $dbse->getMessage());
+			return;
+		}
+
+		Logger::log_event(LOG_DEBUG, "Default language changed to $new_language for " .
+							"subscriber $subscriber");
+		Framework::success_output("Default language for your subscriber successfully changed to " .
+									$this->full_names[$new_language]);
+	} /* end updateSubscriberLanguage */
+
+	/**
+	 * Get the default language for a certain NREN
+	 *
+	 * @param $nren string The name of the NREN
+	 * @return string The ISO-631-1 language code of the NREN's language
+	 */
+	private function getNRENLanguage($nren)
+	{
+		$query = "SELECT lang FROM nrens WHERE name=?";
+
+		try {
+			$res = MDB2Wrapper::execute($query,
+										array('text'),
+										array($nren));
+		} catch (ConfusaGenException $cge) {
+			Framework::warning_output("Could not get the default language for NREN $nren!");
+		}
+
+		return $res[0]['lang'];
+	} /* end getNRENLanguage */
+
+	/**
+	 * Get the default language for a certain subscriber
+	 *
+	 * @param $subscriber The name of the subscriber whose language should be updated
+	 */
+	private function getSubscriberLanguage($subscriber)
+	{
+		$query = "SELECT lang FROM subscribers WHERE name=?";
+
+		try {
+			$res = MDB2Wrapper::execute($query,
+										array('text'),
+										array($subscriber));
+		} catch (ConfusaGenException $cge) {
+			Framework::warning_output("Could not get the default language for subscriber " .
+									"$subscriber!");
+		}
+
+		return $res[0]['lang'];
+	} /* end getSubscriberLanguage */
 }
 
 $fw = new Framework(new CP_NREN_Subs_Settings());

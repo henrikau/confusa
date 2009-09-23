@@ -23,13 +23,11 @@
 	<li><a href="revoke_certificate.php">Revoke certificates</a></li>
 	<li><a href="admin.php">Subscriber Admins</a></li>
 	<li><a href="robot.php">Robot Interface</a></li>
-	<li><a href="language_selector.php">Language</a></li>
 	<li><a href="nren_subs_settings.php">Subscriber settings</a></li>
 	{elseif $person->isNRENAdmin()}
 	<li><a href="admin.php">Admins</a></li>
 	<li><a href="nren_admin.php">Subscribers</a></li>
 	<li><a href="stylist.php?show=text">Appearance</a></li>
-	<li><a href="language_selector.php">Language</a></li>
 	<li><a href="nren_subs_settings.php">NREN settings</a></li>
 
 	{if $is_online === TRUE}
