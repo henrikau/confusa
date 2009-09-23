@@ -18,8 +18,8 @@ require_once 'config.php';
  */
 
 echo "Running " . $argv[0] . " to bootstrap the database with values\n";
-if ($argc === 3) {
-	insert_nren_admin($argv[1], $argv[2]);
+if ($argc === 4) {
+	insert_nren_admin($argv[1], $argv[2], $argv[3]);
 }
 else {
 	show_help($argv);
@@ -58,23 +58,29 @@ function get_nren_id($nren_name) {
  * @param $nren_name the name of the nren to use.
  * @param $principal eduPersonPrincipalName or similar unique identifier for the
  *			administrator that is to be added
+ * @param $contact An e-mail address at the NREN which can be contacted if contact
+ * 	is necessary
  */
-function insert_nren_admin($nren_name, $principal)
+function insert_nren_admin($nren_name, $principal, $contact)
 {
 
 	$res = get_nren_id($nren_name);
 
 	if (count($res) == 0) {
-		$statement = "INSERT INTO nrens(name) VALUES(?)";
+		$statement = "INSERT INTO nrens(name, contact) VALUES(?,?)";
 
 		try {
-			MDB2Wrapper::update($statement, array('text'), array($nren_name));
+			MDB2Wrapper::update($statement,
+								array('text', 'text'),
+								array($nren_name, $contact));
+
 			$res = get_nren_id($nren_name);
 		} catch (DBStatementException $dbse) {
 			echo "Could not insert the NREN $nren_name into the DB! Internal error was " . $dbse->getMessage();
 			exit(5);
 		} catch (DBQueryException $dbqe) {
-			echo "Could not insert the NREN $nren_name into the DB! Problem was: " . $dbqe->getMessage();
+			echo "Could not insert the NREN $nren_name into the DB! " .
+			"Does the NREN already exist? Problem was: " . $dbqe->getMessage();
 			exit(5);
 		}
 	}
@@ -97,5 +103,6 @@ function show_help($argv)
 {
 	echo "Usage: " . $argv[0] . " <nren_name> <principal>\n";
 	echo "\tnren_name:\tThe name of the NREN, e.g. UNINETT\n";
-	echo "\tprincipal:\teduPersonPrincipalName or another unique identifier for \n\t\t\ta new NREN-admin\n";
+	echo "\tprincipal:\teduPersonPrincipalName or another unique identifier for \n\t\t\tan initial NREN-admin\n";
+	echo "\tcontact:\tA contact information for the NREN\n";
 }
