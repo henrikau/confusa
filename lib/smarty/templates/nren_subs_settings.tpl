@@ -1,4 +1,4 @@
-{if $person->isAdmin() && ($person->isNRENAdmin() || $person->isSubscriberAdmin())}
+{if $person->inAdminMode() && ($person->isNRENAdmin() || $person->isSubscriberAdmin())}
 
 <div class="spacer"></div>
 <fieldset>
@@ -21,7 +21,6 @@ that is tied to a person or more persons that may be able to react if they recei
 from Confusa. For instance, Confusa might contact this address in case of critical errors or to
 notify you of mass-revocation of certificates.
 </p>
-
 {/if}
 <br />
 Contact-email:
