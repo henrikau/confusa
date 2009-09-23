@@ -22,7 +22,7 @@ if ($argc === 4) {
 	insert_nren_admin($argv[1], $argv[2], $argv[3]);
 }
 else {
-	show_help($argv);
+	echo "Please call that file from the corresponding shellscript!\n";
 	exit(5);
 }
 
@@ -97,12 +97,4 @@ function insert_nren_admin($nren_name, $principal, $contact)
 	} catch (DBQueryException $dbqe) {
 		echo "Could not insert admin $prinipal into the DB! Problem was: " . $dbqe->getMessage();
 	}
-}
-
-function show_help($argv)
-{
-	echo "Usage: " . $argv[0] . " <nren_name> <principal>\n";
-	echo "\tnren_name:\tThe name of the NREN, e.g. UNINETT\n";
-	echo "\tprincipal:\teduPersonPrincipalName or another unique identifier for \n\t\t\tan initial NREN-admin\n";
-	echo "\tcontact:\tA contact information for the NREN\n";
 }
