@@ -1,7 +1,9 @@
 {if $person->isAdmin() && ($person->isNRENAdmin() || $person->isSubscriberAdmin())}
 
+<div class="spacer"></div>
+<fieldset>
 {if $person->isNRENAdmin()}
-<h3>NREN contact information</h3>
+<legend>NREN contact information</legend>
 <br />
 <p class="info">
 Here you can define contact information for your NREN. Define an e-mail address
@@ -11,7 +13,7 @@ or to notify you of mass-revocation of certificates.
 </p>
 
 {elseif $person->isSubscriberAdmin()}
-<h3>Subscriber contact information</h3>
+<legend>Subscriber contact information</legend>
 <br />
 <p class="info">
 Here you can define contact information for your subscriber. Define an e-mail address
@@ -28,10 +30,12 @@ Contact-email:
 	<input type="text" name="contact" value="{$contact}" />
 	<input type="submit" value="Update" />
 </form>
+</fieldset>
 
 <br /><br />
 
-<h3>Language selection</h3>
+<fieldset>
+<legend>Language selection</legend>
 <br />
 <p class="info">
 {if $person->isNRENAdmin()}
@@ -49,5 +53,6 @@ Contact-email:
 		<input type="hidden" name="language_operation" value="update" />
 		<input type="submit" value="Update" />
 </form>
+</fieldset>
 
 {/if}
