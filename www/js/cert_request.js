@@ -77,8 +77,7 @@ function createIEVistaRequest(dn, keysize)
 	objEnroll.InitializeFromRequest(objRequest);
 	request = objEnroll.CreateRequest(1);
     } catch (e) {
-	var message="Hit the following error upon key generation: " + e.description
-	+ "\nIs the Confusa instance configured as a trusted site?";
+	var message="Hit the following error upon key generation: " + e.description;
 	alert(message);
 	return false;
     }
@@ -185,8 +184,7 @@ function installIEVistaCertificate()
 	 */
 	objEnroll.InstallResponse(4, g_ccc, 1, "");
     } catch (e) {
-	var message="Hit the following problem when trying to install the cert: " + e.description
-	+ "\nDid you generate the request with exactly that browser?";
+	var message="Hit the following problem when trying to install the cert: " + e.description;
 	alert(message);
     }
 }
