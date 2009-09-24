@@ -4,7 +4,9 @@
    */
 $confusa_config = array(
 	/* global config-flag
-	 * Set this to true to enable debug-logging, extra output etc
+	 * If debug is set to true, Confusa will run in debug mode. Verbose technical
+	 * error and informational messages will be printed. For users that are not
+	 * very technical involved, these messages will be of limited use.
 	 */
 	'debug'			=> true,
 
@@ -20,7 +22,12 @@ $confusa_config = array(
 	 */
 	'maint'			=> false,
 
-        /* install path */
+         /* The path on the local filesystem, on which Confusa is installed.
+		 * This must be set to the right path, or otherwise Confusa will not work
+		 * in many parts, since it tries to find for instance CA certificates,
+		 * custom CSS files, translation dictionaries and the smarty compile
+		 * path using this Config switch.
+		 */
         'install_path'                  => '/var/www/confusa/',
 
 	/* script variables, where the end-user create-keyresides */
@@ -56,6 +63,10 @@ $confusa_config = array(
 	 *
 	 *	/usr/share/php/smarty/
 	 *
+	 * or
+	 *
+	 * /usr/share/php/smarty/libs/ (debian)
+	 *
 	 */
 	'smarty_path'		=> '/usr/share/php/smarty/',
 
@@ -81,26 +92,47 @@ $confusa_config = array(
 	'custom_css'		=> 'css/custom/',
 	'custom_logo'		=> 'graphics/custom/',
 
-        /* For CA handling.
-         * Legal modes are: CA_STANDALONE and CA_ONLINE */
+	/* For CA handling.
+	 * Legal modes are: CA_STANDALONE and CA_ONLINE
+	 *
+	 * CA_STANDALONE: Use locally installed CA-certs to sign certificate signing
+	 * requests with the openssl version running on the server
+	 *
+	 * CA_ONLINE: Send the CSRs to the Comodo API with a HTTP POST message. There
+	 * it will be signed using the NREN's credentials and once it is processed,
+	 * downloaded again using the HTTP POST API.
+	 * */
 	'ca_mode'		=> CA_STANDALONE,
 
-	/* The following fields can be used when the Comodo-API is called
-	 * for certificate creation */
+	/* The following fields are used when the Comodo-API is called
+	 * for certificate creation
+	 *
+	 * Probably you don't want to change them, since that will most likely break
+	 * online certificate signing. The Comodo API documentation can be found at
+	 *
+	 * http://secure.comodo.net/api/pdf/reseller/customclientcertificates/
+	 *  */
         'capi_apply_endpoint'          => 'https://secure.comodo.com/products/!applyCustomClientCert',
         'capi_auth_endpoint'           => 'https://secure.comodo.net/products/!AutoAuthorize',
         'capi_collect_endpoint'        => 'https://secure.comodo.net/products/download/CollectCCC',
         'capi_listing_endpoint'             => 'https://secure.comodo.net/products/!Tier2ResellerReport',
         'capi_revoke_endpoint'              => 'https://secure.comodo.net/products/!AutoRevokeCCC',
+		/* these fields are for informational use, when the user clicks "view CRL/view root cert"
+		 * in Confusa */
+		'capi_root_cert'			=> 'http://crt.tcs.terena.org/TERENAeSciencePersonalCA.crt',
+		'capi_crl'				=> 'http://crl.tcs.terena.org/TERENAeSciencePersonalCA.crl',
+		/* used in the API */
         'capi_escience_id'                      => '285',
         /* if we ever want to issue e-mail certificates */
         'capi_personal_id'                      => '284',
-        /* will insert a 'TEST' string into the certificate subjects if set to true */
+        /* if 'capi_test' is to true, Confusa will
+		 * 		- clutter all certificate subjects with 'TEST' strings
+		 * 		- limit the validity of all certificates to 14 days
+		 * 		- not perform revocation, but only simulate it
+		 */
         'capi_test'                             => true,
-        /* will encrypt the (sub)-account passwords in the DB with this key */
+        /* will encrypt the NREN-Comodo-account passwords in the DB with this key */
         'capi_enc_pw'                           => '',
-	'capi_root_cert'			=> 'http://crt.tcs.terena.org/TERENAeSciencePersonalCA.crt',
-	'capi_crl'				=> 'http://crl.tcs.terena.org/TERENAeSciencePersonalCA.crl',
 
 	/* Values needed for standalone-mode
 	 * The names should be self-explanatory. All paths are relative to the
@@ -115,8 +147,8 @@ $confusa_config = array(
 	'ca_crl_name'		=> '/confusa_crl.pem',
 
         /* this *should* be true, as you really* want wget to detect a
-         * SSL-man-in-the-middle attac! However, as a workaround for testsystems
-         * (which normally does not hav e properly signed SSL-certificate),
+         * SSL-man-in-the-middle attack! However, as a workaround for testsystems
+         * (which normally do not have properly signed SSL-certificate),
          * force user-script to disregard invalid/self-signed certs. */
 	'script_check_ssl'	=> False,
 
@@ -176,7 +208,9 @@ $confusa_config = array(
 
         /* how long should a certificate be valid in the cert_cache before being
          * doomed expired (to avoid that it's available for a long time for the
-         * world) */
+         * world)
+		 *
+		 * That setting applies only to standalone mode */
         'cert_default_timeout'           => array(15, 'MINUTE'),
 
         /* how long a CSR should stay in the csr_cache before being
@@ -238,7 +272,7 @@ $confusa_config = array(
 
 	/* this should be set to true when config is verified (or the file has
 	 * been updated and not just copied)
-	 * This should also find all the users that doesn't read the config file
+	 * This should also find all the users that don't read the config file
 	 * properly ;-)
 	 */
 	'valid_install'		=> false
