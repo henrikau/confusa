@@ -352,7 +352,7 @@ function configure_confusa_settings
 	if [ $mode == "online" ]; then
 		have_pwgen=`which pwgen`
 
-		if [ -n $have_pwgen ]; then
+		if [ "$?" -eq "0" ]; then
 			echo "Generating a password for encryption of the Comodo credentials"
 			capi_enc_pw=`pwgen -1 -s -n 12`
 			res=$?
@@ -434,7 +434,7 @@ function configure_confusa_settings
 	###############################################################################
 	have_pwgen=`which pwgen`
 
-	if [ -n $have_pwgen  ]; then
+	if [ "$?" -eq "0"  ]; then
 		echo "Generating mysql password with pwgen..."
 		mysql_password=`pwgen -1 -n 12 -s`
 	fi
@@ -442,7 +442,7 @@ function configure_confusa_settings
 	if [ -z $have_pwgen ] || [ ! $? -eq 0 ]; then
 		while [ -z $mysql_password ]; do
 			echo "Please specify a password for the user $custom_mysql_username "
-			echo "for MySQL:"
+			echo -n "for MySQL:"
 			stty -echo
 			read mysql_password
 			stty echo
