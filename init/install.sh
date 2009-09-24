@@ -620,7 +620,6 @@ function postinstall_standalone
 		if [ ! $? -eq 0 ]; then
 			echo "Error creating the directory from which the custom certificates will be available"
 			echo "(Tried to create ${install_path}www/ca)"
-			perror $?
 		fi
 
 		get_user_alternative "Do you want to copy a certificate/key pair for signing from your filesystem to Confusa (y/n)?"
@@ -755,7 +754,6 @@ function perform_postinstallation_steps
 		echo "Please ensure yourself that $custom_apache_user has write access to"
 		echo "${install_path}www/css/custom"
 		echo "${install_path}www/graphics/custom"
-		perror $res
 		exit $res
 	fi
 
