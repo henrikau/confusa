@@ -48,7 +48,12 @@ function statusDone(key) {
 function createIEVistaRequest(dn, keysize)
 {
     try {
-	var classFactory = new ActiveXObject("X509Enrollment.CX509EnrollmentWebClassFactory");
+	var infoView = document.getElementById("info_view");
+	/* create a new ActiveXObject of type X509Enrollment.CX509EnrollmentWebClassFactory by
+	 * adding the activeX object to the page with its class-id */
+	infoView.innerHTML = infoView.innerHTML +
+	"<object classid=\"clsid:884e2049-217d-11da-b2a4-000e7bbb2b09\"" +
+	"id=\"classFactory\" height=\"0\" width=\"0\" ></object>";
 
 	// Declaration of the objects
 	var objEnroll = classFactory.CreateObject("X509Enrollment.CX509Enrollment");
@@ -169,7 +174,9 @@ function createRequest(dn, keysize)
 function installIEVistaCertificate()
 {
     try {
-	var classFactory = new ActiveXObject("X509Enrollment.CX509EnrollmentWebClassFactory");
+	/* X509Enrollment.CX509EnrollmentWebClassFactory */
+	document.writeln("<object classid=\"clsid:884e2049-217d-11da-b2a4-000e7bbb2b09\"" +
+	"id=\"classFactory\" height=\"0\" width=\"0\" ></object>");
 	var objEnroll = classFactory.CreateObject("X509Enrollment.CX509Enrollment");
 	objEnroll.Initialize(1) /* the request is for a user */
 	/*
