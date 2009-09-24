@@ -615,6 +615,8 @@ function postinstall_standalone
 		ca_key_path=`grep "'ca_key_path'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
 		ca_key_name=`grep "'ca_key_name'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
 
+		mkdir -p ${install_path}${ca_cert_base_path}/${ca_cert_path}
+		mkdir -p ${install_path}${ca_cert_base_path}/${ca_key_path}
 		mkdir -p ${install_path}www/ca
 
 		if [ ! $? -eq 0 ]; then
@@ -740,8 +742,10 @@ function perform_postinstallation_steps
 		custom_apache_user=$apache_user
 	fi
 
+	mkdir -p ${install_path}www/css/custom
 	chown -R $custom_apache_user ${install_path}www/css/custom
 	res=$?
+	mkdir -p ${install_path}www/graphics/custom
 	chown -R $custom_apache_user ${install_path}www/graphics/custom
 	res=`expr $res + $?`
 	chmod 0755 ${install_path}www/css/custom
