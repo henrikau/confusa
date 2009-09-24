@@ -238,7 +238,7 @@ abstract class Confusa_Auth
 	 *
 	 * @return void
 	 */
-	public abstract function deAuthenticateUser();
+	public abstract function deAuthenticateUser($logout_loc='logout.php');
 }
 
 /**

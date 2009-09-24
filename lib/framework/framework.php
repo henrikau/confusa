@@ -116,7 +116,10 @@ class Framework {
 		if (Framework::$sensitive_action) {
 			$delta = Config::get_config('protected_session_timeout')*60 - $this->person->getTimeSinceStart();
 			if ($delta < 0) {
-				$auth->deAuthenticateUser();
+				$path = $_SERVER['SCRIPT_NAME'];
+				$parts = explode('/', $path);
+				$file = $parts[count($parts) - 1];
+				$auth->deAuthenticateUser($file);
 
 				require_once 'refresh.html';
 				$msg =  __FILE__ . ":" . __LINE__ . " Sensitive action, and your session is too old (";
