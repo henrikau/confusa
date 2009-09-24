@@ -184,7 +184,7 @@ function configure_confusa_settings
 	# Guess the installation path of Confusa to use it as default (assuming bash)
 	#############################################################################
 	script_dir=`pwd`
-	install_path=`echo | awk -v sdir=$script_dir '{sub("programs", "", sdir); print sdir}'`
+	install_path=`echo | awk -v sdir=$script_dir '{sub("init", "", sdir); print sdir}'`
 
 	echo -n "Confusa install path: [$install_path]: "
 	read custom_install_path
