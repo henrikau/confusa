@@ -58,6 +58,23 @@ class CP_Robot_Interface extends Content_Page
 
 	public function process()
 	{
+		/* get menu-flags and assign to the framework */
+		if (isset($_GET['robot_view'])) {
+			switch(Input::sanitize($_GET['robot_view'])) {
+			case 'list':
+				$this->tpl->assign('rv_list', true);
+				break;
+			case 'upload':
+				$this->tpl->assign('rv_upload', true);
+				break;
+			default:
+				break;
+			}
+		} else {
+			/* We default to listing the certificates */
+			$this->tpl->assign('rv_list', true);
+
+		}
 		/* get a list of certificates and assign to template */
 		$this->tpl->assign('robotCerts', $this->getRobotCertList());
 		$this->tpl->assign('content', $this->tpl->fetch('robot.tpl'));

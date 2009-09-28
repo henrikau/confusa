@@ -1,16 +1,19 @@
 <h3>Robot Interface</h3>
 <br />
-<p class="info">
-In this section you will find information about already uploaded
-certificates for your organization. You can modify ownership if the
-certificate is listed as an orphan, or you can remove it all
-together. You may also upload a new certificate, either by pasting into
-the window below, or by uploading a local file.
-</p>
-
-
-{include file='robot/ri_list.tpl'}
+{* show menu *}
+[ <a href="?robot_view=list">List</a> ]
+[ <a href="?robot_view=upload">Upload</a>]
+<br />
+<br />
 <br />
 
-{include file='robot/ri_upload.tpl'}
+{* display the pages *}
+{if $rv_list}
+{include file='robot/ri_list.tpl'}
+<br />
+{/if}
 
+{if $rv_upload}
+{include file='robot/ri_upload.tpl'}
+<br />
+{/if}

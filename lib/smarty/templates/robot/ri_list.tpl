@@ -1,11 +1,20 @@
+
 <fieldset>
 <legend>Manage certificates</legend>
 <br />
 <p class="info">
-This is the list of certificates. You may display the certificates in
-greater detail.
+  In this section you will find information about already uploaded
+  certificates for your organization. You can modify ownership if the
+  certificate is listed as an orphan, or you can remove it all
+  together.
 </p>
-
+<br />
+<p class="info">
+  If you so choose, you may inspect the certificate in greater detail
+  here.
+</p>
+<br />
+<hr width="90%"/>
 {if $robotCerts}
 <table>
 {foreach from=$robotCerts item=element}
