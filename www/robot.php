@@ -225,10 +225,13 @@ class CP_Robot_Interface extends Content_Page
 		}
 
 		try {
-			$update  = "INSERT INTO robot_certs (subscriber_id, uploaded_by, uploaded_date, valid_until, cert, fingerprint, serial)";
-			$update .= " VALUES(?, ?, current_timestamp(), ?, ?, ?, ?)";
-			$params	= array('text', 'text', 'text', 'text', 'text', 'text');
-			$data	= array($subscriber_id, $admin_id, $cert->validTo(), $cert->getCert(), $cert->fingerprint(), $cert->serial());
+			if (!isset($comment) || $comment == "") {
+				$comment = " ";
+			}
+			$update  = "INSERT INTO robot_certs (subscriber_id, uploaded_by, uploaded_date, valid_until, cert, fingerprint, serial, comment)";
+			$update .= " VALUES(?, ?, current_timestamp(), ?, ?, ?, ?, ?)";
+			$params	= array('text', 'text', 'text', 'text', 'text', 'text', 'text');
+			$data	= array($subscriber_id, $admin_id, $cert->validTo(), $cert->getCert(), $cert->fingerprint(), $cert->serial(), $comment);
 			MDB2Wrapper::update($update, $params, $data);
 
 		} catch (Exception $e) {
