@@ -205,7 +205,7 @@ class CP_Robot_Interface extends Content_Page
 			Framework::error_output("coultn't update robot_certs, server said:<br />\n" . $e->getMessage());
 			return false;
 		}
-		Framework::message_output("No errors found wile uploading certificate to keystore");
+		Framework::message_output("Certificate uploaded to keystore.");
 		return true;
 	}
 
