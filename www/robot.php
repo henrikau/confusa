@@ -242,6 +242,27 @@ class CP_Robot_Interface extends Content_Page
 
 	private function deleteCertificate($serial)
 	{
+		$cert = $this->getRobotCert($serial);
+		if (isset($cert)) {
+			try {
+				MDB2Wrapper::update("DELETE FROM robot_certs WHERE id=? AND serial=?",
+						    array('text','text'),
+						    array($cert['id'], $serial));
+				return true;
+			} catch (Exception $e) {
+				Framework::error_output($e->getMessage());
+				return false;
+			}
+		} else {
+			Framework::error_output("Could not find certificate (".$serial.") in database.");
+			return false;
+		}
+
+		/* Unreachable, but nevertheless */
+		return false;
+	}
+	private function getRobotCert($serial)
+	{
 		$query  = "SELECT * FROM robot_certs rc LEFT JOIN nren_subscriber_view nsv";
 		$query .= " ON nsv.subscriber_id = rc.subscriber_id WHERE ";
 		$query .= " nren=? AND subscriber=? AND serial=?";
@@ -251,14 +272,15 @@ class CP_Robot_Interface extends Content_Page
 		try {
 			$res = MDB2Wrapper::execute($query,$params, $data);
 			if (count($res)!= 1) {
-				return false;
+				return null;
 			}
-			MDB2Wrapper::update("DELETE FROM robot_certs WHERE id=? AND serial=?", array('text','text'), array($res[0]['id'], $serial));
+			return $res[0];
 		} catch (Exception $e) {
 			Framework::error_output("Could not find cert. Server said: " . $e->getMessage());
-			return false;
+			return null;
 		}
-	}
+		return null;
+	} /* end getRobotCert */
 }
 
 $fw = new Framework(new CP_Robot_Interface());
