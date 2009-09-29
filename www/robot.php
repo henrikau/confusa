@@ -89,8 +89,8 @@ class CP_Robot_Interface extends Content_Page
 	 */
 	private function getRobotCertList()
 	{
-		$query = "SELECT uploaded_date, a.admin, valid_until, last_warning_sent, cert, comment ";
-		$query .= " FROM robot_certs rc, admins a,  subscribers s where s.subscriber_id=rc.subscriber_id ";
+		$query = "SELECT * FROM robot_certs rc, admins a, subscribers s ";
+		$query .= "WHERE s.subscriber_id=rc.subscriber_id ";
 		$query .= "AND rc.uploaded_by=a.admin_id AND s.name=?";
 		try {
 			$res = MDB2Wrapper::execute($query, array('text'), array($this->person->getSubscriberOrgName()));
@@ -103,6 +103,8 @@ class CP_Robot_Interface extends Content_Page
 			$cert = new Certificate($val['cert']);
 			$cert->setMadeAvailable($val['uploaded_date']);
 			$cert->setOwner($val['admin']);
+			$cert->setComment($val['comment']);
+			$cert->setLastWarningSent($val['last_warning_sent']);
 			$certs[] = $cert;
 		}
 		return $certs;
