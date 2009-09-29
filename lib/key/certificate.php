@@ -9,6 +9,7 @@ class Certificate
 	private $serialNumber;
 	private $availableFrom;
 	private $owner;
+	private $lwsent;
 
 	/* parsed (and cached data based on $parsed) */
 	private $parsed;
@@ -118,5 +119,14 @@ class Certificate
 
 	public function getOwner() { return $this->owner; }
 
+
+	public function setLastWarningSent($date)
+	{
+		$this->lwsent = $date;
+	}
+	public function getLastWarningSent()
+	{
+		return $this->lwsent;
+	}
 }
 ?>
