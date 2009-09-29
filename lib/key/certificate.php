@@ -55,10 +55,18 @@ class Certificate
 
 	public function setComment($comment)
 	{
-		$this->comment = $comment;
+		if (isset($comment) || $comment != "") {
+			$this->comment = $comment;
+		}
 	}
 
-
+	public function getComment()
+	{
+		if (!isset($this->comment)) {
+			return "";
+		}
+		return $this->comment;
+	}
 	public function getCert($raw = true)
 	{
 		if (isset($this->cert) && $this->isValid()) {
