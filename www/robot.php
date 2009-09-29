@@ -207,6 +207,15 @@ class CP_Robot_Interface extends Content_Page
 				break;
 			default:
 				/* FIXME: DB-inconsistency */
+				$error_code = strtoupper(create_pw(8));
+				$error_msg  = "[error_code: $error_code] multiple instances of admin (";
+				$error_msg .= $this->person->getEPPN() . ") found in the database.";
+
+				$log_msg    = "[$error_code] multiple hits (".count($res).")on ";
+				$log_msg   .= $this->person->getEPPN() . " in admins-table.";
+
+				Framework::error_output($error_msg);
+				Logger::log_event(LOG_ALERT, $log_msg);
 				return false;
 			}
 		} catch (Exception $e) {
