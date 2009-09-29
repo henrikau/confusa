@@ -67,7 +67,46 @@
     <td></td>
     <td>{$element->validTo()}</td>
   </tr>
-{/foreach}
+
+  {if $cert_info}
+  <tr>
+    <td>
+      <div class="spacer"></div>
+    </td>
+  </tr>
+
+  { if $element->serial() eq $cert_info_serial}
+  <tr><td></td>
+    <td></td>
+    <td></td>
+    <td><b>Extended Info</b><br /></td>
+  </tr>
+  <tr><td></td>
+    <td>Fingerprint:</td>
+    <td></td>
+    <td>{$element->fingerprint()}</td>
+  </tr>
+  <tr><td></td>
+    <td>Comment:</td><td></td>
+    <td>{$element->getComment()}
+    </td>
+  </tr>
+  {if $element->getLastWarningSent()}
+  <tr><td></td>
+    <td>Warning sent:</td>
+    <td></td>
+    <td>{$element->getLastWarningSent()}
+    </td>
+  </tr>
+  {/if}
+  <tr><td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  {/if}
+  {/if}
+  {/foreach}
 </table>
 {else}
 No available certificates in Database.
