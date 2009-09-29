@@ -45,7 +45,8 @@ class CP_Robot_Interface extends Content_Page
 				$res = $this->deleteCertificate($serial);
 				break;
 			case 'info':
-				$res = $this->dumpInfo($serial);
+				$this->tpl->assign('cert_info', true);
+				$this->tpl->assign('cert_info_serial', $serial);
 				break;
 			default:
 				Framework::error_output("Unknown action");
