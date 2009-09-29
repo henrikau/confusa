@@ -254,6 +254,7 @@ class CP_Robot_Interface extends Content_Page
 				MDB2Wrapper::update("DELETE FROM robot_certs WHERE id=? AND serial=?",
 						    array('text','text'),
 						    array($cert['id'], $serial));
+				Framework::message_output("Certificate ($serial) removed from database.");
 				return true;
 			} catch (Exception $e) {
 				Framework::error_output($e->getMessage());
