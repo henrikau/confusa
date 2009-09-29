@@ -96,7 +96,7 @@ class Certificate
 	public function serial()
 	{
 		if (!isset($this->serial)) {
-			$this->serial = openssl_x509_serial($this->cert);
+			$this->serial = trim(openssl_x509_serial($this->cert));
 		}
 		return $this->serial;
 	}
