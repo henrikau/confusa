@@ -170,13 +170,35 @@ class CP_Robot_Interface extends Content_Page
 			$res = MDB2Wrapper::execute($query, $params, $data);
 			switch(count($res)) {
 			case 0:
-				$msg  = "No hits - subscriber not in database! <br />\n";
-				$msg .= "The Subscriber (".$this->person->getSubscriberOrgName().") ";
-				$msg .= "must be added by an NREN-admin for nren '" .$this->person->getNREN(). "'. Something is seriously wrong.";
+				$error_code = strtoupper(create_pw(8));
+				$error_msg  = "[error_code: $error_code]<br /><br />\n";
+				$log_msg  = "[$error_code] ";
+				$admin_query_res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND admin_level=? AND subscriber IS NULL",
+									array('text', 'text', 'text'),
+									array($this->person->getEPPN(), SUBSCRIBER_ADMIN));
+				if (count($admin_query_res) != 0) {
+					$error_msg .= "The subscriber-admin (".$this->person->getEPPN().") is not properly connected ";
+					$error_msg .= "to any database. This is due to a database inconsistency ";
+					$error_msg .= "and is a direct result of someone manually adding the admin to the database ";
+					$error_msg .= "without connecting the admin to a subscriber.";
 
-				Framework::error_output($msg);
-				/* fixme: add logging and proper
-				 * error-message. DB inconsistency */
+					$log_msg   .= "Subscriber-admin " . $this->person->getEPPN();
+					$log_msg   .= " has not set any affilitated subscriber in the database.";
+					$log_msg   .= " It should be " . $this->person->getSubscriberOrgName();
+					$log_msg   .= ", but is NULL. Please update the database.";
+				} else {
+					$error_msg .= "For some reason, the subscriber (".$this->person->getSubscriberOrgName().") ";
+					$error_msg .= "is not properly configured in the database. ";
+					$error_msg .= "The exact reason is unknown. Please contact operational support.";
+
+					$log_msg   .= "Subscriber " . $this->person->getSubscriberOrgName();
+					$log_msg   .= " is not properly configured in the database.";
+				}
+				$error_msg .= "<br /><br />\nThis event has been logged, please contact operational support (provide the error-code) ";
+				$error_msg .= "to resolve this issue.";
+				Framework::error_output($error_msg);
+				Logger::log_event(LOG_ALERT, $log_msg);
+
 				return false;
 			case 1:
 				$admin_id	= $res[0]['aid'];
