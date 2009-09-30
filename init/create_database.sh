@@ -120,5 +120,7 @@ fi
 
 echo "Confusa-setup complete, adding views"
 $MYSQL -D$database  < views_create.sql
+echo "Trying to update database schema"
+sh update_database.sh
 echo "Views created. Database bootstrap complete."
 echo ""

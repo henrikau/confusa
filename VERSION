@@ -25,6 +25,9 @@ MAJOR_VERSION=0
 MINOR_VERSION=3
 EXTRA_VERSION="rc0"
 
+# Used for possible DB updates
+DB_SCHEMA_VERSION=0
+
 # Codename for current release
 NAME="BONANZA"
 
