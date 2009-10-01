@@ -3,7 +3,7 @@
 <!--	Confusa Robotic Interface XML DTD	-->
 <!-- ========================================== -->
 
-<!ELEMENT ConfusaRobot (userList|revocationList) >
+<!ELEMENT ConfusaRobot (userList|revocationList|revokedCerts) >
 <!--ConfusaRobot attribute listing				-->
 <!-- date:	the date when the list was created. This is not	-->
 <!--		necessary, but from a processing perspecitve, we-->
@@ -52,3 +52,10 @@
 <!-- subscriber (or rather the IdM routines) should send to Confusa -->
 <!-- whenever a user quits the organization. -->
 <!ELEMENT revocationList (listElement+)>
+
+
+<!-- List over users that got their certificates revoked. If the list is -->
+<!-- empty, it means that no certificates were revoked. -->
+<!-- For each user, a the number (elementCount) is given to indicate the -->
+<!-- number of revoked certificates. -->
+<!ELEMENT revokedCerts (listElement*)>
