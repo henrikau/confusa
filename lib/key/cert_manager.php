@@ -218,12 +218,14 @@ class CertManagerHandler
 			switch((int)Config::get_config('ca_mode')) {
 
 			case CA_STANDALONE:
-			      CertManagerHandler::$cert_manager = new CertManager_Standalone($person);
-			      break;
+				require_once 'cert_manager_standalone.php';
+				CertManagerHandler::$cert_manager = new CertManager_Standalone($person);
+				break;
 
 			case CA_ONLINE:
-			      CertManagerHandler::$cert_manager = new CertManager_Online($person);
-			      break;
+				require_once 'cert_manager_online.php';
+				CertManagerHandler::$cert_manager = new CertManager_Online($person);
+				break;
 
 			default:
 
