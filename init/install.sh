@@ -601,6 +601,50 @@ function configure_confusa_settings
 	################################################################################
 }
 
+# if an older version of Confusa was installed before, maybe some new configuration
+# flags (in confusa_config_template.php) were introduced in the meantime.
+# This function checks for the presence of flags in the config-template that
+# are not in the config file and copies them while preserving the existing
+# configuration values.
+#
+# Do the following:
+#	1 Copy config template to working template
+# 	2 Get all the configuration flags in the config template
+#	3 For each flag:
+#		- lookup if flag is in the config file, if it is assign value from config
+#		  file to working template
+#	4 Copy working template to config file
+#
+function copy_new_config_flags
+{
+	echo "Copying new config flags from the template, removing deprecated ones"
+	cp $config_template $working_template
+	tmp_file="../config/.flags_only"
+	working_template_2="../config/.template2"
+	# first remove comment lines, then find the configuration flags
+	cat $config_template | egrep -v "^[[:space:]]*(/)?(\\*)" | egrep "=>" | cut -d '=' -f 1 > $tmp_file
+
+	while read line
+	do
+		flag=`echo $line`
+		# Remove trailing whitespace characters (otherwise grep will be confused later)
+		flag="${flag%"${flag##*[![:space:]]}"}"
+		# Lookup the value of the config flag in the regular config file
+		config_line=`cat $config | egrep -v "^[[:space:]]*(/)?(\\*)" | egrep "${flag}[[:space:]]*=>.*"`
+
+		if [ -n "$config_line" ]; then
+			value=`echo $config_line | cut -d '=' -f 2 | cut -d ">" -f 2`
+			# now remove the trailing ","
+			value="${value%","}"
+			sed s\|"$flag[ \t]*=>.*"\|"$flag    => $value,"\| < $working_template > $working_template_2
+			mv $working_template_2 $working_template
+		fi
+	done < $tmp_file
+
+	rm $tmp_file
+	sed s\|"'$1'[ \t]*=>.*"\|"'valid_install'    => true,"\| < $working_template > $config
+}
+
 # configure the directories and permissions for the installed CA
 # Offer the possibility to copy a cert/private key to these locations
 function postinstall_standalone
@@ -850,6 +894,8 @@ if [ -f $config ]; then
 
 		if [ $answer = "n" ]; then
 			configure_confusa_settings
+		else
+			copy_new_config_flags
 		fi
 
 		perform_postinstallation_steps
@@ -857,4 +903,9 @@ if [ -f $config ]; then
 		configure_confusa_settings
 		perform_postinstallation_steps
 	fi
+# Config template does not yet exist, copy it and walk the user through configuration
+else
+	cp $config_template $config
+	configure_confusa_settings
+	perform_postinstallation_steps
 fi
