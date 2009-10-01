@@ -227,7 +227,7 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	 private function normal_revoke()
 	{
-		$this->search_certs_display($this->person->getEPPN());
+		$this->search_certs_display($this->person->getEPPN(), $this->person->getSubscriberOrgName());
 	}
 
 	/**
