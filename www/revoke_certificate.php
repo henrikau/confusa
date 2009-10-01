@@ -73,7 +73,7 @@ class CP_RevokeCertificate extends Content_Page
 
 				try {
 					$this->revoke_certs(Input::sanitize($_POST['common_name']), Input::sanitize($_POST['reason']));
-				} catch (ConfusaGenExcpetion $cge) {
+				} catch (ConfusaGenException $cge) {
 					Framework::error_output("Could not revoke certificates because of the " .
 											"following problem: " . $cge->getMessage());
 				}
