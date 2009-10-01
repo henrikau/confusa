@@ -479,10 +479,10 @@ class CertManager_Online extends CertManager
 				break;
 			default:
 				$msg = $this->capiErrorMessage($error_parts[0], $error_parts[1]);
-				throw new RemoteAPIException("Received error message $data. $msg");
 				Logger::log_event(LOG_ERROR, "Revocation of certificate with " .
-								 "order_number $key failed! User contacted us from " .
-								 $_SERVER['REMOTE_ADDR']);
+				 "order_number $key failed! User contacted us from " .
+				 $_SERVER['REMOTE_ADDR']);
+				throw new RemoteAPIException("Received error message $data. $msg");
 				break;
 			}
 		}
