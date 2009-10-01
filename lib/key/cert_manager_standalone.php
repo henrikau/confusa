@@ -156,10 +156,10 @@ class CertManager_Standalone extends CertManager
      *          array('cert_owner','auth_key')
      */
     public function get_cert_list_for_persons($common_name, $org) {
-	    $cn = "%".$common_name."%";
-	    $query = "SELECT * FROM cert_cache WHERE cert_owner LIKE :cn AND organization = :org";
-	    $params = array('text', 'text');
-	    $data = array('cn' => $cn, 'org' => $org);
+	    $cn		= "%".$common_name."%";
+	    $query	= "SELECT * FROM cert_cache WHERE valid_untill > current_timestamp() AND cert_owner LIKE :cn AND organization = :org";
+	    $params	= array('text', 'text');
+	    $data	= array('cn' => $cn, 'org' => $org);
 	    try {
 		    $res = MDB2Wrapper::execute($query, $params, $data);
 	    } catch (DBStatementException $dbse) {
