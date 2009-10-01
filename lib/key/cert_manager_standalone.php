@@ -156,13 +156,20 @@ class CertManager_Standalone extends CertManager
      *          array('cert_owner','auth_key')
      */
     public function get_cert_list_for_persons($common_name, $org) {
-        $query = "SELECT auth_key, cert_owner, valid_untill FROM cert_cache WHERE " .
-                 "cert_owner LIKE ? AND organization = ?";
-        $res = MDB2Wrapper::execute($query, array('text','text'),
-                                            array($common_name, $org)
-        );
-
-        return $res;
+	    $cn = "%".$common_name."%";
+	    $query = "SELECT * FROM cert_cache WHERE cert_owner LIKE :cn AND organization = :org";
+	    $params = array('text', 'text');
+	    $data = array('cn' => $cn, 'org' => $org);
+	    try {
+		    $res = MDB2Wrapper::execute($query, $params, $data);
+	    } catch (DBStatementException $dbse) {
+		    Logger::log_event(LOG_NOTICE, "Could not get list of certificates, error with query-syntax in " . __FILE__ . ":" . __LINE__);
+		    return null;
+	    } catch (DBQueryExceptin $dbqe) {
+		    Logger::log_event(LOG_NOTICE, "Could not get list of certificates, error with parameters in query at " . __FILE__ . ":" . __LINE__);
+		    return null;
+	    }
+	    return $res;
     }
 
     public function signBrowserCSR($csr, $browser)
