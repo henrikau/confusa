@@ -31,6 +31,9 @@ class CP_RevokeCertificate extends Content_Page
 	function __destruct()
 	{
 		parent::__destruct();
+		if (isset($_SESSION['auth_keys'])) {
+			unset($_SESSION['auth_keys']);
+		}
 	}
 
 	/**
@@ -69,7 +72,7 @@ class CP_RevokeCertificate extends Content_Page
 			case 'do_revoke':
 
 				try {
-					$this->revoke_certs(Input::sanitize($_POST['order_numbers']), Input::sanitize($_POST['reason']));
+					$this->revoke_certs(Input::sanitize($_POST['common_name']), Input::sanitize($_POST['reason']));
 				} catch (ConfusaGenExcpetion $cge) {
 					Framework::error_output("Could not revoke certificates because of the " .
 											"following problem: " . $cge->getMessage());
@@ -243,6 +246,10 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	private function search_certs_display($common_name, $subscriber)
 	{
+		if (isset($_SESSION['auth_keys'])) {
+			unset($_SESSION['auth_keys']);
+		}
+
 		$common_name = "%" . $common_name . "%";
 
 		$certs = $this->certManager->get_cert_list_for_persons($common_name, $subscriber);
@@ -253,30 +260,48 @@ class CP_RevokeCertificate extends Content_Page
 			 * to the revocation method */
 			foreach($certs as $row) {
 				$owners[] = $row['cert_owner'];
-				$orders[$row['cert_owner']][] = array($row['auth_key'], $row['valid_untill']);
+				/* Sanitation here is like a form of encoding, so the cert-owner can
+				 * serve as an identifier that can be passed to the page and back
+				 * via a POST subsequently. If we didn't sanitize here, after coming
+				 * back via the POST the cert_owner wouldn't match the stored one
+				 * any more.
+				 */
+				$orders[Input::sanitize($row['cert_owner'])][] = $row['auth_key'];
 			}
 
+			/* total number of occurences for every owner */
+			$stats = array_count_values($owners);
+			$_SESSION['auth_keys'] = $orders;
 			$owners = array_unique($owners);
 			$this->tpl->assign('owners', $owners);
+			$this->tpl->assign('stats', $stats);
 			$this->tpl->assign('revoke_cert', true);
-			$this->tpl->assign('orders', $orders);
 			$this->tpl->assign('nren_reasons', $this->nren_reasons);
 			$this->tpl->assign('selected', 'unspecified');
 		}
 	}
 
 	/*
-	 * Revoke all the certificates in $auth_key_list with the supplied reason
+	 * Revoke all the certificates of person with common_name $common_name with the supplied reason.
+	 * Upon searching for certificates, the list of auth_keys associated with the
+	 * certificate owner with the given sanitized common_name is stored in the
+	 * session and retrieved again upon revocation.
 	 *
-	 * @param $auth_key_list The references to the certificates that are to be
-	 *                       revoked
+	 * @param $common_name The common name of the certificate owner
 	 * @param $reason The reason for revocation as defined in RFC 3280
 	 *
 	 */
-	private function revoke_certs($auth_key_list, $reason)
+	private function revoke_certs($common_name, $reason)
 	{
+		if (isset($_SESSION['auth_keys'])) {
+			$auth_keys = $_SESSION['auth_keys'];
+			unset($_SESSION['auth_keys']);
+		} else {
+			Framework::error_output("Lost the certificate identifiers associated with " .
+									"common name $common_name during the session! Please try again!");
+		}
 
-		$auth_key_list = $this->sanitize($auth_key_list);
+		$auth_key_list = $auth_keys[$common_name];
 
 		if (array_search($reason, $this->nren_reasons) === FALSE) {
 			Framework::error_output("Encountered an unknown revocation " .
