@@ -59,14 +59,10 @@ immediately see a result entry *}
                 <td>
                     <form action="?revoke=do_revoke" method="post">
                     <div>
-                    {foreach from=$orders[$owner] item=order}
-                        <input type="hidden" name="order_numbers[]" value="{$order[0]}" />
-                        <input type="hidden" name="valid_untill[]" value="{$order[1]}" />
-                    {/foreach}
-
+                    <input type="hidden" name="common_name" value="{$owner}" />
                     {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
                     <input type="submit" name="submit" value="Revoke all"
-                            onclick="return confirm('Revoking {$orders[$owner]|@count} certificates! Are you sure?')" />
+                            onclick="return confirm('Revoking {$stats[$owner]} certificates! Are you sure?')" />
                     </div>
                     </form>
                 </td>
