@@ -165,7 +165,7 @@ function createCertList($admin)
 	$cm = CertManagerHandler::getManager($admin);
 	$list = $cm->get_cert_list_for_persons("", $admin->getSubscriberOrgName());
 	$res = array();
-	if (isset($res) && is_array($res) && count($res) > 0) {
+	if (isset($list) && is_array($list) && count($list) > 0) {
 		foreach($list as $value) {
 			$cert = openssl_x509_parse(openssl_x509_read($value['cert']), false);
 			$eppn_array = explode(" ", $value['cert_owner']);
