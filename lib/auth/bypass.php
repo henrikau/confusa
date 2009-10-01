@@ -20,7 +20,7 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 		try {
 			$personIndex = (int)Config::get_config('bypass_id');
 		} catch (KeyNotFoundException $knfe) {
-			Logger::log_even(LOG_NOTICE, __FILE__ . ":" . __LINE__ . " bypass_id not set in config. Using default ID.");
+			Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . " bypass_id not set in config. Using default ID.");
 		}
 		switch ($personIndex) {
 		case 0:
