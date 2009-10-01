@@ -714,6 +714,18 @@ class Person{
 	    db_array_debug($res);
 	    if ($size == 1) {
 		    $adminRes = $res[0]['admin_level'];
+		    /* Is the name and other variables properly set? */
+		    if ($this->getX509ValidCN() != $res[0]['admin_name'] ||
+			$this->getEmail() != $res[0]['admin_email']) {
+			    try {
+				    MDB2Wrapper::update("UPDATE admins SET admin_name=?, admin_email=? WHERE admin_id=?",
+							array('text', 'text', 'text'),
+							array($this->getX509ValidCN(), $this->getEmail(), $res[0]['admin_id']));
+			    } catch (Exception $e) {
+				    Framework::error_output("Could not update admin-data. Server said: " . $e->getMessage());
+			    }
+		    }
+
 	    }
 	    return $adminRes;
     }
