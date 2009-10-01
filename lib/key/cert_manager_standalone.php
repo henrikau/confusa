@@ -285,6 +285,11 @@ class CertManager_Standalone extends CertManager
 	    if (file_exists($crlFile)) {
 		    if (!is_dir($pubCADir)) {
 			    if (!is_writable(dirname($pubCADir))) {
+				    $logMsg  = __FILE__ . ":" . __LINE__ . " ";
+				    $logMsg .= "www/ca dir not present and cannot create. ";
+				    $logMsg .= "Check Confusa configuration";
+				    Logger::log_event(LOG_ALERT, $logMsg);
+
 				    $msg  = "CA-dir does not exist, and the webserver does not have write-access to web-dir.<BR />";
 				    $msg .= "Please contact a site-administrator and notify about this problem.";
 				    $msg .= "We are unable to publish the CRL's at this time.<BR />";
