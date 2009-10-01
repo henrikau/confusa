@@ -93,12 +93,6 @@ class CP_RevokeCertificate extends Content_Page
 
 	public function process()
 	{
-		if ($this->person->isNRENAdmin() && $this->person->inAdminMode()) {
-			$this->tpl->assign('reason', 'You are not allowed to revoke certificates, your clearance is too high.');
-			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
-			return;
-		}
-
 		try {
 			if ($this->person->inAdminMode()) {
 				$this->showAdminRevokeTable();
@@ -118,9 +112,8 @@ class CP_RevokeCertificate extends Content_Page
 	/**
 	 * showAdminRevokeTable - Render a revocation interface for the sublime of users.
 	 *
-	 * But not for the sublimest. I.e. a NREN-admin will not be able to revoke
-	 * certificates, but an institution-admin, and the beings of her grace,
-	 * the institution-sub-admins will. Revocation can either take place
+	 * For NREN admins it is planned to restrict the permission to revoke to an
+	 * incident response team. Revocation can either take place
 	 * by a wildcard-search for an ePPN or by uplading a CSV with ePPNs which
 	 * will be searched wrapped into wildcards
 	 */
@@ -132,8 +125,37 @@ class CP_RevokeCertificate extends Content_Page
 		}
 
 		/* Test access-rights */
-		if (!$this->person->isSubscriberAdmin() && !$this->person->isSubscriberSubAdmin())
+		if (!$this->person->isAdmin())
 			Framework::error_output("Insufficient rights for revocation!");
+
+		/* Get the right subscriber for which revocation should happen */
+		if ($this->person->isNRENAdmin()) {
+			$subscribers = $this->getNRENSubscribers($this->person->getNREN());
+
+			if (isset($_POST['subscriber'])) {
+				$subscriber = Input::sanitize($_POST['subscriber']);
+
+				/* check if the given subscriber is a legitimate subscriber
+				 * for the given NREN
+				 */
+				if (!array_search($subscriber, $subscribers)) {
+					Logger::log_event(LOG_NOTICE, "[nadm] Administrator for NREN " .
+						$this->person->getNREN() . ", contacting us from " .
+						$_SERVER['REMOTE_ADDR'] . " tried to revoke certificates for " .
+						"subscriber $subscriber, which is not part of the NREN!");
+					Framework::error_output("Subscriber $subscriber is not part of " .
+									"your NREN!");
+					return;
+				}
+			} else {
+				$subscriber = $subscribers[0];
+			}
+
+			$this->tpl->assign('subscriber', htmlentities($subscriber));
+			$this->tpl->assign('subscribers', $subscribers);
+		} else {
+			$subscriber = $this->person->getSubscriberOrgName();
+		}
 
 		$this->tpl->assign('file_name', 'eppn_list');
 
@@ -146,18 +168,55 @@ class CP_RevokeCertificate extends Content_Page
 		/* when we want so search for a particular certificate
 		 * to revoke. */
 		case 'search_display':
-			$this->search_certs_display($_POST['search']);
+			$common_name = Input::sanitize($_POST['search']);
+			$this->search_certs_display($common_name, $subscriber);
 			break;
 		case 'search_list_display':
-			$this->search_list_display('eppn_list', $person);
+			$this->search_list_display('eppn_list', $subscriber);
 			break;
 
 		default:
-			Framework::error_output("Unknown operation");
 			break;
 		}
 
 	} /* end showAdminRevokeTable */
+
+	/**
+	 * Get the subscribers that belong to a certain NREN.
+	 * TODO: Move that functionality to lib/, it is needed in more graphical
+	 * 		classes.
+	 * @param $nren The NREN for which the subscribers are queried
+	 */
+	private function getNRENSubscribers($nren)
+	{
+		$query = "SELECT subscriber FROM nren_subscriber_view WHERE nren=?";
+
+		try {
+			$res = MDB2Wrapper::execute($query,
+										array('text'),
+										array($nren));
+		} catch(DBStatementException $dbse) {
+			Framework::error_output("Cannot retrieve subscriber from database!<BR /> " .
+				"Probably wrong syntax for query, ask an admin to investigate." .
+				"Server said: " . $dbse->getMessage());
+			return null;
+		} catch(DBQueryException $dbqe) {
+			Framework::error_output("Query failed. This probably means that the values passed to the "
+								. "database are wrong. Server said: " . $dbqe->getMessage());
+			return null;
+		}
+
+		$subscribers = array();
+
+		if (count($res) > 0) {
+
+			foreach($res as $row) {
+				$subscribers[] = $row['subscriber'];
+			}
+		}
+
+		return $subscribers;
+	}
 
 	/**
 	 * normal_revoke() - certificate revocation for the ordinary man
@@ -180,12 +239,13 @@ class CP_RevokeCertificate extends Content_Page
 	 *
 	 * @param $common_name The common-name that is searched for. Will be automatically
 	 *                     turned into a wildcard
+	 * @param $subscriber The name of the subscriber to which the search is constrained
 	 */
-	private function search_certs_display($common_name)
+	private function search_certs_display($common_name, $subscriber)
 	{
-		$common_name = "%" . $this->sanitize($common_name) . "%";
+		$common_name = "%" . $common_name . "%";
 
-		$certs = $this->certManager->get_cert_list_for_persons($common_name, $this->person->getSubscriberOrgName());
+		$certs = $this->certManager->get_cert_list_for_persons($common_name, $subscriber);
 
 		if (count($certs) > 0) {
 			/* get the certificate owner/order number pairs into a ordering that
@@ -251,7 +311,6 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	private function revoke_list($reason)
 	{
-
 		$auth_keys = array();
 		if (isset($_SESSION['auth_keys'])) {
 			$auth_keys = $_SESSION['auth_keys'];
@@ -289,12 +348,13 @@ class CP_RevokeCertificate extends Content_Page
 	 * based on an uploaded CSV with a list of eduPersonPrincipalNames. Offer the
 	 * possibility to revoke these certificates.
 	 *
-	 * @param string $eppn_file The name of the $_FILES parameter containining the
+	 * @param $eppn_file string The name of the $_FILES parameter containining the
 	 *                          CSV of eduPersonPrincipalNames
-	 * @param Person $person The person calling this function
+	 * @param $subscriber string The name of the subscriber by which the search is
+	 * 							scoped
 	 *
 	 */
-	private function search_list_display($eppn_file)
+	private function search_list_display($eppn_file, $subscriber)
 	{
 		/* These can become a *lot* of auth_keys/order_numbers. Thus, save the list
 		 * of auth_keys preferrably in the session, otherwise it will take forever
@@ -314,7 +374,7 @@ class CP_RevokeCertificate extends Content_Page
 		foreach($eppn_list as $eppn) {
 			$eppn = $this->sanitize_eppn($eppn);
 			$eppn = "%" . $eppn . "%";
-			$eppn_certs = $this->certManager->get_cert_list_for_persons($eppn, $this->person->getSubscriberOrgName());
+			$eppn_certs = $this->certManager->get_cert_list_for_persons($eppn, $subscriber);
 			$certs = array_merge($certs, $eppn_certs);
 		}
 
