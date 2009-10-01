@@ -7,7 +7,7 @@ require_once 'mdb2_wrapper.php';
 require_once 'db_query.php';
 require_once 'pw.php';
 require_once 'cert_lib.php';
-
+require_once 'CGE_KeyRevokeException.php';
 /*
  * CertManager_Standalone Standalone-CA extension for CertManager.
  *
@@ -260,10 +260,9 @@ class CertManager_Standalone extends CertManager
 		    $msg .= $line . "<BR />\n";
 	    }
 	    if ((int)$return != 0) {
-		    Framework::error_output($msg);
 		    Logger::log_event(LOG_NOTICE, "Problems revoking certificate for " .
 				      $this->person->getX509SubjectDN() . "($key)");
-		    return false;
+		    throw new CGE_KeyRevokeException($msg);
 	    }
 	    Logger::log_event(LOG_NOTICE, "Revoked certificate $key for user " .
 			      $this->person->getX509SubjectDN());
@@ -282,9 +281,7 @@ class CertManager_Standalone extends CertManager
 				    $msg  = "CA-dir does not exist, and the webserver does not have write-access to web-dir.<BR />";
 				    $msg .= "Please contact a site-administrator and notify about this problem.";
 				    $msg .= "We are unable to publish the CRL's at this time.<BR />";
-				    Framework::error_output($msg);
-				    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . " www/ca dir not present and cannot create. Check Confusa configuration");
-				    return false;
+				    throw new ConfusaGenException($msg);
 			    }
 			    /* Should work, but in case it fails, return */
 			    if (!mkdir($pubCADir, 0755, true)) {
@@ -315,8 +312,11 @@ class CertManager_Standalone extends CertManager
 			    if (!is_writable($pubCrlFile)) {
 				    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . " "  .
 						      "Want to publish CRL but not allowed to write to $pubCrlFile. " .
-						      "Please make this file writable for " . get_current_user());
-				    return false;
+						      "Please make this file writable for the webserver.");
+				    /* This could be returned as false,
+				     * however, the certificate has been
+				     * revoked, we just cannot publish it. */
+				    return true;
 			    }
 			    if (!copy($crlFile, $pubCrlFile)) {
 				    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . " "  .
