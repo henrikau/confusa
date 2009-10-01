@@ -16,11 +16,10 @@
 {elseif $person->getMode() == 1}
 <h3>Admin</h3>
 <ul>
+	<li><a href="revoke_certificate.php">Revocation</a></li>
 	{if $person->isSubscriberSubadmin()}
-	<li><a href="revoke_certificate.php">Revoke Certificates</a></li>
 	<li><a href="admin.php">Show Admins</a></li>
 	{elseif $person->isSubscriberAdmin()}
-	<li><a href="revoke_certificate.php">Revoke certificates</a></li>
 	<li><a href="admin.php">Subscriber Admins</a></li>
 	<li><a href="robot.php">Robot Interface</a></li>
 	<li><a href="nren_subs_settings.php">Subscriber settings</a></li>
