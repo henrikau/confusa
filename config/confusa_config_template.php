@@ -159,20 +159,19 @@ $confusa_config = array(
         /* where to report errors in script for users. This should be set to
          * something sane for *your* installation */
 	'error_addr'		=> 'your@error.addr',
-
-	'csr_var'		=> 'remote_csr', /* name of the variable that
-						  * the upload-handler checks
-						  * for csr's */
-	'auth_var'		=> 'inspect_csr', /* the variable to pass as the
-						* authentication-url we use for
-						* authenticating users' CSRs */
-
-	'auth_length'		=> '40', /* length of auth-url token */
+	/* name of the variable that the upload-handler checks for csr's */
+	'csr_var'		=> 'remote_csr',
+	/* the variable to pass as the authentication-url we use for
+	 * authenticating users' CSRs */
+	'auth_var'		=> 'inspect_csr',
+	/* length of auth-url token */
+	'auth_length'		=> '40',
 
 	/* logs */
 	'default_log'		=> '/var/log/confusa/tmp.log',
-	'loglevel_min'		=> LOG_DEBUG, /* see syslog (php) for details */
-	'syslog_min'			=> LOG_DEBUG, /* ... */
+	/* see syslog (php) for details */
+	'loglevel_min'		=> LOG_DEBUG,
+	'syslog_min'			=> LOG_DEBUG,
 
 
 	/* mysql-variables */
@@ -194,17 +193,13 @@ $confusa_config = array(
         /* the from-addr to show up in the emails from the system */
 	'sys_from_address'		=> 'your@system.contact.addr',
 
-
-	'remote_retries'		=> 10, /* the number of CSRs a user can
-						* upload before he/she must log
-						* in and clean up.  */
-	'remote_ips'			=> 5, /* how many different CSRs can
-					       * exist in the database at any
-					       * given time, uploaded from the
-					       * SAME ip-address. If this
-					       * number is high, it can
-					       * indicate someone trying to
-					       * spam down the database. */
+	/* the number of CSRs a user can upload before he/she must log
+	 * in and clean up.  */
+	'remote_retries'		=> 10,
+	/* how many different CSRs can exist in the database at any given time,
+	 * uploaded from the SAME ip-address. If this number is high, it can
+	 * indicate someone trying to spam down the database. */
+	'remote_ips'			=> 5,
 
         /* how long should a certificate be valid in the cert_cache before being
          * doomed expired (to avoid that it's available for a long time for the
