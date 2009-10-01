@@ -127,10 +127,6 @@ class CP_RevokeCertificate extends Content_Page
 			Framework::error_output("Impossible condition. NON-Admin user in admin-mode!");
 		}
 
-		/* Test access-rights */
-		if (!$this->person->isAdmin())
-			Framework::error_output("Insufficient rights for revocation!");
-
 		/* Get the right subscriber for which revocation should happen */
 		if ($this->person->isNRENAdmin()) {
 			$subscribers = $this->getNRENSubscribers($this->person->getNREN());
