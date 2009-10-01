@@ -306,17 +306,25 @@ class CP_RevokeCertificate extends Content_Page
 		}
 
 		$num_certs = count($auth_key_list);
-
+		$num_certs_revoked = 0;
 		Logger::log_event(LOG_INFO, "Trying to revoke $num_certs certificates." .
 									"Administrator contacted us from " .
 									$_SERVER['REMOTE_ADDR']
 		);
 
 		foreach($auth_key_list as $auth_key) {
-			$this->certManager->revoke_cert($auth_key, $reason);
+			try {
+				if (!$this->certManager->revoke_cert($auth_key, $reason)) {
+					Framework::error_output("Could not revoke certificate properly.");
+				} else {
+					$num_certs_revoked = $num_certs_revoked + 1;
+				}
+			} catch (ConfusaGenException $cge) {
+				Framework::error_output($cge->getMessage());
+			}
 		}
 
-		Logger::log_event(LOG_NOTICE, "Successfully revoked $num_certs certificates." .
+		Logger::log_event(LOG_NOTICE, "Successfully revoked $num_certs_revoked certificates out of $num_certs. " .
 									  "Administrator contacted us from " .
 									  $_SERVER['REMOTE_ADDR']
 		);
@@ -346,6 +354,7 @@ class CP_RevokeCertificate extends Content_Page
 		}
 
 		$num_certs = count($auth_keys);
+		$num_certs_revoked = 0;
 
 		Logger::log_event(LOG_INFO, "Trying to revoke $num_certs certificates." .
 									"Administrator contacted us from " .
@@ -354,10 +363,18 @@ class CP_RevokeCertificate extends Content_Page
 		);
 
 		foreach($auth_keys as $auth_key) {
-			$this->certManager->revoke_cert($auth_key, $reason);
+			try {
+				if (!$this->certManager->revoke_cert($auth_key, $reason)) {
+					Framework::error_output("Could not revoke certificate $auth_key.");
+				} else {
+					$num_certs_revoked = $num_certs_revoked + 1;
+				}
+			} catch (ConfusaGenException $cge) {
+				Framework::error_output($cge->getMessage());
+			}
 		}
 
-		Logger::log_event(LOG_INFO, "Successfully revoked $num_certs certificates." .
+		Logger::log_event(LOG_INFO, "Successfully revoked $num_certs_revoked certificates out of $num_certs. " .
 									"Administrator contacted us from " .
 									$_SERVER['REMOTE_ADDR'] .
 									" in a bulk (list) revocation request."
