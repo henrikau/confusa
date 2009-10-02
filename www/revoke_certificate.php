@@ -69,9 +69,15 @@ class CP_RevokeCertificate extends Content_Page
 											$cge->getMessage());
 				}
 				break;
+			default:
+				Framework::error_output("Unknown operation received in parameter!");
+				break;
+			}
+		}
 
-			case 'do_revoke':
-
+		if (isset($_POST['revoke_operation'])) {
+			switch($_POST['revoke_operation']) {
+			case 'revoke_by_cn':
 				try {
 					$this->revoke_certs(Input::sanitize($_POST['common_name']), Input::sanitize($_POST['reason']));
 				} catch (ConfusaGenException $cge) {
@@ -80,7 +86,7 @@ class CP_RevokeCertificate extends Content_Page
 				}
 				break;
 
-			case 'do_revoke_list':
+			case 'revoke_by_list':
 				try {
 					$this->revoke_list(Input::sanitize($_POST['reason']));
 				} catch (ConfusaGenException $cge) {
@@ -160,18 +166,18 @@ class CP_RevokeCertificate extends Content_Page
 		$this->tpl->assign('file_name', 'eppn_list');
 
 		/* No need to do processing */
-		if (!isset($_GET['revoke']))
+		if (!isset($_POST['revoke_operation']))
 			return;
 
 		/* Test for revoke-commands */
-		switch($_GET['revoke']) {
+		switch($_POST['revoke_operation']) {
 		/* when we want so search for a particular certificate
 		 * to revoke. */
-		case 'search_display':
+		case 'search_by_cn':
 			$common_name = Input::sanitize($_POST['search']);
 			$this->search_certs_display($common_name, $subscriber);
 			break;
-		case 'search_list_display':
+		case 'search_by_list':
 			$this->search_list_display('eppn_list', $subscriber);
 			break;
 

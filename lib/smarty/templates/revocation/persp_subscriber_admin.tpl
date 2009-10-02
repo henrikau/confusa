@@ -4,7 +4,7 @@
 immediately see a result entry *}
 
     <div class="spacer"></div>
-    <form action="?revoke=search_display" method="post">
+    <form action="" method="post">
     <fieldset>
     <legend>CN-search</legend>
 
@@ -13,6 +13,7 @@ immediately see a result entry *}
     '%' as a wildcard.
     </p>
     <br />
+    <input type="hidden" name="revoke_operation" value="search_by_cn" />
     <input type="text" name="search" value="" />
     <input type="submit" name="Search" value="Search" />
 
@@ -21,7 +22,7 @@ immediately see a result entry *}
 
     <div class="spacer"></div>
 
-    <form enctype="multipart/form-data" action="?revoke=search_list_display" method="post">
+    <form enctype="multipart/form-data" action="" method="post">
     <fieldset>
     <legend>List upload</legend>
 
@@ -30,6 +31,7 @@ immediately see a result entry *}
     will actually be revoked. Separate the ePPNs in the list with a ',' comma.
     </p>
     <br />
+    <input type="hidden" name="revoke_operation" value="search_by_list" />
     <input type="hidden" name="max_file_size" value="10000000" />
     <input name="{$file_name}" type="file" />
     <input type="submit" value="Upload list" />
@@ -57,8 +59,9 @@ immediately see a result entry *}
                     {$owner}
                 </td>
                 <td>
-                    <form action="?revoke=do_revoke" method="post">
+                    <form action="" method="post">
                     <div>
+                    <input type="hidden" name="revoke_operation" value="revoke_by_cn" />
                     <input type="hidden" name="common_name" value="{$owner}" />
                     {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
                     <input type="submit" name="submit" value="Revoke all"
@@ -86,9 +89,10 @@ immediately see a result entry *}
 
         <div class="spacer"></div>
         <div style="text-align: right">
-            <form action="?revoke=do_revoke_list" method="post">
+            <form action="" method="post">
             Revocation reason:
             {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
+            <input type="hidden" name="revoke_operation" value="revoke_by_list" />
             <input type="Submit" value="Revoke all" onclick="return confirm('Are you sure?')" />
             </form>
         </div>
