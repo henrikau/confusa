@@ -10,6 +10,40 @@ require_once 'cert_manager.php';
 $log_error_code = create_pw(8);
 
 /**
+ * assertEnvironment() make sure that we are operating safely
+ *
+ * Assert that we are on SSL and on appropriate level before continuing. If any
+ * of the requirements are not met, we abort and close the connection.
+ *
+ * @param void
+ * @return void
+ */
+function assertEnvironment()
+{
+	global $log_error_code;
+	/* are we on SSL */
+	if (strtolower($_SERVER['HTTPS']) != 'on') {
+		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Server is not running on SSL. Blocking robot-connections.");
+		exit(0);
+	}
+	/* SSLv3 */
+	$protocol = strtolower($_SERVER['SSL_PROTOCOL']);
+	if (!($protocol == 'sslv3' || $protocol == 'tlsv1')) {
+		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Not on proper ssl protocol. Need SSLv3/TLS. Got " . $_SERVER['SSL_PROTOCOL']);
+		exit(0);
+	}
+	/* do we have a client certificate? */
+	$cert = $_SERVER['SSL_CLIENT_CERT'];
+	if (!isset($cert) || $cert == "") {
+		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Connection from client (".
+				  $_SERVER['REMOTE_ADDR'].
+				  ") without certificate. Dropping connection.");
+		exit(0);
+	}
+	return true;
+} /* end assertEnvironment() */
+
+/**
  * createAdminPerson() Create a person-object based on the certificate
  * credentials passed via the client certificate.
  *
@@ -21,24 +55,7 @@ $log_error_code = create_pw(8);
  */
 function createAdminPerson()
 {
-	/* are we on SSL */
-	if (strtolower($_SERVER['HTTPS']) != 'on') {
-		Logger::log_event(LOG_NOTICE, "Server is not running on SSL. Blocking robot-connections.");
-		return null;
-	}
-	/* SSLv3 */
-	$protocol = strtolower($_SERVER['SSL_PROTOCOL']);
-	if (!($protocol == 'sslv3' || $protocol == 'tlsv1')) {
-		Logger::log_event(LOG_NOTICE, "Not on proper ssl protocol. Need SSLv3/TLS. Got " . $_SERVER['SSL_PROTOCOL']);
-		return null;
-	}
-
-	/* do we have a client certificate? */
-	$cert = $_SERVER['SSL_CLIENT_CERT'];
-	if (!isset($cert) || $cert == "") {
-		return null;
-	}
-
+	global $log_error_code;
 	/*
 	 * Find the cert in the robot_cert table
 	 *
