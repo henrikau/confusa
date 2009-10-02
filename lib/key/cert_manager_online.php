@@ -524,12 +524,14 @@ class CertManager_Online extends CertManager
 		}
 
 		$info = array();
-		$info['cert_owner'] = $params['1_1_subjectDN'];
+		$cn_substr = strstr($params['1_1_subjectDN'], 'CN=');
+		$cn = substr($cn_substr, 3, (strpos($cn_substr, ',') - 3));
+		$info['cert_owner'] = $cn;
 
 		/* Unfortunately, the Comodo API can not return the organization in the
 		 * certificate from the API - that's why we'll have to parse it from the
 		 * subject-DN */
-		$org_substr = strstr($info['cert_owner'], 'O=');
+		$org_substr = strstr($params['1_1_subjectDN'], 'O=');
 		$orgname = substr($org_substr, 2, (strpos($org_substr, ',') - 2));
 		$info['organization'] = $orgname;
 
