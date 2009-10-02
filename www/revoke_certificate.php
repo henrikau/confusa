@@ -416,7 +416,7 @@ class CP_RevokeCertificate extends Content_Page
 		$auth_keys = array();
 
 		foreach($eppn_list as $eppn) {
-			$eppn = $this->sanitize_eppn($eppn);
+			$eppn = Input::sanitize($eppn);
 			$eppn = "%" . $eppn . "%";
 			$eppn_certs = $this->certManager->get_cert_list_for_persons($eppn, $subscriber);
 			$certs = array_merge($certs, $eppn_certs);
@@ -438,44 +438,6 @@ class CP_RevokeCertificate extends Content_Page
 			$this->tpl->assign('nren_reasons', $this->nren_reasons);
 			$this->tpl->assign('selected', 'unspecified');
 		}
-	}
-
-	/**
-	 * Remove anything that could be dangerous from user input.
-	 * Common-name search patterns should contain only [a-z][0-9] @.
-	 * So all inputs can be limited to [a-z][0-9] @.
-	 *
-	 * @param $input The input which is going to be sanitized
-	 */
-	private function sanitize($input)
-	{
-	  if (is_array($input)) {
-		foreach($input as $var=>$val) {
-		  $output[$var] = $this->sanitize($val);
-		}
-	  }
-	  /* also allow the wildcard character and the e-mail character*/
-	  $output = preg_replace('/[^a-z0-9 @.]+/i','',$input);
-	  return $output;
-	}
-
-	/**
-	 * Limit the eduPersonPrincipalName to a set of expected characters.
-	 *
-	 * @param mixed $eppn An eduPersonPrincipalName or an array therof
-	 *
-	 * @return The sanitized string/array
-	 */
-	private function sanitize_eppn($eppn)
-	{
-		if (is_array($eppn)) {
-			foreach($eppn as $var=>$val) {
-			  $output[$var] = sanitize_eppn($val);
-			}
-		}
-	  /* also allow the the e-mail characters @, . and _ */
-	  $output = preg_replace('/[^a-z0-9@._]+/','',$eppn);
-	  return $output;
 	}
 
 	/**
