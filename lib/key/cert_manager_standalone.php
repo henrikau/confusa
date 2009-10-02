@@ -174,12 +174,34 @@ class CertManager_Standalone extends CertManager
 
     public function signBrowserCSR($csr, $browser)
     {
-	/* I am feeling all stubby */
+	    /* FIXME */
+	    Framework::error_output("I am sorry, but this functionality is not yet implemented for standalone.");
+	    return null;
     }
 
+
+    /**
+     * Return true if processing of the certificate is finished and false
+     * otherwise.
+     *
+     * @param $key The auth_key or order number of the certificate for which is
+     * polled
+     */
     public function pollCertStatus($key)
     {
-	/* I am feeling all stubby */
+	    /* FIXME, should be immediate result anyway */
+	    try  {
+		    $res = MDB2Wrapper::execute("SELECT * FROM cert_cache WHERE auth_key=? and cert_owner = ?",
+						array('text', 'text'),
+						array($key, $this->person->getEPPN()));
+		    if (count($res) == 1) {
+			    return true;
+		    }
+	    } catch (Exception $e) {
+		    Framework::error_output($e->getMessage());
+		    return false;
+	    }
+	    return false;
     }
 
     /*
