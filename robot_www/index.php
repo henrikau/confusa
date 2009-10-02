@@ -163,6 +163,8 @@ function createCertList($admin)
 	$cm = CertManagerHandler::getManager($admin);
 	$list = $cm->get_cert_list_for_persons("", $admin->getSubscriberOrgName());
 	$res = array();
+	$found_certs = 0;
+	$found_users = 0;
 	if (isset($list) && is_array($list) && count($list) > 0) {
 		foreach($list as $value) {
 			$cert = openssl_x509_parse(openssl_x509_read($value['cert']), false);
@@ -172,9 +174,13 @@ function createCertList($admin)
 				$res[$eppn]['count'] = $res[$eppn]['count'] + 1;
 			} else {
 				$res[$eppn] = array('eppn' => $eppn, 'fullDN' => $cert['name'], 'count' => '1');
+				$found_users = $found_users + 1;
 			}
+			$found_certs = $found_certs + 1;
 		}
 	}
+	Logger::log_event(LOG_NOTICE, "Created a list of $found_certs valid certificates for $found_users " .
+			  "different user(s) in subscriber " . $admin->getSubscriberOrgName());
 	return $res;
 } /* end createCertList */
 
