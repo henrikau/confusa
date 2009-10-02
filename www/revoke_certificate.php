@@ -228,7 +228,7 @@ class CP_RevokeCertificate extends Content_Page
 	 * the normal user will only be given the possibility to revoke the full
 	 * set of her own certificates.
 	 */
-	 private function normal_revoke()
+	 private function showNonAdminRevokeTable()
 	{
 		$this->search_certs_display($this->person->getEPPN(), $this->person->getSubscriberOrgName());
 	}
