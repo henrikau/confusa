@@ -31,9 +31,6 @@ class CP_RevokeCertificate extends Content_Page
 	function __destruct()
 	{
 		parent::__destruct();
-		if (isset($_SESSION['auth_keys'])) {
-			unset($_SESSION['auth_keys']);
-		}
 	}
 
 	/**
