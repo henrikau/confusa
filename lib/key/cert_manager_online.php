@@ -23,8 +23,8 @@ class CertManager_Online extends CertManager
 
 	/* constants for the test-mode. These will go into the certificate subject */
 	public static $TEST_DC_PREFIX = "TEST CERTIFICATE";
-	public static $TEST_O_PREFIX = "TEST UNIVERSITY";
-	public static $TEST_CN_PREFIX = "TEST PERSON";
+	public static $TEST_O_PREFIX = "TEST UNIVERSITY ";
+	public static $TEST_CN_PREFIX = "TEST PERSON ";
 
     private $cnPrefix;
     private $oPrefix;
