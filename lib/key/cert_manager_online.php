@@ -21,10 +21,13 @@ class CertManager_Online extends CertManager
     /* order number for communication with the remote API */
     private $order_number;
 
-    /* constants for the test-mode. These will go into the certificate subject */
-    private $TEST_CN_PREFIX;
-    private $TEST_DC = "TEST CERTIFICATE";
-    private $TEST_O_PREFIX;
+	/* constants for the test-mode. These will go into the certificate subject */
+	public static $TEST_DC_PREFIX = "TEST CERTIFICATE";
+	public static $TEST_O_PREFIX = "TEST UNIVERSITY";
+	public static $TEST_CN_PREFIX = "TEST PERSON";
+
+    private $cnPrefix;
+    private $oPrefix;
 
     /* login-name and password for the remote-signing CA */
     private $login_name;
@@ -36,11 +39,11 @@ class CertManager_Online extends CertManager
     function __construct($pers)
     {
         if (Config::get_config('capi_test')) {
-            $this->TEST_CN_PREFIX = "TEST PERSON ";
-            $this->TEST_O_PREFIX = "TEST UNIVERSITY ";
+            $this->cnPrefix = CertManager_Online::$TEST_CN_PREFIX;
+            $this->oPrefix = CertManager_Online::$TEST_O_PREFIX;
         } else {
-            $this->TEST_CN_PREFIX = "";
-            $this->TEST_O_PREFIX = "";
+            $this->cnPrefix = "";
+            $this->oPrefix = "";
         }
 
         parent::__construct($pers);
@@ -304,7 +307,7 @@ class CertManager_Online extends CertManager
             $dn_components = explode(',', $subject);
 
             if ($org != NULL) {
-                $organization = "O=" . $this->TEST_O_PREFIX . $org;
+                $organization = "O=" . $this->oPrefix . $org;
 
                 /* don't return order number and the owner subject
                  * if the organization is not present in the DN
@@ -693,7 +696,7 @@ class CertManager_Online extends CertManager
          * if the certs are part of a testing process
          */
         if (Config::get_config('capi_test')) {
-          $postfields_sign_req["subject_domainComponent_7"] = $this->TEST_DC;
+          $postfields_sign_req["subject_domainComponent_7"] = CertManager_Online::$TEST_DC_PREFIX;
           $days = '14';
         } else {
           $days = '395';
@@ -708,9 +711,9 @@ class CertManager_Online extends CertManager
         $postfields_sign_req["caCertificateId"] = $ca_cert_id;
         /* manually compose the subject. Necessary, because we want to have
          * Terena domainComponents */
-        $postfields_sign_req["subject_commonName_1"] = $this->TEST_CN_PREFIX .
+        $postfields_sign_req["subject_commonName_1"] = $this->cnPrefix .
             $this->person->getX509ValidCN();
-        $postfields_sign_req["subject_organizationName_2"] = $this->TEST_O_PREFIX .
+        $postfields_sign_req["subject_organizationName_2"] = $this->oPrefix .
             $this->person->getSubscriberOrgName();
         $postfields_sign_req["subject_countryName_3"] = $this->person->getCountry();
         $postfields_sign_req["subject_domainComponent_4"] = "tcs";
