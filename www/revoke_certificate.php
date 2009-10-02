@@ -57,8 +57,9 @@ class CP_RevokeCertificate extends Content_Page
 				try {
 					if (!isset($order_number) || !isset($reason)) {
 						Framework::error_output("Revoke Certificate: Errors with parameters, not set properly");
-					}
-					elseif (!$this->certManager->revoke_cert($order_number, $reason)) {
+					} elseif (!$this->checkRevocationPermissions($order_number)) {
+						Framework::error_output("You do not have the permission to revoke that certificate!");
+					} elseif (!$this->certManager->revoke_cert($order_number, $reason)) {
 						Framework::error_output("Cannot revoke yet ($order_number) for supplied reason: $reason");
 					} else {
 						Framework::message_output("Certificate ($order_number) successfully revoked.");
@@ -471,6 +472,94 @@ class CP_RevokeCertificate extends Content_Page
 	  $output = preg_replace('/[^a-z0-9@._]+/','',$eppn);
 	  return $output;
 	}
+
+	/**
+	 * Check if the person that called "revoke" on auth_key may revoke the respective
+	 * certificate.
+	 *
+	 * NREN-Admin: Is the certificate issued to one of the subscribers in the
+	 * 			constituency of the NREN?
+	 * Subscriber-Admin: Is the certificate issued to the organization of the admin?
+	 * "Normal" Person: Is the certificate issued to the person herself?
+	 *
+	 * @param $auth_key mixed The auth_key for which to check
+	 * @return boolean true, if revocation of the passed key is permitted
+	 */
+	private function checkRevocationPermissions($auth_key)
+	{
+		try {
+			$info = $this->certManager->getCertInformation($auth_key);
+
+			if (is_null($info)) {
+				Framework::error_output("Certificate with the given auth_key/order-number " .
+					"not found! Maybe you misspelled the order-number or auth_key?");
+				return false;
+			}
+
+			/* if the API is in test mode, inject the TEST CERTIFICATE strings into the
+			 * organization name that is queried for */
+			$test_prefix = Config::get_config('ca_mode') == CA_ONLINE &&
+							Config::get_config('capi_test');
+
+			/**
+			 * Check if the NREN admin may revoke the certificate. That holds only
+			 * if the organization name in the certificate matches one of the institutions
+			 * in the constituency of the NREN
+			 */
+			if ($this->person->isNRENAdmin()) {
+				$subscribers = $this->getNRENSubscribers($this->person->getNREN());
+
+				foreach ($subscribers as $subscriber) {
+					if ($test_prefix) {
+						$subscriber = CertManager_Online::$TEST_O_PREFIX . $subscriber;
+					}
+
+					if ($subscriber === $info['organization']) {
+						return true;
+					}
+				}
+			/** check if the subscriber admin may revoke the certificate.
+			 * She may do so only if the organization name in the certificate matches
+			 * her own organization
+			 */
+			} else if ($this->person->isSubscriberAdmin() || $this->person->isSubscriberSubAdmin()) {
+				$subscriber = $this->person->getSubscriberOrgName();
+				if ($test_prefix) {
+					$subscriber = CertManager_Online::$TEST_O_PREFIX . $subscriber;
+				}
+
+				if ($subscriber === $info['organization']) {
+					return true;
+				}
+			/*
+			 * Check if an individual user may revoke a certificate. That holds only
+			 * if the CN of the certificate matches the (constructed) CN of the user and
+			 * the organization the subscriber-organization of the user
+			 *
+			 * */
+			} else {
+				$cn = $this->person->getX509ValidCN();
+				$subscriber = $this->person->getSubscriberOrgName();
+				if ($test_prefix) {
+					$cn = CertManager_Online::$TEST_CN_PREFIX . $cn;
+					$subscriber = CertManager_Online::$TEST_O_PREFIX . $subscriber;
+				}
+
+				if (($info['cert_owner'] === $cn) && ($info['organization'] === $subscriber)) {
+					return true;
+				}
+			}
+
+		} catch (ConfusaGenException $cge) {
+			Framework::error_output("Retrieving certificate information failed: " .
+							$cge->getMessage());
+			Logger::log_event(LOG_INFO, "[nadm][sadm][norm] Revoking certificate " .
+				"with key $auth_key failed, because permissions could not be " .
+				"determined!");
+		}
+
+		return false;
+	} /* end checkRevocationPermissions */
 }
 
 $fw = new Framework(new CP_RevokeCertificate());
