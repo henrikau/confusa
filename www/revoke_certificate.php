@@ -26,6 +26,7 @@ class CP_RevokeCertificate extends Content_Page
 	function __construct()
 	{
 		parent::__construct("Revoke Certificate(s)", true);
+		Framework::sensitive_action();
 	}
 
 	function __destruct()
@@ -40,7 +41,6 @@ class CP_RevokeCertificate extends Content_Page
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
-		Framework::sensitive_action();
 
 		if(isset($_GET['revoke'])) {
 			switch($_GET['revoke']) {
