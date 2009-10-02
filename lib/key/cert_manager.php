@@ -93,6 +93,17 @@ abstract class CertManager
    */
   abstract function revoke_cert($key, $reason);
 
+  /**
+   * get_cert_list_for_persons() get all valid certificates for a given user
+   *
+   * Search for the certificates of a person with a given common_name.
+   * Common_name may include wildcard characters.
+   *
+   * Restrict the result set to organization $org.
+   *
+   * @param $common_name The common_name to search for
+   * @param $org The organization to restrict the search to
+   */
   abstract function get_cert_list_for_persons($common_name, $org);
   /*
    * If the person has been changed in the framework or elsewhere, it can be updated here
