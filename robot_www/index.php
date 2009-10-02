@@ -118,9 +118,11 @@ function createAdminPerson()
 					    array('text'),
 					    array($cert_res[0]['uploaded_by']));
 	} catch (DBStatementException $dbse) {
+		/* FIXME */
 		echo $dbse->getMessage() . "<br />\n";
 		return null;
 	} catch (DBQueryException $dbqe) {
+		/* FIXME */
 		echo $dbqe->getMessage() . "<br />\n";
 		return null;
 	}
@@ -169,13 +171,13 @@ function parseRevList($list, $admin)
 	$revokedUsers = array();
 	$cm = CertManagerHandler::getManager($admin);
 	foreach ($list as $value) {
-		/* Get eppn */
-		if (!isset($value['eppn'])) {
+
+		/* Get eppn from value*/
+		$eppn = $value['eppn'];
+		if (!isset($eppn) || $eppn == "") {
 			echo "Need eppn. This is a REQUIRED attribute.<br />\n";
 			break;
 		}
-		$eppn = $value['eppn'];
-
 		/* Search after matches for cn and subscriber */
 		$list = $cm->get_cert_list_for_persons($eppn, $admin->getSubscriberOrgName());
 		$count = 0;
@@ -198,11 +200,16 @@ function parseRevList($list, $admin)
 
 /**
  * createCertList() Create a list of all valid certificates for the given subscriber
+ *
+ * The function will log the number of certificates found as well, but only the
+ * total number and the number of different users.
+ *
+ * @return Array the list of users and the number of (valid) certificates each user has
  */
 function createCertList($admin)
 {
 	$cm = CertManagerHandler::getManager($admin);
-	$list = $cm->get_cert_list_for_persons("", $admin->getSubscriberOrgName());
+	$list = $cm->get_cert_list_for_persons("%", $admin->getSubscriberOrgName());
 	$res = array();
 	$found_certs = 0;
 	$found_users = 0;
@@ -231,8 +238,18 @@ function createCertList($admin)
 	return $res;
 } /* end createCertList */
 
+/**
+ * printXMLRes() Print the returned array as a valid ConfusaRobot XML-file
+ *
+ * @param $resArray Array of data to print
+ * @param $type String indicating the class of output
+ */
 function printXMLRes($resArray, $type = 'userList')
 {
+	/* lets hope that the header has not yet been set so we can trigger
+	 * proper XML headers */
+	header ("content-type: text/xml");
+
 	echo "<?xml version=\"1.0\" standalone=\"yes\" ?>\n";
 	echo "<ConfusaRobot>\n";
 	$ending = "";
@@ -266,6 +283,9 @@ function printXMLRes($resArray, $type = 'userList')
 	}
 	echo "</ConfusaRobot>\n";
 }
+
+/* Safe environment? */
+assertEnvironment();
 
 /* Is the certificate a legit cert? */
 $admin = createAdminPerson();
@@ -301,8 +321,6 @@ if (isset($_GET['action'])) {
 	$action = 'cert_list';
 }
 
-/* We are going to dump something as xml anyways, so set the header as xml */
-header ("content-type: text/xml");
 
 switch($action) {
 case 'cert_list':
@@ -315,11 +333,10 @@ case 'revoke_list':
 	}
 	else if (isset($_POST['list'])) {
 		$xml = $_POST['list'];
-	} else if (Config::get_config('debug')) {
-		$xml = file_get_contents('robot/example.xml');
 	} else {
 		echo "No data provided.<br />\n";
 	}
+
 	/* Start parsing */
 	if (isset($xml)) {
 		$parsedXML = new SimpleXMLElement($xml);
