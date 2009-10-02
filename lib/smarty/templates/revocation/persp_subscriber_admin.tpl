@@ -97,12 +97,6 @@ immediately see a result entry *}
             </form>
         </div>
 
-    {else}
     {/if}
-    {else}
-        {if !$person->inAdminMode()}
-            <div class="spacer"></div>
-            Found no valid certificates to revoke for DN<br /><b>{$person->getX509ValidCN()}</b>!
-        {/if}
 {/if}
 

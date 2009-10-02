@@ -104,7 +104,9 @@ class CP_RevokeCertificate extends Content_Page
 			if ($this->person->inAdminMode()) {
 				$this->showAdminRevokeTable();
 			} else {
-				$this->showNonAdminRevokeTable();
+				if (!isset($_GET['revoke'])) {
+					$this->showNonAdminRevokeTable();
+				}
 			}
 
 		$this->tpl->assign('textual', $textual);
