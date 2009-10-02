@@ -137,8 +137,8 @@ function parseRevList($list, $admin)
 
 		/* Search after matches for cn and subscriber */
 		$list = $cm->get_cert_list_for_persons($eppn, $admin->getSubscriberOrgName());
+		$count = 0;
 		if (count($list) > 0) {
-			$count = 0;
 			foreach ($list as $key => $value) {
 				try {
 					if ($cm->revoke_cert($value['auth_key'], "privilegeWithdrawn")) {
@@ -149,10 +149,8 @@ function parseRevList($list, $admin)
 					echo $kre->getMessage() . "<br />\n";
 				}
 			}
-			if ($count > 0) {
-				$revokedUsers[] = array('eppn' => $eppn, 'count' => $count);
-			}
 		}
+		$revokedUsers[] = array('eppn' => $eppn, 'count' => $count);
 	}
 	return $revokedUsers;
 } /* end parseRevList */
