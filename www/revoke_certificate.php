@@ -138,7 +138,7 @@ class CP_RevokeCertificate extends Content_Page
 				/* check if the given subscriber is a legitimate subscriber
 				 * for the given NREN
 				 */
-				if (!array_search($subscriber, $subscribers)) {
+				if (array_search($subscriber, $subscribers) === false) {
 					Logger::log_event(LOG_NOTICE, "[nadm] Administrator for NREN " .
 						$this->person->getNREN() . ", contacting us from " .
 						$_SERVER['REMOTE_ADDR'] . " tried to revoke certificates for " .
