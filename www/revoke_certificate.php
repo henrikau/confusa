@@ -18,7 +18,7 @@ class CP_RevokeCertificate extends Content_Page
 	private $nren_reasons = array('unspecified',
 				      'keyCompromise',
 				      'affiliationChanged',
-				      'superseeded',
+				      'superseded',
 				      'certificateHold',
 				      'privilegeWithdrawn',
 				      'aACompromise');
