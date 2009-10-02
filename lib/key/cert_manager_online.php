@@ -83,6 +83,10 @@ class CertManager_Online extends CertManager
         $this->login_name = $res[0]['account_login_name'];
         $this->ap_name = $res[0]['ap_name'];
 
+		if (!isset($this->login_name) || !isset($this->ap_name)) {
+			return;
+		}
+
         $encrypted_pw = base64_decode($res[0]['account_password']);
         $ivector = base64_decode($res[0]['account_ivector']);
         $encryption_key = Config::get_config('capi_enc_pw');
