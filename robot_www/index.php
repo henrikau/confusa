@@ -61,7 +61,7 @@ function createAdminPerson()
 	 *
 	 * If the query fails for some reason, we jumb out, returning null
 	 */
-	$fingerprint = openssl_x509_fingerprint($cert, true);
+	$fingerprint = openssl_x509_fingerprint($_SERVER['SSL_CLIENT_CERT'], true);
 	try {
 		$cert_res = MDB2Wrapper::execute("SELECT * FROM robot_certs WHERE fingerprint = ?",
 						 array('text'),
@@ -89,7 +89,7 @@ function createAdminPerson()
 		 * that differences in spaces, newlines, tabs and whatnot are
 		 * removed.
 		 */
-		openssl_x509_export(openssl_x509_read($cert), $stored_admin_dump);
+		openssl_x509_export(openssl_x509_read($_SERVER['SSL_CLIENT_CERT']), $stored_admin_dump);
 		openssl_x509_export(openssl_x509_read($cert_res[0]['cert']), $stored_client_dump);
 		if ($stored_admin_dump != $stored_client_dump) {
 			Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Got matching fingerprint ($fingerprint) ".

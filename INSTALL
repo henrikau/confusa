@@ -122,6 +122,8 @@ a) Put Confusa in a directory, say /var/www/confusa/
 
 b) Configure Apache with something along the following line:
 
+   For the normal webservice:
+
              Alias /confusa "/var/www/confusa/www/"
 	     Alias /simplesaml "/var/www/simplesamlphp/www/"
              <Directory /var/www/confusa/www>
@@ -131,7 +133,25 @@ b) Configure Apache with something along the following line:
                         Allow from all
              </Directory>
 
-   then reload the config: /etc/init.d/apache2 reload (or httpd (or
+   For the robotic interface:
+
+             Alias /confusa_robot "/var/www/confusa/robot_www/"
+             <Directory /var/www/confusa/robot_www/>
+			SSLVerifyClient require
+			SSLVerifyClient optional_no_ca
+			Options Indexes FollowSymLinks Multiviews
+			AllowOverride None
+			Order deny,allow
+			allow from all
+             </Directory>
+
+   You want to create a separate directory so you can enforce the
+   certificate requirement and let apache fail if the client does not
+   provide a certificate. Confusa *will* halt if no certificate is
+   present, but you will save some extra cycles by setting Apache to
+   handle this.
+
+   Then reload the config: /etc/init.d/apache2 reload (or httpd (or
    other relevant name for apache - consult your distro's documentation)
    and reaload.
 
