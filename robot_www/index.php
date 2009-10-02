@@ -67,15 +67,21 @@ function createAdminPerson()
 						 array('text'),
 						 array($fingerprint));
 	} catch (DBStatementException $dbse) {
-		Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . " Error with syntax for robot_certs-query.(".$dbse->getMessage().")");
+		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) (line: ".__LINE__.
+				  ")Error with syntax for robot_certs-query.("
+				  .$dbse->getMessage().")");
 		return null;
 	} catch (DBQueryException $dbqe) {
-		Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . " Error with params in robot_certs-query.(".$dbqe->getMessage().")");
+		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Error with params (line (".
+				  __LINE__ .") in robot_certs-query.(".$dbqe->getMessage().")");
 		return null;
 	}
 
 	switch(count($cert_res)) {
 	case 0:
+		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code): Unauthenticated client connected. Refusing to establish connection. " .
+				  $_SERVER['SSL_CLIENT_I_DN']);
+		echo "[$log_error_code] You are not authorized to use this API. This incident has been logged.\n";
 		return null;
 	case 1:
 		/*
@@ -86,11 +92,18 @@ function createAdminPerson()
 		openssl_x509_export(openssl_x509_read($cert), $stored_admin_dump);
 		openssl_x509_export(openssl_x509_read($cert_res[0]['cert']), $stored_client_dump);
 		if ($stored_admin_dump != $stored_client_dump) {
+			Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Got matching fingerprint ($fingerprint) ".
+					  "but actual certificates differ! Aborting");
+			echo "[$code] There were issues with your certificate. Cannot continue using this cert.\n";
+			echo "Please use another certificate for the time being.\n";
+			echo "This event has been logged.\n";
 			return null;
 		}
 		break;
 	default:
-		Logger::log_event(LOG_ALERT, "Several certs (".count($cert_res).") in DB matching fingerprint ($fingerprint), cannot auth client.");
+		Logger::log_event(LOG_ALERT, "[RI] ($log_error_code) Several certs (".
+				  count($cert_res).
+				  ") in DB matching fingerprint ($fingerprint), cannot auth client.");
 		return null;
 	}
 
@@ -113,7 +126,7 @@ function createAdminPerson()
 	}
 
 	if (count($res) != 1) {
-		echo "Did not find the owner (".$cert_res[0]['uploaded_by'].") of the certificate ";
+		echo "[$log_error_code] Did not find the owner (".$cert_res[0]['uploaded_by'].") of the certificate ";
 		echo "(got " . count($res) . " rows in return). <br />\n";
 		echo "This certificate should not be present in the DB.<br />\n";
 		return null;
@@ -191,6 +204,12 @@ function createCertList($admin)
 			$eppn_array = explode(" ", $value['cert_owner']);
 			$eppn = $eppn_array[count($eppn_array) - 1];
 			if (isset($res[$eppn])) {
+				if ($res[$eppn]['fullDN'] != $cert['name']) {
+					$msg  =  "Several certificates with identical names ($eppn) but different DN";
+					$msg .= " " . $res[$eppn]['fullDN']."vs. ".$cert['name'].".";
+					Logger::log_event(LOG_ALERT, $msg);
+					continue;
+				}
 				$res[$eppn]['count'] = $res[$eppn]['count'] + 1;
 			} else {
 				$res[$eppn] = array('eppn' => $eppn, 'fullDN' => $cert['name'], 'count' => '1');
