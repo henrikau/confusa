@@ -488,6 +488,51 @@ class CertManager_Online extends CertManager
 		}
 	}
 
+	/**
+	 * Poll for information about the certificate associated with key $key
+	 *
+	 * @param $key mixed Order number, auth_key or another certificate identifier
+	 * @return array cert_owner and organization in an array
+	 */
+	public function getCertInformation($key)
+    {
+		$key = $this->_transform_to_order_number($key);
+
+		$list_endpoint = Config::get_config('capi_listing_endpoint');
+		$postfields_list = array();
+        $postfields_list["loginName"]		= $this->login_name;
+        $postfields_list["loginPassword"]	= $this->login_pw;
+        $postfields_list["orderNumber"] = $key;
+        $data = $this->curlContact($list_endpoint, "post", $postfields_list);
+		$params = array();
+		parse_str($data, $params);
+
+		if (!isset($params['errorCode'])) {
+			throw new RemoteAPIException("Response from Comodo API looks malformed! " .
+							"Maybe the Confusa instance is misconfigured? Please " .
+							"contact an administrator!");
+		}
+
+        if ($params['errorCode'] != 0) {
+			$msg = $this->capiErrorMessage($data['errorCode'], $data['errorMessage']);
+			throw new RemoteAPIException("Could not query information about " .
+				"certificate with key $key. Error was " . $data['errorMessage'] .
+				"\n\n$msg");
+		}
+
+		$info = array();
+		$info['cert_owner'] = $params['1_1_subjectDN'];
+
+		/* Unfortunately, the Comodo API can not return the organization in the
+		 * certificate from the API - that's why we'll have to parse it from the
+		 * subject-DN */
+		$org_substr = strstr($info['cert_owner'], 'O=');
+		$orgname = substr($org_substr, 2, (strpos($org_substr, ',') - 2));
+		$info['organization'] = $orgname;
+
+		return $info;
+	} /* end getCertInformation */
+
     /**
      * Get the certificate with key $key in a deployable from for the specified
      * browser.

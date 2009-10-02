@@ -49,6 +49,7 @@ class CertManager_Standalone extends CertManager
 			if (!file_exists($path)) {
 				throw new KeySignException("sign_key.sh does not exist!");
 			}
+			echo "Path: " . $path . " auth_key " . $auth_key . " cert_file_name " . $cert_file_name . "<br />\n";
 			$cmd = "$path $auth_key $cert_file_name";
 			$res = shell_exec($cmd);
 			$val = split("\n", $res);
@@ -228,6 +229,29 @@ class CertManager_Standalone extends CertManager
             throw new DBQueryException($msg);
         }
     }
+
+	/**
+	 * Get the owner DN and the organization name for the certificate associated
+	 * with key $key.
+	 *
+	 * @param $key mixed The key for which the certificate is to be retrieved
+	 * @return array containing owner DN and organization name
+	 *
+	 * @throws DBQueryException If something went wrong with the query
+	 * @throws DBStatementException If the SQL configuration is wrong
+	 */
+    public function getCertInformation($key)
+    {
+		$query = "SELECT cert_owner, organization FROM cert_cache WHERE auth_key=?";
+
+		$res = MDB2Wrapper::execute($query,
+									array('text'),
+									array($key));
+
+		if (count($res) == 1) {
+			return $res[0];
+		}
+	}
 
     public function getCertDeploymentScript($key, $browser)
     {

@@ -79,6 +79,13 @@ abstract class CertManager
    */
   abstract function get_cert($key);
 
+  /*
+   * Return owner and organisation belonging to the certificate with key $key
+   *
+   * @param key An identifier mapping to a certificate, dependant on the implementation.
+   */
+  abstract function getCertInformation($key);
+
   /** deleteCertFromDB()
    *
    * @key : the unique identifier for the certififcate in the database
