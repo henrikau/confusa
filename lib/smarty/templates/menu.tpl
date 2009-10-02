@@ -9,29 +9,33 @@
 <h3>Other</h3>
 <ul>
 	<li><a href="about_you.php">About you</a></li>
+	<li><a href="{php}$_SERVER['PHP_SELF']{/php}?mode=admin">Admin menu</a></li>
 	<li><a href="tools.php">Tools</a></li>
 	{if $person->isAdmin()}
-	<li><a href="{php}$_SERVER['PHP_SELF']{/php}?mode=admin">Admin menu</a></li>
 	{/if}
 {elseif $person->getMode() == 1}
 <h3>Admin</h3>
 <ul>
-	<li><a href="revoke_certificate.php">Revocation</a></li>
 	{if $person->isSubscriberSubadmin()}
-	<li><a href="admin.php">Show Admins</a></li>
+	<li><a href="admin.php">Admins</a></li>
+	<li><a href="revoke_certificate.php">Revocation</a></li>
 	{elseif $person->isSubscriberAdmin()}
-	<li><a href="admin.php">Subscriber Admins</a></li>
+	<li><a href="admin.php">Admins</a></li>
+	<li><a href="revoke_certificate.php">Revocation</a></li>
 	<li><a href="robot.php">Robot Interface</a></li>
 	<li><a href="nren_subs_settings.php">Subscriber settings</a></li>
 	{elseif $person->isNRENAdmin()}
 	<li><a href="admin.php">Admins</a></li>
-	<li><a href="nren_admin.php">Subscribers</a></li>
 	<li><a href="stylist.php?show=text">Appearance</a></li>
-	<li><a href="nren_subs_settings.php">NREN settings</a></li>
 
 	{if $is_online === TRUE}
 		<li><a href="accountant.php">CA-accounts</a></li>
 	{/if}
+
+	<li><a href="nren_subs_settings.php">NREN settings</a></li>
+	<li><a href="revoke_certificate.php">Revocation</a></li>
+	<li><a href="nren_admin.php">Subscribers</a></li>
+
 	{/if}
 </ul>
 <h3>Other</h3>
