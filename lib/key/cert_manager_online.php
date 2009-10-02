@@ -654,7 +654,7 @@ class CertManager_Online extends CertManager
         $list_endpoint = Config::get_config('capi_listing_endpoint');
         $postfields_list["loginName"]		= $this->login_name;
         $postfields_list["loginPassword"]	= $this->login_pw;
-        $postfields_list["commonName"]		= $this->TEST_CN_PREFIX . $common_name;
+        $postfields_list["commonName"]		= $this->cnPrefix . $common_name;
 
         $data = $this->curlContact($list_endpoint, "post", $postfields_list);
         $params=array();
