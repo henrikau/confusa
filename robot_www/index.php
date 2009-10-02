@@ -129,33 +129,41 @@ function createAdminPerson()
 		echo "[$log_error_code] Did not find the owner (".$cert_res[0]['uploaded_by'].") of the certificate ";
 		echo "(got " . count($res) . " rows in return). <br />\n";
 		echo "This certificate should not be present in the DB.<br />\n";
+		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) No admins appear to own certificate $fingerprint.");
 		return null;
+	}
+	/*
+	 * Decorate person
+	 */
+	$person = new Person();
+	if (isset($res[0]['admin_name']) && $res[0]['admin_name'] != "") {
+		$person->setName($res[0]['admin_name']);
+	} else {
+		$person->setName($res[0]['admin']);
 	}
 	try {
-		/*
-		 * Decorate person
-		 */
-		$person = new Person();
-		if (isset($res[0]['admin_name']) && $res[0]['admin_name'] != "") {
-			$person->setName($res[0]['adminn_name']);
-		} else {
-			$person->setName($res[0]['admin']);
-		}
 		$person->setEPPN($res[0]['admin']);
-		$person->setAuth(true);
-		$person->setEntitlement(Config::get_config('entitlement_admin'));
-		$person->setSubscriberOrgName($res[0]['subscriber_name']);
-		$person->setNREN($res[0]['nren_name']);
-		$person->setName($res[0]['admin_name']);
-		$person->setEmail($res[0]['admin_email']);
 	} catch (CriticalAttributeException $cae) {
-		echo "Problems with setting the eduPersonPrincipalName for person.<br />\n";
+		echo "[$log_error_code] Problems with setting the eduPersonPrincipalName for robot-admin.<br />\n";
 		echo "Check the data in admins (admin_id: " . $cert_res[0]['uploaded_by'] . ")<br />\n";
+		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Internal error? Suddenly provided admin-eppn is not available.");
 		return null;
 	}
-	return $person;
-}
+	$person->setAuth(true);
+	$person->setEntitlement(Config::get_config('entitlement_admin'));
+	$person->setSubscriberOrgName($res[0]['subscriber_name']);
+	$person->setNREN($res[0]['nren_name']);
+	$person->setName($res[0]['admin_name']);
+	$person->setEmail($res[0]['admin_email']);
 
+	Logger::log_event(LOG_NOTICE, "[RI]: Authenticated robot-client via cert $fingerprint belonging to " . $person->getEPPN());
+	return $person;
+} /* end createAdminPerson() */
+
+/**
+ * parseRevList() work through a list of eppns and revoke certificates for those users
+ *
+ */
 function parseRevList($list, $admin)
 {
 	$revokedUsers = array();
