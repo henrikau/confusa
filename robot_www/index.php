@@ -1,6 +1,6 @@
 <?php
 require_once '../www/confusa_include.php';
-requrie_once 'pw.php';
+require_once 'pw.php';
 require_once 'mdb2_wrapper.php';
 require_once 'cert_lib.php';
 require_once 'logger.php';
