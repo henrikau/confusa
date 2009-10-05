@@ -120,10 +120,19 @@ abstract class Confusa_Auth
 				}
 			}
 			$this->person->setSubscriberOrgName($parsed);
-
 			$this->person->setName($attributes[$map['cn']][0]);
-			$this->person->setEmail($attributes[$map['mail']][0]);
 
+			/* if mail is not set, we cannot send notifications etc
+			 * to the user. This means that we cannot sign
+			 * certificates (or revoke them) as the user *requires*
+			 * a receipt. */
+			if (!isset($attributes[$map['mail']][0]) || $attributes[$map['mail']][0] == "") {
+				$msg  = "Troubles with attributes. No mail address available. ";
+				$msg .=" You will not be able to sign new certificates until this attribute is available.<br />\n";
+				Framework::error_output($msg);
+			} else {
+				$this->person->setEmail($attributes[$map['mail']][0]);
+			}
 
 			/* test namespace
 			 *
