@@ -37,12 +37,6 @@ class KeyScript {
 		$address .= "://" . $_SERVER['SERVER_NAME'] . dirname($_SERVER['REQUEST_URI']);
 
 		$script = str_replace('server_loc=""'	,'server_loc="'. $address .'"'	, $script);
-                $script = str_replace('down_page=""'	,'down_page="'.Config::get_config('download').'"'	, $script);
-                $script = str_replace('up_page=""'	,'up_page="'.Config::get_config('upload').'"'		, $script);
-		$script = str_replace('approve_page=""'	, 'approve_page="'.Config::get_config('approve').'"'	, $script);
-		$script = str_replace('csr_var=""'	,'csr_var="'.Config::get_config('csr_var').'"'		, $script);
-		$script = str_replace('auth_var=""'	,'auth_var="'.Config::get_config('auth_var').'"'	, $script);
-		$script = str_replace('auth_length=""'	,'auth_length="'.Config::get_config('auth_length').'"'	, $script);
 		$script = str_replace('ca_cert_name="'	, 'ca_cert_name="'.Config::get_config('ca_cert_name')	, $script);
 		$script = str_replace('ca_cert_path="'	, 'ca_cert_path="'.Config::get_config('ca_cert_path')	, $script);
 

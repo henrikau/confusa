@@ -34,9 +34,9 @@ key_length=
 # where the Confusa instance is running, and which sites that handles
 # the respective parts of the operation
 server_loc=""
-down_page=""
-up_page=""
-approve_page=""
+down_page="/key_download.php"
+up_page="/key_upload.php"
+approve_page="/index.php"
 
 # The CA has it's own certificate
 ca_cert_name=""
@@ -54,11 +54,11 @@ error_addr=""
 
 # the name of the csr-var we need to supply to the upload-page so that
 # it will trigger properly
-csr_var=""
+csr_var="remote_csr"
 
 # the name of the auth-token and the length of it
-auth_var=""
-auth_length=""
+auth_var="inspect_csr"
+auth_length="40"
 
 # ------------------------------------------------------------- #
 # END AUTOMAGIC CONFIG

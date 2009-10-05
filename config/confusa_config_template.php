@@ -66,17 +66,6 @@ $confusa_config = array(
 	 */
 	'smarty_path'		=> '/usr/share/php/smarty/',
 
-	/* for script CSR/cert-handling
-         *
-         * key_upload is the program that handles automatic CSR upload from the user-script.
-         * key_download is the corresponding download of signed certificate
-         *
-         * Unless you are willing to recreate a lot of Confusa, you should not
-         * change this.
-         */
-        'upload'                => '/key_upload.php',
-        'download'              => '/key_download.php',
-	'approve'		=> '/index.php',
 	/* the page of Confusa that should be shown after the user signed in */
 	'post_login_page'	=> '/about_nren.php',
 
@@ -155,13 +144,6 @@ $confusa_config = array(
         /* where to report errors in script for users. This should be set to
          * something sane for *your* installation */
 	'error_addr'		=> 'your@error.addr',
-	/* name of the variable that the upload-handler checks for csr's */
-	'csr_var'		=> 'remote_csr',
-	/* the variable to pass as the authentication-url we use for
-	 * authenticating users' CSRs */
-	'auth_var'		=> 'inspect_csr',
-	/* length of auth-url token */
-	'auth_length'		=> '40',
 
 	/* logs */
 	'default_log'		=> '/var/log/confusa/tmp.log',
