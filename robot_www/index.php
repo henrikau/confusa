@@ -152,7 +152,6 @@ function createAdminPerson()
 		return null;
 	}
 	$person->setAuth(true);
-	$person->setEntitlement(Config::get_config('entitlement_admin'));
 	$person->setSubscriberOrgName($res[0]['subscriber_name']);
 	$person->setNREN($res[0]['nren_name']);
 	$person->setName($res[0]['admin_name']);
