@@ -10,7 +10,7 @@ $path .= PATH_SEPARATOR . LIB_DIR . '/misc';
 $path .= PATH_SEPARATOR . LIB_DIR . '/person';
 $path .= PATH_SEPARATOR . LIB_DIR . '/framework';
 $path .= PATH_SEPARATOR . LIB_DIR . '/input';
-
+$path .= PATH_SEPARATOR . LIB_DIR . '/robot';
 ini_set('include_path', $path);
 
 
