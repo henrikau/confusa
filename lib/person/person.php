@@ -42,6 +42,8 @@ class Person{
     private $session;
     private $saml_config;
 
+    private $adminDBError;
+
     /* get variables for:
      * Region (i.e. Sor Trondelag)
      * City (i.e. Trondheim)
@@ -100,6 +102,7 @@ class Person{
 	    unset($this->saml_config);
 
 	    $this->isAuthenticated = false;
+	    $this->adminDBError = false;
     }
 
     /**
@@ -708,6 +711,11 @@ class Person{
 		    return NORMAL_USER;
 	    }
 
+	    /* if the database is riddled with errors, do not run through the
+	     * test once more, just bail */
+	    if ($this->adminDBError) {
+		    return NORMAL_USER;
+	    }
 	    require_once 'mdb2_wrapper.php';
 	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->eppn));
 	    $size	= count($res);
@@ -726,14 +734,17 @@ class Person{
 				    $msg = "[$errorCode] Database not properly set. Missing fields in the admins-table.";
 				    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . $msg);
 				    Framework::error_output($msg . "<br />Server said: " . $dbse->getMessage());
+				    $this->adminDBError = true;
 			    } catch (DBQueryException $dbqe) {
 				    Logger::log_event(LOG_INFO, "[$errorCode] Could not update data for admin." . $dbqe->getMessage());
 				    Framework::error_output("[$errorCode] Could not update data for admin. Problems with keys. Server said: "
 							    . $dbqe->getMessage());
+				    $this->adminDBError = true;
 			    } catch (Exception $e) {
 				    $msg = "Could not update admin-data. Unknown error. Server said: " . $e->getMessage();
 				    Framework::error_output($msg);
 				    Logger::Log_event(LOG_INFO, $msg);
+				    $this->adminDBError = true;
 			    }
 		    }
 	    }
