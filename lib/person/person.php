@@ -717,16 +717,25 @@ class Person{
 		    return NORMAL_USER;
 	    }
 	    require_once 'mdb2_wrapper.php';
+	    $errorCode = create_pw(8);
+
 	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->eppn));
 	    $size	= count($res);
 	    db_array_debug($res);
 	    if ($size == 1) {
 		    $adminRes = $res[0]['admin_level'];
 		    /* Is the name and other variables properly set? */
+		    if (!isset($res[0]['admin_name']) || !isset($res[0]['admin_email'])) {
+			    Framework::error_output("[$errorCode] database is inconsistent. Please contact operational support.");
+			    $msg = "[$errorCode] Missing elements in the admin-table. Please update the table to current standard.";
+			    Logger::log_event(LOG_ALERT, $msg);
+			    $this->adminDBError = true;
+			    return NORMAL_USER;
+		    }
+
 		    if ($this->getX509ValidCN() != $res[0]['admin_name'] ||
 			$this->getEmail() != $res[0]['admin_email']) {
 			    try {
-				    $errorCode = create_pw(8);
 				    MDB2Wrapper::update("UPDATE admins SET admin_name=?, admin_email=? WHERE admin_id=?",
 							array('text', 'text', 'text'),
 							array($this->getX509ValidCN(), $this->getEmail(), $res[0]['admin_id']));
