@@ -272,8 +272,7 @@ class CP_Stylist extends Content_Page
 	 */
 	private function fetchNRENCSS($nren)
 	{
-		$css_path = Config::get_config('install_path') . 'www/css/';
-		$css_path .= 'custom/' . $nren . '/custom.css';
+		$css_path = Config::get_config('custom_css') . $nren . '/custom.css';
 
 		if (file_exists($css_path) === TRUE) {
 			try {
@@ -310,11 +309,7 @@ class CP_Stylist extends Content_Page
 	 */
 	private function updateNRENCSS($nren, $content)
 	{
-		$css_path = Config::get_config('install_path') . 'www/css/';
-		$css_path .= 'custom/' . $nren;
-
-		$css = $css_path . '/custom.css';
-
+		$css_path = Config::get_config('custom_css') . $nren . '/custom.css';
 		if (ini_get('magic_quotes_gpc') === "1") {
 			/* no slashes should be introduced into the content */
 			$content = stripslashes($content);
@@ -325,7 +320,7 @@ class CP_Stylist extends Content_Page
 			 * respective folders
 			 * This should have been done by the bootstrap script, though
 			 */
-			File_IO::writeToFile($css, $content, TRUE, TRUE);
+			File_IO::writeToFile($css_path, $content, TRUE, TRUE);
 		} catch (FileException $fexp) {
 			Framework::error_output("Could not write to custom CSS file! Please contact an administrator!");
 			return;
@@ -345,8 +340,7 @@ class CP_Stylist extends Content_Page
 	 */
 	private function resetNRENCSS($nren)
 	{
-		$css_file = Config::get_config('install_path') . 'www/css/';
-		$css_file .= 'custom/' . $nren . '/custom.css';
+		$css_file = Config::get_config('custom_css') . $nren . '/custom.css';
 
 		if (file_exists($css_file)) {
 			$success = unlink($css_file);
@@ -401,8 +395,7 @@ class CP_Stylist extends Content_Page
 
 			/* keep the suffix but change the name to custom.suffix
 			 */
-			$logo_path = Config::get_config('install_path') . 'www/';
-			$logo_path .= Config::get_config('custom_logo');
+			$logo_path = Config::get_config('custom_logo');
 			$logo_path .= $nren;
 
 			if (!file_exists($logo_path)) {

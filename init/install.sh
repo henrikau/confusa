@@ -760,6 +760,8 @@ function perform_postinstallation_steps
 	simplesaml_path=`grep "'simplesaml_path'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 	ca_mode=`grep "'ca_mode'" $config | cut -d "=" -f 2 | cut -d "_" -f 2 | cut -d "," -f 1`
 	confusa_log=`grep "'default_log'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
+	custom_css_path=`grep "'custom_css'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
+	custom_graphics_path=`grep "'custom_logo'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 
 	# Link the necessary AuthProc filters
 	ln -s -f ${install_path}include/CharacterMap.php ${simplesaml_path}modules/core/lib/Auth/Process/CharacterMap.php
@@ -785,15 +787,15 @@ function perform_postinstallation_steps
 		custom_apache_user=$apache_user
 	fi
 
-	mkdir -p ${install_path}www/css/custom
-	chown -R $custom_apache_user ${install_path}www/css/custom
+	mkdir -p ${custom_css_path}
+	chown -R $custom_apache_user ${custom_css_path}
 	res=$?
-	mkdir -p ${install_path}www/graphics/custom
-	chown -R $custom_apache_user ${install_path}www/graphics/custom
+	mkdir -p ${custom_graphics_path}
+	chown -R $custom_apache_user ${custom_graphics_path}
 	res=`expr $res + $?`
-	chmod 0755 ${install_path}www/css/custom
+	chmod 0755 ${custom_css_path}
 	res=`expr $res + $?`
-	chmod 0755 ${install_path}www/graphics/custom
+	chmod 0755 ${custom_graphics_path}
 	res=`expr $res + $?`
 
 	if [ ! $res -eq 0 ]; then

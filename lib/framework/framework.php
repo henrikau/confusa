@@ -47,14 +47,6 @@ class Framework {
 	private static $successes = array();
 	private static $sensitive_action = false;
 
-	/* Limit the file endings that are going to be accepted.
-	 * There can be images with embedded comments. As the comments can
-	 * contain PHP code, allowing files with suffix .php is dangerous,
-	 * even when a check for the file mime-type has already been made.
-	 * Classical injection scenario.
-	 */
-	public static $allowed_img_suffixes = array('png','jpg','gif');
-
 	public function __construct($contentPage) {
 		if (!isset($contentPage)) {
 			Framework::error_output("Error! content_page not provided to Framework constructor");
@@ -216,12 +208,12 @@ class Framework {
 		$this->tpl->assign('warnings', self::$warnings);
 
 		/* get custom logo if there is any */
-		$logo = Framework::get_logo_for_nren($this->person->getNREN());
-		$css = Framework::get_css_for_nren($this->person->getNREN());
+		$logo = "view_logo.php?nren=" . $this->person->getNREN();
+		$css = "get_css.php?nren=" . $this->person->getNREN();
 		$this->tpl->assign('logo', $logo);
 		$this->tpl->assign('css',$css);
 		$this->tpl->display('site.tpl');
-		
+
 
 		$this->contentPage->post_process($this->person);
 		if (Config::get_config('debug')) {
@@ -252,68 +244,4 @@ class Framework {
 		self::$warnings[] = $message;
 	}
 
-	/*
-	 * Check if there is a custom logo for a certain NREN and if there is,
-	 * return its URL.
-	 *
-	 * @param NREN the name of the NREN of which the logo should be retrieved
-	 * @return $url: The URL of the logo
-	 *
-	 * 			NULL if the logo does not exist
-	 */
-	public static function get_logo_for_nren($nren)
-	{
-		$logo_path = Config::get_config('install_path') . 'www/';
-		$logo_path .= Config::get_config('custom_logo') . '/' . $nren . '/custom.';
-
-		$logo_suffix = "";
-
-		/*
-		 * Search if there is one custom.png, custom.jpg or custom.any_other_
-		 * allowed_suffix file in the custom-logo folder.
-		 *
-		 * If there isn't return null
-		 */
-		foreach(Framework::$allowed_img_suffixes as $suffix) {
-			if (file_exists($logo_path . $suffix)) {
-				$logo_suffix = $suffix;
-				break;
-			}
-		}
-
-		if (empty($logo_suffix)) {
-			return NULL;
-		}
-
-		$image = $logo_path . $logo_suffix;
-
-		$logo_url = Config::get_config('custom_logo');
-		$logo_url .= $nren . '/custom.' . $logo_suffix;
-
-		return $logo_url;
-	}
-
-	/*
-	 * Check if a custom CSS file for a certain NREN exists and return it if it
-	 * does.
-	 *
-	 * @param $nren The name of the NREN for which to retrieve the custom CSS
-	 * @return The custom CSS file for the respective NREN
-	 */
-	public static function get_css_for_nren($nren)
-	{
-		$css_path = Config::get_config('install_path') . 'www/';
-		$css_path .= Config::get_config('custom_css') . $nren . '/custom.css';
-
-		if (!file_exists($css_path)) {
-			return NULL;
-		}
-
-		$css_url =  Config::get_config('custom_css');
-		$css_url .= $nren . '/custom.css';
-
-		return $css_url;
-	}
-
-	
-} /* end class Framewokr */
+} /* end class Framework */

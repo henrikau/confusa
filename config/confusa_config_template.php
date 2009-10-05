@@ -71,11 +71,13 @@ $confusa_config = array(
 
 	/* for NREN landing page customization
 	 *
-	 * define where custom CSS files and logos are kept - the paths are
-	 * relative to Confusa's' www directory
+	 * define where custom CSS files and logos are kept - please specify
+	 * absolute paths to a location where you want apache to be allowed to
+	 * write to.
+	 * Note: The installer will set www-data write permissions for the folders.
 	 */
-	'custom_css'		=> 'css/custom/',
-	'custom_logo'		=> 'graphics/custom/',
+	'custom_css'		=> '/var/lib/confusa/custom_css/',
+	'custom_logo'		=> '/var/lib/confusa/custom_graphics/',
 
 	/* For CA handling.
 	 * Legal modes are: CA_STANDALONE and CA_ONLINE
