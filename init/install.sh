@@ -224,23 +224,6 @@ function configure_confusa_settings
 	replace_config_entry "install_path" $custom_install_path
 	echo ""
 
-	# Take the path to the script files of Confusa and ask the user if the setting is OK
-	###############################################################################
-	echo -n "Path to Confusa's keyscript: ["$custom_install_path"programs/create_cert.sh]:"
-	read custom_programs_path
-
-	while [ ! -f "$custom_programs_path" ]; do
-		if [ -z $custom_programs_path ]; then
-			custom_programs_path="$custom_install_path"programs/create_cert.sh
-		else
-			echo -n "Keyscript path must point to a file [${custom_install_path}programs/create_cert.sh]:"
-			read custom_programs_path
-		fi
-	done
-
-	replace_config_entry "programs_path" $custom_programs_path
-	echo ""
-
 	# Configure the server url
 	###############################################################################
 	while [ 1 == 1 ]; do

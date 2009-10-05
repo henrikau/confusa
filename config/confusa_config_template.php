@@ -30,10 +30,6 @@ $confusa_config = array(
 		 */
         'install_path'                  => '/var/www/confusa/',
 
-	/* script variables, where the end-user create-keyresides */
-	'programs_path'		=> '/var/www/confusa/programs/create_cert.sh',
-
-
         /* The url to the server
          *
          * This is possible to deduce automatically, but PHP has a few quircks,

@@ -22,7 +22,7 @@ class KeyScript {
 	public function create_script()
 	{
 
-		$script = file_get_contents(Config::get_config('programs_path'));
+		$script = file_get_contents(Config::get_config('install_path') . '/programs/create_cert.sh');
 
  		/* set variables for the key and CSR/cert */
 		$script = str_replace('common=""'      ,'common="' .$this->person->getX509ValidCN() . '"'	, $script);
