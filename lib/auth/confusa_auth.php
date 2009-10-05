@@ -271,8 +271,10 @@ class AuthHandler
 	{
 		if (!isset(AuthHandler::$auth)) {
 			if (Config::get_config('auth_bypass') === TRUE) {
+				require_once 'bypass.php';
 				AuthHandler::$auth = new Confusa_Auth_Bypass($person);
 			} else {
+				require_once 'idp.php';
 				AuthHandler::$auth = new Confusa_Auth_IdP($person);
 			}
 		}
