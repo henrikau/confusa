@@ -34,8 +34,8 @@ class CP_Root_Certificate extends Content_Page
 			 * kept entirely in memory
 			 */
 			case CA_ONLINE:
-				$this->cert_url = Config::get_config('capi_root_cert');
-				$this->crl_url = Config::get_config('capi_crl');
+				$this->cert_url = ConfusaConstants::$CAPI_ROOT_CERT;
+				$this->crl_url = ConfusaConstants::$CAPI_CRL;
 				$this->cert_path = "/tmp/cert.pem";
 				$this->crl_path = "/tmp/comodo.crl";
 				break;

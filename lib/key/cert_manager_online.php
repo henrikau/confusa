@@ -6,6 +6,7 @@ require_once 'key_sign.php';
 require_once 'db_query.php';
 require_once 'mdb2_wrapper.php';
 require_once 'remote_api.php';
+require_once 'confusa_constants.php';
 
 /**
  * CertManager_Online. Remote extension for CertManager.
@@ -21,11 +22,6 @@ class CertManager_Online extends CertManager
     /* order number for communication with the remote API */
     private $order_number;
 
-	/* constants for the test-mode. These will go into the certificate subject */
-	public static $TEST_DC_PREFIX = "TEST CERTIFICATE";
-	public static $TEST_O_PREFIX = "TEST UNIVERSITY ";
-	public static $TEST_CN_PREFIX = "TEST PERSON ";
-
     private $cnPrefix;
     private $oPrefix;
 
@@ -39,8 +35,8 @@ class CertManager_Online extends CertManager
     function __construct($pers)
     {
         if (Config::get_config('capi_test')) {
-            $this->cnPrefix = CertManager_Online::$TEST_CN_PREFIX;
-            $this->oPrefix = CertManager_Online::$TEST_O_PREFIX;
+            $this->cnPrefix = ConfusaConstants::$CAPI_TEST_CN_PREFIX;
+            $this->oPrefix = ConfusaConstants::$CAPI_TEST_O_PREFIX;
         } else {
             $this->cnPrefix = "";
             $this->oPrefix = "";
@@ -344,7 +340,7 @@ class CertManager_Online extends CertManager
     {
         $key = $this->_transform_to_order_number($key);
 
-        $polling_endpoint = Config::get_config('capi_collect_endpoint') .
+        $polling_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
                         "?loginName=" . $this->login_name .
                         "&loginPassword=" . $this->login_pw .
                         "&orderNumber=" . $key .
@@ -379,7 +375,7 @@ class CertManager_Online extends CertManager
                                       " from the Comodo collect API. Sending to user with ip " .
                                       $_SERVER['REMOTE_ADDR']);
 
-        $collect_endpoint = Config::get_config('capi_collect_endpoint') .
+        $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
                             "?loginName=" . $this->login_name .
                             "&loginPassword=" . $this->login_pw .
                             "&orderNumber=" . $key .
@@ -438,7 +434,7 @@ class CertManager_Online extends CertManager
                                       " using Comodo's auto-revoke-API. Sending to user with ip " .
                                       $_SERVER['REMOTE_ADDR']);
 
-        $revoke_endpoint = Config::get_config('capi_revoke_endpoint');
+        $revoke_endpoint = ConfusaConstants::$CAPI_REVOKE_ENDPOINT;
         $postfields_revoke = array();
         $postfields_revoke["loginName"] = $this->login_name;
         $postfields_revoke["loginPassword"] = $this->login_pw;
@@ -506,7 +502,7 @@ class CertManager_Online extends CertManager
     {
 		$key = $this->_transform_to_order_number($key);
 
-		$list_endpoint = Config::get_config('capi_listing_endpoint');
+		$list_endpoint = ConfusaConstants::$CAPI_LISTING_ENDPOINT;
 		$postfields_list = array();
         $postfields_list["loginName"]		= $this->login_name;
         $postfields_list["loginPassword"]	= $this->login_pw;
@@ -568,7 +564,7 @@ class CertManager_Online extends CertManager
         case "firefox":
             /* if the generating software of the request was firefox, export the
              * certificate in CMMF format embedded in JavaScript */
-            $collect_endpoint = Config::get_config('capi_collect_endpoint') .
+            $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
                                 "?loginName=" . $this->login_name .
                                 "&loginPassword=" . $this->login_pw .
                                 "&orderNumber=" . $key .
@@ -584,7 +580,7 @@ class CertManager_Online extends CertManager
             break;
 
         case "msie_post_vista":
-            $collect_endpoint = Config::get_config('capi_collect_endpoint') .
+            $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
                                    "?loginName=" . $this->login_name .
                                 "&loginPassword=" . $this->login_pw .
                                 "&orderNumber=" . $key .
@@ -600,7 +596,7 @@ class CertManager_Online extends CertManager
             break;
 
         case "msie_pre_vista":
-            $collect_endpoint = Config::get_config('capi_collect_endpoint') .
+            $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
                                    "?loginName=" . $this->login_name .
                                 "&loginPassword=" . $this->login_pw .
                                 "&orderNumber=" . $key .
@@ -616,7 +612,7 @@ class CertManager_Online extends CertManager
             break;
 
         case "keygen":
-            $collect_endpoint = Config::get_config('capi_collect_endpoint') .
+            $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
                                    "?loginName=" . $this->login_name .
                                     "&loginPassword=" . $this->login_pw .
                                     "&orderNumber=" . $key .
@@ -651,7 +647,7 @@ class CertManager_Online extends CertManager
         Logger::log_event(LOG_DEBUG, "Trying to get the list with the certificates " .
                                     "for person $common_name");
 
-        $list_endpoint = Config::get_config('capi_listing_endpoint');
+        $list_endpoint = ConfusaConstants::$CAPI_LISTING_ENDPOINT;
         $postfields_list["loginName"]		= $this->login_name;
         $postfields_list["loginPassword"]	= $this->login_pw;
         $postfields_list["commonName"]		= $this->cnPrefix . $common_name;
@@ -694,8 +690,8 @@ class CertManager_Online extends CertManager
     */
     private function _capi_upload_CSR($auth_key, $csr, $csr_format = "csr")
     {
-        $sign_endpoint = Config::get_config('capi_apply_endpoint');
-        $ca_cert_id = Config::get_config('capi_escience_id');
+        $sign_endpoint = ConfusaConstants::$CAPI_APPLY_ENDPOINT;
+        $ca_cert_id = ConfusaConstants::$CAPI_ESCIENCE_ID;
 
         $postfields_sign_req=array();
 
@@ -703,10 +699,10 @@ class CertManager_Online extends CertManager
          * if the certs are part of a testing process
          */
         if (Config::get_config('capi_test')) {
-          $postfields_sign_req["subject_domainComponent_7"] = CertManager_Online::$TEST_DC_PREFIX;
-          $days = '14';
+          $postfields_sign_req["subject_domainComponent_7"] = ConfusaConstants::$CAPI_TEST_DC_PREFIX;
+          $days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
         } else {
-          $days = '395';
+          $days = $CAPI_VALID_DAYS;
         }
 
         /* set all the required post parameters for upload */
@@ -897,7 +893,7 @@ class CertManager_Online extends CertManager
      */
     private function _capi_authorize_CSR()
     {
-        $authorize_endpoint = Config::get_config('capi_auth_endpoint');
+        $authorize_endpoint = ConfusaConstants::$CAPI_AUTH_ENDPOINT;
 
         $postfields_auth = array();
         $postfields_auth["loginName"] = $this->login_name;

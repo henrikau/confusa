@@ -89,28 +89,9 @@ $confusa_config = array(
 	 * */
 	'ca_mode'		=> CA_STANDALONE,
 
-	/* The following fields are used when the Comodo-API is called
-	 * for certificate creation
-	 *
-	 * Probably you don't want to change them, since that will most likely break
-	 * online certificate signing. The Comodo API documentation can be found at
-	 *
-	 * http://secure.comodo.net/api/pdf/reseller/customclientcertificates/
-	 *  */
-        'capi_apply_endpoint'          => 'https://secure.comodo.com/products/!applyCustomClientCert',
-        'capi_auth_endpoint'           => 'https://secure.comodo.net/products/!AutoAuthorize',
-        'capi_collect_endpoint'        => 'https://secure.comodo.net/products/download/CollectCCC',
-        'capi_listing_endpoint'             => 'https://secure.comodo.net/products/!Tier2ResellerReport',
-        'capi_revoke_endpoint'              => 'https://secure.comodo.net/products/!AutoRevokeCCC',
-		/* these fields are for informational use, when the user clicks "view CRL/view root cert"
-		 * in Confusa */
-		'capi_root_cert'			=> 'http://crt.tcs.terena.org/TERENAeSciencePersonalCA.crt',
-		'capi_crl'				=> 'http://crl.tcs.terena.org/TERENAeSciencePersonalCA.crl',
-		/* used in the API */
-        'capi_escience_id'                      => '285',
-        /* if we ever want to issue e-mail certificates */
-        'capi_personal_id'                      => '284',
-        /* if 'capi_test' is to true, Confusa will
+		/* ========= Config flags applying only for ONLINE mode ==========
+		 * ===============================================================
+         * if 'capi_test' is to true, Confusa will
 		 * 		- clutter all certificate subjects with 'TEST' strings
 		 * 		- limit the validity of all certificates to 14 days
 		 * 		- not perform revocation, but only simulate it
@@ -119,7 +100,8 @@ $confusa_config = array(
         /* will encrypt the NREN-Comodo-account passwords in the DB with this key */
         'capi_enc_pw'                           => '',
 
-	/* Values needed for standalone-mode
+	/* ========= Config flags applying only for STANDALONE mode ==========
+	 * ===============================================================
 	 * The names should be self-explanatory. All paths are relative to the
 	 * install_path
 	 */
@@ -131,7 +113,9 @@ $confusa_config = array(
 	'ca_conf_name'		=> '/conf/confusa_openssl.conf',
 	'ca_crl_name'		=> '/confusa_crl.pem',
 
-        /* this *should* be true, as you really* want wget to detect a
+		/* ======== General flags ========
+		 * ===============================
+         * this *should* be true, as you really* want wget to detect a
          * SSL-man-in-the-middle attack! However, as a workaround for testsystems
          * (which normally do not have properly signed SSL-certificate),
          * force user-script to disregard invalid/self-signed certs. */

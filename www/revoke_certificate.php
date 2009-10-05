@@ -481,7 +481,7 @@ class CP_RevokeCertificate extends Content_Page
 
 				foreach ($subscribers as $subscriber) {
 					if ($test_prefix) {
-						$subscriber = CertManager_Online::$TEST_O_PREFIX . $subscriber;
+						$subscriber = ConfusaConstants::$CAPI_TEST_O_PREFIX . $subscriber;
 					}
 
 					if ($subscriber === $info['organization']) {
@@ -495,7 +495,7 @@ class CP_RevokeCertificate extends Content_Page
 			} else if ($this->person->isSubscriberAdmin() || $this->person->isSubscriberSubAdmin()) {
 				$subscriber = $this->person->getSubscriberOrgName();
 				if ($test_prefix) {
-					$subscriber = CertManager_Online::$TEST_O_PREFIX . $subscriber;
+					$subscriber = ConfusaConstants::$CAPI_TEST_O_PREFIX . $subscriber;
 				}
 
 				if ($subscriber === $info['organization']) {
@@ -511,8 +511,8 @@ class CP_RevokeCertificate extends Content_Page
 				$cn = $this->person->getX509ValidCN();
 				$subscriber = $this->person->getSubscriberOrgName();
 				if ($test_prefix) {
-					$cn = CertManager_Online::$TEST_CN_PREFIX . $cn;
-					$subscriber = CertManager_Online::$TEST_O_PREFIX . $subscriber;
+					$cn = ConfusaConstants::$CAPI_TEST_CN_PREFIX . $cn;
+					$subscriber = ConfusaConstants::$CAPI_TEST_O_PREFIX . $subscriber;
 				}
 
 				if (($info['cert_owner'] === $cn) && ($info['organization'] === $subscriber)) {
