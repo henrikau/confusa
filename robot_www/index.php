@@ -289,7 +289,7 @@ assertEnvironment();
 /* Is the certificate a legit cert? */
 $admin = createAdminPerson();
 if(!isset($admin) || !$admin->isAuth()) {
-	echo "Not authenticated! Piss off!<br />\n";
+	echo "Not authenticated! Cannot continue<br />\n";
 	exit(0);
 }
 if (false && Config::get_config('debug')) {
