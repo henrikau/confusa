@@ -31,16 +31,21 @@ MYSQL="/usr/bin/mysql $user $host $root_pw"
 
 # use the database stated in the confusa_config.php. If this file is not
 # present, the script will terminate
-if [ ! -f "../config/confusa_config.php" ]; then
-    echo "*need* the confusa_config.php file!"
+if [ -f "../config/confusa_config.php" ]; then
+	confusa_config="../config/confusa_config.php"
+elif [ -f "/etc/confusa/confusa_config.php" ]; then
+	confusa_config="/etc/confusa/confusa_config.php"
+else
+	echo "*need* the confusa_config.php file!"
     echo "Please configure this properly before you re-run this script"
     exit
 fi
-echo "Found ../config/confusa_config.php OK. Continuing"
+
+echo "Found $confusa_config OK. Continuing"
 
 # Check to se if the database itself is present in MySQL
 # if not, create it
-database=`grep "mysql_db" ../config/confusa_config.php | cut -d '=' -f 2 \
+database=`grep "mysql_db" $confusa_config | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
 if [ -z $database ]; then
     echo "mysql-db not set in config-file!"
@@ -60,8 +65,10 @@ fi
 # add tables
 echo "Creating tables in the database. Existing databases will be reset according to table_create.sql"
 $MYSQL -D$database < table_create.sql
+res=$?
 
-if [ ! $? -eq 0 ]; then
+if [ $res -ne 0 ]; then
+    perror $res
     echo "Errors were encountered during the database install"
     echo "Make sure you have enough privileges to write to the database, and that "
     echo "the file table_create.sql has not been corrupted."
@@ -71,11 +78,11 @@ if [ ! $? -eq 0 ]; then
 fi
 
 # check to see if the the proper user with rights are in place
-webuser=`grep "mysql_username" ../config/confusa_config.php | cut -d '=' -f 2 \
+webuser=`grep "mysql_username" $confusa_config | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
-pw=`grep "mysql_password" ../config/confusa_config.php | cut -d '=' -f 2 \
+pw=`grep "mysql_password" $confusa_config | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
-webhost=`grep "mysql_host" ../config/confusa_config.php | cut -d '=' -f 2 \
+webhost=`grep "mysql_host" $confusa_config | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
 grants="SELECT, INSERT, DELETE, UPDATE, USAGE"
 

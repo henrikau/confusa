@@ -34,16 +34,20 @@ MYSQL="/usr/bin/mysql $user $host $root_pw"
 
 # use the database stated in the confusa_config.php. If this file is not
 # present, the script will terminate
-if [ ! -f "../config/confusa_config.php" ]; then
-    echo "*need* the confusa_config.php file!"
+if [ -f "../config/confusa_config.php" ]; then
+	confusa_config="../config/confusa_config.php"
+elif [ -f "/etc/confusa/confusa_config.php" ]; then
+	confusa_config="/etc/confusa/confusa_config.php"
+else
+	echo "*need* the confusa_config.php file!"
     echo "Please configure this properly before you re-run this script"
     exit
 fi
-echo "Found ../config/confusa_config.php OK. Continuing"
+echo "Found $confusa_config OK. Continuing"
 
 # Check to se if the database itself is present in MySQL
 # if not, create it
-database=`grep "mysql_db" ../config/confusa_config.php | cut -d '=' -f 2 \
+database=`grep "mysql_db" $confusa_config | cut -d '=' -f 2 \
     | cut -d "'" -f 2`
 if [ -z $database ]; then
     echo "mysql-db not set in config-file!"

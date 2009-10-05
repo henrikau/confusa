@@ -3,9 +3,25 @@
 #
 # GPL v3 applies
 
-config_template="../config/confusa_config_template.php"
-working_template="../config/.working_template"
-config="../config/confusa_config.php"
+# Try to find the config directory. Depending on whether Confusa was
+# downloaded from the Git repository or installed from the Debian
+# package, that is in the Confusa directory or in /etc/confusa/config/
+if	[ -d "../config/" ] &&
+	[ -f "../config/confusa_config_template.php" ]; then
+	prefix="../config/"
+
+elif	[ -d "/etc/confusa" ] &&
+		[ -f "/etc/confusa/confusa_config_template.php" ]; then
+	prefix="/etc/confusa/"
+else
+	echo -n "Could not find config directory! Tried ../config/ and "
+	echo "/etc/confusa/config/!"
+	exit 1
+fi
+
+config_template=${prefix}"confusa_config_template.php"
+working_template="/tmp/.confusa_wrk_template"
+config=${prefix}"confusa_config.php"
 
 # Call this function for simple yes/no questions with the questions as an argument
 function get_user_alternative

@@ -1,5 +1,19 @@
 <?php
-ini_set("include_path", ini_get('include_path') . ":../config/:../lib/misc:../lib/exceptions/:../lib/file/");
+
+if (file_exists("../config/confusa_config.php")) {
+	$config="../config/";
+} else if (file_exists("/etc/confusa/confusa_config.php")) {
+	$config="/etc/confusa/";
+} else {
+	echo "Confusa config file not found! Looked in\n";
+	echo "../config/confusa_config.php and in\n";
+	echo "/etc/confusa/confusa_config.php. Please create a config\n";
+	echo "file, e.g. from the template or using the Installer before\n";
+	echo "invoking this bootstrap script!";
+	exit(5);
+}
+
+ini_set("include_path", ini_get('include_path') . ":$config:../lib/misc:../lib/exceptions/:../lib/file/");
 
 require_once 'mdb2_wrapper.php';
 require_once 'config.php';
