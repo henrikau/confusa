@@ -718,16 +718,27 @@ class Person{
 		    if ($this->getX509ValidCN() != $res[0]['admin_name'] ||
 			$this->getEmail() != $res[0]['admin_email']) {
 			    try {
+				    $errorCode = create_pw(8);
 				    MDB2Wrapper::update("UPDATE admins SET admin_name=?, admin_email=? WHERE admin_id=?",
 							array('text', 'text', 'text'),
 							array($this->getX509ValidCN(), $this->getEmail(), $res[0]['admin_id']));
+			    } catch (DBStatementException $dbse) {
+				    $msg = "[$errorCode] Database not properly set. Missing fields in the admins-table.";
+				    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . $msg);
+				    Framework::error_output($msg . "<br />Server said: " . $dbse->getMessage());
+			    } catch (DBQueryException $dbqe) {
+				    Logger::log_event(LOG_INFO, "[$errorCode] Could not update data for admin." . $dbqe->getMessage());
+				    Framework::error_output("[$errorCode] Could not update data for admin. Problems with keys. Server said: "
+							    . $dbqe->getMessage());
 			    } catch (Exception $e) {
-				    Framework::error_output("Could not update admin-data. Server said: " . $e->getMessage());
+				    $msg = "Could not update admin-data. Unknown error. Server said: " . $e->getMessage();
+				    Framework::error_output($msg);
+				    Logger::Log_event(LOG_INFO, $msg);
 			    }
 		    }
-
 	    }
 	    return $adminRes;
-    }
+    } /*  end getAdminStatus() */
+
 } /* end class Person */
 ?>
