@@ -45,9 +45,12 @@ class ConfusaConstants {
 	 * Classical injection scenario.
 	 */
 	public static $ALLOWED_IMG_SUFFIXES = array('png','jpg','gif');
+
 	/*
+	 * STANDALONE constants
 	 * the length of the auth_key, as it is used in standalone signing */
 	public static $AUTH_KEY_LENGTH = '40';
+	public static $OPENSSL_SERIAL_FILE='/var/lib/confusa/cert/ca.db.srl';
 }
 
 ?>

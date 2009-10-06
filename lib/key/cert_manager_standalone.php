@@ -49,8 +49,8 @@ class CertManager_Standalone extends CertManager
 			if (!file_exists($path)) {
 				throw new KeySignException("sign_key.sh does not exist!");
 			}
-			echo "Path: " . $path . " auth_key " . $auth_key . " cert_file_name " . $cert_file_name . "<br />\n";
-			$cmd = "$path $auth_key $cert_file_name";
+
+			$cmd = "$path $auth_key $cert_file_name " . ConfusaConstants::$OPENSSL_SERIAL_FILE;
 			$res = shell_exec($cmd);
 			$val = split("\n", $res);
 
