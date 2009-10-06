@@ -19,6 +19,7 @@ else
 	exit 1
 fi
 
+constants="../lib/confusa_constants.php"
 config_template=${prefix}"confusa_config_template.php"
 working_template="/tmp/.confusa_wrk_template"
 config=${prefix}"confusa_config.php"
@@ -653,18 +654,19 @@ function postinstall_standalone
 
 		ca_cert_base_path=`grep "'ca_cert_base_path'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
 		ca_cert_path=`grep "'ca_cert_path'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
-		ca_crl_name=`grep "'ca_crl_name'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
 		ca_cert_name=`grep "'ca_cert_name'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
 		ca_key_path=`grep "'ca_key_path'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
 		ca_key_name=`grep "'ca_key_name'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
+		crl_path=`grep "OPENSSL_CRL_FILE" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
+		ca_write_dir=`dirname $crl_path`
 
 		mkdir -p ${install_path}${ca_cert_base_path}/${ca_cert_path}
 		mkdir -p ${install_path}${ca_cert_base_path}/${ca_key_path}
-		mkdir -p ${install_path}www/ca
+		mkdir -p $ca_write_dir
 
 		if [ ! $? -eq 0 ]; then
-			echo "Error creating the directory from which the custom certificates will be available"
-			echo "(Tried to create ${install_path}www/ca)"
+			echo "Error creating the directories for private and public CA key and CRL"
+			echo "(Tried ${ca_write_dir})"
 		fi
 
 		get_user_alternative "Do you want to copy a certificate/key pair for signing from your filesystem to Confusa (y/n)?"
@@ -680,7 +682,6 @@ function postinstall_standalone
 			done
 
 			cp $custom_cert_pos ${install_path}${ca_cert_base_path}/${ca_cert_path}/${ca_cert_name}
-			cp $custom_cert_pos ${install_path}www/ca/servercert.pem
 
 			while [ -z $custom_key_pos ]; do
 				echo -n "Full path to a CA-private key on your computer (e.g. /etc/apache2/ca/ca.key): "
@@ -701,31 +702,22 @@ function postinstall_standalone
 		echo ""
 		echo "Trying to set the right permissions for the ca execution directory"
 
-
-		touch ${install_path}${ca_cert_base_path}/ca.db.index
-		res=$?
-		chown $custom_apache_user ${install_path}${ca_cert_base_path}/ca.db.index
+		chown -R $custom_apache_user $ca_write_dir
 		res=`expr $res + $?`
-		touch ${install_path}${ca_cert_base_path}/ca.db.index.attr
+		touch ${ca_write_dir}/ca.db.index
 		res=`expr $res + $?`
-		chown $custom_apache_user ${install_path}${ca_cert_base_path}/ca.db.index.attr
+		touch ${ca_write_dir}/ca.db.index.attr
 		res=`expr $res + $?`
-		touch ${install_path}${ca_cert_base_path}/${ca_crl_name}
+		# Give apache read permissions on the private key
+		chown -R $custom_apache_user ${install_path}${ca_cert_base_path}/${ca_key_path}/${ca_key_name}
 		res=`expr $res + $?`
-		chown $custom_apache_user ${install_path}${ca_cert_base_path}/${ca_crl_name}
-		res=`expr $res + $?`
-		# Create the serial number
-		cert_prefix=`echo ${ca_cert_name} | cut -d '.' -f 1`
-		res=`expr $res + $?`
-		touch ${install_path}${ca_cert_base_path}/${ca_cert_path}/${cert_prefix}.srl
-		res=`expr $res + $?`
-		chown $custom_apache_user ${install_path}${ca_cert_base_path}/${ca_cert_path}/${cert_prefix}.srl
+		chmod 400 ${install_path}${ca_cert_base_path}/${ca_key_path}/${ca_key_name}
 		res=`expr $res + $?`
 
 		if [ ! $res -eq 0 ]; then
 			echo "Something went wrong when trying to assign the right permissions to the CA keys/files"
-			echo "Please make yourself sure that the files in ${install_path}${ca_cert_base_path} have "
-			echo "the right permissions!"
+			echo "Please make yourself sure that the files in ${ca_write_dir} and"
+			echo "${install_path}${ca_cert_base_path} have the right permissions!"
 		fi
 }
 
