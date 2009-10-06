@@ -115,7 +115,7 @@ class CP_Robot_Interface extends Content_Page
 		if (FileUpload::testError('cert')) {
 			$cert = openssl_x509_read(FileUpload::getContent('cert'));
 			if (openssl_x509_export($cert, $certDump, true)) {
-				return $this->insertCertificate($certDump);
+				return $this->insertCertificate($certDump, $comment);
 			}
 		}
 	}
