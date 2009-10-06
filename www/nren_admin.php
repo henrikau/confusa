@@ -10,6 +10,7 @@ require_once 'input.php';
 class CP_NREN_Admin extends Content_Page
 {
 	private $state;
+	private $grid_mode = false;
 	function __construct()
 	{
 		parent::__construct("Admin", true);
@@ -25,6 +26,17 @@ class CP_NREN_Admin extends Content_Page
 			return false;
 
 
+		/* are we running in grid-mode? We must check this before we do
+		 * any other processing */
+		try {
+			if (Config::get_config('obey_grid_restrictions')) {
+				$this->grid_mode = true;
+				$this->tpl->assign('confusa_grid_restrictions', true);
+			}
+		} catch (KeyNotFoundException $knfe) {
+			Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . " " .
+					  "Cannot find config-switch 'obey_grid_restrictions' (boolean) in confusa-config.");
+		}
 		/* handle nren-flags */
 		if (isset($_POST['subscriber'])) {
 			if (isset($_POST['id']))

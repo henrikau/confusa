@@ -41,6 +41,18 @@ $confusa_config = array(
 	'server_url'		=> null,
 
 
+	/* when Confusa is operating in "grid-mode", we must add some extra
+	 * restrictions on how certain names can be constructed.
+	 *
+	 * For instance, grid-certificates cannot contain UTF-8, and they cannot
+	 * be longer than 64 characters.
+	 *
+	 * This switch will toggle this. When set to false, Confusa will accept
+	 * CSRs with DN-names longer than 64 characters, and also accept UTF-8
+	 * encoded fields in the \DN.
+	 */
+	'obey_grid_restrictions'	=> true,
+
         /* Pr. default, confusa uses simpleSAMLphp for authentication
          * You can use something else, but you must edit quite a few files to
          * make this possible.
