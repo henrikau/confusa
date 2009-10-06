@@ -101,7 +101,7 @@ class FileUpload {
 	  $fuptr = $this->test_func;
 	  /* truncate the pubkey_hash to the length defined in the config script */
 	  $hash=pubkey_hash($this->fcont, true);
-	  $auth_url = substr($hash,0,(int)Config::get_config('auth_length'));
+	  $auth_url = substr($hash,0,ConfusaConstants::$AUTH_KEY_LENGTH);
 	  $this->file_ok = $fuptr($this->fcont, $auth_url);
 	}
 	else {

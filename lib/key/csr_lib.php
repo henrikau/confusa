@@ -74,8 +74,8 @@ function test_content($content, $auth_url)
    * test authenticity of auth_url
    */
   $hash = pubkey_hash($content, true);
-  if (substr($hash, 0, (int)Config::get_config('auth_length')) != $auth_url) {
-	  Framework::error_output("Uploaded key ($ħash) and auth_url ($auth_url) does not match");
+  if (substr($hash, 0, ConfusaConstants::$AUTH_KEY_LENGTH) != $auth_url) {
+	  Framework::error_output("Uploaded key ($hash) and auth_url ($auth_url) does not match");
 	  return false;
   }
 

@@ -19,8 +19,8 @@ require_once 'confusa_gen.php';
 
 /* only accept downloads from sources that specify *both* auth_var and
  * common_name (the client should know this anyway */
-if (isset($_GET[Config::get_config('auth_var')]) && $_GET['common_name']) {
-      $authvar        = htmlentities($_GET[Config::get_config('auth_var')]);
+if (isset($_GET['inspect_csr']) && $_GET['common_name']) {
+      $authvar        = htmlentities($_GET['inspect_csr']);
       $user           = base64_decode($_GET['common_name']);
       $person = new Person();
       $person->setEPPN($user);

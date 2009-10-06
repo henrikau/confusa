@@ -145,7 +145,7 @@ final class CP_ProcessCsr extends Content_Page
 			if ($fu->file_ok()) {
 				$csr = $fu->get_content();
 				$subject = openssl_csr_get_subject($csr, true);
-				$authvar = substr(pubkey_hash($fu->get_content(), true), 0, (int)Config::get_config('auth_length'));
+				$authvar = substr(pubkey_hash($fu->get_content(), true), 0, ConfusaConstants::$AUTH_KEY_LENGTH);
 				/* is the CSR already uploaded? */
 				$res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE csr=?",
 							    array('text'),

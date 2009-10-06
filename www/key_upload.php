@@ -34,9 +34,9 @@ require_once 'csr_lib.php';
    *	to see if the key has been signed before, is done locally in this file.
    */
 $ip=$_SERVER['REMOTE_ADDR'];
-if ( isset($_GET['remote_csr']) && $_GET[Config::get_config('auth_var')]) {
+if ( isset($_GET['remote_csr']) && $_GET['inspect_csr']) {
 	$csr = base64_decode(htmlentities($_GET['remote_csr']));
-     $auth_var = htmlentities($_GET[Config::get_config('auth_var')]);
+     $auth_var = htmlentities($_GET['inspect_csr']);
      $csr_subject=openssl_csr_get_subject($csr);
      if ($csr_subject) {
           $common = $csr_subject['CN'];

@@ -867,7 +867,7 @@ class CertManager_Online extends CertManager
          * at the same time this is the only formal restriction we have for an order number.
         */
         return $auth_key;
-      } else if(strlen($auth_key) == Config::get_config('auth_length')) {
+      } else if(strlen($auth_key) == ConfusaConstants::$AUTH_KEY_LENGTH) {
           // TODO: Replace getEPPN with get_eppn or whatever...
           $res = MDB2Wrapper::execute("SELECT order_number FROM order_store WHERE auth_key=? AND owner=?",
                                   array('text', 'text'),
