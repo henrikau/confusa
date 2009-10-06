@@ -7,6 +7,7 @@ require_once 'file_io.php';
 require_once 'file_upload.php';
 require_once 'logger.php';
 require_once 'classTextile.php';
+require_once 'confusa_constants.php';
 
 class CP_Stylist extends Content_Page
 {
@@ -114,9 +115,9 @@ class CP_Stylist extends Content_Page
 				break;
 			case 'logo':
 				$this->tpl->assign('edit_logo', true);
-				$logo = Framework::get_logo_for_nren($this->person->getNREN());
+				$logo = "view_logo.php?nren=" . $this->person->getNREN();
 				$this->tpl->assign('logo', $logo);
-				$extensions = implode(", ", Framework::$allowed_img_suffixes);
+				$extensions = implode(", ", ConfusaConstants::$ALLOWED_IMG_SUFFIXES);
 				$this->tpl->assign('extensions', $extensions);
 				$this->tpl->assign('width', $this->allowed_width);
 				$this->tpl->assign('height', $this->allowed_height);

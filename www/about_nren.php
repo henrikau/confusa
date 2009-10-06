@@ -14,7 +14,7 @@ class CP_About_NREN extends Content_Page
 
 	public function process()
 	{
-		$logo = Framework::get_logo_for_nren($this->person->getNREN());
+		$logo = "view_logo.php?nren=" . $this->person->getNREN();
 		$this->tpl->assign('logo', $logo);
 		$about_text = $this->getAboutTextForNREN($this->person->getNREN());
 		$this->tpl->assign('text_info', $about_text);
