@@ -180,10 +180,9 @@ class CP_NREN_Admin extends Content_Page
 				       $subscr_responsible_name, $subscr_responsible_email,
 				       $subscr_comment)
 	{
-		$db_org_name	= strtolower(Input::sanitize($db_name));
 		$nren		= $this->person->getNREN();
 
-		if (empty($db_org_name)) {
+		if (empty($db_name)) {
 		    Framework::error_output("Please specify a name for the subscriber!");
 		    return;
 		}
@@ -196,7 +195,7 @@ class CP_NREN_Admin extends Content_Page
 			Framework::error_output("orgstate not set!");
 			return false;
 		}
-		if (!isset($db_org_name) || $db_org_name === "") {
+		if (!isset($db_name) || $db_name === "") {
 			Framework::error_output("orgname not set!");
 			return false;
 		}
@@ -253,7 +252,7 @@ class CP_NREN_Admin extends Content_Page
 		try {
 			MDB2Wrapper::update($update_subscr_insert,
 					    array('text',	'text',			'text'),
-					    array($db_org_name,	$res[0]['nren_id'],	$org_state));
+					    array($db_name,	$res[0]['nren_id'],	$org_state));
 		} catch (DBStatementException $dbse) {
 			$msg = __FILE__ . ":" . __LINE__ . " synatx error in update, server said: " . $dbse->getMessage();
 			Logger::log_event(LOG_NOTICE, $msg);
@@ -265,7 +264,7 @@ class CP_NREN_Admin extends Content_Page
 			return;
 		}
 
-		Logger::log_event(LOG_INFO, "Added the organization $db_org_name with " .
+		Logger::log_event(LOG_INFO, "Added the organization $db_name with " .
 				  "NREN $nren and state $org_state as a subscriber ");
 		return true;
 	} /* end addSubscriber() */
