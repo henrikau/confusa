@@ -45,15 +45,34 @@ class CP_NREN_Admin extends Content_Page
 			if (isset($_POST['state']))
 				$state	= Input::sanitize($_POST['state']);
 
-			if (isset($_POST['name']))
-				$name	= Input::sanitize($_POST['name']);
+			if (isset($_POST['db_name']))
+				$db_name	= Input::sanitize($_POST['db_name']);
+
 
 			switch(htmlentities($_POST['subscriber'])) {
 			case 'edit':
 				$this->editSubscriber($id, $state);
 				break;
 			case 'add':
-				$this->addSubscriber($name, $state);
+				$dn_name = Input::sanitize($_POST['dn_name']);
+				$subscr_email = Input::sanitize($_POST['subscr_email']);
+				$subscr_phone = Input::sanitize($_POST['subscr_phone']);
+				$subscr_responsible_name = Input::sanitize($_POST['subscr_responsible_name']);
+				$subscr_responsible_email = Input::sanitize($_POST['subscr_responsible_email']);
+				$subscr_comment = Input::sanitizeText($_POST['subscr_comment']);
+				if ($this->addSubscriber($db_name,
+							 $state,
+							 $dn_name,
+							 $subscr_email,
+							 $subscr_phone,
+							 $subscr_responsible_name,
+							 $subscr_responsible_email,
+							 $subscr_comment)) {
+					Framework::success_output("Added new subscriber $dn_name OK to database.");
+				}
+				break;
+			case 'info':
+				/* FIXME, add inline support for info */
 				break;
 			case 'delete':
 				$this->delSubscriber($id);
@@ -72,11 +91,30 @@ class CP_NREN_Admin extends Content_Page
 			return;
 		}
 
-		/* get all info from database and publish to template */
-		$this->tpl->assign('nrenName'		, $this->person->getNREN());
 		$this->tpl->assign_by_ref('nren'	, $this);
-		$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
-		$this->tpl->assign('self_subscriber'	, $this->person->getSubscriberOrgName());
+		$this->tpl->assign('nrenName'		, $this->person->getNREN());
+
+		if (isset($_GET['target'])) {
+			switch(Input::sanitize($_GET['target'])) {
+			case 'list':
+				/* get all info from database and publish to template */
+				$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
+				$this->tpl->assign('self_subscriber'	, $this->person->getSubscriberOrgName());
+				$this->tpl->assign('list_subscribers', true);
+				break;
+			case 'add':
+				$this->tpl->assign('add_subscriber', true);
+				break;
+			default:
+				break;
+			}
+		} else {
+			/* get all info from database and publish to template */
+			$this->tpl->assign_by_ref('nren'	, $this);
+			$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
+			$this->tpl->assign('self_subscriber'	, $this->person->getSubscriberOrgName());
+			$this->tpl->assign('list_subscribers', true);
+		}
 
 		/* render page */
 		$this->tpl->assign('content', $this->tpl->fetch('nren_admin.tpl'));
@@ -133,14 +171,19 @@ class CP_NREN_Admin extends Content_Page
 	 *
 	 * @name	: Name of subscriber
 	 * @state	: The initial state to put the subscriber in.
+	 addSubscriber(	$db_name, $state, $dn_name, $subscr_email,
+			$subscr_phone, $subscr_responsible_name,
+			$subscr_responsible_email, $subscr_comment);
 	 */
-	private function addSubscriber($name, $state)
+	private function addSubscriber($db_name, $org_state, $dn_name,
+				       $subscr_email, $subscr_phone,
+				       $subscr_responsible_name, $subscr_responsible_email,
+				       $subscr_comment)
 	{
-		$org_state	= Input::sanitize($state);
-		$org_name	= strtolower(Input::sanitize($name));
+		$db_org_name	= strtolower(Input::sanitize($db_name));
 		$nren		= $this->person->getNREN();
 
-		if (empty($org_name)) {
+		if (empty($db_org_name)) {
 		    Framework::error_output("Please specify a name for the subscriber!");
 		    return;
 		}
@@ -149,12 +192,18 @@ class CP_NREN_Admin extends Content_Page
 		$constraint_query	= "SELECT subscriber_id FROM subscribers WHERE name=? and nren_id = ?";
 		$update_subscr_insert	= "INSERT INTO subscribers(name, nren_id, org_state) VALUES(?,?,?)";
 
-		if (!isset($org_state) || $org_state === "")
-			echo "orgstate not set!";
-		if (!isset($org_name) || $org_name === "")
-			echo "orgname not set!";
-		if (!isset($nren) || $nren === "")
-			echo "nren not set!";
+		if (!isset($org_state) || $org_state === "") {
+			Framework::error_output("orgstate not set!");
+			return false;
+		}
+		if (!isset($db_org_name) || $db_org_name === "") {
+			Framework::error_output("orgname not set!");
+			return false;
+		}
+		if (!isset($nren) || $nren === "") {
+			Framework::error_output("nren not set!");
+			return false;
+		}
 
 		try {
 			$res = MDB2Wrapper::execute($select_nrenid,
@@ -204,7 +253,7 @@ class CP_NREN_Admin extends Content_Page
 		try {
 			MDB2Wrapper::update($update_subscr_insert,
 					    array('text',	'text',			'text'),
-					    array($org_name,	$res[0]['nren_id'],	$org_state));
+					    array($db_org_name,	$res[0]['nren_id'],	$org_state));
 		} catch (DBStatementException $dbse) {
 			$msg = __FILE__ . ":" . __LINE__ . " synatx error in update, server said: " . $dbse->getMessage();
 			Logger::log_event(LOG_NOTICE, $msg);
@@ -216,8 +265,9 @@ class CP_NREN_Admin extends Content_Page
 			return;
 		}
 
-		Logger::log_event(LOG_INFO, "Added the organization $org_name with " .
+		Logger::log_event(LOG_INFO, "Added the organization $db_org_name with " .
 				  "NREN $nren and state $org_state as a subscriber ");
+		return true;
 	} /* end addSubscriber() */
 
 
