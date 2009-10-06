@@ -103,8 +103,14 @@ CREATE TABLE IF NOT EXISTS subscribers (
     -- the preferred language for users belonging to the subscriber
     -- overrides NREN's preferred language for a certain user
     lang VARCHAR(5),
+
     -- an e-mail address of somebody who will receive notifications for the subscriber
-    contact VARCHAR(30),
+    subscr_email VARCHAR(64) NOT NULL,
+    subscr_phone VARCHAR(24) DEFAULT "",
+    subscr_resp_name  VARCHAR(24) NOT NULL,
+    subscr_resp_email  VARCHAR(24) NOT NULL,
+    subscr_comment TEXT DEFAULT "",
+
     FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
 
