@@ -45,6 +45,9 @@ class ConfusaConstants {
 	 * Classical injection scenario.
 	 */
 	public static $ALLOWED_IMG_SUFFIXES = array('png','jpg','gif');
+	/*
+	 * the length of the auth_key, as it is used in standalone signing */
+	public static $AUTH_KEY_LENGTH = '40';
 }
 
 ?>
