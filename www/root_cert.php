@@ -7,41 +7,20 @@ class CP_Root_Certificate extends Content_Page
 	private $cert_path;
 	/* The local path to the CRL*/
 	private $crl_path;
-	/* A web URL to the CA-certificate */
-	private $cert_url;
-	/* A web URL to the CRL */
-	private $crl_url;
 
 	function __construct()
 	{
 		parent::__construct("Root Certificate(s)", false);
 
-		switch(Config::get_config('ca_mode')) {
-
-			case CA_STANDALONE:
-				$this->cert_path = Config::get_config('install_path') .
-									Config::get_config('ca_cert_base_path') .
-									Config::get_config('ca_cert_path') .
-									Config::get_config('ca_cert_name');
-				$this->crl_path = Config::get_config('install_path') . "www/ca" .
-									Config::get_config('ca_crl_name');
-				$this->cert_url = 'ca/' . Config::get_config('ca_cert_name');
-				$this->crl_url = 'ca/' . Config::get_config('ca_crl_name');
-				break;
-
-			/**
-			 * Temporarily store certificate and CRL, so they don't have to be
-			 * kept entirely in memory
-			 */
-			case CA_ONLINE:
-				$this->cert_url = ConfusaConstants::$CAPI_ROOT_CERT;
-				$this->crl_url = ConfusaConstants::$CAPI_CRL;
-				$this->cert_path = "/tmp/cert.pem";
-				$this->crl_path = "/tmp/comodo.crl";
-				break;
-
-			default:
-				exit(1);
+		if (Config::get_config('ca_mode') == CA_ONLINE) {
+			$this->cert_path = "/var/tmp/confusa.pem";
+			$this->crl_path = "/var/tmp/confusa.crl";
+		} else {
+			$this->cert_path = Config::get_config('install_path') .
+								Config::get_config('ca_cert_base_path') .
+								Config::get_config('ca_cert_path') .
+								Config::get_config('ca_cert_name');
+			$this->crl_path = ConfusaConstants::$OPENSSL_CRL_FILE;
 		}
 	}
 
@@ -49,6 +28,7 @@ class CP_Root_Certificate extends Content_Page
 	{
 		parent::__destruct();
 	}
+
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
@@ -67,13 +47,27 @@ class CP_Root_Certificate extends Content_Page
 				return;
 			}
 			exit(1);
+		} else if (isset($_GET['link']) && file_exists($this->cert_path)) {
+			switch(htmlentities($_GET['link'])) {
+			case 'cacert':
+				$this->makeCertAvailable();
+				$cert = file_get_contents($this->cert_path);
+				header("Content-type: application/x-x509-ca-cert");
+				header("Content-Length: " . strlen($cert));
+				header("Content-Disposition: inline; filename=confusa.crl");
+				echo $cert;
+				break;
+			case 'crl':
+				$this->makeCRLAvailable();
+				$crl = file_get_contents($this->crl_path);
+				header("Content-type: application/pkix-crl");
+				header("Content-Length: " . strlen($crl));
+				header("Content-Disposition: inline; filename=confusa.crl");
+				echo $crl;
+				break;
+			}
 		}
-		if (isset($_GET['install_root']) && file_exists($this->cert_path)) {
-			$myCert = join("", file($this->cert_path));
-			header("Content-Type: application/x-x509-ca-cert");
-			print $myCert;
-			exit(1);
-		}
+
 		return false;
 	}
 	public function process()
@@ -92,8 +86,6 @@ class CP_Root_Certificate extends Content_Page
 			$this->tpl->assign('crl_dump', $crl_dump);
 		}
 
-		$this->tpl->assign('crl_file', $this->crl_url);
-		$this->tpl->assign('ca_file', $this->cert_url);
 		$this->tpl->assign('content', $this->tpl->fetch('root_cert.tpl'));
 	}
 
@@ -104,13 +96,11 @@ class CP_Root_Certificate extends Content_Page
 	 * read again) and leaves the code somewhat intact and does not cause too
 	 * much obfuscation.
 	 *
-	 * TODO: Maybe the CRL in standalone can be JIT-copied from cert_handle to
-	 * www/ca if it's not yet available there?
 	 */
 	private function makeCRLAvailable()
 	{
 		if(Config::get_config('ca_mode') == CA_ONLINE) {
-			$ch = curl_init($this->crl_url);
+			$ch = curl_init(ConfusaConstants::$CAPI_CRL);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 			$crl_content = curl_exec($ch);
 			curl_close($ch);
@@ -128,7 +118,7 @@ class CP_Root_Certificate extends Content_Page
 	private function makeCertAvailable()
 	{
 		if(Config::get_config('ca_mode') == CA_ONLINE) {
-			$ch = curl_init($this->cert_url);
+			$ch = curl_init(ConfusaConstants::$CAPI_ROOT_CERT);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 			$ca_file_content = curl_exec($ch);
 			curl_close($ch);

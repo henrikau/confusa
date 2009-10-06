@@ -27,8 +27,8 @@ function include_file ()
     fi
 }
 
-if [ ! $# -eq 1 ]; then
-    echo "need more arguments (auth_key of Certificate in database)" >&2
+if [ ! $# -eq 2 ]; then
+    echo "need more arguments (auth_key of Certificate in database and path to the CRL file)" >&2
     exit 1
 fi
 
@@ -43,7 +43,7 @@ include_file "../lib/bash/db_lib.sh"
 config=".`get_config_entry 'ca_conf_name'`"
 cacert=".`get_config_entry 'ca_cert_path'``get_config_entry 'ca_cert_name'`"
 cakey=".`get_config_entry 'ca_key_path'``get_config_entry 'ca_key_name'`"
-crlfile=".`get_config_entry 'ca_crl_name'`"
+crlfile=$2
 
 cert=`run_query "SELECT cert FROM cert_cache where auth_key='$1'"|grep -E '|.*|'`
 tmpfile=`mktemp /tmp/cert_XXXXXX`

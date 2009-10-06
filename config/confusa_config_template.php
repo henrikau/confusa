@@ -113,7 +113,6 @@ $confusa_config = array(
 	'ca_key_path'		=> '/priv',
 	'ca_key_name'		=> '',
 	'ca_conf_name'		=> '/conf/confusa_openssl.conf',
-	'ca_crl_name'		=> '/confusa_crl.pem',
 
 		/* ======== General flags ========
 		 * ===============================

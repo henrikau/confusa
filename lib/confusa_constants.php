@@ -51,6 +51,11 @@ class ConfusaConstants {
 	 * the length of the auth_key, as it is used in standalone signing */
 	public static $AUTH_KEY_LENGTH = '40';
 	public static $OPENSSL_SERIAL_FILE='/var/lib/confusa/cert/ca.db.srl';
+	/* since the ca.db is in /var/lib/confusa/cert as well, define the crl
+	 * as a constant as well to avoid cluttering of the whole system with
+	 * different pieces of Confusa's signing process
+	 */
+	public static $OPENSSL_CRL_FILE='/var/lib/confusa/cert/confusa.crl';
 }
 
 ?>
