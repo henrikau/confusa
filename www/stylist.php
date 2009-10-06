@@ -367,9 +367,9 @@ class CP_Stylist extends Content_Page
 
 			$suffix = $file_tokens[count($file_tokens) - 1];
 
-			if (array_search($suffix, Framework::$allowed_img_suffixes) === FALSE) {
+			if (array_search($suffix, ConfusaConstants::$ALLOWED_IMG_SUFFIXES) === FALSE) {
 				Framework::error_output("Your file has an illegal ending! Make sure the ending is one of: "
-									. implode(" ", Framework::$allowed_img_suffixes));
+									. implode(" ", ConfusaConstants::$ALLOWED_IMG_SUFFIXES));
 				return;
 			}
 
@@ -403,7 +403,7 @@ class CP_Stylist extends Content_Page
 				mkdir($logo_path, 0755, TRUE);
 			} else {
 				/* delete all the other potential logos that might be there */
-				foreach (Framework::$allowed_img_suffixes as $all_suffix) {
+				foreach (ConfusaConstants::$ALLOWED_IMG_SUFFIXES as $all_suffix) {
 					$file = $logo_path . "/custom.$all_suffix";
 					if (file_exists($file)) {
 						unlink($file);
