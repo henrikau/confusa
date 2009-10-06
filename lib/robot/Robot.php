@@ -32,9 +32,23 @@ class Robot
 		$found_users = 0;
 		if (isset($list) && is_array($list) && count($list) > 0) {
 			foreach($list as $value) {
-				$cert = openssl_x509_parse(openssl_x509_read($value['cert']), false);
-				$eppn_array = explode(" ", $value['cert_owner']);
-				$eppn = $eppn_array[count($eppn_array) - 1];
+				/* cert is for instance not set in online mode */
+				if (isset($value['cert'])) {
+					$cert = openssl_x509_parse(openssl_x509_read($value['cert']), false);
+					$eppn_array = explode(" ", $value['cert_owner']);
+					$eppn = $eppn_array[count($eppn_array) - 1];
+				} else {
+					$cert = array();
+					/* online has the full DN as the cert_owner */
+					$cert['name'] = $value['cert_owner'];
+					$cert_name = $cert['name'];
+					$cn_start = stripos($cert_name, 'CN=');
+					$cn_end = stripos($cert_name, ',', $cn_start);
+					$cn_substr=substr($cert_name, $cn_start, $cn_end);
+					$eppn_array = explode(" ", $cn_substr);
+					$eppn = $eppn_array[count($eppn_array) -1];
+				}
+
 				if (isset($res[$eppn])) {
 					if ($res[$eppn]['fullDN'] != $cert['name']) {
 						$msg  =  "Several certificates with identical names ($eppn) but different DN";
