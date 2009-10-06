@@ -227,7 +227,7 @@ abstract class Confusa_Auth
 	public abstract function checkAuthentication();
 
 	/**
-	 * getAttributes() - return the attribute-keys found in attributes
+	 * getAttributeKeys() - return the attribute-keys found in attributes
 	 *
 	 * This function is created solely to help the
 	 * attribute-mapping. Instead of exposing *all* attributes, we return
