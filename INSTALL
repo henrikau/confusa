@@ -101,7 +101,6 @@ anything else.
    stay, but add the custom Authentication Processing Filters for Confusa:
 
    'authproc' => array(
-        60 => 'core:ConfusaAttributeMap',
         61 => 'core:CountryMap',
         62 => 'core:CharacterMap',
 	63 => 'core:NRENMap',
@@ -111,7 +110,6 @@ anything else.
    You will have to either copy or symlink these into
 	simplesamlphp/modules/core/lib/Auth/
    like this:
-	ln -s /var/www/confusa/include/ConfusaAttributeMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/ConfusaAttributeMap.php
 	ln -s /var/www/confusa/include/CountryMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CountryMap.php
 	ln -s /var/www/confusa/include/CharacterMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CharacterMap.php
 	ln -s /var/www/confusa/include/NRENMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/NRENMap.php
