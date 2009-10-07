@@ -79,7 +79,7 @@ class Robot
 	 * @return Array of a list of persons coupled to the number of revoked
 	 * certificates.
 	 */
-	function parseRevList($list, $admin)
+	static function parseRevList($list, $admin)
 	{
 		$revokedUsers = array();
 		$cm = CertManagerHandler::getManager($admin);

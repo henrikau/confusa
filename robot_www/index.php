@@ -273,7 +273,7 @@ case 'revoke_list':
 		foreach ($parsedXML as $key => $value) {
 			switch ($key) {
 			case 'revocationList':
-				$res = parseRevList($value, $admin);
+				$res = Robot::parseRevList($value, $admin);
 				break;
 			default:
 				echo "Unknown type. Are you sure you are following the DTD?<br />\n";
