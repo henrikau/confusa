@@ -4,6 +4,7 @@
     <input type="hidden" name="subscriber" value="add" />
 
     <table width="90%">
+      <tr><td><div class="spacer"></td><td></td></tr>
       <tr>
 	<td colspan="2">
 	  <p class="info">
@@ -31,16 +32,11 @@
 	  <p class="info">
 	    Normally, this one one of the following attributes:
 	  </p>
-	  <ul>
-	    <li>
-	      <a href="http://rnd.feide.no/attribute/edupersonorgdn">
-	      eduPersonOrgDN</a>
-	    </li>
-	    <li>
-	      <a href="http://rnd.feide.no/content/schachomeorganization">
-	      schachHomeOrganization</a>
-	    </li>
-	  </ul>
+	  <br />
+	  <a href="http://rnd.feide.no/attribute/edupersonorgdn">
+	    eduPersonOrgDN</a><br />
+	  <a href="http://rnd.feide.no/content/schachomeorganization">
+	    schachHomeOrganization</a><br />
 	  <br />
 	  <p class="info">
 	    The important element to remember is that this must be
@@ -105,6 +101,7 @@
 	  </p>
 	</td>
       </tr>
+      <tr><td><div class="spacer"></td><td></td></tr>
       <tr>
 	<td><font color="gray"><i>Contact email:</i></font></td>
 	<td><input type="text" name="subscr_email" /></td>
@@ -122,12 +119,12 @@
 	<td><input type="text" name="subscr_responsible_name" /></td>
       </tr>
       <tr><td><div class="spacer"></td><td></td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2"><hr /></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
 
 
       <tr><td colspan="2"><h3>Arbitrary comment</h3></td></tr>
+      <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2">
 	  <p class="info">
 	    In case a general comment concerning the subscriber is needed, you
@@ -148,6 +145,7 @@
       <tr><td><div class="spacer"></td><td></td></tr>
 
       <tr><td colspan="2"><h3>Subscriber State</h3></td></tr>
+      <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2">
 	  <p class="info">
 	    The state describes how a subscriber is treated. At the moment you
