@@ -649,6 +649,44 @@ function copy_new_config_flags
 	sed s\|"'$1'[ \t]*=>.*"\|"'valid_install'    => true,"\| < $working_template > $config
 }
 
+function write_cron_jobs
+{
+	install_path=$1
+	cron_file="/etc/cron.d/confusa.cron"
+
+	# Get absolute path to the config file
+	conf_dir=`dirname $config`
+	cnf_file=`cd $conf_dir; pwd`/`basename $config`
+
+	if [ ! -d "/etc/cron.d" ]; then
+		echo "Cron execution directory not found. Please make sure to have cron"
+		echo "installed!"
+		return
+	fi
+
+	cronline1="*/10  *    *    *  *       ${install_path}/programs/clean_db.sh ${cnf_file}"
+	cronline2="0     */2  *    *  *   ${install_path}/programs/db_backup.sh ${cnf_file}"
+
+	if [ -f $cron_file ]; then
+		get_user_alternative "Cron file ${cron_file} already exists. Overwrite (y/n)?"
+
+		if [ $answer == "n" ]; then
+			return
+		fi
+	fi
+
+	echo "$cronline1" > $cron_file
+	res=$?
+	echo "$cronline2" >> $cron_file
+	res=`expr $res + $?`
+
+	if [ $res -ne 0 ]; then
+		echo -n "Writing Confusa's crontab to /etc/cron.d failed. Please make sure "
+		echo -n "yourself that important scripts for cleaning and backing up the DB "
+		echo "get executed regularly (e.g. by defining cronjobs using crontab -e)"
+	fi
+}
+
 # configure the directories and permissions for the installed CA
 # Offer the possibility to copy a cert/private key to these locations
 function postinstall_standalone
@@ -758,6 +796,12 @@ function perform_postinstallation_steps
 	confusa_log=`grep "'default_log'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 	custom_css_path=`grep "'custom_css'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 	custom_graphics_path=`grep "'custom_logo'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
+
+	get_user_alternative "Do you want setup to Install a crontab for cleaning and backing up the DB? (y/n)"
+
+	if [ $answer == "y" ]; then
+		write_cron_jobs ${install_path}
+	fi
 
 	# Link the necessary AuthProc filters
 	ln -s -f ${install_path}include/CharacterMap.php ${simplesaml_path}modules/core/lib/Auth/Process/CharacterMap.php
