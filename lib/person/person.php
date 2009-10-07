@@ -450,6 +450,33 @@ class Person{
     }
 
     /**
+     * setSubscriberIdPName() Set the name the IdP exports for this subscriber.
+     *
+     * This name is used to find the correct row in the database, and from that,
+     * get what we use in the certificate (the subscriberName).
+     *
+     * @param String the name to use for the subscriber in the database.
+     * @return void
+     */
+    public function setSubscriberIdPName($db_name)
+    {
+	    if (isset($db_name) && $db_name != "") {
+		    $this->db_name = $db_name;
+	    }
+    }
+
+    /**
+     * getSubscrberIdPName() Return the name we use as key in the database.
+     *
+     * @param void
+     * @return String the name of the subscriber used as key in the database.
+     */
+    public function getSubscriberIdPName()
+    {
+	    return $this->db_name;
+    }
+
+    /**
      * setEntitlement() store the entitlement
      *
      * The entitlement is set by the IdP for the user, and we use this to test
