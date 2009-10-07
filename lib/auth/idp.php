@@ -27,8 +27,15 @@ class Confusa_Auth_IdP extends Confusa_Auth
 
 		/* start a session needed for the IdP-based AuthN approach */
 		$session = SimpleSAML_Session::getInstance();
+		$authority = $session->getAuthority();
 
-		if (!$session->isValid()) {
+		/* if we don't get an authority from the session, just fallback to
+		 * default */
+		if (empty($authority)) {
+			$authority = ConfusaConstants::$DEFAULT_SESSION_AUTHORITY;
+		}
+
+		if (!$session->isValid($authority)) {
 			session_start();
 		}
 
@@ -151,7 +158,13 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	{
 		$session = SimpleSAML_Session::getInstance();
 		$this->person->setSession($session);
-		$this->person->setAuth($session->isValid());
+		$authority = $session->getAuthority();
+
+		if (empty($authority)) {
+			$authority = ConfusaConstants::$DEFAULT_SESSION_AUTHORITY;
+		}
+
+		$this->person->setAuth($session->isValid($authority));
 		if ($this->person->isAuth()) {
 			/* Do not add try-catch here as framework will trigger
 			 * on that and adapt. */

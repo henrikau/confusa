@@ -56,6 +56,12 @@ class ConfusaConstants {
 	 * different pieces of Confusa's signing process
 	 */
 	public static $OPENSSL_CRL_FILE='/var/lib/confusa/cert/confusa.crl';
+	/* The "authority" (i.e. authentication source) upon which SimpleSAML
+	 * should fallback if none is detected in the session.
+	 * (NB: Since simplesamlphp is supposed to handle this, generally the
+	 * "fallback" should only happen when there is no authN session at all)
+	 */
+	public static $DEFAULT_SESSION_AUTHORITY = 'saml2';
 }
 
 ?>
