@@ -530,7 +530,11 @@ function configure_confusa_settings
 		custom_sys_from_address=`echo $custom_sys_from_address | egrep "[a-zA-Z0-9-]+([._a-zA-Z0-9.-]+)*@[a-zA-Z0-9.-]+\.([a-zA-Z]{2,4})$"`
 	done
 
+	# Set both sys_from_address and sys_header_from_address to the same value.
+	# If the user wants more fine-grained setup, he/she can always change
+	# confusa_config.php
 	replace_config_entry "sys_from_address" $custom_sys_from_address
+	replace_config_entry "sys_header_from_address" $custom_sys_from_address
 	echo ""
 
 	# Configure the cert-default-timeout

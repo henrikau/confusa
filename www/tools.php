@@ -52,6 +52,7 @@ class CP_Tools extends Content_Page
 		$subject = 'Custom-tailored script for creating key and certificate request for ARC';
 		$mail = new MailManager($this->person,
 					Config::get_config('sys_from_address'),
+					Config::get_config('sys_header_from_address'),
 					$subject,
 					$body);
 		$mail->add_attachment($keyscript->create_script(), "create_cert.sh");

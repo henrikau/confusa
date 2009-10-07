@@ -179,6 +179,7 @@ abstract class CertManager
     $msg .= "   The Confusa team\n";
     $mm = new MailManager($this->person,
 			  Config::get_config('sys_from_address'),
+			  Config::get_config('sys_header_from_address'),
 			  $subject,
 			  $msg);
     $mm->send_mail();

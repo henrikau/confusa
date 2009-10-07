@@ -153,8 +153,10 @@ $confusa_config = array(
 	 */
 	'system_name'		=> 'Confusa',
 
-        /* the from-addr to show up in the emails from the system */
+     /* the from-addr to show up in the emails from the system */
 	'sys_from_address'		=> 'your@system.contact.addr',
+	/* the from-addr to show up in the header of emails from the system */
+	'sys_header_from_address' => 'your@system.contact.addr',
 
 	/* the number of CSRs a user can upload before he/she must log
 	 * in and clean up.  */

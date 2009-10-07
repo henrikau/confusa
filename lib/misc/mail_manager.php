@@ -10,6 +10,7 @@
 class MailManager {
     private $person;
     private $sender;
+    private $sendHeader;
     private $subject;
     private $body;
     private $attachment_text;
@@ -18,7 +19,7 @@ class MailManager {
     private $mime_boundary;
     private $htmlalt_mime_boundary;
 
-    public function __construct($pers, $sender, $subject,  $body) 
+    public function __construct($pers, $sender, $sendHeader, $subject,  $body)
 	{
 		if (!isset($pers) || ! ($pers instanceof Person)) { 
 			echo __FILE__ .":".__LINE__. " Need person in MailManager!<BR>\n";
@@ -29,6 +30,7 @@ class MailManager {
 		$this->receiver .= $this->person->getName() . " <" . $this->person->getEmail() . ">";
 
         $this->sender   = $sender;
+        $this->sendHeader = $sendHeader;
         /* UTF-8 encode subject: */
         /* $this->subject  = "=?UTF-8?B?" . base64_encode("Subject: " . subject)."?"; */
         $this->subject = $subject;
@@ -73,7 +75,7 @@ class MailManager {
         $this->create_headers();
         $this->compose_mail();
 
-        $mail_sent = @mail($this->receiver, $this->subject, $this->body, $this->header);
+        $mail_sent = @mail($this->receiver, $this->subject, $this->body, $this->header, "-f" . $this->sender);
 	/* echo __FILE__ . ":" . __LINE__ . " -> Mail sent to $this->receiver<BR>\n"; */
         return $mail_sent;
 	} /* end send_mail */
@@ -103,8 +105,8 @@ class MailManager {
 
     private function create_headers()
         {
-        $this->header .= "From: " . $this->sender . " <" . $this->sender . ">" . $this->eol;
-        $this->header .= "Reply-To: " . $this->sender . " <" . $this->sender . ">" . $this->eol;
+        $this->header .= "From: " . $this->sendHeader . " <" . $this->sendHeader . ">" . $this->eol;
+        $this->header .= "Reply-To: " . $this->sendHeader . " <" . $this->sendHeader . ">" . $this->eol;
         $this->header .= "Return-Path: " . $this->sender . " <" . $this->sender . ">" . $this->eol;
         $this->header .= "Date: " . date(DATE_RFC822) . $this->eol;
         $this->header .= "Message-ID: <" . time() . "-" . $this->sender . ">" . $this->eol;
