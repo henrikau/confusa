@@ -420,7 +420,6 @@ class CP_RevokeCertificate extends Content_Page
 
 		foreach($eppn_list as $eppn) {
 			$eppn = Input::sanitize($eppn);
-			$eppn = "%" . $eppn . "%";
 			$eppn_certs = $this->certManager->get_cert_list_for_persons($eppn, $subscriber);
 			$certs = array_merge($certs, $eppn_certs);
 		}

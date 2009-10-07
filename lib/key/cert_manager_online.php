@@ -292,6 +292,8 @@ class CertManager_Online extends CertManager
     public function get_cert_list_for_persons($common_name, $org)
     {
 		$this->cacheInvalidate();
+		$common_name = "%" . $common_name . "%";
+
         $params = $this->_capi_get_cert_list($common_name);
         $res = array();
         for ($i = 1; $i <= $params['noOfResults']; $i++) {
