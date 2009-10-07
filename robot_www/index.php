@@ -253,6 +253,7 @@ case 'cert_list':
 case 'revoke_list':
 	if (isset($_GET['list'])) {
 		$xml = $_GET['list'];
+		$xml = stripslashes($xml);
 	}
 	else if (isset($_POST['list'])) {
 		$xml = $_POST['list'];
