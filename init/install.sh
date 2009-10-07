@@ -685,6 +685,9 @@ function write_cron_jobs
 		echo -n "yourself that important scripts for cleaning and backing up the DB "
 		echo "get executed regularly (e.g. by defining cronjobs using crontab -e)"
 	fi
+
+	echo -n "Wrote crontab to ${cron_file}. If you want to fine-tune the execution "
+	echo "dates please edit the file."
 }
 
 # configure the directories and permissions for the installed CA
