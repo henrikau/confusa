@@ -171,7 +171,7 @@ class CP_RevokeCertificate extends Content_Page
 			$this->tpl->assign('subscriber', htmlentities($subscriber));
 			$this->tpl->assign('subscribers', $subscribers);
 		} else {
-			$subscriber = $this->person->getSubscriberOrgName();
+			$subscriber = $this->person->getSubscriberIdPName();
 		}
 
 		$this->tpl->assign('file_name', 'eppn_list');
