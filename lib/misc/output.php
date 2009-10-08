@@ -52,6 +52,23 @@ class Output
 		return $res;
 	} /* end create_select_box */
 
+
+	/**
+	 * Return an ASCII string for the given UTF-8 input string
+	 * First map known UTF-8 chars to their ASCII counterparts, then hard-remove
+	 * the rest.
+	 *
+	 * @param $inputStr The UTF-8 input string
+	 */
+	static function mapUTF8ToASCII($inputStr)
+	{
+		 /* map known UTF8-characters to ASCII characters */
+		$map = ConfusaConstants::$UTF8_ASCII_MAP;
+		$asciiString = str_replace(array_keys($map), array_values($map), $inputStr);
+		/* remove the rest of the ACSII characters the "hard way" */
+		$asciiString = preg_replace("/[^a-z0-9_.@ \d]/i", "", $asciiString);
+		return $asciiString;
+	}
 } /* end class Output */
 
 function error_output($msg)

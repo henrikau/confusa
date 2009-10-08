@@ -1,5 +1,6 @@
 <?php
 require_once 'input.php';
+require_once 'output.php';
 require_once 'CriticalAttributeException.php';
 /* Person
  *
@@ -176,13 +177,19 @@ class Person{
     /**
      * getX509SubjectDN()  Complete /DN for a certificate/CSR
      *
+     * @param $browserDisplay boolean default true Pass the attribute through
+     * 		htmlentities before returning it
      * @return: String The DN in an X.509 certificate
      */
-    function getX509SubjectDN()
+    function getX509SubjectDN($browserDisplay = true)
     {
 	    $dn = "";
-	    $country	= $this->getCountry();
-	    $son	= $this->getSubscriberOrgName();
+	    $country	= $this->getCountry($browserDisplay);
+	    $son	= Output::mapUTF8ToASCII($this->getSubscriberOrgName(false));
+
+		if ($browserDisplay) {
+			$son = htmlentities($son, ENT_COMPAT, 'UTF-8');
+		}
 
 	    if (isset($country)) {
 		    $dn .= "/C=$country";
@@ -191,6 +198,7 @@ class Person{
 		    $dn .= "/O=$son";
 	    }
 	    $dn .= "/CN=" . $this->getX509ValidCN();
+
 	    return $dn;
     }
 
@@ -202,11 +210,15 @@ class Person{
 	 * This is needed for in-browser request signing
 	 * @return string the DN in comma-separated format
 	 */
-    function getBrowserFriendlyDN()
+    function getBrowserFriendlyDN($browserDisplay = true)
     {
 	$dn = "";
-	$country	= $this->getCountry();
-	$son		= $this->getSubscriberOrgName();
+	$country	= $this->getCountry($browserDisplay);
+	$son		= Output::mapUTF8ToASCII($this->getSubscriberOrgName(false));
+
+	if ($browserDisplay) {
+		$son = htmlentities($son, ENT_COMPAT, 'UTF-8');
+	}
 
 	if (isset($country)) {
 	    $dn .= "C=$country, ";
@@ -249,24 +261,33 @@ class Person{
      *
      *		http://rnd.feide.no/content/cn
      *
+     * The name is NOT sanitized due to the possible existance of UTF-8
+     * characters such as ä or å which we want to preserve. Make sure to
+     * sanitize it in all depending functions such as getX509SubjectDN()
+     *
      * @param String given_name (the full name of the person)
      * @return void
      */
     public function setName($cn) {
 	    if (isset($cn)) {
-		    $this->given_name = Input::sanitize(trim(htmlentities($cn)));
+		    $this->given_name = trim($cn);
 	    }
     }
 
     /**
      * getName() Get the full name of the person
      *
-     * @param void
+     * @param $browserDisplay bool default true Pass the attribute through htmlentities
+     * 		before returning it
      * @return String the full given name for the person.
      */
-    public function getName()
+    public function getName($browserDisplay = true)
     {
-	    return $this->given_name;
+		if ($browserDisplay) {
+			return htmlentities($this->given_name, ENT_COMPAT, 'UTF-8');
+		} else {
+			return $this->given_name;
+		}
     }
 
     /**
@@ -294,18 +315,23 @@ class Person{
         if (!isset($eppn)) {
 		throw new CriticalAttributeException("eduPersonPrincipalName (or equvivalent token) not set for person!");
 	}
-	$this->eppn = Input::sanitize(htmlentities($eppn));
+	$this->eppn = Input::sanitize($eppn);
     }
 
     /**
      * getEPPN() returns the ePPN for the person.
      *
-     * @param void
+     * @param $browserDisplay bool default true Pass the attribute through htmlentities
+     * 		before returning it
      * @return String The ePPN for the user
      */
-    public function getEPPN()
+    public function getEPPN($browserDisplay = true)
     {
-	    return $this->eppn;
+		if ($browserDisplay) {
+			return htmlentities($this->eppn, ENT_COMPAT, 'UTF-8');
+		} else {
+			return $this->eppn;
+		}
     }
 
     /**
@@ -338,18 +364,20 @@ class Person{
      * subject. As not all characters are printable, this function will also
      * strip these away, possibly altering the expected content slightly.
      *
-     * @param void
-     * @return String the X.509 printable /CN attribute
+     * @param $browserDisplay bool default true Pass the attribute through htmlentities
+     * 		before returning it
+     * @return String the X.509 printable /CN attribute (mapped to ASCII and sanitized)
      */
-    public function getX509ValidCN()
+    public function getX509ValidCN($browserDisplay = true)
     {
-	    $res = "";
-	    if (isset($this->given_name)) {
-		    $tmp_name = $this->given_name;
-		    $tmp_name = preg_replace("/[^a-z \d]/i", "", $tmp_name);
-		    $res .= $tmp_name . " ";
-	    }
-	    return $res . $this->getEPPN();
+		/* note that mapping to ASCII will also sanitize */
+		$cn = Output::mapUTF8ToASCII($this->given_name) . " " . $this->getEPPN(false);
+
+		if ($browserDisplay) {
+			return htmlentities($cn, ENT_COMPAT, 'UTF-8');
+		} else {
+			return $cn;
+		}
     }
 
     /**
@@ -372,17 +400,24 @@ class Person{
     public function setEmail($email)
     {
         if (isset($email)) {
-		$this->email = Input::sanitize($email);
+			$this->email = Input::sanitize($email);
         }
     }
 
     /**
      * getEmail() return the registred email-address
      *
-     * @param void
+     * @param $browserDisplay boolean default true Pass the attribute through
+     * 		htmlentities before returning it
      * @return: string containing the email-address
      */
-    public function getEmail() { return $this->email; }
+    public function getEmail($browserDisplay = true) {
+		if ($browserDisplay) {
+			return htmlentities($this->email, ENT_COMPAT, 'UTF-8');
+		} else {
+			return $this->email;
+		}
+	}
 
 
     /** setSubscriberOrgName()- set the name of the subscriber organization
@@ -401,12 +436,17 @@ class Person{
      *
      * This is a name of the home-institution, e.g. 'ntnu',  'uio'.
      *
-     * @param void
+     * @param $browserDisplay boolean default true Pass the attribute through
+     * 		htmlentities before returning it
      * @return String The subscriber's name.
      */
-    public function getSubscriberOrgName()
+    public function getSubscriberOrgName($browserDisplay = true)
     {
-	    return $this->subscriberName;
+		if ($browserDisplay) {
+			return htmlentities($this->subscriberName, ENT_COMPAT, 'UTF-8');
+		} else {
+			return $this->subscriberName;
+		}
     }
 
     /**
@@ -482,7 +522,7 @@ class Person{
      *
      * This is actually a potential problem, as this country is the country
      * where the *NREN* is located. As most federations are national (hence the
-     * name), it should be accurate most of the time.
+     * name), it should be accurate most of the time. The country is sanitized
      *
      * @param String The country of the NREN (and in effect, person)
      * @return void
@@ -490,19 +530,24 @@ class Person{
     public function setCountry($country)
     {
 	    if (isset($country)) {
-		    $this->country = strtoupper(substr(Input::sanitize($country),0, 2));
+		    $this->country = strtoupper(Input::sanitize(substr($country,0, 2)));
 	    }
     }
 
     /**
      * getCountry() - return the country-code for the user's country.
      *
-     * @param void
+     * @param $browserDisplay boolean default true Pass the attribute through
+     * 		htmlentities before returning it
      * @return String two-letter country code
      */
-    public function getCountry()
+    public function getCountry($browserDisplay = true)
     {
-	    return $this->country;
+		if ($browserDisplay) {
+			return htmlentities($this->country, ENT_COMPAT, 'UTF-8');
+		} else {
+			return $this->country;
+		}
     }
 
 
@@ -537,12 +582,17 @@ class Person{
     /**
      * getNREN() return the NREN the user belongs to.
      *
-     * @param void
+     * @param $browserDisplay boolean default true Pass the attribute through
+     * 		htmlentities before returning it
      * @return String The name of the nren
      */
-    public function getNREN()
+    public function getNREN($browserDisplay = true)
     {
-	    return $this->nren;
+		if ($browserDisplay) {
+			return htmlentities($this->nren, ENT_COMPAT, 'UTF-8');
+		} else {
+			return $this->nren;
+		}
     }
 
 

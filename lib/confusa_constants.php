@@ -62,6 +62,60 @@ class ConfusaConstants {
 	 * "fallback" should only happen when there is no authN session at all)
 	 */
 	public static $DEFAULT_SESSION_AUTHORITY = 'saml2';
+	/* this array is used when mapping from UTF8 characters to ASCII characters
+	 * (for instance when constructing the eScience DN from the attributes)
+	 */
+	public static $UTF8_ASCII_MAP = array(
+		'Å' => 'aa',
+		'å' => 'aa',
+		'Æ' => 'Ae',
+		'æ' => 'ae',
+		'Ä' => 'Ae',
+		'ä' => 'ae',
+		'Č' => 'C',
+		'č' => 'c',
+		'Ď' => 'D',
+		'ď' => 'd',
+		'ð' => 'th',
+		'Þ' => 'Th',
+		'þ' => 'th',
+		'É' => 'E',
+		'é' => 'e',
+		'È' => 'E',
+		'è' => 'e',
+		'Ë' => 'E',
+		'ë' => 'e',
+		'Ě' => 'E',
+		'ě' => 'e',
+		'Í' => 'I',
+		'í' => 'i',
+		'Ň' => 'N',
+		'ň' => 'n',
+		'Ö' => 'Oe',
+		'ö' => 'oe',
+		'Ø' => 'Oe',
+		'ø' => 'oe',
+		'Ó' => 'O',
+		'ó' => 'o',
+		'Ř' => 'R',
+		'ř' => 'r',
+		'Š' => 'S',
+		'š' => 's',
+		'ß' => 'sz',
+		'Ť' => 'T',
+		'ť' => 't',
+		'Ü' => 'Ue',
+		'ü' => 'ue',
+		'Ú' => 'U',
+		'ú' => 'u',
+		'Ů' => 'U',
+		'ů' => 'u',
+		'Ý' => 'Y',
+		'ý' => 'y',
+		'Ž' => 'Z',
+		'ž' => 'z'
+	);
+
 }
 
 ?>
