@@ -334,18 +334,35 @@ class AuthHandler
 		return null;
 	}
 
+	/**
+	 * getNRENMap()	Get the NREN-map (the most general map available).
+	 *
+	 * @param String		The name of the NREN as it is stored in
+	 *				the database.
+	 *
+	 * @return Array|null		The map for the NREN's attributes.
+	 */
 	static function getNRENMap($nren)
 	{
-			$query  = "SELECT a.eppn, a.epodn, a.cn, a.mail, a.entitlement";
-			$query .= " FROM attribute_mapping a, nrens n WHERE n.nren_id=a.nren_id AND n.name=? AND subscriber_id IS NULL";
-			try {
-				$map = MDB2Wrapper::execute($query,
-							    array('text'),
-							    array($nren));
-			} catch (Exception $e) {
-				return null;
-			}
-
+		if (!isset($nren) || $nren == "") {
+			throw new ConfusaGenException("Cannot find the nren-map when the NREN is not set.");
+		}
+		$query  = "SELECT a.eppn, a.epodn, a.cn, a.mail, a.entitlement ";
+		$query .= "FROM attribute_mapping a, nrens n ";
+		$query .= "WHERE n.nren_id=a.nren_id AND n.name=? AND subscriber_id IS NULL";
+		try {
+			$map = MDB2Wrapper::execute($query,
+						    array('text'),
+						    array($nren));
+		} catch (DBStatementException $dbse) {
+			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ .
+					  " check the table 'attribute_mapping' and make sure all columns are present.");
+			return null;
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_INFO,  __FILE__ . ":" . __LINE__ .
+					  "cannot find nren, something wrong with supplied nren-data ($nren)");
+			return null;
+		}
 		if (count($map) > 0) {
 			if (count($map) == 1) {
 				$map['type'] = 'nren';
