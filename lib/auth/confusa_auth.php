@@ -295,6 +295,19 @@ class AuthHandler
 		return AuthHandler::getNrenMap($nren);
 	} /* end getMap() */
 
+
+	/**
+	 * getSubscriberMap() Get the map for the subscriber so we can retrieve
+	 * the correct attributes.
+	 *
+	 * @param String nren		The name identifying the NREN
+	 * @param String subscriber	The name used to identify the
+	 *				subscriber. This is the db_name, and is
+	 *				the raw-string exported by the IdP's to
+	 *				identify a given subscriber.
+	 *
+	 * @return Array|null		The resulting map for the subscriber.
+	 */
 	static function getSubscriberMap($nren, $subscriber)
 	{
 		$query  = "SELECT a.eppn, a.epodn, a.cn, a.mail, a.entitlement";
