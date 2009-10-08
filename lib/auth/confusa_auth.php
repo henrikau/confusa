@@ -101,25 +101,30 @@ abstract class Confusa_Auth
 		if (isset($map) && is_array($map)) {
 			$this->person->setEPPN($attributes[$map['eppn']][0]);
 			$this->person->setEPPNKey($map['eppn']);
-
-			/* slow down and parse the name properly */
-			$parsed = $attributes[$map['epodn']][0];
-			$orgname= split(',', $parsed);
-			if (isset($orgname)) {
-				$parsed = "";
-				foreach ($orgname as $key => $value) {
-					$tmp = split('=', $value);
-					if (isset($tmp[1])) {
-						$parsed .= strtolower(str_replace(' ', '', $tmp[1])) . ".";
-					} else {
-						$parsed .= strtolower(str_replace(' ', '', $tmp[0])) . ".";
-					}
+			$this->person->setSubscriberIdPName(trim(stripslashes($attributes[$map['epodn']][0])));
+			try {
+				$query  = "SELECT s.dn_name FROM subscribers s ";
+				$query .= "LEFT JOIN nrens n ON n.nren_id = s.nren_id ";
+				$query .= "WHERE n.name=? AND s.name like ?";
+				$res = MDB2Wrapper::execute($query,
+							    array('text', 'text'),
+							    array($nren, $this->person->getSubscriberIdPName()));
+				if (count($res) == 1) {
+					$this->person->setSubscriberOrgName($res[0]['dn_name']);
+				} else {
+					$msg  = "Cannot find subscriberOrgName in the database. Cannot continue.<br />";
+					$msg .= "This normally indicates that your subscriber (raw_name: ";
+					$msg .= $this->person->getSubscriberIdPName() . ") ";
+					$msg .= "is not properly configured. Contact your NREN-administrator to resolve this.<br />\n";
+					throw new CriticalAttributeException($msg);
 				}
-				if ($parsed[strlen($parsed)-1] == ".") {
-					$parsed = substr($parsed, 0, strlen($parsed)-1);
-				}
+			} catch (DBStatementException $dbse) {
+				throw new ConfusaGenException("Cannot connect properly to database, some internal error. Make sure the DB is configured correctly.");
+			} catch (DBQueryException $dbqe) {
+				throw new ConfusaGenException("Cannot connect properly to database, errors with supplied data.");
 			}
-			$this->person->setSubscriberOrgName($parsed);
+
+			/* Get subscriberORgName from subscribers */
 			$this->person->setName($attributes[$map['cn']][0]);
 
 			/* if mail is not set, we cannot send notifications etc
