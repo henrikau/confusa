@@ -127,13 +127,8 @@ class Confusa_Auth_IdP extends Confusa_Auth
 			    }
 		    }
 		    /* Find the redirect-link for surfnet/EduGAIN users */
+	    }
 
-		    /* Do it the Feide way */
-		    $this->session->doLogout();
-	    }
-	    if (isset($_SESSION)) {
-		    session_destroy();
-	    }
 		$this->person->isAuth(false);
 		$base_url = $this->person->getSAMLConfiguration()->getBaseURL();
 		$this->person->clearAttributes();
