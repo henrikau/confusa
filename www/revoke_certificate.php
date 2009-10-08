@@ -154,7 +154,18 @@ class CP_RevokeCertificate extends Content_Page
 					return;
 				}
 			} else {
-				$subscriber = $subscribers[0];
+				/* if no preferred subscriber is set, use the
+				 * subscriber where the NREN-admin belongs.
+				 * If, for some strange reason, the NREN has no
+				 * Subscriber set, not even via the IdP, use the
+				 * first in the list.
+				 */
+				$subscriber = $this->person->getSubscriberIdPName();
+				if (!isset($subscriber) || $subscriber=="") {
+					echo "[DEBUG] ".__FILE__ . ":" . __LINE__;
+					echo " no subscriber set, getting the first available.<br />\n";
+					$subscriber = $subscribers[0];
+				}
 			}
 
 			$this->tpl->assign('subscriber', htmlentities($subscriber));
