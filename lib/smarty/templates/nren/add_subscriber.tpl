@@ -16,6 +16,10 @@
       </tr>
       <tr><td><div class="spacer"></td><td></td></tr>
 
+
+      {* ------------------------------------------------------ *}
+      {* Attribute Name (db_name)				*}
+      {* ------------------------------------------------------ *}
       <tr><td colspan="2"><hr /></td></tr>
       <tr>
 	<td colspan="2">
@@ -57,6 +61,11 @@
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2"><hr /></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
+
+
+      {* ------------------------------------------------------ *}
+      {* DN Name						*}
+      {* ------------------------------------------------------ *}
       <tr><td colspan="2"><h3>DN-Name</h3></td></tr>
       <tr>
 	<td colspan="2">
@@ -85,6 +94,9 @@
       <tr><td><div class="spacer"></td><td></td></tr>
 
 
+      {* ------------------------------------------------------ *}
+      {* Contact information for subscriber			*}
+      {* ------------------------------------------------------ *}
       <tr><td colspan="2"><h3>Contact Information for subscriber</h3></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2">
@@ -123,6 +135,9 @@
       <tr><td><div class="spacer"></td><td></td></tr>
 
 
+      {* ------------------------------------------------------ *}
+      {* Comment						*}
+      {* ------------------------------------------------------ *}
       <tr><td colspan="2"><h3>Arbitrary comment</h3></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2">
@@ -144,6 +159,9 @@
       <tr><td colspan="2"><hr /></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
 
+      {* ------------------------------------------------------ *}
+      {* Subscriber state					*}
+      {* ------------------------------------------------------ *}
       <tr><td colspan="2"><h3>Subscriber State</h3></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2">
