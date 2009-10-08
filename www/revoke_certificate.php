@@ -186,7 +186,7 @@ class CP_RevokeCertificate extends Content_Page
 		 * to revoke. */
 		case 'search_by_cn':
 			$common_name = Input::sanitize($_POST['search']);
-			$this->search_certs_display($common_name, $subscriber);
+			$this->searchCertsDisplay($common_name, $subscriber);
 			break;
 		case 'search_by_list':
 			$this->search_list_display('eppn_list', $subscriber);
@@ -244,11 +244,11 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	 private function showNonAdminRevokeTable()
 	{
-		$this->search_certs_display($this->person->getEPPN(), $this->person->getSubscriberOrgName());
+		$this->searchListDisplay($this->person->getEPPN(), $this->person->getSubscriberOrgName());
 	}
 
 	/**
-	 * search_certs_display() - find and display a particular certificate
+	 * searchListDisplay() find and display a particular certificate
 	 *
 	 * Perform the search for a certain common name. Use the organization of the
 	 * person as a search restriction. Display the result along with a revoke-
@@ -256,9 +256,12 @@ class CP_RevokeCertificate extends Content_Page
 	 *
 	 * @param $common_name The common-name that is searched for. Will be automatically
 	 *                     turned into a wildcard
-	 * @param $subscriber The name of the subscriber to which the search is constrained
+	 * @param $subscriber  The name of the subscriber to which the search is
+	 *                     constrained
+	 *
+	 * @return void
 	 */
-	private function search_certs_display($common_name, $subscriber)
+	private function searchListDisplay($common_name, $subscriber)
 	{
 		if (isset($_SESSION['auth_keys'])) {
 			unset($_SESSION['auth_keys']);
