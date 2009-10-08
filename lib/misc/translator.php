@@ -148,8 +148,8 @@ class Translator {
 			try {
 				$query = "SELECT lang FROM subscribers WHERE name=?";
 				$res = MDB2Wrapper::execute($query,
-											array('text'),
-											array($this->person->getSubscriberOrgName()));
+							    array('text'),
+							    array($this->person->getSubscriberIdPName()));
 
 				if (isset($res[0]['lang'])) {
 					$_SESSION['language'] = $res[0]['lang'];
