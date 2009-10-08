@@ -44,7 +44,7 @@ class CP_Admin extends Content_Page
 				case 'downgrade_self':
 					$this->downgradeNRENAdmin($this->person->getEPPN(),
 								  $this->person->getNREN(),
-								  $this->person->getSubscriberOrgName());
+								  $this->person->getSubscriberIdPName());
 					break;
 				case 'upgrade_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
@@ -85,7 +85,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'downgrade_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
-					$subscriber = $this->person->getSubscriberOrgName();
+					$subscriber = $this->person->getSubscriberIdPName();
 					$this->downgradeSubscriberAdmin($admin, $subscriber);
 					break;
 				case 'upgrade_subs_sub_admin':
