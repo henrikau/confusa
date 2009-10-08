@@ -427,8 +427,9 @@ class Person{
      */
     public function setSubscriberOrgName($subscriber)
     {
-	    if (isset($subscriber))
-		    $this->subscriberName = strtolower(Input::sanitize($subscriber));
+	    if (isset($subscriber)) {
+		    $this->subscriberName = $subscriber;
+	    }
     }
 
     /**
