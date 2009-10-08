@@ -128,7 +128,7 @@
       </tr>
       <tr>
 	<td><font color="gray"><i>Responsible's email:</i></font></td>
-	<td><input type="text" name="subscr_responsible_name" /></td>
+	<td><input type="text" name="subscr_responsible_email" /></td>
       </tr>
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2"><hr /></td></tr>
