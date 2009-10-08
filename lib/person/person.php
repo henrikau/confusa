@@ -715,7 +715,7 @@ class Person{
      */
     public function isSubscriberAdmin()
     {
-	    if (!$this->testEntitlementAttribute("confusaAdmin")) {
+	    if (!$this->testEntitlementAttribute(Config::get_config('entitlement_admin'))) {
 		    return false;
 	    }
 	    /* If the user has no subscriber set, he/she *cannot* be a
@@ -736,7 +736,7 @@ class Person{
      */
     public function isSubscriberSubAdmin()
     {
-	    if (!$this->testEntitlementAttribute("confusaAdmin")) {
+	    if (!$this->testEntitlementAttribute(Config::get_config('entitlement_admin'))) {
 		    return false;
 	    }
 	    $epodn = $this->getSubscriberOrgName();
