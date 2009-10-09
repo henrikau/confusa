@@ -130,6 +130,7 @@ class CP_Admin extends Content_Page
 			$subscribers=$this->getSubscribers($this->person->getNREN());
 			$current_subscriber = "";
 
+			/* Are we looking at a particular subscriber? */
 			if (isset($_POST['subscriber'])) {
 				$current_subscriber = Input::sanitize($_POST['subscriber']);
 			} else if (count($subscribers) > 0) {
@@ -137,7 +138,7 @@ class CP_Admin extends Content_Page
 			}
 
 			if (!empty($current_subscriber)) {
-				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber, 1);
+				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber, SUBSCRIBER_ADMIN);
 				$this->tpl->assign('subscriber', $current_subscriber);
 				$this->tpl->assign('subscriber_admins', $subscriber_admins);
 			}
@@ -147,22 +148,30 @@ class CP_Admin extends Content_Page
 			$this->tpl->assign('subscribers', $subscribers);
 
 		} else if ($this->person->isSubscriberAdmin()) { /* subscriber admin display */
-			$subscriber = $this->person->getSubscriberOrgName();
-			$subscriber_admins = $this->getSubscriberAdmins($subscriber, 1);
-			$nren = $this->person->getNREN();
+			$subscriber_dn	= $this->person->getSubscriberOrgName();
+			$subscriber_db  = $this->person->getSubscriberIdPName();
+			$nren		= $this->person->getNREN();
+
+			/* get all NREN-admins */
 			$nren_admins = $this->getNRENAdmins($nren);
 			$this->tpl->assign('nren_admins', $nren_admins);
 			$this->tpl->assign('nren', $nren);
-			$this->tpl->assign('subscriber', $subscriber);
+
+			/* Get all subscriber-admins */
+			$subscriber_admins = $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_ADMIN);
+			$this->tpl->assign('subscriber', $subscriber_dn);
 			$this->tpl->assign('subscriber_admins', $subscriber_admins);
 
-			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->getSubscriberOrgName(), 0);
+			/* get a list of all subadmins */
+			$subscriber_sub_admins = $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_SUB_ADMIN);
 			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
 
 		} else if ($this->person->isSubscriberSubAdmin()) { /* subscriber-sub-admin display */
-			$subscriber = $this->person->getSubscriberOrgName();
-			$subscriber_admins = $this->getSubscriberAdmins($subscriber, 1);
-			$subscriber_sub_admins = $this->getSubscriberAdmins($this->person->getSubscriberOrgName(), 0);
+			$subscriber_dn		= $this->person->getSubscriberOrgName();
+			$subscriber_db		= $this->person->getSubscriberIdPName();
+			$subscriber_admins	= $this->getSubscriberAdmins($subscriber, SUBSCRIBER_ADMIN);
+			$subscriber_sub_admins	= $this->getSubscriberAdmins($this->person->getSubscriberOrgName(), SUBSCRIBER_SUB_ADMIN);
+
 			/* remove the administrator herself from the list */
 			$subscriber_sub_admins = array_diff($subscriber_sub_admins, array($this->person->getEPPN()));
 			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
@@ -215,9 +224,11 @@ class CP_Admin extends Content_Page
 	/**
 	 * Get all the admins that belong to a certain subscriber
 	 *
-	 * @param $subscriber The subscriber whose admins are sought
-	 * @param $level 0 or 1, dependant on whether the query is for subscriber
-	 * admins or subscriber sub-admins
+	 * @param String The subscriber whose admins are sought
+	 * @param String dependant on whether the query is for subscriber
+	 *		 admins or subscriber sub-admins. This is either
+	 *		 SUBSCRIBER_ADMIN	- 1
+	 *		 SUBSCRIBER_SUB_ADMIN	- 0
 	 */
 	private function getSubscriberAdmins($subscriber, $level)
 	{
@@ -226,8 +237,8 @@ class CP_Admin extends Content_Page
 
 		try {
 			$res = MDB2Wrapper::execute($query,
-										array('text','text'),
-										array($level, $subscriber));
+						    array('text','text'),
+						    array($level, $subscriber));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Cannot retrieve (subscriber) admins from database!<BR /> " .
 				"Probably wrong syntax for query, ask an admin to investigate. Server said: " . $dbse->getMessage());
