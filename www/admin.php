@@ -48,8 +48,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'upgrade_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
-					$this->upgradeSubscriberAdmin($admin,
-								      $this->person->getNREN());
+					$this->upgradeSubscriberAdmin($admin);
 					break;
 				case 'add_nren_admin':
 					$admin = Input::sanitize($_POST['nren_admin']);
@@ -530,14 +529,21 @@ class CP_Admin extends Content_Page
 		Framework::success_output("Downgraded $admin from subscriber admin to subscriber-sub-admin");
 	}
 
-	private function upgradeSubscriberAdmin($admin, $nren)
+	/**
+	 * ugradeSubscriberAdmin() Upgrade an admin from subscriber to NREN
+	 *
+	 * @param String admin the ePPN of the admin to upgrade
+	 *
+	 * @return void
+	 */
+	private function upgradeSubscriberAdmin($admin)
 	{
 		$snren_id = "SELECT nren_id FROM nrens WHERE name=?";
-
+		$nren = $this->person->getNREN();
 		try {
 			$res=MDB2Wrapper::execute($snren_id,
-									array('text'),
-									array($nren));
+						  array('text'),
+						  array($nren));
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem determining the ID of your NREN! Server said " .
 									$dbqe->getMessage());
