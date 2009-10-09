@@ -58,7 +58,7 @@ class CP_NREN_Admin extends Content_Page
 				$subscr_email = Input::sanitize($_POST['subscr_email']);
 				$subscr_phone = Input::sanitize($_POST['subscr_phone']);
 				$subscr_responsible_name = Input::sanitize($_POST['subscr_responsible_name']);
-				$subscr_responsible_email = Input::sanitize($_POST['subscr_responsible_email']);
+				$subscr_responsible_email = $_POST['subscr_responsible_email'];
 				$subscr_comment = Input::sanitizeText($_POST['subscr_comment']);
 				if ($this->addSubscriber($db_name,
 							 $state,
