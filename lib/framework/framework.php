@@ -12,6 +12,7 @@ require_once 'person.php';
 require_once 'logger.php';
 require_once 'content_page.php';
 require_once 'output.php';
+require_once 'CGE_RemoteCredentialException.php';
 
 /* global config */
 require_once 'config.php';
@@ -166,6 +167,17 @@ class Framework {
 			$msg .= "to the registred NREN administrator for your domain.";
 			Framework::error_output($msg);
 			$this->renderError = true;
+		} catch (CGE_RemoteCredentialException $rce) {
+			$msg = "The credentials for your NREN are not specified or incorrect! Some " .
+					"certificate operations will not work.";
+
+			if ($this->person->isNRENAdmin()) {
+				Framework::warning_output($msg . " Please " .
+						"update the credentials <a href=\"accountant.php\">here</a>.");
+			} else {
+				Framework::warning_output($msg . " Please contact an IT-administrator.");
+			}
+
 		} catch (ConfusaGenException $cge) {
 			Framework::error_output("Could not authenticate you! Error was: " .
 									$cge->getMessage());

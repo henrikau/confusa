@@ -7,6 +7,7 @@ require_once 'db_query.php';
 require_once 'mdb2_wrapper.php';
 require_once 'remote_api.php';
 require_once 'confusa_constants.php';
+require_once 'CGE_RemoteCredentialException.php';
 
 /**
  * CertManager_Online. Remote extension for CertManager.
@@ -73,9 +74,8 @@ class CertManager_Online extends CertManager
 
         if (count($res) != 1) {
             Logger::log_event(LOG_NOTICE, "Could not extract the suitable remote CA credentials for NREN $nren!");
-            throw new DBQueryException("Could not extract the suitable " .
-                           "remote CA credentials for NREN " . $this->person->getNREN(true) . "!<br />\n"
-                );
+            throw new CGE_RemoteCredentialException("Could not extract the suitable " .
+                           "remote CA credentials for NREN " . $this->person->getNREN(true) . "!<br />\n");
         }
 
         $this->login_name = $res[0]['account_login_name'];
