@@ -43,8 +43,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'downgrade_self':
 					$this->downgradeNRENAdmin($this->person->getEPPN(),
-								  $this->person->getNREN(),
-								  $this->person->getSubscriberIdPName());
+							  $this->person->getSubscriberIdPName());
 					break;
 				case 'upgrade_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
@@ -438,20 +437,24 @@ class CP_Admin extends Content_Page
 		}
 	}
 
-	/*
-	 * Downgrade a NREN admin to the status of a subscriber admin
+	/**
+	 * downgradeNRENAdmin() Downgrade a NREN admin to the status of a subscriber admin
 	 *
-	 * @param $admin The admin that should be downgraded to subscriber level
-	 * @param $nren The NREN to which the admin belongs
-	 * @param $subscriber The subscriber of which the is to become admin
+	 * @param $admin	The admin that should be downgraded to subscriber level
+	 * @param $subscriber	The subscriber of which the is to become
+	 *			admin. This string must be the db-name, i.e. the
+	 *			unique identifier sent from the IdP.
+	 *
+	 * @return void
 	 */
-	private function downgradeNRENAdmin($admin, $nren, $subscriber)
+	private function downgradeNRENAdmin($admin, $subscriber)
 	{
-		if (is_null($subscriber)) {
-			Logger::log_event(LOG_NOTICE, "Tried to downgrade NREN admin $admin " .
-							" from NREN $nren to subscriber admin, but admin's subscriber affiliaton is unknown!");
-			Framework::error_output("Tried to downgrade your admin status, but your subscriber affiliation is unknown! " .
-									"Please check your attributes and try again!");
+		$nren = $this->person->getNREN();
+		if (is_null($subscriber) || $subscriber=="") {
+			$msg  = "Tried to downgrade NREN admin $admin from NREN $nren to subscriber admin, ";
+			$msg .= "but admin's subscriber affiliaton is not set. Cannot continue.";
+			Logger::log_event(LOG_NOTICE,$msg);
+			Framework::error_output($msg);
 		}
 
 		$sid_query = "SELECT subscriber_id AS sid FROM subscribers s LEFT JOIN nrens n on n.nren_id=s.nren_id WHERE n.name=? AND s.name=?";
