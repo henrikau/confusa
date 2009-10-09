@@ -80,7 +80,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'add_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
-					$subscriber = $this->person->getSubscriberOrgName();
+					$subscriber = $this->person->getSubscriberIdPName();
 					$this->addSubscriberAdmin($admin,SUBSCRIBER_ADMIN,$subscriber);
 					break;
 				case 'downgrade_subs_admin':
@@ -90,7 +90,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'upgrade_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
-					$subscriber = $this->person->getSubscriberOrgName();
+					$subscriber = $this->person->getSubscriberIdPName();
 					$this->upgradeSubscriberSubAdmin($admin, $subscriber);
 					break;
 				case 'delete_subs_sub_admin':
@@ -99,7 +99,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'add_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
-					$subscriber = $this->person->getSubscriberOrgName();
+					$subscriber = $this->person->getSubscriberIdPName();
 					$this->addSubscriberAdmin($admin,SUBSCRIBER_SUB_ADMIN,$subscriber);
 					break;
 				default:
@@ -333,8 +333,27 @@ class CP_Admin extends Content_Page
 		}
 	} /* end addNRENAdmin() */
 
+	/**
+	 * addSubscriberAdmin()	Add a new subscriber admin to the table
+	 *
+	 * This function will take the $admin and add it as a new
+	 * subscriber-admin. Given that the user has the admin-entitlement set.
+	 *
+	 * @param String admin	The ePPN of the admin to add
+	 * @param String level	Subscriber-admin level (either subscribera-admin
+	 *			or sub-admin).
+	 * @param String subscriber The name of the subscriber as exported by
+	 *			the IdP. IOW, this is *not* the subscriber-dn,
+	 *			but the db_name.
+	 *
+	 * @return void
+	 */
 	private function addSubscriberAdmin($admin, $level, $subscriber)
 	{
+		/* FIXME: Change signature to boolean, indicating the result of adding a
+		 * new subscriber-admin
+		 */
+
 		if (!isset($admin)) {
 			Framework::error_output("Need the name of the new admin.");
 			return;
