@@ -52,18 +52,20 @@ class CertManager_Online extends CertManager
      */
     private function getAccountInformation() {
 
+		$nren = $this->person->getNREN(false);
+
 		/* can only get the account if we have NREN information */
-		if (is_null($this->person->getNREN())) {
+		if (empty($nren)) {
 			return;
 		}
 
         $login_cred_query = "SELECT a.account_login_name, a.account_password, a.account_ivector, a.ap_name " .
               "FROM nren_account_map_view a WHERE a.nren=?";
 
-        $nren = $this->person->getNREN();
+        $nren = $this->person->getNREN(false);
         Logger::log_event(LOG_INFO, "Getting the remote-CA login " .
                           "credentials for NREN " .
-                          $this->person->getNREN()
+                          $nren
                 );
         $res = MDB2Wrapper::execute($login_cred_query, array('text'),
                                     array($nren)
@@ -72,7 +74,7 @@ class CertManager_Online extends CertManager
         if (count($res) != 1) {
             Logger::log_event(LOG_NOTICE, "Could not extract the suitable remote CA credentials for NREN $nren!");
             throw new DBQueryException("Could not extract the suitable " .
-                           "remote CA credentials for NREN $nren!"
+                           "remote CA credentials for NREN " . $this->person->getNREN(true) . "!<br />\n"
                 );
         }
 
