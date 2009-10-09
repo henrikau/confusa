@@ -9,10 +9,10 @@
 <h3>Other</h3>
 <ul>
 	<li><a href="about_you.php">About you</a></li>
-	<li><a href="{php}$_SERVER['PHP_SELF']{/php}?mode=admin">Admin menu</a></li>
-	<li><a href="tools.php">Tools</a></li>
 	{if $person->isAdmin()}
+	<li><a href="{php}$_SERVER['PHP_SELF']{/php}?mode=admin">Admin menu</a></li>
 	{/if}
+	<li><a href="tools.php">Tools</a></li>
 {elseif $person->getMode() == 1}
 <h3>Admin</h3>
 <ul>
