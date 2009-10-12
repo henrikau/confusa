@@ -160,7 +160,7 @@ class CP_RevokeCertificate extends Content_Page
 				 * Subscriber set, not even via the IdP, use the
 				 * first in the list.
 				 */
-				$subscriber = $this->person->getSubscriberIdPName();
+				$subscriber = $this->person->getSubscriberOrgName();
 				if (!isset($subscriber) || $subscriber=="") {
 					echo "[DEBUG] ".__FILE__ . ":" . __LINE__;
 					echo " no subscriber set, getting the first available.<br />\n";
@@ -171,7 +171,7 @@ class CP_RevokeCertificate extends Content_Page
 			$this->tpl->assign('subscriber', htmlentities($subscriber));
 			$this->tpl->assign('subscribers', $subscribers);
 		} else {
-			$subscriber = $this->person->getSubscriberIdPName();
+			$subscriber = $this->person->getSubscriberOrgName();
 		}
 
 		$this->tpl->assign('file_name', 'eppn_list');
@@ -206,7 +206,7 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	private function getNRENSubscribers($nren)
 	{
-		$query = "SELECT subscriber FROM nren_subscriber_view WHERE nren=?";
+		$query = "SELECT subscriber_dn FROM nren_subscriber_view WHERE nren=?";
 
 		try {
 			$res = MDB2Wrapper::execute($query,
@@ -228,7 +228,7 @@ class CP_RevokeCertificate extends Content_Page
 		if (count($res) > 0) {
 
 			foreach($res as $row) {
-				$subscribers[] = $row['subscriber'];
+				$subscribers[] = $row['subscriber_dn'];
 			}
 		}
 
@@ -261,7 +261,7 @@ class CP_RevokeCertificate extends Content_Page
 	 *
 	 * @return void
 	 */
-	private function searchListDisplay($common_name, $subscriber)
+	private function searchCertsDisplay($common_name, $subscriber)
 	{
 		if (isset($_SESSION['auth_keys'])) {
 			unset($_SESSION['auth_keys']);
