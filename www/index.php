@@ -1,9 +1,10 @@
-<?php 
+<?php
 require_once 'confusa_include.php';
 include_once 'framework.php';
 include_once 'logger.php';
 require_once 'output.php';
 require_once 'pw.php';
+require_once 'content_page.php';
 
 final class CP_Index extends Content_Page
 {
