@@ -46,7 +46,7 @@ class CP_NREN_Admin extends Content_Page
 				$state	= Input::sanitize($_POST['state']);
 
 			if (isset($_POST['db_name']))
-				$db_name	= Input::sanitize($_POST['db_name']);
+				$db_name	= $_POST['db_name'];
 
 
 			switch(htmlentities($_POST['subscriber'])) {
@@ -54,7 +54,7 @@ class CP_NREN_Admin extends Content_Page
 				$this->editSubscriber($id, $state);
 				break;
 			case 'add':
-				$dn_name = Input::sanitize($_POST['dn_name']);
+				$dn_name = $_POST['dn_name'];
 				$subscr_email = Input::sanitize($_POST['subscr_email']);
 				$subscr_phone = Input::sanitize($_POST['subscr_phone']);
 				$subscr_responsible_name = Input::sanitize($_POST['subscr_responsible_name']);
