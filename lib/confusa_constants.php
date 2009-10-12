@@ -116,6 +116,11 @@ class ConfusaConstants {
 		'ž' => 'z'
 	);
 
+	/* where the compiled smarty classes get stored. Should be writable by
+	 * webserver user, hence it should not be in the normal directory tree */
+	public static $SMARTY_TEMPLATES_C = '/var/cache/confusa/templates_c';
+	public static $SMARTY_CACHE = '/var/cache/confusa/smarty_cache/';
+
 }
 
 ?>

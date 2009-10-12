@@ -65,9 +65,9 @@ class Framework {
 		$this->person	= new Person();
 		$this->tpl	= new Smarty();
 		$this->tpl->template_dir= Config::get_config('install_path').'lib/smarty/templates';
-		$this->tpl->compile_dir	= Config::get_config('install_path').'lib/smarty/templates_c';
+		$this->tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
 		$this->tpl->config_dir	= Config::get_config('install_path').'lib/smarty/configs';
-		$this->tpl->cache_dir	= Config::get_config('install_path').'lib/smarty/cache';
+		$this->tpl->cache_dir	= ConfusaConstants::$SMARTY_CACHE;
 		$this->tpl->assign('title', Config::get_config('system_name').' - '.$this->contentPage->get_title());
 		if (Config::get_config('maint')) {
 			$this->tpl->assign('instance', Config::get_config('system_name'));
