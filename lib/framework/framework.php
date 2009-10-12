@@ -87,8 +87,10 @@ class Framework {
 					$auth->authenticateUser();
 				}
 			}
-		}
-		catch (ConfusaGenException $cge) {
+		} catch (CriticalAttributeException $cae) {
+			Framework::error_output($cae->getMessage());
+			return;
+		} catch (ConfusaGenException $cge) {
 			Framework::error_output($cge->getMessage());
 			$this->renderError = true;
 			return;
