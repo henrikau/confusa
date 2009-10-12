@@ -218,8 +218,9 @@ class CP_NREN_Admin extends Content_Page
 		if (!isset($subscr_responsible_email) || $subscr_responsible_email == "") {
 			$subscr_responsible_email = "";
 		}
+
 		if (!isset($subscr_comment) || $subscr_comment == "") {
-			$subscr_responsible_email = "";
+			$subscr_comment = "";
 		}
 
 		$nren = $this->person->getNREN();
@@ -241,7 +242,6 @@ class CP_NREN_Admin extends Content_Page
 				return false;
 			}
 		}
-
 
 		/*
 		 * Find the NREN
@@ -309,7 +309,6 @@ class CP_NREN_Admin extends Content_Page
 			Framework::error_output($msg);
 			return false;
 		}
-
 
 		/*
 		 * Finally, we are ready to insert into subscribers.
