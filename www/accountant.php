@@ -109,6 +109,11 @@ class CP_Accountant extends Content_Page
 			return;
 		}
 
+		$accounts = $this->getAccountInfo();
+		if (is_null($accounts['account'])) {
+			$this->changeAccount($login_name);
+		}
+
 		Framework::message_output("Added new account $login_name to NREN " . $this->person->getNREN());
 		Logger::log_event(LOG_INFO, "Added new account $login_name to NREN " . $this->person->getNREN());
 		return;
@@ -161,7 +166,13 @@ class CP_Accountant extends Content_Page
 	/**
 	 * getAccountInfo - return an array with info for *this* nren-account
 	 *
-	 * This function will find
+	 * This function will find all the accounts, the account for the current
+	 * NREN and the AP-name for the current NREN and return an array in the
+	 * following format:
+	 *
+	 * 		- account: the current account of the NREN
+	 * 		- AP-name: the AP-name of the current account
+	 * 		- all: all Comodo accounts that could be found in the DB
 	 */
 	private function getAccountInfo()
 	{
@@ -325,8 +336,8 @@ class CP_Accountant extends Content_Page
 			MDB2Wrapper::update("UPDATE nrens SET login_account=$subselect WHERE name=?",
 					    array('text', 'text'),
 					    array($login_name, $nren));
-			Framework::message_output("Changed account for $org to $login_name");
-			Logger::log_event(LOG_INFO, "Changed account for $org to $login_name. " .
+			Framework::message_output("Changed account for $nren to $login_name");
+			Logger::log_event(LOG_INFO, "Changed account for $nren to $login_name. " .
 					"Admin contacted us from " . $_SERVER['REMOTE_ADDR']);
 		} catch (DBStatementException $dbqe) {
 			Framework::error_output("Query syntax errors. Server said: " . $dbqe->getMessage());
