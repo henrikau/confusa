@@ -799,6 +799,9 @@ function perform_postinstallation_steps
 	confusa_log=`grep "'default_log'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 	custom_css_path=`grep "'custom_css'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 	custom_graphics_path=`grep "'custom_logo'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
+	# bootstrap smarty directories
+	smarty_templates_c=`grep "SMARTY_TEMPLATES_C" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
+	smarty_cache=`grep "SMARTY_CACHE" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
 
 	get_user_alternative "Do you want setup to Install a crontab for cleaning and backing up the DB? (y/n)"
 
@@ -840,12 +843,20 @@ function perform_postinstallation_steps
 	res=`expr $res + $?`
 	chmod 0755 ${custom_graphics_path}
 	res=`expr $res + $?`
+	mkdir -p ${smarty_templates_c}
+	chown -R $custom_apache_user ${smarty_templates_c}
+	res=`expr $res + $?`
+	mkdir -p ${smarty_cache}
+	chown -R $custom_apache_user ${smarty_cache}
+	res=`expr $res + $?`
 
 	if [ ! $res -eq 0 ]; then
 		echo "Failed in setting the right permissions for the installation path!"
 		echo "Please ensure yourself that $custom_apache_user has write access to"
 		echo "${install_path}www/css/custom"
 		echo "${install_path}www/graphics/custom"
+		echo "${smarty_templates_c}"
+		echo "${smarty_cache}"
 		exit $res
 	fi
 
