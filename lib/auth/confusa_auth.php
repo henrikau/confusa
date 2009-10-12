@@ -82,11 +82,34 @@ abstract class Confusa_Auth
 			throw new CrititicalAttributeException("Cannot find <b>any</b> attributes!");
 		}
 
+		/* first deduce non-exported attributes from the NREN/Country map */
+		$nren = $attributes['nren'][0];
+		$country = $attributes['country'][0];
+
+		if (is_null($nren)) {
+			$msg = "Could not map from the identity provider to the NREN. ";
+			$msg .= "Probably the NRENMap is not configured. ";
+			$msg .= "Please tell an administrator about that problem!";
+			throw new CriticalAttributeException($msg);
+		}
+
+		$this->person->setNREN($nren);
+
+		if (is_null($country)) {
+			$msg = "Could not map from the identity provider to the country. ";
+			$msg .= "Probably the CountryMap is not configured. ";
+			$msg .= "Please tell an administrator about that problem!";
+			throw new CriticalAttributeException($msg);
+		}
+
+		/* in the attributes, but not exported by the nrens (we
+		 * deduce this in the NREN/Country map */
+		$this->person->setCountry($country);
+
 		/* Get the map
 		 * Warning: this may throw the MapNotFoundException if the nren
 		 * is new.
 		 */
-		$nren = $attributes['nren'][0];
 		$subscr = $attributes['subscriber'][0];
 		try {
 			$map = AuthHandler::getMap($nren, $subscr);
@@ -183,7 +206,7 @@ abstract class Confusa_Auth
 			}
 			/* is ePPN registred as NREN admin (from bootstrap) */
 			if ($this->person->isNRENAdmin()) {
-				$msg  = "No map for your NREN (".$attributes['nren'][0].") is set <br />\n";
+				$msg  = "No map for your NREN (".$nren.") is set <br />\n";
 				$msg .= "You need to do this <b>now</b> so the normal users can utilize Confusa's functionality.<br />\n";
 				$msg .= "<br /><center>Go <a href=\"stylist.php?mode=admin&show=map\">here</a> to update the map.</center><br />\n";
 				if (Config::get_config('debug')) {
@@ -210,10 +233,6 @@ abstract class Confusa_Auth
 			$msg .= "Configure NREN Attribute Map for Your NREN.<br /><br />";
 			throw new MapNotFoundException($msg);
 		}
-		/* in the attributes, but not exported by the nrens (we
-		 * deduce this in the NREN/Country map */
-		$this->person->setCountry($attributes['country'][0]);
-		$this->person->setNREN($attributes['nren'][0]);
 	}
 
 	/**
