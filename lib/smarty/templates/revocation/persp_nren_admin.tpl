@@ -4,7 +4,7 @@ All revocation operations currently limited to subscriber {$subscriber}.
 <div style="text-align: right">
     <form action="" method="post">
     <div>
-    Select subscriber:
+    Select subscriber (orgname in the DN):
     {html_options name="subscriber" values=$subscribers output=$subscribers selected=$subscriber}
     <input type="submit" name="change" value="Change" />
     </div>
