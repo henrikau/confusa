@@ -170,15 +170,17 @@ class Framework {
 			Framework::error_output($msg);
 			$this->renderError = true;
 		} catch (CGE_RemoteCredentialException $rce) {
-			$msg = "The credentials for your NREN are not specified or incorrect! Some " .
-					"certificate operations will not work.";
+			$msg  = "The credentials for your NREN are not specified or incorrect! Some ";
+			$msg .= "certificate operations will not work.";
+			$msg .= "<br /><br />Backend said: <br />";
+			$msg .= "<i>".$rce->getMessage() . "</i><br /><br />";
 
 			if ($this->person->isNRENAdmin()) {
-				Framework::warning_output($msg . " Please " .
-						"update the credentials <a href=\"accountant.php\">here</a>.");
+				$msg .=  "<center>Please update the credentials <a href=\"accountant.php\">here</a></center>";
 			} else {
-				Framework::warning_output($msg . " Please contact an IT-administrator.");
+				$msg .= "Please contact an IT-administrator.";
 			}
+				Framework::warning_output($msg);
 
 		} catch (ConfusaGenException $cge) {
 			Framework::error_output("Could not authenticate you! Error was: " .
