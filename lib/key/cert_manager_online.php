@@ -238,6 +238,12 @@ class CertManager_Online extends CertManager
      */
     public function get_cert_list()
     {
+		$res = $this->cacheLookupList();
+
+		if (!is_null($res)) {
+			return $res;
+		}
+
         $common_name = $this->person->getX509ValidCN();
         $params = $this->_capi_get_cert_list($common_name);
         $res=array();
@@ -271,6 +277,7 @@ class CertManager_Online extends CertManager
             $res[$i-1]['cert_owner'] = $this->person->getX509ValidCN();
         }
 
+		$this->cacheInsertList($res);
         return $res;
     }
     /* delete a certificate from the DB (Deprecated)
@@ -293,7 +300,6 @@ class CertManager_Online extends CertManager
      */
     public function get_cert_list_for_persons($common_name, $org)
     {
-		$this->cacheInvalidate();
 		$common_name = "%" . $common_name . "%";
 
         $params = $this->_capi_get_cert_list($common_name);
@@ -642,12 +648,6 @@ class CertManager_Online extends CertManager
      */
     private function _capi_get_cert_list($common_name)
     {
-        $raw_list = $this->cacheLookupList();
-
-        if (!is_null($raw_list)) {
-            return $raw_list;
-        }
-
         Logger::log_event(LOG_DEBUG, "Trying to get the list with the certificates " .
                                     "for person $common_name");
 
@@ -668,7 +668,6 @@ class CertManager_Online extends CertManager
         }
 
         if ($params['errorCode'] == "0") {
-            $this->cacheInsertList($params);
             return $params;
         } else {
 			$msg = $this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
