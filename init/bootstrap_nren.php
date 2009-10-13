@@ -1,4 +1,16 @@
 <?php
+  /**
+   * bootstrap_nren.php
+   *
+   * Via this file, the operational team is given a command-line interface into
+   * the confusa-admin internals without going through the web-interface.
+   *
+   * Adding a new NREN is currently not possible via the web-interface, nor do
+   * we have any plans for adding this. At the moment, the metadata will have to
+   * be manually added by the sysadmins, so we can justify this extra step.
+   *
+   * @author Thomas Zangerl <tzangerl@pdc.kth.se>
+   */
 
 if (file_exists("../config/confusa_config.php")) {
 	$config="../config/";
