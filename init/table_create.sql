@@ -79,6 +79,15 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- an e-mail-address of somebody who will receive notifications for the NREN
     contact VARCHAR(64) NOT NULL,
 
+    -- We need to store contact-info for the CERT-team
+    cert_email VARCHAR(64),
+    cert_phone VARCHAR(16),
+
+    -- The url is the url that will be used for the users contacting
+    -- confusa. Even if confusa is hosted at instance.confusa.org, the
+    -- NREN might want the users to visit nren.example.org.
+    url VARCHAR(128),
+
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) type=InnoDB;
 
