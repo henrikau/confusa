@@ -24,7 +24,7 @@ class ConfusaConstants {
 	/* these fields are for informational use, when the user clicks "view CRL/view root cert"
 	 * in Confusa */
 	public static $CAPI_ROOT_CERT = 'http://crt.tcs.terena.org/TERENAeSciencePersonalCA.crt';
-	public static $CAPI_CRL = 'http://crt.tcs.terena.org/TERENAeSciencePersonalCA.crt';
+	public static $CAPI_CRL = 'http://crl.tcs.terena.org/TERENAeSciencePersonalCA.crl';
 	/* used in the API */
 	public static $CAPI_ESCIENCE_ID = '285';
 	/* if we ever want to issue e-mail certificates */
@@ -34,7 +34,7 @@ class ConfusaConstants {
 	/* constants for the test-mode. These will go into the certificate subject in online mode */
 	public static $CAPI_TEST_DC_PREFIX = 'TEST CERTIFICATE';
 	public static $CAPI_TEST_O_PREFIX = 'TEST UNIVERSITY ';
-	public static $CAPI_TEST_CN_PREFIX = 'TEST PERSON ';
+	public static $CAPI_TEST_CN_PREFIX = '';
 	/* certificate validity period in test mode */
 	public static $CAPI_TEST_VALID_DAYS = '14';
 
