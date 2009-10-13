@@ -77,7 +77,8 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- Code according to ISO 639-1, with possible annotation like in de-AT, en-US
     lang VARCHAR(5),
     -- an e-mail-address of somebody who will receive notifications for the NREN
-    contact VARCHAR(30),
+    contact VARCHAR(64) NOT NULL,
+
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) type=InnoDB;
 
