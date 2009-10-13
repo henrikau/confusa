@@ -705,7 +705,7 @@ class CertManager_Online extends CertManager
           $postfields_sign_req["subject_domainComponent_7"] = ConfusaConstants::$CAPI_TEST_DC_PREFIX;
           $days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
         } else {
-          $days = $CAPI_VALID_DAYS;
+          $days = ConfusaConstants::$CAPI_VALID_DAYS;
         }
 
         /* set all the required post parameters for upload */
