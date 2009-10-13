@@ -244,7 +244,7 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	 private function showNonAdminRevokeTable()
 	{
-		$this->searchListDisplay($this->person->getEPPN(), $this->person->getSubscriberOrgName());
+		$this->searchCertsDisplay($this->person->getEPPN(), $this->person->getSubscriberOrgName());
 	}
 
 	/**
