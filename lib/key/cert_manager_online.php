@@ -68,10 +68,27 @@ class CertManager_Online extends CertManager
                           "credentials for NREN " .
                           $nren
                 );
-        $res = MDB2Wrapper::execute($login_cred_query, array('text'),
-                                    array($nren)
-        );
+	try {
+		$errorCode = create_pw(8);
+		$errorMsg = "[$errorCode] " . __FILE__ . ":" . __LINE__ . " ";
 
+		$res = MDB2Wrapper::execute($login_cred_query, array('text'),
+					    array($nren));
+	} catch (DBStatementException $dbse) {
+		Logger::log_event(LOG_ALERT, "$errorMsg missing columns in account_map/nren_account_map_view");
+		$errorMsg .= "<br />The table does not have all required columns. Please contact operational support.";
+		throw new CGE_REmoteCredentialException($errorMsg);
+	} catch (DBQueryException $dbqe) {
+		if (is_null($nren) || $nren =="") {
+			Logger::log_event(LOG_NOTICE, "$errorMsg - Look for subscriber-map problems.");
+			$errorMsg .= "<br />NREN-name not properly set, cannot extract account-credentials.";
+			throw new CGE_REmoteCredentialException($errorMsg);
+		} else {
+			$errorMsg .= " unknown query-inconsistency";
+			Logger::log_event(LOG_NOTICE, $errorMsg);
+			throw new CGE_REmoteCredentialException($errorMsg);
+		}
+	}
         if (count($res) != 1) {
             Logger::log_event(LOG_NOTICE, "Could not extract the suitable remote CA credentials for NREN $nren!");
             throw new CGE_RemoteCredentialException("Could not extract the suitable " .
