@@ -192,7 +192,8 @@ class CP_Admin extends Content_Page
 	private function getNRENAdmins($nren)
 	{
 
-		$query = "SELECT admin FROM admins WHERE admin_level='2' AND nren=";
+		$query  = "SELECT admin, admin_name, admin_email ";
+		$query .= "FROM admins WHERE admin_level='2' AND nren=";
 		$query .= "(SELECT nren_id FROM nrens WHERE name = ?)";
 
 		try {
@@ -232,7 +233,8 @@ class CP_Admin extends Content_Page
 	 */
 	private function getSubscriberAdmins($subscriber, $level)
 	{
-		$query = "SELECT admin FROM admins WHERE admin_level=? AND subscriber=";
+		$query  = "SELECT admin, admin_name, admin_email ";
+		$query .= "FROM admins WHERE admin_level=? AND subscriber=";
 		$query .= "(SELECT subscriber_id FROM subscribers WHERE name=?)";
 
 		try {
