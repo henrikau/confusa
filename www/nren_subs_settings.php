@@ -66,11 +66,13 @@ class CP_NREN_Subs_Settings extends Content_Page
 	public function process()
 	{
 		if ($this->person->isNRENAdmin()) {
-			$contact = $this->getNRENContact($this->person->getNREN());
-			$current_language = $this->getNRENLanguage($this->person->getNREN());
+			$info = $this->getNRENInfo();
+			$current_language = $info['lang'];
+			$this->tpl->assign('nrenInfo', $info);
 		} else {
-			$contact = $this->getSubscriberContact($this->person->getSubscriberOrgName());
-			$current_language = $this->getSubscriberLanguage($this->person->getSubscriberOrgName());
+			$info = $this->getSubscriberInfo();
+			$current_language = $info['lang'];
+			$this->tpl->assign('subscriberInfo', $info);
 		}
 
 		if (is_null($current_language)) {
@@ -126,23 +128,23 @@ class CP_NREN_Subs_Settings extends Content_Page
 	 * @param $nren string The NREN for which the contact information should be retrieved
 	 * @return string The contact (e-mail address) information for a NREN
 	 */
-	private function getNRENContact($nren)
+	private function getNRENInfo()
 	{
-		$query="SELECT contact FROM nrens WHERE name=?";
+		$query="SELECT lang, contact_email, contact_phone,cert_email, cert_phone, url FROM nrens WHERE name=?";
 
 		try {
 			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($nren));
+						    array('text'),
+						    array($this->person->getNREN()));
 		} catch (DBQueryException $dqe) {
-			Framework::warning_ouput("Could not get the current contact information for $nren");
+			Framework::warning_ouput(__FILE__ . ":" . __LINE__ . " Could not get the current contact information for $nren");
 		} catch (DBStatementException $dse) {
 			Framework::warning_output("Could not get the current contact information for $nren");
 			Logger::log_event(LOG_INFO, "[nadm] Could not get current contact for NREN " .
 							"$nren: " . $dse->getMessage());
 		}
 
-		return $res[0]['contact'];
+		return $res[0];
 	}
 
 	/**
@@ -152,14 +154,13 @@ class CP_NREN_Subs_Settings extends Content_Page
 	 *			should be retrieved
 	 * @return string The contact that was defined for the subscriber
 	 */
-	private function getSubscriberContact($subscriber)
+	private function getSubscriberInfo()
 	{
-		$query="SELECT contact FROM subscribers WHERE name=?";
-
+		$query="SELECT * FROM subscribers WHERE name=?";
 		try {
 			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($subscriber));
+						    array('text'),
+						    array($this->person->getSubscriberIdPName()));
 		} catch (DBQueryException $dqe) {
 			Framework::warning_ouput("Could not get the current contact information for $subscriber");
 		} catch (DBStatementException $dse) {
