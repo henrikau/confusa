@@ -92,8 +92,10 @@ class CP_Robot_Interface extends Content_Page
 		$query = "SELECT * FROM robot_certs rc, admins a, subscribers s ";
 		$query .= "WHERE s.subscriber_id=rc.subscriber_id ";
 		$query .= "AND rc.uploaded_by=a.admin_id AND s.name=?";
+		$params = array('text');
+		$data = array($this->person->getSubscriberIdPName());
 		try {
-			$res = MDB2Wrapper::execute($query, array('text'), array($this->person->getSubscriberOrgName()));
+			$res = MDB2Wrapper::execute($query, $params, $data);
 		} catch (Exception $e) {
 			/* fixme */
 			Framework::error_output("Errors getting robot-certificates from DB.<br />" . $e->getMessage());
