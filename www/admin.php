@@ -701,10 +701,7 @@ class CP_Admin extends Content_Page
 				Framework::error_output("Too many hits in the database. Cannot decide where to go from here.");
 				return;
 			}
-			if (count($res) != 2) {
-				
-			}
-			
+
 		} catch (DBStatementException $dbse) {
 			$msg = "Cannot find id-values in the database due to server problems. Server said: " . $dbse->getMessage();
 			Framework::error_output($msg);
