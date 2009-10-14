@@ -37,7 +37,7 @@ To install Confusa
      libapache2-php5
      php5-mysql
      PEAR::MDB2_mysql_driver
-     
+
 3 b) When using online, you will also need the mcrypt and curl libraries:
 
      php5-mcrypt
@@ -53,7 +53,7 @@ To install Confusa
 
      openssl-blacklist
 
-4) Configure Apache to use SSL, use the following lines in your 
+4) Configure Apache to use SSL, use the following lines in your
    apache2/sites-enabled/appropriate.config.file and php5-openssl
 
 # Redirect http to https
@@ -88,7 +88,7 @@ in the given config-file.
 
 Finally, this is a *sample* configuration. If you know your way around
 an Apache configuration, this should be more of a guideline than
-anything else. 
+anything else.
 
 5) simpleSAMLphp
    confusa uses simpleSAMLphp to handle AuthN, and thus, you should
@@ -159,7 +159,7 @@ b) Configure Apache with something along the following line:
 c) Configure the confusa_config.php file (copy the
    confusa_config_template.php and modify with values that makes sense
    to you - the template explaines the attributes).
-   
+
 d) Run the create_database.sh script in confusa/init folder
    This will create the database, the user and the tables. it will use
    the confusa_config.php file, so make sure that this is configured
@@ -228,7 +228,7 @@ the following line to <simplesamlphp-dir>/config/authsources.php:
 
 Bear in mind that the IdP with which you wish to establish the above trust relationship needs to accept the metadata of the
 saml2 module on your side, not only your standard metadata. And OAuth may oblige you to create a directory /tmp/oauth with write
-permissions for the webserver-process, which it will use as a token store. 
+permissions for the webserver-process, which it will use as a token store.
 
 
 *) optional
