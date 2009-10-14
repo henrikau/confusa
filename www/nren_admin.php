@@ -45,21 +45,71 @@ class CP_NREN_Admin extends Content_Page
 			if (isset($_POST['state']))
 				$state	= Input::sanitize($_POST['state']);
 
-			if (isset($_POST['db_name']))
+			if (isset($_POST['db_name'])) {
 				$db_name	= $_POST['db_name'];
+			}
 
+			if (isset($_POST['dn_name'])) {
+				$dn_name = Input::sanitize($_POST['dn_name']);
+			}
 
+			if(isset($_POST['subscr_email']) && $_POST['subscr_email'] != "") {
+				$subscr_email = Input::sanitize($_POST['subscr_email']);
+			} else {
+				$subscr_email = "";
+			}
+			if(isset($_POST['subscr_phone']) && $_POST['subscr_phone'] != "") {
+				$subscr_phone = Input::sanitize($_POST['subscr_phone']);
+			} else {
+				$subscr_phone = "";
+			}
+			if(isset($_POST['subscr_responsible_name']) && $_POST['subscr_responsible_name'] != "") {
+				$subscr_responsible_name = Input::sanitize($_POST['subscr_responsible_name']);
+			} else {
+				$subscr_responsible_name = "";
+			}
+			if(isset($_POST['subscr_responsible_email']) && $_POST['subscr_responsible_email'] != "") {
+					$subscr_responsible_email = $_POST['subscr_responsible_email'];
+			} else {
+				$subscr_responsible_email = "";
+			}
+			if(isset($_POST['subscr_comment']) && $_POST['subscr_comment'] != "") {
+				$subscr_comment = Input::sanitizeText($_POST['subscr_comment']);
+			} else {
+				$subscr_comment = "";
+			}
+			
 			switch(htmlentities($_POST['subscriber'])) {
 			case 'edit':
-				$this->editSubscriber($id, $state);
+				if ($this->editSubscriber($id,
+							  $state,
+							  $subscr_email,
+							  $subscr_phone,
+							  $subscr_responsible_name,
+							  $subscr_responsible_email,
+							  $subscr_comment)) {
+					Framework::success_output("Updated subscriber '<i>$dn_name</i>' successfully.");
+				}
+				break;
+			case 'info':
+				/* get info */
+				try {
+					$query  = "SELECT s.* FROM subscribers s LEFT JOIN nrens n ";
+					$query .= "ON n.nren_id = s.nren_id WHERE n.name=? AND s.subscriber_id=?";
+					$data = MDB2Wrapper::execute($query,
+								     array('text', 'text'),
+								     array($this->person->getNREN(), $id));
+					$this->tpl->assign('subscr_details', $data[0]);
+				} catch(Exception $e) {
+					;
+				}
+				/* assign to tpl */
+				/* notify tpl */
+				$this->tpl->assign('subscriber_details', true);
+				$this->tpl->assign('subscriber_detail_id', $id);
 				break;
 			case 'add':
 				$dn_name = $_POST['dn_name'];
-				$subscr_email = Input::sanitize($_POST['subscr_email']);
-				$subscr_phone = Input::sanitize($_POST['subscr_phone']);
-				$subscr_responsible_name = Input::sanitize($_POST['subscr_responsible_name']);
-				$subscr_responsible_email = $_POST['subscr_responsible_email'];
-				$subscr_comment = Input::sanitizeText($_POST['subscr_comment']);
 				if ($this->addSubscriber($db_name,
 							 $state,
 							 $dn_name,
@@ -70,9 +120,6 @@ class CP_NREN_Admin extends Content_Page
 							 $subscr_comment)) {
 					Framework::success_output("Added new subscriber $dn_name OK to database.");
 				}
-				break;
-			case 'info':
-				/* FIXME, add inline support for info */
 				break;
 			case 'delete':
 				$this->delSubscriber($id);
