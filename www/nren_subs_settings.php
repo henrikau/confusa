@@ -36,10 +36,13 @@ class CP_NREN_Subs_Settings extends Content_Page
 				}
 				break;
 			case 'subscriber_contact':
-				if ($this->person->isSusbscriberAdmin()) {
-					$subscriber = $person->getSubscriberOrgName();
-					$this->updateSubscriberContact($subscriber, $contact);
-
+				if ($this->person->isSubscriberAdmin()) {
+					/* ($contact_email, $contact_phone, $resp_name, $resp_email) */
+					$this->updateSubscriberContact(
+						Input::sanitize($_POST['contact_email']),
+						Input::sanitize($_POST['contact_phone']),
+						Input::sanitize($_POST['resp_name']),
+						Input::sanitize($_POST['resp_email']));
 				}
 				break;
 			default:
@@ -165,17 +168,18 @@ class CP_NREN_Subs_Settings extends Content_Page
 	/**
 	 * Get the current contact information for a subscriber
 	 *
-	 * @param $subscriber string The subscriber for which the contact-information
-	 *			should be retrieved
-	 * @return string The contact that was defined for the subscriber
+	 * @param void 
+	 * @return String The contact that was defined for the subscriber
 	 */
 	private function getSubscriberInfo()
 	{
-		$query="SELECT * FROM subscribers WHERE name=?";
+		$query  = "SELECT s.* FROM subscribers s LEFT JOIN nrens n ";
+		$query .= "ON n.nren_id = s.nren_id WHERE s.name=? AND n.name=?";
 		try {
 			$res = MDB2Wrapper::execute($query,
-						    array('text'),
-						    array($this->person->getSubscriberIdPName()));
+						    array('text', 'text'),
+						    array($this->person->getSubscriberIdPName(),
+							  $this->person->getNREN()));
 		} catch (DBQueryException $dqe) {
 			Framework::warning_ouput("Could not get the current contact information for $subscriber");
 		} catch (DBStatementException $dse) {
@@ -184,7 +188,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 							"$subscriber: " . $dse->getMessage());
 		}
 
-		return $res[0]['contact'];
+		return $res[0];
 	}
 
 	/**
@@ -194,14 +198,15 @@ class CP_NREN_Subs_Settings extends Content_Page
 	 *		should be updated
 	 * @param $contact string The new contact information
 	 */
-	private function updateSubscriberContact($subscriber, $contact)
+	private function updateSubscriberContact($contact_email, $contact_phone, $resp_name, $resp_email)
 	{
-		$query="UPDATE subscribers SET contact=? WHERE name=?";
+		$subscriber = $this->person->getSubscriberIdPName();
+		$query="UPDATE subscribers SET subscr_email=?, subscr_phone=?, subscr_resp_name=?, subscr_resp_email=? WHERE name=?";
 
 		try {
 			MDB2Wrapper::update($query,
-								array('text','text'),
-								array($contact, $subscriber));
+					    array('text','text','text','text','text'),
+					    array($contact_email, $contact_phone, $resp_name, $resp_email, $subscriber));
 		} catch (DBQueryException $dqe) {
 			Framework::error_output("Could not change the subscriber contact! Maybe something is " .
 									"wrong with the data that you supplied? Server said: " .
