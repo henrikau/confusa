@@ -11,6 +11,7 @@
 	<tr><td><b>email:</b></td><td>{$person->getEmail()}</td></tr>
 	<tr><td><b>Country:</b></td><td>{$person->getCountry()}</td></tr>
 	<tr><td><b>OrganizationalName:</b></td><td>{$person->getSubscriberOrgName()}</td></tr>
+	<tr><td><b>Organizational Identifier:</b></td><td>{$person->getSubscriberIdPName()}</td></tr>
 	<tr><td><b>Entitlement:</b></td><td>{$person->getEntitlement()}</td></tr>
 	<tr><td><b>NREN:</b></td><td>{$person->getNREN()}</td></tr>
 	<tr><td><b>Complete /DN:</b></td><td>{$person->getX509SubjectDN()}</td></tr>
