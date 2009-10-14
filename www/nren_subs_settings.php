@@ -24,17 +24,26 @@ class CP_NREN_Subs_Settings extends Content_Page
 
 		if (isset($_POST['setting'])) {
 			switch(htmlentities($_POST['setting'])) {
-			case 'contact':
-				$contact = Input::sanitize($_POST['contact']);
-
+			case 'nren_contact':
 				if ($this->person->isNRENAdmin()) {
-					$nren = $person->getNREN();
-					$this->updateNRENContact($nren, $contact);
-				} else {
+					$email = Input::sanitize($_POST['contact_email']);
+					$phone = Input::sanitize($_POST['contact_phone']);
+					$certPhone = Input::sanitize($_POST['cert_phone']);
+					$certEmail = Input::sanitize($_POST['cert_email']);
+					$url = Input::sanitize($_POST['url']);
+					$newLanguage = Input::sanitize($_POST['language']);
+					$this->updateNRENContact($email, $phone, $certPhone, $certEmail, $url, $newLanguage);
+				}
+				break;
+			case 'subscriber_contact':
+				if ($this->person->isSusbscriberAdmin()) {
 					$subscriber = $person->getSubscriberOrgName();
 					$this->updateSubscriberContact($subscriber, $contact);
-				}
 
+				}
+				break;
+			default:
+				Framework::error_output("Unknown action (".$_POST['setting'] . ")");
 				break;
 			}
 		} else if (isset($_POST['language_operation'])) {
@@ -45,7 +54,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 
 							if ($person->isSubscriberAdmin()) {
 								$this->updateSubscriberLanguage($person->getSubscriberOrgName(),
-																$new_language);
+												$new_language);
 							} else if ($person->isNRENAdmin()) {
 								$this->updateNRENLanguage($person->getNREN(),
 														  $new_language);
@@ -82,7 +91,6 @@ class CP_NREN_Subs_Settings extends Content_Page
 		$this->tpl->assign('languages', $this->full_names);
 		$this->tpl->assign('current_language', $current_language);
 		$this->tpl->assign('language_codes', array_keys($this->full_names));
-		$this->tpl->assign('contact', $contact);
 		$this->tpl->assign('content', $this->tpl->fetch('nren_subs_settings.tpl'));
 	}
 
