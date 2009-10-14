@@ -90,7 +90,6 @@ class CP_NREN_Admin extends Content_Page
 							  $subscr_comment)) {
 					Framework::success_output("Updated subscriber '<i>$dn_name</i>' successfully.");
 				}
-				break;
 			case 'info':
 				/* get info */
 				try {
