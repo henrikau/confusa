@@ -128,7 +128,7 @@ abstract class Confusa_Auth
 			try {
 				$query  = "SELECT s.dn_name FROM subscribers s ";
 				$query .= "LEFT JOIN nrens n ON n.nren_id = s.nren_id ";
-				$query .= "WHERE n.name=? AND s.name like ?";
+				$query .= "WHERE n.name=? AND s.name = ?";
 				$res = MDB2Wrapper::execute($query,
 							    array('text', 'text'),
 							    array($nren, $this->person->getSubscriberIdPName()));
