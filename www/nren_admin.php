@@ -100,13 +100,11 @@ class CP_NREN_Admin extends Content_Page
 								     array('text', 'text'),
 								     array($this->person->getNREN(), $id));
 					$this->tpl->assign('subscr_details', $data[0]);
+					$this->tpl->assign('subscriber_details', true);
+					$this->tpl->assign('subscriber_detail_id', $id);
 				} catch(Exception $e) {
 					;
 				}
-				/* assign to tpl */
-				/* notify tpl */
-				$this->tpl->assign('subscriber_details', true);
-				$this->tpl->assign('subscriber_detail_id', $id);
 				break;
 			case 'add':
 				$dn_name = $_POST['dn_name'];
