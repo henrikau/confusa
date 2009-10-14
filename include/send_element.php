@@ -6,4 +6,4 @@ function set_value($name, $target, $msg, $method = "POST")
 	echo "<INPUT TYPE=\"submit\" VALUE=\"$msg\" />\n";
 	echo "</FORM>\n";
 }
-
+?>
