@@ -437,6 +437,27 @@ class CP_NREN_Admin extends Content_Page
 		return $styling;
 	}
 
+	public function info_button($key, $subscriber, $subscriber_id)
+	{
+		if (!isset($key) || !isset($subscriber))
+			return;
+
+		if ($key === "" || $subscriber === "")
+			return"";
+		$res  = "<form action=\"\" method=\"post\">\n";
+		$res .= "<div>\n";
+		$res .= "<input type=\"hidden\" name=\"$key\" value=\"info\" />\n";
+		$res .= "<input type=\"hidden\" name=\"name\" value=\"$subscriber\" />\n";
+		$res .= "<input type=\"hidden\" name=\"state\" value=\"\" />\n"; /* don't need state to delete */
+		$res .= "<input type=\"hidden\" name=\"id\" value=\"$subscriber_id\" />\n";
+		$res .= "<input type=\"image\" name=\"information\" ";
+		$res .= "title=\"Information\" ";
+		$res .= "                 value=\"info\" src=\"graphics/information.png\"";
+		$res .= "                 alt=\"Information about $subscriber\" />\n";
+		$res .= "</div>\n";
+		$res .= "</form>\n";
+		echo $res;
+	}
 	public function delete_button($key, $target, $id)
 	{
 		if (!isset($key) || !isset($target))
