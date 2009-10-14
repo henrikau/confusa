@@ -454,7 +454,9 @@ class CP_NREN_Admin extends Content_Page
 				return;
 			$result = array();
 			foreach($res as $row)
-				$result[] = array('subscriber' => $row['subscriber'], 'org_state' => $row['org_state'], 'subscriber_id' => $row['subscriber_id']);
+				$result[] = array('subscriber' => $row['subscriber'],
+						  'org_state' => $row['org_state'],
+						  'subscriber_id' => $row['subscriber_id']);
 		} catch (DBStatementException $dbse) {
 			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax. Verify that the query matches the database!";
 			Logger::log_event(LOG_NOTICE, $msg);
