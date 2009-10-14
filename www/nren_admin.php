@@ -129,42 +129,47 @@ class CP_NREN_Admin extends Content_Page
 	 * At the moment, the only thing that actually makes sense to change, is
 	 * the state of the subscriber.
 	 *
-	 * @name	: The name of the subscriber.
-	 * @state	: New state.
+	 * @name		: The name of the subscriber.
+	 * @state		: New state.
+	 * @subscr_email	: Contact email for the subscriber
+	 * @subscr_phone	: Phone to central place at subscriber's
+	 * @subscr_responsible_name	: Someone responsible
+	 * @subscr_responsible_email	: That someone's email
+	 * @subscr_comment	: Comment.
 	 */
-	private function editSubscriber($id, $state)
+	private function editSubscriber($id, $state, $email, $phone, $rname, $remail, $comment)
 	{
-		$query_id		= "SELECT nren_id FROM nrens WHERE name=?";
-		$update			= "UPDATE subscribers SET org_state=? WHERE subscriber_id=? AND nren_id=?";
-
 		try {
-			$res_id = MDB2Wrapper::execute($query_id,
+			$res_id = MDB2Wrapper::execute("SELECT nren_id FROM nrens WHERE name=?",
 						       array('text'),
 						       array($this->person->getNREN()));
 			if (count($res_id) < 1) {
 				Framework::error_output("Could not find your NREN! Something seems to be misconfigured.");
 			}
+			$nren_id = $res_id[0]['nren_id'];
 
-			/* only thing you can change is state.
-			 * If new state is identical to the current,
-			 * there's no point in going further. */
-			if ($res_subscribers[0]['org_state'] === $state) {
-				return;
-			}
-			MDB2Wrapper::update($update,
-					    array('text', 'text', 'text'),
-					    array($state, $id, $res_id[0]['nren_id']));
+
+			$update  = "UPDATE subscribers SET ";
+			$update .= "org_state=?, subscr_email=?, subscr_phone=?, ";
+			$update .= "subscr_resp_email=?, subscr_resp_name=?, subscr_comment=? ";
+			$update .= "WHERE subscriber_id=? AND nren_id=?";
+			$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
+			$data = array($state, $email, $phone, $rname, $remail, $comment, $id, $nren_id);
+			MDB2Wrapper::update($update, $params, $data);
 
 			Logger::log_event(LOG_NOTICE, "Changed state for subscriber with ID $id from " . $res[0]['org_state'] . " to $state");
 
 		} catch (DBStatementException $dbse) {
 			Framework::error_output(__FILE__ . ":" . __LINE__ . " Error in query-syntax.<BR />Server said " . $dbse->getMessage());
 			Logger::log_event(LOG_NOTICE, "Problem occured when editing the state of subscriber $id: " . $dbse->getMessage());
+			return false;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output(__FILE__ . ":" . __LINE__ . " Problems with query.<BR />Server said " . $dbqe->getMessage());
 			Logger::log_event(LOG_NOTICE, "Problem occured when editing subscriber $id: " . $dbse->getMessage());
+			return false;
 		}
-	}
+		return true;
+	} /* end editSubscriber */
 
 	/**
 	 * addSubscriber - add a new subscriber
