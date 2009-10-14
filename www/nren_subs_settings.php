@@ -293,48 +293,6 @@ class CP_NREN_Subs_Settings extends Content_Page
 		Framework::success_output("Default language for your subscriber successfully changed to " .
 									$this->full_names[$new_language]);
 	} /* end updateSubscriberLanguage */
-
-	/**
-	 * Get the default language for a certain NREN
-	 *
-	 * @param $nren string The name of the NREN
-	 * @return string The ISO-631-1 language code of the NREN's language
-	 */
-	private function getNRENLanguage($nren)
-	{
-		$query = "SELECT lang FROM nrens WHERE name=?";
-
-		try {
-			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($nren));
-		} catch (ConfusaGenException $cge) {
-			Framework::warning_output("Could not get the default language for NREN $nren!");
-		}
-
-		return $res[0]['lang'];
-	} /* end getNRENLanguage */
-
-	/**
-	 * Get the default language for a certain subscriber
-	 *
-	 * @param $subscriber The name of the subscriber whose language should be updated
-	 */
-	private function getSubscriberLanguage($subscriber)
-	{
-		$query = "SELECT lang FROM subscribers WHERE name=?";
-
-		try {
-			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($subscriber));
-		} catch (ConfusaGenException $cge) {
-			Framework::warning_output("Could not get the default language for subscriber " .
-									"$subscriber!");
-		}
-
-		return $res[0]['lang'];
-	} /* end getSubscriberLanguage */
 }
 
 $fw = new Framework(new CP_NREN_Subs_Settings());
