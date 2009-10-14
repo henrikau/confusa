@@ -98,31 +98,38 @@ class CP_NREN_Subs_Settings extends Content_Page
 	 * Update the contact information (usually a e-mail address) for a NREN to
 	 * a new value.
 	 *
-	 * @param $nren string The NREN for which the contact is to be updated
-	 * @param $contact string The new contact information
+	 * @param email String The new contact information
+	 * @param phone String Phone for the subscriber
+	 * @param certPhone String CERT phone (for emergency)
+	 * @param certEmail String CERT email (for emergency)
+	 * @param url String The url the NREN will configure Confusa to listen to.
+	 * @param newLanguage String
 	 */
-	private function updateNRENContact($nren, $contact)
+	private function updateNRENContact($email, $phone, $certPhone, $certEmail, $url, $newLanguage)
 	{
-		$query="UPDATE nrens SET contact=? WHERE name=?";
-
+		$nren = $this->person->getNREN();
+		$query  = "UPDATE nrens SET contact_email=?, contact_phone=?, ";
+		$query .= " cert_phone=?, cert_email=?, url=?, lang=? ";
+		$query .= "WHERE name=?";
 		try {
 			MDB2Wrapper::update($query,
-								array('text','text'),
-								array($contact, $nren));
+					    array('text','text', 'text', 'text', 'text', 'text', 'text'),
+					    array($email, $phone, $certPhone, $certEmail, $url, $newLanguage, $nren));
 		} catch (DBQueryException $dqe) {
 			Framework::error_output("Could not change the NREN contact! Maybe something is " .
-									"wrong with the data that you supplied? Server said: " .
-									$dqe->getMessage());
+						"wrong with the data that you supplied? Server said: " .
+						$dqe->getMessage());
 			Logger::log_event(LOG_INFO, "[nadm] Could not update " .
-							"contact of NREN $nren to $contact: " .
-							$dqe->getMessage());
+					  "contact of NREN $nren to $contact: " .
+					  $dqe->getMessage());
 		} catch (DBStatementException $dse) {
 			Framework::error_output("Could not change the NREN contact! Confusa " .
-									"seems to be misconfigured. Server said: " .
-									$dse->getMessage());
+						"seems to be misconfigured. Server said: " .
+						$dse->getMessage());
 			Logger::log_event(LOG_WARNING, "[nadm] Could not update " .
 							"contact of $nren to $contact: " .
 							$dse->getMessage());
+			echo $query . "<br />\n";
 		}
 
 		Framework::success_output("Updated contact information for your NREN $nren " .
