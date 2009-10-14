@@ -77,8 +77,8 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- Code according to ISO 639-1, with possible annotation like in de-AT, en-US
     lang VARCHAR(5),
     -- an e-mail-address of somebody who will receive notifications for the NREN
-    contact VARCHAR(64) NOT NULL,
-
+    contact_email VARCHAR(64) NOT NULL,
+    contact_phone VARCHAR(24) NOT NULL,
     -- We need to store contact-info for the CERT-team
     cert_email VARCHAR(64),
     cert_phone VARCHAR(16),
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS subscribers (
     -- the name that goes into the certificate subject DN (not that the
     -- organization name DN component may fill a maximum of 64 characters
     -- minus 'O=' that is 62 characters
-    dn_name VARCHAR(62) UNIQUE NOT NULL,
+    dn_name VARCHAR(64) UNIQUE NOT NULL,
 
     -- the NREN as it is stored in the NREN table
     nren_id INT,
