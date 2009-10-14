@@ -33,7 +33,7 @@ function test_content($content, $auth_url)
 	  Framework::error_output("malformed CSR. Please upload a proper CSR to the system.");
 	  return false;
   }
-  
+
   /* test type. IGTF will soon change the charter to *not* issue DSA
    * certificates */
   if (get_algorithm($content) !== "rsa") {

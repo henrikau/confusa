@@ -78,7 +78,7 @@ class CP_NREN_Admin extends Content_Page
 			} else {
 				$subscr_comment = "";
 			}
-			
+
 			switch(htmlentities($_POST['subscriber'])) {
 			case 'edit':
 				if ($this->editSubscriber($id,

@@ -2,9 +2,9 @@
 #
 #		Henrik Austad
 #	UNINETT SIGMA A/S 2008,2009
-#	
+#
 #	Part of Confusa, GPLv3 applies.
-# 
+#
 #
 # Script for signing keys, the auth_token to the CSR in the database
 # must be passed along as an argument, the same with the filename where

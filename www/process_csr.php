@@ -135,7 +135,7 @@ final class CP_ProcessCsr extends Content_Page
 	 * processFileCSR - walk an uploaded CSR through the steps towards a certificate
 	 *
 	 * If a new CSR has been uploaded via FILE, this will retrieve it, store it in
-	 * the database and pass control over to CertManager to process it. 
+	 * the database and pass control over to CertManager to process it.
 	 */
 	private function processFileCSR()
 	{
@@ -213,11 +213,10 @@ final class CP_ProcessCsr extends Content_Page
 						  $auth_token . ") exists in the database for user " .
 						  $this->person->getX509ValidCN());
 				return false;
-			}	
+			}
 		}
-
 		return $res;
-	}
+	} /* end processDBCSR() */
 
 	private function approveBrowserGenerated($csr, $browser)
 	{

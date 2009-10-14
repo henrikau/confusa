@@ -45,7 +45,7 @@ abstract class Content_Page
 	{
 		return $this->certManager;
 	}
-	
+
 	public function setTpl(Smarty $tpl)
 	{
 		$this->tpl = $tpl;
@@ -108,7 +108,7 @@ abstract class Content_Page
 	/**
 	 * post_process() - the last function to run before framework exits, but
 	 *		  before framework runs the internal cleanups.
-	 * 
+	 *
 	 */
 	function post_process()
 	{

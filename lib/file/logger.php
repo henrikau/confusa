@@ -4,7 +4,7 @@
  * This logs to both syslog and a user defined log
  *	This is set by the config-variable default_log in
  *	config/confosa_config.php
- * 
+ *
  * By adjusting the levels to log, different levels of logging can be set for
  * syslog and the local log. This is done by tuning
  *	- syslog_min (for syslog)
@@ -30,7 +30,7 @@ class Logger {
  * defined level (ie, LOG_DEBUG will be dropped if loglevel_min is LOG_NOTICE)
  *
  * From php.net:
- * 
+ *
  * syslog() Priorities (in descending order)
  * Constant		Description
  * LOG_EMERG		system is unusable
@@ -104,7 +104,6 @@ class Logger {
 			return;
 			break;
 		}
-  
 		/* assemble line and enter into local log */
 		$log_line = Logger::get_timestamp() . " (Confusa) " . $header . " " . $message . "\n";
 		fputs($fd, $log_line);

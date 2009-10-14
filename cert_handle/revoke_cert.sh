@@ -2,9 +2,9 @@
 #
 #		Henrik Austad
 #	UNINETT SIGMA A/S 2008,2009
-#	
+#
 #	Part of Confusa, GPLv3 applies.
-# 
+#
 #
 # Script for revoking a certificate found in the database with a
 # provided auth_key. It will update the CRL-file in the local

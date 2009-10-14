@@ -14,6 +14,4 @@ echo "         Your current IP is " . $_SERVER['REMOTE_ADDR'] . "<br />\n";
 echo "      </center>\n";
 echo "   </body>\n";
 echo "</html>\n";
-
 ?>
-

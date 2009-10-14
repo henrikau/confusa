@@ -133,7 +133,7 @@ final class CP_DownloadCertificate extends Content_Page
 		} catch (ConfusaGenException $e) {
 			Framework::error_output("Could not retrieve the certificate, server said: " . $e->getMessage());
 		}
-		
+
 		$this->tpl->assign('processingToken',  $authKey);
 		$this->tpl->assign('processingResult', $this->tpl->fetch('inspect_certificate.tpl'));
 	} /* end inspectCert */
@@ -146,7 +146,7 @@ final class CP_DownloadCertificate extends Content_Page
 				$mm = new MailManager($this->person,
 						      Config::get_config('sys_from_address'),
 						      Config::get_config('sys_header_from_address'),
-						      "Signed certificate from " . Config::get_config('system_name'), 
+						      "Signed certificate from " . Config::get_config('system_name'),
 						      "Attached is your new certificate. Remember to store this in \$HOME/.globus/usercert.pem for ARC to use");
 				$mm->add_attachment($cert, 'usercert.pem');
 				if (!$mm->send_mail()) {

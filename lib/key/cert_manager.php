@@ -15,7 +15,7 @@ abstract class CertManager
 {
   protected $person;
 
-  /* 
+  /*
    * Should register all values so that when a sign_key request is issued,
    * all values are in place.
    *
@@ -37,7 +37,7 @@ abstract class CertManager
     {
       unset($this->person);
     } /* end destructor */
-    
+
 
   /* sign_key()
    *

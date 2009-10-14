@@ -104,7 +104,7 @@ class CertManager_Standalone extends CertManager
 						  " Error with values passed to the query. Check for constraint-violations");
 				throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
 			}
-		
+
 			$this->sendMailNotification($auth_key, date('Y-m-d H:i'), $_SERVER['REMOTE_ADDR']);
 			Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
 					  $this->person->getX509ValidCN() .
