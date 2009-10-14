@@ -26,7 +26,7 @@
   </tr>
   <tr>
     <td></td>
-    <td>
+    <td valign="top">
       <a href="?robot_action=delete&serial={$element->serial()}">
 	<img src="https://slcstest.uninett.no/silk_icons/delete.png"/
 	alt="Delete" title="Delete Robot Certificate" class="url">
