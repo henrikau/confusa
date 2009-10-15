@@ -33,7 +33,7 @@
 CREATE TABLE IF NOT EXISTS account_map (
     account_map_id INT PRIMARY KEY AUTO_INCREMENT,
     -- the login-name for the associated sub-account,
-    login_name VARCHAR(128) UNIQUE NOT NULL,
+    login_name VARCHAR(128) NOT NULL,
 
     -- the password with which the sub-account will be accessed.
     -- encrypted at application layer
