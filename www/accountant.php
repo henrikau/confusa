@@ -128,13 +128,18 @@ class CP_Accountant extends Content_Page
 		}
 	}
 
-	/* changeNRENAccount - add a new account for the NRENs to use.
+	/**
+	 * changeNRENAccount() Change elements in an existing account
 	 *
-	 * @param login_name the new login-name. This must be a unique name (given
-	 *		 by Comodo)
-	 * @param password a strong password, and must be the same as set in the
-	 *		 remote CA.
-	 * @param ap_name The "alliance partner" name used to identify a reseller
+	 * @param String login_name	The new login-name. This must be a
+	 *				unique name (given by Comodo)
+	 * @param String password	A strong password, and must be the same
+	 *				as set in the remote CA.
+	 *
+	 * @param String ap_name	The "alliance partner" name used to
+	 *				identify a reseller.
+	 *
+	 * @return Boolean indicating if the change was successful.				
 	 */
 	private function changeNRENAccount($login_name, $password, $ap_name)
 	{
