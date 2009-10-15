@@ -257,3 +257,69 @@ class CP_Accountant extends Content_Page
 $fw = new Framework(new CP_Accountant());
 $fw->start();
 ?>
+
+	private function addNRENAccount($loginName, $password, $apName)
+	{
+		if (!isset($loginName) || !isset($password) || !isset($apName)) {
+			Framework::error_output("Cannot add new account when fields are missing!");
+			return false;
+		}
+
+		/*
+		 * prepare the db-entries
+		 */
+		$enckey	= Config::get_config('capi_enc_pw');
+		$pw	= base64_encode($password);
+		$size	= mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
+		$iv	= mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
+		$cryptpw= base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,
+						       $enckey,$pw,
+						       MCRYPT_MODE_CFB,
+						       $iv));
+
+		/*
+		 * Get NREN-id
+		 */
+		try {
+			$res = MDB2Wrapper::execute("SELECT * FROM nrens WHERE name = ?",
+						    array('text'),
+						    array($this->person->getNREN()));
+			$nrenID = $res[0]['nren_id'];
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Error adding new account, does the account exist?<br />".
+						$dbqe->getMessage());
+			return false;
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Error adding new account $login_name. " .
+						"Server said: " . $dbse->getMessage());
+			return false;
+		}
+
+		/*
+		 * Add the new account
+		 */
+		try {
+			MDB2Wrapper::update("INSERT INTO account_map (login_name, password, ivector, ap_name, nren_id) " .
+					    "VALUES(?, ?, ?, ?, ?)",
+					    array('text','text','text', 'text', 'text'),
+					    array($loginName, $cryptpw, base64_encode($iv), $apName, $nrenID));
+
+			Framework::message_output("Added new account $loginName to NREN " . $this->person->getNREN());
+			Logger::log_event(LOG_INFO, "Added new account $loginName to NREN " . $this->person->getNREN());
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Error adding new account, does the account exist?<br />".
+						$dbqe->getMessage());
+			return false;
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Error adding new account $login_name. " .
+						"Server said: " . $dbse->getMessage());
+			return false;
+		}
+
+		/*
+		 * Hook the account into nren
+		 */
+		$this->changeAccount($loginName);
+
+		return true;
+	} /* end addNRENAccount() */
