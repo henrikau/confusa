@@ -148,10 +148,6 @@ class Framework {
 		 */
 		try {
 			$this->authenticate();
-			$res = $this->contentPage->pre_process($this->person);
-			if ($res) {
-				$this->tpl->assign('extraHeader', $res);
-			}
 		} catch (CriticalAttributeException $cae) {
 			$msg  = "<center>";
 			$msg .= "<b>Error(s) with attributes</b><br /><br />";
@@ -169,6 +165,20 @@ class Framework {
 			$msg .= "to the registred NREN administrator for your domain.";
 			Framework::error_output($msg);
 			$this->renderError = true;
+		} catch (ConfusaGenException $cge) {
+			Framework::error_output("Could not authenticate you! Error was: " .
+									$cge->getMessage());
+			$this->renderError = true;
+		}
+
+		/*
+		 * Try to run the pre-processing
+		 */
+		try {
+			$res = $this->contentPage->pre_process($this->person);
+			if ($res) {
+				$this->tpl->assign('extraHeader', $res);
+			}
 		} catch (CGE_RemoteCredentialException $rce) {
 			$msg  = "The credentials for your NREN are not specified or incorrect! Some ";
 			$msg .= "certificate operations will not work.";
@@ -179,13 +189,9 @@ class Framework {
 				$msg .=  "<center>Please update the credentials <a href=\"accountant.php\">here</a></center>";
 			} else {
 				$msg .= "Please contact an IT-administrator.";
+				$this->renderError = true;
 			}
-				Framework::warning_output($msg);
-
-		} catch (ConfusaGenException $cge) {
-			Framework::error_output("Could not authenticate you! Error was: " .
-									$cge->getMessage());
-			$this->renderError = true;
+			Framework::warning_output($msg);
 		} catch (Exception $e) {
 			Framework::error_output("Uncaught exception occured!<br />\n" . $e->getMessage());
 			$this->renderError = true;
