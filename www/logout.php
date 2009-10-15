@@ -1,6 +1,8 @@
 <?php
 require_once 'confusa_include.php';
 include_once 'framework.php';
+require_once 'confusa_config.php';
+
 class Logout extends Content_Page
 {
 	public function __construct()
@@ -10,12 +12,25 @@ class Logout extends Content_Page
 
 	public function pre_process()
 	{
+
+		$sspdir = Config::get_config('simplesaml_path');
+		require_once $sspdir . '/lib/_autoload.php';
+		SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
+
 		if (is_null($this->person)) {
 			$this->person = new Person();
 		}
 
 		$auth = AuthHandler::getAuthManager($this->person);
-		if ($auth->checkAuthentication()) {
+
+		$session = SimpleSAML_Session::getInstance();
+		$authority = $session->getAuthority();
+
+		if (empty($authority)) {
+			$authority = ConfusaConstants::$DEFAULT_SESSION_AUTHORITY;
+		}
+
+		if ($session->isValid($authority)) {
 			$auth->deAuthenticateUser('logout.php');
 		}
 	}
