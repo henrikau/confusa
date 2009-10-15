@@ -20,7 +20,16 @@ class CP_Accountant extends Content_Page
 
 	public function pre_process($person)
 	{
-		parent::pre_process($person);
+		$res = false;
+
+		/*  we cannot call parent::pre_process here because CertManager
+		 *  will bomb if the account_map is not properly set. */
+		/* parent::pre_process($person); */
+		$this->setPerson($person);
+
+		/*
+		 * are we going to update the account-map?
+		 */
 		/* If the caller is not a nren-admin or Confusa is not in online mode, we stop here */
 		if (!$this->person->isNRENAdmin() || Config::get_config('ca_mode') != CA_ONLINE) {
 			return false;
@@ -42,7 +51,9 @@ class CP_Accountant extends Content_Page
 				break;
 			}
 		}
-	}
+		parent::pre_process($person);
+		return $res;
+	} /* end pre_process */
 
 	public function process()
 	{
