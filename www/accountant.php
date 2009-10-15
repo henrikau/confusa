@@ -22,8 +22,9 @@ class CP_Accountant extends Content_Page
 	{
 		parent::pre_process($person);
 		/* If the caller is not a nren-admin or Confusa is not in online mode, we stop here */
-		if (!$this->person->isNRENAdmin() || Config::get_config('ca_mode') != CA_ONLINE)
+		if (!$this->person->isNRENAdmin() || Config::get_config('ca_mode') != CA_ONLINE) {
 			return false;
+		}
 
 		if (isset($_POST['account'])) {
 			/* We must use POST as we may pass along a password and
