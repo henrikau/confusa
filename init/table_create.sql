@@ -45,7 +45,17 @@ CREATE TABLE IF NOT EXISTS account_map (
     ivector TINYBLOB NOT NULL,
     -- the alliance partner (AP name) by which Comodo identifies it's resellers
     -- this is handed out by Terena in a NREN-specific manner
-    ap_name VARCHAR(30) NOT NULL
+    ap_name VARCHAR(30) NOT NULL,
+
+    -- NREN reference.
+    -- This is so that a NREN can have multiple accounts, and so we can
+    -- distinguish between the accounts.
+    -- It is important that the CA-accounts are *not* shared amongst the
+    -- NRENs, that would be very bad
+    nren_id INTEGER NOT NULL,
+
+    foreign key(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
+
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
