@@ -149,11 +149,12 @@ class CP_NREN_Subs_Settings extends Content_Page
 	private function getNRENInfo()
 	{
 		$query="SELECT lang, contact_email, contact_phone,cert_email, cert_phone, url FROM nrens WHERE name=?";
+		$nren = $this->person->getNREN();
 
 		try {
 			$res = MDB2Wrapper::execute($query,
 						    array('text'),
-						    array($this->person->getNREN()));
+						    array($nren));
 		} catch (DBQueryException $dqe) {
 			Framework::warning_ouput(__FILE__ . ":" . __LINE__ . " Could not get the current contact information for $nren");
 		} catch (DBStatementException $dse) {
