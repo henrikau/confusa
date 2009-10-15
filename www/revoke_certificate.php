@@ -269,7 +269,9 @@ class CP_RevokeCertificate extends Content_Page
 
 		$common_name = "% " . $common_name;
 
-		$certs = $this->certManager->get_cert_list_for_persons($common_name, $subscriber);
+		if (isset($subscriber) && !empty($subscriber)) {
+			$certs = $this->certManager->get_cert_list_for_persons($common_name, $subscriber);
+		}
 
 		if (count($certs) > 0) {
 			/* get the certificate owner/order number pairs into a ordering that
