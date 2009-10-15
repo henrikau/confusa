@@ -72,14 +72,14 @@ class CP_Root_Certificate extends Content_Page
 	}
 	public function process()
 	{
-		if ($_GET['show_root_cert']) {
+		if (isset($_GET['show_root_cert'])) {
 			$this->makeCertAvailable();
 			$ca_file_content = file_get_contents($this->cert_path);
 			openssl_x509_export($ca_file_content, $tmp, false);
 			$this->tpl->assign('ca_dump', $tmp);
 		}
 
-		if ($_GET['show_crl']) {
+		if (isset($_GET['show_crl'])) {
 			$this->makeCRLAvailable();
 			$crl_content = file_get_contents($this->crl_path);
 			$crl_dump = openssl_crl_export($crl_content);
