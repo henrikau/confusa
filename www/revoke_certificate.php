@@ -109,7 +109,6 @@ class CP_RevokeCertificate extends Content_Page
 				}
 			}
 
-		$this->tpl->assign('textual', $textual);
 		$this->tpl->assign('content', $this->tpl->fetch('revoke_certificate.tpl'));
 
 		} catch (ConfusaGenException $cge) {
