@@ -8,6 +8,7 @@ require_once 'mdb2_wrapper.php';
 require_once 'remote_api.php';
 require_once 'confusa_constants.php';
 require_once 'CGE_RemoteCredentialException.php';
+require_once 'curlwrapper.php';
 
 /**
  * CertManager_Online. Remote extension for CertManager.
@@ -373,7 +374,7 @@ class CertManager_Online extends CertManager
                         "&orderNumber=" . $key .
                         "&queryType=0";
 
-		$data = $this->curlContact($polling_endpoint);
+		$data = CurlWrapper::curlContact($polling_endpoint);
 
         if ($data == 1) {
             return true;
@@ -409,7 +410,7 @@ class CertManager_Online extends CertManager
                             "&queryType=2" .
                             "&responseMimeType=application/x-x509-user-cert";
 
-		$data = $this->curlContact($collect_endpoint);
+		$data = CurlWrapper::curlContact($collect_endpoint);
 
         $STATUS_PEND="0";
         $STATUS_OK="2";
@@ -474,14 +475,7 @@ class CertManager_Online extends CertManager
             $postfields_revoke["test"] = 'Y';
         }
 
-        $ch = curl_init($revoke_endpoint);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_revoke);
-        $data = curl_exec($ch);
-        curl_close($ch);
+		$data = CurlWrapper::curlContact($revoke_endpoint, "post", $postfields_revoke);
 
         /* try to catch all kinds of errors that can happen when connecting */
         if ($data === FALSE) {
@@ -534,7 +528,7 @@ class CertManager_Online extends CertManager
         $postfields_list["loginName"]		= $this->login_name;
         $postfields_list["loginPassword"]	= $this->login_pw;
         $postfields_list["orderNumber"] = $key;
-        $data = $this->curlContact($list_endpoint, "post", $postfields_list);
+        $data = CurlWrapper::curlContact($list_endpoint, "post", $postfields_list);
 		$params = array();
 		parse_str($data, $params);
 
@@ -602,7 +596,7 @@ class CertManager_Online extends CertManager
                                 /* call that function after the JS variable-declarations */
                                 "&callbackFunctionName=installCertificate";
 
-			$data = $this->curlContact($collect_endpoint);
+			$data = CurlWrapper::curlContact($collect_endpoint);
             return "<script type=\"text/javascript\">$data</script>";
             break;
 
@@ -618,7 +612,7 @@ class CertManager_Online extends CertManager
                                 /* call that function after the JS variable-declarations */
                                 "&callbackFunctionName=installCertificate";
 
-			$data = $this->curlContact($collect_endpoint);
+			$data = CurlWrapper::curlContact($collect_endpoint);
             return "<script type=\"text/javascript\">$data</script>";
             break;
 
@@ -634,7 +628,7 @@ class CertManager_Online extends CertManager
                                 /* call that function after the JS variable-declarations */
                                 "&callbackFunctionName=installCertificate";
 
-			$data = $this->curlContact($collect_endpoint);
+			$data = CurlWrapper::curlContact($collect_endpoint);
             return "<script type=\"text/javascript\">$data</script>";
             break;
 
@@ -647,7 +641,7 @@ class CertManager_Online extends CertManager
                                     "&responseType=3" . /* PKCS#7 */
                                     "&responseEncoding=0"; /* encode base-64 */
 
-			$data = $this->curlContact($collect_endpoint);
+			$data = CurlWrapper::curlContact($collect_endpoint);
             return trim(substr($data,2));
             break;
 
@@ -673,7 +667,7 @@ class CertManager_Online extends CertManager
         $postfields_list["loginPassword"]	= $this->login_pw;
         $postfields_list["commonName"]		= $this->cnPrefix . $common_name;
 
-        $data = $this->curlContact($list_endpoint, "post", $postfields_list);
+        $data = CurlWrapper::curlContact($list_endpoint, "post", $postfields_list);
         $params=array();
         parse_str($data, $params);
 
@@ -736,6 +730,7 @@ class CertManager_Online extends CertManager
          * Terena domainComponents */
         $postfields_sign_req["subject_commonName_1"] = $this->cnPrefix .
             $this->person->getX509ValidCN();
+
         $postfields_sign_req["subject_organizationName_2"] = $this->oPrefix .
             $this->person->getSubscriberOrgName();
         $postfields_sign_req["subject_countryName_3"] = $this->person->getCountry();
@@ -743,7 +738,7 @@ class CertManager_Online extends CertManager
         $postfields_sign_req["subject_domainComponent_5"] = "terena";
         $postfields_sign_req["subject_domainComponent_6"] = "org";
 
-		$data = $this->curlContact($sign_endpoint, "post", $postfields_sign_req);
+		$data = CurlWrapper::curlContact($sign_endpoint, "post", $postfields_sign_req);
 
         $params=array();
         parse_str($data, $params);
@@ -786,41 +781,6 @@ class CertManager_Online extends CertManager
                             $this->order_number));
         } /* end _capi_upload_csr */
     }
-
-	/**
-	 * Send a POST message containing $postData to the endpoint in $url
-	 *
-	 * @param $url string the endpoint to which the POST message should be sent
-	 * @param $method string whether GET or POST should be used to conact the
-	 * 				remote site
-	 * @param $postData array the POST variables that are to be send
-	 *
-	 * @return string the result of the communication
-	 */
-	private function curlContact($url, $method="get", $postData=null)
-	{
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-
-		if ($method == "post") {
-			curl_setopt($ch, CURLOPT_POST,1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-		}
-
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $data = curl_exec($ch);
-		$status = curl_errno($ch);
-        curl_close($ch);
-
-		if ($status != 0) {
-			throw new RemoteAPIException("Could not connect properly to remote API " .
-										"endpoint $url! Maybe the Confusa instance is misconfigured? " .
-										"Please contact an administrator!");
-		}
-
-		return $data;
-	}
 
 	/**
 	 * Return a textual and user-understandable message for common remote-API
@@ -919,7 +879,7 @@ class CertManager_Online extends CertManager
         $postfields_auth["loginName"] = $this->login_name;
         $postfields_auth["loginPassword"] = $this->login_pw;
         $postfields_auth["orderNumber"] = $this->order_number;
-		$data = $this->curlContact($authorize_endpoint, "post", $postfields_auth);
+		$data = CurlWrapper::curlContact($authorize_endpoint, "post", $postfields_auth);
 
         /* the only formal restriction we have is if the API returns 0 for the query */
         if (substr($data,0,1) == "0") {
