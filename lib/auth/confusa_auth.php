@@ -124,6 +124,7 @@ abstract class Confusa_Auth
 		if (isset($map) && is_array($map)) {
 			$this->person->setEPPN($attributes[$map['eppn']][0]);
 			$this->person->setEPPNKey($map['eppn']);
+
 			$this->person->setSubscriberIdPName(trim(stripslashes($attributes[$map['epodn']][0])));
 			try {
 				$query  = "SELECT s.dn_name FROM subscribers s ";
@@ -138,7 +139,8 @@ abstract class Confusa_Auth
 					$msg  = "Cannot find subscriberOrgName in the database. Cannot continue.<br />";
 					$msg .= "This normally indicates that your subscriber (raw_name: ";
 					$msg .= $this->person->getSubscriberIdPName() . ") ";
-					$msg .= "is not properly configured. Contact your NREN-administrator to resolve this.<br />\n";
+					$msg .= "is not properly configured or does not participate in Confusa ";
+					$msg .= "certificate issuing. Contact your NREN-administrator to resolve this.<br />\n";
 					throw new CriticalAttributeException($msg);
 				}
 			} catch (DBStatementException $dbse) {
