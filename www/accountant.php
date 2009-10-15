@@ -47,8 +47,16 @@ class CP_Accountant extends Content_Page
 
 			switch(htmlentities($_POST['account'])) {
 			case 'change':
-				$this->changeNRENAccount($login_name, $password, $ap_name);
+				$res = $this->changeNRENAccount($login_name, $password, $ap_name);
 				break;
+			case 'new':
+				$res = $this->addNRENAccount($login_name, $password, $ap_name);
+				break;
+			default:
+				Framework::error_output("Unknow accountant-operation (" .
+							$htmlentities($_POST['account']) .
+							"). Stopping.");
+				$res = false;
 			}
 		}
 		parent::pre_process($person);
