@@ -139,7 +139,7 @@ class Translator {
 	 */
 	private function getBestLanguage()
 	{
-		if ($_SESSION['language']) {
+		if (isset($_SESSION['language'])) {
 			return $_SESSION['language'];
 		}
 
