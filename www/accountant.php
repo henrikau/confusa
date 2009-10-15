@@ -120,11 +120,11 @@ class CP_Accountant extends Content_Page
 				return null;
 			}
 		} catch (DBQueryException $dqe) {
-			Logger::log_event(LOG_INFO, "[nadm] Could not determine the current " .
-				"ap_name and login_name for NREN $nren: " . $dqe->getMessage());
+			Logger::log_event(LOG_INFO, "[nadm] (query) Could not determine the current " .
+					  "ap_name and login_name for NREN $nren: " . $dqe->getMessage());
 		} catch (DBStatementException $dse) {
-			Logger::log_event(LOG_INFO, "[nadm] Could not determine the current " .
-				"ap_name and login_name for NREN $nren: " . $dse->getMessage());
+			Logger::log_event(LOG_INFO, "[nadm] (statement) Could not determine the current " .
+					  "ap_name and login_name for NREN $nren: " . $dse->getMessage());
 		}
 	}
 
