@@ -123,21 +123,20 @@ class CP_NREN_Subs_Settings extends Content_Page
 						"wrong with the data that you supplied? Server said: " .
 						$dqe->getMessage());
 			Logger::log_event(LOG_INFO, "[nadm] Could not update " .
-					  "contact of NREN $nren to $contact: " .
+					  "contact of NREN $nren: " .
 					  $dqe->getMessage());
 		} catch (DBStatementException $dse) {
 			Framework::error_output("Could not change the NREN contact! Confusa " .
 						"seems to be misconfigured. Server said: " .
 						$dse->getMessage());
 			Logger::log_event(LOG_WARNING, "[nadm] Could not update " .
-							"contact of $nren to $contact: " .
+							"contact of $nren: " .
 							$dse->getMessage());
 			echo $query . "<br />\n";
 		}
 
-		Framework::success_output("Updated contact information for your NREN $nren " .
-								"to $contact.");
-		Logger::log_event(LOG_DEBUG, "[nadm] Updated contact for NREN $nren to $contact");
+		Framework::success_output("Updated contact information for your NREN $nren.");
+		Logger::log_event(LOG_DEBUG, "[nadm] Updated contact for NREN $nren");
 	} /* end updateNRENContact */
 
 	/**
@@ -213,20 +212,19 @@ class CP_NREN_Subs_Settings extends Content_Page
 									"wrong with the data that you supplied? Server said: " .
 									$dqe->getMessage());
 			Logger::log_event(LOG_INFO, "[sadm] Could not update " .
-							"contact of subscriber $subscriber to $contact: " .
+							"contact of subscriber $subscriber: " .
 							$dqe->getMessage());
 		} catch (DBStatementException $dse) {
 			Framework::error_output("Could not change the subscriber contact! Confusa " .
 									"seems to be misconfigured. Server said: " .
 									$dse->getMessage());
 			Logger::log_event(LOG_WARNING, "[sadm] Could not update " .
-							"contact of $subscriber to $contact: " .
+							"contact of $subscriber: " .
 							$dse->getMessage());
 		}
 
-		Framework::success_output("Updated contact information for your subscriber $subscriber " .
-								"to $contact.");
-		Logger::log_event(LOG_DEBUG, "[sadm] Updated contact for subscriber $subscriber to $contact");
+		Framework::success_output("Updated contact information for your subscriber $subscriber.");
+		Logger::log_event(LOG_DEBUG, "[sadm] Updated contact for subscriber $subscriber.");
 	} /* end updateSubscriberContact */
 
 	/**
