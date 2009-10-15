@@ -105,9 +105,9 @@ class CP_Accountant extends Content_Page
 	 */
 	private function getNRENAccount($nren)
 	{
-		$query = "SELECT ap_name, login_name, password " .
-			"FROM account_map a, nrens n " .
-			"WHERE a.account_map_id = n.login_account and n.name = ?";
+		$query = "SELECT ap_name, login_name, password, n.nren_id " .
+			"FROM account_map a LEFT JOIN nrens n " .
+			"ON a.account_map_id = n.login_account WHERE n.name = ?";
 
 		try {
 			$res = MDB2Wrapper::execute($query,
