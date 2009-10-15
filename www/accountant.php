@@ -143,37 +143,66 @@ class CP_Accountant extends Content_Page
 	 */
 	private function changeNRENAccount($login_name, $password, $ap_name)
 	{
-		$this->deleteAccount($this->person->getNREN());
+		/*
+		 * get NREN and currently configured account
+		 */
+		$accountInfo = $this->getNRENAccount($this->person->getNREN());
+		if (is_null($accountInfo)) {
+			Framework::error_output("Cannot get NREN-account info. Aborting.");
+			return false;
+		}
+		$nren_id	= $accountInfo[0]['nren_id'];
+		$account_id	= $accountInfo[0]['login_account'];
 
-		try {
-			$enckey	= Config::get_config('capi_enc_pw');
-			$pw	= base64_encode($password);
-			$size	= mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
-			$iv	= mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
-			$cryptpw= base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,
-								$enckey,$pw,
-								MCRYPT_MODE_CFB,
-								$iv));
-			MDB2Wrapper::update("INSERT INTO account_map (login_name, password, ivector, ap_name) " .
-						"VALUES(?, ?, ?, ?)",
-						array('text','text','text', 'text'),
-						array($login_name, $cryptpw, base64_encode($iv), $ap_name));
-
-		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Error adding new account." . $dbqe->getMessage());
-			return;
-		} catch (DBStatementException $dbse) {
-			Framework::error_output("Error adding new account $login_name. " .
-						"Server said: " . $dbse->getMessage());
-			return;
+		if (!isset($nren_id) || $nren_id != "" || !isset($account_id) || $account_id="") {
+			Framework::error_output("Vital info unavailable. Cannot update Account");
+			return false;
 		}
 
-		$this->changeAccount($login_name);
+		/*
+		 * prepare the db-entries
+		 */
+		$enckey	= Config::get_config('capi_enc_pw');
+		$pw	= base64_encode($password);
+		$size	= mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
+		$iv	= mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
+		$cryptpw= base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,
+						       $enckey,$pw,
+						       MCRYPT_MODE_CFB,
+						       $iv));
 
-		Framework::message_output("Added new account $login_name to NREN " . $this->person->getNREN());
-		Logger::log_event(LOG_INFO, "Added new account $login_name to NREN " . $this->person->getNREN());
-		return;
-	}
+		/*
+		 * new or changing existing account
+		 */
+		try {
+			$account_info = MDB2Wrapper::execute("SELECT * FROM account_map WHERE account_map_id = ?",
+							     array('text'),
+							     array($account_id));
+			/* are we updating existing value, or adding new? */
+			if (count($account_info) != 1) {
+				$changed = false;
+				/* are we changing anything? */
+				if (($account_info[0]['login_name'] != $login_name) ||
+				    ($account_info[0]['password'] != $cryptpw)) {
+					echo "updating existing account<br />\n";
+					return $this->updateNRENAccount($login_name, $password, $ap_name, $account_id, $nren_id);
+				} else {
+					echo "nothing changed. stopping<br />\n";
+					return false;
+				}
+			}
+			else {
+				/* FIXME */
+				return false;
+			}
+		} catch (DBStatementException $dbse) {
+			Framework::error_output(__FILE__ . ":" . __LINE__ . $dbse->getMessage());
+			return false;
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output(__FILE__ . ":" . __LINE__ . $dbqe->getMessage());
+			return false;
+		}
+	} /* end changeAccount() */
 
 	/**
 	 * Delete the account_map associated with NREN $nren
