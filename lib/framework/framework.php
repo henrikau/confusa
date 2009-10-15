@@ -216,8 +216,12 @@ class Framework {
 		 *
 		 * The general idea, is that the process() should be
 		 * self-contained wrt to exceptions.
+		 *
+		 * A NREN admin is supposed to be able to "fix stuff" such as for instance
+		 * CriticalAttributeExceptions and should hence see the pages also if
+		 * renderError is set.
 		 */
-		if (!$this->renderError) {
+		if (!$this->renderError || $this->person->isNRENAdmin()) {
 			try {
 				$this->contentPage->process($this->person);
 			} catch (Exception $e) {
