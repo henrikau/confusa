@@ -267,7 +267,7 @@ class CP_RevokeCertificate extends Content_Page
 			unset($_SESSION['auth_keys']);
 		}
 
-		$common_name = "%" . $common_name . "%";
+		$common_name = "% " . $common_name;
 
 		$certs = $this->certManager->get_cert_list_for_persons($common_name, $subscriber);
 
