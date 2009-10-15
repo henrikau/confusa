@@ -72,12 +72,11 @@ class CP_Accountant extends Content_Page
 			return;
 		} else if (Config::get_config('ca_mode') != CA_ONLINE) {
 			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . "tried to access the accountant, " .
-							"even though Confusa is not running in Online mode.");
+					  "even though Confusa is not running in Online mode.");
 			$this->tpl->assign('reason', 'Confusa is not in online mode');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
 		}
-
 		$res = $this->getNRENAccount($this->person->getNREN());
 
 		if (isset($res[0]['login_name'])) {
@@ -119,8 +118,8 @@ class CP_Accountant extends Content_Page
 
 		try {
 			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($nren));
+						    array('text'),
+						    array($nren));
 
 			if (count($res) > 0) {
 				return $res;
@@ -224,19 +223,19 @@ class CP_Accountant extends Content_Page
 
 		try {
 			MDB2Wrapper::update($query,
-								array('text'),
-								array($nren));
+					    array('text'),
+					    array($nren));
 		} catch (DBQueryException $dbe) {
 			Framework::error_message("Problem deleting your old account: " . $dbe->getMessage() .
-				". Seems like a problem with the supplied data!");
+						 ". Seems like a problem with the supplied data!");
 			Logger::log_event(LOG_WARN, "[nadm] Could not delete old login account of " .
-								"NREN $nren " . $dbe->getMessage());
+					  "NREN $nren " . $dbe->getMessage());
 			return;
 		} catch (DBStatementException $dse) {
 			Framework::error_message("Problem deleting your old account: " . $dbe->getMessage() .
-				". Seems like a problem with the configuration. Please contact an administrator.");
+						 ". Seems like a problem with the configuration. Please contact an administrator.");
 			Logger::log_event(LOG_WARN, "[nadm] Could not delete old login account of " .
-								"NREN $nren " . $dbe->getMessage());
+					  "NREN $nren " . $dbe->getMessage());
 			return;
 		}
 	}
@@ -276,24 +275,19 @@ class CP_Accountant extends Content_Page
 					    array($login_name, $nren));
 			Framework::message_output("Changed account for NREN $nren to $login_name");
 			Logger::log_event(LOG_INFO, "Changed account for $nren to $login_name. " .
-					"Admin contacted us from " . $_SERVER['REMOTE_ADDR']);
+					  "Admin contacted us from " . $_SERVER['REMOTE_ADDR']);
 		} catch (DBStatementException $dbqe) {
 			Framework::error_output("Query syntax errors. Server said: " . $dbqe->getMessage());
 			Logger::log_event(LOG_INFO, "Syntax error when trying to change the used account of NREN " .
-						$this->person->getNREN() . ": " . $dbqe->getMessage());
+					  $this->person->getNREN() . ": " . $dbqe->getMessage());
 			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Database-server problems. Server said: " . $dbqe->getMessage());
 			Logger::log_event(LOG_NOTICE, "Database problems when trying to change the used account of NREN " .
-			$this->person->getNREN() . ": " . $dbqe->getMessage());
+					  $this->person->getNREN() . ": " . $dbqe->getMessage());
 			return;
 		}
 	} /* end changeAccount() */
-}
-
-$fw = new Framework(new CP_Accountant());
-$fw->start();
-?>
 
 	private function addNRENAccount($loginName, $password, $apName)
 	{
@@ -360,3 +354,8 @@ $fw->start();
 
 		return true;
 	} /* end addNRENAccount() */
+}
+
+$fw = new Framework(new CP_Accountant());
+$fw->start();
+?>
