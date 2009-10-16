@@ -375,7 +375,7 @@ class Person{
      */
     public function getX509ValidCN($browserDisplay = true)
     {
-	    $name = $this->getName();
+	    $name = $this->getName(false);
 	    if ($name == "") {
 		    return null;
 	    }
