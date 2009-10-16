@@ -457,11 +457,14 @@ class Person{
      */
     public function getSubscriberOrgName($browserDisplay = true)
     {
+	    if (isset($this->subscriberName)) {
 		if ($browserDisplay) {
 			return htmlentities($this->subscriberName, ENT_COMPAT, 'UTF-8');
 		} else {
 			return $this->subscriberName;
 		}
+	    }
+	    return "";
     }
 
     /**
