@@ -283,11 +283,16 @@ class Person{
      */
     public function getName($browserDisplay = true)
     {
+	    if (isset($this->given_name)) {
 		if ($browserDisplay) {
 			return htmlentities($this->given_name, ENT_COMPAT, 'UTF-8');
 		} else {
 			return $this->given_name;
 		}
+	    } else {
+		    return "";
+	    }
+	    return "";
     }
 
     /**
@@ -370,14 +375,17 @@ class Person{
      */
     public function getX509ValidCN($browserDisplay = true)
     {
-		/* note that mapping to ASCII will also sanitize */
-		$cn = Output::mapUTF8ToASCII($this->given_name) . " " . $this->getEPPN(false);
-
-		if ($browserDisplay) {
-			return htmlentities($cn, ENT_COMPAT, 'UTF-8');
-		} else {
-			return $cn;
-		}
+	    $name = $this->getName();
+	    if ($name == "") {
+		    return null;
+	    }
+	    /* note that mapping to ASCII will also sanitize */
+	    $cn = Output::mapUTF8ToASCII($name) . " " . $this->getEPPN(false);
+	    if ($browserDisplay) {
+		    return htmlentities($cn, ENT_COMPAT, 'UTF-8');
+	    } else {
+		    return $cn;
+	    }
     }
 
     /**
@@ -388,7 +396,10 @@ class Person{
      */
     public function getSession()
     {
-	return $this->session;
+	    if (!isset($this->session)) {
+		    return null;
+	    }
+	    return $this->session;
     }
 
     /**
@@ -412,12 +423,15 @@ class Person{
      * @return: string containing the email-address
      */
     public function getEmail($browserDisplay = true) {
-		if ($browserDisplay) {
-			return htmlentities($this->email, ENT_COMPAT, 'UTF-8');
-		} else {
+	    if (!isset($this->email)) {
+		    return null;
+	    }
+	    if ($browserDisplay) {
+		    return htmlentities($this->email, ENT_COMPAT, 'UTF-8');
+	    } else {
 			return $this->email;
-		}
-	}
+	    }
+    }
 
 
     /** setSubscriberOrgName()- set the name of the subscriber organization
