@@ -77,7 +77,7 @@ class CP_Accountant extends Content_Page
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
 		}
-		$res = $this->getNRENAccount($this->person->getNREN());
+		$res = $this->getNRENAccounts($this->person->getNREN());
 
 		if (isset($res[0]['login_name'])) {
 			$this->tpl->assign('login_name', $res[0]['login_name']);
@@ -97,20 +97,24 @@ class CP_Accountant extends Content_Page
 	} /* end process */
 
 	/**
+	 * getNRENAccounts() Get all CA-accounts for the current NREN
+	 *
 	 * Get the currently existing account for NREN. Read login name and ap_name
 	 * and IF there is a password, but do not decrypt it.
 	 *
 	 * @param $nren string the NREN for which to retrieve the account information
 	 * @return array consisting of
-	 * 		ap_name string AP-name
-	 * 		login_name string the login name
-	 * 		password the ENCRYPTED password
+	 * 		ap_name		String	AP-name
+	 * 		login_name	String	the login name
+	 * 		password	String	the ENCRYPTED password
+	 * 		account_map_id	Int	the ID of the account in the DB
+	 * 		nren_id		Int	the ID of the NREN in the DB
 	 */
-	private function getNRENAccount($nren)
+	private function getNRENAccounts($nren)
 	{
-		$query = "SELECT ap_name, login_name, password, n.nren_id " .
-			"FROM account_map a LEFT JOIN nrens n " .
-			"ON a.account_map_id = n.login_account WHERE n.name = ?";
+		$query  = "SELECT ap_name, login_name, password, account_map_id, n.nren_id ";
+		$query .= "FROM account_map a LEFT JOIN nrens n ";
+		$query .= "ON a.account_map_id = n.login_account WHERE n.name = ?";
 
 		try {
 			$res = MDB2Wrapper::execute($query,
@@ -129,7 +133,7 @@ class CP_Accountant extends Content_Page
 			Logger::log_event(LOG_INFO, "[nadm] (statement) Could not determine the current " .
 					  "ap_name and login_name for NREN $nren: " . $dse->getMessage());
 		}
-	}
+	} /* end getNRENAccounts() */
 
 	/**
 	 * changeNRENAccount() Change elements in an existing account
@@ -149,7 +153,7 @@ class CP_Accountant extends Content_Page
 		/*
 		 * get NREN and currently configured account
 		 */
-		$accountInfo = $this->getNRENAccount($this->person->getNREN());
+		$accountInfo = $this->getNRENAccounts($this->person->getNREN());
 		if (is_null($accountInfo)) {
 			Framework::error_output("Cannot get NREN-account info. Aborting.");
 			return false;
