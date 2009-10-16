@@ -51,6 +51,9 @@ class CP_Accountant extends Content_Page
 				break;
 			case 'new':
 				$res = $this->addNRENAccount($login_name, $password, $ap_name);
+				if ($res) {
+					$res = $this->changeAccount($loginName);
+				}
 				break;
 			default:
 				Framework::error_output("Unknow accountant-operation (" .
@@ -306,9 +309,8 @@ class CP_Accountant extends Content_Page
 	/**
 	 * addNRENAccount() add a new CA account for current NREN
 	 *
-	 * This method will add a new account and update the NREN to start using
-	 * it. If the NREN is tied to another account, that account will not be
-	 * removed, and still connected to the NREN.
+	 * This method will add a new account, but not set it active, this is
+	 * the responsibility of the calling function.
 	 *
 	 * @param String $loginName the 'username' for the CA-account
 	 * @param String $password
@@ -374,11 +376,6 @@ class CP_Accountant extends Content_Page
 						"Server said: " . $dbse->getMessage());
 			return false;
 		}
-
-		/*
-		 * Hook the account into nren
-		 */
-		$this->changeAccount($loginName);
 
 		return true;
 	} /* end addNRENAccount() */
