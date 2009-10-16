@@ -161,7 +161,7 @@ class CP_Accountant extends Content_Page
 		$nren_id	= $accountInfo[0]['nren_id'];
 		$account_id	= $accountInfo[0]['login_account'];
 
-		if (!isset($nren_id) || $nren_id != "" || !isset($account_id) || $account_id="") {
+		if (empty($nren_id) ||empty($account_id)) {
 			Framework::error_output("Vital info unavailable. Cannot update Account");
 			return false;
 		}
@@ -291,7 +291,7 @@ class CP_Accountant extends Content_Page
 
 	private function addNRENAccount($loginName, $password, $apName)
 	{
-		if (!isset($loginName) || !isset($password) || !isset($apName)) {
+		if (empty($loginName) || empty($password) || empty($apName)) {
 			Framework::error_output("Cannot add new account when fields are missing!");
 			return false;
 		}
