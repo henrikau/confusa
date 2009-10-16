@@ -158,7 +158,8 @@ class CP_Accountant extends Content_Page
 		 */
 		$accountInfo = $this->getNRENAccounts($this->person->getNREN());
 		if (is_null($accountInfo)) {
-			Framework::error_output("Cannot get NREN-account info. Aborting.");
+			Framework::error_output("Cannot get NREN-account info. Please add at least " .
+				"one account before changing the account information!");
 			return false;
 		}
 		$nren_id	= $accountInfo[0]['nren_id'];
