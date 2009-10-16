@@ -237,8 +237,8 @@ if (false && Config::get_config('debug')) {
 
 
 /* Get list of issued certiticates */
-if (isset($_GET['action'])) {
-	$action = Input::sanitize($_GET['action']);
+if (isset($_POST['action'])) {
+	$action = Input::sanitize($_POST['action']);
 } else {
 	/* if no action provided, assume the client wants a list of issued certificates. */
 	$action = 'cert_list';
@@ -251,16 +251,11 @@ case 'cert_list':
 	printXMLRes($res, 'userlist');
 	break;
 case 'revoke_list':
-	if (isset($_GET['list'])) {
-		$xml = $_GET['list'];
-		$xml = stripslashes($xml);
-	}
-	else if (isset($_POST['list'])) {
-		$xml = $_POST['list'];
-	} else {
+	if (!isset($_POST['list'])) {
 		echo "No data provided.<br />\n";
-	}
 
+	}
+	$xml = $_POST['list'];
 	/* Start parsing */
 	if (isset($xml)) {
 		$parsedXML = new SimpleXMLElement($xml);
