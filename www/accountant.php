@@ -52,7 +52,7 @@ class CP_Accountant extends Content_Page
 			case 'new':
 				$res = $this->addNRENAccount($login_name, $password, $ap_name);
 				if ($res) {
-					$res = $this->changeAccount($loginName);
+					$res = $this->changeAccount($login_name);
 				}
 				break;
 			default:
