@@ -283,7 +283,8 @@ class CP_NREN_Admin extends Content_Page
 		 * Verify length and encoding of dn_name
 		 */
 		if ($this->grid_mode) {
-			if (strlen($dn_name) > 64) {
+			$dn_name = Output::mapUTF8ToASCII($dn_name);
+			if (strlen($dn_name) > 62) {
 				$msg  = "Too long name for subscriber DN-name. ";
 				$msg .= "Maximum length is 64 characters. Yours were ";
 				$msg .= strlen($dn_name);
