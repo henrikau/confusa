@@ -212,32 +212,41 @@ class CP_Accountant extends Content_Page
 	} /* end editNRENAccount() */
 
 	/**
-	 * Delete the account_map associated with NREN $nren
-	 * @param $nren string The name of the NREN with which the account is associated
-	 * @return void
+	 * deleteAccount() Delete a CA-account for the current NREN
+	 *
+	 * NOTE: This function is currently not in use, but it is planned to be
+	 *	 used once we start listing all available accounts for the
+	 *	 NREN. Thus, it does not make sense to remove it.
+	 *
+	 * This will delete an account for the current admin's NREN.
+	 *
+	 * @param String account_map_id the id of the account to delete.
+	 * @return boolean Indicating if the account was successfully deleted.
+	 *
 	 */
-	private function deleteAccount($nren)
+	private function deleteAccount($account_map_id)
 	{
-		$query = "DELETE FROM account_map WHERE account_map_id = (SELECT login_account " .
-			"FROM nrens WHERE name = ?)";
+		$query  = "DELETE FROM account_map WHERE account_map_id ? AND nren_id = ";
+		$query .= "(SELECT nren_id FROM nrens WHERE name = ?)";
 
 		try {
 			MDB2Wrapper::update($query,
-					    array('text'),
-					    array($nren));
+					    array('text', 'text'),
+					    array($account_map_id, $this->person->getNREN()));
 		} catch (DBQueryException $dbe) {
 			Framework::error_message("Problem deleting your old account: " . $dbe->getMessage() .
 						 ". Seems like a problem with the supplied data!");
 			Logger::log_event(LOG_WARN, "[nadm] Could not delete old login account of " .
 					  "NREN $nren " . $dbe->getMessage());
-			return;
+			return false;
 		} catch (DBStatementException $dse) {
 			Framework::error_message("Problem deleting your old account: " . $dbe->getMessage() .
 						 ". Seems like a problem with the configuration. Please contact an administrator.");
 			Logger::log_event(LOG_WARN, "[nadm] Could not delete old login account of " .
 					  "NREN $nren " . $dbe->getMessage());
-			return;
+			return false;
 		}
+		return true;
 	}
 
 	/**
