@@ -42,7 +42,11 @@
 	<td></td>
 	<td>Login-name:</td>
 	<td>{$login_name}</td>
+	{if $login_name === 'undefined'}
+	<td><input disabled="disabled" type="text" name="login_name" value="{$login_name}" /></td>
+	{else}
 	<td><input type="text" name="login_name" value="{$login_name}" /></td>
+	{/if}
 	<td></td>
       </tr>
 
@@ -50,7 +54,11 @@
 	<td></td>
 	<td>Password:</td>
 	<td>{$password_label}</td>
+	{if $login_name === 'undefined'}
+	<td> <input disabled="disabled" type="password" name="password" value="" /> </td>
+	{else}
 	<td> <input type="password" name="password" value="" /> </td>
+	{/if}
 	<td></td>
       </tr>
 
@@ -62,7 +70,11 @@
 	    AP-Name:</span>
 	</td>
 	<td>{$ap_name}</td>
+	{if $ap_name === 'undefined'}
+	<td><input type="text" disabled="disabled" name="ap_name" value="{$ap_name}" /></td>
+	{else}
 	<td><input type="text" name="ap_name" value="{$ap_name}" /></td>
+	{/if}
 	<td></td>
       </tr>
 
@@ -76,8 +88,13 @@
 
       <tr>
 	<td></td>
+	{if $login_name === 'undefined'}
+	<td><input disabled="disabled" type="reset" value="Revert to default" /></td>
+	<td><input disabled="disabled" type="submit" value="Update {$login_name}" /></td>
+	{else}
 	<td><input type="reset" value="Revert to default" /></td>
 	<td><input type="submit" value="Update {$login_name}" /></td>
+	{/if}
 	<td></td>
 	<td></td>
       </tr>
