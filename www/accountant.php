@@ -46,8 +46,8 @@ class CP_Accountant extends Content_Page
 				$ap_name = Input::sanitize($_POST['ap_name']);
 
 			switch(htmlentities($_POST['account'])) {
-			case 'change':
-				$res = $this->changeNRENAccount($login_name, $password, $ap_name);
+			case 'edit':
+				$res = $this->editNRENAccount($login_name, $password, $ap_name);
 				break;
 			case 'new':
 				$res = $this->addNRENAccount($login_name, $password, $ap_name);
@@ -136,7 +136,7 @@ class CP_Accountant extends Content_Page
 	} /* end getNRENAccounts() */
 
 	/**
-	 * changeNRENAccount() Change elements in an existing account
+	 * editNRENAccount() Change elements in an existing account
 	 *
 	 * @param String login_name	The new login-name. This must be a
 	 *				unique name (given by Comodo)
@@ -148,7 +148,7 @@ class CP_Accountant extends Content_Page
 	 *
 	 * @return Boolean indicating if the change was successful.				
 	 */
-	private function changeNRENAccount($login_name, $password, $ap_name)
+	private function editNRENAccount($login_name, $password, $ap_name)
 	{
 		/*
 		 * get NREN and currently configured account
@@ -209,7 +209,7 @@ class CP_Accountant extends Content_Page
 			Framework::error_output(__FILE__ . ":" . __LINE__ . $dbqe->getMessage());
 			return false;
 		}
-	} /* end changeAccount() */
+	} /* end editNRENAccount() */
 
 	/**
 	 * Delete the account_map associated with NREN $nren

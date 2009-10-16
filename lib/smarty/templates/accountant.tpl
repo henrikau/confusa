@@ -29,7 +29,7 @@
   {* {if $password_label != "undefined"}*}
   <h4>Current account</h4>
   <form action="" method="post">
-    <input type="hidden" name="account" value="change" />
+    <input type="hidden" name="account" value="edit" />
     <table>
       <tr>
 	<td style="width: 20px"></td>
