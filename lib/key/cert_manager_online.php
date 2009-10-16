@@ -747,10 +747,15 @@ class CertManager_Online extends CertManager
          * the return message
          */
         if (isset($params['errorCode'])) {
-            $msg = "Received an error when uploading the CSR to the remote CA: " .
-                $params['errorMessage'] . " " . $params['errorItem'] .
-				$this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
-            throw new RemoteAPIException($msg);
+		$msg = "Received an error when uploading the CSR to the remote CA: ";
+		if (isset($params['errorMessage'])) {
+			$msg .= " " . $params['errorMessage'];
+		}
+		if (isset($params['errorItem'])) {
+			$msg .= " " . $params['errorItem'];
+		}
+		$this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
+		throw new RemoteAPIException($msg);
         }
 
         else {
