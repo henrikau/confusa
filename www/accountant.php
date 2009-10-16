@@ -85,11 +85,7 @@ class CP_Accountant extends Content_Page
 			$this->tpl->assign('login_name', 'undefined');
 		}
 
-		if (isset($res[0]['password'])) {
-			$this->tpl->assign('password_label', '<i>defined, hidden</i>');
-		} else {
-			$this->tpl->assign('password_label', 'undefined');
-		}
+		$this->tpl->assign('password_label', '<i>hidden</i>');
 
 		if (isset($res[0]['ap_name'])) {
 			$this->tpl->assign('ap_name', $res[0]['ap_name']);
