@@ -401,7 +401,7 @@ class CP_NREN_Admin extends Content_Page
 	 * affiliated subscriber admins (this is handled by the database-schema
 	 * with the 'ON DELETE CASCADE'.
 	 *
-	 * @name  : the name of the institution/subscriber
+	 * @param id String|integer the ID of the institution/subscriber in the database.
 	 *
 	 */
 	private function delSubscriber($id) {
@@ -410,28 +410,71 @@ class CP_NREN_Admin extends Content_Page
 		}
 		$nren	= $this->person->getNREN();
 
-		$subselect = "(SELECT nren_id FROM nrens WHERE name=?)";
-
+		/*
+		 * Make sure that we are deleting a subscriber from the current NREN.
+		 */
 		try {
-			/* FIXME: add switch to force the query to fail if the
-			 * subscriber does not exist. */
-			MDB2Wrapper::execute("DELETE FROM subscribers WHERE subscriber_id = ? AND nren_id = $subselect",
-					     array('text', 'text'),
-					     array($id, $nren));
-
-			Logger::log_event(LOG_INFO, "Deleted subscriber with ID $id.\n");
-			Framework::message_output("Successfully deleted subscriber with ID $id.");
+			$query  = "SELECT nren_id, subscriber FROM nren_subscriber_view ";
+			$query .= "WHERE nren=? AND subscriber_id=?";
+			$res =  MDB2Wrapper::execute($query,
+						     array('text', 'text'),
+						     array($this->person->getNREN(), $id));
 		} catch (DBQueryException $dbqe) {
 			$msg = "Could not delete subscriber with ID $id from DB.";
 			Logger::log_event(LOG_NOTICE, $msg);
 			Framework::message_output($msg . "<BR />Server said: " . $dbqe->getMessage());
+			return false;
 		} catch (DBStatementException $dbse) {
 			$msg = "Could not delete subsriber with ID $id from DB, due to problems with the " .
 				"statement. Probably this is a configuration error. Server said: " .
 				$dbse->getMessage();
 			Logger::log_event(LOG_NOTICE, "ADMIN: " . $msg);
 			Framework::message_output($msg);
+			return false;
 		}
+
+		if (count($res) != 1) {
+			Framework::error_output("Could not find a unique NREN/subscriber pair for subscriber with id $id.");
+			return false;
+		}
+		$nren_id = $res[0]['nren_id'];
+		$subscriberName = $res[0]['subscriber'];
+
+		if (!isset($nren_id) || $nren_id == "") {
+			Framework::error_output("Could not get the NREN-ID for subscriber $id. Will not delete subscriber ($id).");
+			return false;
+		}
+
+		/*
+		 * Revoke all certificates for subscriber
+		 */
+		$cm	= CertManagerHandler::getManager($this->person);
+		$list	= $cm->get_cert_list_for_persons("", $subscriberName);
+		$count	= 0;
+		foreach ($list as $key => $value) {
+			try {
+				if (isset($value['auth_key'])) {
+					echo "<pre>\n";
+					print_r($value);
+					echo "</pre>\n";
+					if ($cm->revoke_cert($value['auth_key'], "privilegeWithdrawn")) {
+						$count = $count + 1;
+					}
+				}
+			}  catch (CGE_KeyRevokeException $kre) {
+						echo $kre->getMessage() . "<br />\n";
+			}
+			Logger::log_event(LOG_INFO, "Deleting subscriber, revoked $count issued certificates ".
+					  "for subscriber $subscriberName.");
+		}
+
+		MDB2Wrapper::execute("DELETE FROM subscribers WHERE subscriber_id = ? AND nren_id = ?",
+				     array('text', 'text'),
+				     array($id, $nren_id));
+
+		Logger::log_event(LOG_INFO, "Deleted subscriber with ID $id.\n");
+		Framework::message_output("Successfully deleted subscriber ($subscriberName) with ID $id. ".
+					  "A total of $count certificates were also revoked.");
 	} /* end delSubscriber */
 
 	/**
