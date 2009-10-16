@@ -115,7 +115,7 @@ class CP_Accountant extends Content_Page
 	 */
 	private function getNRENAccounts($nren)
 	{
-		$query  = "SELECT ap_name, login_name, password, account_map_id, n.nren_id ";
+		$query  = "SELECT login_account, ap_name, login_name, password, account_map_id, n.nren_id ";
 		$query .= "FROM account_map a LEFT JOIN nrens n ";
 		$query .= "ON a.account_map_id = n.login_account WHERE n.name = ?";
 
