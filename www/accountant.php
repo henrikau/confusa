@@ -303,6 +303,20 @@ class CP_Accountant extends Content_Page
 		return true;
 	} /* end changeAccount() */
 
+	/**
+	 * addNRENAccount() add a new CA account for current NREN
+	 *
+	 * This method will add a new account and update the NREN to start using
+	 * it. If the NREN is tied to another account, that account will not be
+	 * removed, and still connected to the NREN.
+	 *
+	 * @param String $loginName the 'username' for the CA-account
+	 * @param String $password
+	 * @param String $apName the name identifying the NREN-account at the
+	 *			 CA. This is pretty Comodo-specific.
+	 *
+	 * @return boolean indicating if the account was successfully added.
+	 */
 	private function addNRENAccount($loginName, $password, $apName)
 	{
 		if (empty($loginName) || empty($password) || empty($apName)) {
