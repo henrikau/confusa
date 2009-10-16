@@ -110,7 +110,12 @@ abstract class Confusa_Auth
 		 * Warning: this may throw the MapNotFoundException if the nren
 		 * is new.
 		 */
-		$subscr = $attributes['subscriber'][0];
+		$map = "";
+		$subscr = "";
+		if (isset($attributes) && isset($attributes['subscriber'])) {
+			$subscr = $attributes['subscriber'][0];
+		}
+
 		try {
 			$map = AuthHandler::getMap($nren, $subscr);
 		} catch (DBStatementException $dbse) {
