@@ -250,11 +250,12 @@ class CP_Accountant extends Content_Page
 	}
 
 	/**
-	 * Change the account of the NREN of the logged on person to login_name
+	 * changeAccount() move the NREN from one account to another.
 	 *
-	 * @param $login_name String the new login-name for the NREN of the logged
-	 * 	in user
-	 * @return void
+	 * @param String login_name the new login-name for the NREN of the
+	 *		 logged in user @return void
+	 *
+	 * @return Boolean indicating if the change was successful.
 	 */
 	private function changeAccount($login_name)
 	{
@@ -268,12 +269,15 @@ class CP_Accountant extends Content_Page
 			if (count($res) > 1) {
 				Framework::error_output("Too many hits in database! " . count($res) . " Database inconsistency.");
 				Logger::log_event(LOG_WARNING, "Inconsistency detected in the database. $org has " . count($res) . " accounts");
-				return;
+				return false;
 			}
 
 			if (count($res) == 1) {
 				if ($res[0]['account_login_name'] === $login_name) {
-					return;
+					/* fake success, we don't have to do
+					 * anything, thus we cannot do anything
+					 * wrong. */
+					return true;
 				}
 			}
 
@@ -289,13 +293,14 @@ class CP_Accountant extends Content_Page
 			Framework::error_output("Query syntax errors. Server said: " . $dbqe->getMessage());
 			Logger::log_event(LOG_INFO, "Syntax error when trying to change the used account of NREN " .
 					  $this->person->getNREN() . ": " . $dbqe->getMessage());
-			return;
+			return false;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Database-server problems. Server said: " . $dbqe->getMessage());
 			Logger::log_event(LOG_NOTICE, "Database problems when trying to change the used account of NREN " .
 					  $this->person->getNREN() . ": " . $dbqe->getMessage());
-			return;
+			return false;
 		}
+		return true;
 	} /* end changeAccount() */
 
 	private function addNRENAccount($loginName, $password, $apName)
