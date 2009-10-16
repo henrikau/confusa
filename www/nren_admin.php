@@ -249,7 +249,7 @@ class CP_NREN_Admin extends Content_Page
 			Framework::error_output("orgstate not set, this is required.!");
 			return false;
 		}
-		if (!isset($dn_name) || $d_name === "") {
+		if (!isset($dn_name) || $dn_name === "") {
 			Framework::error_output("The orgname to use in the certificate is not set!");
 			return false;
 		}
@@ -340,10 +340,10 @@ class CP_NREN_Admin extends Content_Page
 		try {
 			$check = MDB2Wrapper::execute("SELECT subscriber_id FROM subscribers WHERE name=? and nren_id = ?",
 						      array('text', 'text'),
-						      array($name, $res[0]['nren_id']));
+						      array($db_name, $res[0]['nren_id']));
 			if (count($check) > 0) {
 				Framework::error_output("Subscriber names must be unique per NREN! " .
-							"Found an existing subscriber with the name '$name' and " .
+							"Found an existing subscriber with the name '$db_name' and " .
 							"id " . $check[0]['subscriber_id'] . "!");
 				return false;
 			}
