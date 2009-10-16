@@ -170,18 +170,6 @@ class CP_Accountant extends Content_Page
 		}
 
 		/*
-		 * prepare the db-entries
-		 */
-		$enckey	= Config::get_config('capi_enc_pw');
-		$pw	= base64_encode($password);
-		$size	= mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
-		$iv	= mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
-		$cryptpw= base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,
-						       $enckey,$pw,
-						       MCRYPT_MODE_CFB,
-						       $iv));
-
-		/*
 		 * new or changing existing account
 		 */
 		try {
@@ -189,17 +177,8 @@ class CP_Accountant extends Content_Page
 							     array('text'),
 							     array($account_id));
 			/* are we updating existing value, or adding new? */
-			if (count($account_info) != 1) {
-				$changed = false;
-				/* are we changing anything? */
-				if (($account_info[0]['login_name'] != $login_name) ||
-				    ($account_info[0]['password'] != $cryptpw)) {
-					echo "updating existing account<br />\n";
-					return $this->updateNRENAccount($login_name, $password, $ap_name, $account_id, $nren_id);
-				} else {
-					echo "nothing changed. stopping<br />\n";
-					return false;
-				}
+			if (count($account_info) == 1) {
+				$this->updateNRENAccount($login_name, $password, $ap_name, $account_id);
 			}
 			else {
 				/* FIXME */
@@ -252,6 +231,58 @@ class CP_Accountant extends Content_Page
 		return true;
 	}
 
+	/**
+	 * updateNRENAccount() - Change the data of an existing NREN account, but do not touch
+	 * 		the foreign key that points to it from the NREN
+	 *
+	 * Just update all values of the account, no matter if they have changed or
+	 * not, because
+	 *  - this is considered an infrequent operation not demanding
+	 * much optimization
+	 * - updating one column or updating multiple columns of the same row should
+	 * have negligible cost difference
+	 *
+	 * @param $login_name string The new login-name of the account
+	 * @param $password string The new password of the account (unencrypted)
+	 * @param $ap_name string The new AP-name of the account
+	 * @param $account_id string The account-ID of the account (stays constant)
+	 *
+	 */
+	private function updateNRENAccount($login_name, $password, $ap_name, $account_id)
+	{
+
+		/*
+		 * prepare the db-entries
+		 */
+		$enckey	= Config::get_config('capi_enc_pw');
+		$pw	= base64_encode($password);
+		$size	= mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
+		$iv	= mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
+		$cryptpw= base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,
+						       $enckey,$pw,
+						       MCRYPT_MODE_CFB,
+						       $iv));
+		$iv = base64_encode($iv);
+
+		$sql_stmt = "UPDATE account_map SET login_name=?, password=?, ivector=?, ap_name=?";
+		$sql_stmt .= " WHERE account_map_id = ?";
+
+		try {
+			MDB2Wrapper::update($sql_stmt,
+								array('text', 'text', 'text', 'text', 'text'),
+								array($login_name, $cryptpw, $iv, $ap_name, $account_id));
+		} catch (DBQueryException $dqe) {
+			Logger::log_event(LOG_ERR, "[nadm] Query: Could not update the login-account with ID " .
+							  "$account_id to new value $login_name " . $dqe->getMessage());
+			Framework::error_output("Could not update your login-account. Backend said: " .
+									$dqe->getMessage());
+		} catch (DBStatementException $dse) {
+			Logger::log_event(LOG_ERR, "[nadm] Statement: Could not update the login-account with ID " .
+							  "$account_id to new value $login_name " . $dse->getMessage());
+			Framework::error_output("Could not update your login-account. Backend said: " .
+									$dse->getMessage());
+		}
+	}
 	/**
 	 * changeAccount() move the NREN from one account to another.
 	 *
