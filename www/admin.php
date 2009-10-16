@@ -59,7 +59,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'add_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
-					$subscriber = Input::sanitize($_POST['subscriber']);
+					$subscriber = Input::sanitizeText($_POST['subscriber']);
 					$this->addSubscriberAdmin($admin, SUBSCRIBER_ADMIN, $subscriber);
 					break;
 				default:
@@ -132,7 +132,7 @@ class CP_Admin extends Content_Page
 
 			/* Are we looking at a particular subscriber? */
 			if (isset($_POST['subscriber'])) {
-				$current_subscriber = Input::sanitize($_POST['subscriber']);
+				$current_subscriber = Input::sanitizeText($_POST['subscriber']);
 			} else if (count($subscribers) > 0) {
 				$current_subscriber = $subscribers[0];
 			}
