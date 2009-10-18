@@ -93,7 +93,7 @@ function insert_nren_admin($nren_name, $principal, $contact)
 	$res = get_nren_id($nren_name);
 
 	if (count($res) == 0) {
-		$statement = "INSERT INTO nrens(name, contact) VALUES(?,?)";
+		$statement = "INSERT INTO nrens(name, contact_email) VALUES(?,?)";
 
 		try {
 			MDB2Wrapper::update($statement,
