@@ -762,8 +762,33 @@ function perform_postinstallation_steps
 	read -n1 -t10 any_key
 
 	cd ../init/
+
+	if [ ! -f "/root/mysql_root.pw" ]; then
+		TMPFILE="/root/mysql_root.pw"
+
+		while [ -z $mysql_root_password ]; do
+			echo "Please specify the MySQL root password, so the installer can"
+			echo -n "bootstrap the MySQL-database: "
+			stty -echo
+			read mysql_root_password
+			stty echo
+			echo ""
+
+			# Test if the user specified the correct password
+			mysql -u'root' -p${mysql_root_password} -hlocalhost -e "use mysql"
+			res=$?
+
+			if [ $res -ne 0 ]; then
+				mysql_root_password=""
+			fi
+		done
+
+		echo $mysql_root_password > $TMPFILE
+	fi
+
 	sh create_database.sh --delete_user
 	res=$?
+	rm $TMPFILE
 
 	if [ ! $res -eq 0 ]; then
 		echo "Failed populating the DB!"
