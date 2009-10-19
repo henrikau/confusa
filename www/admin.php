@@ -54,7 +54,7 @@ class CP_Admin extends Content_Page
 					$this->addNRENAdmin($admin);
 					break;
 				case 'delete_subs_admin':
-					$admin = Input::sanitize($_POST['subs_admin']);
+					$admin = Input::sanitizeText($_POST['subs_admin']);
 					$this->deleteAdmin($admin,SUBSCRIBER_ADMIN);
 					break;
 				case 'add_subs_admin':
