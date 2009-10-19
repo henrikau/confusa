@@ -122,8 +122,7 @@
 	<td align="right">Responsible Person email</td>
 	<td align="right" style="width=100px"><div class="spacer"></div></td>
 	<td>
-	  <input type="text" name="subscr_responsible_email" name="subscr_email"
-	  value="{$subscr_details.subscr_resp_email}" />
+	  <input type="text" name="subscr_responsible_email" value="{$subscr_details.subscr_resp_email}" />
 	</td>
       </tr>
 
