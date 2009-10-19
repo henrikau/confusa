@@ -35,10 +35,6 @@ class Confusa_Auth_IdP extends Confusa_Auth
 			$authority = ConfusaConstants::$DEFAULT_SESSION_AUTHORITY;
 		}
 
-		if (!$session->isValid($authority)) {
-			session_start();
-		}
-
 		$this->person->setSession($session);
 		$this->person->setSAMLConfiguration(SimpleSAML_Configuration::getInstance());
 	}
