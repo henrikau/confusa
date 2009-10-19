@@ -110,21 +110,8 @@ function configure_confusa_settings
 	#
 	# debug					- Should be set to false in the template
 	# maint					- Does not make sense in initial configuration
-	# upload
-	# download
-	# approve
-	# post_login_page		- Advanced options
 	# custom_css			- advanced
 	# custom_logo			- advanced
-	# capi_apply_endpoint	- not supposed to change, advanced
-	# capi_auth_endpoint	- not supposed to change, advanced
-	# capi_collect_endpoint	- not supposed to change, advanced
-	# capi_listing_endpoint	- ditto
-	# capi_revoke_endpoint	- ditto
-	# capi_escience_id		- ditto
-	# capi_personal_id		- ditto
-	# capi_root_cert		- ditto
-	# capi_crl				- ditto
 	# capi_test				- should be set to false in the template
 	# ca_cert_base_path
 	# ca_cert_path
@@ -132,12 +119,7 @@ function configure_confusa_settings
 	# ca_key_path
 	# ca_key_name
 	# ca_conf_name
-	# ca_crl_name			- if there is a custom CA configuration,
-	#						- it is probably not in place at the time of installation!
 	# script_check_ssl		- should be set to true in the template
-	# csr_var				- advanced, probably not changed very often
-	# auth_var				- advanced, probably not changed very often
-	# auth_length			- see above
 	# loglevel_min
 	# syslog_min			- when you dig into logfiles, you can also change config files
 	# auth_bypass			- not supposed to change, set false in template
