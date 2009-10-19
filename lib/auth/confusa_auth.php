@@ -78,6 +78,15 @@ abstract class Confusa_Auth
 	 */
 	public function decoratePerson($attributes)
 	{
+
+		if (Config::get_config('capi_test')) {
+			$cnPrefix = ConfusaConstants::$CAPI_TEST_CN_PREFIX;
+			$oPrefix = ConfusaConstants::$CAPI_TEST_O_PREFIX;
+		} else {
+			$cnPrefix = "";
+			$oPrefix = "";
+		}
+
 		if (!isset($attributes)) {
 			throw new CrititicalAttributeException("Cannot find <b>any</b> attributes!");
 		}
@@ -139,7 +148,7 @@ abstract class Confusa_Auth
 							    array('text', 'text'),
 							    array($nren, $this->person->getSubscriberIdPName()));
 				if (count($res) == 1) {
-					$this->person->setSubscriberOrgName($res[0]['dn_name']);
+					$this->person->setSubscriberOrgName($oPrefix . $res[0]['dn_name']);
 				} else {
 					$msg  = "Cannot find subscriberOrgName in the database. Cannot continue.<br />";
 					$msg .= "This normally indicates that your subscriber (raw_name: ";
@@ -154,8 +163,8 @@ abstract class Confusa_Auth
 				throw new ConfusaGenException("Cannot connect properly to database, errors with supplied data.");
 			}
 
-			/* Get subscriberORgName from subscribers */
-			$this->person->setName($attributes[$map['cn']][0]);
+			/* Decorate the person with the mapped subscriber and a possible test prefix */
+			$this->person->setName($cnPrefix . $attributes[$map['cn']][0]);
 
 			/* if mail is not set, we cannot send notifications etc
 			 * to the user. This means that we cannot sign

@@ -480,11 +480,6 @@ class CP_RevokeCertificate extends Content_Page
 				return false;
 			}
 
-			/* if the API is in test mode, inject the TEST CERTIFICATE strings into the
-			 * organization name that is queried for */
-			$test_prefix = Config::get_config('ca_mode') == CA_ONLINE &&
-							Config::get_config('capi_test');
-
 			/**
 			 * Check if the NREN admin may revoke the certificate. That holds only
 			 * if the organization name in the certificate matches one of the institutions
@@ -494,10 +489,6 @@ class CP_RevokeCertificate extends Content_Page
 				$subscribers = $this->getNRENSubscribers($this->person->getNREN());
 
 				foreach ($subscribers as $subscriber) {
-					if ($test_prefix) {
-						$subscriber = ConfusaConstants::$CAPI_TEST_O_PREFIX . $subscriber;
-					}
-
 					if ($subscriber === $info['organization']) {
 						return true;
 					}
@@ -508,9 +499,6 @@ class CP_RevokeCertificate extends Content_Page
 			 */
 			} else if ($this->person->isSubscriberAdmin() || $this->person->isSubscriberSubAdmin()) {
 				$subscriber = $this->person->getSubscriberOrgName();
-				if ($test_prefix) {
-					$subscriber = ConfusaConstants::$CAPI_TEST_O_PREFIX . $subscriber;
-				}
 
 				if ($subscriber === $info['organization']) {
 					return true;
@@ -524,10 +512,6 @@ class CP_RevokeCertificate extends Content_Page
 			} else {
 				$cn = $this->person->getX509ValidCN();
 				$subscriber = $this->person->getSubscriberOrgName();
-				if ($test_prefix) {
-					$cn = ConfusaConstants::$CAPI_TEST_CN_PREFIX . $cn;
-					$subscriber = ConfusaConstants::$CAPI_TEST_O_PREFIX . $subscriber;
-				}
 
 				if (($info['cert_owner'] === $cn) && ($info['organization'] === $subscriber)) {
 					return true;

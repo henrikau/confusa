@@ -24,9 +24,6 @@ class CertManager_Online extends CertManager
     /* order number for communication with the remote API */
     private $order_number;
 
-    private $cnPrefix;
-    private $oPrefix;
-
     /* login-name and password for the remote-signing CA */
     private $login_name;
     private $login_pw;
@@ -36,14 +33,6 @@ class CertManager_Online extends CertManager
 
     function __construct($pers)
     {
-        if (Config::get_config('capi_test')) {
-            $this->cnPrefix = ConfusaConstants::$CAPI_TEST_CN_PREFIX;
-            $this->oPrefix = ConfusaConstants::$CAPI_TEST_O_PREFIX;
-        } else {
-            $this->cnPrefix = "";
-            $this->oPrefix = "";
-        }
-
         parent::__construct($pers);
         $this->getAccountInformation();
     }
@@ -336,7 +325,7 @@ class CertManager_Online extends CertManager
             $dn_components = explode(',', $subject);
 
             if ($org != NULL) {
-                $organization = "O=" . $this->oPrefix . $org;
+                $organization = "O=" . $org;
 
                 /* don't return order number and the owner subject
                  * if the organization is not present in the DN
@@ -665,7 +654,7 @@ class CertManager_Online extends CertManager
         $list_endpoint = ConfusaConstants::$CAPI_LISTING_ENDPOINT;
         $postfields_list["loginName"]		= $this->login_name;
         $postfields_list["loginPassword"]	= $this->login_pw;
-        $postfields_list["commonName"]		= $this->cnPrefix . $common_name;
+        $postfields_list["commonName"]		= $common_name;
 
         $data = CurlWrapper::curlContact($list_endpoint, "post", $postfields_list);
         $params=array();
@@ -728,10 +717,10 @@ class CertManager_Online extends CertManager
         $postfields_sign_req["caCertificateId"] = $ca_cert_id;
         /* manually compose the subject. Necessary, because we want to have
          * Terena domainComponents */
-        $postfields_sign_req["subject_commonName_1"] = $this->cnPrefix .
+        $postfields_sign_req["subject_commonName_1"] =
             $this->person->getX509ValidCN();
 
-        $postfields_sign_req["subject_organizationName_2"] = $this->oPrefix .
+        $postfields_sign_req["subject_organizationName_2"] =
             $this->person->getSubscriberOrgName();
         $postfields_sign_req["subject_countryName_3"] = $this->person->getCountry();
         $postfields_sign_req["subject_domainComponent_4"] = "tcs";
