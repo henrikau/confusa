@@ -125,6 +125,16 @@ $confusa_config = array(
 	'ca_key_path'		=> '/priv',
 	'ca_key_name'		=> '',
 	'ca_conf_name'		=> '/conf/confusa_openssl.conf',
+	/*
+	 * Where to report errors in the standalone CSR-generation script
+	 * for users. This is the script that can be downloaded in the "Tools"
+	 * section of Confusa, which will create a request/key pair for upload to
+	 * confusa for the user.
+	 *
+	 * This should be an e-mail address belonging to a person who can actually
+	 * respond to possible errors.
+	 */
+	'error_addr'		=> 'your@error.addr',
 
 		/* ======== General flags ========
 		 * ===============================
@@ -137,10 +147,6 @@ $confusa_config = array(
         /* default length of client key. This is minimum keylength, a user can
          * upload a longer key, if he/she wants that */
 	'key_length'		=> '2048',
-
-        /* where to report errors in script for users. This should be set to
-         * something sane for *your* installation */
-	'error_addr'		=> 'your@error.addr',
 
 	/* logs */
 	'default_log'		=> '/var/log/confusa/tmp.log',
