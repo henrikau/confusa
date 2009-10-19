@@ -8,13 +8,19 @@
 if [ ! `whoami` == "root" ]; then
     echo "Should be root"
 fi
-if [ ! -f "../config/confusa_config.php" ]; then
-    echo "cannot dump database before confusa_config exists!"
-    exit
+if [ ! $# -eq 1 ]; then
+    echo "Errors in parameters, need exactly 1, $# given"
+    usage
 fi
 
+if [ ! -f $1 ]; then
+    echo "config-file does not exist"
+    usage
+fi
+configfile=$1
+
 # find database to do backup from
-database=`grep "mysql_db" ../config/confusa_config.php | cut -d '=' -f 2\
+database=`grep "mysql_db" $configfile | cut -d '=' -f 2\
     | cut -d "'" -f 2`
 if [ -z "$database" ]; then
     echo "Cannot find configured database in confusa_config. Aborting"
@@ -22,7 +28,7 @@ if [ -z "$database" ]; then
 fi
 
 # find backupdir
-backupdir=`grep "mysql_backup_dir" ../config/confusa_config.php | cut -d '=' -f 2\
+backupdir=`grep "mysql_backup_dir" $configfile | cut -d '=' -f 2\
     | cut -d "'" -f 2`"/"
 if [ -z "$backupdir" ]; then
     echo "Need a backupdir. Please set mysql_backup_dir in confusa_config.php"
