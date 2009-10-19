@@ -512,11 +512,11 @@ function configure_confusa_settings
 	echo -n "the browser [$system_name]: "
 	read custom_system_name
 
-	if [ -z $custom_system_name ]; then
-		custom_system_name=$system_name
+	if [ -z "$custom_system_name" ]; then
+		custom_system_name="$system_name"
 	fi
 
-	replace_config_entry "system_name" $custom_system_name
+	replace_config_entry "system_name" "${custom_system_name}"
 	echo ""
 
 	# Configure the sys_from address
