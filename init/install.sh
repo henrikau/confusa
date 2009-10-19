@@ -786,6 +786,8 @@ function perform_postinstallation_steps
 		echo $mysql_root_password > $TMPFILE
 	fi
 
+	echo "Wrote mysql_root password temporarily to /root/mysql_root.pw. "
+	echo "If mysql-execution fails, please delete that file manually."
 	sh create_database.sh --delete_user
 	res=$?
 	rm $TMPFILE
