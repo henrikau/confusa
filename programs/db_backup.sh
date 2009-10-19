@@ -38,15 +38,13 @@ fi
 
 
 # test for debian-sys-maint
-file=/etc/mysql/debian.cnf
-if [ -f $file ]; then
-    user=`grep user $file | cut -d '=' -f 2 | head -n 1 |sed s/'\ '//g`
-    pw=`grep password $file | cut -d '=' -f 2 | head -n 1 |sed s/'\ '//g`
-else
-    echo "debian-sys-main not set. Aborting"
+file=/root/mysql_root.pw
+if [ ! -f $file ]; then
+    echo "$file not set. Aborting"
     exit
 fi
-res=`mysqldump -u$user -p$pw $database`
+pw=`cat /root/mysql_root.pw`
+res=`mysqldump -uroot -p$pw $database`
 if [ -z "$res" ]; then
     echo "dump of database failed for some reason."
     exit
