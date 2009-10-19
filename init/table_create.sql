@@ -1,3 +1,4 @@
+
 -- ---------------------------------------------------------
 --
 --
@@ -9,6 +10,15 @@
 --
 --
 -- ---------------------------------------------------------
+
+-- When we create the database, we must temporarily disable foreign-key
+-- check as it will fail upon creating account_map as nrens has not been
+-- created yet, and vice versa.
+--
+-- This is re-enabled at the end of the file.
+SET FOREIGN_KEY_CHECKS = 0;
+
+
 -- ---------------------------------------------------------
 --
 -- account_map	 - map an account to a set of username/password credentials.
@@ -356,3 +366,5 @@ CREATE TABLE IF NOT EXISTS robot_certs (
 CREATE TABLE IF NOT EXISTS schema_version (
         version INT PRIMARY KEY DEFAULT 0
 ) type=InnoDB;
+
+SET FOREIGN_KEY_CHECKS = 1;
