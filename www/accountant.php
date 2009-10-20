@@ -39,11 +39,11 @@ class CP_Accountant extends Content_Page
 			/* We must use POST as we may pass along a password and
 			 * we do not want to set that statically in the subject-line. */
 			if (isset($_POST['login_name']))
-				$login_name = Input::sanitize($_POST['login_name']);
+				$login_name = Input::sanitizeText($_POST['login_name']);
 			if (isset($_POST['password']))
-				$password = Input::sanitize($_POST['password']);
+				$password = Input::sanitizeText($_POST['password']);
 			if (isset($_POST['ap_name']))
-				$ap_name = Input::sanitize($_POST['ap_name']);
+				$ap_name = Input::sanitizeText($_POST['ap_name']);
 
 			switch(htmlentities($_POST['account'])) {
 			case 'edit':
