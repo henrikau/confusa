@@ -157,17 +157,6 @@ class CertManager_Online extends CertManager
     */
     public function sign_key($auth_key, $csr)
     {
-	    /* Is the requried attributes present? */
-	    $testAttrs = $this->verifyAttributes();
-	    if ($testAttrs != null) {
-		    $msg  = "Error(s) with attributes:<br />\n";
-		    $msg .= "<ul>$testAttrs</ul>\n";
-		    $msg .= "<br />\n";
-		    $msg .= "This means that you do <b>not</b> qualify for certificates at this point in time.<br />\n";
-		    $msg .= "Please contact your local IT-support to resolve this issue.<br />\n";
-		    throw new KeySignException($msg);
-	    }
-
         $this->_capi_upload_CSR($auth_key, $csr);
         $this->_capi_authorize_CSR();
 
@@ -192,17 +181,6 @@ class CertManager_Online extends CertManager
      */
     public function signBrowserCSR($csr, $browser)
     {
-		/* Are the required attributes present? */
-		$testAttrs = $this->verifyAttributes();
-		if ($testAttrs != null) {
-		    $msg  = "Error(s) with attributes:<br />\n";
-		    $msg .= "<ul>$testAttrs</ul>\n";
-		    $msg .= "<br />\n";
-		    $msg .= "This means that you do <b>not</b> qualify for certificates at this point in time.<br />\n";
-		    $msg .= "Please contact your local IT-support to resolve this issue.<br />\n";
-		    throw new KeySignException($msg);
-	    }
-
         /* use the last 64-characters of the CRMF as an auth_key */
 		$auth_key = substr($csr, strlen($csr)-65, strlen($csr)-1);
         /* FIXME: Recognize IE format, that is PKCS10 */

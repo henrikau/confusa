@@ -9,6 +9,7 @@ require_once 'config.php';
 require_once 'send_element.php';
 require_once 'input.php';
 require_once 'output.php';
+require_once 'permission.php';
 
 /**
  * ProcessCsr - the web frontend for handling of CSRs
@@ -223,6 +224,15 @@ final class CP_ProcessCsr extends Content_Page
 
 	private function approveBrowserGenerated($csr, $browser)
 	{
+		$permission = $this->person->mayRequestCertificate();
+
+		if ($permission->isPermissionGranted() === false) {
+			Framework::error_output("You may not request a new certificate, because:<br /><br />" .
+							$permission->getFormattedReasons() .
+							"<br />Please contact an IT-administrator about that!");
+			return;
+		}
+
 		$order_number = $this->certManager->signBrowserCSR($csr, $browser);
 		return $order_number;
 	}
@@ -265,7 +275,18 @@ final class CP_ProcessCsr extends Content_Page
 				Framework::error_output("certManager is NULL!");
 				return false;
 			}
+
+			$permission = $this->person->mayRequestCertificate();
+
+			if ($permission->isPermissionGranted() === false) {
+				Framework::error_output("You may not request a new certificate, because:<br /><br />" .
+							$permission->getFormattedReasons() .
+							"<br />Please contact an IT-administrator about that!");
+				return;
+			}
+
 			$this->certManager->sign_key($authToken, $csr);
+
 		} catch (RemoteAPIException $rapie) {
 			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" . $rapie);
 			return false;
