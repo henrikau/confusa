@@ -64,14 +64,15 @@
 
 
       {* ------------------------------------------------------ *}
-      {* DN Name						*}
+      {* Org-Name						*}
       {* ------------------------------------------------------ *}
-      <tr><td colspan="2"><h3>DN-Name</h3></td></tr>
+      <tr><td colspan="2"><h3>DN Organization-Name</h3></td></tr>
       <tr>
 	<td colspan="2">
 	  <p class="info">
-	    The DN-Name is the name that will appear in the certificate for
-	    the end entities (the users). This name is subject to certain
+	    The DN Organization-Name is the name that will appear in the certificate for
+	    the end entities (the users). I.e. it is the string appearing in the /O=...
+	    section of the certificate. This name is subject to certain
 	    restrictions pertaining length, encoding etc.
 	  </p>
 	  {if $confusa_grid_restrictions}
@@ -86,7 +87,7 @@
 	</tr>
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr>
-	<td><font color="gray"><i>DN-Name:</i></font></td>
+	<td><font color="gray"><i>/O=</i></font></td>
 	<td><input type="text" name="dn_name" /></td>
       </tr>
       <tr><td><div class="spacer"></td><td></td></tr>
