@@ -36,7 +36,7 @@
 <br />
 <form name="reqForm" id="reqForm" onSubmit="return createRequest('{$dn}', {$keysize});" method="post" action="process_csr.php">
 <input id="reqField" type="hidden" name="browserRequest" value="" />
-{if $person->testEntitlementAttribute('Confusa')}
+{if $user_cert_enabled}
 	<input type="submit" name="Send" id="startButton" value="Start" />
 {else}
 	{* Disable the element if the user does not have the right entitlement *}
