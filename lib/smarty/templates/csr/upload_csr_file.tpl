@@ -40,7 +40,7 @@
 	<input type="submit" name="Send" id="startButton" value="Start" />
 {else}
 	{* Disable the element if the user does not have the right entitlement *}
-	<input disabled type="submit" name=Send" id="startButton" value="Start" />
+	<input disabled type="submit" name="Send" id="startButton" value="Start" />
 {/if}
 
 <noscript>
