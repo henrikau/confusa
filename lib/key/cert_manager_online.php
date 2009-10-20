@@ -230,6 +230,8 @@ class CertManager_Online extends CertManager
 		}
 
         $common_name = $this->person->getX509ValidCN();
+        $organization = 'O=' . $this->person->getSubscriberOrgName();
+
         $params = $this->_capi_get_cert_list($common_name);
         $res=array();
 
@@ -246,13 +248,22 @@ class CertManager_Online extends CertManager
                     continue;
             }
 
-            /* for simplicity, format the time just as an SQL server would return it */
-            $valid_untill = $params[$i . '_1_notAfter'];
-
-            if (!empty($valid_untill)) {
+            if (isset($params[$i . '_1_notAfter'])) {
+				/* for simplicity, format the time just as an SQL server would return it */
+				$valid_untill = $params[$i . '_1_notAfter'];
                 $valid_untill = date('Y-m-d H:i:s', $valid_untill);
                 $res[$i-1]['valid_untill'] = $valid_untill;
             }
+
+            $subject = $params[$i . '_1_subjectDN'];
+            $dn_components = explode(',', $subject);
+
+			/* don't return order number and the owner subject
+			 * if the organization is not present in the DN
+			 */
+			if (array_search($organization, $dn_components) === false) {
+				continue;
+			}
 
             if ($status == "Revoked") {
                 $res[$i-1]['revoked'] = true;
