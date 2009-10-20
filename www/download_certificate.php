@@ -45,7 +45,12 @@ final class CP_DownloadCertificate extends Content_Page
 		/* test and handle flags */
 		$this->processDBCert();
 		try {
-			$this->tpl->assign('certList', $this->certManager->get_cert_list());
+			$certList = $this->certManager->get_cert_list();
+			/* sort the revoked certificates after the active certificates */
+			$revoked = array_filter($certList, array($this, 'revokedFilter'));
+			$non_revoked = array_diff_assoc($certList, $revoked);
+			$certList = array_merge($non_revoked, $revoked);
+			$this->tpl->assign('certList', $certList);
 		} catch (ConfusaGenException $e) {
 			Framework::error_output("Could not retrieve certificates from the database. Server said: " .  $e->getMessage());
 		}
@@ -159,6 +164,17 @@ final class CP_DownloadCertificate extends Content_Page
 		}
 		$this->tpl->assign('processingResult', 'Email sent OK');
 	} /* end send_cert */
+
+	/**
+	 * include only revoked certificates from the result array
+	 *
+	 * @param $var a row of the result array
+	 * @return true if the row corresponds to a revoked result, false otherwise
+	 */
+	private function revokedFilter($var)
+	{
+		return (isset($var['revoked']) && $var['revoked'] === true);
+	}
 
 } /* end class DownloadCertificate */
 
