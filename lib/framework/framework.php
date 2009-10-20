@@ -100,8 +100,8 @@ class Framework {
 		$this->person = $auth->getPerson();
 		/* show a warning if the person does not have Confusa entitlement and ConfusaAdmin entitlement */
 		if ($this->person->isAuth()) {
-			if ($this->person->testEntitlementAttribute("Confusa") == false) {
-				if ($this->person->testEntitlementAttribute("ConfusaAdmin") == false) {
+			if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_user')) == false) {
+				if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_admin'))) == false) {
 					Framework::message_output("'Confusa' Entitlement not set. You do not qualify " .
 								"to request certificates at this time. Please ask an IT-administrator at your " .
 								"institution to resolve this issue.");
