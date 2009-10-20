@@ -106,6 +106,9 @@ final class CP_ProcessCsr extends Content_Page
 		$this->tpl->assign('inspect_csr',	$this->tpl->fetch('csr/inspect_csr.tpl'));
 		$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
 		$this->tpl->assign('list_all_csr',	$this->tpl->fetch('csr/list_all_csr.tpl'));
+		if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_user'))) {
+			$this->tpl->assign('user_cert_enabled', true);
+		}
 		$this->tpl->assign('upload_csr_file',	$this->tpl->fetch('csr/upload_csr_file.tpl'));
 		$this->tpl->assign('content',		$this->tpl->fetch('csr/process_csr.tpl'));
 	}
