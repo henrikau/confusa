@@ -90,6 +90,10 @@ class CP_NREN_Admin extends Content_Page
 							  $subscr_comment)) {
 					Framework::success_output("Updated subscriber '<i>$dn_name</i>' successfully.");
 				}
+				break;
+			case 'editState':
+				$this->editSubscriberState($id, $state);
+				break;
 			case 'info':
 				/* get info */
 				try {
@@ -170,8 +174,8 @@ class CP_NREN_Admin extends Content_Page
 	/**
 	 * editSubscriber - change an existing subscriber
 	 *
-	 * At the moment, the only thing that actually makes sense to change, is
-	 * the state of the subscriber.
+	 * Update state and/or subscriber meta-information such as email or
+	 * contact-info.
 	 *
 	 * @name		: The name of the subscriber.
 	 * @state		: New state.
@@ -201,11 +205,11 @@ class CP_NREN_Admin extends Content_Page
 			$data = array($state, $email, $phone, $rname, $remail, $comment, $id, $nren_id);
 			MDB2Wrapper::update($update, $params, $data);
 
-			Logger::log_event(LOG_NOTICE, "Changed state for subscriber with ID $id from " . $res[0]['org_state'] . " to $state");
+			Logger::log_event(LOG_NOTICE, "Updated (full) information for subscriber $subscriber_id");
 
 		} catch (DBStatementException $dbse) {
 			Framework::error_output(__FILE__ . ":" . __LINE__ . " Error in query-syntax.<BR />Server said " . $dbse->getMessage());
-			Logger::log_event(LOG_NOTICE, "Problem occured when editing the state of subscriber $id: " . $dbse->getMessage());
+			Logger::log_event(LOG_NOTICE, "Problem occured when editing the information of subscriber $id: " . $dbse->getMessage());
 			return false;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output(__FILE__ . ":" . __LINE__ . " Problems with query.<BR />Server said " . $dbqe->getMessage());
@@ -214,6 +218,40 @@ class CP_NREN_Admin extends Content_Page
 		}
 		return true;
 	} /* end editSubscriber */
+
+	/**
+	 * editSubscriberState - edit the state of a subscriber alone
+	 *
+	 * This is a convenient function for updating just the state of a subscriber
+	 * without changing all the associated metainformation
+	 *
+	 * @param $subscriber_id The identifier of the subscriber
+	 * @param $newState the state to which the subscriber should be changed
+	 */
+	private function editSubscriberState($subscriber_id, $newState)
+	{
+		$query = "UPDATE subscribers SET org_state=? WHERE subscriber_id=?";
+
+		try {
+			MDB2Wrapper::execute($query,
+							array('text'),
+							array($newState, $subscriber_id));
+
+		Logger::log_event(LOG_INFO, "[nadm] Changed state for subscriber with ID $subscriber_id to $newState");
+		Framework::success_output("Changed state for subscriber with ID $subscriber_id to $newState");
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Error while updating the subscriber of subscriber $subscriber_id state, server said: " .
+					$dbse->getMessage() .
+					"<br />Probably this is a configuration error, contact an administrator!");
+			Logger::log_event(LOG_NOTICE, "[nadm] Problem occured when updating state of subscriber " .
+					"$subscriber_id:" . $dbse->getMessage());
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Error while updating the subscriber state of subscriber $subscriber_id, server said: " .
+					$dbqe->getMessage());
+			Logger::log_event(LOG_NOTICE, "[nadm] Problem with query data when updating subscriber " .
+					"$subscriber_id to state $newState:" . $dbqe->getMessage());
+		}
+	}
 
 	/**
 	 * addSubscriber - add a new subscriber

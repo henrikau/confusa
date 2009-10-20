@@ -52,14 +52,14 @@
       </td>
       {if !$subscriber_details || $row.subscriber_id != $subscriber_detail_id}
       <td>
-	<form action="" method="post">
-	  <div>
-	    <input type="hidden" name="subscriber" value="edit" />
-	    <input type="hidden" name="id" value="{$row.subscriber_id}" />
-	    {$nren->createSelectBox($row.org_state,	null, state)}
-	    <input type="submit" class="button" value="Update" />
-	  </div>
-	</form>
+			<form action="" method="post">
+			  <div>
+				<input type="hidden" name="subscriber" value="editState" />
+				<input type="hidden" name="id" value="{$row.subscriber_id}" />
+				{$nren->createSelectBox($row.org_state,	null, state)}
+				<input type="submit" class="button" value="Update" />
+			  </div>
+			</form>
       </td>
       {/if}
     </tr>
