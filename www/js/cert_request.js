@@ -159,7 +159,7 @@ function createRequest(dn, keysize)
 		}
 	} else if ((navigator.userAgent.indexOf("Opera") > -1) ||
 		  (navigator.userAgent.indexOf("AppleWebKit") > -1) ||
-		  (navigator.userAgent.indexOf("Firefox") > -1)) {
+		  (navigator.userAgent.indexOf("Gecko") > -1)) {
 		      createKeygenTag(dn, keysize);
 		      return false;
 	} else {
