@@ -133,7 +133,7 @@
       </tr>
 
       <tr>
-	<td align="right">DN-Name</td>
+	<td align="right">DN: /O=</td>
 	<td align="right" style="width=100px"><div class="spacer"></div></td>
 	<td><b>{$subscr_details.dn_name}</b></td>
       </tr>
