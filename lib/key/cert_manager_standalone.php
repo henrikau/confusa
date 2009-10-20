@@ -29,17 +29,6 @@ class CertManager_Standalone extends CertManager
 	 */
 	public function sign_key($auth_key, $csr)
 	{
-		/* Is the requried attributes present? */
-		$testAttrs = $this->verifyAttributes();
-		if ($testAttrs != null) {
-			$msg  = "Error(s) with attributes:<br />\n";
-			$msg .= "<ul>$testAttrs</ul>\n";
-			$msg .= "<br />\n";
-			$msg .= "This means that you do <b>not</b> qualify for certificates at this point in time.<br />\n";
-			$msg .= "Please contact your local IT-support to resolve this issue.<br />\n";
-			throw new KeySignException($msg);
-		}
-
 		if ($this->verify_csr($csr)) {
 			$cert_file_name	= tempnam("/tmp/", "REV_CERT_");
 			$cert_file = fopen($cert_file_name, "w");

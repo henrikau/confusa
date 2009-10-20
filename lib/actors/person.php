@@ -2,6 +2,8 @@
 require_once 'input.php';
 require_once 'output.php';
 require_once 'CriticalAttributeException.php';
+require_once 'permission.php';
+
 /* Person
  *
  * Person is the object describing the user in the system
@@ -846,5 +848,78 @@ class Person{
 	    return $adminRes;
     } /*  end getAdminStatus() */
 
+	/**
+	 * Return if this person may request a new certificate. This is dependant
+	 * on a few conditions:
+	 * 		- person is fully decorated
+	 * 		- 'confusa' entitlement is set
+	 * 		- subscriber of the person is in state 'subscribed'
+	 *
+	 * @return permission object containing
+	 * 		permissionGranted true/false based on whether the permission was granted
+	 * 		reasons array with reasons for granting/rejecting the permissions
+	 */
+	public function mayRequestCertificate()
+	{
+		$permission = new Permission();
+		$permission->setPermissionGranted(true);
+
+		if (empty($this->eppn)) {
+			$permission->setPermissionGranted(false);
+			$permission->addReason("Need a properly formatted eduPersonPrincipal name!");
+		}
+
+		if (empty($this->given_name)) {
+			$permission->setPermissionGranted(false);
+			$permission->addReason("Need a given-name to place in the certificate!");
+		}
+
+		if (empty($this->email)) {
+			$permission->setPermissionGranted(false);
+			$permission->addReason("Need an email-address to send notifications to!");
+		}
+
+		if (empty($this->country)) {
+			$permission->setPermissionGranted(false);
+			$permission->addReason("Need a country name for the certificates!");
+		}
+
+		if (empty($this->subscriberName)) {
+			$permission->setPermissionGranted(false);
+			$permission->addReason("Need a properly formatted Subscriber name!");
+		}
+
+		if (empty($this->entitlement)
+				|| !$this->testEntitlementAttribute(Config::get_config('entitlement_user'))) {
+			$permission->setPermissionGranted(false);
+			$permission->addReason(Config::get_config('entitlement_user') .
+								" entitlement must be set but is not set!");
+		}
+
+		$query = "SELECT org_state FROM subscribers WHERE name=?";
+
+		/* Bubble up exceptions */
+		$res = MDB2Wrapper::execute($query,
+				array('text'),
+				array($this->db_name));
+
+		if (count($res) == 0) {
+			$permission->setPermissionGranted(false);
+			$permission->addReason("Your institution " . $this->db_name .
+					" was not found in the database!");
+			return $permission;
+		} else if (count($res) > 1) {
+			throw new AuthException("More than one DB-entry with same subscriberOrgName " .
+					$this->subscriberOrgName);
+		}
+
+		if ($res[0]['org_state'] !== 'subscribed') {
+			$permission->setPermissionGranted(false);
+			$permission->addReason("Your institution " . $this->db_name .
+					" is currently not subscribed to the portal!");
+		}
+
+		return $permission;
+	}
 } /* end class Person */
 ?>
