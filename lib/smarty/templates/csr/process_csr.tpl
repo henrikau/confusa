@@ -1,7 +1,7 @@
 {if $signingOk}
 <div class="success">
 <CENTER>
-	The certificate is now being provessed by the CA (Certificate Authority)<BR />
+	The certificate is now being processed by the CA (Certificate Authority)<BR />
 	Depending on the load, this takes approximately 2 minutes.<BR /><BR />
 
 	You will now be redirected to the certificate-download area found 
