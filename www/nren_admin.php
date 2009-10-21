@@ -151,6 +151,16 @@ class CP_NREN_Admin extends Content_Page
 				$this->tpl->assign('list_subscribers', true);
 				break;
 			case 'add':
+				$am = AuthHandler::getAuthManager($this->person);
+				$attributes = $am->getAttributes();
+				$nren = $this->person->getNREN();
+
+				$map = AuthHandler::getNRENMap($nren);
+
+				if (isset($attributes[$map['epodn']])) {
+					$this->tpl->assign('foundUniqueName', $attributes[$map['epodn']][0]);
+				}
+
 				$this->tpl->assign('add_subscriber', true);
 				break;
 			default:

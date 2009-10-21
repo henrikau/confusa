@@ -63,14 +63,13 @@ class Confusa_Auth_IdP extends Confusa_Auth
 			throw new AuthException("Required attribute eduPersonPrincipalName not set!");
 		}
 
-		$this->assertAttributes($attributes);
 		$this->person->setAuth($this->person->getSession()->isValid());
 	}
 
 	/**
 	 * @return the attributes as they are stored in the session
 	 */
-	protected function getAttributes()
+	public function getAttributes()
 	{
 		return $this->person->getSession()->getAttributes();
 	}
