@@ -226,8 +226,14 @@ class CP_RevokeCertificate extends Content_Page
 
 		if (count($res) > 0) {
 
+			if (Config::get_config('capi_test') === true) {
+				$prefix = ConfusaConstants::$CAPI_TEST_O_PREFIX;
+			} else {
+				$prefix = "";
+			}
+
 			foreach($res as $row) {
-				$subscribers[] = $row['subscriber_dn'];
+				$subscribers[] = $prefix . $row['subscriber_dn'];
 			}
 		}
 
