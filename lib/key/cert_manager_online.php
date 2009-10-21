@@ -248,13 +248,6 @@ class CertManager_Online extends CertManager
                     continue;
             }
 
-            if (isset($params[$i . '_1_notAfter'])) {
-				/* for simplicity, format the time just as an SQL server would return it */
-				$valid_untill = $params[$i . '_1_notAfter'];
-                $valid_untill = date('Y-m-d H:i:s', $valid_untill);
-                $res[$i-1]['valid_untill'] = $valid_untill;
-            }
-
             $subject = $params[$i . '_1_subjectDN'];
             $dn_components = explode(',', $subject);
 
@@ -263,6 +256,14 @@ class CertManager_Online extends CertManager
 			 */
 			if (array_search($organization, $dn_components) === false) {
 				continue;
+			}
+
+
+			if (isset($params[$i . '_1_notAfter'])) {
+				/* for simplicity, format the time just as an SQL server would return it */
+				$valid_untill = $params[$i . '_1_notAfter'];
+				$valid_untill = date('Y-m-d H:i:s', $valid_untill);
+				$res[$i-1]['valid_untill'] = $valid_untill;
 			}
 
             if ($status == "Revoked") {
