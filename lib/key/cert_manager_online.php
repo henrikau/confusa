@@ -302,8 +302,6 @@ class CertManager_Online extends CertManager
         $params = $this->_capi_get_cert_list($common_name);
         $res = array();
         for ($i = 1; $i <= $params['noOfResults']; $i++) {
-            /* Note that this field will not get exported if the order is not yet authorized */
-            $valid_untill = $params[$i . '_1_notAfter'];
             $status = $params[$i . '_1_status'];
 
             /* don't consider expired, revoked or pending certificates */
@@ -325,7 +323,9 @@ class CertManager_Online extends CertManager
                 }
             }
 
-            if (!empty($valid_untill)) {
+			/* Note that this field will not get exported if the order is not yet authorized */
+            if (!empty($params[$i . '_1_notAfter'])) {
+				$valid_unitll = $params[$i . '_1_notAfter'];
                 $valid_untill = date('Y-m-d H:i:s', $valid_untill);
                 $res[$i-1]['valid_untill'] = $valid_untill;
             }
