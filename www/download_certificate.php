@@ -49,7 +49,7 @@ final class CP_DownloadCertificate extends Content_Page
 			/* sort the revoked certificates after the active certificates */
 			$revoked = array_filter($certList, array($this, 'revokedFilter'));
 			$non_revoked = array_diff_assoc($certList, $revoked);
-			$certList = array_merge($non_revoked, $revoked);
+			$certList = $non_revoked + $revoked;
 			$this->tpl->assign('certList', $certList);
 		} catch (ConfusaGenException $e) {
 			Framework::error_output("Could not retrieve certificates from the database. Server said: " .  $e->getMessage());
