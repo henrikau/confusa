@@ -325,7 +325,7 @@ class CertManager_Online extends CertManager
 
 			/* Note that this field will not get exported if the order is not yet authorized */
             if (!empty($params[$i . '_1_notAfter'])) {
-				$valid_unitll = $params[$i . '_1_notAfter'];
+				$valid_untill = $params[$i . '_1_notAfter'];
                 $valid_untill = date('Y-m-d H:i:s', $valid_untill);
                 $res[$i-1]['valid_untill'] = $valid_untill;
             }
