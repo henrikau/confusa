@@ -79,6 +79,10 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 		return $this->person->isAuth();
 	}
 
+	public function getAttributes()
+	{
+		return $this->attributes;
+	}
 
 	public function getAttributeKeys($isNRENAdmin = false)
 	{

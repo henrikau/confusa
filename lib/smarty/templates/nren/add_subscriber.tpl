@@ -58,7 +58,10 @@
 	  <input type="text" name="db_name" />
 	</td>
       </tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      {if isset($foundUniqueName)}
+		<tr><td></td><td>(<i>e.g.: {$foundUniqueName}</i>)</td></tr>
+	{/if}
+	  <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2"><hr /></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
 

@@ -226,7 +226,7 @@ abstract class Confusa_Auth
 				$msg .= "You need to do this <b>now</b> so the normal users can utilize Confusa's functionality.<br />\n";
 				$msg .= "<br /><center>Go <a href=\"stylist.php?mode=admin&show=map\">here</a> to update the map.</center><br />\n";
 				if (Config::get_config('debug')) {
-					$msg .= "Raw-dump of supplied attrributes:<br />\n";
+					$msg .= "Raw-dump of supplied attributes:<br />\n";
 					$msg .= "<br /><pre>\n";
 					foreach ($attributes as $key => $val) {
 						$tabs = "\t";
@@ -280,6 +280,17 @@ abstract class Confusa_Auth
 	 * @return array of attribute-keys.
 	 */
 	public abstract function getAttributeKeys();
+
+	/**
+	 * Get the currently assigned attributes from the authentication class.
+	 *
+	 * This can be practical whenever a more raw form of the attributes is
+	 * needed, for instance for verbose logging and debugging messages or for
+	 * informational display.
+	 *
+	 * @return array Raw attributes
+	 */
+	public abstract function getAttributes();
 
 	/**
 	 * "Logout" the user, possibly using the subsystem. To be implemented by
