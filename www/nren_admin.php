@@ -356,7 +356,7 @@ class CP_NREN_Admin extends Content_Page
 			Framework::error_output($msg);
 			return false;
 		} catch (DBQueryException $dbqe) {
-			$log_msg  = __FILE__ . ":" . __LINE__ . " Query-error. Constraint violoation in query?";
+			$log_msg  = __FILE__ . ":" . __LINE__ . " Query-error. Constraint violation in query?";
 			$msg .= "$log_msg<BR />Server said: " . $dbqe->getMessage();
 
 			Logger::log_event(LOG_NOTICE, $msg);
@@ -383,7 +383,7 @@ class CP_NREN_Admin extends Content_Page
 
 		/*
 		 * Make sure that the subscriber is a unique name. We must do
-		 * this after getting the NREN-id as we can have to identical
+		 * this after getting the NREN-id as we can have two identical
 		 * names under two different NRENs.
 		 */
 		try {
@@ -396,13 +396,30 @@ class CP_NREN_Admin extends Content_Page
 							"id " . $check[0]['subscriber_id'] . "!");
 				return false;
 			}
+
+			/**
+			 * The orgname in the DN must be globally unique, or otherwise we will have
+			 * certificates from different subscribers with the same org-name in the
+			 * DN
+			 */
+			$check2 = MDB2Wrapper::execute("SELECT name FROM subscribers WHERE dn_name= ?",
+							array('text'),
+							array($dn_name));
+			if (count($check2) > 0) {
+				Framework::error_output("Organization DN-names must be globally unique. " .
+							"The organization DN-name '" . $dn_name . "' is already assigned " .
+							"to organization '" . $check2[0]['name'] . "'! Please configure " .
+							"a different name.");
+				return false;
+			}
 		} catch (DBStatementException $dbse) {
 			$msg = __FILE__ . ":" . __LINE__ . " syntax error in constraint check, server said: " . $dbse->getMessage();
 			Logger::log_event(LOG_NOTICE, $msg);
 			Framework::error_output($msg);
 			return false;
 		} catch (DBQueryException $dbqe) {
-			$msg = __FILE__ . ":" . __LINE__ . " cannot add row, duplicate entry?";
+			$msg = __FILE__ . ":" . __LINE__ . " cannot check naming constraints, due to problems with the data: " .
+				$dbqe->getMessage();
 			Logger::log_event(LOG_NOTICE, $msg);
 			Framework::error_output($msg);
 			return false;
