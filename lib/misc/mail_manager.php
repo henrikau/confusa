@@ -108,7 +108,7 @@ class MailManager {
         $this->header .= "From: " . $this->sendHeader . " <" . $this->sendHeader . ">" . $this->eol;
         $this->header .= "Reply-To: " . $this->sendHeader . " <" . $this->sendHeader . ">" . $this->eol;
         $this->header .= "Return-Path: " . $this->sender . " <" . $this->sender . ">" . $this->eol;
-        $this->header .= "Date: " . date(DATE_RFC822) . $this->eol;
+        $this->header .= "Date: " . date(DATE_RFC2822) . $this->eol;
         $this->header .= "Message-ID: <" . time() . "-" . $this->sender . ">" . $this->eol;
         $this->header .= "X-Mailer: PHP v".phpversion().$this->eol;
         $this->header .= "MIME-Version: 1.0" . $this->eol;
