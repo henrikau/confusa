@@ -169,14 +169,14 @@ class CP_Admin extends Content_Page
 		} else if ($this->person->isSubscriberSubAdmin()) { /* subscriber-sub-admin display */
 			$subscriber_dn		= $this->person->getSubscriberOrgName();
 			$subscriber_db		= $this->person->getSubscriberIdPName();
-			$subscriber_admins	= $this->getSubscriberAdmins($subscriber, SUBSCRIBER_ADMIN);
-			$subscriber_sub_admins	= $this->getSubscriberAdmins($this->person->getSubscriberOrgName(), SUBSCRIBER_SUB_ADMIN);
+			$subscriber_admins	= $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_ADMIN);
+			$subscriber_sub_admins	= $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_SUB_ADMIN);
 
 			/* remove the administrator herself from the list */
 			$subscriber_sub_admins = array_diff($subscriber_sub_admins, array($this->person->getEPPN()));
 			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
 			$this->tpl->assign('subscriber_admins', $subscriber_admins);
-			$this->tpl->assign('subscriber', $subscriber);
+			$this->tpl->assign('subscriber', $subscriber_db);
 		}
 
 		$this->tpl->assign('self', $this->person->getEPPN());
