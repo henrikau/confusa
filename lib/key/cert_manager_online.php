@@ -289,18 +289,71 @@ class CertManager_Online extends CertManager
     /*
      * Search for the certificates of a person with a given common_name.
      * Common_name may include wildcard characters.
-     *
      * Restrict the result set to organization $org.
+     *
+     * Dependant on the form of the query, the order in which it filters for
+     * commonName and organizationName will be different.
+     *
+     * The filtering will be performed as follows:
+     * 	- pure wildcard search "%": remote organizationName, then local common-name
+     * 	- short search string with two non-adjacent wildcards, like "%jo%" -
+     * 			remote organizationName, then local common-name
+     *	- string containing "@": remote common-name, then local organization-name
+     * 	- all others: remote common-name, then local organization-name
      *
      * @param $common_name The common_name to search for
      * @param $org The organization to restrict the search to
+     *
+     * @return An array with each row consisting of
+     * 		- orderNumber
+     * 		- validUntil
+     * 		- subjectDN
+     * of the matched certificate.
      */
     public function get_cert_list_for_persons($common_name, $org)
     {
-		$common_name = "%" . $common_name . "%";
 
-        $params = $this->_capi_get_cert_list($common_name);
+		/* org-name *must* be set */
+		if (empty($org)) {
+			return NULL;
+		}
+
+		/* don't want to do work twice - if one of these is set, don't match
+		 * orgname or CN in PHP any more */
+		$organizationVerified = false;
+		$cnVerified = false;
+
+		/* the common-name consists only of a wildcard, effectively this is an
+		 * organization-wide search */
+		if (trim($common_name) == "%") {
+			$params = $this->capiGetOrgCertList($org);
+			$organizationVerified = true;
+			$cnVerified = true;
+		/* the common-name consists of two non-adjacent wildcards with a total
+		 * length smaller than 7, meaning something like "%jo%". Here it is
+		 * probably more efficient to search for the organization name first.
+		 */
+		} else if (substr_count($common_name, "%") >= 2 &&
+		           stripos($common_name, "%%") === false &&
+		           strlen($common_name) < 9) {
+			$params = $this->capiGetOrgCertList($org);
+			$organizationVerified = true;
+		/* eppn-ish, expecting fewer results, do a common_name search */
+		} else if (stripos($common_name, "@") !== false) {
+			$params = $this->_capi_get_cert_list($common_name);
+			$cnVerified = true;
+		/* longer search string, expecting fewer results if querying for the
+		 * common-name first */
+		} else {
+			$params = $this->_capi_get_cert_list($common_name);
+			$cnVerified = true;
+		}
+
         $res = array();
+        $organization = "O=" . $org;
+        /* rewrite SQL-ish wildcards to grep-wildcards from the common-name string */
+        $cn =  "/CN=" . str_replace("%", "(.)*", $common_name) . "/";
+
         for ($i = 1; $i <= $params['noOfResults']; $i++) {
             $status = $params[$i . '_1_status'];
 
@@ -310,18 +363,19 @@ class CertManager_Online extends CertManager
             }
 
             $subject = $params[$i . '_1_subjectDN'];
-            $dn_components = explode(',', $subject);
 
-            if ($org != NULL) {
-                $organization = "O=" . $org;
+			/* don't return order number and the owner subject
+			 * if the organization is not present in the DN
+			 */
+			if (!$organizationVerified &&
+			    strpos($subject, $organization) === false) {
+				continue;
+			}
 
-                /* don't return order number and the owner subject
-                 * if the organization is not present in the DN
-                 */
-                if (array_search($organization, $dn_components) === FALSE) {
-                    continue;
-                }
-            }
+			if (!$cnVerified &&
+			    preg_match($cn, $subject) === 0) {
+				continue;
+			}
 
 			/* Note that this field will not get exported if the order is not yet authorized */
             if (!empty($params[$i . '_1_notAfter'])) {
@@ -632,7 +686,7 @@ class CertManager_Online extends CertManager
 
     /*
      * Query the remote API for the list of certificates belonging to
-     * common_name $common_name. Filter out all the expired certificates.
+     * common_name $common_name.
      *
      * @param $common_name The common-name for which the list is retrieved
      */
@@ -667,6 +721,36 @@ class CertManager_Online extends CertManager
             );
         }
     }
+
+	/**
+	 * Query the remote API for the list of certificates belonging to
+	 * organization $organization.
+	 *
+	 * @param $organization The organization for which the list is retrieved
+	 */
+    private function capiGetOrgCertList($organization)
+    {
+		Logger::log_event(LOG_DEBUG, "Trying to get the list with the certificates " .
+							"for organization $organization");
+
+		$listEndpoint = ConfusaConstants::$CAPI_LISTING_ENDPOINT;
+		$postfieldsList["loginName"]		= $this->login_name;
+		$postfieldsList["loginPassword"]	= $this->login_pw;
+		$postfieldsList["organizationName"]	= $organization;
+
+		$data = CurlWrapper::curlContact($listEndpoint, "post", $postfieldsList);
+		$params =array();
+		parse_str($data, $params);
+
+		if ($params['errorCode'] == "0") {
+			return $params;
+		} else {
+			$msg = $this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
+			throw new RemoteAPIException("Received error when trying to list " .
+										"certificates from the remote-API: " .
+										$params['errorMessage'] . $msg);
+		}
+	} /* end capiGetOrgCertList */
 
     /**
      * Upload the CSR to the remote API and authorize the signing request
