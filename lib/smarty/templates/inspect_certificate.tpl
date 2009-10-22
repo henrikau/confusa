@@ -1,12 +1,19 @@
+<a href="{$smarty.server.PHP_SELF}">
+<img src="graphics/shape_flip_horizontal.png"
+     title="Collapse detail view"
+     alt=""
+     class="url"/>
+Collapse</a>
+
 {if !isset($pem)}
-	<DIV class="error">
+	<div class="error">
 	There were errors encountered when formatting the certificate. Here is a raw-dump.
-	<PRE>
+	<pre class="certificate">
 		{$certificate}
-	</PRE>
-	</DIV>
+	</pre>
+	</div>
 {else}
-	<pre>
+	<pre class="certificate">
 		{$pem}
 	</pre>
 {/if}

@@ -139,8 +139,10 @@ final class CP_DownloadCertificate extends Content_Page
 			Framework::error_output("Could not retrieve the certificate, server said: " . $e->getMessage());
 		}
 
+		$inspectElement = array();
+		$inspectElement[$authKey] = $this->tpl->fetch('inspect_certificate.tpl');
 		$this->tpl->assign('processingToken',  $authKey);
-		$this->tpl->assign('processingResult', $this->tpl->fetch('inspect_certificate.tpl'));
+		$this->tpl->assign('inspectElement', $inspectElement);
 	} /* end inspectCert */
 
 	private function mailCert($authKey)

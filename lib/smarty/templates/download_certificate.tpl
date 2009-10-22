@@ -12,6 +12,7 @@
 			{assign var='name' value=$cert.cert_owner}
 			{assign var='valid' value=$cert.valid_untill}
 			{assign var='revoked' value=$cert.revoked}
+
 			{if $standalone}
 
 				<tr>
@@ -44,6 +45,8 @@
 					 class="url">
 				    Download Certificate
 				  </a><br />
+
+				  {if empty($inspectElement[$key])}
 				  <a href="download_certificate.php?inspect_cert={$key}">
 				    <img src="graphics/information.png"
 					 alt=""
@@ -51,6 +54,7 @@
 					 class="url">
 				    Inspect
 				  </a><br />
+				  {/if}
 				  <a href="download_certificate.php?delete_cert={$key}">
 				    <img src="graphics/delete.png"
 					 alt=""
@@ -79,6 +83,14 @@
 				<td></td>
 				<td>{$cert.valid_untill}</td>
 				</tr>
+				<tr><td colspan="3">
+				<div id="inspect_area">
+					<br />
+					{if isset($inspectElement[$key])}
+						{$inspectElement[$key]}
+					{/if}
+				</div>
+				</td></tr>
 			{else}
 				<tr>
 				<td></td>
@@ -112,6 +124,7 @@
 				  </a>
 				  <br />
 
+				  {if empty($inspectElement[$cert.order_number])}
 				  <a href="download_certificate.php?inspect_cert={$cert.order_number}">
 				    <img src="graphics/information.png"
 					 alt=""
@@ -120,6 +133,7 @@
 				    Inspect
 				  </a>
 				  <br />
+				  {/if}
 				  <a href="download_certificate.php?install_cert={$cert.order_number}">
 				    <img src="graphics/database_add.png"
 				    alt=""
@@ -157,8 +171,15 @@
 				<td>{$cert.valid_untill}</td>
 				{/if}
 				</tr>
+				<tr><td colspan="3">
+				<div id="inspect_area">
+					<br />
+					{if isset($inspectElement[$cert.order_number])}
+						{$inspectElement[$cert.order_number]}
+					{/if}
+				</div>
+				</td></tr>
 			{/if}
-			<tr><td><br /></td></tr>
 		{/foreach}
 	</table>
 	</fieldset>
