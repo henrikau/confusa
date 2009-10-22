@@ -352,3 +352,7 @@ span.wtf {
     cursor: help;
     border-bottom: dashed 1px;
 }
+
+pre.certificate {
+	white-space: pre-wrap;
+}
