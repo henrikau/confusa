@@ -13,6 +13,8 @@ immediately see a result entry *}
     '%' as a wildcard.
     </p>
     <br />
+	<p class="info">Example: "John Doe jdoe@example.org" or "%jdoe@example.org".</p>
+	<br />
     <input type="hidden" name="revoke_operation" value="search_by_cn" />
     <input type="text" name="search" value="" />
     <input type="submit" name="Search" value="Search" />
