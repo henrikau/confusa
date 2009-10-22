@@ -76,7 +76,7 @@ class CP_RevokeCertificate extends Content_Page
 			switch($_POST['revoke_operation']) {
 			case 'revoke_by_cn':
 				try {
-					$this->revoke_certs(Input::sanitize($_POST['common_name']), Input::sanitize($_POST['reason']));
+					$this->revoke_certs(Input::sanitizeText($_POST['common_name']), Input::sanitize($_POST['reason']));
 				} catch (ConfusaGenException $cge) {
 					Framework::error_output("Could not revoke certificates because of the " .
 											"following problem: " . $cge->getMessage());
@@ -184,7 +184,8 @@ class CP_RevokeCertificate extends Content_Page
 		/* when we want so search for a particular certificate
 		 * to revoke. */
 		case 'search_by_cn':
-			$common_name = Input::sanitize($_POST['search']);
+			$common_name = Input::sanitizeText($_POST['search']);
+			Framework::message_output("Your search string was '$common_name'.");
 			$this->searchCertsDisplay($common_name, $subscriber);
 			break;
 		case 'search_by_list':
@@ -249,7 +250,11 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	 private function showNonAdminRevokeTable()
 	{
-		$this->searchCertsDisplay($this->person->getEPPN(), $this->person->getSubscriberOrgName());
+		/* be sure to only match the eppn of the person and not also
+		 * those of which it is the suffix. I.e. test@feide.no should
+		 * not match confusatest@feide.no */
+		$common_name = "% " . $this->person->getEPPN();
+		$this->searchCertsDisplay($common_name, $this->person->getSubscriberOrgName());
 	}
 
 	/**
@@ -272,9 +277,7 @@ class CP_RevokeCertificate extends Content_Page
 			unset($_SESSION['auth_keys']);
 		}
 
-		$common_name = "% " . $common_name;
-
-		if (isset($subscriber) && !empty($subscriber)) {
+		if (!empty($subscriber)) {
 			$certs = $this->certManager->get_cert_list_for_persons($common_name, $subscriber);
 		}
 
