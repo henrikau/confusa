@@ -126,6 +126,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		}
 
 		$session = $this->person->getSession();
+		$this->person->setSession($session);
 
 		/* authority is normally default-sp, but in case we/someowne ant
 		 * to extend this, use the current authority without reverting
