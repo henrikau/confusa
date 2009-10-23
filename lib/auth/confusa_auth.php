@@ -78,7 +78,6 @@ abstract class Confusa_Auth
 	 */
 	public function decoratePerson($attributes)
 	{
-
 		if (Config::get_config('capi_test')) {
 			$cnPrefix = ConfusaConstants::$CAPI_TEST_CN_PREFIX;
 			$oPrefix = ConfusaConstants::$CAPI_TEST_O_PREFIX;
@@ -114,7 +113,6 @@ abstract class Confusa_Auth
 		/* in the attributes, but not exported by the nrens (we
 		 * deduce this in the NREN/Country map */
 		$this->person->setCountry($country);
-
 		/* Get the map
 		 * Warning: this may throw the MapNotFoundException if the nren
 		 * is new.
@@ -307,8 +305,7 @@ abstract class Confusa_Auth
  * The handler should abstract that decision away from the calling functions
  * and consult on its own on the configuration or environment
  */
-require_once 'idp.php';
-require_once 'bypass.php';
+
 class AuthHandler
 {
 	private static $auth;
@@ -332,6 +329,14 @@ class AuthHandler
 		return AuthHandler::$auth;
 	}
 
+	/**
+	 * getMap() Return the map used for this nren/subscriber
+	 *
+	 * @param String nren the name identifying the NREN
+	 * @param String subscriber|null the name identifying the subscriber (dn_name)
+	 *
+	 * @retun Array|null the map for the given nren/subscriber
+	 */
 	static function getMap($nren, $subscriber = null)
 	{
 		if (!isset($nren) || $nren == "")
