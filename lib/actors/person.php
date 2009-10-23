@@ -43,7 +43,6 @@ class Person{
     private $entitlement;
 
     private $session;
-    private $saml_config;
 
     private $adminDBError;
 
@@ -101,9 +100,6 @@ class Person{
 	    $this->session = null;
 	    unset($this->session);
 
-	    $this->saml_config = null;
-	    unset($this->saml_config);
-
 	    $this->isAuthenticated = false;
 	    $this->adminDBError = false;
     }
@@ -119,23 +115,6 @@ class Person{
 		    return;
 	    }
 	    $this->session = $session;
-    }
-
-    /**
-     * setSAMLConfiguration() adds a reference to the config
-     *
-     * The configuration contains a lot of useful information, some of which is
-     * directly related to the lifespan of the session.
-     *
-     * @param array The configuration object/array for this session/instance.
-     * @return void
-     */
-    function setSAMLConfiguration($config)
-    {
-	    if (!isset($config)) {
-		    return;
-	    }
-	    $this->saml_config = $config;
     }
 
     /**
@@ -295,17 +274,6 @@ class Person{
 		    return "";
 	    }
 	    return "";
-    }
-
-    /**
-     * getSAMLConfiguration find the configuration for this session
-     *
-     * @param void
-     * @return array the configuration items for the currently active session.
-     */
-    public function getSAMLConfiguration()
-    {
-	return $this->saml_config;
     }
 
     /**
