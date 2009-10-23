@@ -15,6 +15,9 @@ require_once 'confusa_auth.php';
  */
 class Confusa_Auth_IdP extends Confusa_Auth
 {
+	/* hold the Auth_Simple object from SimpleSAMLphp */
+	private $as;
+
 	/**
 	 * Constructor
 	 *
@@ -26,20 +29,17 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		parent::__construct($person);
 
 		/* start a session needed for the IdP-based AuthN approach */
+		$this->as = new SimpleSAML_Auth_Simple('default-sp');
 		$session = SimpleSAML_Session::getInstance();
-		$authority = $session->getAuthority();
-
-		/* if we don't get an authority from the session, just fallback to
-		 * default */
-		if (empty($authority)) {
-			$authority = ConfusaConstants::$DEFAULT_SESSION_AUTHORITY;
-		}
-
 		$this->person->setSession($session);
-		$this->person->setSAMLConfiguration(SimpleSAML_Configuration::getInstance());
 	}
 
 	/**
+	 * authenticateUser() run the current user through authN-hoops
+	 *
+	 * This function will make sure that the user is authenticated. Once
+	 * done, the person will be authenticated and decorated.
+	 *
 	 * Depending on state, do one of the following:
 	 *		- Use the subsystem to perform an IdP authN
 	 *		- Decorate the person object with attributes
@@ -48,22 +48,16 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	{
 		/* is the user authNed according to simplesamlphp */
 		if (!$this->person->isAuth()) {
-			$base_url = $this->person->getSAMLConfiguration()->getBaseURL();
-			$relay = Config::get_config('server_url') . Config::get_config('post_login_page');
-			SimpleSAML_Utilities::redirect('/' . $base_url . 'saml2/sp/initSSO.php',
-										  array('RelayState' => $relay));
-			exit(0);
+			$this->as->requireAuth();
 		}
-
-		$attributes = $this->person->getSession()->getAttributes();
-
+		$attributes = $this->as->getAttributes();
 		if (!isset($attributes['eduPersonPrincipalName'])) {
 			Logger::log_event(LOG_ERROR, "IdP did not send any eduPersonPrincipalName. " .
 							 "The rest of the attributes are " . implode(" ", $attributes));
 			throw new AuthException("Required attribute eduPersonPrincipalName not set!");
 		}
 
-		$this->person->setAuth($this->person->getSession()->isValid());
+		$this->person->setAuth($this->checkAuthentication());
 	}
 
 	/**
@@ -71,13 +65,22 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	 */
 	public function getAttributes()
 	{
-		return $this->person->getSession()->getAttributes();
+		return $this->as->getAttributes();
 	}
 
+	/**
+	 * getAttributeKeys() get the keys used to index the attributes
+	 *
+	 * This will return all the keys for the current attributes except a
+	 * few (those that we create internally in Confusa and ePPN).
+	 * 
+	 * @param void
+	 * @return Array the list of keys used to index the attributes.
+	 */
 	public function getAttributeKeys()
 	{
 		$res = array();
-		$attrs = $this->person->getSession()->getAttributes();
+		$attrs = $this->getAttributes();
 		foreach ($attrs as $key => $value) {
 			switch ($key) {
 			case "country":
@@ -93,49 +96,18 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	}
 
 	/**
-	 * Use the subsystem to perform a single logout (SLO).
+	 * deAuthentcateUser() - Use the subsystem to logout
 	 *
-	 * For those IdPs with which single logout does not work, try to use the
-	 * IdP-specific mechanisms, but fallback on SingleLogout for all other
-	 * scenarios
-	 *
-	 * @param $logout_loc string the location to which the user will be
-	 * redirected after logout
+	 * @param String $logout_loc the location to which the user will be redirected after logout
 	 * @return void
 	 */
 	public function deAuthenticateUser($logout_loc = 'logout.php')
 	{
-
-		$soft=false;
-		$logout_url="";
-
-	    if(isset($this->session)) {
-		    /* adapt to HAKA */
-		    $attribs = $this->session->getAttributes();
-		    if (isset($attribs['urn:mace:funet.fi:haka:logout-url'])) {
-				$soft=true;
-			    $logout_url = $attribs['urn:mace:funet.fi:haka:logout-url'];
-			    $safecounter = 10;
-			    while ($safecounter > 0 && is_array($logout_url)) {
-				    $safecounter -= 1;
-				    $logout_url = $logout_url[0];
-			    }
-		    }
-		    /* Find the redirect-link for surfnet/EduGAIN users */
-	    }
-
-		$this->person->isAuth(false);
-		$base_url = $this->person->getSAMLConfiguration()->getBaseURL();
-		$this->person->clearAttributes();
-
-		/*
-		 * If we are to perform soft logout, a logout_url must be set
-		 */
-		if (!$soft || !isempty($logout_url)) {
-			$relay = Config::get_config('server_url') . $logout_loc;
-			SimpleSAML_Utilities::redirect('/' . $base_url . 'saml2/sp/initSLO.php',
-											array('RelayState' => $relay));
-	    }
+		if ($this->checkAuthentication()) {
+			$this->person->isAuth(false);
+			$this->person->clearAttributes();
+			$this->as->logout(Config::get_config('server_url') . "$logout_loc");
+		}
 	} /* end deAuthenticateUser */
 
 	/**
@@ -146,21 +118,28 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	 */
 	public function checkAuthentication()
 	{
-		$session = SimpleSAML_Session::getInstance();
-		$this->person->setSession($session);
-		$authority = $session->getAuthority();
-
-		if (empty($authority)) {
-			$authority = ConfusaConstants::$DEFAULT_SESSION_AUTHORITY;
+		if (is_null($this->person)) {
+			return false; /* anonymous cannot be AuthN */
+		}
+		if (is_null($this->person->getSession())) {
+			return false; /* no session, thus, we *cannot* be authN */
 		}
 
-		$this->person->setAuth($session->isValid($authority));
+		$session = $this->person->getSession();
+
+		/* authority is normally default-sp, but in case we/someowne ant
+		 * to extend this, use the current authority without reverting
+		 * to hard-coded values. */
+		$this->person->setAuth($session->isValid($session->getAuthority()));
+
+		/* if session is valid, decorate person */
 		if ($this->person->isAuth()) {
-			/* Do not add try-catch here as framework will trigger
-			 * on that and adapt. */
-			$this->decoratePerson($session->getAttributes());
+			$this->decoratePerson($this->as->getAttributes());
+			return true;
 		}
-		return $this->person->isAuth();
-	}
+		/* Session is invalid, thus user is not authN */
+		return false;
+	} /* end checkAuthentication() */
+
 } /* end class IdP */
 ?>
