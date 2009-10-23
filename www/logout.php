@@ -10,28 +10,11 @@ class Logout extends Content_Page
 		parent::__construct("Logout", false);
 	}
 
-	public function pre_process()
+	public function pre_process($person)
 	{
-
-		$sspdir = Config::get_config('simplesaml_path');
-		require_once $sspdir . '/lib/_autoload.php';
-		SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
-
-		if (is_null($this->person)) {
-			$this->person = new Person();
-		}
-
-		$auth = AuthHandler::getAuthManager($this->person);
-
-		$session = SimpleSAML_Session::getInstance();
-		$authority = $session->getAuthority();
-
-		if (empty($authority)) {
-			$authority = ConfusaConstants::$DEFAULT_SESSION_AUTHORITY;
-		}
-
-		if ($session->isValid($authority)) {
-			$auth->deAuthenticateUser('logout.php');
+		parent::pre_process($person);
+		if (!is_null($person)) {
+			AuthHandler::getAuthManager($this->person)->deAuthenticateUser(basename($_SERVER['SCRIPT_NAME']));
 		}
 	}
 
