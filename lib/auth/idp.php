@@ -128,12 +128,18 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		$session = $this->person->getSession();
 		$this->person->setSession($session);
 
-		/* authority is normally default-sp, but in case we/someowne ant
-		 * to extend this, use the current authority without reverting
-		 * to hard-coded values. */
+                /*
+                 * authority is normally default-sp, but in case we/someone want
+                 * to extend this, use the current authority without reverting
+                 * to hard-coded values.
+		 */
+                if (is_null($session->getAuthority())) {
+                        return false; /* cannot get authority for session, thus
+                                       * we cannot be authenticated. */
+                }
 		$this->person->setAuth($session->isValid($session->getAuthority()));
 
-		/* if session is valid, decorate person */
+
 		if ($this->person->isAuth()) {
 			$this->decoratePerson($this->as->getAttributes());
 			return true;
