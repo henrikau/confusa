@@ -153,12 +153,16 @@ function createAdminPerson()
 					    array('text'),
 					    array($cert_res[0]['uploaded_by']));
 	} catch (DBStatementException $dbse) {
-		/* FIXME */
-		echo $dbse->getMessage() . "<br />\n";
+		$msg = "[$log_error_code] Problem executing query. Is the database-schema outdated?. ";
+		Logger::log_message(LOG_INFO, $msg . " Server said: " . $dbse->getMessage());
+		echo $msg . "<br />\nServar said: " . $dbse->getMessage() . "<br />\n";
 		return null;
 	} catch (DBQueryException $dbqe) {
 		/* FIXME */
-		echo $dbqe->getMessage() . "<br />\n";
+		$msg = "Could not find owner-details for certificate, probably issues with supplied data. ";
+		$msg .= "Admin_id: " . $cert_res[0]['uploaded_by'];
+		Logger::log_message(LOG_INFO, $msg . " Server said: " . $dbqe->getMessage());
+		echo $msg . "<br />\nServar said: " . $dbqe->getMessage() . "<br />\n";
 		return null;
 	}
 
