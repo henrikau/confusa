@@ -90,6 +90,12 @@ function assertEnvironment()
  */
 function createAdminPerson()
 {
+	/*
+	 * Once confusa_auth has been extended, this part should be moved into
+	 * that section. Until then, we do the nitty-gritty work here.
+	 */
+
+
 	global $log_error_code;
 	/*
 	 * Find the cert in the robot_cert table
@@ -142,12 +148,15 @@ function createAdminPerson()
 		return null;
 	}
 
-	/* Get the details for the owner of the certificate, use this as a
-	 * basis for authenticating the person */
+	/*
+	 * Get the details for the owner of the certificate, use this as a
+	 * basis for authenticating the person
+	 */
 	try {
 		$query  = "SELECT sa.*, n.name as nren_name FROM ";
 		$query .= "(SELECT s.name as subscriber_name, nren_id, a.* ";
-		$query .= "FROM admins a LEFT JOIN subscribers s ON a.subscriber = s.subscriber_id WHERE admin_id=? AND name iS NOT NULL) ";
+		$query .= "FROM admins a LEFT JOIN subscribers s ON ";
+		$query .= "a.subscriber = s.subscriber_id WHERE admin_id=? AND name iS NOT NULL) ";
 		$query .= "sa LEFT JOIN nrens n ON n.nren_id = sa.nren_id";
 		$res = MDB2Wrapper::execute($query,
 					    array('text'),
@@ -174,7 +183,8 @@ function createAdminPerson()
 		return null;
 	}
 	/*
-	 * Decorate person
+	 * Decorate person.
+	 *
 	 */
 	$person = new Person();
 	if (isset($res[0]['admin_name']) && $res[0]['admin_name'] != "") {
