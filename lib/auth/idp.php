@@ -127,6 +127,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 
 		$session = $this->person->getSession();
 		$this->person->setSession($session);
+		$this->person->setSAMLConfiguration(SimpleSAML_Configuration::getInstance());
 
                 /*
                  * authority is normally default-sp, but in case we/someone want

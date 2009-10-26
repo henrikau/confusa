@@ -19,6 +19,7 @@
 	<tr><td></td><td></td></tr>
 
 	<tr><td><b>Time left</b></td><td>{$timeLeft}</td></tr>
+        <tr><td><b>Time since AuthN</b></td><td>{$timeSinceStart}</td></tr>
 </table><br />
 <hr />
 

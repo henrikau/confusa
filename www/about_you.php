@@ -16,6 +16,7 @@ class CP_AboutYou extends Content_Page
 			$textual = htmlentities($_GET['text']);
 		}
 		$this->tpl->assign('timeLeft', $this->person->getTimeLeft());
+		$this->tpl->assign('timeSinceStart', $this->person->getTimeSinceStart());
 		$this->tpl->assign('textual', $textual);
 		$this->tpl->assign('content', $this->tpl->fetch('about_you.tpl'));
 	}
