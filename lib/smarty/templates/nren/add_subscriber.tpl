@@ -73,7 +73,7 @@
       <tr>
 	<td colspan="2">
 	  <p class="info">
-	    The DN Organization-Name is the name that will appear in the certificate for
+	    The Organization-Name is the name that will appear in the certificate for
 	    the end entities (the users). I.e. it is the string appearing in the /O=...
 	    section of the certificate. This name is subject to certain
 	    restrictions pertaining length, encoding etc.
