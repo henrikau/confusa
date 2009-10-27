@@ -16,7 +16,12 @@
     export to Confusa and should only be used as an absolute last
     resort.
   </p>
-
+  <p class="info">
+    <br />
+    Remember that after you have uploaded your changes, you should list
+    the page one more time to retrieve the latest changes from the
+    database.
+  </p>
   <br />
   <br />
 
