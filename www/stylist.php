@@ -126,7 +126,6 @@ class CP_Stylist extends Content_Page
 				$this->tpl->assign('handle_map',	true);
 				$this->tpl->assign('NRENMap',		AuthHandler::getNRENMap($this->person->getNREN()));
 				$this->tpl->assign('keys',		AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
-				$this->tpl->assign('organization',	$this->person->getSubscriberOrgName());
 				break;
 			default:
 				Framework::error_output("Unsupported operation chosen!");
