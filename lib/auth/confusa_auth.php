@@ -138,6 +138,10 @@ abstract class Confusa_Auth
 			$this->person->setEPPNKey($map['eppn']);
 
 			$this->person->setSubscriberIdPName(trim(stripslashes($attributes[$map['epodn']][0])));
+
+			/*
+			 * Find name of subscriber where the user belongs.
+			 */
 			try {
 				$query  = "SELECT s.dn_name FROM subscribers s ";
 				$query .= "LEFT JOIN nrens n ON n.nren_id = s.nren_id ";
@@ -147,7 +151,21 @@ abstract class Confusa_Auth
 							    array($nren, $this->person->getSubscriberIdPName()));
 				if (count($res) == 1) {
 					$this->person->setSubscriberOrgName($oPrefix . $res[0]['dn_name']);
+				} else if ($this->person->isNRENAdmin()) {
+					/* not found, but user is NREN-admin so
+					 * he/she should be allowed to continue
+					 * and add the subscriber.
+					 */
+					$msg  = "You are not connected to any subscriber. As an NREN-admin, ";
+					$msg .= "you should start out with adding your own subscriber:<br /><br />\n";
+					$msg .= "<i><center>". $this->person->getSubscriberIdPName();
+					$msg .= "</i></center><br /><br />\n";
+					$msg .= "<center>Go <a href=\"nren_admin.php?mode=admin&target=add\">here</a> ";
+					$msg .= "to add the subscriber.</center>\n";
+					Framework::error_output($msg);
 				} else {
+					/* subscriber not set, user cannot
+					 * influence state of subscriber. */
 					$msg  = "Cannot find subscriberOrgName in the database. Cannot continue.<br />";
 					$msg .= "This normally indicates that your subscriber (raw_name: ";
 					$msg .= $this->person->getSubscriberIdPName() . ") ";
