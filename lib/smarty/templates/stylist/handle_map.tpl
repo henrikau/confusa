@@ -59,7 +59,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td>{$person->getSubscriberOrgName()}</td>
+	<td>{$person->getSubscriberIdPName()}</td>
       </tr>
 
 
