@@ -107,8 +107,3 @@ function createIEXPRequest(dn, keysize)
 {/if}
 </script>
 
-{* This part will be JavaScript or another script executable by the browser (ActiveX?) *}
-{if isset($deployment_script)}
-	{$deployment_script}
-{/if}
-
