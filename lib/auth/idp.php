@@ -28,6 +28,17 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	{
 		parent::__construct($person);
 
+		/* Find the path to simpelsamlphp and run the autoloader */
+		try {
+			$sspdir = Config::get_config('simplesaml_path');
+		} catch (KeyNotFoundException $knfe) {
+			echo "Cannot find path to simplesaml. This install is not valid. Aborting.<br />\n";
+			Logger::log_event(LOG_ALERT, "Tryging to instansiate SimpleSAMLphp without a configured path.");
+			exit(0);
+		}
+		require_once $sspdir . '/lib/_autoload.php';
+		SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
+
 		/* start a session needed for the IdP-based AuthN approach */
 		$this->as = new SimpleSAML_Auth_Simple('default-sp');
 		$session = SimpleSAML_Session::getInstance();

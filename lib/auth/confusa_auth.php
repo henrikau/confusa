@@ -4,27 +4,21 @@ require_once 'person.php';
 require_once 'confusa_config.php';
 require_once 'config.php';
 
-if (!Config::get_config('auth_bypass')) {
-	$sspdir = Config::get_config('simplesaml_path');
-	require_once $sspdir . '/lib/_autoload.php';
-	SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
-}
-
 require_once 'MapNotFoundException.php';
 
 /**
  * Confusa_Auth - base class for all authentication managers
  *
  * Classes providing authN are supposed to implement:
+ *
  * 		- authenticateUser()
- *
  * 		- checkAuthentication()
- *
  *		- getAttributeKeys()
- *
  * 		- deAuthenticateUser()
- *
  *		- softLogout()
+ *
+ * Subclasses should also use decoratePerson() when a new user has been
+ * Authenticated.
  */
 abstract class Confusa_Auth
 {
@@ -340,6 +334,7 @@ class AuthHandler
 				require_once 'bypass.php';
 				AuthHandler::$auth = new Confusa_Auth_Bypass($person);
 			} else {
+				/* Start the IdP and create the handler */
 				require_once 'idp.php';
 				AuthHandler::$auth = new Confusa_Auth_IdP($person);
 			}
