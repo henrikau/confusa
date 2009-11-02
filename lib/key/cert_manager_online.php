@@ -643,7 +643,7 @@ class CertManager_Online extends CertManager
                                 "&responseEncoding=2" . /* encode in Javascript */
                                 "&responseMimeType=text/javascript" .
                                 /* call that function after the JS variable-declarations */
-                                "&callbackFunctionName=installCertificate";
+                                "&callbackFunctionName=installIEVistaCertificate";
 
 			$data = CurlWrapper::curlContact($collect_endpoint);
             return "<script type=\"text/javascript\">$data</script>";
@@ -659,7 +659,7 @@ class CertManager_Online extends CertManager
                                 "&responseEncoding=2" . /* encode in Javascript */
                                 "&responseMimeType=text/javascript" .
                                 /* call that function after the JS variable-declarations */
-                                "&callbackFunctionName=installCertificate";
+                                "&callbackFunctionName=installIEXPCertificate";
 
 			$data = CurlWrapper::curlContact($collect_endpoint);
             return "<script type=\"text/javascript\">$data</script>";

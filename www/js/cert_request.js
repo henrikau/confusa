@@ -73,26 +73,3 @@ function installIEXPCertificate()
 		" this browser?");
     }
 }
-
-/**
- * Import the certificate
- * Note that this expects the certificate to be in a format already known to
- * the browser, like for instance JavaScript
- */
-function installCertificate()
-{
-
-	if (navigator.userAgent.indexOf("MSIE") > -1) {	/* Internet explorer */
-		if (navigator.userAgent.indexOf("Windows NT 5.") == -1) { /* Windows Vista and later */
-			installIEVistaCertificate();
-		} else {
-			installIEXPCertificate();
-		}
-	} else {
-		alert("Your browser is currently not supported.\nSupported browsers:\nFirefox/Mozilla" +
-			"IE (XP, Vista, Windows 7)\n" +
-			"Safari, Opera");
-		return false;
-	}
-
-}
