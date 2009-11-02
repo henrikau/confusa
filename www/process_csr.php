@@ -67,7 +67,6 @@ final class CP_ProcessCsr extends Content_Page
 			}
 		}
 
-
 		if (isset($_POST['browserRequest'])) {
 			$request = trim($_POST['browserRequest']);
 			$request = str_replace(array("\n","\r"),array('',''),$request);
@@ -101,15 +100,22 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('sign_csr', htmlentities($_GET['sign_csr']));
 		}
 
-		$browser_adapted_dn = $this->person->getBrowserFriendlyDN();
-		$this->tpl->assign('dn',		$browser_adapted_dn);
-		$this->tpl->assign('keysize',		Config::get_config('key_length'));
 		$this->tpl->assign('inspect_csr',	$this->tpl->fetch('csr/inspect_csr.tpl'));
 		$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
 		$this->tpl->assign('list_all_csr',	$this->tpl->fetch('csr/list_all_csr.tpl'));
 		if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_user'))) {
 			$this->tpl->assign('user_cert_enabled', true);
 		}
+
+				/* set the browser signing variables only if browser signing is enabled */
+		if (isset($_POST['browserSigning']) || isset($_GET['status_poll'])) {
+			$browser_adapted_dn = $this->person->getBrowserFriendlyDN();
+			$this->tpl->assign('dn',				$browser_adapted_dn);
+			$this->tpl->assign('keysize',			Config::get_config('key_length'));
+			$browserTemplate = $this->dispatchBrowserTemplate();
+			$this->tpl->assign('browserTemplate',	$browserTemplate);
+		}
+
 		$this->tpl->assign('upload_csr_file',	$this->tpl->fetch('csr/upload_csr_file.tpl'));
 		$this->tpl->assign('content',		$this->tpl->fetch('csr/process_csr.tpl'));
 	}
@@ -330,6 +336,32 @@ final class CP_ProcessCsr extends Content_Page
 			$res[$key]['from_ip'] = format_ip($value['from_ip'], true);
 		}
 		return $res;
+	}
+
+	/**
+	 * Show the right template for the browser of the user
+	 */
+	private function dispatchBrowserTemplate()
+	{
+		$ua = getUserAgent();
+
+		switch($ua) {
+		case "msie_post_vista":
+			return $this->tpl->fetch("browser_csr/vista7.tpl");
+			break;
+		case "msie_pre_vista":
+			return $this->tpl->fetch("browser_csr/xp2003.tpl");
+			break;
+		case "keygen":
+			return $this->tpl->fetch("browser_csr/keygen.tpl");
+			break;
+		case "other":
+			return $this->tpl->fetch("browser_csr/unsupported.tpl");
+			break;
+		default:
+			return $this->tpl->fetch("browser_csr/unsupported.tpl");
+			break;
+		}
 	}
 
 }
