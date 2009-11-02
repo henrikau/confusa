@@ -96,8 +96,7 @@ class Framework {
 			$this->renderError = true;
 			return;
 		}
-		/* get the updated person object back from the authentication framework */
-		$this->person = $auth->getPerson();
+
 		/* show a warning if the person does not have Confusa entitlement and ConfusaAdmin entitlement */
 		if ($this->person->isAuth()) {
 			if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_user')) == false) {

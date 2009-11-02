@@ -40,16 +40,6 @@ abstract class Confusa_Auth
 	}
 
 	/**
-	 * Get the person object associated with this authN class
-	 *
-	 * @return the person member of this class
-	 */
-	public function getPerson()
-	{
-		return $this->person;
-	}
-
-	/**
 	 * decoratePerson - get the supplied attributes and add to the correct
 	 * fields in person
 	 *
