@@ -36,7 +36,9 @@ To install Confusa
 
      libapache2-php5
      php5-mysql
-     PEAR::MDB2_mysql_driver
+     PEAR::MDB2_mysql_driver (note: pear and MDB2_Mysql_Driver is
+			      available through the backports, but we
+			       refrain from using this here).
 
 3 b) When using online, you will also need the mcrypt and curl libraries:
 
@@ -46,20 +48,24 @@ To install Confusa
 3 c) When in standalone, you will need to configure the CA aspect slightly.
      One thing is to generate the key and certificate for the CA operation.
 
-     One alternative is to just use the apache SSL-keys, generating this
+     An alternative is to just use the apache SSL-keys, generating this
      is really left as an exercise for the reader.
      The ca_* elements in the config/confusa_config.php must be set.
 
+     The, to make sure that the uploaded keys are not vulnerable, you
+     will need the blacklist-package:
 
      openssl-blacklist
 
 4) Configure Apache to use SSL, use the following lines in your
    apache2/sites-enabled/appropriate.config.file and php5-openssl
+   (you will have to add Confsua-specific settings, see 6b for
+   details).
 
 # Redirect http to https
 <VirtualHost your.host.org:80>
         Servername your.server.org
-        Redirect permanent / https://your.host.org
+        Redirect permanent / https://your.host.org/
 </VirtualHost>
 
 <VirtualHost your.host.org:443>
@@ -70,57 +76,68 @@ To install Confusa
         SSLVerifyClient optional_no_ca
         SSLVerifyDepth 10
         SSLOptions +StdEnvVars +ExportCertData
-        SSLCertificateFile /etc/apache2/ssl/slcstest.crt
-        SSLCertificateKeyFile /etc/apache2/ssl/slcstest.key
+        SSLCertificateFile /etc/apache2/ssl/your_host.crt
+        SSLCertificateKeyFile /etc/apache2/ssl/your_host.key
 
 	...
 </VirtualHost>
 
-Note that ServerName can be the same as the host-name in VirtualHost.
-Make sure you create the folder /etc/apache2/ssl/ as the create-ca.sh
-will put hostkeys there for you (a self-signed certificate, you should
-get a properly signed certificate for any production-grade instances of
-Confusa!).
 
-Alternatively, if you don't want to use this script, put the
-key/certificate in the folder of your choice and configure the 2 lines
-in the given config-file.
-
-Finally, this is a *sample* configuration. If you know your way around
-an Apache configuration, this should be more of a guideline than
-anything else.
+This is a *sample* configuration. If you know your way around an Apache
+configuration, this should be more of a guideline than anything else.
 
 5) simpleSAMLphp
-   confusa uses simpleSAMLphp to handle AuthN, and thus, you should
+   Confusa uses simpleSAMLphp to handle AuthN, and thus, you should
    configure simpleSAMLphp before venturing on.
 
-   http://rnd.feide.no contains excellent guides on how to configure
-   simpelSAMLphp, and is required reading.
+   http://rnd.feide.no/view/simplesamlphpdocs
 
-   IN saml20-sp-hosted.php, let the __DYNAMIC:1-entry from template
-   stay, but add the custom Authentication Processing Filters for Confusa:
+   Contains excellent guides on how to configure simpelSAMLphp, and is
+   *required* reading.
 
-   'authproc' => array(
-        61 => 'core:CountryMap',
-        62 => 'core:CharacterMap',
-	63 => 'core:NRENMap',
-    ),
-    'ForceAuthn'	 => true
+   In simpleSAMLphp's config/config.php you should also add the custom
+   Authentication Processing Filters for Confusa. This is done in the
+   authproc.sp-section of the file:
 
-   You will have to either copy or symlink these into
-	simplesamlphp/modules/core/lib/Auth/
-   like this:
+   'authproc.sp' => array(
+      ...
+      62 => array( 'class' => 'core:CountryMap'),
+      63 => array( 'class' => 'core:NRENMap'),
+      ...
+   ),
+
+   You will have to either copy or symlink these into the core part of
+   SimpleSAMLphp:
+
 	ln -s /var/www/confusa/include/CountryMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CountryMap.php
-	ln -s /var/www/confusa/include/CharacterMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CharacterMap.php
 	ln -s /var/www/confusa/include/NRENMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/NRENMap.php
 
-6) Install and configure Confusa:
+   When this is done, configure config/authsources.php as described in
 
-a) Put Confusa in a directory, say /var/www/confusa/
+	http://rnd.feide.no/content/using-simplesamlphp-service-provider
 
-b) Configure Apache with something along the following line:
+   Until IdP discovery will be implemented in simplesamlphp's SAML2
+   module, the IdP must be hardcoded in the configuration. E.g. add/edit
+   the following line to <simplesamlphp-dir>/config/authsources.php:
 
-   For the normal webservice:
+   'saml2' => array(
+            'saml2:SP',
+            'idp' => 'https://exampleidp.example.com',
+	    /* fill in other values found via the documentation */
+	    ),
+
+    Bear in mind that the IdP with which you wish to establish the above
+    trust relationship needs to accept the metadata of the saml2 module
+    on your side, not only your standard metadata.
+
+
+6) Install and configure Confusa
+
+   a) Put Confusa in a directory, say /var/www/confusa/
+
+   b) Configure Apache with something along the following line:
+
+      For the normal webservice:
 
              Alias /confusa "/var/www/confusa/www/"
 	     Alias /simplesaml "/var/www/simplesamlphp/www/"
@@ -149,12 +166,9 @@ b) Configure Apache with something along the following line:
    present, but you will save some extra cycles by setting Apache to
    handle this.
 
-   Then reload the config: /etc/init.d/apache2 reload (or httpd (or
-   other relevant name for apache - consult your distro's documentation)
-   and reaload.
+   Then reload apache:
 
-   This will enable your host to show the www directory of the
-   confusa-folder.
+	/etc/init.d/apache2 reload (or httpd (or
 
 c) Configure the confusa_config.php file (copy the
    confusa_config_template.php and modify with values that makes sense
@@ -176,59 +190,51 @@ f) Add a cron-job that takes backup of the database. The most critical
    A sample script lies in confusa/programs. Note that this is a simple
    mysqldump script that dumps the database specified in confusa_config
 
-7) If you want NREN-admins to be able to customize the appearance of Confusa,
-you have to give the apache user write permissions to the "custom" folders in
-www/css and www/graphics. The apache user is often called 'www-data', sometimes
-also 'apache' or something else.
-If you are unsure about the user-name and have apache running, try to find it
-out by executing
+7) If you want NREN-admins to be able to customize the appearance of
+   Confusa, you have to give the apache user write permissions to the
+   "custom" folders:
 
-ps aux | grep apache | awk '{print $1}'
-or
-ps aux | grep httpd | awk '{print $1}'
+	- www/css
+	- www/graphics.
 
-If your apache username is www-data, execute
+   The apache user is often called 'www-data', sometimes also 'apache2'
+   or something else.  If you are unsure about the username and have
+   apache running, try to find it out by executing
 
-chown -R www-data /usr/share/confusa/www/css/custom
-chown -R www-data /usr/share/confusa/www/graphics/custom
-chmod -R 0755 /usr/share/confusa/www/css/custom
-chmod -R 0755 /usr/share/confusa/www/graphics/custom
+	ps aux | grep -e "apache" -e "http" | awk '{print $1}'
+
+   If your apache username is www-data, execute
+
+   chown -R www-data /usr/share/confusa/www/css/custom
+   chown -R www-data /usr/share/confusa/www/graphics/custom
+   chmod -R 0755 /usr/share/confusa/www/css/custom
+   chmod -R 0755 /usr/share/confusa/www/graphics/custom
 
 8) Test and verify that the system is operational before you allow
    public access.
 
-9*) Enable OAuth authorization for third party applications. OAuth has the
-advantage that Confusa-based non-browser applications won't need to maintain cookies any more
-and that it protects against replay attacks. Simplesamlphp supports OAuth in more recent versions.
+=== Optional ===
 
-In order to enable OAuth in Confusa, it must first be enabled in simplesamlphp. chdir to the OAuth
-module directory (<simplesaml-dir>/modules/oauth/ and create a file named enable there, e.g. by executing "touch enable".
+9*) Enable OAuth authorization for third party applications. OAuth has
+    the advantage that Confusa-based non-browser applications won't need
+    to maintain cookies any more and that it protects against replay
+    attacks. Simplesamlphp supports OAuth in more recent versions.
 
-OAuth uses the SAML2 AuthN module for the authentication phase. Hence, make sure that that module is enabled
-as well (see <simplesaml-dir>/modules/saml2) and add a metadata-entry for it in <simplesaml-dir>/metadata/saml2-sp.hosted.php.
-You can just copy the default one, yielding for instance:
+    Another application for OAuth is the planned server-to-server
+    backend communication channel. Since we are dealing with
+    user-credentials, it is important that this channels is
+    - secure
+    - short lived
+    - approved by the user
 
-'https://slcs.example.com/simplesaml/module.php/saml2/sp/metadata.php?source=saml2' => array(
-  'host'  => '__DEFAULT__',
-  'authproc' => array(
-    50 => 'core:NRENMap',
-    60 => 'core:ConfusaAttributeMap',
-    61 => 'core:CountryMap'
-  ),
-  'ForceAuthn' => true
-)
+    In order to enable OAuth in Confusa, it must first be enabled in
+    simplesamlphp.
 
-Until IdP discovery will be implemented in simplesamlphp's SAML2 module, the IdP must be hardcoded in the configuration. E.g. add/edit
-the following line to <simplesamlphp-dir>/config/authsources.php:
+    touch <simplesaml-dir>/modules/oauth/enable
 
-'saml2' => array(
-            'saml2:SP',
-            'idp' => 'https://exampleidp.example.com',
-),
+    OAuth uses the SAML2 AuthN module for the authentication
+    phase. This should have been done at step 5.
 
-Bear in mind that the IdP with which you wish to establish the above trust relationship needs to accept the metadata of the
-saml2 module on your side, not only your standard metadata. And OAuth may oblige you to create a directory /tmp/oauth with write
-permissions for the webserver-process, which it will use as a token store.
-
-
-*) optional
+    OAuth may oblige you to create a directory /tmp/oauth with write
+    permissions for the webserver-process, which it will use as a token
+    store.
