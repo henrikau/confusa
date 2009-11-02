@@ -130,15 +130,22 @@ function getUserAgent()
 {
 	$userAgent=$_SERVER['HTTP_USER_AGENT'];
 
-	if (strstr(strtolower($userAgent), "msie")) {
-		if (strstr(strtolower($userAgent), "Windows NT 5.")) {
+	/* Chrome sends both "AppleWebKit" and "like Gecko", but does not support
+	 * keygen
+	 */
+	if (stripos($userAgent, "chrome") !== FALSE) {
+		return "other";
+	}
+
+	if (stripos($userAgent, "msie") !== FALSE) {
+		if (stripos($userAgent, "windows NT 5.") !== FALSE) {
 			return "msie_pre_vista";
 		} else {
 			return "msie_post_vista";
 		}
-	} else if (strstr(strtolower($userAgent), "applewebkit") ||
-				strstr(strtolower($userAgent), "opera") ||
-				strstr(strtolower($userAgent), "firefox")) {
+	} else if (stripos($userAgent, "applewebkit") !== FALSE ||
+				stripos($userAgent, "opera") !== FALSE ||
+				stripos($userAgent, "gecko") !== FALSE) {
 			return "keygen";
 	} else {
 		return "other";
