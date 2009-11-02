@@ -186,10 +186,6 @@ class CertManager_Online extends CertManager
         /* FIXME: Recognize IE format, that is PKCS10 */
 
         switch($browser) {
-        case "firefox":
-            $this->_capi_upload_CSR($auth_key, $csr, 'crmf');
-            break;
-
         case "msie_post_vista":
             $this->_capi_upload_CSR($auth_key, $csr, 'csr');
             break;
@@ -615,24 +611,6 @@ class CertManager_Online extends CertManager
         $key = $this->_transform_to_order_number($key);
 
         switch ($browser) {
-        case "firefox":
-            /* if the generating software of the request was firefox, export the
-             * certificate in CMMF format embedded in JavaScript */
-            $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
-                                "?loginName=" . $this->login_name .
-                                "&loginPassword=" . $this->login_pw .
-                                "&orderNumber=" . $key .
-                                "&queryType=1" .
-                                "&responseType=4" . /* CMMF */
-                                "&responseEncoding=2" . /* encode in Javascript */
-                                "&responseMimeType=text/javascript" .
-                                /* call that function after the JS variable-declarations */
-                                "&callbackFunctionName=installCertificate";
-
-			$data = CurlWrapper::curlContact($collect_endpoint);
-            return "<script type=\"text/javascript\">$data</script>";
-            break;
-
         case "msie_post_vista":
             $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
                                    "?loginName=" . $this->login_name .
