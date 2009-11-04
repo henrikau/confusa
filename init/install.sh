@@ -896,29 +896,6 @@ function perform_postinstallation_steps
 		postinstall_standalone $custom_apache_user $install_path
 	fi # standalone handling
 
-
-	echo ""
-	echo "Do you want the Confusa setup to install simplesamlphp metadata (y/n)?"
-	get_user_alternative "(If you have modified the metadata before, changes will be overwritten): "
-
-	if [ $answer = "y" ]; then
-		echo "Writing metadata to ${custom_simplesaml_path}/metadata/saml20-sp-hosted.php"
-		cat > ${simplesaml_path}/metadata/saml20-sp-hosted.php <<EOF
-<?php
-	\$metadata = array(
-		'__DYNAMIC:1__' => array(
-				'host'  => '__DEFAULT__',
-				'authproc' => array(
-					60 => 'core:NRENMap',
-					61 => 'core:CharacterMap'
-				 ),
-				'ForceAuthn' => true,
-		),
-	);
-?>
-EOF
-	fi
-
 	# TODO: add in that order, once NREN bootstrapping exists:
 	#		bootstrapNREN
 	#		bootstrapAdmin
