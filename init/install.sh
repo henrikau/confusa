@@ -771,39 +771,44 @@ function perform_postinstallation_steps
 
 	cd ../init/
 
-	if [ ! -f "/root/mysql_root.pw" ]; then
-		TMPFILE="/root/mysql_root.pw"
+	# only populate the database if that has not already been done by dbconfig
+	if [ ! -f $dbconfig_template ]; then
+		if [ ! -f "/root/mysql_root.pw" ]; then
+			TMPFILE="/root/mysql_root.pw"
 
-		while [ -z $mysql_root_password ]; do
-			echo "Please specify the MySQL root password, so the installer can"
-			echo -n "bootstrap the MySQL-database: "
-			stty -echo
-			read mysql_root_password
-			stty echo
-			echo ""
+			while [ -z $mysql_root_password ]; do
+				echo "Please specify the MySQL root password, so the installer can"
+				echo -n "bootstrap the MySQL-database: "
+				stty -echo
+				read mysql_root_password
+				stty echo
+				echo ""
 
-			# Test if the user specified the correct password
-			mysql -u'root' -p${mysql_root_password} -hlocalhost -e "use mysql"
-			res=$?
+				# Test if the user specified the correct password
+				mysql -u'root' -p${mysql_root_password} -hlocalhost -e "use mysql"
+				res=$?
 
-			if [ $res -ne 0 ]; then
-				mysql_root_password=""
-			fi
-		done
+				if [ $res -ne 0 ]; then
+					mysql_root_password=""
+				fi
+			done
 
-		echo $mysql_root_password > $TMPFILE
-	fi
+			echo $mysql_root_password > $TMPFILE
+		fi
 
-	echo "Wrote mysql_root password temporarily to /root/mysql_root.pw. "
-	echo "If mysql-execution fails, please delete that file manually."
-	sh create_database.sh --delete_user
-	res=$?
-	rm $TMPFILE
+		echo "Wrote mysql_root password temporarily to /root/mysql_root.pw. "
+		echo "If mysql-execution fails, please delete that file manually."
+		sh create_database.sh --delete_user
+		res=$?
+		rm $TMPFILE
 
-	if [ ! $res -eq 0 ]; then
-		echo "Failed populating the DB!"
-		perror $res
-		exit $res
+		if [ ! $res -eq 0 ]; then
+			echo "Failed populating the DB!"
+			perror $res
+			exit $res
+		fi
+	else
+		echo "DB has already been populated by dbconfig-common, skipping..."
 	fi
 
 	echo ""
