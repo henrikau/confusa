@@ -22,6 +22,8 @@ fi
 constants="../lib/confusa_constants.php"
 config_template=${prefix}"confusa_config_template.php"
 working_template="/tmp/.confusa_wrk_template"
+# The template written by the debian configuration helper dbconfig-common
+dbconfig_template="/etc/confusa/confusa_config.inc.php"
 config=${prefix}"confusa_config.php"
 
 # Call this function for simple yes/no questions with the questions as an argument
@@ -397,73 +399,79 @@ function configure_confusa_settings
 
 	echo ""
 
-	# Configure the mysql username
-	##############################################################################
-	mysql_username=`grep "'mysql_username'" $working_template | cut -d '=' -f 2 \
-			| cut -d "'" -f 2`
+	# Skip the DB-name, host, username and password configuration, if a config
+	# file has been written by dbconfig-common
+	if [! -f $dbconfig_template ]; then
+		# Configure the mysql username
+		##############################################################################
+		mysql_username=`grep "'mysql_username'[^]]" $working_template | cut -d '=' -f 2 \
+				| cut -d "'" -f 2`
 
-	echo -n "The user-name for accessing the MySQL-DB [$mysql_username]: "
-	read custom_mysql_username
+		echo -n "The user-name for accessing the MySQL-DB [$mysql_username]: "
+		read custom_mysql_username
 
-	if [ -z $custom_mysql_username ]; then
-		custom_mysql_username=$mysql_username
-	fi
+		if [ -z $custom_mysql_username ]; then
+			custom_mysql_username=$mysql_username
+		fi
 
-		replace_config_entry "mysql_username" $custom_mysql_username
+			replace_config_entry "mysql_username" $custom_mysql_username
+			echo ""
+
+		# Configure the mysql password
+		###############################################################################
+		have_pwgen=`which pwgen`
+
+		if [ "$?" -eq "0"  ]; then
+			echo "Generating mysql password with pwgen..."
+			mysql_password=`pwgen -1 -n 12 -s`
+		fi
+
+		if [ -z $have_pwgen ] || [ ! $? -eq 0 ]; then
+			while [ -z $mysql_password ]; do
+				echo "Please specify a password for the user $custom_mysql_username "
+				echo -n "for MySQL:"
+				stty -echo
+				read mysql_password
+				stty echo
+				echo ""
+			done
+		fi
+
+		replace_config_entry "mysql_password" $mysql_password
 		echo ""
 
-	# Configure the mysql password
-	###############################################################################
-	have_pwgen=`which pwgen`
+		# Configure the mysql-host
+		################################################################################
+		mysql_host=`grep "'mysql_host'[^]]" $working_template | cut -d '=' -f 2 \
+				| cut -d "'" -f 2`
 
-	if [ "$?" -eq "0"  ]; then
-		echo "Generating mysql password with pwgen..."
-		mysql_password=`pwgen -1 -n 12 -s`
-	fi
+		echo -n "The host on which mysql is to run [$mysql_host]: "
+		read custom_mysql_host
 
-	if [ -z $have_pwgen ] || [ ! $? -eq 0 ]; then
-		while [ -z $mysql_password ]; do
-			echo "Please specify a password for the user $custom_mysql_username "
-			echo -n "for MySQL:"
-			stty -echo
-			read mysql_password
-			stty echo
-			echo ""
-		done
-	fi
+		if [ -z $custom_mysql_host ]; then
+			custom_mysql_host=$mysql_host
+		fi
 
-	replace_config_entry "mysql_password" $mysql_password
-	echo ""
+		replace_config_entry "mysql_host" $custom_mysql_host
+		echo ""
 
-	# Configure the mysql-host
-	################################################################################
-	mysql_host=`grep "'mysql_host'" $working_template | cut -d '=' -f 2 \
-			| cut -d "'" -f 2`
+		# Configure the mysql-DB-name
+		###############################################################################
+		mysql_db=`grep "'mysql_db'[^]]" $working_template | cut -d '=' -f 2 \
+				| cut -d "'" -f 2`
 
-	echo -n "The host on which mysql is to run [$mysql_host]: "
-	read custom_mysql_host
+		echo -n "Enter DB (name) which should be used for Confusa [$mysql_db]: "
+		read custom_mysql_db
 
-	if [ -z $custom_mysql_host ]; then
-		custom_mysql_host=$mysql_host
-	fi
+		if [ -z $custom_mysql_db ]; then
+			custom_mysql_db=$mysql_db
+		fi
 
-	replace_config_entry "mysql_host" $custom_mysql_host
-	echo ""
-
-	# Configure the mysql-DB-name
-	###############################################################################
-	mysql_db=`grep "'mysql_db'" $working_template | cut -d '=' -f 2 \
-			| cut -d "'" -f 2`
-
-	echo -n "Enter DB (name) which should be used for Confusa [$mysql_db]: "
-	read custom_mysql_db
-
-	if [ -z $custom_mysql_db ]; then
-		custom_mysql_db=$mysql_db
-	fi
-
-	replace_config_entry "mysql_db" $custom_mysql_db
-	echo ""
+		replace_config_entry "mysql_db" $custom_mysql_db
+		echo ""
+	else
+		echo "Using database settings written by dbconfig-common..."
+	fi # dbconfig-template exists
 
 	# Configure the mysql-backup dir
 	###############################################################################

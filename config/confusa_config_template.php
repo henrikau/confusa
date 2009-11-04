@@ -255,4 +255,25 @@ $confusa_config = array(
 	 */
 	'valid_install'		=> false
 	);
+
+	/*
+	 * config flag overrides made by dbconfig_common (or any other install-time
+	 * autoconfiguration tool, for that matter)
+	 */
+	@include_once 'confusa_config.inc.php';
+	if (isset($dbuser)) {
+		$confusa_config['mysql_username'] = $dbuser;
+	}
+
+	if (isset($dbpass)) {
+		$confusa_config['mysql_password'] = $dbpass;
+	}
+
+	if (isset($dbname)) {
+		$confusa_config['mysql_db'] = $dbname;
+	}
+
+	if (isset($dbhost)) {
+		$confusa_config['mysql_host'] = $dbhost;
+	}
 ?>
