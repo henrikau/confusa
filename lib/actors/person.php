@@ -365,9 +365,9 @@ class Person{
 	    return $this->eppnKey;
     }
 
-    /** getX509ValidCN()  get a valid /CN for a X.509 /DN
+    /** getX509ValidCN()  get a valid /CN for an X.509 /DN
      *
-     * This will return the CommonName-attribute in a X.509 certificate
+     * This will return the CommonName-attribute in an X.509 certificate
      * subject. As not all characters are printable, this function will also
      * strip these away, possibly altering the expected content slightly.
      *
