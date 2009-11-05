@@ -88,6 +88,10 @@
 <ul>
   <li><a href="about_nren.php">About</a></li>
   <li><a href="help.php">Help</a></li>
+
+  {if $person->isAdmin()}
+		<li><a href="about_confusa.php">Version</a></li>
+  {/if}
 </ul>
 
 
