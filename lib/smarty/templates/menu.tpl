@@ -31,7 +31,9 @@
 
   {if $is_online === TRUE}
   <li><a href="accountant.php">CA Account</a></li>
+</ul>
   {else}
+</ul>
   <br />
   {/if}{* online *}
 
@@ -43,15 +45,19 @@
 <ul>
   <li><a href="robot.php">Robot</a></li>
   <li><a href="nren_subs_settings.php">Settings</a></li>
+</ul>
 {else}
 <br />
 <br />
+{/if} {* type admin *}
+
   <ul>
-  {/if} {* type admin *}
   <li><a href="admin.php">Admins</a></li>
+  </ul>
   <br />
+  <ul>
   <li><a href="revoke_certificate.php">Revocation</a></li>
-</ul>
+  </ul>
 
 {/if} { * Mode *}
 
@@ -67,7 +73,9 @@
   {elseif $person->isAdmin()}
   <li><a href="index.php?mode=normal">Normal mode</a></li>
   {else}
+  </ul>
   <br />
+  <ul>
   {/if}
 
   <li><a href="about_you.php">About you</a></li>
