@@ -25,7 +25,7 @@
 
 We store very little information. What we do keep, is information about
 certificates issued, combined with the <a
-href=http://rnd.feide.no/attribute/edupersonprincipalname"">eduPersonPrincipalName</a>. This
+href="http://rnd.feide.no/attribute/edupersonprincipalname">eduPersonPrincipalName</a>. This
 is part of the DN in the certificate (it is the unique identifier for
 <i>you</i> in the namespace of your organization), and we <b>have</b> to
 store this.<br />
