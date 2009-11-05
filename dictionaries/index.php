@@ -2,7 +2,7 @@
 $lang = array(
 	'index_summary_line1' => array(
 		'alig' => 'Confusa iz da system dat maps da federated identity into da x.509 certificate.',
-		'en' => 'Confusa is a system that maps a federated identity into a X.509 certificate.',
+		'en' => 'Confusa is a system that maps a federated identity into an X.509 certificate.',
 		'de' => 'Confusa ist ein System, welches eine föderierte Identität auf ein X.509 Zertifikat abbildet.',
 		'sv' => 'Confusa är ett system, som skapper en X.509 certifikat av ett federerad identitet.',
 		'lb' => 'Confusa ass ee System fir federéiert Identitéiten op ee X.509 Zertifikat ofzebillen.',
@@ -32,7 +32,7 @@ $lang = array(
 
 	'index_summary_line3' => array(
 		'alig' => 'Da turf institushun iz gonna relay informashun about yous (name, hemail, organization) to confusa. dis informashun an\' ya certificate request iz gonna permit confusa an\' da backend online-ca to issue da x.509 certificate to yous.',
-		'en' => 'The home institution will relay information about you (name, email, organization) to Confusa. This information and your certificate request will permit Confusa and a backend Online-CA to issue a X.509 certificate to you.',
+		'en' => 'The home institution will relay information about you (name, email, organization) to Confusa. This information and your certificate request will permit Confusa and a backend Online-CA to issue an X.509 certificate to you.',
 	),
 
 	'index_faq_heading1' => array(
