@@ -59,7 +59,7 @@
 	</td>
       </tr>
       {if isset($foundUniqueName)}
-		<tr><td></td><td>(<i>e.g.: {$foundUniqueName}</i>)</td></tr>
+		<tr><td></td><td style="font-size: 0.8em; font-style: italic">e.g.: {$foundUniqueName}</td></tr>
 	{/if}
 	  <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2"><hr /></td></tr>
@@ -122,18 +122,40 @@
 	<td><font color="gray"><i>Contact email:</i></font></td>
 	<td><input type="text" name="subscr_email" /></td>
       </tr>
+      <tr><td></td><td>
+      <span style="font-size: 0.8em; font-style: italic">
+		e.g. support team's mail address
+      </span></td>
       <tr>
 	<td><font color="gray"><i>Contact phone:</i></font></td>
 	<td><input type="text" name="subscr_phone" /></td>
+      </tr>
+      <tr><td></td><td>
+      <span style="font-size: 0.8em; font-style: italic">
+        e.g. support's phone number
+      </span>
+      </td>
       </tr>
       <tr>
 	<td><font color="gray"><i>Responsible Person:</i></font></td>
 	<td><input type="text" name="subscr_responsible_name"/>
       </tr>
       <tr>
+      <td></td>
+      <td style="font-size: 0.8em; font-style: italic">
+		technical contact - not end user support
+      </td>
+      </tr>
+      <tr>
 	<td><font color="gray"><i>Responsible's email:</i></font></td>
 	<td><input type="text" name="subscr_responsible_email" /></td>
       </tr>
+      <tr>
+      <td></td><td>
+      <span style="font-size: 0.8em; font-style: italic">
+        technical contact mail
+      </span>
+      </td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2"><hr /></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>

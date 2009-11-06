@@ -76,38 +76,44 @@
     <form action="" method="post">
     <table>
       <tr>
-	<td style="width: 150px">
+	<td style="width: 150px; padding-right: 10px">
 		<input type="hidden" name="subscriber" value="edit" />
 		<input type="hidden" name="id" value="{$row.subscriber_id}" />
 		<input type="hidden" name="dn_name" value="{$row.subscriber}" />
 	</td>
-	<td><div class="spacer"></div></td>
 	<td style="width: 25px"></td>
 	<td style="width: 300px"></td>
       </tr>
 
       <tr>
 	<td align="right"></td>
-	<td><div class="spacer"> </div></td>
 	<td></td>
       </tr>
-
       <tr>
-	<td align="right">Contact phone</td>
-	<td align="right" style="width=100px"><div class="spacer"></div></td>
+	<td align="right" style="padding-right: 10px">Contact phone</td>
 	<td>
 	  <input type="text" name="subscr_phone"
 	  value="{$subscr_details.subscr_phone}" />
 	</td>
       </tr>
+      <tr>
+		<td></td>
+		<td style="font-size: 0.8em; font-style: italic">
+			e.g. the support teams's phone number
+		</td>
+      </tr>
 
       <tr>
-	<td align="right">Contact email</td>
-	<td align="right" style="width=100px"><div class="spacer"></div></td>
+	<td align="right" style="padding-right: 10px">Contact email</td>
 	<td>
-	  <input type="text" name="subscr_email"
-	  value="{$subscr_details.subscr_email}" />
+	  <input type="text" name="subscr_email" value="{$subscr_details.subscr_email}" />
 	</td>
+      </tr>
+       <tr>
+		<td></td>
+		<td style="font-size: 0.8em; font-style: italic">
+			e.g. the support teams's e-mail address
+		</td>
       </tr>
       <tr>
 	<td><div class="spacer"></div></td>
@@ -116,21 +122,31 @@
       </tr>
 
       <tr>
-	<td align="right">Responsible Person</td>
-	<td align="right" style="width=100px"><div class="spacer"></div></td>
+	<td align="right" style="padding-right: 10px">Responsible Person</td>
 	<td>
 	  <input type="text" name="subscr_responsible_name" value="{$subscr_details.subscr_resp_name}" />
 	</td>
       </tr>
-
+       <tr>
+		<td></td>
+		<td style="font-size: 0.8em; font-style: italic">
+			technical contact - not enduser support
+		</td>
+      </tr>
       <tr>
-	<td align="right">Responsible Person email</td>
-	<td align="right" style="width=100px"><div class="spacer"></div></td>
+	<td align="right" style="padding-right: 10px">Responsible Person email</td>
 	<td>
 	  <input type="text" name="subscr_responsible_email" value="{$subscr_details.subscr_resp_email}" />
 	</td>
       </tr>
 
+       <tr>
+		<td></td>
+		<td style="font-size: 0.8em; font-style: italic">
+			technical contact's mail address
+		</td>
+      </tr>
+
       <tr>
 	<td><div class="spacer"></div></td>
 	<td></td>
@@ -138,8 +154,7 @@
       </tr>
 
       <tr>
-	<td align="right">DN: /O=</td>
-	<td align="right" style="width=100px"><div class="spacer"></div></td>
+	<td align="right" style="padding-right: 10px">DN: /O=</td>
 	<td><b>{$subscr_details.dn_name}</b></td>
       </tr>
 
@@ -150,17 +165,15 @@
       </tr>
 
       <tr>
-	<td align="right" valign="top">Comments</td>
-	<td align="right" style="width=100px"><div class="spacer"></div></td>
+	<td align="right" valign="top" style="padding-right: 10px">Comments</td>
 	<td>
-	  <textarea name="subscr_comment" rows="10" cols="60">{$subscr_details.subscr_comment}</textarea>
+	  <textarea name="subscr_comment" rows="10" cols="60"
+	            title="Arbitrary comment about the subscriber">{$subscr_details.subscr_comment}</textarea>
 	</td>
       </tr>
 
       <tr>
-	<td align="right">State</td>
-	<td align="right"
-	style="width=100px"><div class="spacer"></div></td>
+	<td align="right" style="padding-right: 10px">State</td>
 	<td>{$nren->createSelectBox($row.org_state,	null,
 	state)}</td>
       </tr>
@@ -172,8 +185,7 @@
       </tr>
 
       <tr>
-	<td align="right"><input type="reset" value="Reset form" /></td>
-	<td style="width: 25px"></td>
+	<td align="right" style="padding-right: 10px"><input type="reset" value="Reset form" /></td>
 	<td style="width: 300px"><input type="submit" value="Update {$row.subscriber}" /></td>
       </tr>
     </table>
