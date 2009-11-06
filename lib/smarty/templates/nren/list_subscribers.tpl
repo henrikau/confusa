@@ -25,7 +25,9 @@
       <td style="width: 25px"></td>
       <td style="width: 70px"><b>ID</b></td>
       <td style="width: 200px"><b>Name</b></td>
-      <td><b>State</b></td>
+      {if !$subscriber_details}
+         <td><b>State</b></td>
+      {/if}
       <td></td>
     </tr>
   </table>
@@ -67,16 +69,19 @@
 
   {* show subscriber info *}
   {if $subscriber_details && $row.subscriber_id == $subscriber_detail_id}
+  <div class="spacer"></div>
   <fieldset style="border: 1px dotted #C0C0C0">
     <legend style="border: none; color: #303030">Details for
     {$row.subscriber}</legend>
     <form action="" method="post">
-      <input type="hidden" name="subscriber" value="edit">
-      <input type="hidden" name="id" value="{$row.subscriber_id}">
-      <input type="hidden" name="dn_name" value="{$row.subscriber}">
     <table>
       <tr>
-	<td style="width: 150px"><div class="spacer"></div></td>
+	<td style="width: 150px">
+		<input type="hidden" name="subscriber" value="edit" />
+		<input type="hidden" name="id" value="{$row.subscriber_id}" />
+		<input type="hidden" name="dn_name" value="{$row.subscriber}" />
+	</td>
+	<td><div class="spacer"></div></td>
 	<td style="width: 25px"></td>
 	<td style="width: 300px"></td>
       </tr>
@@ -145,7 +150,7 @@
       </tr>
 
       <tr>
-	<td align="right"></td>
+	<td align="right" valign="top">Comments</td>
 	<td align="right" style="width=100px"><div class="spacer"></div></td>
 	<td>
 	  <textarea name="subscr_comment" rows="10" cols="60">{$subscr_details.subscr_comment}</textarea>
@@ -169,7 +174,7 @@
       <tr>
 	<td align="right"><input type="reset" value="Reset form" /></td>
 	<td style="width: 25px"></td>
-	<td style="width: 300px"><input type="submit" value="Update {$row.subscriber}"</td>
+	<td style="width: 300px"><input type="submit" value="Update {$row.subscriber}" /></td>
       </tr>
     </table>
     </form>
