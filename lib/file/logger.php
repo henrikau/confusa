@@ -65,7 +65,7 @@ class Logger {
 		 * is lower pri */
 		if ($pri > Config::get_config('loglevel_min')) {
 			Framework::error_output("pri lower than loglevel_min!");
-			$fclose($fd);
+			fclose($fd);
 			return;
 		}
 
