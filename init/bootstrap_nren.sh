@@ -51,7 +51,7 @@ else
 		| cut -d "'" -f 2`
 	pw=`grep "mysql_password'[^]]" $confusa_config | cut -d '=' -f 2 \
 		| cut -d "'" -f 2`
-	webhost=`grep "mysql_host'[^]]" $confusa_config | cut -d '=' -f 2 \gre
+	webhost=`grep "mysql_host'[^]]" $confusa_config | cut -d '=' -f 2 \
 		| cut -d "'" -f 2`
 	database=`grep "mysql_db'[^]]" $confusa_config | cut -d '=' -f 2 \
 		| cut -d "'" -f 2`
@@ -106,6 +106,13 @@ fi
 
 nren_id=`echo $res | cut -d " " -f 2`
 
+res=`$MYSQL -e "USE ${database}; SELECT * FROM admins WHERE admin='${2}' AND nren=${nren_id}"`
+
+if [ -n "$res" ]; then
+	echo "ERROR: An administrator with eppn ${2} already exists for NREN ${1}. Aborting..."
+	exit 1
+fi
+
 echo "Adding new administrator to NREN $1, internal ID $nren_id"
 res=`$MYSQL -e "USE ${database}; INSERT INTO admins(admin, admin_level, admin_email, nren) \
 		VALUES('$2', '2', '$3', $nren_id)"`
@@ -120,5 +127,3 @@ if [ $result -ne 0 ]; then
 fi
 
 echo "NREN-administrator successfully bootstrapped"
-
-
