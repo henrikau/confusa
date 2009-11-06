@@ -60,6 +60,12 @@ class CP_RevokeCertificate extends Content_Page
 						Framework::error_output("Cannot revoke yet ($order_number) for supplied reason: $reason");
 					} else {
 						Framework::message_output("Certificate ($order_number) successfully revoked.");
+
+						if (Config::get_config('ca_mode') === CA_ONLINE &&
+						    Config::get_config('capi_test') === true) {
+								Framework::message_output("Note that the revocation has only been simulated, " .
+									"because Confusa is in API-Test mode.");
+						}
 					}
 				} catch (ConfusaGenException $cge) {
 					Framework::error_output("Revocation failed, the following problem was reported: " .
