@@ -159,6 +159,7 @@ class CP_Admin extends Content_Page
 
 			/* Get all subscriber-admins */
 			$subscriber_admins = $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_ADMIN);
+			print_r($subscriber_admins);
 			$this->tpl->assign('subscriber', $subscriber_dn);
 			$this->tpl->assign('subscriber_admins', $subscriber_admins);
 
@@ -179,6 +180,7 @@ class CP_Admin extends Content_Page
 			$this->tpl->assign('subscriber', $subscriber_db);
 		}
 
+		/* output sanitation */
 		$this->tpl->assign('self', $this->person->getEPPN());
 		$this->tpl->assign('content', $this->tpl->fetch('admin.tpl'));
 	}
@@ -215,7 +217,9 @@ class CP_Admin extends Content_Page
 		if (count($res) > 0) {
 
 			foreach($res as $row) {
-				$admins[] = $row['admin'];
+				$admins[] =  array('eppn' => $row['admin'],
+				                   'name' => $row['admin_name'],
+				                   'email' => $row['admin_email']);
 			}
 		}
 
@@ -256,7 +260,9 @@ class CP_Admin extends Content_Page
 		if (count($res) > 0) {
 
 			foreach($res as $row) {
-				$subscribers[] = $row['admin'];
+				$subscribers[] = array('eppn' => $row['admin'],
+				                       'name' => $row['name'],
+				                       'email' => $row['email']);
 			}
 		}
 
