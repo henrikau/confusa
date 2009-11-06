@@ -320,6 +320,12 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	private function revoke_certs($common_name, $reason)
 	{
+		if (Config::get_config('ca_mode') === CA_ONLINE &&
+		    Config::get_config('capi_test') === true) {
+			Framework::message_output("Please note that you are in Confusa's API " .
+			           "test mode. Revocation is only simulated!");
+		}
+
 		if (isset($_SESSION['auth_keys'])) {
 			$auth_keys = $_SESSION['auth_keys'];
 			unset($_SESSION['auth_keys']);
@@ -372,6 +378,13 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	private function revoke_list($reason)
 	{
+
+		if (Config::get_config('ca_mode') === CA_ONLINE &&
+		    Config::get_config('capi_test') === true) {
+			Framework::message_output("Please note that you are in Confusa's API " .
+			           "test mode. Revocation is only simulated!");
+		}
+
 		$auth_keys = array();
 		if (isset($_SESSION['auth_keys'])) {
 			$auth_keys = $_SESSION['auth_keys'];
