@@ -45,7 +45,7 @@ function get_user_alternative
 function replace_config_entry
 {
 	# Replace entry in the configuration file with the new value
-	sed s\|"'$1'[ \t]*=>.*"\|"'$1'    => '$2',"\| < $working_template > $config
+	sed s\|"'$1'[^]][ \t]*=>.*"\|"'$1'    => '$2',"\| < $working_template > $config
 	cp $config $working_template
 }
 
