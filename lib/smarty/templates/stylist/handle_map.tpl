@@ -129,7 +129,7 @@
       <tr>
 	<td align="right"><input type="reset" value="reset"/></td>
 	<td align="right">
-	  <input type="submit" value="update map" onclick="return confirm('\tAre you sure?\n\nThis will potentianally affect all users affiliated with {$person->getSubscriberOrgName()}')" />
+	  <input type="submit" value="update map" onclick="return confirm('\tAre you sure?\n\nThis will potentially affect all users affiliated with NREN {$person->getNREN()}!')" />
 	</td>
       </tr>
     </table>
