@@ -821,12 +821,12 @@ class Person{
 	    db_array_debug($res);
 	    if ($size == 1) {
 		    $adminRes = $res[0]['admin_level'];
-		    if ($this->getX509ValidCN() != $res[0]['admin_name'] ||
-			$this->getEmail() != $res[0]['admin_email']) {
+		    if ($this->getName(false) != $res[0]['admin_name'] ||
+			$this->getEmail(false) != $res[0]['admin_email']) {
 			    try {
 				    MDB2Wrapper::update("UPDATE admins SET admin_name=?, admin_email=? WHERE admin_id=?",
 							array('text', 'text', 'text'),
-							array($this->getX509ValidCN(), $this->getEmail(), $res[0]['admin_id']));
+							array($this->getName(false), $this->getEmail(false), $res[0]['admin_id']));
 			    } catch (DBStatementException $dbse) {
 				    $msg = "[$errorCode] Database not properly set. Missing fields in the admins-table.";
 				    Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . $msg);
