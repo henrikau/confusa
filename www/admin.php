@@ -417,9 +417,9 @@ class CP_Admin extends Content_Page
 
 		/* make sure that the admin is not already present in the database */
 		try {
-			$res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND subscriber=? AND nren=?",
-						    array('text', 'text', 'text'),
-						    array($admin, $subscriberID, $nrenID));
+			$res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND nren=?",
+						    array('text', 'text'),
+						    array($admin, $nrenID));
 		} catch (DBStatementException $dbse) {
 			$msg  = "Serverside issues. Cannot find admin in database. ";
 			$msg .= "Server said: " . $dbse->getMessage();
@@ -432,7 +432,9 @@ class CP_Admin extends Content_Page
 			return;
 		}
 		if (count($res) != 0) {
-			Framework::error_output("Cannot add subscriber(sub) admin as an administrator with that name is already present in the database.");
+			Framework::error_output("Cannot add subscriber(sub) admin as an administrator with " .
+			                        "that name is already present in the database. Note that an " .
+			                        "administrator may only exist once, with exactly one admin-level!");
 			return;
 		}
 
@@ -448,7 +450,7 @@ class CP_Admin extends Content_Page
 			$msg .= "Server said " . $dbse->getMessage();
 			Framework::error_output($msg);
 			return;
-		} catch (DBQueryException $dqse) {
+		} catch (DBQueryException $dbqe) {
 			$msg  = "Cannot add Admin to database, probably problems with supplied data. <br />";
 			$msg .= "Server said: " . $dbqe->getMessage();
 			Framework::error_output($msg);
