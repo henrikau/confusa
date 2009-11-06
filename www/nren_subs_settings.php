@@ -26,10 +26,10 @@ class CP_NREN_Subs_Settings extends Content_Page
 			switch(htmlentities($_POST['setting'])) {
 			case 'nren_contact':
 				if ($this->person->isNRENAdmin()) {
-					$email = Input::sanitize($_POST['contact_email']);
+					$email = Input::sanitizeText($_POST['contact_email']);
 					$phone = Input::sanitizeText($_POST['contact_phone']);
 					$certPhone = Input::sanitizeText($_POST['cert_phone']);
-					$certEmail = Input::sanitize($_POST['cert_email']);
+					$certEmail = Input::sanitizeText($_POST['cert_email']);
 					$url = Input::sanitizeText($_POST['url']);
 					$newLanguage = Input::sanitize($_POST['language']);
 					$this->updateNRENContact($email, $phone, $certPhone, $certEmail, $url, $newLanguage);
@@ -39,10 +39,10 @@ class CP_NREN_Subs_Settings extends Content_Page
 				if ($this->person->isSubscriberAdmin()) {
 					/* ($contact_email, $contact_phone, $resp_name, $resp_email) */
 					$this->updateSubscriberContact(
-						Input::sanitize($_POST['contact_email']),
+						Input::sanitizeText($_POST['contact_email']),
 						Input::sanitizeText($_POST['contact_phone']),
-						Input::sanitize($_POST['resp_name']),
-						Input::sanitize($_POST['resp_email']));
+						Input::sanitizeText($_POST['resp_name']),
+						Input::sanitizeText($_POST['resp_email']));
 				}
 				break;
 			default:
