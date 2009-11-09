@@ -825,15 +825,31 @@ function perform_postinstallation_steps
 	smarty_templates_c=`grep "SMARTY_TEMPLATES_C" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
 	smarty_cache=`grep "SMARTY_CACHE" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
 
-	get_user_alternative "Do you want setup to Install a crontab for cleaning and backing up the DB? (y/n)"
+	get_user_alternative "Do you want setup to install a crontab for cleaning and backing up the DB? (y/n)"
 
 	if [ $answer == "y" ]; then
 		write_cron_jobs ${install_path}
 	fi
 
 	# Link the necessary AuthProc filters
-	ln -s -f ${install_path}include/CharacterMap.php ${simplesaml_path}modules/core/lib/Auth/Process/CharacterMap.php
+	ln -s -f ${install_path}include/CountryMap.php ${simplesaml_path}modules/core/lib/Auth/Process/CountryMap.php
 	ln -s -f ${install_path}include/NRENMap.php ${simplesaml_path}modules/core/lib/Auth/Process/NRENMap.php
+
+	# Check if the NRENMap has already been included in the simplesamlphp config
+	# If so, no need to do it again
+	hasNRENMap=`grep "core:NRENMap" ${simplesaml_path}/config/config.php`
+
+	if [ -z "${hasNRENMap}" ]; then
+		get_user_alternative "Do you want setup to add the NRENMap/CountryMap filters to simplesamlphp's configuration? (y/n)"
+	else
+		answer="n"
+	fi
+
+	if [ $answer == "y" ]; then
+		 sed s\|"'authproc.sp'[ \t]*=>[ \t]*array("\|"'authproc.sp' => array(\n\t\t62 => 'core:NRENMap',\n\t\t63 => 'core:CountryMap',"\| \
+		  < ${simplesaml_path}/config/config.php > ${simplesaml_path}/config/.config.php.tmp
+		 mv ${simplesaml_path}/config/.config.php.tmp ${simplesaml_path}/config/config.php
+	fi
 
 	# Get the permissions right
 	# Guess the name of the apache/httpd user
