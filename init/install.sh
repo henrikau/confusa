@@ -613,8 +613,8 @@ function copy_new_config_flags
 {
 	echo "Copying new config flags from the template, removing deprecated ones"
 	cp $config_template $working_template
-	tmp_file="../config/.flags_only"
-	working_template_2="../config/.template2"
+	tmp_file="${prefix}/.flags_only"
+	working_template_2="${prefix}/.template2"
 	# first remove comment lines, then find the configuration flags
 	cat $config_template | egrep -v "^[[:space:]]*(/)?(\\*)" | egrep "=>" | cut -d '=' -f 1 > $tmp_file
 
