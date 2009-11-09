@@ -401,7 +401,7 @@ function configure_confusa_settings
 
 	# Skip the DB-name, host, username and password configuration, if a config
 	# file has been written by dbconfig-common
-	if [! -f $dbconfig_template ]; then
+	if [ ! -f $dbconfig_template ]; then
 		# Configure the mysql username
 		##############################################################################
 		mysql_username=`grep "'mysql_username'[^]]" $working_template | cut -d '=' -f 2 \
