@@ -64,7 +64,6 @@ class Logger {
 		/* log to normal file if within level. highest level is 0, increasing number
 		 * is lower pri */
 		if ($pri > Config::get_config('loglevel_min')) {
-			Framework::error_output("pri lower than loglevel_min!");
 			fclose($fd);
 			return;
 		}
