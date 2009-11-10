@@ -4,7 +4,8 @@
    * This package sends emails to the specified address.
    * Attachments are supported
    *
-   * Author: Henrik Austad <henrik.austad@uninett.no>
+   * @author Henrik Austad <henrik.austad@uninett.no>
+   * @author Thomas Zangerl <tzangerl@pdc.kth.se>
    */
 
 class MailManager {
@@ -29,15 +30,13 @@ class MailManager {
 		}
 		$this->person = $pers;
 		$this->receiver .= $this->person->getName() . " <" . $this->person->getEmail() . ">";
-
         $this->sender   = $sender;
         $this->sendHeader = $sendHeader;
         $this->senderName = $senderName;
 
         /* UTF-8 encode subject: */
-        /* $this->subject  = "=?UTF-8?B?" . base64_encode("Subject: " . subject)."?"; */
-        $this->subject = $subject;
-        $this->body     = $body;
+        $this->subject = "=?UTF-8?Q?" . $this->quoted_printable_encode($subject, 75) . "?=\r\n";
+        $this->body     = $this->quoted_printable_encode($body);
         $this->attachment_text = "";
         $this->eol = "\r\n";
         $this->mime_boundary="Confusa_Part_".md5(time());
@@ -88,12 +87,12 @@ class MailManager {
             $msg = "";
             /* start on the mail: */
             $msg .= "--" . $this->mime_boundary . $this->eol;
-            $msg .= "Content-Type: text/plain" .  $this->eol;
-            $msg .= "Content-Transfer-Encoding: 7bit" .  $this->eol;
+            $msg .= 'Content-Type: text/plain; charset=UTF-8' .  $this->eol;
+            $msg .= 'Content-Transfer-Encoding: quoted-printable' .  $this->eol;
             $msg .= $this->eol;
 
             /* add body */
-            $msg .= str_replace("\n", $this->eol, $this->body) . $this->eol;
+            $msg .= $this->body;
 
             /* add attachments */
             $msg .= $this->eol;
@@ -103,8 +102,7 @@ class MailManager {
             $msg .= "--" . $this->mime_boundary . "--" . $this->eol;
 
             /* move the message to body for sending */
-            $msg = "asdfjkkkkkkkkkkkkkkkkkkklöööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööqqwerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr";
-            $this->body = $this->mb_wordwrap($msg);
+            $this->body = $msg;
         } /* end compose_mail() */
 
     private function create_headers()
@@ -118,5 +116,97 @@ class MailManager {
         $this->header .= "Content-Type: multipart/mixed; boundary=\"" . $this->mime_boundary . "\"" . $this->eol;
         $this->header .= "Content-Transfer-Encoding: 7bit" . $this->eol;
         }
-      } /* end MailManager */
+
+	/**
+	 * Encode a string quoted printable and wordwrap it at the same time
+	 *
+	 * The following will be done:
+	 * 	1) Split the original text into lines according to the existing newlines
+	 * 	2) For each line:
+	 * 		2.1 Encode every character that must be encoded
+	 * 		2.2 Count the length, once the line length limit (default 75) is
+	 * 		    reached, stop
+	 * 		2.3 From the line length limit do a reverse lookup back to the last
+	 * 		    whitespace
+	 * 		2.4 Include the substring up to the last whitespace in the output,
+	 * 		    add a qp-encoded linebreak and
+	 * 		    reset the line pointer to the position of the last whitespace
+	 *
+	 * @param $input string The input string, not quoted-printable encoded
+	 * @param $line_max integer The length at which the lines will be wrapped
+	 * @return $output string The quoted-printable encoded string
+	 */
+	private function quoted_printable_encode($input, $line_max = 75) {
+		$hex = array('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
+		$lines = preg_split("/(?:\r\n|\r|\n)/", $input);
+		$linebreak = "=0D=0A";
+		$escape = "=";
+		$output = "";
+		$cur_conv_line = "";
+		$length = 6; /* length of the linebreak, included in total length */
+
+		for ($j=0; $j<count($lines); $j++) {
+			$line = $lines[$j];
+			$linlen = strlen($line);
+
+			for ($i = 0; $i < $linlen; $i++) {
+				$c = substr($line, $i, 1);
+				$dec = ord($c);
+
+				if ( ($dec == 32) && ($i == ($linlen - 1)) ) { // convert space at eol only
+					$c = "=20";
+				} elseif ( ($dec == 61) || ($dec < 32 ) || ($dec > 126) ) { // always encode "\t", which is *not* required
+					$h2 = floor($dec/16); $h1 = floor($dec%16);
+					$c = $escape . $hex["$h2"] . $hex["$h1"];
+				}
+
+				$length++;
+
+				// length for wordwrap exceeded, get a newline into the text
+				if ($length >= $line_max) {
+					$cur_conv_line .= $c;
+
+					// move pointer back to last whitespace, so the wordwrap takes place across word boundaries and looks nice
+					$whitesp_it = $i;
+
+					// TODO reverse search taking into account all QP-encoded chars is not very efficient
+					while (($c = substr($line, $whitesp_it,1)) !== " ") {
+						$dec = ord($c);
+
+						if (($dec == 61) && ($dec < 32) || ($dec > 126)) {
+							$whitesp_it -= 6;
+						} else {
+							$whitesp_it--;
+						}
+					}
+
+					// read only up to the whitespace for the current line
+					$whitesp_diff = $i - $whitesp_it;
+					$output .= substr($cur_conv_line, 0, (strlen($cur_conv_line) - $whitesp_diff)) . $linebreak;
+
+					// the text after the whitespace will have to be read again
+					$i =  $i - $whitesp_diff;
+
+					$cur_conv_line = "";
+					$length = 6;
+				} else {
+					// length for wordwrap not reached, continue reading
+					$cur_conv_line .= $c;
+				}
+			} // end of for
+
+			$length = 6;
+			$output .= $cur_conv_line;
+			$cur_conv_line = "";
+
+			if ($j<=count($lines)-1) {
+				$output .= $linebreak;
+			}
+		}
+
+		return trim($output);
+		//return wordwrap(trim($output), $line_max);
+	}
+
+} /* end MailManager */
 ?>
