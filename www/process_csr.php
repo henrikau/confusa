@@ -157,11 +157,12 @@ final class CP_ProcessCsr extends Content_Page
 				$subject = openssl_csr_get_subject($csr, true);
 				$authvar = substr(pubkey_hash($fu->get_content(), true), 0, ConfusaConstants::$AUTH_KEY_LENGTH);
 				/* is the CSR already uploaded? */
-				$res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE csr=?",
+				$res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE auth_key=?",
 							    array('text'),
-							    array($csr));
+							    array($authvar));
 				if (count($res)>0) {
-					Framework::error_output("CSR already present in the database, no need for second upload");
+					Framework::error_output("CSR with matching public-key already in the database. ".
+								"Cannot upload this CSR. Please generate a new keypair and try again.");
 				/* match the DN only when in standalone mode, no need to do it in online mode */
 				} else if (Config::get_config('ca_mode') == CA_ONLINE ||
 						 match_dn($subject, $this->person)) {
