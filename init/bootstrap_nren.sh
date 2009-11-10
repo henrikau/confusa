@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # author Thomas Zangerl <tzangerl@pdc.kth.se>
 # Script for initially setting up a NREN and adding an initial admin to it,

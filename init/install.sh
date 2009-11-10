@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Confusa auto-setup.
 #
 # GPL v3 applies
