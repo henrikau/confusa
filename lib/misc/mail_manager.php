@@ -1,4 +1,6 @@
 <?php
+include_once 'metainfo.php';
+
   /* mail_manager.php
    *
    * This package sends emails to the specified address.
@@ -107,11 +109,19 @@ class MailManager {
 
     private function create_headers()
         {
+
+        try {
+			$confusaVersion = MetaInfo::getConfusaVersion();
+		} catch (ConfusaGenException $cge) {
+			/* take a version that won't appear that fast */
+			$confusaVersion = "17.2.11";
+		}
+
         $this->header .= "From: " . $this->senderName . " <" . $this->sendHeader . ">" . $this->eol;
         $this->header .= "Return-Path: " . $this->sender . " <" . $this->sender . ">" . $this->eol;
         $this->header .= "Date: " . date(DATE_RFC2822) . $this->eol;
         $this->header .= "Message-ID: <" . time() . "-" . $this->sender . ">" . $this->eol;
-        $this->header .= "X-Mailer: PHP v".phpversion().$this->eol;
+        $this->header .= "X-Mailer: Confusa/" . $confusaVersion . $this->eol;
         $this->header .= "MIME-Version: 1.0" . $this->eol;
         $this->header .= "Content-Type: multipart/mixed; boundary=\"" . $this->mime_boundary . "\"" . $this->eol;
         $this->header .= "Content-Transfer-Encoding: 7bit" . $this->eol;
