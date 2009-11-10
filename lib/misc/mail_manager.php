@@ -174,7 +174,7 @@ class MailManager {
 						$dec = ord($c);
 
 						if (($dec == 61) && ($dec < 32) || ($dec > 126)) {
-							$whitesp_it -= 6;
+							$whitesp_it -= 3;
 						} else {
 							$whitesp_it--;
 						}
