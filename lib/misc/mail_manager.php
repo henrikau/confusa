@@ -37,7 +37,7 @@ class MailManager {
         $this->senderName = $senderName;
 
         /* UTF-8 encode subject: */
-        $this->subject = "=?UTF-8?Q?" . $this->quoted_printable_encode($subject, 75) . "?=\r\n";
+        $this->subject = "=?UTF-8?Q?" . $this->quoted_printable_encode($subject) . "?=";
         $this->body     = $this->quoted_printable_encode($body);
         $this->attachment_text = "";
         $this->eol = "\r\n";
