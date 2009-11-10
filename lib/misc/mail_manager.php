@@ -10,6 +10,7 @@
 class MailManager {
     private $person;
     private $sender;
+    private $senderName;
     private $sendHeader;
     private $subject;
     private $body;
@@ -19,7 +20,7 @@ class MailManager {
     private $mime_boundary;
     private $htmlalt_mime_boundary;
 
-    public function __construct($pers, $sender, $sendHeader, $subject,  $body)
+    public function __construct($pers, $sender, $senderName, $sendHeader, $subject,  $body)
 	{
 		if (!isset($pers) || ! ($pers instanceof Person)) { 
 			echo __FILE__ .":".__LINE__. " Need person in MailManager!<BR>\n";
@@ -31,6 +32,8 @@ class MailManager {
 
         $this->sender   = $sender;
         $this->sendHeader = $sendHeader;
+        $this->senderName = $senderName;
+
         /* UTF-8 encode subject: */
         /* $this->subject  = "=?UTF-8?B?" . base64_encode("Subject: " . subject)."?"; */
         $this->subject = $subject;
@@ -100,13 +103,13 @@ class MailManager {
             $msg .= "--" . $this->mime_boundary . "--" . $this->eol;
 
             /* move the message to body for sending */
-            $this->body = $msg;
+            $msg = "asdfjkkkkkkkkkkkkkkkkkkklöööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööööqqwerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr";
+            $this->body = $this->mb_wordwrap($msg);
         } /* end compose_mail() */
 
     private function create_headers()
         {
-        $this->header .= "From: " . $this->sendHeader . " <" . $this->sendHeader . ">" . $this->eol;
-        $this->header .= "Reply-To: " . $this->sendHeader . " <" . $this->sendHeader . ">" . $this->eol;
+        $this->header .= "From: " . $this->senderName . " <" . $this->sendHeader . ">" . $this->eol;
         $this->header .= "Return-Path: " . $this->sender . " <" . $this->sender . ">" . $this->eol;
         $this->header .= "Date: " . date(DATE_RFC2822) . $this->eol;
         $this->header .= "Message-ID: <" . time() . "-" . $this->sender . ">" . $this->eol;
