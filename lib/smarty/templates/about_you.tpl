@@ -1,25 +1,25 @@
 {if $textual == 'yes'}
 <div id="dn-section">
-	{$person->getX509SubjectDN()}
+	{$person->getX509SubjectDN()|escape}
 </div>
 {else}
 <h3>This is what we know about you:</h3>
  <table class="small">
-	<tr><td><b>Name:</b></td><td>{$person->getName()}</td></tr>
-	<tr><td><b>eduPersonPrincipalName:</b></td><td>{$person->getEPPN()}</td></tr>
-	<tr><td><b>CommonName in DN</b></td><td>{$person->getX509ValidCN()}</td></tr>
-	<tr><td><b>email:</b></td><td>{$person->getEmail()}</td></tr>
-	<tr><td><b>Country:</b></td><td>{$person->getCountry()}</td></tr>
-	<tr><td><b>OrganizationalName:</b></td><td>{$person->getSubscriberOrgName()}</td></tr>
-	<tr><td><b>Organizational Identifier:</b></td><td>{$person->getSubscriberIdPName()}</td></tr>
-	<tr><td><b>Entitlement:</b></td><td>{$person->getEntitlement()}</td></tr>
-	<tr><td><b>NREN:</b></td><td>{$person->getNREN()}</td></tr>
-	<tr><td><b>Complete /DN:</b></td><td>{$person->getX509SubjectDN()}</td></tr>
+	<tr><td><b>Name:</b></td><td>{$person->getName()|escape}</td></tr>
+	<tr><td><b>eduPersonPrincipalName:</b></td><td>{$person->getEPPN()|escape}</td></tr>
+	<tr><td><b>CommonName in DN</b></td><td>{$person->getX509ValidCN()|escape}</td></tr>
+	<tr><td><b>email:</b></td><td>{$person->getEmail()|escape}</td></tr>
+	<tr><td><b>Country:</b></td><td>{$person->getCountry()|escape}</td></tr>
+	<tr><td><b>OrganizationalName:</b></td><td>{$person->getSubscriberOrgName()|escape}</td></tr>
+	<tr><td><b>Organizational Identifier:</b></td><td>{$person->getSubscriberIdPName()|escape}</td></tr>
+	<tr><td><b>Entitlement:</b></td><td>{$person->getEntitlement()|escape}</td></tr>
+	<tr><td><b>NREN:</b></td><td>{$person->getNREN()|escape}</td></tr>
+	<tr><td><b>Complete /DN:</b></td><td>{$person->getX509SubjectDN()|escape}</td></tr>
 
 	<tr><td></td><td></td></tr>
 
-	<tr><td><b>Time left</b></td><td>{$timeLeft}</td></tr>
-        <tr><td><b>Time since AuthN</b></td><td>{$timeSinceStart}</td></tr>
+	<tr><td><b>Time left</b></td><td>{$timeLeft|escape}</td></tr>
+        <tr><td><b>Time since AuthN</b></td><td>{$timeSinceStart|escape}</td></tr>
 </table><br />
 <hr />
 
