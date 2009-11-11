@@ -43,6 +43,5 @@ final class CP_Index extends Content_Page
 $fw  = new Framework(new CP_Index());
 $fw->start();
 unset($fw);
-unset($ind);
 
 ?>
