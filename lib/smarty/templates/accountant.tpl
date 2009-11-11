@@ -41,7 +41,7 @@
       <tr>
 	<td></td>
 	<td>Login-name:</td>
-	<td>{$login_name}</td>
+	<td>{$login_name|escape}</td>
 	{if $login_name === 'undefined'}
 	<td><input disabled="disabled" type="text" name="login_name" value="{$login_name}" /></td>
 	{else}
@@ -90,10 +90,10 @@
 	<td></td>
 	{if $login_name === 'undefined'}
 	<td><input disabled="disabled" type="reset" value="Revert to default" /></td>
-	<td><input disabled="disabled" type="submit" value="Update {$login_name}" /></td>
+	<td><input disabled="disabled" type="submit" value="Update {$login_name|escape}" /></td>
 	{else}
 	<td><input type="reset" value="Revert to default" /></td>
-	<td><input type="submit" value="Update {$login_name}" /></td>
+	<td><input type="submit" value="Update {$login_name|escape}" /></td>
 	{/if}
 	<td></td>
 	<td></td>
