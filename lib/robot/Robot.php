@@ -102,7 +102,7 @@ class Robot
 						}
 
 					} catch (CGE_KeyRevokeException $kre) {
-						echo $kre->getMessage() . "<br />\n";
+						echo htmlentities($kre->getMessage()) . "<br />\n";
 					}
 				}
 			}
