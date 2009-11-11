@@ -58,11 +58,12 @@ class CP_Tools extends Content_Page
 					$body);
 		$mail->add_attachment($keyscript->create_script(), "create_cert.sh");
 		if ($mail->send_mail()) {
-			Framework::message_output("Mail sent to " . $this->person->getEmail() . " with new version of create_cert.sh");
+			Framework::message_output("Mail sent to " . htmlentities($this->person->getEmail()) .
+			                          " with new version of create_cert.sh");
 		} else {
 			$code = create_pw(8);
 			Logger::log_event(LOG_NOTICE, "Could not send email to user, check mail-logs at this time. Session-error-code: $code");
-			Framework::error_output("Could not send mail to " . $this->person->getEmail() .
+			Framework::error_output("Could not send mail to " . htmlentities($this->person->getEmail()) .
 						"<BR />Check the server-logs for details. Log-code $code");
 		}
 

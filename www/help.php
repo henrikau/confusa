@@ -40,12 +40,12 @@ class CP_Help extends Content_Page
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Could not retrieve the help text of your NREN due " .
 									"to an error with the statement. Server said " .
-									$dbse->getMessage());
+									htmlentities($dbse->getMessage()));
 			return "";
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Could not retrieve the help text of your NREN due " .
 									"to an error in the query. Server said " .
-									$dbqe->getMessage());
+									htmlentities($dbqe->getMessage()));
 			return "";
 		}
 
