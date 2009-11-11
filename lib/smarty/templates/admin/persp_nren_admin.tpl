@@ -6,7 +6,7 @@
   <legend>NREN admins</legend>
 
   <p class="info">
-    Add and delete NREN admins for your NREN '{$nren}'. You yourself are
+    Add and delete NREN admins for your NREN '{$nren|escape}'. You yourself are
     marked with an asterisk (*). NREN admins have many privileges:
   </p>
   <br />
@@ -112,7 +112,7 @@
 {* *********************************************************************** *}
 <fieldset>
 	<legend>
-	Admins for subscriber {$subscriber}
+	Admins for subscriber {$subscriber|escape}
 	</legend>
 
 	<p class="info">
@@ -125,7 +125,7 @@
 	</ul>
 	<br />
 	<p class="info">
-	Their scope is limited to an institution, in this case {$subscriber}.
+	Their scope is limited to an institution, in this case {$subscriber|escape}.
 	</p>
 	<br />
 

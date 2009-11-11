@@ -204,11 +204,13 @@ class CP_Admin extends Content_Page
 										array($nren));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Cannot retrieve (nren)admins from database!<BR /> " .
-				"Probably wrong syntax for query, ask an admin to investigate. Server said: " . $dbse->getMessage());
+				"Probably wrong syntax for query, ask an admin to investigate. Server said: " .
+				htmlentities($dbse->getMessage()));
 			return null;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Query failed. This probably means that the values " .
-				"passed to the database are wrong. Server said: " . $dbqe->getMessage());
+				"passed to the database are wrong. Server said: " .
+				htmlentities($dbqe->getMessage()));
 			return null;
 		}
 
@@ -247,11 +249,13 @@ class CP_Admin extends Content_Page
 						    array($level, $subscriber));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Cannot retrieve (subscriber) admins from database!<BR /> " .
-				"Probably wrong syntax for query, ask an admin to investigate. Server said: " . $dbse->getMessage());
+				"Probably wrong syntax for query, ask an admin to investigate. Server said: " .
+				htmlentities($dbse->getMessage()));
 			return null;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Query failed. This probably means that the values passed to the "
-								. "database are wrong. Server said: " . $dbqe->getMessage());
+								. "database are wrong. Server said: " .
+								htmlentities($dbqe->getMessage()));
 			return null;
 		}
 
@@ -285,11 +289,12 @@ class CP_Admin extends Content_Page
 		} catch(DBStatementException $dbse) {
 			Framework::error_output("Cannot retrieve subscriber from database!<BR /> " .
 				"Probably wrong syntax for query, ask an admin to investigate." .
-				"Server said: " . $dbse->getMessage());
+				"Server said: " . htmlentities($dbse->getMessage()));
 			return null;
 		} catch(DBQueryException $dbqe) {
 			Framework::error_output("Query failed. This probably means that the values passed to the "
-								. "database are wrong. Server said: " . $dbqe->getMessage());
+								. "database are wrong. Server said: " .
+								htmlentities($dbqe->getMessage()));
 			return null;
 		}
 
@@ -332,7 +337,9 @@ class CP_Admin extends Content_Page
 			if (count($res) != 0) {
 				$msg = "Admin $admin already present as admin in table.\n<ul>";
 				foreach ($res as $key => $val) {
-					$msg .= "<li>" . $val['admin'] . " in NREN: " . $val['nren'] . " for subscriber " . $val['subscriber'] . "</li>\n";
+					$msg .= "<li>" . htmlentities($val['admin']) . " in NREN: " .
+					        htmlentities($val['nren']) . " for subscriber " .
+					        htmlentities($val['subscriber']) . "</li>\n";
 				}
 				$msg .= "</ul>\n";
 				Framework::error_output($msg);
@@ -343,10 +350,12 @@ class CP_Admin extends Content_Page
 					    array('text', 'text', 'text', 'Integer'),
 					    array($admin, '2', '0', $nrenID));
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Problem with statement, probably server-issues. Server said " . $dbse->getMessage());
+			Framework::error_output("Problem with statement, probably server-issues. Server said " .
+			                        htmlentities($dbse->getMessage()));
 			return;
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Problem with query, probably issues with supplied data. Server said " . $dbqe->getMessage());
+			Framework::error_output("Problem with query, probably issues with supplied data. Server said " .
+			                        htmlentities($dbqe->getMessage()));
 			return;
 		}
 	} /* end addNRENAdmin() */
@@ -386,7 +395,8 @@ class CP_Admin extends Content_Page
 
 		/* Assert level */
 		if (!($level == SUBSCRIBER_ADMIN || $level == SUBSCRIBER_SUB_ADMIN)) {
-			Framework::error_output("Cannot add administrator with mangled admin-level. Got $level, which is not a subscriber admin code.");
+			Framework::error_output("Cannot add administrator with mangled admin-level. Got " .
+			                        htmlentities($level) . ", which is not a subscriber admin code.");
 			return;
 		}
 
@@ -396,19 +406,20 @@ class CP_Admin extends Content_Page
 			$res = MDB2Wrapper::execute($query, array('text', 'text'), array($this->person->getNREN(), $subscriber));
 		} catch (DBStatementException $dbse) {
 			$msg =  "Serverside issues. Cannot find IDs for NREN and subscriber in database. ";
-			$msg .= "Server said: " . $dbse->getMessage();
+			$msg .= "Server said: " . htmlentities($dbse->getMessage());
 			Framework::error_output($msg);
 			return;
 		} catch (DBQueryException $dbqe) {
 			$msg = "Cannot find IDs for NREN and subscriber in database, probably problems with supplied data. ";
-			$msg .= "Server said: " . $dbqe->getMessage();
+			$msg .= "Server said: " . htmlentities($dbqe->getMessage());
 			Framework::error_output($msg);
 			return;
 		}
 
 		if (count($res) != 1) {
-			$msg  = "Could not find unique subscriber/nren combination for subscriber $subscriber ";
-			$msg .= "and NREN ".$this->person->getNREN() . ". Cannot continue.";
+			$msg  = "Could not find unique subscriber/nren combination for subscriber ";
+			$msg .= htmlentities($subscriber);
+			$msg .= " and NREN ". htmlentities($this->person->getNREN()) . ". Cannot continue.";
 			Framework::error_output($msg);
 			return;
 		}
@@ -422,12 +433,12 @@ class CP_Admin extends Content_Page
 						    array($admin, $nrenID));
 		} catch (DBStatementException $dbse) {
 			$msg  = "Serverside issues. Cannot find admin in database. ";
-			$msg .= "Server said: " . $dbse->getMessage();
+			$msg .= "Server said: " . htmlentities($dbse->getMessage());
 			Framework::error_output($msg);
 			return;
 		} catch (DBQueryException $dbqe) {
 			$msg  = "Cannot find admin in database, probably problems with supplied data. ";
-			$msg .= "Server said: " . $dbqe->getMessage();
+			$msg .= "Server said: " . htmlentities($dbqe->getMessage());
 			Framework::error_output($msg);
 			return;
 		}
@@ -447,12 +458,12 @@ class CP_Admin extends Content_Page
 
 		} catch (DBStatementException $dbse) {
 			$msg  = "Cannot add Admin to database, probably serverside problems.<br />";
-			$msg .= "Server said " . $dbse->getMessage();
+			$msg .= "Server said " . htmlentities($dbse->getMessage());
 			Framework::error_output($msg);
 			return;
 		} catch (DBQueryException $dbqe) {
 			$msg  = "Cannot add Admin to database, probably problems with supplied data. <br />";
-			$msg .= "Server said: " . $dbqe->getMessage();
+			$msg .= "Server said: " . htmlentities($dbqe->getMessage());
 			Framework::error_output($msg);
 			return;
 		}
@@ -472,7 +483,8 @@ class CP_Admin extends Content_Page
 	{
 		$nren = $this->person->getNREN();
 		if (is_null($subscriber) || $subscriber=="") {
-			$msg  = "Tried to downgrade NREN admin $admin from NREN $nren to subscriber admin, ";
+			$msg  = "Tried to downgrade NREN admin " . htmlentities($admin) . " from NREN " .
+			        htmlentities($nren) . " to subscriber admin, ";
 			$msg .= "but admin's subscriber affiliaton is not set. Cannot continue.";
 			Logger::log_event(LOG_NOTICE,$msg);
 			Framework::error_output($msg);
@@ -485,14 +497,14 @@ class CP_Admin extends Content_Page
 						    array($nren, $subscriber));
 		} catch (DBQueryException $dbqe) {
 			$msg  = "Problem getting the ID of your subscriber, probably serverside issues. ";
-			$msg .= " Server said: " . $dbqe->getMessage();
+			$msg .= " Server said: " . htmlentities($dbqe->getMessage());
 			Framework::error_output($msg);
 			Logger::log_event(LOG_NOTICE, "ADMIN: Did not get subscriber_id for admin $admin, nren $nren, " .
 							 "subscriber $subscriber. Error is " . $dbqe->getMessage());
 			return;
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem getting the ID of your subscriber, server said: " .
-									$dbse->getMessage());
+									htmlentities($dbse->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Did not get subscriber_id for admin $admin, nren $nren, " .
 					  "subscriber $subscriber. Error is " . $dbse->getMessage());
 			return;
@@ -518,7 +530,7 @@ class CP_Admin extends Content_Page
 										array('text','text'),
 										array($sid,$admin));
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Problem updating your admin status. Server said: " . $dbqe->getMessage());
+			Framework::error_output("Problem updating your admin status. Server said: " . htmlentities($dbqe->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
 							" of subscriber $subscriber");
 			return;
@@ -550,17 +562,19 @@ class CP_Admin extends Content_Page
 								array('text', 'text'),
 								array($admin, $subscriber));
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("ADMIN: Could not downgrade admin $admin! Seems like a problem " .
+			Framework::error_output("ADMIN: Could not downgrade admin " . htmlentities($admin) .
+			                        "! Seems like a problem " .
 									"with the configuration of Confusa! Server said: " .
-									$dbse->getMessage());
+									htmlentities($dbse->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not downgrade subscriber-admin $admin of subscriber " .
 							"$subscriber to a subscriber-sub-admin. Something seems to " .
 							"be wrong with the statement: " . $dbse->getMessage());
 			return;
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("ADMIN: Could not downgrade admin $admin! Seems like a problem " .
+			Framework::error_output("ADMIN: Could not downgrade admin " . htmlentities($admin) .
+			                        "! Seems like a problem " .
 									"with the supplied data! Server said: " .
-									$dbqe->getMessage());
+									htmlentities($dbqe->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not downgrade subscriber-admin $admin of subscriber " .
 							"$subscriber to a subscriber-sub-admin. Error with the " .
 							"supplied data: " . $dbqe->getMessage());
@@ -569,7 +583,8 @@ class CP_Admin extends Content_Page
 
 		Logger::log_event(LOG_NOTICE, "ADMIN: Downgraded admin $admin from subscriber-admin to subscriber-" .
 						"sub-admin in subscriber $subscriber.");
-		Framework::success_output("Downgraded $admin from subscriber admin to subscriber-sub-admin");
+		Framework::success_output("Downgraded " . htmlentities($admin) .
+		                          " from subscriber admin to subscriber-sub-admin");
 	}
 
 	/**
@@ -589,13 +604,13 @@ class CP_Admin extends Content_Page
 						  array($nren));
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem determining the ID of your NREN! Server said " .
-									$dbqe->getMessage());
+									htmlentities($dbqe->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Problem getting NREN-ID for NREN $nren " .
 								$dbqe->getMessage());
 			return;
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem determining the ID of your NREN! Server said " .
-									$dbse->getMessage());
+									htmlentities($dbse->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Problem getting NREN-ID for NREN $nren " .
 								$dbse->getMessage());
 			return;
@@ -623,17 +638,20 @@ class CP_Admin extends Content_Page
 		} catch (DBStatementException $dbse) {
 			Logger::log_event(LOG_NOTICE, "ADMIN: Problem when trying to upgrade subscriber admin " .
 							"$admin to NREN-admin in NREN $nren: " . $dbse->getMessage());
-			Framework::error_output("Problem when upgrading the admin. Server said: " . $dbse->getMessage());
+			Framework::error_output("Problem when upgrading the admin. Server said: " .
+			                        htmlentities($dbse->getMessage()));
 			return;
 		} catch (DBQueryException $dbqe) {
 			Logger::log_event(LOG_NOTICE, "ADMIN: Problem when trying to upgrade subscriber admin " .
 							"$admin to NREN-admin in NREN $nren: " . $dbqe->getMessage());
-			Framework::error_output("Problem when upgrading the admin. Server said: " . $dbqe->getMessage());
+			Framework::error_output("Problem when upgrading the admin. Server said: " .
+			                        htmlentities($dbqe->getMessage()));
 			return;
 		}
 
 		Logger::log_event(LOG_NOTICE, "ADMIN: Subscriber admin $admin upgraded to NREN level (NREN $nren)");
-		Framework::success_output("Upgraded subscriber-admin $admin to NREN level $nren");
+		Framework::success_output("Upgraded subscriber-admin " . htmlentities($admin) . " to NREN level " .
+		                          htmlentities($nren));
 	}
 
 	/*
@@ -655,21 +673,24 @@ class CP_Admin extends Content_Page
 			Logger::log_event(LOG_NOTICE, "ADMIN: Problem when trying to upgrade subscriber-sub-admin " .
 							"$admin in subscriber $subscriber. Error with the statement: " .
 							$dbse->getMessage());
-			Framework::error_output("Problem when upgrading sub-admin $admin. Probably an error with the " .
-									"configuration! Server said: " . $dbse->getMessage());
+			Framework::error_output("Problem when upgrading sub-admin " . htmlentities($admin) .
+			                        " Probably an error with the configuration! Server said: " .
+			                        htmlentities($dbse->getMessage()));
 			return;
 		} catch (DBQueryException $dbqe) {
 			Logger::log_event(LOG_NOTICE, "ADMIN: Problem when trying to upgrade subscriber-sub-admin " .
 							"$admin in subscriber $subscriber. Error with supplied data: " .
 							$dbqe->getMessage());
-			Framework::error_output("Problem when upgrading sub_admin $admin. Probably a problem with the " .
-									"supplied data! Server said: " . $dbqe->getMessage());
+			Framework::error_output("Problem when upgrading sub_admin " . htmlentities($admin) .
+			                        " Probably a problem with the supplied data! Server said: " .
+			                        htmlentities($dbqe->getMessage()));
 			return;
 		}
 
 		Logger::log_event(LOG_NOTICE, "ADMIN: Upgraded subscriber-sub-admin $admin to a subscriber-admin " .
 						"within subscriber $subscriber");
-		Framework::success_output("Upgraded subscriber-sub-admin $admin to a subscriber-admin");
+		Framework::success_output("Upgraded subscriber-sub-admin " . htmlentities($admin) .
+		                          " to a subscriber-admin");
 	}
 
 	/*
@@ -713,11 +734,13 @@ class CP_Admin extends Content_Page
 			}
 
 		} catch (DBStatementException $dbse) {
-			$msg = "Cannot find id-values in the database due to server problems. Server said: " . $dbse->getMessage();
+			$msg = "Cannot find id-values in the database due to server problems. Server said: " .
+			        htmlentities($dbse->getMessage());
 			Framework::error_output($msg);
 			return;
 		} catch (DBQueryException $dbqe) {
-			$msg = "Cannot find id-values due to data inconsistency. Server said: " . $dbqe->getMessage();
+			$msg = "Cannot find id-values due to data inconsistency. Server said: " .
+			       htmlentities($dbqe->getMessage());
 			Framework::error_output($msg);
 			return;
 		}
@@ -754,17 +777,19 @@ class CP_Admin extends Content_Page
 			Logger::log_event(LOG_INFO, "Successfully deleted admin $admin with level $targetLevel");
 		} catch(DBStatementException $dbse) {
 			Framework::error_output("Could not delete the admin because the statement was bad " .
-						"Please contact an administrator. Server said " . $dbse->getMessage());
+						"Please contact an administrator. Server said " .
+						htmlentities($dbse->getMessage()));
 			Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ . ": Problem occured when trying to delete " .
 					  "admin $admin with level $level: " . $dbse->getMessage());
 		} catch(DBQueryException $dbqe) {
 			Framework::error_output("Could not delete the admin because of problems with the " .
-						"received data. Server said " . $dbqe->getMessage());
+						"received data. Server said " .
+						htmlentities($dbqe->getMessage()));
 			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ . ": Problem occured when tyring to delete " .
 					  "admin $admin with level $level: " . $dbqe->getMessage());
 		}
 
-		Framework::success_output("Deleted admin $admin");
+		Framework::success_output("Deleted admin " . htmlentities($admin));
 	}
 }
 
