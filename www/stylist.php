@@ -171,12 +171,12 @@ class CP_Stylist extends Content_Page
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem looking up the NREN about- and help-texts in the DB. " .
 									"Looks like a server problem, contact an administrator. " .
-									"Server said " .  $dbse->getMessage());
+									"Server said " .  htmlentities($dbse->getMessage()));
 			return NULL;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem looking up the NREN about- and help-texts in the DB. " .
 									"Looks like a problem with the supplied data. " .
-									"Server said " . $dbqe->getMessage());
+									"Server said " . htmlentities($dbqe->getMessage()));
 			return NULL;
 		}
 
@@ -220,12 +220,12 @@ class CP_Stylist extends Content_Page
 										array($new_text, $nren));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem updating the help text of your NREN! " .
-									"Please contact an administrator to resolve this! Server said " . $dbse->getMessage());
+									"Please contact an administrator to resolve this! Server said " . htmlentities($dbse->getMessage()));
 			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating the help text of your NREN, " .
 									"probably related to the supplied data. Please verify the data to be inserted! " .
-									"Server said " . $dbqe->getMessage());
+									"Server said " . htmlentities($dbqe->getMessage()));
 			return;
 		}
 
@@ -250,12 +250,12 @@ class CP_Stylist extends Content_Page
 									   array($new_text, $nren));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem updating the about text of your NREN! " .
-									"Please contact an administrator to resolve this! Server said " . $dbse->getMessage());
+									"Please contact an administrator to resolve this! Server said " . htmlentities($dbse->getMessage()));
 			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating the about text of your NREN, " .
 									"probably related to the supplied data. Please verify the data to be inserted! " .
-									"Server said " . $dbqe->getMessage());
+									"Server said " . htmlentities($dbqe->getMessage()));
 			return;
 		}
 
@@ -280,7 +280,7 @@ class CP_Stylist extends Content_Page
 				return Input::sanitizeCSS($css_string);
 			} catch (FileException $fexp) {
 				Framework::error_output("Could not open NREN-specific CSS file! Server said "
-										. $fexp->getMessage() . "!");
+										. htmlentities($fexp->getMessage()) . "!");
 			}
 		}
 
@@ -295,7 +295,7 @@ class CP_Stylist extends Content_Page
 			return Input::sanitizeCSS($css_string);
 		} catch (FileException $fexp) {
 			Framework::error_output("Could not open Confusa's main CSS file! Server said "
-									. $fexp->getMessage() . "!");
+									. htmlentities($fexp->getMessage()) . "!");
 			return;
 		}
 	}
@@ -417,7 +417,7 @@ class CP_Stylist extends Content_Page
 				$fu->write_content_to_file($logo_file);
 			} catch (FileException $fexp) {
 				Framework::error_output("Could not save the logo on the server. " .
-							"Server said: " . $fexp->getMessage());
+							"Server said: " . htmlentities($fexp->getMessage()));
 				return;
 			}
 
@@ -449,11 +449,11 @@ class CP_Stylist extends Content_Page
 						    $nren_id[0]['nren_id']);
 		} catch (DBStatementException $dbse) {
 			/* FIXME */
-			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . $dbse->getMessage());
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . htmlentities($dbse->getMessage()));
 			return false;
 		} catch (DBQueryException $dbqe) {
 			/* FIXME */
-			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . $dbqe->getMessage());
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . htmlentities($dbqe->getMessage()));
 			return false;
 		}
 
@@ -465,7 +465,7 @@ class CP_Stylist extends Content_Page
 						    array('text', 'text', 'text', 'text', 'text', 'text'),
 						    array($nren_id[0]['nren_id'], $this->person->getEPPNKey(), $epodn, $cn, $mail, $entitlement));
 			} catch (DBQueryException $dbqe) {
-				Framework::error_output("Could not create new map.<br />Server said: " . $dbqe->getMessage());
+				Framework::error_output("Could not create new map.<br />Server said: " . htmlentities($dbqe->getMessage()));
 				return false;
 			}
 			break;

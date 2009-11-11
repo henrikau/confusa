@@ -6,12 +6,12 @@
   </p>
   <br />
   <p class="info">
-    Note: Please provide an image with a size of maximally <b>{$width} x {$height}</b>
+    Note: Please provide an image with a size of maximally <b>{$width|escape} x {$height|escape}</b>
     pixel!
   </p>
   <br />
   <p class="info">
-    Note: Supported file-extensions are {$extensions}
+    Note: Supported file-extensions are {$extensions|escape}
   </p>
   <br />
   {if is_null($logo) === FALSE}

@@ -3,7 +3,7 @@
   <p class="info">
     <br />
     Add or update the attribute map for your NREN
-    ({$person->getNREN()}). This part is crucial for the operation of
+    ({$person->getNREN()|escape}). This part is crucial for the operation of
     Confusa, and if the mapping is not working properly, the users may
     not be able to use Confusa the way they are supposed to.
   </p>
@@ -36,7 +36,7 @@
       <tr>
 	<td align="right">Country</td>
 	<td align="center"><b><font color="darkgray">-</font></b></td>
-	<td>{$person->getCountry()}</td>
+	<td>{$person->getCountry()|escape}</td>
       </tr>
 
 
@@ -46,8 +46,8 @@
       *}
       <tr>
 	<td align="right">Unique identifier</td>
-	<td align="center"><font color="darkgray">{$person->getEPPNKey()}</font></td>
-	<td>{$person->getEPPN()}</td>
+	<td align="center"><font color="darkgray">{$person->getEPPNKey()|escape}</font></td>
+	<td>{$person->getEPPN()|escape}</td>
       </tr>
 
       {*
@@ -64,7 +64,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td>{$person->getSubscriberIdPName()}</td>
+	<td>{$person->getSubscriberIdPName()|escape}</td>
       </tr>
 
 
@@ -83,7 +83,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td>{$person->getName()}</td>
+	<td>{$person->getName()|escape}</td>
       </tr>
 
       {*
@@ -101,7 +101,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td>{$person->getEmail()}</td>
+	<td>{$person->getEmail()|escape}</td>
       </tr>
 
       {*
@@ -114,12 +114,12 @@
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $NRENMap.entitlement}selected="yes"{/if} value="{$element}">
-	      {$element}
+	      {$element|escape}
 	    </option>
 	    {/foreach}
 	  </select>
 	</td>
-	<td>{$person->getEntitlement()}</td>
+	<td>{$person->getEntitlement()|escape}</td>
       </tr>
 
       <tr>
@@ -129,7 +129,7 @@
       <tr>
 	<td align="right"><input type="reset" value="reset"/></td>
 	<td align="right">
-	  <input type="submit" value="update map" onclick="return confirm('\tAre you sure?\n\nThis will potentianally affect all users affiliated with {$person->getSubscriberOrgName()}')" />
+	  <input type="submit" value="update map" onclick="return confirm('\tAre you sure?\n\nThis will potentially affect all users affiliated with NREN {$person->getNREN()|escape}!')" />
 	</td>
       </tr>
     </table>
