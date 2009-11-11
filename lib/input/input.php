@@ -82,6 +82,10 @@ class Input
 		/* execute this after the URL removal, since it will break the CSS.
 		 * this is for the leftover hardcore cases such as expression(...) */
 		$output = preg_replace('/(.)*(\()+(.)*/', '', $output);
+		/* remove all occurences of @ as the @import directive makes it possible
+		 * to execute remote code
+		 */
+		$output = preg_replace('/(.)*(@)+(.)*/', '', $output);
 		return $output;
 	}
 
