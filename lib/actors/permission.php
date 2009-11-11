@@ -51,7 +51,7 @@ class Permission
 		$formattedReasons = "<ul>";
 		foreach($this->reasons as $reason) {
 			$formattedReasons .= "<li style=\"margin-bottom: 10px\">" .
-					$reason . "</li>";
+					htmlentities($reason) . "</li>";
 		}
 		$formattedReasons .= "</ul>";
 		return $formattedReasons;
