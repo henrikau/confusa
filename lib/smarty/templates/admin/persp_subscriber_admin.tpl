@@ -7,7 +7,7 @@
 </legend>
 
 	<p class="info">
-	Add/delete administrators for your institution '{$subscriber}'.
+	Add/delete administrators for your institution '{$subscriber|escape}'.
 	You yourself are marked with an asterisk (*). Subscriber admins have the
 	following privileges:
 	</p>
@@ -59,7 +59,7 @@
 		{else}
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
 				title="Delete admin"
-				name="delete" onclick="return confirm('Delete entry {$subscriber_admin}?')" />
+				name="delete" onclick="return confirm('Delete entry {$subscriber_admin.eppn|escape}?')" />
 			</div>
 			</form>
 			</td>
@@ -98,7 +98,7 @@
 </legend>
 
 <p class="info">
-Add/delete subscriber-subadmins for your institution '{$subscriber}'.
+Add/delete subscriber-subadmins for your institution '{$subscriber|escape}'.
 Subscriber sub-admins have the following privileges:
 </p>
 <br />
@@ -169,12 +169,12 @@ Subscriber sub-admins have the following privileges:
 <div class="expcont">
 	<div class="spacer"></div>
 	<fieldset class="infoblock">
-		<legend>Admins for your NREN {$nren}</legend>
+		<legend>Admins for your NREN {$nren|escape}</legend>
 		<p class="info">
 		NREN-admins are administrating the whole NREN admin domain, i.e. your institution
 		along with other institutions. They can also define, which institutions are
 		hooked up to Confusa and which credentials should be used for communicating
-		with the Online-CA. Below you can find a list of them for your NREN {$nren}:
+		with the Online-CA. Below you can find a list of them along with their e-mail addresses your NREN {$nren|escape}:
 		</p>
 		<br />
 		<ul>
