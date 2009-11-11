@@ -52,7 +52,7 @@ certificates published by this CA.
 <br />
 <h4>CA certificate dump:</h4>
 <hr width="80%">
-<pre>
+<pre class="certificate">
 {$ca_dump|escape}
 </pre>
 {/if}
@@ -61,7 +61,7 @@ certificates published by this CA.
 <br />
 <h4>CRL dump:</h4>
 <hr width="80%">
-<pre>
+<pre class="certificate">
 {$crl_dump|escape}
 </pre>
 <hr width="80%" />
