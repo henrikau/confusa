@@ -21,9 +21,9 @@
       {foreach from=$csrList item=csr}
       <tr><td></td></tr>
       <tr>
-	<td>{$csr.uploaded_date}</td>
+	<td>{$csr.uploaded_date|escape}</td>
 	<td> </td>
-	<td>{$csr.common_name}</td>
+	<td>{$csr.common_name|escape}</td>
 	<td> </td>
 	<td>{$csr.from_ip}</td>
 	<td> </td>

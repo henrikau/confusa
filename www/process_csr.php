@@ -202,7 +202,7 @@ final class CP_ProcessCsr extends Content_Page
 		if (isset($_GET['delete_csr'])) {
 			$res = delete_csr_from_db($this->person, htmlentities($_GET['delete_csr']));
 			if ($res) {
-				Framework::message_output("Successfully deleted CSR for user " . $this->person->getEPPN() . ".");
+				Framework::message_output("Successfully deleted CSR for user " . htmlentities($this->person->getEPPN()) . ".");
 			} else {
 				Framework::error_output("Could not delete CSR.");
 			}
@@ -212,7 +212,7 @@ final class CP_ProcessCsr extends Content_Page
 				$this->tpl->assign('csrInspect', get_csr_details($this->person, Input::sanitize($_GET['inspect_csr'])));
 				$res = true;
 			} catch (CSRNotFoundException $csrnfe) {
-				$msg  = "Error with auth-token ($auth_key) - not found. ";
+				$msg  = "Error with auth-token (" . htmlentities($auth_key) . ") - not found. ";
 				$msg .= "Please verify that you have entered the correct auth-url and try again.";
 				$msg .= "If this problem persists, try to upload a new CSR and inspect the fields carefully";
 				Framework::error_output($msg);
@@ -270,7 +270,7 @@ final class CP_ProcessCsr extends Content_Page
 		}
 
 		if (!isset($csr)) {
-			Framework::error_output("Did not find CSR with auth_token $auth_token");
+			Framework::error_output("Did not find CSR with auth_token " . htmlentities($auth_token));
 			$msg  = "User " . $this->person->getEPPN() . " ";
 			$msg .= "tried to delete CSR with auth_token " . $authToken . " but was unsuccessful";
 			Logger::log_event(LOG_NOTICE, $msg);
@@ -295,14 +295,14 @@ final class CP_ProcessCsr extends Content_Page
 			$this->certManager->sign_key($authToken, $csr);
 
 		} catch (RemoteAPIException $rapie) {
-			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" . $rapie);
+			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" . htmlentities($rapie));
 			return false;
 		} catch (ConfusaGenException $e) {
-			$msg = "Error signing key, remote said: <br /><br /><i>" . $e->getMessage() . "</i><br />";
+			$msg = "Error signing key, remote said: <br /><br /><i>" . htmlentities($e->getMessage()) . "</i><br />";
 			Framework::error_output($msg);
 			return false;
 		} catch (KeySigningException $kse) {
-			Framework::error_output("Could not sign certificate. Server said: " . $kse->getMessage());
+			Framework::error_output("Could not sign certificate. Server said: " . htmlentites($kse->getMessage()));
 			return false;
 		}
 		delete_csr_from_db($this->person, $authToken);
