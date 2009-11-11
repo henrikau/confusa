@@ -5,11 +5,11 @@
 * ---------------------------------------------------------------- *}
 
 <fieldset>
-  <legend>Subscriber accounts for: {$nrenName}</legend>
+  <legend>Subscriber accounts for: {$nrenName|escape}</legend>
   <br />
   <p class="info">
     Add or change subscriber accounts. A subscriber is an organization
-    belonging to the current NREN ({$nrenName}). This is where the status
+    belonging to the current NREN ({$nrenName|escape}). This is where the status
     of these subscribers can be changed, new added or existing deleted.
   </p>
   <br />
@@ -41,10 +41,10 @@
       <td style="width: 25px">{$nren->info_button('subscriber', $row.subscriber, $row.subscriber_id)}</td>
 
       <td style="width: 70px; {$style}">
-	{$row.subscriber_id}
+	{$row.subscriber_id|escape}
       </td>
       <td style="width: 200px; {$style}">
-	{$row.subscriber}
+	{$row.subscriber|escape}
 
 	{if $row.subscriber == $self_subscriber}
 	<span title="Your own institution" style="cursor:help">(*)</span>
@@ -69,14 +69,18 @@
   {if $subscriber_details && $row.subscriber_id == $subscriber_detail_id}
   <fieldset style="border: 1px dotted #C0C0C0">
     <legend style="border: none; color: #303030">Details for
-    {$row.subscriber}</legend>
+    {$row.subscriber|escape}</legend>
     <form action="" method="post">
       <input type="hidden" name="subscriber" value="edit">
       <input type="hidden" name="id" value="{$row.subscriber_id}">
       <input type="hidden" name="dn_name" value="{$row.subscriber}">
     <table>
       <tr>
-	<td style="width: 150px"><div class="spacer"></div></td>
+	<td style="width: 150px; padding-right: 10px">
+		<input type="hidden" name="subscriber" value="edit" />
+		<input type="hidden" name="id" value="{$row.subscriber_id|escape}" />
+		<input type="hidden" name="dn_name" value="{$row.subscriber|escape}" />
+	</td>
 	<td style="width: 25px"></td>
 	<td style="width: 300px"></td>
       </tr>
@@ -133,9 +137,8 @@
       </tr>
 
       <tr>
-	<td align="right">DN: /O=</td>
-	<td align="right" style="width=100px"><div class="spacer"></div></td>
-	<td><b>{$subscr_details.dn_name}</b></td>
+	<td align="right" style="padding-right: 10px">DN: /O=</td>
+	<td><b>{$subscr_details.dn_name|escape}</b></td>
       </tr>
 
       <tr>
@@ -167,9 +170,8 @@
       </tr>
 
       <tr>
-	<td align="right"><input type="reset" value="Reset form" /></td>
-	<td style="width: 25px"></td>
-	<td style="width: 300px"><input type="submit" value="Update {$row.subscriber}"</td>
+	<td align="right" style="padding-right: 10px"><input type="reset" value="Reset form" /></td>
+	<td style="width: 300px"><input type="submit" value="Update {$row.subscriber|escape}" /></td>
       </tr>
     </table>
     </form>
