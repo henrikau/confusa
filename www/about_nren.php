@@ -35,11 +35,11 @@ class CP_About_NREN extends Content_Page
 										array($nren));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Error fetching the NREN about-page. Probably a " .
-									"configuration problem! Server said: " . $dbse->getMessage());
+									"configuration problem! Server said: " . htmlentities($dbse->getMessage()));
 			return "";
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Error fetching the NREN about-page. Looks like a " .
-									"problem with the supplied data. Queried NREN was " . $nren);
+									"problem with the supplied data. Queried NREN was " . htmlentities($nren));
 			return "";
 		}
 
