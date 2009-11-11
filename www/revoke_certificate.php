@@ -57,13 +57,23 @@ class CP_RevokeCertificate extends Content_Page
 					} elseif (!$this->checkRevocationPermissions($order_number)) {
 						Framework::error_output("You do not have the permission to revoke that certificate!");
 					} elseif (!$this->certManager->revoke_cert($order_number, $reason)) {
-						Framework::error_output("Cannot revoke yet ($order_number) for supplied reason: $reason");
+						Framework::error_output("Cannot revoke yet (" . htmlentities($order_number) .
+						                        ") for supplied reason: " .
+						                        htmlentities($reason));
 					} else {
-						Framework::message_output("Certificate ($order_number) successfully revoked.");
+						Framework::message_output("Certificate (" .
+						                          htmlentities($order_number) .
+						                          ") successfully revoked.");
+
+						if (Config::get_config('ca_mode') === CA_ONLINE &&
+						    Config::get_config('capi_test') === true) {
+								Framework::message_output("Note that the revocation has only been simulated, " .
+									"because Confusa is in API-Test mode.");
+						}
 					}
 				} catch (ConfusaGenException $cge) {
 					Framework::error_output("Revocation failed, the following problem was reported: " .
-											$cge->getMessage());
+											htmlentities($cge->getMessage()));
 				}
 				break;
 			default:
@@ -79,7 +89,7 @@ class CP_RevokeCertificate extends Content_Page
 					$this->revoke_certs(Input::sanitizeText($_POST['common_name']), Input::sanitize($_POST['reason']));
 				} catch (ConfusaGenException $cge) {
 					Framework::error_output("Could not revoke certificates because of the " .
-											"following problem: " . $cge->getMessage());
+											"following problem: " . htmlentities($cge->getMessage()));
 				}
 				break;
 
@@ -88,7 +98,7 @@ class CP_RevokeCertificate extends Content_Page
 					$this->revoke_list(Input::sanitize($_POST['reason']));
 				} catch (ConfusaGenException $cge) {
 					Framework::error_output("Could not revoke certificates because of the " .
-											"following problem: " . $cge->getMessage());
+											"following problem: " . htmlentities($cge->getMessage()));
 				}
 				break;
 
@@ -113,7 +123,7 @@ class CP_RevokeCertificate extends Content_Page
 
 		} catch (ConfusaGenException $cge) {
 			Framework::error_output("Can not display revocation options! Server " .
-									"said: " . $cge->getMessage());
+									"said: " . htmlentities($cge->getMessage()));
 		}
 	}
 
@@ -148,8 +158,8 @@ class CP_RevokeCertificate extends Content_Page
 						$this->person->getNREN() . ", contacting us from " .
 						$_SERVER['REMOTE_ADDR'] . " tried to revoke certificates for " .
 						"subscriber $subscriber, which is not part of the NREN!");
-					Framework::error_output("Subscriber $subscriber is not part of " .
-									"your NREN!");
+					Framework::error_output("Subscriber " . htmlentities($subscriber) .
+					                        "is not part of your NREN!");
 					return;
 				}
 			} else {
@@ -185,7 +195,8 @@ class CP_RevokeCertificate extends Content_Page
 		 * to revoke. */
 		case 'search_by_cn':
 			$common_name = Input::sanitizeText($_POST['search']);
-			Framework::message_output("Your search string was '$common_name'.");
+			Framework::message_output("Your search string was '" .
+			                          htmlentities($common_name) . "'.");
 			$this->searchCertsDisplay($common_name, $subscriber);
 			break;
 		case 'search_by_list':
@@ -215,11 +226,11 @@ class CP_RevokeCertificate extends Content_Page
 		} catch(DBStatementException $dbse) {
 			Framework::error_output("Cannot retrieve subscriber from database!<BR /> " .
 				"Probably wrong syntax for query, ask an admin to investigate." .
-				"Server said: " . $dbse->getMessage());
+				"Server said: " . htmlentities($dbse->getMessage()));
 			return null;
 		} catch(DBQueryException $dbqe) {
 			Framework::error_output("Query failed. This probably means that the values passed to the "
-								. "database are wrong. Server said: " . $dbqe->getMessage());
+								. "database are wrong. Server said: " . htmlentities($dbqe->getMessage()));
 			return null;
 		}
 
@@ -325,7 +336,9 @@ class CP_RevokeCertificate extends Content_Page
 			unset($_SESSION['auth_keys']);
 		} else {
 			Framework::error_output("Lost the certificate identifiers associated with " .
-									"common name $common_name during the session! Please try again!");
+			                        "common name " .
+			                        htmlentities($common_name) .
+			                        " during the session! Please try again!");
 		}
 
 		$auth_key_list = $auth_keys[$common_name];
@@ -351,7 +364,7 @@ class CP_RevokeCertificate extends Content_Page
 					$num_certs_revoked = $num_certs_revoked + 1;
 				}
 			} catch (ConfusaGenException $cge) {
-				Framework::error_output($cge->getMessage());
+				Framework::error_output(htmlentities($cge->getMessage()));
 			}
 		}
 
@@ -397,7 +410,8 @@ class CP_RevokeCertificate extends Content_Page
 		foreach($auth_keys as $auth_key) {
 			try {
 				if (!$this->certManager->revoke_cert($auth_key, $reason)) {
-					Framework::error_output("Could not revoke certificate $auth_key.");
+					Framework::error_output("Could not revoke certificate " .
+					                        htmlentities($auth_key) . ".");
 				} else {
 					$num_certs_revoked = $num_certs_revoked + 1;
 				}
@@ -529,7 +543,7 @@ class CP_RevokeCertificate extends Content_Page
 
 		} catch (ConfusaGenException $cge) {
 			Framework::error_output("Retrieving certificate information failed: " .
-							$cge->getMessage());
+							htmlentities($cge->getMessage()));
 			Logger::log_event(LOG_INFO, "[nadm][sadm][norm] Revoking certificate " .
 				"with key $auth_key failed, because permissions could not be " .
 				"determined!");

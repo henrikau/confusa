@@ -58,7 +58,7 @@ immediately see a result entry *}
         {foreach from=$owners item=owner}
             <tr>
                 <td>
-                    {$owner}
+                    {$owner|escape}
                 </td>
                 <td>
                     <form action="" method="post">
@@ -83,7 +83,7 @@ immediately see a result entry *}
 
         {foreach from=$owners item=owner}
             <tr style="width: 80%">
-                <td>{$owner}</td>
+                <td>{$owner|escape}</td>
             </tr>
         {/foreach}
 
