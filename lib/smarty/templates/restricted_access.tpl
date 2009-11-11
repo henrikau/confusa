@@ -5,4 +5,4 @@ you to view the intended page. The reason supplied was:
 <BR />
 <BR />
 
-{$reason}
+{$reason|escape}
