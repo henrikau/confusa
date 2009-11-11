@@ -13,11 +13,11 @@
 	<script type="text/javascript">
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
-	pollStatus('Processing order number {$order_number}.');
+	pollStatus('Processing order number {$order_number|escape}.');
 
 	{if $done === TRUE}
 		clearTimeout(timer1);
-		statusDone({$order_number});
+		statusDone({$order_number|escape});
 	{/if}
 	</script>
 {else}
@@ -29,7 +29,7 @@
 	</td>
 	<td>
 	<p class="info">We strongly recommend to choose a key with keysize
-	<b> {$keysize} </b> bits. Please check which keysizes correspond to which "grades" in your browser!</p>
+	<b> {$keysize|escape} </b> bits. Please check which keysizes correspond to which "grades" in your browser!</p>
 	</td>
 	</tr><tr><td>
 	<input type="hidden" name="browserSigning" value="keygen" />

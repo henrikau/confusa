@@ -7,7 +7,7 @@
       <tr>
 	<td>Auth token</td>
 	<td></td>
-	<td>{$csrInspect.auth_token}</td>
+	<td>{$csrInspect.auth_token|escape}</td>
       </tr>
       <tr><td></td></tr>
 
@@ -16,7 +16,7 @@
       <tr>
 	<td>Country:</td>
 	<td></td>
-	<td>{$csrInspect.countryName}</td>
+	<td>{$csrInspect.countryName|escape}</td>
       </tr>
       <tr><td></td></tr>
       {/if}
@@ -26,7 +26,7 @@
       <tr>
 	<td>Organization Name:</td>
 	<td></td>
-	<td>{$csrInspect.organizationName}</td>
+	<td>{$csrInspect.organizationName|escape}</td>
       </tr>
       <tr><td></td></tr>
       {/if}
@@ -36,7 +36,7 @@
       <tr>
 	<td>Common-Name:</td>
 	<td></td>
-	<td>{$csrInspect.commonName}</td>
+	<td>{$csrInspect.commonName|escape}</td>
       </tr>
       <tr><td></td></tr>
       {/if}
@@ -46,7 +46,7 @@
       <tr>
 	<td>Key length:</td>
 	<td></td>
-	<td>{$csrInspect.length}</td>
+	<td>{$csrInspect.length|escape}</td>
       </tr>
       <tr><td></td></tr>
       {/if}
@@ -56,7 +56,7 @@
       <tr>
 	<td>Was uploaded:</td>
 	<td></td>
-	<td>{$csrInspect.uploaded}</td>
+	<td>{$csrInspect.uploaded|escape}</td>
       </tr>
       <tr><td></td></tr>
       {/if}

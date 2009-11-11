@@ -76,11 +76,11 @@ function createIEVistaRequest(dn, keysize)
 	chooseButton.style.cssText = "display: none";
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
-	pollStatus('Processing order number {$order_number}.');
+	pollStatus('Processing order number {$order_number|escape}.');
 
 	{if $done === TRUE}
 		clearTimeout(timer1);
-		statusDone({$order_number});
+		statusDone({$order_number|escape});
 	{/if}
 {else}
 	{* let the user choose the CSP (Cryptographic service provider) *}
