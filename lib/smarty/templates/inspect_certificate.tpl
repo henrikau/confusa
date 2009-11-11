@@ -9,11 +9,11 @@ Collapse</a>
 	<div class="error">
 	There were errors encountered when formatting the certificate. Here is a raw-dump.
 	<pre class="certificate">
-		{$certificate}
+		{$certificate|escape}
 	</pre>
 	</div>
 {else}
 	<pre class="certificate">
-		{$pem}
+		{$pem|escape}
 	</pre>
 {/if}

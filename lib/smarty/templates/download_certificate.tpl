@@ -18,14 +18,14 @@
 				<tr>
 				<td></td>
 				<td>
-				<i>{$key}</i>
+				<i>{$key|escape}</i>
 				</td>
 				</tr>
 				
 				<tr>
 				<td></td>
 				<td>
-				Serial number: <B>{$serial}</B>
+				Serial number: <B>{$serial|escape}</B>
 				</td>
 				</tr>
 
@@ -69,11 +69,11 @@
 				<div>
 				{* Revoke-button *}
 				<input type="hidden" name="revoke"		value="revoke_single" />
-				<input type="hidden" name="order_number"	value="{$key}" />
+				<input type="hidden" name="order_number"	value="{$key|escape}" />
 				<input type="hidden" name="reason"		value="unspecified" />
 				<input type="submit" name="submit"		value="Revoke"
 				       		     style=" background-color:#660000; color:#FFFFFF;" 
-						     onclick="return confirm('\t\tReally revoke certificate?\n\nAuth_key:       {$key}\nExpiry date:   {$cert.valid_untill}')" />
+						     onclick="return confirm('\t\tReally revoke certificate?\n\nAuth_key:       {$key}\nExpiry date:   {$cert.valid_untill|escape}')" />
 				</div>
 				</form>
 				</td>
@@ -81,7 +81,7 @@
 				</tr>
 				<tr>
 				<td></td>
-				<td>{$cert.valid_untill}</td>
+				<td>{$cert.valid_untill|escape}</td>
 				</tr>
 				<tr><td colspan="3">
 				<div id="inspect_area">
@@ -95,7 +95,7 @@
 				<tr>
 				<td></td>
 				<td>
-				<i>{$cert.order_number}</i>
+				<i>{$cert.order_number|escape}</i>
 				</td>
 				</tr>
 
@@ -149,11 +149,11 @@
 						<div>
 						{* Revoke-button *}
 						<input type="hidden" name="revoke"		value="revoke_single" />
-						<input type="hidden" name="order_number"	value="{$cert.order_number}" />
+						<input type="hidden" name="order_number"	value="{$cert.order_number|escape}" />
 						<input type="hidden" name="reason"		value="unspecified" />
 						<input type="submit" name="submit"		value="Revoke"
 										 style=" background-color:#660000; color:#FFFFFF;"
-										onclick="return confirm('\t\tReally revoke certificate?\n\Order number: {$cert.order_number}\nExpiry date:     {$valid}')" />
+										onclick="return confirm('\t\tReally revoke certificate?\n\Order number: {$cert.order_number|escape}\nExpiry date:     {$valid|escape}')" />
 						</div>
 						</form>
 					</td>
@@ -168,7 +168,7 @@
 				{elseif $revoked === true}
 				<td><span style="color: red"><b>Revoked!!</b></span></td>
 				{else}
-				<td>{$cert.valid_untill}</td>
+				<td>{$cert.valid_untill|escape}</td>
 				{/if}
 				</tr>
 				<tr><td colspan="3">
@@ -185,7 +185,7 @@
 	</fieldset>
 	</div>
 {/if} {* empty(certList) *}
-{$processingResult}
+{$processingResult|escape}
 {if isset($script)}
 {$script}
 {/if}

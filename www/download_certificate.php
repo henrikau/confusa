@@ -29,7 +29,7 @@ final class CP_DownloadCertificate extends Content_Page
 						exit(0);
 					}
 				} catch(ConfusaGenException $cge) {
-					Framework::error_output("Could not download the certificate, server said: " . $cge->getMessage());
+					Framework::error_output("Could not download the certificate, server said: " . htmlentities($cge->getMessage()));
 				}
 			}
 		}
@@ -52,7 +52,7 @@ final class CP_DownloadCertificate extends Content_Page
 			$certList = $non_revoked + $revoked;
 			$this->tpl->assign('certList', $certList);
 		} catch (ConfusaGenException $e) {
-			Framework::error_output("Could not retrieve certificates from the database. Server said: " .  $e->getMessage());
+			Framework::error_output("Could not retrieve certificates from the database. Server said: " .  htmlentities($e->getMessage()));
 		}
 		$this->tpl->assign('standalone', (Config::get_config('ca_mode') === CA_STANDALONE));
 		$this->tpl->assign('content', $this->tpl->fetch('download_certificate.tpl'));
@@ -136,7 +136,7 @@ final class CP_DownloadCertificate extends Content_Page
 				}
 			}
 		} catch (ConfusaGenException $e) {
-			Framework::error_output("Could not retrieve the certificate, server said: " . $e->getMessage());
+			Framework::error_output("Could not retrieve the certificate, server said: " . htmlentities($e->getMessage()));
 		}
 
 		$inspectElement = array();
@@ -163,7 +163,7 @@ final class CP_DownloadCertificate extends Content_Page
 				}
 			}
 		} catch (ConfusaGenException $e) {
-			Framework::error_output("Could not mail the certificate, server said: " . $e->getMessage());
+			Framework::error_output("Could not mail the certificate, server said: " . htmlentities($e->getMessage()));
 		}
 		Framework::success_output("Your e-mail has been sent");
 	} /* end send_cert */
