@@ -2,6 +2,7 @@
 
 class Input
 {
+	private static $bootstrapped = false;
 	/**
 	 * sanitize() - clean input for known injection vulnerabilities
 	 *
@@ -61,6 +62,19 @@ class Input
 		 * convert them to <br /> tags. Direct HTML insertion has been dealt
 		 * with using htmlentities*/
 		$input = strtr(strip_tags($input), array("\n" => '<br />', "\r\n" =>'<br />'));
+
+		/* The following is a *HACK*
+		 * However, since we want to use the mysql_real_escape_string,
+		 * we have to make sure that the database has been
+		 * contacted. *sigh*
+		 *
+		 * Note that this *may* throw an exception from the database.
+		 */
+		if (!Input::$bootstrapped) {
+			MDB2Wrapper::execute("SELECT current_timestamp()", null, null);
+			Input::$bootstrapped = true;
+		}
+		/* Escape the string */
 		$output = mysql_real_escape_string($input);
 		return $output;
 	}
