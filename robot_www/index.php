@@ -164,19 +164,19 @@ function createAdminPerson()
 	} catch (DBStatementException $dbse) {
 		$msg = "[$log_error_code] Problem executing query. Is the database-schema outdated?. ";
 		Logger::log_message(LOG_INFO, $msg . " Server said: " . $dbse->getMessage());
-		echo $msg . "<br />\nServar said: " . $dbse->getMessage() . "<br />\n";
+		echo $msg . "<br />\nServer said: " . htmlentities($dbse->getMessage()) . "<br />\n";
 		return null;
 	} catch (DBQueryException $dbqe) {
 		/* FIXME */
 		$msg = "Could not find owner-details for certificate, probably issues with supplied data. ";
-		$msg .= "Admin_id: " . $cert_res[0]['uploaded_by'];
+		$msg .= "Admin_id: " . htmlentities($cert_res[0]['uploaded_by']);
 		Logger::log_message(LOG_INFO, $msg . " Server said: " . $dbqe->getMessage());
-		echo $msg . "<br />\nServar said: " . $dbqe->getMessage() . "<br />\n";
+		echo $msg . "<br />\nServer said: " . htmlentities($dbqe->getMessage()) . "<br />\n";
 		return null;
 	}
 
 	if (count($res) != 1) {
-		echo "[$log_error_code] Did not find the owner (".$cert_res[0]['uploaded_by'].") of the certificate ";
+		echo "[$log_error_code] Did not find the owner (". htmlentities($cert_res[0]['uploaded_by']) .") of the certificate ";
 		echo "(got " . count($res) . " rows in return). <br />\n";
 		echo "This certificate should not be present in the DB.<br />\n";
 		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) No admins appear to own certificate $fingerprint.");
@@ -196,7 +196,7 @@ function createAdminPerson()
 		$person->setEPPN($res[0]['admin']);
 	} catch (CriticalAttributeException $cae) {
 		echo "[$log_error_code] Problems with setting the eduPersonPrincipalName for robot-admin.<br />\n";
-		echo "Check the data in admins (admin_id: " . $cert_res[0]['uploaded_by'] . ")<br />\n";
+		echo "Check the data in admins (admin_id: " . htmlentities($cert_res[0]['uploaded_by']) . ")<br />\n";
 		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Internal error? Suddenly provided admin-eppn is not available.");
 		return null;
 	}
@@ -242,12 +242,12 @@ function printXMLRes($resArray, $type = 'userList')
 	if (isset($resArray) && is_array($resArray) && count($resArray) > 0) {
 		echo $start;
 		foreach($resArray as $value) {
-			$line = "\t\t<listElement eppn=\"".$value['eppn']."\"";
+			$line = "\t\t<listElement eppn=\"". htmlentities($value['eppn']) ."\"";
 			if (isset($value['count'])) {
 				$line .= " count=\"".$value['count']."\"";
 			}
 			if (isset($value['fullDN'])) {
-				$line .= " fullDN=\"".$value['fullDN']."\"";
+				$line .= " fullDN=\"". htmlentities($value['fullDN']) ."\"";
 			}
 			echo $line . " />\n";
 		}
@@ -268,18 +268,18 @@ if(!isset($admin) || !$admin->isAuth()) {
 if (false && Config::get_config('debug')) {
 	echo "<hr />\n";
 	echo "<table class=\"small\">";
-	echo "<tr><td><b>Name:</b></td><td>".$admin->getName()."</td></tr>";
-	echo "<tr><td><b>eduPersonPrincipalName:</b></td><td>".$admin->getEPPN()."</td></tr>";
-	echo "<tr><td><b>CommonName in DN</b></td><td>".$admin->getX509ValidCN()."</td></tr>";
-	echo "<tr><td><b>email:</b></td><td>".$admin->getEmail()."</td></tr>";
-	echo "<tr><td><b>Country:</b></td><td>".$admin->getCountry()."</td></tr>";
-	echo "<tr><td><b>OrganizationalName:</b></td><td>".$admin->getSubscriberOrgName()."</td></tr>";
-	echo "<tr><td><b>Entitlement:</b></td><td>".$admin->getEntitlement()."</td></tr>";
-	echo "<tr><td><b>NREN:</b></td><td>".$admin->getNREN()."</td></tr>";
-	echo "<tr><td><b>Complete /DN:</b></td><td>".$admin->getX509SubjectDN()."</td></tr>";
+	echo "<tr><td><b>Name:</b></td><td>". htmlentities($admin->getName()) ."</td></tr>";
+	echo "<tr><td><b>eduPersonPrincipalName:</b></td><td>".htmlentities($admin->getEPPN())."</td></tr>";
+	echo "<tr><td><b>CommonName in DN</b></td><td>".htmlentities($admin->getX509ValidCN())."</td></tr>";
+	echo "<tr><td><b>email:</b></td><td>".htmlentities($admin->getEmail())."</td></tr>";
+	echo "<tr><td><b>Country:</b></td><td>".htmlentities($admin->getCountry())."</td></tr>";
+	echo "<tr><td><b>OrganizationalName:</b></td><td>".htmlentities($admin->getSubscriberOrgName())."</td></tr>";
+	echo "<tr><td><b>Entitlement:</b></td><td>".htmlentities($admin->getEntitlement())."</td></tr>";
+	echo "<tr><td><b>NREN:</b></td><td>".htmlentities($admin->getNREN())."</td></tr>";
+	echo "<tr><td><b>Complete /DN:</b></td><td>".htmlentities($admin->getX509SubjectDN())."</td></tr>";
 	echo "	<tr><td></td><td></td></tr>";
-	echo "	<tr><td><b>Time left</b></td><td>".$timeLeft."</td></tr>";
-	echo "<tr><td><b>Time since AuthN</b></td><td>".$timeSinceStart."</td></tr>";
+	echo "	<tr><td><b>Time left</b></td><td>".htmlentities($timeLeft)."</td></tr>";
+	echo "<tr><td><b>Time since AuthN</b></td><td>".htmlentities($timeSinceStart)."</td></tr>";
 	echo "</table><br />";
 	echo "<hr />\n";
 }

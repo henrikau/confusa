@@ -47,25 +47,25 @@
     <td width="20px"></td>
     <td>Serial number:</td>
     <td width="30px"></td>
-    <td>{$element->serial()}</td>
+    <td>{$element->serial()|escape}</td>
   </tr>
   <tr>
     <td></td>
     <td>Uploaded by</td>
     <td></td>
-    <td>{$element->getOwner()}</td>
+    <td>{$element->getOwner()|escape}</td>
   </tr>
   <tr>
     <td></td>
     <td>Uploaded:</td>
     <td width="30px"></td>
-    <td>{$element->madeAvailable()}</td>
+    <td>{$element->madeAvailable()|escape}</td>
   </tr>
   <tr>
     <td></td>
     <td>Valid until:</td>
     <td></td>
-    <td>{$element->validTo()}</td>
+    <td>{$element->validTo()|escape}</td>
   </tr>
 
   {if $cert_info}
@@ -84,18 +84,18 @@
   <tr><td></td>
     <td>Fingerprint:</td>
     <td></td>
-    <td>{$element->fingerprint()}</td>
+    <td>{$element->fingerprint()|escape}</td>
   </tr>
   <tr><td></td>
     <td>Comment:</td><td></td>
-    <td>{$element->getComment()}
+    <td>{$element->getComment()|escape}
     </td>
   </tr>
   {if $element->getLastWarningSent()}
   <tr><td></td>
     <td>Warning sent:</td>
     <td></td>
-    <td>{$element->getLastWarningSent()}
+    <td>{$element->getLastWarningSent()|escape}
     </td>
   </tr>
   {/if}
