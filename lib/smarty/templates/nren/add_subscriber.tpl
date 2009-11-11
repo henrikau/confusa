@@ -59,7 +59,7 @@
 	</td>
       </tr>
       {if isset($foundUniqueName)}
-		<tr><td></td><td style="font-size: 0.8em; font-style: italic">e.g.: {$foundUniqueName}</td></tr>
+		<tr><td></td><td style="font-size: 0.8em; font-style: italic">e.g.: {$foundUniqueName|escape}</td></tr>
 	{/if}
 	  <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2"><hr /></td></tr>

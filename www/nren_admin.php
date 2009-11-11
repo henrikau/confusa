@@ -18,6 +18,7 @@ class CP_NREN_Admin extends Content_Page
 		$this->org_name_cache	= array();
 	}
 
+
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
@@ -88,7 +89,7 @@ class CP_NREN_Admin extends Content_Page
 							  $subscr_responsible_name,
 							  $subscr_responsible_email,
 							  $subscr_comment)) {
-					Framework::success_output("Updated subscriber '<i>$dn_name</i>' successfully.");
+					Framework::success_output("Updated subscriber '<i>" . htmlentities($dn_name) . "</i>' successfully.");
 				}
 				break;
 			case 'editState':
@@ -119,7 +120,7 @@ class CP_NREN_Admin extends Content_Page
 							 $subscr_responsible_name,
 							 $subscr_responsible_email,
 							 $subscr_comment)) {
-					Framework::success_output("Added new subscriber $dn_name OK to database.");
+					Framework::success_output("Added new subscriber " . htmlentities($dn_name) . " to database.");
 				}
 				break;
 			case 'delete':
@@ -248,15 +249,15 @@ class CP_NREN_Admin extends Content_Page
 							array($newState, $subscriber_id));
 
 		Logger::log_event(LOG_INFO, "[nadm] Changed state for subscriber with ID $subscriber_id to $newState");
-		Framework::success_output("Changed state for subscriber with ID $subscriber_id to $newState");
+		Framework::success_output("Changed state for subscriber with ID " . htmlentities($subscriber_id) . " to " . htmlentities($newState));
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Error while updating the subscriber of subscriber $subscriber_id state, server said: " .
+			Framework::error_output("Error while updating the subscriber of subscriber " . htmlentities($subscriber_id) . " state, server said: " .
 					$dbse->getMessage() .
 					"<br />Probably this is a configuration error, contact an administrator!");
 			Logger::log_event(LOG_NOTICE, "[nadm] Problem occured when updating state of subscriber " .
 					"$subscriber_id:" . $dbse->getMessage());
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Error while updating the subscriber state of subscriber $subscriber_id, server said: " .
+			Framework::error_output("Error while updating the subscriber state of subscriber " . htmlentities($subscriber_id) . ", server said: " .
 					$dbqe->getMessage());
 			Logger::log_event(LOG_NOTICE, "[nadm] Problem with query data when updating subscriber " .
 					"$subscriber_id to state $newState:" . $dbqe->getMessage());
@@ -392,8 +393,8 @@ class CP_NREN_Admin extends Content_Page
 						      array($db_name, $res[0]['nren_id']));
 			if (count($check) > 0) {
 				Framework::error_output("Subscriber names must be unique per NREN! " .
-							"Found an existing subscriber with the name '$db_name' and " .
-							"id " . $check[0]['subscriber_id'] . "!");
+							"Found an existing subscriber with the name '" . htmlentities($db_name) . "' and " .
+							"id " . htmlentities($check[0]['subscriber_id']) . "!");
 				return false;
 			}
 
@@ -407,8 +408,8 @@ class CP_NREN_Admin extends Content_Page
 							array($dn_name));
 			if (count($check2) > 0) {
 				Framework::error_output("Organization DN-names must be globally unique. " .
-							"The organization DN-name '" . $dn_name . "' is already assigned " .
-							"to organization '" . $check2[0]['name'] . "'! Please configure " .
+							"The organization DN-name '" . htmlentities($dn_name) . "' is already assigned " .
+							"to organization '" . htmlentities($check2[0]['name']) . "'! Please configure " .
 							"a different name.");
 				return false;
 			}
@@ -491,7 +492,7 @@ class CP_NREN_Admin extends Content_Page
 			Framework::message_output($msg . "<BR />Server said: " . $dbqe->getMessage());
 			return false;
 		} catch (DBStatementException $dbse) {
-			$msg = "Could not delete subsriber with ID $id from DB, due to problems with the " .
+			$msg = "Could not delete subsriber with ID " .htmlentities($id) . " from DB, due to problems with the " .
 				"statement. Probably this is a configuration error. Server said: " .
 				$dbse->getMessage();
 			Logger::log_event(LOG_NOTICE, "ADMIN: " . $msg);
@@ -500,14 +501,17 @@ class CP_NREN_Admin extends Content_Page
 		}
 
 		if (count($res) != 1) {
-			Framework::error_output("Could not find a unique NREN/subscriber pair for subscriber with id $id.");
+			Framework::error_output("Could not find a unique NREN/subscriber pair for subscriber with id " .
+			                        htmlentities($id));
 			return false;
 		}
 		$nren_id = $res[0]['nren_id'];
 		$subscriberName = $res[0]['subscriber'];
 
 		if (!isset($nren_id) || $nren_id == "") {
-			Framework::error_output("Could not get the NREN-ID for subscriber $id. Will not delete subscriber ($id).");
+			Framework::error_output("Could not get the NREN-ID for subscriber " .
+			                         htmlentities($id) . "Will not delete subscriber (" .
+			                         htmlentites($id) . ").");
 			return false;
 		}
 
@@ -539,8 +543,9 @@ class CP_NREN_Admin extends Content_Page
 				     array($id, $nren_id));
 
 		Logger::log_event(LOG_INFO, "Deleted subscriber with ID $id.\n");
-		Framework::message_output("Successfully deleted subscriber ($subscriberName) with ID $id. ".
-					  "A total of $count certificates were also revoked.");
+		Framework::message_output("Successfully deleted subscriber (" . htmlentities($subscriberName) . ") with ID " .
+		                          htmlentities($id) . ". " .
+		                          "A total of $count certificates were also revoked.");
 	} /* end delSubscriber */
 
 	/**
@@ -606,14 +611,14 @@ class CP_NREN_Admin extends Content_Page
 			return"";
 		$res  = "<form action=\"\" method=\"post\">\n";
 		$res .= "<div>\n";
-		$res .= "<input type=\"hidden\" name=\"$key\" value=\"info\" />\n";
-		$res .= "<input type=\"hidden\" name=\"name\" value=\"$subscriber\" />\n";
+		$res .= '<input type="hidden" name="' . htmlentities($key) . '" value="info" />' . "\n";
+		$res .= '<input type="hidden" name="name" value="' . htmlentities($subscriber) . "\" />\n";
 		$res .= "<input type=\"hidden\" name=\"state\" value=\"\" />\n"; /* don't need state to delete */
-		$res .= "<input type=\"hidden\" name=\"id\" value=\"$subscriber_id\" />\n";
+		$res .= '<input type="hidden" name="id" value="' . htmlentities($subscriber_id) . "\" />\n";
 		$res .= "<input type=\"image\" name=\"information\" ";
 		$res .= "title=\"Information\" ";
 		$res .= "                 value=\"info\" src=\"graphics/information.png\"";
-		$res .= "                 alt=\"Information about $subscriber\" />\n";
+		$res .= '                 alt="Information about ' . htmlentities($subscriber) . "\" />\n";
 		$res .= "</div>\n";
 		$res .= "</form>\n";
 		echo $res;
@@ -628,18 +633,18 @@ class CP_NREN_Admin extends Content_Page
 
 		$res  = "<form action=\"\" method=\"post\">\n";
 		$res .= "<div>\n";
-		$res .= "<input type=\"hidden\" name=\"". $key . "\" value=\"delete\" />\n";
-		$res .= "<input type=\"hidden\" name=\"name\" value=\"" . $target . "\" />\n";
+		$res .= '<input type="hidden" name="' . htmlentities($key) . '" value="delete" />' . "\n";
+		$res .= '<input type="hidden" name="name" value="' . htmlentities($target) . '" />' . "\n";
 		$res .= "<input type=\"hidden\" name=\"state\" value=\"\" />\n"; /* don't need state to delete */
-		$res .= "<input type=\"hidden\" name=\"id\" value=\"" . $id . "\" />\n";
+		$res .= '<input type="hidden" name="id" value="' . htmlentities($id) . '" />' . "\n";
 		$res .= "<input type=\"image\" name=\"delete\" ";
 		$res .= "title=\"Delete\" ";
 		/* warning upon attempted self-deletion */
 		if ($target === $this->person->getSubscriberOrgName()) {
-			$res .= "onclick=\"return confirm('You are about to delete your OWN INSTITUTION (" . $target . ")!\\n";
+			$res .= "onclick=\"return confirm('You are about to delete your OWN INSTITUTION (" . htmlentities($target) . ")!\\n";
 			$res .= "          Are you sure about that?')\"";
 		} else {
-			$res .= "onclick=\"return confirm('Delete entry with ID $id? (" . $target . ") ')\" ";
+			$res .= "onclick=\"return confirm('Delete entry with ID $id? (" . htmlentities($target) . ") ')\" ";
 		}
 
 		$res .= "                 value=\"delete\" src=\"graphics/delete.png\"";
