@@ -63,7 +63,7 @@
 		{else}
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
 				title="Delete admin"
-				name="delete" onclick="return confirm('Delete entry {$admin}?')" />
+				name="delete" onclick="return confirm('Delete entry {$admin.eppn|escape}?')" />
 			</div>
 			</form>
 			</td>
