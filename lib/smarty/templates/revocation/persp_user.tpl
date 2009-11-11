@@ -16,7 +16,7 @@
         {foreach from=$owners item=owner}
             <tr>
                 <td>
-                    {$owner}
+                    {$owner|escape}
                 </td>
                 <td>
                     <form action="" method="post">

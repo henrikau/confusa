@@ -1,11 +1,11 @@
 {* Offer the NREN-admin a subscriber pre-selection *}
-All revocation operations currently limited to subscriber {$subscriber}.
+All revocation operations currently limited to subscriber {$subscriber|escape}.
 <div class="spacer"></div>
 <div style="text-align: right">
     <form action="" method="post">
     <div>
     Select subscriber (orgname in the DN):
-    {html_options name="subscriber" values=$subscribers output=$subscribers selected=$subscriber}
+    {html_options name="subscriber" values=$subscribers output=$subscribers selected=$subscriber|escape}
     <input type="submit" name="change" value="Change" />
     </div>
     </form>
@@ -19,11 +19,11 @@ immediately see a result entry *}
 <div class="spacer"></div>
 <form action="" method="post">
 <fieldset>
-<legend>CN-search ({$subscriber})</legend>
+<legend>CN-search ({$subscriber|escape})</legend>
 
 <p class="info">
 Search for a commonName or a eduPersonPrincipalName of a person within the
-institution {$subscriber} whose certificates you want to revoke. Use '%' as a
+institution {$subscriber|escape} whose certificates you want to revoke. Use '%' as a
 wildcard.
 </p>
 <br />
@@ -55,7 +55,7 @@ wildcard.
         {foreach from=$owners item=owner}
             <tr>
                 <td>
-                    {$owner}
+                    {$owner|escape}
                 </td>
                 <td>
                     <form action="" method="post">
