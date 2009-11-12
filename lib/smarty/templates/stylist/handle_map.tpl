@@ -27,7 +27,6 @@
 
   <form action="" method="post">
     <table width="95%" border="1" rules="none" cellpadding="5" cellspacing="5">
-      <input type="hidden" name="stylist_operation" value="update_map_nren" />
       <tr>
 	<th align="left">Category</th>
 	<th align="center">Current Key</th>
@@ -35,8 +34,10 @@
       </tr>
       <tr>
 	<td align="right">Country</td>
-	<td align="center"><b><font color="darkgray">-</font></b></td>
-	<td>{$person->getCountry()|escape}</td>
+	<td align="center"><b><span style="color: darkgray">-</span></b></td>
+	<td>{$person->getCountry()|escape}
+	<input type="hidden" name="stylist_operation" value="update_map_nren" />
+	</td>
       </tr>
 
 
@@ -46,7 +47,7 @@
       *}
       <tr>
 	<td align="right">Unique identifier</td>
-	<td align="center"><font color="darkgray">{$person->getEPPNKey()|escape}</font></td>
+	<td align="center"><span style="color: darkgray">{$person->getEPPNKey()|escape}</span></td>
 	<td>{$person->getEPPN()|escape}</td>
       </tr>
 
@@ -56,9 +57,9 @@
       <tr>
 	<td align="right">Organization<br /></td>
 	<td align="right">
-	  <select {if ! $person->isNRENAdmin()} DISABLED{/if} name="epodn">
+	  <select {if ! $person->isNRENAdmin()} disabled="disabled"{/if} name="epodn">
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $NRENMap.epodn}selected="yes"{/if} value="{$element}">
+	    <option {if $element eq $NRENMap.epodn}selected="selected"{/if} value="{$element}">
 	      {$element}
 	    </option>
 	    {/foreach}
@@ -77,7 +78,7 @@
 	  <select name="cn">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $NRENMap.cn}selected="yes"{/if} value="{$element}">
+	    <option {if $element eq $NRENMap.cn}selected="selected"{/if} value="{$element}">
 	      {$element}
 	    </option>
 	    {/foreach}
@@ -95,7 +96,7 @@
 	  <select name="mail">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $NRENMap.mail}selected="yes"{/if} value="{$element}">
+	    <option {if $element eq $NRENMap.mail}selected="selected"{/if} value="{$element}">
 	      {$element}
 	    </option>
 	    {/foreach}
@@ -113,7 +114,7 @@
 	  <select name="entitlement">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $NRENMap.entitlement}selected="yes"{/if} value="{$element}">
+	    <option {if $element eq $NRENMap.entitlement}selected="selected"{/if} value="{$element}">
 	      {$element|escape}
 	    </option>
 	    {/foreach}
