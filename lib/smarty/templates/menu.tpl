@@ -28,14 +28,19 @@
   <li><a href="stylist.php?show=text">Appearance</a></li>
   <li><a href="nren_subs_settings.php">Settings</a></li>
   <li><a href="nren_admin.php">Subscribers</a></li>
+</ul>
+<br />
 
   {if $is_online === TRUE}
+<ul>
   <li><a href="accountant.php">CA Account</a></li>
 </ul>
-  {else}
-</ul>
-  <br />
   {/if}{* online *}
+
+   <ul>
+   <li><a href="attributes.php">Attributes</a></li>
+   </ul>
+   <br />
 
 
 {elseif $person->isSubscriberAdmin()}
@@ -46,6 +51,12 @@
   <li><a href="robot.php">Robot</a></li>
   <li><a href="nren_subs_settings.php">Settings</a></li>
 </ul>
+
+<br />
+<ul>
+<li><a href="attributes.php">Attributes</a></li>
+</ul>
+
 {else}
 <br />
 <br />

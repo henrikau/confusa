@@ -45,7 +45,8 @@
 	}
 </script>
 {/literal}
-
+{* avoid problems with hidden overflow and notification messages *}
+<div class="spacer"></div>
 <fieldset>
   <legend>Create or modify NREN attribute-map</legend>
   <p class="info">
@@ -84,7 +85,7 @@
 	<td align="right">Country</td>
 	<td align="center"><b><span style="color: darkgray">-</span></b></td>
 	<td>{$person->getCountry()|escape}
-	<input type="hidden" name="stylist_operation" value="update_map_nren" />
+	<input type="hidden" name="attributes_operation" value="update_map_nren" />
 	</td>
       </tr>
 
