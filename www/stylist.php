@@ -132,6 +132,28 @@ class CP_Stylist extends Content_Page
 				break;
 			case 'map':
 				$this->tpl->assign('handle_map',	true);
+				$nrenMap = AuthHandler::getNRENMap($this->person->getNREN());
+
+				if (isset($nrenMap['epodn'])) {
+					$orgName = $this->person->getSession()->getAttribute($nrenMap['epodn']);
+					$this->tpl->assign('epodn', implode(', ', $orgName));
+				}
+
+				if (isset($nrenMap['cn'])) {
+					$cn = $this->person->getSession()->getAttribute($nrenMap['cn']);
+					$this->tpl->assign('cn', implode(', ', $cn));
+				}
+
+				if (isset($nrenMap['mail'])) {
+					$mail = $this->person->getSession()->getAttribute($nrenMap['mail']);
+					$this->tpl->assign('mail', implode(', ', $mail));
+				}
+
+				if (isset($nrenMap['entitlement'])) {
+					$entitlement = $this->person->getSession()->getAttribute($nrenMap['entitlement']);
+					$this->tpl->assign('entitlement', implode(', ', $entitlement));
+				}
+
 				$this->tpl->assign('NRENMap',		AuthHandler::getNRENMap($this->person->getNREN()));
 				$this->tpl->assign('keys',		AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
 				break;

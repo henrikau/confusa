@@ -78,7 +78,7 @@
       <tr>
 	<th align="left">Category</th>
 	<th align="center">Current Key</th>
-	<th align="left">Result</th>
+	<th align="left">Value</th>
       </tr>
       <tr>
 	<td align="right">Country</td>
@@ -96,7 +96,7 @@
       <tr>
 	<td align="right">Unique identifier</td>
 	<td align="center"><span style="color: darkgray">{$person->getEPPNKey()|escape}</span></td>
-	<td>{$person->getEPPN()|escape}</td>
+	<td>{$person->getEPPN()|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
       </tr>
 
       {*
@@ -113,7 +113,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td id="orgNameField" class="attval">{$person->getSubscriberIdPName()|escape}</td>
+	<td id="orgNameField" class="attval" title="{$epodn|escape}">{$epodn|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
       </tr>
 
 
@@ -132,7 +132,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td id="cnField" class="attval">{$person->getName()|escape}</td>
+	<td id="cnField" class="attval" title="{$cn|escape}">{$cn|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
       </tr>
 
       {*
@@ -150,7 +150,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td id="emailField" class="attval">{$person->getEmail()|escape}</td>
+	<td id="emailField" class="attval" title="{$mail|escape}">{$mail|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
       </tr>
 
       {*
@@ -168,7 +168,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td id="entitlementField" class="attval">{$person->getEntitlement()|escape}</td>
+	<td id="entitlementField" class="attval" title="{$entitlement|escape}">{$entitlement|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
       </tr>
 
       <tr>
