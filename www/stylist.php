@@ -49,7 +49,10 @@ class CP_Stylist extends Content_Page
 			case 'change_css':
 				if (isset($_POST['reset'])) {
 					$this->resetNRENCSS($this->person->getNREN());
-				} else {
+				} else if (isset($_POST['download'])) {
+					$new_css = Input::sanitizeCSS($_POST['css_content']);
+					$this->downloadNRENCSS($new_css);
+				} else if (isset($_POST['change'])) {
 					/* the CSS will not be inserted into the DB or executed in another way.
 					* Hence do not sanitize it. It will contain 'dangerous' string portions,
 					* such as { : ' anyways, so it would be hard to insert it into the DB properly*/
@@ -330,6 +333,17 @@ class CP_Stylist extends Content_Page
 									" was changed. User contacted us from " .
 									$_SERVER['REMOTE_ADDR']);
 		Framework::success_output("Custom CSS for your NREN successfully updated!");
+	}
+
+	/**
+	 * Download customized CSS to the user's harddisk
+	 *
+	 * @param $css string the updated CSS
+	 */
+	private function downloadNRENCSS($css)
+	{
+		require_once 'file_download.php';
+		download_file($css, 'custom.css');
 	}
 
 	/*

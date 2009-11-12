@@ -14,16 +14,19 @@
   <form action="" method="post">
     <table>
       <tr>
-	<td>
+	<td colspan="2">
 	  <textarea name="css_content" rows="20" cols="80">{$css_content}</textarea>
 	</td>
       </tr>
       <tr>
+    <td align="left">
+		<input type="submit" name="download" value="Download" />
+    </td>
 	<td align="right">
 	  <input type="hidden" name="stylist_operation" value="change_css" />
 	  <input type="submit" name="reset" value="Reset"
 		 onclick="return confirm('Reset CSS to Confusa\'s shipped CSS?')" />
-	  <input type="submit" name="change" value="Save" />
+	  <input type="submit" name="change" value="Update" />
 	</td>
       </tr>
     </table>
