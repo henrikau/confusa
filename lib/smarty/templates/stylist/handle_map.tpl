@@ -1,3 +1,51 @@
+{literal}
+<script type="text/javascript">
+
+	if (typeof XMLHttpRequest == "undefined") {
+		XMLHttpRequest = function() {
+			/* define XMLHttpRequest for IE versions < 7 */
+			try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); }
+			catch(e) {}
+			try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); }
+			catch(e) {}
+			try { return new ActiveXObject("Msxml2.XMLHTTP"); }
+			catch(e) {}
+			try { return new ActiveXObject("Microsoft.XMLHTTP"); }
+			catch(e) {}
+		};
+	}
+
+	/**
+	 * Ask the stylist for the value of the attribute key currently selected
+	 * in 'selectElement' with a polite asynchronous GET message
+	 *
+     * @param selectElement DOM-Node The <select> containing the selected
+     *                      attribute key
+     * @param targetElementID string The ID of the element where the value
+     *                        should be written to
+     * @return void
+     */
+	function fetchAttributeValue(selectElement, targetElementID)
+	{
+		var req = new XMLHttpRequest();
+		var field = document.getElementById(targetElementID);
+
+		req.open("GET", "?attr_value=" + selectElement.value, true);
+		req.send(null);
+		req.onreadystatechange = function() {
+			if (req.readyState == 4 /*complete*/) {
+				if (req.status == 200) {
+					field.innerHTML = req.responseText;
+					field.title = req.responseText;
+				} else {
+					field.innerHTML = "<i>Attribute value could not be retrieved</i>";
+				}
+			}
+		}
+	}
+</script>
+{/literal}
+
 <fieldset>
   <legend>Create or modify NREN attribute-map</legend>
   <p class="info">
@@ -26,7 +74,7 @@
   <br />
 
   <form action="" method="post">
-    <table width="95%" border="1" rules="none" cellpadding="5" cellspacing="5">
+    <table class="mapping" width="95%" border="1" rules="none" cellpadding="5" cellspacing="5">
       <tr>
 	<th align="left">Category</th>
 	<th align="center">Current Key</th>
@@ -57,7 +105,7 @@
       <tr>
 	<td align="right">Organization<br /></td>
 	<td align="right">
-	  <select {if ! $person->isNRENAdmin()} disabled="disabled"{/if} name="epodn">
+	  <select {if ! $person->isNRENAdmin()} disabled="disabled"{/if} name="epodn" onchange="fetchAttributeValue(this, 'orgNameField');">
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $NRENMap.epodn}selected="selected"{/if} value="{$element}">
 	      {$element}
@@ -65,7 +113,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td>{$person->getSubscriberIdPName()|escape}</td>
+	<td id="orgNameField" class="attval">{$person->getSubscriberIdPName()|escape}</td>
       </tr>
 
 
@@ -75,7 +123,7 @@
       <tr>
 	<td align="right">Full Name<br /></td>
 	<td align="right">
-	  <select name="cn">
+	  <select name="cn" onchange="fetchAttributeValue(this, 'cnField');">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $NRENMap.cn}selected="selected"{/if} value="{$element}">
@@ -84,7 +132,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td>{$person->getName()|escape}</td>
+	<td id="cnField" class="attval">{$person->getName()|escape}</td>
       </tr>
 
       {*
@@ -93,7 +141,7 @@
       <tr>
 	<td align="right">E-Mail<br /></td>
 	<td align="right">
-	  <select name="mail">
+	  <select name="mail" onchange="fetchAttributeValue(this, 'emailField');">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $NRENMap.mail}selected="selected"{/if} value="{$element}">
@@ -102,7 +150,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td>{$person->getEmail()|escape}</td>
+	<td id="emailField" class="attval">{$person->getEmail()|escape}</td>
       </tr>
 
       {*
@@ -111,7 +159,7 @@
       <tr>
 	<td align="right">entitlement<br /></td>
 	<td align="right">
-	  <select name="entitlement">
+	  <select name="entitlement" onchange="fetchAttributeValue(this, 'entitlementField')">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $NRENMap.entitlement}selected="selected"{/if} value="{$element}">
@@ -120,7 +168,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td>{$person->getEntitlement()|escape}</td>
+	<td id="entitlementField" class="attval">{$person->getEntitlement()|escape}</td>
       </tr>
 
       <tr>

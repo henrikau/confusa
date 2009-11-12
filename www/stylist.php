@@ -96,6 +96,11 @@ class CP_Stylist extends Content_Page
 			return;
 		}
 
+		if (isset($_GET['attr_value'])) {
+			$this->handleAttrValueAJAX($_GET['attr_value']);
+			return;
+		}
+
 		if (isset($_GET['show'])) {
 			switch(htmlentities($_GET['show'])) {
 			case 'text':
@@ -503,6 +508,20 @@ class CP_Stylist extends Content_Page
 		}
 
 		return true;
+	}
+
+	/**
+	 * Return the value for the key to an IdP attribute (if defined)
+	 *
+	 * @param attr_key string The key of the attribute
+	 * @return string The value for the supplied attribute key
+	 */
+	private function handleAttrValueAJAX($attr_key)
+	{
+		$session = $this->person->getSession();
+		$attr_value = implode(", ", $session->getAttribute($attr_key));
+		echo htmlentities($attr_value, ENT_COMPAT, "UTF-8");
+		exit(0);
 	}
 }
 

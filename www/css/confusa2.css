@@ -260,6 +260,15 @@ p.example {
     background-color: #DDDDEE;
 }
 
+table.mapping tr td.attval {
+	width: 14em;
+	min-width: 14em;
+	max-width: 14em;
+	overflow: hidden;
+	/* IE fix */
+	word-wrap: break-word;
+}
+
 /* powered by http://mierendo.com/software/rounded_css_boxes/ */
 .confusa_corners_tl, .confusa_corners_t, .confusa_corners_tr, .confusa_corners_l, .confusa_corners_r, .confusa_corners_bl, .confusa_corners_b, .confusa_corners_br, .confusa_corners {
     width: auto;
