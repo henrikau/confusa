@@ -72,12 +72,11 @@ abstract class Confusa_Auth
 	 */
 	public function decoratePerson($attributes)
 	{
+		$cnPrefix = "";
+		$oPrefix  = "";
 		if (Config::get_config('capi_test')) {
 			$cnPrefix = ConfusaConstants::$CAPI_TEST_CN_PREFIX;
-			$oPrefix = ConfusaConstants::$CAPI_TEST_O_PREFIX;
-		} else {
-			$cnPrefix = "";
-			$oPrefix = "";
+			$oPrefix  = ConfusaConstants::$CAPI_TEST_O_PREFIX;
 		}
 
 		if (!isset($attributes)) {
