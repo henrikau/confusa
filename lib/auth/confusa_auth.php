@@ -1,7 +1,6 @@
 <?php
-
+require_once 'confusa_include.php';
 require_once 'person.php';
-require_once 'confusa_config.php';
 require_once 'config.php';
 
 require_once 'MapNotFoundException.php';
