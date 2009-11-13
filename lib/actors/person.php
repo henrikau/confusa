@@ -595,6 +595,19 @@ class Person{
 	    $this->subscriber = new Subscriber($subscriber, $this->nren);
     }
 
+    public function getMap()
+    {
+	    $map = null;
+	    /* is subscriber-map available? */
+	    if (!is_null($this->subscriber)) {
+		    $map = $this->subscriber->getMap();
+	    }
+	    if (is_null($map)) {
+		    return $this->nren->getMap();
+	    }
+	    return null;
+    }
+
     /**
      * getMode() Gets the current modus for the user
      *
