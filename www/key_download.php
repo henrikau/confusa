@@ -5,6 +5,7 @@ require_once 'config.php';
 if (!Config::get_config('auth_bypass')) {
 	include 'not_found.php';
 	not_found($_SERVER['SCRIPT_NAME']);
+	exit(0);
 }
 if (Config::get_config('maint')) {
 	echo "1\n";
