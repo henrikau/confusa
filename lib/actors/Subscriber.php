@@ -74,6 +74,23 @@ class Subscriber
 		return $this->valid;
 	}
 
+	/**
+	 * Get the contact information for a NREN
+	 *
+	 * @param void
+	 * @return Array The contact-details for the NREN
+	 */
+	public function getInfo()
+	{
+		$res = array();
+		$res['name'] = $this->idp_name;
+		$res['dn_name'] = $this->dn_name;
+		$res['subscr_email'] = $this->email;
+		$res['subscr_phone'] = $this->phone;
+		$res['subscr_resp_email'] = $this->responsible_email;
+		$res['subscr_resp_name'] = $this->responsible_name;
+		return $res;
+	}
 	public function getMap()
 	{
 		if ($this->hasMap)
