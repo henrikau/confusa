@@ -800,7 +800,7 @@ function perform_postinstallation_steps
 		echo "If mysql-execution fails, please delete that file manually."
 		sh create_database.sh --delete_user
 		res=$?
-		rm $TMPFILE
+		rm -f $TMPFILE
 
 		if [ ! $res -eq 0 ]; then
 			echo "Failed populating the DB!"
