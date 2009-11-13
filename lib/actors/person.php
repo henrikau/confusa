@@ -73,30 +73,16 @@ class Person{
      */
     public function clearAttributes()
     {
-	    
-	    $this->given_name = null;
 	    unset($this->given_name);
-
-	    $this->eppn = null;
 	    unset($this->eppn);
-
-	    $this->eppnKey = null;
 	    unset($this->eppnKey);
-
-	    $this->email = null;
 	    unset($this->email);
-
-	    $this->country = null;
 	    unset($this->country);
 
-	    $this->subscriberName = null;
-	    unset($this->subscriberName);
-
-	    $this->nren = null;
 	    unset($this->nren);
 
 	    $this->entitlement = null;
-	    unset($this->entitlement);
+
 
 	    $this->session = null;
 	    unset($this->session);
