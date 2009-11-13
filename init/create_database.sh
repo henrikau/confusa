@@ -29,30 +29,44 @@ host="-hlocalhost"
 user="-u'root'"
 MYSQL="/usr/bin/mysql $user $host $root_pw"
 
-# use the database stated in the confusa_config.php. If this file is not
+# use the database stated in confusa_config.php or in dbconfig-common. If this file is not
 # present, the script will terminate
-if [ -f "../config/confusa_config.php" ]; then
-	confusa_config="../config/confusa_config.php"
-elif [ -f "/etc/confusa/confusa_config.php" ]; then
-	confusa_config="/etc/confusa/confusa_config.php"
-else
-	echo "*need* the confusa_config.php file!"
-    echo "Please configure this properly before you re-run this script"
-    exit
-fi
+dbconfig_file="/etc/confusa/confusa_config.inc.php"
 
-echo "Found $confusa_config OK. Continuing"
+if [ -f $dbconfig_file ]; then
+	echo "Database configured by dbconfig_common. Skipping creation"
+	exit 1
+else
+	if [ -f "../config/confusa_config.php" ]; then
+		confusa_config="../config/confusa_config.php"
+	elif [ -f "/etc/confusa/confusa_config.php" ]; then
+		confusa_config="/etc/confusa/confusa_config.php"
+	else
+		echo "*need* the confusa_config.php file!"
+		echo "Please configure this properly before you re-run this script"
+		exit
+	fi
+
+	echo "Found $confusa_config OK. Continuing"
+
+	database=`grep "mysql_db'[^]]" $confusa_config | cut -d '=' -f 2 \
+    | cut -d "'" -f 2`
+	if [ -z $database ]; then
+		echo "mysql-db not set in config-file!"
+		echo "Please set this value and try again"
+		exit
+	fi
+
+	webuser=`grep "mysql_username'[^]]" $confusa_config | cut -d '=' -f 2 \
+    | cut -d "'" -f 2`
+	pw=`grep "mysql_password'[^]]" $confusa_config | cut -d '=' -f 2 \
+    | cut -d "'" -f 2`
+	webhost=`grep "mysql_host'[^]]" $confusa_config | cut -d '=' -f 2 \
+    | cut -d "'" -f 2`
+fi
 
 # Check to se if the database itself is present in MySQL
 # if not, create it
-database=`grep "mysql_db" $confusa_config | cut -d '=' -f 2 \
-    | cut -d "'" -f 2`
-if [ -z $database ]; then
-    echo "mysql-db not set in config-file!"
-    echo "Please set this value and try again"
-    exit
-fi
-
 echo "Found configured database ($database) in config-file"
 res=`$MYSQL -e "SHOW DATABASES like '$database'"`
 if [ ! -n "$res" ]; then
@@ -78,12 +92,6 @@ if [ $res -ne 0 ]; then
 fi
 
 # check to see if the the proper user with rights are in place
-webuser=`grep "mysql_username" $confusa_config | cut -d '=' -f 2 \
-    | cut -d "'" -f 2`
-pw=`grep "mysql_password" $confusa_config | cut -d '=' -f 2 \
-    | cut -d "'" -f 2`
-webhost=`grep "mysql_host" $confusa_config | cut -d '=' -f 2 \
-    | cut -d "'" -f 2`
 grants="SELECT, INSERT, DELETE, UPDATE, USAGE"
 
 # test to see if the user is already present. If not, add
