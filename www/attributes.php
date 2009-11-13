@@ -279,8 +279,12 @@ class CP_Attributes extends Content_Page
 	 */
 	private function handleAttrValueAJAX($attr_key)
 	{
+		if (empty($attr_key)) {
+			exit(0);
+		}
+
 		$session = $this->person->getSession();
-		$attr_value = implode(", ", $session->getAttribute($attr_key));
+		$attr_value = @implode(", ", $session->getAttribute($attr_key));
 		echo htmlentities($attr_value, ENT_COMPAT, "UTF-8");
 		exit(0);
 	}
