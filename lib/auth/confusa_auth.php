@@ -72,98 +72,32 @@ abstract class Confusa_Auth
 			throw new CrititicalAttributeException("Cannot find <b>any</b> attributes!");
 		}
 
-		/* first deduce non-exported attributes from the NREN/Country map */
-		$nren = $attributes['nren'][0];
-		$country = $attributes['country'][0];
 
-		if (is_null($nren)) {
-			$msg = "Could not map from the identity provider to the NREN. ";
+		if (is_null($attributes['nren'][0])) {
+			$msg  = "Could not map from the identity provider to the NREN. ";
 			$msg .= "Probably the NRENMap is not configured. ";
 			$msg .= "Please tell an administrator about that problem!";
 			throw new CriticalAttributeException($msg);
 		}
+		$this->person->setNREN($attributes['nren'][0]);
 
-		$this->person->setNREN($nren);
 
-		if (is_null($country)) {
+		if (is_null($attributes['country'][0])) {
 			$msg = "Could not map from the identity provider to the country. ";
 			$msg .= "Probably the CountryMap is not configured. ";
 			$msg .= "Please tell an administrator about that problem!";
 			throw new CriticalAttributeException($msg);
 		}
+		$this->person->setCountry($attributes['country'][0]);
 
-		/* in the attributes, but not exported by the nrens (we
-		 * deduce this in the NREN/Country map */
-		$this->person->setCountry($country);
-		/* Get the map
-		 * Warning: this may throw the MapNotFoundException if the nren
-			$this->person->setEmail($attributes[$map['mail']][0]);
-		 * is new.
-		 */
-		$map = "";
-		$subscr = "";
-		if (isset($attributes) && isset($attributes['subscriber'])) {
-			$subscr = $attributes['subscriber'][0];
-		}
-
-		try {
-			$map = AuthHandler::getMap($nren, $subscr);
-		} catch (DBStatementException $dbse) {
-			$msg  = "Your confusa installation is not properly configured. <br />\n";
-			$msg .= "The attribute_mapping table is either missing or malformed.<br />\n";
-			$msg .= "You need to create all tables needed by in order to find the correct attribute-mapping.<br />\n";
-			throw new CriticalAttributeException($msg);
-		}
-
+		$map = $this->person->getMap();
 		/* Normal mapping, this is what we want. */
 		if (isset($map) && is_array($map)) {
 			$this->person->setEPPN($attributes[$map['eppn']][0]);
 			$this->person->setEPPNKey($map['eppn']);
-
-			$this->person->setSubscriberIdPName(trim(stripslashes($attributes[$map['epodn']][0])));
-
-			/*
-			 * Find name of subscriber where the user belongs.
-			 */
-			try {
-				$query  = "SELECT s.dn_name FROM subscribers s ";
-				$query .= "LEFT JOIN nrens n ON n.nren_id = s.nren_id ";
-				$query .= "WHERE n.name=? AND s.name = ?";
-				$res = MDB2Wrapper::execute($query,
-							    array('text', 'text'),
-							    array($nren, $this->person->getSubscriberIdPName()));
-				if (count($res) == 1) {
-					$this->person->setSubscriberOrgName($oPrefix . $res[0]['dn_name']);
-				} else if ($this->person->isNRENAdmin()) {
-					/* not found, but user is NREN-admin so
-					 * he/she should be allowed to continue
-					 * and add the subscriber.
-					 */
-					$msg  = "You are not connected to any subscriber. As an NREN-admin, ";
-					$msg .= "you should start out with adding your own subscriber:<br /><br />\n";
-					$msg .= "<i><center>". $this->person->getSubscriberIdPName();
-					$msg .= "</i></center><br /><br />\n";
-					$msg .= "<center>Go <a href=\"nren_admin.php?mode=admin&target=add\">here</a> ";
-					$msg .= "to add the subscriber.</center>\n";
-					Framework::error_output($msg);
-				} else {
-					/* subscriber not set, user cannot
-					 * influence state of subscriber. */
-					$msg  = "Cannot find subscriberOrgName in the database. Cannot continue.<br />";
-					$msg .= "This normally indicates that your subscriber (raw_name: ";
-					$msg .= $this->person->getSubscriberIdPName() . ") ";
-					$msg .= "is not properly configured or does not participate in Confusa ";
-					$msg .= "certificate issuing. Contact your NREN-administrator to resolve this.<br />\n";
-					throw new CriticalAttributeException($msg);
-				}
-			} catch (DBStatementException $dbse) {
-				throw new ConfusaGenException("Cannot connect properly to database, some internal error. Make sure the DB is configured correctly.");
-			} catch (DBQueryException $dbqe) {
-				throw new ConfusaGenException("Cannot connect properly to database, errors with supplied data.");
-			}
-
-			/* Decorate the person with the mapped subscriber and a possible test prefix */
+			$this->person->addSubscriber($attributes[$map['epodn']][0]);
 			$this->person->setName($cnPrefix . $attributes[$map['cn']][0]);
+			$this->person->setEmail($attributes[$map['mail']][0]);
 
 			/* go through and add the relevant entitlement-parts.
 			 * TODO: cleanup this and move to person::setEntitlement()
@@ -180,9 +114,12 @@ abstract class Confusa_Auth
 					} else {
 						$val = explode(":", $entitlementValue);
 						if (count($val) !== (count(explode(":", $namespace))+1)) {
-							Framework::error_output("Error with namespace, too many objects in namespace (" . count($val) . ")");
+							Framework::error_output("Error with namespace, too many objects in namespace ("
+										. count($val) . ")");
 							continue;
 						}
+						/* only set the part *after*
+						 * entitlement-namespace */
 						$this->person->setEntitlement($val[count($val)-1]);
 					}
 				}
@@ -226,7 +163,12 @@ abstract class Confusa_Auth
 				Framework::error_output($msg);
 			}
 		}
-		$eppn = $this->person->getEPPN();
+
+		try {
+			$eppn = $this->person->getEPPN();
+		} catch (ConfusaGenException $cge) {
+			echo $cge->getMessage() . "<br />\n";
+		}
 		if (!isset($eppn) || $eppn == "") {
 			/* couldn't decorate person */
 			$msg  = "Could not retrieve the config for you subscriber.<br />";
@@ -234,7 +176,7 @@ abstract class Confusa_Auth
 			$msg .= "Configure NREN Attribute Map for Your NREN.<br /><br />";
 			throw new MapNotFoundException($msg);
 		}
-	}
+	} /* end decoratePerson() */
 
 	/**
 	 * Authenticate the idenitity of a user, using a free-of-choice method to be
