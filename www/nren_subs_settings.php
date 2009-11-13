@@ -82,7 +82,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 			$current_language = $info['lang'];
 			$this->tpl->assign('nrenInfo', $info);
 		} else {
-			$info = $this->getSubscriberInfo();
+			$info = $this->person->getSubscriber()->getInfo();
 			$current_language = $info['lang'];
 			$this->tpl->assign('subscriberInfo', $info);
 		}
@@ -95,31 +95,6 @@ class CP_NREN_Subs_Settings extends Content_Page
 		$this->tpl->assign('current_language', $current_language);
 		$this->tpl->assign('language_codes', array_keys($this->full_names));
 		$this->tpl->assign('content', $this->tpl->fetch('nren_subs_settings.tpl'));
-	}
-	/**
-	 * Get the current contact information for a subscriber
-	 *
-	 * @param void 
-	 * @return String The contact that was defined for the subscriber
-	 */
-	private function getSubscriberInfo()
-	{
-		$query  = "SELECT s.* FROM subscribers s LEFT JOIN nrens n ";
-		$query .= "ON n.nren_id = s.nren_id WHERE s.name=? AND n.name=?";
-		try {
-			$res = MDB2Wrapper::execute($query,
-						    array('text', 'text'),
-						    array($this->person->getSubscriberIdPName(),
-							  $this->person->getNREN()));
-		} catch (DBQueryException $dqe) {
-			Framework::warning_ouput("Could not get the current contact information for $subscriber");
-		} catch (DBStatementException $dse) {
-			Framework::warning_output("Could not get the current contact information for $subscriber");
-			Logger::log_event(LOG_INFO, "[sadm] Could not get current contact for subscriber " .
-							"$subscriber: " . $dse->getMessage());
-		}
-
-		return $res[0];
 	}
 
 	/**
