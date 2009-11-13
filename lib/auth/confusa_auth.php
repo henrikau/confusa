@@ -97,6 +97,7 @@ abstract class Confusa_Auth
 		$this->person->setCountry($country);
 		/* Get the map
 		 * Warning: this may throw the MapNotFoundException if the nren
+			$this->person->setEmail($attributes[$map['mail']][0]);
 		 * is new.
 		 */
 		$map = "";
@@ -164,22 +165,8 @@ abstract class Confusa_Auth
 			/* Decorate the person with the mapped subscriber and a possible test prefix */
 			$this->person->setName($cnPrefix . $attributes[$map['cn']][0]);
 
-			/* if mail is not set, we cannot send notifications etc
-			 * to the user. This means that we cannot sign
-			 * certificates (or revoke them) as the user *requires*
-			 * a receipt. */
-			if (!isset($attributes[$map['mail']][0]) || $attributes[$map['mail']][0] == "") {
-				$msg  = "Troubles with attributes. No mail address available. ";
-				$msg .=" You will not be able to sign new certificates until this attribute is available.<br />\n";
-				Framework::error_output($msg);
-			} else {
-				$this->person->setEmail($attributes[$map['mail']][0]);
-			}
-
-			/* test namespace
-			 *
-			 * we are looking for (atm)
-			 * urn:mace:feide.no:sigma.uninett.no:<attribute>
+			/* go through and add the relevant entitlement-parts.
+			 * TODO: cleanup this and move to person::setEntitlement()
 			 */
 			$entitlements = $attributes[$map['entitlement']];
 			if (isset($entitlements)) {

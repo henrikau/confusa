@@ -370,10 +370,14 @@ class Person{
      */
     public function setEmail($email)
     {
-        if (isset($email)) {
-			$this->email = Input::sanitize($email);
-        }
-    }
+	    if (!is_null($email)) {
+		    $this->email = Input::sanitize($email);
+	    } else {
+		    $msg  = "Troubles with attributes. No mail address available. ";
+		    $msg .=" You will not be able to sign new certificates until this attribute is available.<br />\n";
+		    Framework::error_output($msg);
+	    }
+    } /* end setEmail() */
 
     /**
      * getEmail() return the registred email-address
