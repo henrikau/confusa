@@ -30,6 +30,9 @@ class sspmod_core_Auth_Process_NRENMap extends SimpleSAML_Auth_ProcessingFilter 
 
 	public function process(&$request) {
 		$idp = $request['Source']['entityid'];
+		if (is_null($request['Attributes']['idp'])) {
+			$request['Attributes']['idp'] = array($idp);
+		}
 		$request['Attributes']['nren'] = array($this->known_nrens[$idp]);
 	}
   }
