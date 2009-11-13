@@ -3,6 +3,7 @@ require_once 'input.php';
 require_once 'output.php';
 require_once 'CriticalAttributeException.php';
 require_once 'permission.php';
+require_once 'Subscriber.php';
 
 /* Person
  *
@@ -37,10 +38,9 @@ class Person{
     private $country;
 
     /* The name of the subscriber, e.g. 'ntnu', 'uio', 'uninett' */
-    private $subscriberName;
+    private $subscriber;
 
     private $nren;
-    private $entitlement;
 
     private $session;
     private $saml_config;
@@ -393,36 +393,28 @@ class Person{
 	}
 
 
-    /** setSubscriberOrgName()- set the name of the subscriber organization
-     *
-     * @param String the subscriber (organization) name
-     * @return void
-     */
-    public function setSubscriberOrgName($subscriber)
-    {
-	    if (isset($subscriber)) {
-		    $this->subscriberName = $subscriber;
-	    }
-    }
-
     /**
-     * getSusbscriberOrgName() The name of the person's subscriber organization name. 
+     * getSubscriberOrgName() The name of the person's subscriber organization name.
      *
      * This is a name of the home-institution, e.g. 'ntnu',  'uio'.
      *
      * @return String The subscriber's name.
+     * @deprecated
      */
     public function getSubscriberOrgName()
     {
-	    if (isset($this->subscriberName)) {
-			return $this->subscriberName;
-		}
-
+	    if (Config::get_config('debug')) {
+		    echo __CLASS__ . "::" . __FUNCTION__ . " " . __FILE__ .":".__LINE__. " <font color=\"red\"><b>Deprecated</b></font><br />\n";
+	    }
+	    Logger::log_event(LOG_DEBUG, __CLASS__ . ":" . __FUNCTION__ . " deprecated");
+	    if (isset($this->subscriber)) {
+		    return $this->subscriber->getOrgName($browserDisplay);
+	    }
 	    return "";
     }
 
     /**
-     * setSubscriberIdPName() Set the name the IdP exports for this subscriber.
+     * setSubscriber()
      *
      * This name is used to find the correct row in the database, and from that,
      * get what we use in the certificate (the subscriberName).
@@ -430,10 +422,12 @@ class Person{
      * @param String the name to use for the subscriber in the database.
      * @return void
      */
-    public function setSubscriberIdPName($db_name)
+    public function addSubscriber($db_name)
     {
 	    if (isset($db_name) && $db_name != "") {
-		    $this->db_name = $db_name;
+		    if (!isset($this->subscriber)) {
+			    $this->subscriber = new Subscriber($db_name, $this->nren);
+		    }
 	    }
     }
 
@@ -442,10 +436,15 @@ class Person{
      *
      * @param void
      * @return String the name of the subscriber used as key in the database.
+     * @deprecated
      */
     public function getSubscriberIdPName()
     {
-	    return $this->db_name;
+	    if (Config::get_config('debug')) {
+		    echo __CLASS__ . "::" . __FUNCTION__ . " " . __FILE__ .":".__LINE__. " <font color=\"red\"><b>Deprecated</b></font><br />\n";
+	    }
+	    Logger::log_event(LOG_DEBUG, __CLASS__ . ":" . __FUNCTION__ . " deprecated");
+	    return $this->subscriber->getIdPName();
     }
 
     /**
@@ -583,6 +582,14 @@ class Person{
     }
 
 
+    public function setSubscriber($subscriber)
+    {
+	    if (is_null($subscriber)) {
+		    return;
+	    }
+	    $this->subscriber = new Subscriber($subscriber, $this->nren);
+    }
+
     /**
      * getMode() Gets the current modus for the user
      *
@@ -707,7 +714,7 @@ class Person{
 	    }
 	    /* If the user has no subscriber set, he/she *cannot* be a
 	     * administrator */
-	    $epodn = $this->getSubscriberOrgName();
+	    $epodn = $this->subscriber->getOrgName();
 	    if (!isset($epodn) || $epodn === "") {
 		    return false;
 	    }
@@ -726,7 +733,7 @@ class Person{
 	    if (!$this->testEntitlementAttribute(Config::get_config('entitlement_admin'))) {
 		    return false;
 	    }
-	    $epodn = $this->getSubscriberOrgName();
+	    $epodn = $this->subscriber->getOrgName();
 	    if (!isset($epodn) || $epodn === "") {
 		    return false;
 	    }
