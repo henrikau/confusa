@@ -26,13 +26,13 @@ class CP_NREN_Subs_Settings extends Content_Page
 			switch(htmlentities($_POST['setting'])) {
 			case 'nren_contact':
 				if ($this->person->isNRENAdmin()) {
-					$email = Input::sanitizeText($_POST['contact_email']);
-					$phone = Input::sanitizeText($_POST['contact_phone']);
-					$certPhone = Input::sanitizeText($_POST['cert_phone']);
-					$certEmail = Input::sanitizeText($_POST['cert_email']);
-					$url = Input::sanitizeText($_POST['url']);
-					$newLanguage = Input::sanitize($_POST['language']);
-					$this->updateNRENContact($email, $phone, $certPhone, $certEmail, $url, $newLanguage);
+					$this->person->getNREN()->set_contact_email(	$_POST['contact_email']);
+					$this->person->getNREN()->set_contact_phone(	$_POST['contact_phone']);
+					$this->person->getNREN()->set_cert_phone(	$_POST['cert_phone']);
+					$this->person->getNREN()->set_cert_email(	$_POST['cert_email']);
+					$this->person->getNREN()->set_url(		$_POST['url']);
+					$this->person->getNREN()->set_lang(		$_POST['language']);
+					$this->person->getNREN()->saveNREN();
 				}
 				break;
 			case 'subscriber_contact':
@@ -59,8 +59,8 @@ class CP_NREN_Subs_Settings extends Content_Page
 								$this->updateSubscriberLanguage($person->getSubscriberOrgName(),
 												$new_language);
 							} else if ($person->isNRENAdmin()) {
-								$this->updateNRENLanguage($person->getNREN(),
-														  $new_language);
+								$this->person->getNREN()->set_lang(Input::sanitize($_POST['language']));
+								$this->person->getNREN()->saveNREN();
 							}
 						}
 
@@ -78,7 +78,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 	public function process()
 	{
 		if ($this->person->isNRENAdmin()) {
-			$info = $this->getNRENInfo();
+			$info = $this->person->getNREN()->getNRENInfo();
 			$current_language = $info['lang'];
 			$this->tpl->assign('nrenInfo', $info);
 		} else {
@@ -96,75 +96,6 @@ class CP_NREN_Subs_Settings extends Content_Page
 		$this->tpl->assign('language_codes', array_keys($this->full_names));
 		$this->tpl->assign('content', $this->tpl->fetch('nren_subs_settings.tpl'));
 	}
-
-	/**
-	 * Update the contact information (usually a e-mail address) for a NREN to
-	 * a new value.
-	 *
-	 * @param email String The new contact information
-	 * @param phone String Phone for the subscriber
-	 * @param certPhone String CERT phone (for emergency)
-	 * @param certEmail String CERT email (for emergency)
-	 * @param url String The url the NREN will configure Confusa to listen to.
-	 * @param newLanguage String
-	 */
-	private function updateNRENContact($email, $phone, $certPhone, $certEmail, $url, $newLanguage)
-	{
-		$nren = $this->person->getNREN();
-		$query  = "UPDATE nrens SET contact_email=?, contact_phone=?, ";
-		$query .= " cert_phone=?, cert_email=?, url=?, lang=? ";
-		$query .= "WHERE name=?";
-		try {
-			MDB2Wrapper::update($query,
-					    array('text','text', 'text', 'text', 'text', 'text', 'text'),
-					    array($email, $phone, $certPhone, $certEmail, $url, $newLanguage, $nren));
-		} catch (DBQueryException $dqe) {
-			Framework::error_output("Could not change the NREN contact! Maybe something is " .
-						"wrong with the data that you supplied? Server said: " .
-						$dqe->getMessage());
-			Logger::log_event(LOG_INFO, "[nadm] Could not update " .
-					  "contact of NREN $nren: " .
-					  $dqe->getMessage());
-		} catch (DBStatementException $dse) {
-			Framework::error_output("Could not change the NREN contact! Confusa " .
-						"seems to be misconfigured. Server said: " .
-						$dse->getMessage());
-			Logger::log_event(LOG_WARNING, "[nadm] Could not update " .
-							"contact of $nren: " .
-							$dse->getMessage());
-			echo $query . "<br />\n";
-		}
-
-		Framework::success_output("Updated contact information for your NREN $nren.");
-		Logger::log_event(LOG_DEBUG, "[nadm] Updated contact for NREN $nren");
-	} /* end updateNRENContact */
-
-	/**
-	 * Get the contact information for a NREN
-	 *
-	 * @param $nren string The NREN for which the contact information should be retrieved
-	 * @return string The contact (e-mail address) information for a NREN
-	 */
-	private function getNRENInfo()
-	{
-		$query="SELECT lang, contact_email, contact_phone,cert_email, cert_phone, url FROM nrens WHERE name=?";
-		$nren = $this->person->getNREN();
-
-		try {
-			$res = MDB2Wrapper::execute($query,
-						    array('text'),
-						    array($nren));
-		} catch (DBQueryException $dqe) {
-			Framework::warning_ouput(__FILE__ . ":" . __LINE__ . " Could not get the current contact information for $nren");
-		} catch (DBStatementException $dse) {
-			Framework::warning_output("Could not get the current contact information for $nren");
-			Logger::log_event(LOG_INFO, "[nadm] Could not get current contact for NREN " .
-							"$nren: " . $dse->getMessage());
-		}
-
-		return $res[0];
-	}
-
 	/**
 	 * Get the current contact information for a subscriber
 	 *
@@ -226,41 +157,6 @@ class CP_NREN_Subs_Settings extends Content_Page
 		Framework::success_output("Updated contact information for your subscriber $subscriber.");
 		Logger::log_event(LOG_DEBUG, "[sadm] Updated contact for subscriber $subscriber.");
 	} /* end updateSubscriberContact */
-
-	/**
-	 * Update the default language for a NREN
-	 *
-	 * @param $nren string The name of the NREN
-	 * @param $new_language string the ISO 639-1 code for the new default language of the NREN
-	 */
-	private function updateNRENLanguage($nren, $new_language)
-	{
-		$query = "UPDATE nrens SET lang=? WHERE name=?";
-
-		try {
-			MDB2Wrapper::update($query,
-								array('text','text'),
-								array($new_language, $nren));
-		} catch (DBQueryException $dbqe) {
-			Logger::log_event(LOG_NOTICE, "Updating the language to $new_language " .
-							"failed for NREN $nren. Error was: " . $dbqe->getMessage());
-			Framework::error_output("Updating the language to $new_language for your " .
-									"NREN $nren failed, probably due to problems with " .
-									"the supplied data. Server said: " . $dbqe->getMessage());
-			return;
-		} catch (DBStatementException $dbse) {
-			Logger::log_event(LOG_NOTICE, "Updating the language to $new_language " .
-							"failed for NREN $nren. Error was: " . $dbse->getMessage());
-			Framework::error_output("Updating the language to $new_language for your " .
-									"NREN $nren failed, probably due to problems with the " .
-									"server configuration! Server said: " . $dbse->getMessage());
-			return;
-		}
-
-		Logger::log_event(LOG_DEBUG, "Default language changed to $new_language for NREN $nren");
-		Framework::success_output("Default language for your NREN successfully changed to " .
-									$this->full_names[$new_language]);
-	} /* end updateNRENLanguage */
 
 	/**
 	 * Update the default language for a subscriber
