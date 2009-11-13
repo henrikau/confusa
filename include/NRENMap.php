@@ -1,11 +1,12 @@
 <?php
-  /* Henrik Austad, 2009
+  /**
+   * NRENMap - map a given IdP to an NREN.
    *
-   * Part of Confusa, GPLv3 applies.
+   * Since any given IdP can only belong to a *single* NREN, this is a
+   * many-to-one mapping.
    *
-   * This maps an IdP to an NREN. As an IdP must belong to one and only one NREN,
-   * but one NREN may consist of several IdPs, we must map this the same way we
-   * map the Countries.
+   * @license LGPLv3
+   * @author	Henrik Austad <henrik.austad@uninett.no>
    */
 class sspmod_core_Auth_Process_NRENMap extends SimpleSAML_Auth_ProcessingFilter {
 	private $known_nrens = array();
