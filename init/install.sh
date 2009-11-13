@@ -832,8 +832,8 @@ function perform_postinstallation_steps
 	fi
 
 	# Link the necessary AuthProc filters
-	ln -s -f ${install_path}include/CountryMap.php ${simplesaml_path}modules/core/lib/Auth/Process/CountryMap.php
-	ln -s -f ${install_path}include/NRENMap.php ${simplesaml_path}modules/core/lib/Auth/Process/NRENMap.php
+	ln -s -f ${prefix}/CountryMap.php ${simplesaml_path}modules/core/lib/Auth/Process/CountryMap.php
+	ln -s -f ${prefix}/NRENMap.php ${simplesaml_path}modules/core/lib/Auth/Process/NRENMap.php
 
 	# Check if the NRENMap has already been included in the simplesamlphp config
 	# If so, no need to do it again
