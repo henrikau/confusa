@@ -5,6 +5,7 @@ require_once 'CriticalAttributeException.php';
 require_once 'permission.php';
 require_once 'NREN.php';
 require_once 'Subscriber.php';
+require_once 'framework.php';
 
 /* Person
  *
@@ -37,6 +38,9 @@ class Person{
 
     private $email;
     private $country;
+
+    /* array storing all provided entitlements for the user. */
+    private $entitlement;
 
     /* The name of the subscriber, e.g. 'ntnu', 'uio', 'uninett' */
     private $subscriber;
