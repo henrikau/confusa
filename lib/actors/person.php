@@ -3,6 +3,7 @@ require_once 'input.php';
 require_once 'output.php';
 require_once 'CriticalAttributeException.php';
 require_once 'permission.php';
+require_once 'NREN.php';
 require_once 'Subscriber.php';
 
 /* Person
@@ -565,20 +566,24 @@ class Person{
      * @param String the name of the NREN the user ultimately belongs to.
      * @return void
      */
-    public function setNREN($nren) {
-	    if (isset($nren)) {
-		    $this->nren = strtolower(Input::sanitize($nren));
+    public function setNREN($input_nren) {
+	    if (isset($input_nren)) {
+		    $this->nren = new NREN($input_nren);
 	    }
     }
 
     /**
      * getNREN() return the NREN the user belongs to.
      *
+     * @param void
      * @return String The name of the nren
      */
     public function getNREN()
     {
-		return $this->nren;
+	    if (is_null($this->nren)) {
+		    return null;
+	    }
+	    return $this->nren;
     }
 
 
