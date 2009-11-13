@@ -1,3 +1,4 @@
+{if $person->isNRENAdmin() || $person->isSubscriberAdmin()}
 {literal}
 <script type="text/javascript">
 
@@ -48,6 +49,7 @@
 {* avoid problems with hidden overflow and notification messages *}
 <div class="spacer"></div>
 <fieldset>
+{if $person->isNRENAdmin()}
   <legend>Create or modify NREN attribute-map</legend>
   <p class="info">
     <br />
@@ -65,12 +67,23 @@
     export to Confusa and should only be used as an absolute last
     resort.
   </p>
-  <p class="info">
-    <br />
-    Remember that after you have uploaded your changes, you should list
-    the page one more time to retrieve the latest changes from the
-    database.
-  </p>
+{elseif $person->isSubscriberAdmin()}
+	<legend>Create or modify subscriber attribute-map</legend>
+	<p class="info">
+		<br />
+		Add or update the attribute map for your subscriber
+		'{$person->getSubscriberIdPName()|escape}'.
+		Usually this map should have already been defined by a NREN admin and
+		the NREN-wide settings for your NREN '{$person->getNREN()|escape}'
+		should also apply for your subscriber.
+	</p>
+	<p class="info">
+		<br />
+		So it is advised to change this map only if your IdP really requires
+		to send different attributes than the NREN-wide setting defines.
+	</p>
+{/if}
+
   <br />
   <br />
 
@@ -85,7 +98,7 @@
 	<td align="right">Country</td>
 	<td align="center"><b><span style="color: darkgray">-</span></b></td>
 	<td>{$person->getCountry()|escape}
-	<input type="hidden" name="attributes_operation" value="update_map_nren" />
+	<input type="hidden" name="attributes_operation" value="update_map" />
 	</td>
       </tr>
 
@@ -108,7 +121,7 @@
 	<td align="right">
 	  <select {if ! $person->isNRENAdmin()} disabled="disabled"{/if} name="epodn" onchange="fetchAttributeValue(this, 'orgNameField');">
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $NRENMap.epodn}selected="selected"{/if} value="{$element}">
+	    <option {if $element eq $map.epodn}selected="selected"{/if} value="{$element}">
 	      {$element}
 	    </option>
 	    {/foreach}
@@ -127,7 +140,7 @@
 	  <select name="cn" onchange="fetchAttributeValue(this, 'cnField');">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $NRENMap.cn}selected="selected"{/if} value="{$element}">
+	    <option {if $element eq $map.cn}selected="selected"{/if} value="{$element}">
 	      {$element}
 	    </option>
 	    {/foreach}
@@ -145,7 +158,7 @@
 	  <select name="mail" onchange="fetchAttributeValue(this, 'emailField');">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $NRENMap.mail}selected="selected"{/if} value="{$element}">
+	    <option {if $element eq $map.mail}selected="selected"{/if} value="{$element}">
 	      {$element}
 	    </option>
 	    {/foreach}
@@ -163,7 +176,7 @@
 	  <select name="entitlement" onchange="fetchAttributeValue(this, 'entitlementField')">
 	    <option value=""></option>
 	    {foreach from=$keys item=element}
-	    <option {if $element eq $NRENMap.entitlement}selected="selected"{/if} value="{$element}">
+	    <option {if $element eq $map.entitlement}selected="selected"{/if} value="{$element}">
 	      {$element|escape}
 	    </option>
 	    {/foreach}
@@ -187,3 +200,4 @@
   <br />
 </fieldset>
 <br />
+{/if}
