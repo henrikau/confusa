@@ -439,7 +439,7 @@ class Person{
     }
 
     /**
-     * getSubscrberIdPName() Return the name we use as key in the database.
+     * getSubscriberIdPName() Return the name we use as key in the database.
      *
      * @param void
      * @return String the name of the subscriber used as key in the database.
