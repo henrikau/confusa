@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS subscribers (
     subscr_email VARCHAR(64) NOT NULL,
     subscr_phone VARCHAR(24) DEFAULT "",
     subscr_resp_name  VARCHAR(24) NOT NULL,
-    subscr_resp_email  VARCHAR(24) NOT NULL,
+    subscr_resp_email  VARCHAR(64) NOT NULL,
     subscr_comment TEXT DEFAULT "",
 
     FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
