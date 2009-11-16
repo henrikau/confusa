@@ -878,7 +878,8 @@ class Person{
 			$permission->addReason("Need a country name for the certificates!");
 		}
 
-		if (empty($this->subscriberName)) {
+		$subscriberOrgName = $this->subscriber->getOrgName();
+		if (empty($subscriberOrgName)) {
 			$permission->setPermissionGranted(false);
 			$permission->addReason("Need a properly formatted Subscriber name!");
 		}
@@ -895,21 +896,21 @@ class Person{
 		/* Bubble up exceptions */
 		$res = MDB2Wrapper::execute($query,
 				array('text'),
-				array($this->db_name));
+				array($this->subscriber->getIdPName()));
 
 		if (count($res) == 0) {
 			$permission->setPermissionGranted(false);
-			$permission->addReason("Your institution " . $this->db_name .
+			$permission->addReason("Your institution " . $this->subscriber->getIdPName() .
 					" was not found in the database!");
 			return $permission;
 		} else if (count($res) > 1) {
 			throw new AuthException("More than one DB-entry with same subscriberOrgName " .
-					$this->subscriberOrgName);
+					$this->subscriber->getOrgName());
 		}
 
 		if ($res[0]['org_state'] !== 'subscribed') {
 			$permission->setPermissionGranted(false);
-			$permission->addReason("Your institution " . $this->db_name .
+			$permission->addReason("Your institution " . $this->subscriber->getIdPName() .
 					" is currently not subscribed to the portal!");
 		}
 
