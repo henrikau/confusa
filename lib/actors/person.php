@@ -361,6 +361,12 @@ class Person{
      */
     public function getSession()
     {
+	    if (Config::get_config('auth_bypass')) {
+		    if (Config::get_config('debug')) {
+			    Framework::error_output("Calling " . __CLASS__ . "::" . __FUNCTION__ . " in bypass-mode!");
+		    }
+		    Logger::log_event(LOG_NOTICE, "Calling " . __CLASS__ . "::" . __FUNCTION__ . " in bypass-mode!");
+	    }
 	    if (!isset($this->session)) {
 		    return null;
 	    }
