@@ -148,7 +148,7 @@ class CP_NREN_Admin extends Content_Page
 			case 'list':
 				/* get all info from database and publish to template */
 				$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
-				$this->tpl->assign('self_subscriber'	, $this->person->getSubscriber()->getOrgName());
+				$this->tpl->assign('self_subscriber'	, $this->person->getSubscriber()->getIdPName());
 				$this->tpl->assign('list_subscribers', true);
 				break;
 			case 'add':
