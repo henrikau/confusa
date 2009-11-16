@@ -149,11 +149,13 @@ class MailManager {
 	private function quoted_printable_encode($input, $line_max = 75) {
 		$hex = array('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
 		$lines = preg_split("/(?:\r\n|\r|\n)/", $input);
-		$linebreak = "=0D=0A";
+		$linebreak = "=0D=0A=\r\n";
+		/* the linebreak also counts as characters in the mime_qp_long_line rule of spam-assassin */
+		$line_max = $line_max - strlen($linebreak);
 		$escape = "=";
 		$output = "";
 		$cur_conv_line = "";
-		$length = 6; /* length of the linebreak, included in total length */
+		$length = 0;
 
 		for ($j=0; $j<count($lines); $j++) {
 			$line = $lines[$j];
@@ -198,14 +200,14 @@ class MailManager {
 					$i =  $i - $whitesp_diff;
 
 					$cur_conv_line = "";
-					$length = 6;
+					$length = 0;
 				} else {
 					// length for wordwrap not reached, continue reading
 					$cur_conv_line .= $c;
 				}
 			} // end of for
 
-			$length = 6;
+			$length = 0;
 			$output .= $cur_conv_line;
 			$cur_conv_line = "";
 
