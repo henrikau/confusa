@@ -229,7 +229,7 @@ class CertManager_Online extends CertManager
 		}
 
         $common_name = $this->person->getX509ValidCN();
-        $organization = 'O=' . $this->person->getSubscriberOrgName();
+        $organization = 'O=' . $this->person->getSubscriber()->getOrgName();
 
         $params = $this->_capi_get_cert_list($common_name);
         $res=array();
@@ -776,7 +776,7 @@ class CertManager_Online extends CertManager
             $this->person->getX509ValidCN();
 
         $postfields_sign_req["subject_organizationName_2"] =
-            $this->person->getSubscriberOrgName();
+		$this->person->getSubscriber()->getOrgName();
         $postfields_sign_req["subject_countryName_3"] = $this->person->getCountry();
         $postfields_sign_req["subject_domainComponent_4"] = "tcs";
         $postfields_sign_req["subject_domainComponent_5"] = "terena";

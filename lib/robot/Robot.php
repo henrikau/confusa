@@ -26,7 +26,7 @@ class Robot
 	static function createCertList($admin)
 	{
 		$cm = CertManagerHandler::getManager($admin);
-		$list = $cm->get_cert_list_for_persons("%", $admin->getSubscriberOrgName());
+		$list = $cm->get_cert_list_for_persons("%", $admin->getSubscriber()->getOrgName());
 		$res = array();
 		$found_certs = 0;
 		$found_users = 0;
@@ -65,7 +65,7 @@ class Robot
 			}
 		}
 		Logger::log_event(LOG_NOTICE, "Created a list of $found_certs valid certificates for $found_users " .
-				  "different user(s) in subscriber " . $admin->getSubscriberOrgName());
+				  "different user(s) in subscriber " . $admin->getSubscriber()->getOrgName());
 		return $res;
 	} /* end createCertList */
 
@@ -92,7 +92,7 @@ class Robot
 				break;
 			}
 			/* Search after matches for cn and subscriber */
-			$list = $cm->get_cert_list_for_persons($eppn, $admin->getSubscriberOrgName());
+			$list = $cm->get_cert_list_for_persons($eppn, $admin->getSubscriber()->getOrgName());
 			$count = 0;
 			if (count($list) > 0) {
 				foreach ($list as $key => $value) {

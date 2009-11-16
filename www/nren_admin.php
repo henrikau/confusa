@@ -148,7 +148,7 @@ class CP_NREN_Admin extends Content_Page
 			case 'list':
 				/* get all info from database and publish to template */
 				$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
-				$this->tpl->assign('self_subscriber'	, $this->person->getSubscriberOrgName());
+				$this->tpl->assign('self_subscriber'	, $this->person->getSubscriber()->getOrgName());
 				$this->tpl->assign('list_subscribers', true);
 				break;
 			case 'add':
@@ -171,7 +171,7 @@ class CP_NREN_Admin extends Content_Page
 			/* get all info from database and publish to template */
 			$this->tpl->assign_by_ref('nren'	, $this);
 			$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
-			$this->tpl->assign('self_subscriber'	, $this->person->getSubscriberOrgName());
+			$this->tpl->assign('self_subscriber'	, $this->person->getSubscriber()->getOrgName());
 			$this->tpl->assign('list_subscribers', true);
 		}
 
@@ -640,7 +640,7 @@ class CP_NREN_Admin extends Content_Page
 		$res .= "<input type=\"image\" name=\"delete\" ";
 		$res .= "title=\"Delete\" ";
 		/* warning upon attempted self-deletion */
-		if ($target === $this->person->getSubscriberOrgName()) {
+		if ($target === $this->person->getSubscriber()->getOrgName()) {
 			$res .= "onclick=\"return confirm('You are about to delete your OWN INSTITUTION (" . htmlentities($target) . ")!\\n";
 			$res .= "          Are you sure about that?')\"";
 		} else {

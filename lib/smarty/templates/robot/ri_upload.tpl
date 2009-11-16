@@ -1,5 +1,5 @@
 <fieldset>
-  <legend>Paste new certificate for <i>{$person->getSubscriberOrgName()|escape}</i></legend>
+  <legend>Paste new certificate for <i>{$person->getSubscriber()->getOrgName()|escape}</i></legend>
   <br />
   <form action="" method="post">
     <input type="hidden" name="robot_action" value="paste_new" />
@@ -32,7 +32,7 @@
 
 <br />
 <fieldset>
-  <legend>Upload new certificate for <i>{$person->getSubscriberOrgName()|escape}</i></legend>
+  <legend>Upload new certificate for <i>{$person->getSubscriber()->getOrgName()|escape}</i></legend>
   <br />
   <form enctype="multipart/form-data" action="" METHOD="POST">
     <input type="hidden" name="robot_action" value="upload_new" />

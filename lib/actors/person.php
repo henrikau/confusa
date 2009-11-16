@@ -187,7 +187,7 @@ class Person{
     {
 	    $dn = "";
 	    $country	= $this->getCountry();
-	    $son	= Output::mapUTF8ToASCII($this->getSubscriberOrgName(false));
+	    $son	= Output::mapUTF8ToASCII($this->getSubscriber()->getOrgName());
 
 	    if (isset($country)) {
 		    $dn .= "/C=$country";
@@ -212,7 +212,7 @@ class Person{
     {
 	$dn = "";
 	$country	= $this->getCountry();
-	$son		= Output::mapUTF8ToASCII($this->getSubscriberOrgName(false));
+	$son		= Output::mapUTF8ToASCII($this->getSubscriber()->getOrgName());
 
 	if (isset($country)) {
 	    $dn .= "C=$country, ";

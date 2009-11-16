@@ -56,7 +56,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 							$new_language = Input::sanitize($_POST['language']);
 
 							if ($person->isSubscriberAdmin()) {
-								$this->updateSubscriberLanguage($person->getSubscriberOrgName(),
+								$this->updateSubscriberLanguage($person->getSubscriber()->getOrgName(),
 												$new_language);
 							} else if ($person->isNRENAdmin()) {
 								$this->person->getNREN()->set_lang(Input::sanitize($_POST['language']));

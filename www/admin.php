@@ -148,7 +148,7 @@ class CP_Admin extends Content_Page
 			$this->tpl->assign('subscribers', $subscribers);
 
 		} else if ($this->person->isSubscriberAdmin()) { /* subscriber admin display */
-			$subscriber_dn	= $this->person->getSubscriberOrgName();
+			$subscriber_dn	= $this->person->getSubscriber()->getOrgName();
 			$subscriber_db  = $this->person->getSubscriberIdPName();
 			$nren		= $this->person->getNREN();
 
@@ -168,7 +168,7 @@ class CP_Admin extends Content_Page
 			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
 
 		} else if ($this->person->isSubscriberSubAdmin()) { /* subscriber-sub-admin display */
-			$subscriber_dn		= $this->person->getSubscriberOrgName();
+			$subscriber_dn		= $this->person->getSubscriber()->getOrgName();
 			$subscriber_db		= $this->person->getSubscriberIdPName();
 			$subscriber_admins	= $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_ADMIN);
 			$subscriber_sub_admins	= $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_SUB_ADMIN);

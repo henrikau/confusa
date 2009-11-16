@@ -169,7 +169,7 @@ class CP_RevokeCertificate extends Content_Page
 				 * Subscriber set, not even via the IdP, use the
 				 * first in the list.
 				 */
-				$subscriber = $this->person->getSubscriberOrgName();
+				$subscriber = $this->person->getSubscriber()->getOrgName();
 				if (!isset($subscriber) || $subscriber=="") {
 					echo "[DEBUG] ".__FILE__ . ":" . __LINE__;
 					echo " no subscriber set, getting the first available.<br />\n";
@@ -180,7 +180,7 @@ class CP_RevokeCertificate extends Content_Page
 			$this->tpl->assign('subscriber', htmlentities($subscriber));
 			$this->tpl->assign('subscribers', $subscribers);
 		} else {
-			$subscriber = $this->person->getSubscriberOrgName();
+			$subscriber = $this->person->getSubscriber()->getOrgName();
 		}
 
 		$this->tpl->assign('file_name', 'eppn_list');
@@ -265,7 +265,7 @@ class CP_RevokeCertificate extends Content_Page
 		 * those of which it is the suffix. I.e. test@feide.no should
 		 * not match confusatest@feide.no */
 		$common_name = "% " . $this->person->getEPPN();
-		$this->searchCertsDisplay($common_name, $this->person->getSubscriberOrgName());
+		$this->searchCertsDisplay($common_name, $this->person->getSubscriber()->getOrgName());
 	}
 
 	/**
@@ -534,7 +534,7 @@ class CP_RevokeCertificate extends Content_Page
 			 * her own organization
 			 */
 			} else if ($this->person->isSubscriberAdmin() || $this->person->isSubscriberSubAdmin()) {
-				$subscriber = $this->person->getSubscriberOrgName();
+				$subscriber = $this->person->getSubscriber()->getOrgName();
 
 				if ($subscriber === $info['organization']) {
 					return true;
@@ -547,7 +547,7 @@ class CP_RevokeCertificate extends Content_Page
 			 * */
 			} else {
 				$cn = $this->person->getX509ValidCN();
-				$subscriber = $this->person->getSubscriberOrgName();
+				$subscriber = $this->person->getSubscriber()->getOrgName();
 
 				if (($info['cert_owner'] === $cn) && ($info['organization'] === $subscriber)) {
 					return true;

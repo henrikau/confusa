@@ -170,7 +170,7 @@ class CP_Robot_Interface extends Content_Page
 			$query .= "WHERE admin=? AND s.name=? AND anj.name=?";
 			$params = array('text', 'text', 'text');
 			$data = array($this->person->getEPPN(),
-				      $this->person->getSubscriberOrgName(),
+				      $this->person->getSubscriber()->getOrgName(),
 				      $this->person->getNREN());
 			$res = MDB2Wrapper::execute($query, $params, $data);
 			switch(count($res)) {
@@ -189,14 +189,14 @@ class CP_Robot_Interface extends Content_Page
 
 					$log_msg   .= "Subscriber-admin " . $this->person->getEPPN();
 					$log_msg   .= " has not set any affilitated subscriber in the database.";
-					$log_msg   .= " It should be " . $this->person->getSubscriberOrgName();
+					$log_msg   .= " It should be " . $this->person->getSubscriber()->getOrgName();
 					$log_msg   .= ", but is NULL. Please update the database.";
 				} else {
-					$error_msg .= "For some reason, the subscriber (".$this->person->getSubscriberOrgName().") ";
+					$error_msg .= "For some reason, the subscriber (".$this->person->getSubscriber()->getOrgName().") ";
 					$error_msg .= "is not properly configured in the database. ";
 					$error_msg .= "The exact reason is unknown. Please contact operational support.";
 
-					$log_msg   .= "Subscriber " . $this->person->getSubscriberOrgName();
+					$log_msg   .= "Subscriber " . $this->person->getSubscriber()->getOrgName();
 					$log_msg   .= " is not properly configured in the database.";
 				}
 				$error_msg .= "<br /><br />\nThis event has been logged, please contact operational support (provide the error-code) ";
@@ -277,7 +277,7 @@ class CP_Robot_Interface extends Content_Page
 		$query .= " nren=? AND subscriber=? AND serial=?";
 
 		$params = array('text', 'text', 'text');
-		$data	= array($this->person->getNREN(), $this->person->getSubscriberOrgName(), $serial);
+		$data	= array($this->person->getNREN(), $this->person->getSubscriber()->getOrgName(), $serial);
 		try {
 			$res = MDB2Wrapper::execute($query,$params, $data);
 			if (count($res)!= 1) {
