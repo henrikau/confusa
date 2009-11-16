@@ -594,6 +594,21 @@ class Person{
 	    return $this->nren;
     }
 
+    /**
+     * getSubscriber() Returns the currently associated subscriber
+     *
+     * @param void
+     * @return Subscriber $subscriber
+     * @access public
+     * @since post-v0.3
+     */
+    public function getSubscriber()
+    {
+	    if (is_nulL($this->subscriber)) {
+		    return null;
+	    }
+	    return $this->subscriber;
+    }
 
     public function setSubscriber($subscriber)
     {
