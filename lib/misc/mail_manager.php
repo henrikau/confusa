@@ -32,7 +32,7 @@ class MailManager {
 		}
 		$this->person = $pers;
 		$this->receiver .= $this->person->getName() . " <" . $this->person->getEmail() . ">";
-        $this->sender   = $sender;
+		$this->sender   = $sender;
         $this->sendHeader = $sendHeader;
         $this->senderName = $senderName;
 
@@ -134,10 +134,9 @@ class MailManager {
 	 * 	1) Split the original text into lines according to the existing newlines
 	 * 	2) For each line:
 	 * 		2.1 Encode every character that must be encoded
-	 * 		2.2 Count the length, once the line length limit (default 75) is
+	 * 		2.2 When encountering a whitespace, save its position
+	 * 		2.3 Count the length, once the line length limit (default 75) is
 	 * 		    reached, stop
-	 * 		2.3 From the line length limit do a reverse lookup back to the last
-	 * 		    whitespace
 	 * 		2.4 Include the substring up to the last whitespace in the output,
 	 * 		    add a qp-encoded linebreak and
 	 * 		    reset the line pointer to the position of the last whitespace
@@ -156,6 +155,8 @@ class MailManager {
 		$output = "";
 		$cur_conv_line = "";
 		$length = 0;
+		$whitespace_pos = 0;
+		$addtl_chars = 0;
 
 		for ($j=0; $j<count($lines); $j++) {
 			$line = $lines[$j];
@@ -167,42 +168,36 @@ class MailManager {
 
 				$length++;
 
-				if ( ($dec == 32) && ($i == ($linlen - 1)) ) { // convert space at eol only
-					$c = "=20";
-					$length += 2;
+				if ($dec == 32) { // convert space at eol only
+					if (($i == ($linlen - 1))) {
+						$c = "=20";
+						$length += 2;
+					}
+
+					$addtl_chars = 0;
+					$whitespace_pos = $i;
 				} elseif ( ($dec == 61) || ($dec < 32 ) || ($dec > 126) ) { // always encode "\t", which is *not* required
 					$h2 = floor($dec/16); $h1 = floor($dec%16);
 					$c = $escape . $hex["$h2"] . $hex["$h1"];
 					$length += 2;
+					$addtl_chars += 2;
 				}
 
 				// length for wordwrap exceeded, get a newline into the text
 				if ($length >= $line_max) {
 					$cur_conv_line .= $c;
 
-					// move pointer back to last whitespace, so the wordwrap takes place across word boundaries and looks nice
-					$whitesp_it = $i;
-
-					// TODO reverse search taking into account all QP-encoded chars is not very efficient
-					while (($c = substr($line, $whitesp_it,1)) !== " ") {
-						$dec = ord($c);
-
-						if (($dec == 61) && ($dec < 32) || ($dec > 126)) {
-							$whitesp_it -= 3;
-						} else {
-							$whitesp_it--;
-						}
-					}
-
 					// read only up to the whitespace for the current line
-					$whitesp_diff = $i - $whitesp_it;
+					$whitesp_diff = $i - $whitespace_pos + $addtl_chars;
 					$output .= substr($cur_conv_line, 0, (strlen($cur_conv_line) - $whitesp_diff)) . $linebreak;
 
-					// the text after the whitespace will have to be read again
-					$i =  $i - $whitesp_diff;
+					/* the text after the whitespace will have to be read again ( + any additional characters that came into
+					 * existence as a result of the encoding process after the whitespace) */
+					$i =  $i - $whitesp_diff + $addtl_chars;
 
 					$cur_conv_line = "";
 					$length = 0;
+					$whitespace_pos = 0;
 				} else {
 					// length for wordwrap not reached, continue reading
 					$cur_conv_line .= $c;
@@ -210,6 +205,7 @@ class MailManager {
 			} // end of for
 
 			$length = 0;
+			$whitespace_pos = 0;
 			$output .= $cur_conv_line;
 			$cur_conv_line = "";
 
@@ -219,7 +215,6 @@ class MailManager {
 		}
 
 		return trim($output);
-		//return wordwrap(trim($output), $line_max);
 	}
 
 } /* end MailManager */
