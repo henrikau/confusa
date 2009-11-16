@@ -60,20 +60,22 @@ class CP_Root_Certificate extends Content_Page
 		} else if (isset($_GET['link']) && file_exists($this->cert_path)) {
 			switch(htmlentities($_GET['link'])) {
 			case 'cacert':
-				$this->makeCertAvailable();
 				$cert = file_get_contents($this->cert_path);
+				$cert = CertManager::PEMtoDER($cert, 'cert');
 				header("Content-type: application/x-x509-ca-cert");
 				header("Content-Length: " . strlen($cert));
-				header("Content-Disposition: inline; filename=confusa.crl");
+				header("Content-Disposition: inline; filename=confusa.pem");
 				echo $cert;
+				exit(0);
 				break;
 			case 'crl':
-				$this->makeCRLAvailable();
 				$crl = file_get_contents($this->crl_path);
-				header("Content-type: application/pkix-crl");
+				$crl = CertManager::PEMtoDER($crl, 'crl');
+				header("Content-type: application/x-pkcs7-crl");
 				header("Content-Length: " . strlen($crl));
 				header("Content-Disposition: inline; filename=confusa.crl");
 				echo $crl;
+				exit(0);
 				break;
 			}
 		}

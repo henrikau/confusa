@@ -156,6 +156,37 @@ abstract class CertManager
   }
 
   /**
+   * Convert a certificate from PEM format to DER format
+   *
+   * @param $pem string the certificate in PEM format
+   * @param $type string the type of the certificate. One of:
+   * 			* 'cert'  - a X509 certificate
+   * 			* 'crl'   - a certificate revocation list
+   * @return $der string the certificate in DER format
+   */
+  public static function PEMtoDER($pem, $type)
+  {
+		switch($type) {
+		case 'cert':
+			$begin = "CERTIFICATE-----";
+			$end = "-----END";
+			$pem = substr($pem, strpos($pem, $begin)+strlen($begin));
+			$pem = substr($pem, 0, strpos($pem, $end));
+			$der = base64_decode($pem);
+			return $der;
+			break;
+		case 'crl':
+			$begin = "CRL-----";
+			$end = "-----END";
+			$pem = substr($pem, strpos($pem, $begin)+strlen($begin));
+			$pem = substr($pem, 0, strpos($pem, $end));
+			$der = base64_decode($pem);
+			return $der;
+			break;
+		}
+	}
+
+  /**
    * Send a notification upon the issuance of a new X.509 certificate, as it is
    * required in section 3.2 of the MICS-profile.
    *
