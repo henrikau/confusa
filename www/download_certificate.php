@@ -161,9 +161,12 @@ final class CP_DownloadCertificate extends Content_Page
 					Framework::error_output("Could not send mail properly!");
 					return false;
 				}
+			} else {
+				return false;
 			}
 		} catch (ConfusaGenException $e) {
 			Framework::error_output("Could not mail the certificate, server said: " . htmlentities($e->getMessage()));
+			return false;
 		}
 		Framework::success_output("Your e-mail has been sent");
 	} /* end send_cert */
