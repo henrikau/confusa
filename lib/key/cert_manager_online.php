@@ -54,10 +54,13 @@ class CertManager_Online extends CertManager
               "FROM nren_account_map_view a WHERE a.nren=?";
 
         $nren = $this->person->getNREN();
-        Logger::log_event(LOG_INFO, "Getting the remote-CA login " .
-                          "credentials for NREN " .
-                          $nren
-                );
+	if (Config::get_config('debug')) {
+		Logger::log_event(LOG_INFO, __CLASS__ . "::" . __FUNCTION__ .
+				  " Getting the remote-CA login " .
+				  "credentials for NREN " .
+				  $nren
+			);
+	}
 	try {
 		$errorCode = create_pw(8);
 		$errorMsg = "[$errorCode] " . __FILE__ . ":" . __LINE__ . " ";
