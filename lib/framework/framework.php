@@ -207,7 +207,9 @@ class Framework {
 			$this->person->setMode($new_mode);
 		}
 
-		$this->tpl->assign('person', $this->person);
+		$this->tpl->assign('person',	$this->person);
+		$this->tpl->assign('subscriber',$this->person->getSubscriber());
+		$this->tpl->assign('nren',	$this->person->getNREN());
 		$this->tpl->assign('is_online', (Config::get_config('ca_mode') === CA_ONLINE));
 
 		/* If we have a renderError, do not allow the user-page to
