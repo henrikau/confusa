@@ -156,7 +156,7 @@ class CP_NREN_Admin extends Content_Page
 				$attributes = $am->getAttributes();
 				$nren = $this->person->getNREN();
 
-				$map = AuthHandler::getNRENMap($nren);
+				$map = $this->person->getNREN()->getMap();
 
 				if (isset($attributes[$map['epodn']])) {
 					$this->tpl->assign('foundUniqueName', $attributes[$map['epodn']][0]);
