@@ -34,6 +34,7 @@ class sspmod_core_Auth_Process_CountryMap extends SimpleSAML_Auth_ProcessingFilt
 					  'https://aitta2.funet.fi/idp/shibboleth'	=> 'FI'
 			);
 	}
+
 	public function process(&$request) {
 		$idp = $request['Source']['entityid'];
 		if (is_null($request['Attributes']['idp'])) {
