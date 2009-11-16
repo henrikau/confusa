@@ -60,13 +60,12 @@ class CP_Attributes extends Content_Page
 		$this->tpl->assign('handle_map',	true);
 
 		if ($this->person->isNRENAdmin()) {
-			$map = AuthHandler::getNRENMap($this->person->getNREN());
+			$map = $this->person->getNREN()->getMap();
 		} else if ($this->person->isSubscriberAdmin()) {
-			$map = AuthHandler::getSubscriberMap($this->person->getNREN(),
-			                                     $this->person->getSubscriberIdPName());
+			$map = $this->person->getSubscriber()->getMap();
 			if (count($map) == 0) {
 				/* no subscriber map, fall back to NREN map */
-				$map = AuthHandler::getNRENMap($this->person->getNREN());
+				$map = $this->person->getNREN()->getMap();
 			}
 		}
 
