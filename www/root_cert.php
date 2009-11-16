@@ -63,6 +63,9 @@ class CP_Root_Certificate extends Content_Page
 				$cert = file_get_contents($this->cert_path);
 				$cert = CertManager::PEMtoDER($cert, 'cert');
 				header("Content-type: application/x-x509-ca-cert");
+				// IE fix (for HTTPS only)
+				header("Cache-Control: private");
+				header("Pragma: private");
 				header("Content-Length: " . strlen($cert));
 				header("Content-Disposition: inline; filename=confusa.pem");
 				echo $cert;
@@ -71,6 +74,9 @@ class CP_Root_Certificate extends Content_Page
 			case 'crl':
 				$crl = file_get_contents($this->crl_path);
 				$crl = CertManager::PEMtoDER($crl, 'crl');
+				// IE fix (for HTTPS only)
+				header("Cache-Control: private");
+				header("Pragma: private");
 				header("Content-type: application/x-pkcs7-crl");
 				header("Content-Length: " . strlen($crl));
 				header("Content-Disposition: inline; filename=confusa.crl");
