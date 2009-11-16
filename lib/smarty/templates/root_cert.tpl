@@ -9,7 +9,7 @@ This is the Certificate we use for signing the CSRs we receive.
 	To view the certificate in the browser, press <a href="root_cert.php?show_root_cert=yes">here</a>.
 </li>
 <li>
-	<a href="root_cert.php?link=cacert">Direct link</a> to the certificate (install).
+	<a href="{$ca_download_link}">Direct link</a> to the certificate (install).
 </li>
 <li>
 	<form method="get" action="root_cert.php">
@@ -37,7 +37,7 @@ certificates published by this CA.
 <ul style="margin-left: 18px">
 <li>View the CRL in the brower: 
 <a href="root_cert.php?show_crl=yes">here </a></li>
-<li>Direct link to crl (install): <a href="root_cert.php?link=crl">here</a>.</li>
+<li>Direct link to crl (install): <a href="{$crl_download_link}">here</a>.</li>
 <li>
 	<form method="get" action="">
 		<input type="hidden" name="send_file" value="crl" />

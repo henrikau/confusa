@@ -7,20 +7,30 @@ class CP_Root_Certificate extends Content_Page
 	private $cert_path;
 	/* The local path to the CRL*/
 	private $crl_path;
+	/* The URL to the CA-certificate */
+	private $cert_url;
+	/* The URL to the CRL */
+	private $crl_url;
 
 	function __construct()
 	{
 		parent::__construct("Root Certificate(s)", false);
 
 		if (Config::get_config('ca_mode') == CA_ONLINE) {
-			$this->cert_path = "/var/tmp/confusa.pem";
-			$this->crl_path = "/var/tmp/confusa.crl";
+			$this->cert_path = "/var/tmp/tcs-ca.pem";
+			$this->crl_path = "/var/tmp/tcs-crl.crl";
+
+			$this->cert_url = ConfusaConstants::$CAPI_ROOT_CERT;
+			$this->crl_url = ConfusaConstants::$CAPI_CRL;
 		} else {
 			$this->cert_path = Config::get_config('install_path') .
 								Config::get_config('ca_cert_base_path') .
 								Config::get_config('ca_cert_path') .
 								Config::get_config('ca_cert_name');
 			$this->crl_path = ConfusaConstants::$OPENSSL_CRL_FILE;
+
+			$this->cert_url = "?link=cacert";
+			$this->crl_url = "?link=crl";
 		}
 	}
 
@@ -86,6 +96,8 @@ class CP_Root_Certificate extends Content_Page
 			$this->tpl->assign('crl_dump', $crl_dump);
 		}
 
+		$this->tpl->assign('ca_download_link', $this->cert_url);
+		$this->tpl->assign('crl_download_link', $this->crl_url);
 		$this->tpl->assign('content', $this->tpl->fetch('root_cert.tpl'));
 	}
 
