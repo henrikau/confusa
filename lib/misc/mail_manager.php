@@ -165,14 +165,16 @@ class MailManager {
 				$c = substr($line, $i, 1);
 				$dec = ord($c);
 
+				$length++;
+
 				if ( ($dec == 32) && ($i == ($linlen - 1)) ) { // convert space at eol only
 					$c = "=20";
+					$length += 2;
 				} elseif ( ($dec == 61) || ($dec < 32 ) || ($dec > 126) ) { // always encode "\t", which is *not* required
 					$h2 = floor($dec/16); $h1 = floor($dec%16);
 					$c = $escape . $hex["$h2"] . $hex["$h1"];
+					$length += 2;
 				}
-
-				$length++;
 
 				// length for wordwrap exceeded, get a newline into the text
 				if ($length >= $line_max) {
