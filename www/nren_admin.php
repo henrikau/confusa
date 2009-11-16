@@ -213,7 +213,7 @@ class CP_NREN_Admin extends Content_Page
 			$update .= "subscr_resp_email=?, subscr_resp_name=?, subscr_comment=? ";
 			$update .= "WHERE subscriber_id=? AND nren_id=?";
 			$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
-			$data = array($state, $email, $phone, $rname, $remail, $comment, $id, $nren_id);
+			$data = array($state, $email, $phone, $remail, $rname, $comment, $id, $nren_id);
 			MDB2Wrapper::update($update, $params, $data);
 
 			Logger::log_event(LOG_NOTICE, "Updated (full) information for subscriber $subscriber_id");
