@@ -409,7 +409,9 @@ class Person{
     public function getSubscriberOrgName()
     {
 	    if (Config::get_config('debug')) {
-		    echo __CLASS__ . "::" . __FUNCTION__ . " " . __FILE__ .":".__LINE__. " <font color=\"red\"><b>Deprecated</b></font><br />\n";
+		    echo __CLASS__ . "::" . __FUNCTION__ . " " . __FILE__ .
+			    ":".__LINE__. " <font color=\"red\"><b>Deprecated</b></font> ".
+			    "use getSubscriber()->getOrgName() instead<br />\n";
 	    }
 	    Logger::log_event(LOG_DEBUG, __CLASS__ . ":" . __FUNCTION__ . " deprecated");
 	    if (isset($this->subscriber)) {
@@ -446,7 +448,9 @@ class Person{
     public function getSubscriberIdPName()
     {
 	    if (Config::get_config('debug')) {
-		    echo __CLASS__ . "::" . __FUNCTION__ . " " . __FILE__ .":".__LINE__. " <font color=\"red\"><b>Deprecated</b></font><br />\n";
+		    echo __CLASS__ . "::" . __FUNCTION__ . " " . __FILE__ .":".__LINE__.
+			    " <font color=\"red\"><b>Deprecated</b></font>".
+			    "Use getSubscriber->getIdPName() instead.<br />\n";
 	    }
 	    Logger::log_event(LOG_DEBUG, __CLASS__ . ":" . __FUNCTION__ . " deprecated");
 	    return $this->subscriber->getIdPName();
