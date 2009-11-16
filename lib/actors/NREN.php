@@ -110,6 +110,49 @@ class NREN
 			return $this->map;
 		return null;
 	}
+
+	public function saveMap($epodn, $cn, $mail, $entitlement)
+	{
+		$doUpdate = false;
+		if ($this->hasMap) {
+			/* compare value */
+			if ($epodn	!= Input::sanitizeText($map['epodn']) ||
+			    $cn		!= Input::sanitizeText($map['cn']) ||
+			    $mail	!= Input::sanitizeText($map['mail']) ||
+			    $entitlement!= Input::sanitizeText($map['entitlement'])) {
+				$doUpdate = true;
+				$update = "UPDATE attribute_mapping SET epodn=?, cn=?, ".
+					" mail=?, entitlement=? WHERE nren_id=? ".
+					" AND subscriber_id IS NULL";
+				$params = array('text', 'text', 'text', 'text', 'text');
+				$data = array(Input::sanitizeText($epodn),
+					      Input::sanitizeText($cn),
+					      Input::sanitizeText($mail),
+					      Input::sanitizeText($entitlement),
+					      $this->getID());
+			}
+		} else {
+			$doUpdate = true;
+			$update = "INSERT INTO attribute_mapping(nren_id, eppn, epodn, cn, mail, entitlement) VALUES(?, ?, ?, ?, ?, ?)";
+			$params = array('text', 'text', 'text', 'text', 'text', 'text');
+			$data = array($nren_id[0]['nren_id'], $this->person->getEPPNKey(),
+				      $epodn, $cn, $mail, $entitlement);
+		}
+		if ($doUpdate) {
+			try {
+				MDB2Wrapper::update($update, $params, $data);
+				$this->retrieveMap();
+			}catch (DBStatementException $dbse) {
+				/* FIXME */
+				Framework::error_output(__FILE__ . ":" . __LINE__ . " " . htmlentities($dbse->getMessage()));
+				return false;
+			} catch (DBQueryException $dbqe) {
+				/* FIXME */
+				Framework::error_output(__FILE__ . ":" . __LINE__ . " " . htmlentities($dbqe->getMessage()));
+				return false;
+			}
+		}
+	}
 	/**
 	 * Get the contact information for a NREN
 	 *

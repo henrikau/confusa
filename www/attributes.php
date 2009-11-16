@@ -27,7 +27,7 @@ class CP_Attributes extends Content_Page
 
 				if ($this->person->isNRENAdmin()) {
 					$epodn		= $_POST['epodn'];
-					if ($this->updateMapNREN($epodn, $cn, $mail, $entitlement)) {
+					if ($this->person->getNREN()->saveMap($epodn, $cn, $mail, $entitlement)) {
 						Framework::success_output("Updated map successfully.");
 					}
 				} else if ($this->person->isSubscriberAdmin()) {
@@ -93,70 +93,6 @@ class CP_Attributes extends Content_Page
 		$this->tpl->assign('map',		$map);
 		$this->tpl->assign('keys',		AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
 		$this->tpl->assign('content', 	$this->tpl->fetch('attributes.tpl'));
-	}
-
-	/**
-	 * updateMapNREN() - take the new values and update/create the map for
-	 * an NREN
-	 */
-	private function updateMapNREN($epodn, $cn, $mail, $entitlement)
-	{
-		/* Does the map exist? */
-		$nren_id_query = "SELECT nren_id FROM nrens WHERE name=?";
-		$query = "SELECT * FROM attribute_mapping WHERE nren_id=? AND subscriber_id IS NULL";
-		try {
-			$nren_id = MDB2Wrapper::execute($nren_id_query, array('text'), $this->person->getNREN());
-			if (count($nren_id) != 1) {
-				$errorMsg = __FILE__ . ":" . __LINE__ . " ";
-				$errorMsg .= "Problems finding the NREN in the database. Got " . count($nren_id) . " from the DB";
-				Framework::error_output($errorMsg);
-				return false;
-			}
-			$res = MDB2Wrapper::execute($query,
-						    array('text'),
-						    $nren_id[0]['nren_id']);
-		} catch (DBStatementException $dbse) {
-			/* FIXME */
-			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . htmlentities($dbse->getMessage()));
-			return false;
-		} catch (DBQueryException $dbqe) {
-			/* FIXME */
-			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . htmlentities($dbqe->getMessage()));
-			return false;
-		}
-
-		switch(count($res)) {
-		case 0:
-			try {
-				$update = "INSERT INTO attribute_mapping(nren_id, eppn, epodn, cn, mail, entitlement) VALUES(?, ?, ?, ?, ?, ?)";
-				MDB2Wrapper::update($update,
-						    array('text', 'text', 'text', 'text', 'text', 'text'),
-						    array($nren_id[0]['nren_id'], $this->person->getEPPNKey(), $epodn, $cn, $mail, $entitlement));
-			} catch (DBQueryException $dbqe) {
-				Framework::error_output("Could not create new map.<br />Server said: " . htmlentities($dbqe->getMessage()));
-				return false;
-			}
-			break;
-		case 1:
-			if ($epodn	!= $res[0]['epodn'] ||
-			    $cn		!= $res[0]['cn'] ||
-			    $mail	!= $res[0]['mail'] ||
-			    $entitlement	!= $res[0]['entitlement']) {
-				$update = "UPDATE attribute_mapping SET epodn=?, cn=?, mail=?, entitlement=? WHERE id=?";
-				MDB2Wrapper::update($update,
-						    array('text', 'text', 'text', 'text', 'text'),
-						    array($epodn, $cn, $mail, $entitlement, $res[0]['id']));
-			} else {
-				Framework::error_output("No need to update row with identical elements");
-				return false;
-			}
-			break;
-		default:
-			Framework::error_output("Error in getting the correct ID, it looks like the NREN has several (".count($res).") in the database");
-			return false;
-		}
-
-		return true;
 	}
 
 	/**
