@@ -38,7 +38,7 @@ class CP_Admin extends Content_Page
 			/* operations called by the NREN-admin */
 			switch(htmlentities($_POST['nren_operation'])) {
 				case 'delete_nren_admin':
-					$admin = Input::sanitize($_POST['nren_admin']);
+					$admin = Input::sanitizeText($_POST['nren_admin']);
 					$this->deleteAdmin($admin, NREN_ADMIN);
 					break;
 				case 'downgrade_self':
@@ -46,11 +46,11 @@ class CP_Admin extends Content_Page
 								  $this->person->getSubscriber()->getIdPName());
 					break;
 				case 'upgrade_subs_admin':
-					$admin = Input::sanitize($_POST['subs_admin']);
+					$admin = Input::sanitizeText($_POST['subs_admin']);
 					$this->upgradeSubscriberAdmin($admin);
 					break;
 				case 'add_nren_admin':
-					$admin = Input::sanitize($_POST['nren_admin']);
+					$admin = Input::sanitizeText($_POST['nren_admin']);
 					$this->addNRENAdmin($admin);
 					break;
 				case 'delete_subs_admin':
@@ -58,7 +58,7 @@ class CP_Admin extends Content_Page
 					$this->deleteAdmin($admin,SUBSCRIBER_ADMIN);
 					break;
 				case 'add_subs_admin':
-					$admin = Input::sanitize($_POST['subs_admin']);
+					$admin = Input::sanitizeText($_POST['subs_admin']);
 					$subscriber = Input::sanitizeText($_POST['subscriber']);
 					$this->addSubscriberAdmin($admin, SUBSCRIBER_ADMIN, $subscriber);
 					break;
@@ -74,27 +74,27 @@ class CP_Admin extends Content_Page
 
 			switch(htmlentities($_POST['subs_operation'])) {
 				case 'delete_subs_admin':
-					$admin = Input::sanitize($_POST['subs_admin']);
+					$admin = Input::sanitizeText($_POST['subs_admin']);
 					$this->deleteAdmin($admin, SUBSCRIBER_ADMIN);
 					break;
 				case 'add_subs_admin':
-					$admin = Input::sanitize($_POST['subs_admin']);
+					$admin = Input::sanitizeText($_POST['subs_admin']);
 					$this->addSubscriberAdmin($admin,SUBSCRIBER_ADMIN,$this->person->getSubscriber()->getIdPName());
 					break;
 				case 'downgrade_subs_admin':
-					$admin = Input::sanitize($_POST['subs_admin']);
+					$admin = Input::sanitizeText($_POST['subs_admin']);
 					$this->downgradeSubscriberAdmin($admin, $this->person->getSubscriber()->getIdPName());
 					break;
 				case 'upgrade_subs_sub_admin':
-					$admin = Input::sanitize($_POST['subs_sub_admin']);
+					$admin = Input::sanitizeText($_POST['subs_sub_admin']);
 					$this->upgradeSubscriberSubAdmin($admin, $this->person->getSubscriber()->getIdPName());
 					break;
 				case 'delete_subs_sub_admin':
-					$admin = Input::sanitize($_POST['subs_sub_admin']);
+					$admin = Input::sanitizeText($_POST['subs_sub_admin']);
 					$this->deleteAdmin($admin,SUBSCRIBER_SUB_ADMIN);
 					break;
 				case 'add_subs_sub_admin':
-					$admin = Input::sanitize($_POST['subs_sub_admin']);
+					$admin = Input::sanitizeText($_POST['subs_sub_admin']);
 					$this->addSubscriberAdmin($admin,SUBSCRIBER_SUB_ADMIN,$this->person->getSubscriber()->getIdPName());
 					break;
 				default:
