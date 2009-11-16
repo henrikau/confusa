@@ -156,6 +156,7 @@
       <tr>
 	<td align="right" style="padding-right: 10px">DN: /O=</td>
 	<td><b>{$subscr_details.dn_name|escape}</b></td>
+	<td></td>
       </tr>
 
       <tr>
