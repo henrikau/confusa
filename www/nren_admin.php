@@ -55,22 +55,22 @@ class CP_NREN_Admin extends Content_Page
 			}
 
 			if(isset($_POST['subscr_email']) && $_POST['subscr_email'] != "") {
-				$subscr_email = Input::sanitize($_POST['subscr_email']);
+				$subscr_email = Input::sanitizeText($_POST['subscr_email']);
 			} else {
 				$subscr_email = "";
 			}
 			if(isset($_POST['subscr_phone']) && $_POST['subscr_phone'] != "") {
-				$subscr_phone = Input::sanitize($_POST['subscr_phone']);
+				$subscr_phone = Input::sanitizeText($_POST['subscr_phone']);
 			} else {
 				$subscr_phone = "";
 			}
 			if(isset($_POST['subscr_responsible_name']) && $_POST['subscr_responsible_name'] != "") {
-				$subscr_responsible_name = Input::sanitize($_POST['subscr_responsible_name']);
+				$subscr_responsible_name = Input::sanitizeText($_POST['subscr_responsible_name']);
 			} else {
 				$subscr_responsible_name = "";
 			}
 			if(isset($_POST['subscr_responsible_email']) && $_POST['subscr_responsible_email'] != "") {
-					$subscr_responsible_email = $_POST['subscr_responsible_email'];
+					$subscr_responsible_email = Input::sanitizeText($_POST['subscr_responsible_email']);
 			} else {
 				$subscr_responsible_email = "";
 			}
