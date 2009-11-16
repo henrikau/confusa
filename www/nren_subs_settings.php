@@ -106,7 +106,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 	 */
 	private function updateSubscriberContact($contact_email, $contact_phone, $resp_name, $resp_email)
 	{
-		$subscriber = $this->person->getSubscriberIdPName();
+		$subscriber = $this->person->getSubscriber()->getIdPName();
 		$query="UPDATE subscribers SET subscr_email=?, subscr_phone=?, subscr_resp_name=?, subscr_resp_email=? WHERE name=?";
 
 		try {

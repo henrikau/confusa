@@ -43,7 +43,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'downgrade_self':
 					$this->downgradeNRENAdmin($this->person->getEPPN(),
-							  $this->person->getSubscriberIdPName());
+								  $this->person->getSubscriber()->getIdPName());
 					break;
 				case 'upgrade_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
@@ -79,18 +79,15 @@ class CP_Admin extends Content_Page
 					break;
 				case 'add_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
-					$subscriber = $this->person->getSubscriberIdPName();
-					$this->addSubscriberAdmin($admin,SUBSCRIBER_ADMIN,$subscriber);
+					$this->addSubscriberAdmin($admin,SUBSCRIBER_ADMIN,$this->person->getSubscriber()->getIdPName());
 					break;
 				case 'downgrade_subs_admin':
 					$admin = Input::sanitize($_POST['subs_admin']);
-					$subscriber = $this->person->getSubscriberIdPName();
-					$this->downgradeSubscriberAdmin($admin, $subscriber);
+					$this->downgradeSubscriberAdmin($admin, $this->person->getSubscriber()->getIdPName());
 					break;
 				case 'upgrade_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
-					$subscriber = $this->person->getSubscriberIdPName();
-					$this->upgradeSubscriberSubAdmin($admin, $subscriber);
+					$this->upgradeSubscriberSubAdmin($admin, $this->person->getSubscriber()->getIdPName());
 					break;
 				case 'delete_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
@@ -98,8 +95,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'add_subs_sub_admin':
 					$admin = Input::sanitize($_POST['subs_sub_admin']);
-					$subscriber = $this->person->getSubscriberIdPName();
-					$this->addSubscriberAdmin($admin,SUBSCRIBER_SUB_ADMIN,$subscriber);
+					$this->addSubscriberAdmin($admin,SUBSCRIBER_SUB_ADMIN,$this->person->getSubscriber()->getIdPName());
 					break;
 				default:
 					break;
@@ -149,7 +145,7 @@ class CP_Admin extends Content_Page
 
 		} else if ($this->person->isSubscriberAdmin()) { /* subscriber admin display */
 			$subscriber_dn	= $this->person->getSubscriber()->getOrgName();
-			$subscriber_db  = $this->person->getSubscriberIdPName();
+			$subscriber_db  = $this->person->getSubscriber()->getIdPName();
 			$nren		= $this->person->getNREN();
 
 			/* get all NREN-admins */
@@ -169,7 +165,7 @@ class CP_Admin extends Content_Page
 
 		} else if ($this->person->isSubscriberSubAdmin()) { /* subscriber-sub-admin display */
 			$subscriber_dn		= $this->person->getSubscriber()->getOrgName();
-			$subscriber_db		= $this->person->getSubscriberIdPName();
+			$subscriber_db		= $this->person->getSubscriber()->getIdPName();
 			$subscriber_admins	= $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_ADMIN);
 			$subscriber_sub_admins	= $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_SUB_ADMIN);
 

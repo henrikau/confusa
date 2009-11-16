@@ -169,7 +169,7 @@ class CP_Attributes extends Content_Page
 	 */
 	private function updateMapSubscriber($cn, $mail, $entitlement)
 	{
-		$subscriber = $this->person->getSubscriberIdPName();
+		$subscriber = $this->person->getSubscriber()->getIdPName();
 		$nren = $this->person->getNREN();
 		$nrenMap = AuthHandler::getNRENMap($nren);
 		$epodn = $nrenMap['epodn'];

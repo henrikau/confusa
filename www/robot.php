@@ -93,7 +93,7 @@ class CP_Robot_Interface extends Content_Page
 		$query .= "WHERE s.subscriber_id=rc.subscriber_id ";
 		$query .= "AND rc.uploaded_by=a.admin_id AND s.name=?";
 		$params = array('text');
-		$data = array($this->person->getSubscriberIdPName());
+		$data = array($this->person->getSubscriber()->getIdPName());
 		try {
 			$res = MDB2Wrapper::execute($query, $params, $data);
 		} catch (Exception $e) {

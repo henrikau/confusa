@@ -72,7 +72,7 @@
 	<p class="info">
 		<br />
 		Add or update the attribute map for your subscriber
-		'{$person->getSubscriberIdPName()|escape}'.
+		'{$person->getSubscriber()->getIdPName()|escape}'.
 		Usually this map should have already been defined by a NREN admin and
 		the NREN-wide settings for your NREN '{$person->getNREN()|escape}'
 		should also apply for your subscriber.
