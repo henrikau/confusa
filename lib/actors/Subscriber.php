@@ -104,15 +104,10 @@ class Subscriber
 	 *
 	 * This is a name of the home-institution, e.g. 'ntnu',  'uio'.
 	 *
-	 * @param $browserDisplay boolean default true Pass the attribute through
-	 * 		htmlentities before returning it
 	 * @return String The subscriber's name.
 	 */
-	public function getOrgName($browserDisplay = true)
+	public function getOrgName()
 	{
-		if ($browserDisplay) {
-			return htmlentities($this->dn_name, ENT_COMPAT, 'UTF-8');
-		}
 		return $this->dn_name;
 	}
 

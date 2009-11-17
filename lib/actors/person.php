@@ -421,7 +421,7 @@ class Person{
 	    }
 	    Logger::log_event(LOG_DEBUG, __CLASS__ . ":" . __FUNCTION__ . " deprecated");
 	    if (isset($this->subscriber)) {
-		    return $this->subscriber->getOrgName($browserDisplay);
+		    return $this->subscriber->getOrgName();
 	    }
 	    return "";
     }
