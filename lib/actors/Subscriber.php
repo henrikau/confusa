@@ -195,6 +195,15 @@ class Subscriber
 	{
 		if(!is_null($DNName)) {
 			$this->dn_name = Input::sanitizeText($DNName);
+
+			/**
+			 * set the test prefix, if confusa is in 'capi_test' mode
+			 */
+			if (Config::get_config('capi_test') &&
+			    Config::get_config('ca_mode') === CA_ONLINE) {
+					$this->dn_name = ConfusaConstants::$CAPI_TEST_O_PREFIX .
+					                 $this->dn_name;
+			}
 		}
 	}
 	private function retrieveMap()
