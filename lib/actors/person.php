@@ -610,7 +610,7 @@ class Person{
      */
     public function getSubscriber()
     {
-	    if (is_nulL($this->subscriber)) {
+	    if (is_null($this->subscriber)) {
 		    return null;
 	    }
 	    return $this->subscriber;
