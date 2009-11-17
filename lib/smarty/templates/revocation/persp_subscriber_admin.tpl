@@ -81,7 +81,7 @@ immediately see a result entry *}
         {foreach from=$owners item=owner}
             <tr>
                 <td>
-                    {$owner|escape}
+                    {$owner|escape|replace:',':', '}
                 </td>
                 <td>
                     <form action="" method="post">
