@@ -1,6 +1,5 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'Actor.php';
 require_once 'mdb2_wrapper.php';
 require_once 'CriticalAttributeException.php';
 

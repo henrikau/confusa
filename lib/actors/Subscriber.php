@@ -1,5 +1,4 @@
 <?php
-require_once 'Actor.php';
 require_once 'mdb2_wrapper.php';
 
 class Subscriber
