@@ -10,8 +10,8 @@
 	<tr><td><b>CommonName in DN</b></td><td>{$person->getX509ValidCN()|escape}</td></tr>
 	<tr><td><b>email:</b></td><td>{$person->getEmail()|escape}</td></tr>
 	<tr><td><b>Country:</b></td><td>{$person->getCountry()|escape}</td></tr>
-	<tr><td><b>OrganizationalName:</b></td><td>{$person->getSubscriber()->getOrgName()|escape}</td></tr>
-	<tr><td><b>Organizational Identifier:</b></td><td>{$person->getSubscriber()->getIdPName()|escape}</td></tr>
+	<tr><td><b>OrganizationalName:</b></td><td>{$person->getSubscriberOrgName()|escape}</td></tr>
+	<tr><td><b>Organizational Identifier:</b></td><td>{$person->getSubscriberIdPName()|escape}</td></tr>
 	<tr><td><b>Entitlement:</b></td><td>{$person->getEntitlement()|escape}</td></tr>
 	<tr><td><b>NREN:</b></td><td>{$person->getNREN()|escape}</td></tr>
 	<tr><td><b>Complete /DN:</b></td><td>{$person->getX509SubjectDN()|escape}</td></tr>
