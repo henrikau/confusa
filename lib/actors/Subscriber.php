@@ -3,6 +3,7 @@ require_once 'mdb2_wrapper.php';
 
 class Subscriber
 {
+	private $dn_name;
 	private $idp_name;
 	private $db_id;
 	private $email;
