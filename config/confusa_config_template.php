@@ -273,7 +273,7 @@ $confusa_config = array(
 		$confusa_config['mysql_db'] = $dbname;
 	}
 
-	if (isset($dbhost)) {
-		$confusa_config['mysql_host'] = $dbhost;
+	if (isset($dbserver)) {
+		$confusa_config['mysql_host'] = $dbserver;
 	}
 ?>
