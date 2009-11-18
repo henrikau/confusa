@@ -191,6 +191,23 @@ class Subscriber
 		return true;
 	} /* end updateFromDB() */
 
+	/**
+	 * hasDBID() Test to see if the subscriber has the provided db-id
+	 *
+	 * @param	Integer $id the guessed ID
+	 * @return	Boolean correctness of guess.
+	 */
+	public function hasDBID($id)
+	{
+		if (is_null($id))
+			return false;
+		return $id === $this->db_id;
+	}
+
+	private function getDBID()
+	{
+		return $this->db_id;
+	}
 
 	private function setDBID($dbID)
 	{
