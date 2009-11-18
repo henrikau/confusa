@@ -157,19 +157,6 @@ abstract class Confusa_Auth
 				Framework::error_output($msg);
 			}
 		}
-
-		try {
-			$eppn = $this->person->getEPPN();
-		} catch (ConfusaGenException $cge) {
-			echo $cge->getMessage() . "<br />\n";
-		}
-		if (!isset($eppn) || $eppn == "") {
-			/* couldn't decorate person */
-			$msg  = "Could not retrieve the config for you subscriber.<br />";
-			$msg .= "Please contact your local IT department and forward the request to the NREN administrators.<br /><br />";
-			$msg .= "Configure NREN Attribute Map for Your NREN.<br /><br />";
-			throw new MapNotFoundException($msg);
-		}
 	} /* end decoratePerson() */
 
 	/**
