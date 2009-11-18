@@ -93,7 +93,19 @@ class CP_NREN_Admin extends Content_Page
 				}
 				break;
 			case 'editState':
-				$this->editSubscriberState($id, $state);
+				$subscriber = null;
+				if ($this->person->getSubscriber()->hasDBID($id)) {
+					$subscriber = $this->person->getSubscriber();
+				} else {
+					$subscriber = Subscriber::getSubscriberByID($_POST['id'], $this->person->getNREN());
+				}
+				if (!is_null($subscriber)) {
+					if ($subscriber->setState($state)) {
+						if (!$subscriber->save(true)) {
+							Framework::error_output("Could not update state of subscriber. Is the database-layer broken?");
+						}
+					}
+				}
 				break;
 			case 'info':
 				/* get info */
@@ -229,40 +241,6 @@ class CP_NREN_Admin extends Content_Page
 		}
 		return true;
 	} /* end editSubscriber */
-
-	/**
-	 * editSubscriberState - edit the state of a subscriber alone
-	 *
-	 * This is a convenient function for updating just the state of a subscriber
-	 * without changing all the associated metainformation
-	 *
-	 * @param $subscriber_id The identifier of the subscriber
-	 * @param $newState the state to which the subscriber should be changed
-	 */
-	private function editSubscriberState($subscriber_id, $newState)
-	{
-		$query = "UPDATE subscribers SET org_state=? WHERE subscriber_id=?";
-
-		try {
-			MDB2Wrapper::execute($query,
-							array('text'),
-							array($newState, $subscriber_id));
-
-		Logger::log_event(LOG_INFO, "[nadm] Changed state for subscriber with ID $subscriber_id to $newState");
-		Framework::success_output("Changed state for subscriber with ID " . htmlentities($subscriber_id) . " to " . htmlentities($newState));
-		} catch (DBStatementException $dbse) {
-			Framework::error_output("Error while updating the subscriber of subscriber " . htmlentities($subscriber_id) . " state, server said: " .
-					$dbse->getMessage() .
-					"<br />Probably this is a configuration error, contact an administrator!");
-			Logger::log_event(LOG_NOTICE, "[nadm] Problem occured when updating state of subscriber " .
-					"$subscriber_id:" . $dbse->getMessage());
-		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Error while updating the subscriber state of subscriber " . htmlentities($subscriber_id) . ", server said: " .
-					$dbqe->getMessage());
-			Logger::log_event(LOG_NOTICE, "[nadm] Problem with query data when updating subscriber " .
-					"$subscriber_id to state $newState:" . $dbqe->getMessage());
-		}
-	}
 
 	/**
 	 * addSubscriber - add a new subscriber
