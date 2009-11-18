@@ -41,7 +41,7 @@ class Subscriber
 		}
 		$this->nren	= $nren;
 		$this->idp_name = trim(stripslashes($idp_name));
-		$this->valid	= $this->updateFromDb();
+		$this->valid	= $this->updateFromDB();
 		if ($this->valid) {
 			$this->getMap();
 		}
