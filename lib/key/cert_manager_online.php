@@ -363,12 +363,9 @@ class CertManager_Online extends CertManager
 				$res[$i-1]['valid_untill'] = $valid_untill;
 			}
 
-            if ($status == "Revoked") {
-                $res[$i-1]['revoked'] = true;
-            }
-
             $res[$i-1]['order_number'] = $params[$i . '_orderNumber'];
             $res[$i-1]['cert_owner'] = $this->person->getX509ValidCN();
+			$res[$i-1]['status'] = $status;
 			$dates[] = time() - $params[$i . '_dateTime'];
         }
 
