@@ -2,20 +2,6 @@
 <script type="text/javascript">
 	var timer = null;
 
-	if (typeof XMLHttpRequest == "undefined") {
-		XMLHttpRequest = function() {
-			/* define XMLHttpRequest for IE versions < 7 */
-			try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); }
-			catch(e) {}
-			try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); }
-			catch(e) {}
-			try { return new ActiveXObject("Msxml2.XMLHTTP"); }
-			catch(e) {}
-			try { return new ActiveXObject("Microsoft.XMLHTTP"); }
-			catch(e) {}
-		};
-	}
-
 	function pollCertStatusAJAX(orderNumber) {
 		var req = new XMLHttpRequest();
 

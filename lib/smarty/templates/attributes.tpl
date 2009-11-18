@@ -1,21 +1,6 @@
 {if $person->isNRENAdmin() || $person->isSubscriberAdmin()}
 {literal}
 <script type="text/javascript">
-
-	if (typeof XMLHttpRequest == "undefined") {
-		XMLHttpRequest = function() {
-			/* define XMLHttpRequest for IE versions < 7 */
-			try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); }
-			catch(e) {}
-			try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); }
-			catch(e) {}
-			try { return new ActiveXObject("Msxml2.XMLHTTP"); }
-			catch(e) {}
-			try { return new ActiveXObject("Microsoft.XMLHTTP"); }
-			catch(e) {}
-		};
-	}
-
 	/**
 	 * Ask the stylist for the value of the attribute key currently selected
 	 * in 'selectElement' with a polite asynchronous GET message

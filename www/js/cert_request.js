@@ -1,12 +1,5 @@
 var timer="";
 
-function checkWindowsRequest(request) {
-		with (document.reqForm) {
-			browserRequest.value = request;
-			submit();
-		}
-}
-
 /**
  * This is mostly about visual feedback while the certificate is still
  * processed
@@ -40,36 +33,4 @@ function statusDone(key) {
      + key + "\">install your certificate!</a>";
     document.getElementById("info_view").innerHTML = install_text;
     document.getElementById("reqForm").style.display = "none";
-}
-
-function installIEVistaCertificate()
-{
-    try {
-	/* X509Enrollment.CX509EnrollmentWebClassFactory */
-	document.writeln("<object classid=\"clsid:884e2049-217d-11da-b2a4-000e7bbb2b09\"" +
-	"id=\"classFactory\" height=\"0\" width=\"0\" ></object>");
-	var objEnroll = classFactory.CreateObject("X509Enrollment.CX509Enrollment");
-	objEnroll.Initialize(1) /* the request is for a user */
-	/*
-	 * 0x4 in the first parameter: allow untrusted root
-	 * 0x1 in the last paremeter: certificate is base-64 encoded
-	 */
-	objEnroll.InstallResponse(4, g_ccc, 1, "");
-    } catch (e) {
-	var message="Hit the following problem when trying to install the cert: " + e.description;
-	alert(message);
-    }
-}
-
-function installIEXPCertificate()
-{
-    document.writeln("<OBJECT id=\"XEnroll\"\n" +
-	    "classid=\"clsid:127698e4-e730-4e5c-a2b1-21490a70c8a1\"" +
-	    "codebase=\"xenroll.dll\"></OBJECT>");
-    try {
-	XEnroll.acceptPKCS7(g_ccc);
-    } catch (e) {
-	alert("Hit an exception when installing.\nDid you generate the certificate request with exactly" +
-		" this browser?");
-    }
 }
