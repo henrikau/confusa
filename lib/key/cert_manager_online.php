@@ -139,7 +139,102 @@ class CertManager_Online extends CertManager
                               $raw_list,
                               SimpleSAML_Session::DATA_TIMEOUT_LOGOUT);
         }
-    }
+    } /* end cacheInsertList */
+
+	/**
+	 * Set an expiry date on the cache based on the time of the latest
+	 * certificate order. The idea is that the more recently a certificate has
+	 * been ordered, the higher the likelihood that something about the
+	 * certificate's status will change 'soon'. Thus the cache expiration
+	 * interval is small, if the time interval since the last certificate order
+	 * is small.
+	 *
+	 * Currently the interval is:      up to 2 minutes since order: 30 seconds
+	 *                                   2 - 6 minutes since order: 1 minute
+	 *                                  6 - 15 minutes since order: 2 minutes
+	 *                                 15 - 30 minutes since order: 5 minutes
+	 *                            more than 30 minutes since order: 10 minutes
+	 *
+	 * @param $timeSinceCertificateOrder integer The time passed since the
+	 * 								certificate order
+	 */
+	private function cacheSetExpiryDate($timeSinceCertificateOrder)
+	{
+		$timeSinceCertificateOrder = floor($timeSinceCertificateOrder / 60);
+		$session = $this->person->getSession();
+
+		if (!isset($session)) {
+			return;
+		}
+
+		switch($timeSinceCertificateOrder) {
+		case 0:
+		case 1:
+			$session->setData('integer', 'confusaCacheTimeout', time() + 30);
+			break;
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			$session->setData('integer', 'confusaCacheTimeout', time() + 60);
+			break;
+		case 6:
+		case 7:
+		case 8:
+		case 9:
+		case 10:
+		case 11:
+		case 12:
+		case 13:
+		case 14:
+		case 15:
+			$session->setData('integer', 'confusaCacheTimeout', time() + 120);
+			break;
+		case 16:
+		case 17:
+		case 18:
+		case 19:
+		case 20:
+		case 21:
+		case 22:
+		case 23:
+		case 24:
+		case 25:
+		case 26:
+		case 27:
+		case 28:
+		case 29:
+		case 30:
+			$session->setData('integer', 'confusaCacheTimeout', time() + 300);
+			break;
+		default:
+			$session->setData('integer', 'confusaCacheTimeout', time() + 600);
+			break;
+		}
+	}
+
+	/**
+	 * Return true if the confusa certificate cache data has expired. Expiry
+	 * is mainly set by cacheSetExpiryDate
+	 *
+	 * @return boolean true if cache data has expired, false otherwise
+	 */
+	private function cacheHasExpired()
+	{
+		$session = $this->person->getSession();
+
+		if (isset($session)) {
+			$cacheTimeout = $session->getData('integer', 'confusaCacheTimeout');
+
+			if (empty($cacheTimeout)) {
+				return true;
+			} else {
+				return $cacheTimeout < time();
+			}
+		} else {
+			return true;
+		}
+	}
 
     /**
      * Delete the certificate list from cache. Useful if there were changes
@@ -222,10 +317,12 @@ class CertManager_Online extends CertManager
      */
     public function get_cert_list()
     {
-		$res = $this->cacheLookupList();
+		if (!$this->cacheHasExpired()) {
+			$res = $this->cacheLookupList();
 
-		if (!is_null($res)) {
-			return $res;
+			if (isset($res)) {
+				return $res;
+			}
 		}
 
         $common_name = $this->person->getX509ValidCN();
@@ -233,6 +330,7 @@ class CertManager_Online extends CertManager
 
         $params = $this->_capi_get_cert_list($common_name);
         $res=array();
+		$dates = array();
 
         /* transfer the orders from the string representation in the response
          * to the array representation we use internally */
@@ -271,8 +369,10 @@ class CertManager_Online extends CertManager
 
             $res[$i-1]['order_number'] = $params[$i . '_orderNumber'];
             $res[$i-1]['cert_owner'] = $this->person->getX509ValidCN();
+			$dates[] = time() - $params[$i . '_dateTime'];
         }
 
+		$this->cacheSetExpiryDate(min($dates));
 		$this->cacheInsertList($res);
         return $res;
     }
