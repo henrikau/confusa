@@ -144,7 +144,9 @@ class Translator {
 		}
 
 		if ($this->person->isAuth()) {
-
+			if (is_null($this->person->getSubscriber())) {
+				return $_SESSION['language'];
+			}
 			try {
 				$query = "SELECT lang FROM subscribers WHERE name=?";
 				$res = MDB2Wrapper::execute($query,
