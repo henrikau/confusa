@@ -295,7 +295,12 @@ class Person{
     public function setEPPN($eppn)
     {
         if (!isset($eppn)) {
-		throw new CriticalAttributeException("eduPersonPrincipalName (or equvivalent token) not set for person!");
+		$msg  = "eduPersonPrincipalName (or equvivalent token) ";
+		$msg .= " not provided for person!";
+		$msg .= " This normally means that the Mapping could not";
+		$msg .= " determine the encoding of the attributes.<br /><br />";
+		$msg .= "Please make operational support aware of this issue.";
+		throw new CriticalAttributeException($msg);
 	}
 	$this->eppn = Input::sanitize($eppn);
     }
