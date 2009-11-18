@@ -11,6 +11,8 @@ class Subscriber
 	private $responsible_name;
 	private $responsible_email;
 
+	private $pendingChanges = false;
+
 	/* Subscriber-map */
 	private $hasMap;
 	private $map;
@@ -125,6 +127,18 @@ class Subscriber
 	 */
 	private function updateFromDB()
 	{
+		if ($this->pendingChanges) {
+			/* WARNING, we may get corrupted data
+			 * Should never be here, but even so?
+			 *
+			 * FIXME: decide: error-handling, or ignore?
+			 */
+			if (Config::get_config('debug')) {
+				echo __CLASS__ . "::" . __FUNCTION__ .
+					" Warning! updating values from DB while ".
+					"there are uncommited messages in Subscriber";
+			}
+		}
 		$query = "SELECT * FROM subscribers WHERE name = ?";
 		try {
 			$res = MDB2Wrapper::execute($query,
