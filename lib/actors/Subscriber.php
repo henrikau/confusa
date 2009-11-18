@@ -95,6 +95,14 @@ class Subscriber
 		$res['subscr_resp_name'] = $this->responsible_name;
 		return $res;
 	}
+
+	/**
+	 * getMap() return the Subscriber-map.
+	 *
+	 * @param	void
+	 * @return	array $map
+	 * @access	public
+	 */
 	public function getMap()
 	{
 		if ($this->hasMap)
@@ -108,13 +116,22 @@ class Subscriber
 	 *
 	 * This is a name of the home-institution, e.g. 'ntnu',  'uio'.
 	 *
-	 * @return String The subscriber's name.
+	 * @param	void
+	 * @return	String The subscriber's name.
+	 * @access	public
 	 */
 	public function getOrgName()
 	{
 		return $this->dn_name;
 	}
 
+	/**
+	 * getIdPName() Return the name of the Subscriber given by the IdP
+	 *
+	 * @param	void
+	 * @return	String $idp_name
+	 * @access	public
+	 */
 	public function getIdPName()
 	{
 		return $this->idp_name;
@@ -124,8 +141,9 @@ class Subscriber
 	 * updateFromDB() update the current subscriber-object with fresh data
 	 * from the database.
 	 *
-	 * @param void
-	 * @return Boolean true on sucess.
+	 * @param	void
+	 * @return	Boolean true on sucess.
+	 * @access	private
 	 */
 	private function updateFromDB()
 	{
