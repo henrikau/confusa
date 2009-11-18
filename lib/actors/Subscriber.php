@@ -446,5 +446,30 @@ class Subscriber
 		}
 		return false;
 	} /* end save */
+
+	static function getSubscriberByID($id, $nren)
+	{
+		if (is_null($nren)) {
+			return null;
+		}
+		if (is_null($id)) {
+			return null;
+		}
+
+		try {
+			$res = MDB2Wrapper::execute("SELECT name FROM subscribers WHERE subscriber_id=?",
+						    array('text'),
+						    array(Input::sanitizeText($id)));
+		} catch (ConfusaGenException $cge) {
+			echo $cge->getMessage();
+			return null;
+		}
+		if (count($res) != 1) {
+			echo "wrong count";
+			return null;
+		}
+		return new Subscriber($res[0]['name'], $nren);
+	}
+
 } /* end class Subscriber */
 ?>
