@@ -189,11 +189,18 @@ class MailManager {
 
 					// read only up to the whitespace for the current line
 					$whitesp_diff = $i - $whitespace_pos + $addtl_chars;
-					$output .= substr($cur_conv_line, 0, (strlen($cur_conv_line) - $whitesp_diff)) . $linebreak;
 
 					/* the text after the whitespace will have to be read again ( + any additional characters that came into
-					 * existence as a result of the encoding process after the whitespace) */
-					$i =  $i - $whitesp_diff + $addtl_chars;
+					 * existence as a result of the encoding process after the whitespace)
+					 *
+					 * Also, do not start at 0, if there was *no* whitespace in
+					 * the whole line */
+					if (($i + $addtl_chars) > $whitesp_diff) {
+						$output .= substr($cur_conv_line, 0, (strlen($cur_conv_line) - $whitesp_diff)) . $linebreak;
+						$i =  $i - $whitesp_diff + $addtl_chars;
+					} else {
+						$output .= $cur_conv_line . $linebreak;
+					}
 
 					$cur_conv_line = "";
 					$length = 0;
