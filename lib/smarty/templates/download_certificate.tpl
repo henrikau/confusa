@@ -1,6 +1,26 @@
 {literal}
 <script type="text/javascript">
 	var timer = null;
+	var timer2 = null;
+
+	function showSmallDots(orderNumber) {
+		var infoCell = document.getElementById('certInfoText' + orderNumber);
+		var infoText = infoCell.innerHTML;
+
+		var firstDot = infoText.indexOf(".");
+
+		if (firstDot >= 0) {
+			var numDots = infoText.substring(firstDot, infoText.length).length;
+		}
+
+		if (numDots >= 5) {
+			infoText =  infoText.substring(0, infoText.indexOf(".") + 1);
+		} else {
+			infoText = infoText + ".";
+		}
+
+		infoCell.innerHTML = infoText;
+	}
 
 	function pollCertStatusAJAX(orderNumber) {
 		var req = new XMLHttpRequest();
@@ -13,6 +33,7 @@
 					if (req.responseText == "done") {
 						/* reload the list if the processing is done */
 						window.clearInterval(timer);
+						window.clearInterval(timer2);
 						window.location.reload();
 					}
 				} else {
@@ -25,6 +46,8 @@
 	function pollCertStatus(orderNumber, interval)
 	{
 		timer = window.setInterval("pollCertStatusAJAX(" + orderNumber + ")", interval);
+		/* give some visual feedback to the user that "something is happening" */
+		timer2 = window.setInterval("showSmallDots(" + orderNumber + ")", 2000);
 	}
 </script>
 {/literal}
@@ -199,11 +222,14 @@
 				<tr>
 				<td></td>
 				{if $cert.status == "Awaiting Validation" }
-				<td><span style="color: gray"><b>Processing pending</b></span></td>
+				<td id="certInfoText{$cert.order_number|escape}"
+				    style="color: gray; font-weight: bold">Processing pending</td>
 				{elseif $cert.status === "Revoked"}
-				<td><span style="color: red"><b>Revoked!!</b></span></td>
+				<td id="certInfoText{$cert.order_number|escape}"
+				    style="color: red; font-weight: bold">Revoked!!</td>
 				{else}
-				<td>{$cert.valid_untill|escape}</td>
+				<td id="certInfoText{$cert.order_number|escape}">
+				    {$cert.valid_untill|escape}</td>
 				{/if}
 				</tr>
 				<tr><td colspan="3">
