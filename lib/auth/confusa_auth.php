@@ -130,18 +130,12 @@ abstract class Confusa_Auth
 			 * 
 			 *		no map is set, can we find the ePPN in there?
 			 */
-			if (isset($attributes['eduPersonPrincipalName'][0])) {
-				$this->person->setEPPN($attributes['eduPersonPrincipalName'][0]);
-				$this->person->setEPPNKey('eduPersonPrincipalName');
-			} else if (isset($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0])) {
-				/* EduGAIN, Surfnet */
-				$this->person->setEPPN($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0]);
-				$this->person->setEPPNKey('urn:mace:dir:attribute-def:eduPersonPrincipalName');
-			} else if (isset($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'][0])) {
-				/* HAKA */
-				$this->person->setEPPN($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'][0]);
-				$this->person->setEPPNKey('urn:oid:1.3.6.1.4.1.5923.1.1.1.6');
+			$eppnKey = $this->findEPPN($attributes);
+			if (!is_null($eppnKey)) {
+				$this->person->setEPPN($eppnKey['value']);
+				$this->person->setEPPNKey($eppnKey['key']);
 			}
+
 			/* is ePPN registred as NREN admin (from bootstrap) */
 			if ($this->person->isNRENAdmin()) {
 				$msg  = "No map for your NREN (".$nren.") is set <br />\n";
@@ -178,6 +172,40 @@ abstract class Confusa_Auth
 		}
 	} /* end decoratePerson() */
 
+	/**
+	 * findEPPN() find the eppn-value in the attributes.
+	 *
+	 * This function will search through the attributes and try to figure
+	 * out where the ePPN is stored.
+	 *
+	 * It takes the formatting of the known federations into consideration
+	 * and returns an array with name of key and content.
+	 *
+	 * @param array $attributes
+	 * @return array key and value of ePPN
+	 * @access private
+	 */
+	private function findEPPN($attributes)
+	{
+		if (is_null($attributes))
+			return null;
+		$result = array();
+		/* Feide */
+		if (isset($attributes['eduPersonPrincipalName'][0])) {
+			$result['key'] = 'eduPersonPrincipalName';
+		} else if (isset($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0])) {
+			/* EduGAIN, Surfnet */
+			$result['key'] = 'urn:mace:dir:attribute-def:eduPersonPrincipalName';
+		} else if (isset($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'][0])) {
+			/* HAKA */
+			$result['key'] = 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6';
+		} else {
+			/* nothing found */
+			return null;
+		}
+		$result['value']	= $attributes[$result['key']][0];
+		return $result;
+	}
 	/**
 	 * Authenticate the idenitity of a user, using a free-of-choice method to be
 	 * implemented by subclasses
