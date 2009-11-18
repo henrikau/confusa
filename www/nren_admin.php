@@ -79,19 +79,32 @@ class CP_NREN_Admin extends Content_Page
 			} else {
 				$subscr_comment = "";
 			}
-
 			switch(htmlentities($_POST['subscriber'])) {
 			case 'edit':
-				if ($this->editSubscriber($id,
-							  $state,
-							  $subscr_email,
-							  $subscr_phone,
-							  $subscr_responsible_name,
-							  $subscr_responsible_email,
-							  $subscr_comment)) {
-					Framework::success_output("Updated subscriber '<i>" . htmlentities($dn_name) . "</i>' successfully.");
+				$subscriber = null;
+				if ($this->person->getSubscriber()->hasDBID($id)) {
+					$subscriber = $this->person->getSubscriber();
+				} else {
+					/* Other subscruber than user's
+					 * subscriber, must create new object
+					 * from DB */
+					$subscriber = Subscriber::getSubscriberByID($_POST['id'], $this->person->getNREN());
+				}
+				if (!is_null($subscriber)) {
+					/* subscriber will clean input */
+					if ($subscriber->setState(	$_POST['state']) ||
+					    $subscriber->setEmail(	$_POST['subscr_email']) ||
+					    $subscriber->setPhone(	$_POST['subscr_phone']) ||
+					    $subscriber->setRespName(	$_POST['subscr_responsible_name']) ||
+					    $subscriber->setRespEmail(	$_POST['subscr_responsible_email']) ||
+					    $subscriber->setComment(	$_POST['subscr_comment'])) {
+						if (!$subscriber->save(true)) {
+							Framework::error_output("Could not update Subscriber, even with changed information.");
+						}
+					}
 				}
 				break;
+
 			case 'editState':
 				$subscriber = null;
 				if ($this->person->getSubscriber()->hasDBID($id)) {
