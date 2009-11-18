@@ -43,6 +43,34 @@
 		}
 	}
 
+	function inspectCertificateAJAX(key) {
+		var req = new XMLHttpRequest();
+		var inspectArea = document.getElementById('inspectArea' + key);
+		var inspectText = document.getElementById('inspectText' + key);
+
+		/* if there is text in the inspect area, collapse instead of inspect */
+		if (inspectText.innerHTML == "Collapse") {
+			inspectArea.innerHTML = "";
+			inspectText.innerHTML = "Inspect";
+			return false;
+		}
+
+		req.open("GET", "?inspect_cert=" + key + "&ajax=true", true);
+		req.send(null);
+		req.onreadystatechange = function() {
+			if (req.readyState == 4) {
+				if (req.status == 200) {
+					inspectArea.innerHTML = req.responseText;
+					inspectText.innerHTML = "Collapse";
+				} else {
+					/* no op */
+				}
+			}
+		}
+
+		return false;
+	}
+
 	function pollCertStatus(orderNumber, interval)
 	{
 		timer = window.setInterval("pollCertStatusAJAX(" + orderNumber + ")", interval);
@@ -101,12 +129,16 @@
 				  </a><br />
 
 				  {if empty($inspectElement[$key])}
-				  <a href="download_certificate.php?inspect_cert={$key}">
+				  <a href="download_certificate.php?inspect_cert={$key}"
+				     onclick="return inspectCertificateAJAX('{$key}');">
 				    <img src="graphics/information.png"
 					 alt=""
 					 title="Inspect certificate details"
 					 class="url">
+					 <span id="inspectText{$key}">
 				    Inspect
+					</span>
+					</img>
 				  </a><br />
 				  {/if}
 				  <a href="download_certificate.php?delete_cert={$key}">
@@ -138,12 +170,12 @@
 				<td>{$cert.valid_untill|escape}</td>
 				</tr>
 				<tr><td colspan="3">
-				<div id="inspect_area">
-					<br />
+				<div id="inspectArea{$key|escape}">
 					{if isset($inspectElement[$key])}
 						{$inspectElement[$key]}
 					{/if}
 				</div>
+				<br />
 				</td></tr>
 			{else}
 				<tr>
@@ -183,12 +215,16 @@
 				  <br />
 
 				  {if empty($inspectElement[$cert.order_number])}
-				  <a href="download_certificate.php?inspect_cert={$cert.order_number}">
+				  <a href="download_certificate.php?inspect_cert={$cert.order_number}"
+				     onclick="return inspectCertificateAJAX('{$cert.order_number}');">
 				    <img src="graphics/information.png"
 					 alt=""
 					 title="Inspect certificate details"
 					 class="url">
+					 <span id="inspectText{$cert.order_number}">
 				    Inspect
+					</span>
+					</img>
 				  </a>
 				  <br />
 				  {/if}
@@ -233,12 +269,12 @@
 				{/if}
 				</tr>
 				<tr><td colspan="3">
-				<div id="inspect_area">
-					<br />
+				<div id="inspectArea{$cert.order_number|escape}">
 					{if isset($inspectElement[$cert.order_number])}
 						{$inspectElement[$cert.order_number]}
 					{/if}
 				</div>
+				<br />
 				</td></tr>
 			{/if}
 		{/foreach}

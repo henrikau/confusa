@@ -131,6 +131,17 @@ final class CP_DownloadCertificate extends Content_Page
 			if (isset($cert)) {
 				$csr_test = openssl_x509_read($cert);
 				if (openssl_x509_export($csr_test, $text, false)) {
+
+					/* call made from AJAX or from someone acting as if AJAX,
+					 * just print the textual string
+					 */
+					if (isset($_GET['ajax'])) {
+						echo "<pre class=\"certificate\">" .
+						     htmlentities($text) .
+						     "</pre>";
+						exit(0);
+					}
+
 					$this->tpl->assign('pem', $text);
 					$this->tpl->assign('standalone', (Config::get_config('ca_mode') === CA_STANDALONE));
 				} else {
