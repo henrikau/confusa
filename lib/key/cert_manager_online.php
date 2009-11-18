@@ -255,8 +255,8 @@ class CertManager_Online extends CertManager
     */
     public function sign_key($auth_key, $csr)
     {
-        $this->_capi_upload_CSR($auth_key, $csr);
-        $this->_capi_authorize_CSR();
+        $this->capiUploadCSR($auth_key, $csr);
+        $this->capiAuthorizeCSR();
 
         $this->cacheInvalidate();
         $this->sendMailNotification($auth_key, date('Y-m-d H:i'), $_SERVER['REMOTE_ADDR']);
@@ -285,15 +285,15 @@ class CertManager_Online extends CertManager
 
         switch($browser) {
         case "msie_post_vista":
-            $this->_capi_upload_CSR($auth_key, $csr, 'csr');
+            $this->capiUploadCSR($auth_key, $csr, 'csr');
             break;
 
         case "msie_pre_vista":
-            $this->_capi_upload_CSR($auth_key, $csr, 'csr');
+            $this->capiUploadCSR($auth_key, $csr, 'csr');
             break;
 
         case "keygen":
-            $this->_capi_upload_CSR($auth_key, $csr, 'spkac');
+            $this->capiUploadCSR($auth_key, $csr, 'spkac');
             break;
 
         default:
@@ -301,7 +301,7 @@ class CertManager_Online extends CertManager
             break;
         }
 
-        $this->_capi_authorize_CSR();
+        $this->capiAuthorizeCSR();
         $this->cacheInvalidate();
         $this->sendMailNotification($auth_key, date('Y-m-d H:i'), $_SERVER['REMOTE_ADDR']);
         Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
@@ -328,7 +328,7 @@ class CertManager_Online extends CertManager
         $common_name = $this->person->getX509ValidCN();
         $organization = 'O=' . $this->person->getSubscriber()->getOrgName();
 
-        $params = $this->_capi_get_cert_list($common_name);
+        $params = $this->capiGetCertList($common_name);
         $res=array();
 		$dates = array();
 
@@ -436,12 +436,12 @@ class CertManager_Online extends CertManager
 			$organizationVerified = true;
 		/* eppn-ish, expecting fewer results, do a common_name search */
 		} else if (stripos($common_name, "@") !== false) {
-			$params = $this->_capi_get_cert_list($common_name);
+			$params = $this->capiGetCertList($common_name);
 			$cnVerified = true;
 		/* longer search string, expecting fewer results if querying for the
 		 * common-name first */
 		} else {
-			$params = $this->_capi_get_cert_list($common_name);
+			$params = $this->capiGetCertList($common_name);
 			$cnVerified = true;
 		}
 
@@ -495,7 +495,7 @@ class CertManager_Online extends CertManager
      */
     public function pollCertStatus($key)
     {
-        $key = $this->_transform_to_order_number($key);
+        $key = $this->transformToOrderNumber($key);
 
         $polling_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
                         "?loginName=" . $this->login_name .
@@ -525,7 +525,7 @@ class CertManager_Online extends CertManager
      */
     public function get_cert($key)
     {
-        $key = $this->_transform_to_order_number($key);
+        $key = $this->transformToOrderNumber($key);
 
         Logger::log_event(LOG_NOTICE, "Trying to retrieve certificate with order number " .
                                       $key .
@@ -582,7 +582,7 @@ class CertManager_Online extends CertManager
      */
     public function revoke_cert($key, $reason)
     {
-        $key = $this->_transform_to_order_number($key);
+        $key = $this->transformToOrderNumber($key);
 
         $return_res = NULL;
 
@@ -650,7 +650,7 @@ class CertManager_Online extends CertManager
 	 */
 	public function getCertInformation($key)
     {
-		$key = $this->_transform_to_order_number($key);
+		$key = $this->transformToOrderNumber($key);
 
 		$list_endpoint = ConfusaConstants::$CAPI_LISTING_ENDPOINT;
 		$postfields_list = array();
@@ -708,7 +708,7 @@ class CertManager_Online extends CertManager
     public function getCertDeploymentScript($key, $browser)
     {
 
-        $key = $this->_transform_to_order_number($key);
+        $key = $this->transformToOrderNumber($key);
 
         switch ($browser) {
         case "msie_post_vista":
@@ -768,7 +768,7 @@ class CertManager_Online extends CertManager
      *
      * @param $common_name The common-name for which the list is retrieved
      */
-    private function _capi_get_cert_list($common_name)
+    private function capiGetCertList($common_name)
     {
         Logger::log_event(LOG_DEBUG, "Trying to get the list with the certificates " .
                                     "for person $common_name");
@@ -843,7 +843,7 @@ class CertManager_Online extends CertManager
      *
      * @throws ConfusaGenException
     */
-    private function _capi_upload_CSR($auth_key, $csr, $csr_format = "csr")
+    private function capiUploadCSR($auth_key, $csr, $csr_format = "csr")
     {
         $sign_endpoint = ConfusaConstants::$CAPI_APPLY_ENDPOINT;
         $ca_cert_id = ConfusaConstants::$CAPI_ESCIENCE_ID;
@@ -925,7 +925,7 @@ class CertManager_Online extends CertManager
                             array('text', 'text', 'text'),
                             array($auth_key, $this->person->getX509ValidCN(),
                             $this->order_number));
-        } /* end _capi_upload_csr */
+        } /* end capiUploadCSR */
     }
 
 	/**
@@ -985,7 +985,7 @@ class CertManager_Online extends CertManager
      *
      * @throws ConfusaGenException
      */
-    private function _transform_to_order_number($auth_key)
+    private function transformToOrderNumber($auth_key)
     {
       /* first check if it is an order number already */
       if (is_numeric($auth_key)) {
@@ -1017,7 +1017,7 @@ class CertManager_Online extends CertManager
      * must be authorized by the user.
      * Call the authorize endpoint in the API and update the respective DB entry.
      */
-    private function _capi_authorize_CSR()
+    private function capiAuthorizeCSR()
     {
         $authorize_endpoint = ConfusaConstants::$CAPI_AUTH_ENDPOINT;
 
@@ -1047,7 +1047,7 @@ class CertManager_Online extends CertManager
             throw new RemoteAPIException($msg);
         }
 
-    } /* end _capi_authorize_csr */
+    } /* end capiAuthorizeCSR */
 
 } /* end class OnlineCAManager */
 ?>
