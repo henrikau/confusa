@@ -169,7 +169,7 @@
 	<td align="right" valign="top" style="padding-right: 10px">Comments</td>
 	<td>
 	  <textarea name="subscr_comment" rows="10" cols="60"
-	            title="Arbitrary comment about the subscriber">{$subscr_details.subscr_comment}</textarea>
+	            title="Arbitrary comment about the subscriber">{$subscr_details.subscr_comment|escape}</textarea>
 	</td>
       </tr>
 
