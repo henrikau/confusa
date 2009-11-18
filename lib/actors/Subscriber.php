@@ -10,6 +10,8 @@ class Subscriber
 	private $phone;
 	private $responsible_name;
 	private $responsible_email;
+	private $state;
+	private $comment;
 
 	private $pendingChanges = false;
 
@@ -160,13 +162,14 @@ class Subscriber
 
 		/* Update all subscriber-data */
 		$this->setDBID(		$res[0]['subscriber_id']);
-		$this->setEmail(	$res[0]['subscr_email']);
-		$this->setPhone(	$res[0]['subscr_phone']);
-		$this->setRespName(	$res[0]['subscr_resp_name']);
-		$this->setRespEmail(	$res[0]['subscr_resp_email']);
+		$this->setEmail(	$res[0]['subscr_email'],	false);
+		$this->setPhone(	$res[0]['subscr_phone'],	false);
+		$this->setRespName(	$res[0]['subscr_resp_name'],	false);
+		$this->setRespEmail(	$res[0]['subscr_resp_email'],	false);
 		$this->setDNName(	$res[0]['dn_name']);
+		$this->setState(	$res[0]['state'],		false);
+		$this->setComment(	$res[0]['comment'],		false);
 
-		/* Find the map from the database */
 		return true;
 	} /* end updateFromDB() */
 
@@ -177,29 +180,147 @@ class Subscriber
 			$this->db_id = Input::sanitizeText($dbID);
 		}
 	}
-	private function setEmail($email)
+
+	public function setEmail($email, $external = true)
 	{
 		if(!is_null($email)) {
+			if ($email === $this->email) {
+				return;
+			}
+			if ($external) {
+				$this->pendingChanges = true;
+			}
 			$this->email = Input::sanitizeText($email);
 		}
 	}
-	private function setPhone($phone)
+
+	public function getEmail()
+	{
+		if (!is_null($this->email)) {
+			return $this->email;
+		}
+		return null;
+	}
+
+	public function setPhone($phone, $external = true)
 	{
 		if(!is_null($phone)) {
+			if ($phone === $this->phone) {
+				return;
+			}
+			if ($external) {
+				$this->pendingChanges = true;
+			}
 			$this->phone = Input::sanitizeText($phone);
 		}
 	}
-	private function setRespName($respName)
+
+	public function getPhone()
+	{
+		if (!is_null($this->phone)) {
+			return $this->phone;
+		}
+		return null;
+	}
+
+	public function setRespName($respName, $external = true)
 	{
 		if(!is_null($respName)) {
+			if ($respName === $this->responsible_name) {
+				return;
+			}
+			if ($external) {
+				$this->pendingChanges = true;
+			}
 			$this->responsible_name = Input::sanitizeText($respName);
 		}
 	}
-	private function setRespEmail($respEmail)
+
+	public function getRespName()
+	{
+		if (!is_null($this->respName)) {
+			return $this->respName;
+		}
+		return null;
+	}
+
+
+	public function setRespEmail($respEmail, $external = true)
 	{
 		if(!is_null($respEmail)) {
+			if ($respEmail === $this->responsible_email) {
+				return;
+			}
+			if ($external) {
+				$this->pendingChanges = true;
+			}
 			$this->responsible_email = Input::sanitizeText($respEmail);
 		}
+	} /* end setRespEmail() */
+
+	public function getRespEmail()
+	{
+		if (!is_null($this->respEmail)) {
+			return $this->respEmail;
+		}
+		return null;
+	}
+
+	public function setComment($comment, $external = true)
+	{
+		if (isset($comment)) {
+			$com = Input::sanitizeText($comment);
+			if ($this->comment === $com) {
+				$this->comment = $com;
+				if ($external) {
+					$this->pendingChanges = true;
+				}
+			}
+		}
+	}
+
+	/**
+	 * getComment()
+	 */
+	public function getComment()
+	{
+		if (isset($this->comment)) {
+			return $this->comment;
+		}
+		return null;
+	}
+	/**
+	 * setState() Set new state for the subscriber
+	 *
+	 * @param String $s the new state
+	 * @param boolean $external if it is an external update and not a call
+	 * that just decorates the subscriber with values from the database.
+	 * @access public
+	 */
+	public function setState($s, $external = true)
+	{
+		if (is_null($s)) {
+			return false;
+		}
+
+		$state = Input::sanitizeText($s);
+		if ($state === $this->state) {
+			return false;
+		}
+
+		if ($external) {
+			$this->pendingChanges = true;
+		}
+		$this->state = $state;
+		return true;
+	}
+
+	public function getState()
+	{
+		if (is_null($this->state)) {
+			return null;
+		}
+		return $this->state;
 	}
 	private function setDNName($DNName)
 	{
