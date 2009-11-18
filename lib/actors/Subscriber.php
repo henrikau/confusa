@@ -407,5 +407,44 @@ class Subscriber
 			return false;
 		}
 	} /* end retrieveMap() */
-}
+
+	public function save($forcedSynch = false)
+	{
+		if ($this->pendingChanges || $forcedSynch) {
+			if (Config::get_config('debug')) {
+				echo "Updating subscriber with values: <br />\n";
+				echo $this;
+			}
+			$query  = "UPDATE subscribers SET ";
+			$query .= "subscr_email=?, subscr_phone=?, ";
+			$query .= "subscr_resp_name=?, subscr_resp_email=?, ";
+			$query .= "org_state=?, subscr_comment=? ";
+			$query .= "WHERE subscriber_id=?";
+			$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text');
+			$data	= array($this->getEmail(),
+					$this->getPhone(),
+					$this->getRespName(),
+					$this->getRespEmail(),
+					$this->getState(),
+					$this->getComment(),
+					$this->getDBID());
+			try {
+				MDB2Wrapper::update($query, $params, $data);
+			} catch (DBStatementException $dbse) {
+				/* FIXME, better error-msg */
+				$msg  = "Cannot connect properly to database, some internal error. ";
+				$msg .= "Make sure the DB is configured correctly." . $dbse->getMessage();
+				throw new ConfusaGenException($msg);
+			} catch (DBQueryException $dbqe) {
+				/* FIXME, better error-msg */
+				$msg  = "Cannot connect properly to database, ";
+				$msg .= "errors with supplied data.";
+				throw new ConfusaGenException($msg);
+			}
+			$this->pendingChanges = false;
+			return true;
+		}
+		return false;
+	} /* end save */
+} /* end class Subscriber */
 ?>
