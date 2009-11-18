@@ -31,6 +31,8 @@ final class CP_DownloadCertificate extends Content_Page
 				} catch(ConfusaGenException $cge) {
 					Framework::error_output("Could not download the certificate, server said: " . htmlentities($cge->getMessage()));
 				}
+			} else if (isset($_GET['cert_status'])) {
+				$this->pollCertStatusAJAX(Input::sanitize($_GET['cert_status']));
 			}
 		}
 		return false;
@@ -182,6 +184,26 @@ final class CP_DownloadCertificate extends Content_Page
 		return (isset($var['revoked']) && $var['revoked'] === true);
 	}
 
+	/**
+	 * Call this to poll the status of the certificate identified by the given
+	 * key from an AJAX function.
+	 *
+	 * @param $key mixed The key (order-number, auth-key) identifying the certificate
+	 * @return "done" if the certificate is available
+	 *         "processing" if it is still being processed
+	 */
+	private function pollCertStatusAJAX($key)
+	{
+		$status = $this->certManager->pollCertStatus($key);
+
+		if ($status === true) {
+			echo "done";
+			exit(0);
+		} else {
+			echo "processing";
+			exit(0);
+		}
+	}
 } /* end class DownloadCertificate */
 
 $fw = new Framework(new CP_DownloadCertificate());

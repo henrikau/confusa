@@ -1,3 +1,49 @@
+{literal}
+<script type="text/javascript">
+	var timer = null;
+
+	if (typeof XMLHttpRequest == "undefined") {
+		XMLHttpRequest = function() {
+			/* define XMLHttpRequest for IE versions < 7 */
+			try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); }
+			catch(e) {}
+			try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); }
+			catch(e) {}
+			try { return new ActiveXObject("Msxml2.XMLHTTP"); }
+			catch(e) {}
+			try { return new ActiveXObject("Microsoft.XMLHTTP"); }
+			catch(e) {}
+		};
+	}
+
+	function pollCertStatusAJAX(orderNumber) {
+		var req = new XMLHttpRequest();
+
+		req.open("GET", "?cert_status=" + orderNumber, true);
+		req.send(null);
+		req.onreadystatechange = function() {
+			if (req.readyState == 4 /*complete*/) {
+				if (req.status == 200) {
+					if (req.responseText == "done") {
+						/* reload the list if the processing is done */
+						window.clearInterval(timer);
+						window.location.reload();
+					}
+				} else {
+					/* didn't work, so what? */
+				}
+			}
+		}
+	}
+
+	function pollCertStatus(orderNumber, interval)
+	{
+		timer = window.setInterval("pollCertStatusAJAX(" + orderNumber + ")", interval);
+	}
+</script>
+{/literal}
+
+
 {if empty($certList)}
 <h3>No certificates in database</h3>
 {else}
@@ -20,7 +66,7 @@
 				<i>{$key|escape}</i>
 				</td>
 				</tr>
-				
+
 				<tr>
 				<td></td>
 				<td>
@@ -107,6 +153,10 @@
 					[Inspect]
 					[Install]
 					</td>
+
+					{if isset($cert.valid_untill) && isset($cert.order_number)}
+						<script type="text/javascript">pollCertStatus({$cert.order_number}, 30000)</script>
+					{/if}
 				{else}
 				<td>
 				  <a href="download_certificate.php?email_cert={$cert.order_number}">
