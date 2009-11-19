@@ -13,11 +13,6 @@
     of these subscribers can be changed, new added or existing deleted.
   </p>
   <br />
-  <p class="info">
-    Note: The ID is assigned automatically by Confusa and is the unique identifier
-    of the organization.
-  </p>
-  <br />
   <br />
   <table>
     <tr>
