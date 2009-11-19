@@ -220,12 +220,13 @@ class Subscriber
 	{
 		if(!is_null($email)) {
 			if ($email === $this->email) {
-				return;
+				return false;
 			}
 			if ($external) {
 				$this->pendingChanges = true;
 			}
 			$this->email = Input::sanitizeText($email);
+			return true;
 		}
 	}
 
@@ -241,12 +242,13 @@ class Subscriber
 	{
 		if(!is_null($phone)) {
 			if ($phone === $this->phone) {
-				return;
+				return false;
 			}
 			if ($external) {
 				$this->pendingChanges = true;
 			}
 			$this->phone = Input::sanitizeText($phone);
+			return true;
 		}
 	}
 
@@ -262,12 +264,13 @@ class Subscriber
 	{
 		if(!is_null($respName)) {
 			if ($respName === $this->responsible_name) {
-				return;
+				return false;
 			}
 			if ($external) {
 				$this->pendingChanges = true;
 			}
 			$this->responsible_name = Input::sanitizeText($respName);
+			return true;
 		}
 	}
 
@@ -284,12 +287,13 @@ class Subscriber
 	{
 		if(!is_null($respEmail)) {
 			if ($respEmail === $this->responsible_email) {
-				return;
+				return false;
 			}
 			if ($external) {
 				$this->pendingChanges = true;
 			}
 			$this->responsible_email = Input::sanitizeText($respEmail);
+			return true;
 		}
 	} /* end setRespEmail() */
 
@@ -310,9 +314,11 @@ class Subscriber
 				if ($external) {
 					$this->pendingChanges = true;
 				}
+				return true;
 			}
 		}
-	}
+		return false;
+	} /* end setComment() */
 
 	/**
 	 * getComment()
