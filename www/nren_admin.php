@@ -92,12 +92,13 @@ class CP_NREN_Admin extends Content_Page
 				}
 				if (!is_null($subscriber)) {
 					/* subscriber will clean input */
-					if ($subscriber->setState(	$_POST['state']) ||
-					    $subscriber->setEmail(	$_POST['subscr_email']) ||
-					    $subscriber->setPhone(	$_POST['subscr_phone']) ||
-					    $subscriber->setRespName(	$_POST['subscr_responsible_name']) ||
-					    $subscriber->setRespEmail(	$_POST['subscr_responsible_email']) ||
-					    $subscriber->setComment(	$_POST['subscr_comment'])) {
+					$update  = $subscriber->setState(	$_POST['state']);
+					$update |= $subscriber->setEmail(	$_POST['subscr_email']);
+					$update |= $subscriber->setPhone(	$_POST['subscr_phone']);
+					$update |= $subscriber->setRespName(	$_POST['subscr_responsible_name']);
+					$update |= $subscriber->setRespEmail(	$_POST['subscr_responsible_email']);
+					$update |= $subscriber->setComment(	$_POST['subscr_comment']);
+					if ($update) {
 						if (!$subscriber->save(true)) {
 							Framework::error_output("Could not update Subscriber, even with changed information.");
 						}
