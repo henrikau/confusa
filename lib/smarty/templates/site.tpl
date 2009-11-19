@@ -6,6 +6,9 @@
 	<title>{$title}</title>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
+	{* force off quirks mode in IE8, which will automatically be activated if anything appears above the doctype
+	    (like PHP debugging output) *}
+	<meta http-equiv="X-UA-Compatible" content="IE=8"/>
 	<link rel="shortcut icon" href="graphics/icon.gif" type="image/gif" />
 	<link rel="stylesheet" href="css/confusa2.css" type="text/css" />
 	<script type="text/javascript" src="js/confusa.js"></script>
