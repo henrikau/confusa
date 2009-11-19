@@ -185,8 +185,8 @@ class Subscriber
 		$this->setRespName(	$res[0]['subscr_resp_name'],	false);
 		$this->setRespEmail(	$res[0]['subscr_resp_email'],	false);
 		$this->setDNName(	$res[0]['dn_name']);
-		$this->setState(	$res[0]['state'],		false);
-		$this->setComment(	$res[0]['comment'],		false);
+		$this->setState(	$res[0]['org_state'],		false);
+		$this->setComment(	$res[0]['subscr_comment'],	false);
 
 		return true;
 	} /* end updateFromDB() */
