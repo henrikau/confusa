@@ -4,12 +4,26 @@
 {* ------------------------------------------------------------ *}
 {if $person->getMode() == 0}
 
+{if ! $person->isAuth()}
+{assign var=prot_title value='title="You will be redirected to login before you can view this page"'}
+{assign var=prot_l value="<i>"}
+{assign var=prot_r value="*</i>"}
+{else}
+{assign var=prot_title value=''}
+{assign var=prot_l value=''}
+{assign var=prot_r value=''}
+{/if}
+
+
 <h3>Certificates</h3>
 <br />
 <ul>
-  <li><a href="process_csr.php">Request new</a></li>
-  <li><a href="download_certificate.php">Download</a></li>
-  <li><a href="revoke_certificate.php">Revoke</a></li>
+  <li><a href="process_csr.php"	{$prot_title}>
+      {$prot_l}Request new{$prot_r}</a></li>
+  <li><a href="download_certificate.php"{$prot_title}>
+      {$prot_l}Download{$prot_r}</a></li>
+  <li><a href="revoke_certificate.php"{$prot_title}>
+      {$prot_l}Revoke{$prot_r}</a></li>
 </ul>
 <br />
 <br />
@@ -25,20 +39,28 @@
 <br />
 <br />
 <ul>
-  <li><a href="stylist.php?show=text">Appearance</a></li>
-  <li><a href="nren_subs_settings.php">Settings</a></li>
-  <li><a href="nren_admin.php">Subscribers</a></li>
+  <li>
+    <a href="stylist.php?show=text"{$prot_title}>
+      {$prot_l}Appearance{$prot_r}</a>
+    </a>
+  </li>
+  <li><a href="nren_subs_settings.php"{$prot_title}>
+      {$prot_l}Settings{$prot_r}</a></li>
+  <li><a href="nren_admin.php"{$prot_title}>
+      {$prot_l}Subscribers{$prot_r}</a></li>
 </ul>
 <br />
 
   {if $is_online === TRUE}
 <ul>
-  <li><a href="accountant.php">CA Account</a></li>
+  <li><a href="accountant.php"{$prot_title}>
+      {$prot_l}CA Account{$prot_r}</a></li>
 </ul>
   {/if}{* online *}
 
    <ul>
-   <li><a href="attributes.php">Attributes</a></li>
+   <li><a href="attributes.php"{$prot_title}>
+       {$prot_l}Attributes{$prot_r}</a></li>
    </ul>
    <br />
 
@@ -48,13 +70,16 @@
 <br />
 <br />
 <ul>
-  <li><a href="robot.php">Robot</a></li>
-  <li><a href="nren_subs_settings.php">Settings</a></li>
+  <li><a href="robot.php" {$prot_title}>
+      {$prot_l}Robot{$prot_r}</a></li>
+  <li><a href="nren_subs_settings.php"{$prot_title}>
+      {$prot_l}Settings{$prot_r}</a></li>
 </ul>
 
 <br />
 <ul>
-<li><a href="attributes.php">Attributes</a></li>
+<li><a href="attributes.php"{$prot_title}>
+    {$prot_l}Attributes{$prot_r}</a></li>
 </ul>
 
 {else}
@@ -63,11 +88,13 @@
 {/if} {* type admin *}
 
   <ul>
-  <li><a href="admin.php">Admins</a></li>
+  <li><a href="admin.php"{$prot_title}>
+      {$prot_l}Admins{$prot_r}</a></li>
   </ul>
   <br />
   <ul>
-  <li><a href="revoke_certificate.php">Revocation</a></li>
+  <li><a href="revoke_certificate.php"{$prot_title}>
+      {$prot_l}Revocation{$prot_r}</a></li>
   </ul>
 
 {/if} { * Mode *}
@@ -89,9 +116,12 @@
   <ul>
   {/if}
 
-  <li><a href="about_you.php">About you</a></li>
-  <li><a href="tools.php">Tools</a></li>
-  <li><a href="root_cert.php">CA Certificate</a></li>
+  <li><a href="about_you.php"{$prot_title}>
+      {$prot_l}About you{$prot_r}</a></li>
+  <li><a href="tools.php"{$prot_title}>
+      {$prot_l}Tools{$prot_r}</a></li>
+  <li><a href="root_cert.php">
+      {$prot_l}CA Certificate{$prot_r}</a></li>
 </ul>
 <br />
 <h3>Help</h3>
