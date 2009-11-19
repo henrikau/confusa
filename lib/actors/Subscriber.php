@@ -411,10 +411,6 @@ class Subscriber
 	public function save($forcedSynch = false)
 	{
 		if ($this->pendingChanges || $forcedSynch) {
-			if (Config::get_config('debug')) {
-				echo "Updating subscriber with values: <br />\n";
-				echo $this;
-			}
 			$query  = "UPDATE subscribers SET ";
 			$query .= "subscr_email=?, subscr_phone=?, ";
 			$query .= "subscr_resp_name=?, subscr_resp_email=?, ";
