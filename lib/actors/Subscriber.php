@@ -307,7 +307,7 @@ class Subscriber
 
 	public function setComment($comment, $external = true)
 	{
-		if (isset($comment)) {
+		if (!is_null($comment)) {
 			$com = Input::sanitizeText($comment);
 			if ($this->comment === $com) {
 				$this->comment = $com;
