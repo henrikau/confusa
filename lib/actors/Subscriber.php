@@ -276,8 +276,8 @@ class Subscriber
 
 	public function getRespName()
 	{
-		if (!is_null($this->respName)) {
-			return $this->respName;
+		if (!is_null($this->responsible_name)) {
+			return $this->responsible_name;
 		}
 		return null;
 	}
@@ -299,8 +299,8 @@ class Subscriber
 
 	public function getRespEmail()
 	{
-		if (!is_null($this->respEmail)) {
-			return $this->respEmail;
+		if (!is_null($this->responsible_email)) {
+			return $this->responsible_email;
 		}
 		return null;
 	}
