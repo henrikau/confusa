@@ -177,7 +177,7 @@
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr>
 	<td colspan="2">
-	  <textarea name="subscr_comment" rows="10" cols="70"></textarea>
+	  <textarea name="subscr_comment" rows="10" cols="60"></textarea>
 	  </td>
       </tr>
 
