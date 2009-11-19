@@ -21,10 +21,6 @@
     before being stored in the DB.
   </p>
   <br />
-  <p class="info">
-    At the moment, it is only possible to have a single account. This,
-    however, will change soon.
-  </p>
   <br />
   {* {if $password_label != "undefined"}*}
   <h4>Current account</h4>

@@ -40,7 +40,7 @@
 	  <a href="http://rnd.feide.no/attribute/edupersonorgdn">
 	    eduPersonOrgDN</a><br />
 	  <a href="http://rnd.feide.no/content/schachomeorganization">
-	    schachHomeOrganization</a><br />
+	    schacHomeOrganization</a><br />
 	  <br />
 	  <p class="info">
 	    The important element to remember is that this must be
@@ -82,8 +82,8 @@
 	  <br />
 	  <p class="info">
 	    Currently, Confusa is placed in "Grid-mode". This means that the
-	    name for the subscriber is limited to 7-bit asci and a maximum of
-	    64 characters.
+	    name for the subscriber is limited to ASCII and a maximum of
+	    62 characters.
 	  </p>
 	  {/if}
 	</td>
@@ -91,7 +91,12 @@
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr>
 	<td><font color="gray"><i>/O=</i></font></td>
+
+	{if $confusa_grid_restrictions}
+	<td><input maxlength="62" type="text" name="dn_name" /></td>
+	{else}
 	<td><input type="text" name="dn_name" /></td>
+	{/if}
       </tr>
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr><td colspan="2"><hr class="table"/><br /></td></tr>
@@ -111,7 +116,7 @@
 	  </p>
 	  <br />
 	  <p class="info">
-	    It is important that the contact-information is as updated as
+	    It is important that the contact-information is as up-to-date as
 	    possible. Note that at the moment, the subscriber cannot alter
 	    this information.
 	  </p>
@@ -170,8 +175,8 @@
 	  <p class="info">
 	    In case a general comment concerning the subscriber is needed, you
 	    can add this here. This comment will only be available through
-	    this page, so what you write here, will never be exposed to
-	    neither subscribers, nor end entities.
+	    this page, so what you write here, will neither be exposed to
+	    subscribers, nor to end entities.
 	  </p>
 	</td>
       <tr><td><div class="spacer"></td><td></td></tr>
@@ -193,7 +198,7 @@
       <tr><td colspan="2">
 	  <p class="info">
 	    The state describes how a subscriber is treated. At the moment you
-	    have 3 different states in confusa
+	    have 3 different states in Confusa
 	  </p>
 	</td>
       </tr>
@@ -210,13 +215,13 @@
 	    <br />
 	    <dt><i><u>Unsubscribed:</u></i></dt>
 	    <dd>
-	      Added to confusa, but not yet formally approved to start using
-	      the service
+	      Added to Confusa, but not yet formally approved to start using
+	      the service.
 	    </dd>
 	    <br />
 	    <dt><i><u>Suspended:</u></i></dt>
 	    <dd>
-	      not able to create new certs, no existing will be revoked.
+	      Unable to create new certs, no existing will be revoked.
 	    </dd>
 	    <br />
 
