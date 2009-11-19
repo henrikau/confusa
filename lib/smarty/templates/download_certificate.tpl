@@ -3,6 +3,12 @@
 	var timer = null;
 	var timer2 = null;
 
+	/**
+	 * Show five incrementally appearing dots after a text, which visually
+	 * hints that something is happening.
+	 *
+	 * @param orderNumber the orderNumber, needed to find the right info-block
+	 */
 	function showSmallDots(orderNumber) {
 		var infoCell = document.getElementById('certInfoText' + orderNumber);
 		var infoText = infoCell.innerHTML;
@@ -22,6 +28,13 @@
 		infoCell.innerHTML = infoText;
 	}
 
+	/**
+	 * Poll the processing status (Pending, processed) of an online-certificate
+	 * asynchrously. Reload the page, if the processing of the certificate is
+	 * done.
+	 *
+	 * @param orderNumber the orderNumber of the certificate
+	 */
 	function pollCertStatusAJAX(orderNumber) {
 		var req = new XMLHttpRequest();
 
@@ -43,6 +56,13 @@
 		}
 	}
 
+	/**
+	 * Inspect a certificate by asynchrously getting the content of the
+	 * certificate from Confusa. Switch the link labels between "Inspect" and
+	 * "Collapse"
+	 *
+	 * @param key mixed the auth_key or order_number identifying the certificate
+	 */
 	function inspectCertificateAJAX(key) {
 		var req = new XMLHttpRequest();
 		var inspectArea = document.getElementById('inspectArea' + key);
@@ -71,6 +91,14 @@
 		return false;
 	}
 
+	/**
+	 * Wrapper function that calls both pollCertStatusAJAX and displays the
+	 * funny little dots
+	 *
+	 * @param orderNumber integer the orderNumber of the certificate
+	 * @param interval integer the interval in which the certificate status is
+	 *                 polled
+	 */
 	function pollCertStatus(orderNumber, interval)
 	{
 		timer = window.setInterval("pollCertStatusAJAX(" + orderNumber + ")", interval);
