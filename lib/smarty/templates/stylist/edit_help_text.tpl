@@ -14,19 +14,15 @@
 	</p>
 	<br />
 	<form action="" method="post">
-	<table>
-		<tr>
-		<td>
+
+	<div style="width: 90%">
 		<input type="hidden" name="stylist_operation" value="change_help_text" />
-		<textarea name="help_text" rows="10" cols="80">{$help_text}</textarea>
-		</td>
-		</tr>
-		<tr>
-		<td align="right">
+		<textarea style="width: 100%" name="help_text" rows="10" cols="80">{$help_text}</textarea>
+	</div>
+	<div class="spacer"></div>
+	<div style="width: 90%; text-align: right">
 		<input type="submit" name="change" value="Change" />
-		</td>
-		</tr>
-	</table>
+	</div>
 	</form>
   </fieldset>
   <div class="spacer"></div>
@@ -46,18 +42,13 @@
   </p>
   <br />
   <form action="" method="post">
-  <table>
-	<tr>
-	<td>
-	<input type="hidden" name="stylist_operation" value="change_about_text" />
-	<textarea name="about_text" rows="10" cols="80">{$about_text}</textarea>
-	</td>
-	</tr>
-	<tr>
-	<td align="right">
-	<input type="submit" name="change" value="Change" />
-	</td>
-	</tr>
-  </table>
+	<div style="width: 90%">
+		<input type="hidden" name="stylist_operation" value="change_about_text" />
+		<textarea name="about_text" style="width: 100%" rows="10" cols="80">{$about_text}</textarea>
+	</div>
+	<div class="spacer"></div>
+	<div style="width: 90%; text-align: right">
+		<input type="submit" name="change" value="Change" />
+	</div>
   </form>
   </fieldset>

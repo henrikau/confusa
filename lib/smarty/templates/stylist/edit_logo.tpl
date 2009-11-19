@@ -21,19 +21,12 @@
   <div class="spacer"></div>
   {/if}
   <form action="" method="post" enctype="multipart/form-data">
-    <table>
-      <tr>
-	<td>
-	  <input type="hidden" name="stylist_operation" value="upload_logo" />
-	  <input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
-	  <input type="file" name="nren_logo" />
-
-	</td>
-	<td>
-	  <input type="submit" value="Upload image" />
-	</td>
-      </tr>
-    </table>
+	<div>
+		<input type="hidden" name="stylist_operation" value="upload_logo" />
+		<input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
+		<input type="file" name="nren_logo" />
+		<input type="submit" value="Upload image" />
+	</div>
   </form>
 
   <div class="spacer"></div>
