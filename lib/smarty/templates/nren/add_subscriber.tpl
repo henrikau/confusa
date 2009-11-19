@@ -20,7 +20,7 @@
       {* ------------------------------------------------------ *}
       {* Attribute Name (db_name)				*}
       {* ------------------------------------------------------ *}
-      <tr><td colspan="2"><hr /></td></tr>
+      <tr><td colspan="2"><hr class="table"/><br /></td></tr>
       <tr>
 	<td colspan="2">
 	  <h3>Attribute Name</h3>
@@ -62,7 +62,7 @@
 		<tr><td></td><td style="font-size: 0.8em; font-style: italic">e.g.: {$foundUniqueName|escape}</td></tr>
 	{/if}
 	  <tr><td><div class="spacer"></td><td></td></tr>
-      <tr><td colspan="2"><hr /></td></tr>
+      <tr><td colspan="2"><hr class="table"/><br /></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
 
 
@@ -94,7 +94,7 @@
 	<td><input type="text" name="dn_name" /></td>
       </tr>
       <tr><td><div class="spacer"></td><td></td></tr>
-      <tr><td colspan="2"><hr /></td></tr>
+      <tr><td colspan="2"><hr class="table"/><br /></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
 
 
@@ -157,7 +157,7 @@
       </span>
       </td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
-      <tr><td colspan="2"><hr /></td></tr>
+      <tr><td colspan="2"><hr class="table"/><br /></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
 
 
@@ -182,7 +182,7 @@
       </tr>
 
       <tr><td><div class="spacer"></td><td></td></tr>
-      <tr><td colspan="2"><hr /></td></tr>
+      <tr><td colspan="2"><hr class="table"/><br /></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
 
       {* ------------------------------------------------------ *}
@@ -229,7 +229,7 @@
       </tr>
 
       <tr><td><div class="spacer"></td><td></td></tr>
-      <tr><td colspan="2"><hr /></td></tr>
+      <tr><td colspan="2"><hr class="table"/><br /></td></tr>
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr>
 	<td colspan="2">

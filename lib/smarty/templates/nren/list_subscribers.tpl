@@ -13,6 +13,7 @@
     of these subscribers can be changed, new added or existing deleted.
   </p>
   <br />
+  <hr class="table" />
   <br />
   <table>
     <tr>
