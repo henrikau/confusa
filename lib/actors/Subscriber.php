@@ -309,7 +309,7 @@ class Subscriber
 	{
 		if (!is_null($comment)) {
 			$com = Input::sanitizeText($comment);
-			if ($this->comment === $com) {
+			if ($this->comment !== $com) {
 				$this->comment = $com;
 				if ($external) {
 					$this->pendingChanges = true;
