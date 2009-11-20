@@ -94,7 +94,10 @@ class CertManager_Standalone extends CertManager
 				throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
 			}
 
-			$this->sendMailNotification($auth_key, date('Y-m-d H:i T'), $_SERVER['REMOTE_ADDR']);
+			$this->sendMailNotification($auth_key,
+			                            date('Y-m-d H:i T'),
+			                            $_SERVER['REMOTE_ADDR'],
+			                            ConfusaConstants::$ESCIENCE_PRODUCT);
 			Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
 					  $this->person->getX509ValidCN() .
 					  " Contacting us from ".

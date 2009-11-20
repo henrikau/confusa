@@ -194,9 +194,14 @@ abstract class CertManager
    * that to the user
    * @param $timestamp Also include the time at which the certificate was signed
    * @param $ip And the IP-address of the contacting endpoint
+   * @param $productName string the name of the certificate (eScience, personal,
+   *                            code-signing) that we actually issued
    */
-  protected function sendMailNotification($orderNumber, $timestamp, $ip)
-  {
+	protected function sendMailNotification($orderNumber,
+	                                        $timestamp,
+	                                        $ip,
+	                                        $productName)
+	{
 	/* if a notification e-mail is not a *template*, then what is? */
 	$this->tpl	= new Smarty();
 	$this->tpl->template_dir= Config::get_config('install_path') .
