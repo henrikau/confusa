@@ -8,9 +8,14 @@
   <legend>Subscriber accounts for: {$nrenName|escape}</legend>
   <br />
   <p class="info">
-    Add or change subscriber accounts. A subscriber is an organization
-    belonging to the current NREN ({$nrenName|escape}). This is where the status
-    of these subscribers can be changed, new added or existing deleted.
+    This is where you manage subscriber accounts. A subscriber in this
+    context is typically one of your customers that has subscribed to
+    your TCS eScience Personal service.
+    {*
+    FIXME:
+    what about person cert. portal, should not mention "eSience" here
+    then.
+    *}
   </p>
   <br />
   <hr class="table" />
