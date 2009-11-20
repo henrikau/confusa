@@ -14,12 +14,14 @@ class Subscriber
 	private $comment;
 	private $preferredLanguage;
 	private $help_url;
+	private $help_email;
 
 	private $pendingChanges = false;
 
 	/* Subscriber-map */
 	private $hasMap;
 	private $map;
+
 
 	/* is the subscriber valid (i.e. found in the database)? */
 	private $valid;
@@ -388,6 +390,31 @@ class Subscriber
 		return null;
 	}
 
+	/**
+	 * setHelpEmail() set the email for the HelpDesk at the subscriber's
+	 */
+	public function setHelpEmail($email, $external=true)
+	{
+		if (is_null($email)) {
+			return false;
+		}
+		$email = Input::sanitizeText($email);
+		if ($this->help_email === $email) {
+			return false;
+		}
+		$this->help_email = $email;
+		if ($external) {
+			$this->pendingChanges = true;
+		}
+		return true;
+	}
+	public function getHelpEmail()
+	{
+		if (!is_null($this->help_email)) {
+			return $this->help_email;
+		}
+		return null;
+	}
 	/**
 	 * setState() Set new state for the subscriber
 	 *
