@@ -55,7 +55,8 @@
 				<input type="hidden" name="subscriber" value="editState" />
 				<input type="hidden" name="id" value="{$row.subscriber_id}" />
 				{$nren->createSelectBox($row.org_state,	null, state)}
-				<input type="submit" class="button" value="Update" />
+				<input type="submit" class="button"
+				value="Update state" />
 			  </div>
 			</form>
       </td>
