@@ -207,21 +207,34 @@
 	  <dl>
 	    <dt><i><u>Subscribed:</u></i></dt>
 	    <dd>
-	      When a subscriber is subscribed, the contract between the NREN
-	      and subscriber is signed, the subscriber has agreed to follow the
-	      requirements placed upon it in the CP/CPS document etc. This state
-	      indicates that the subscriber is ready to use Confusa.
+	      <p class="info">
+		When a subscriber is in this state, the contract between
+		the NREN and subscriber is signed, the subscriber has
+		agreed to follow the requirements placed upon it in the
+		CP/CPS document etc. This state indicates that the
+		subscriber is ready to use Confusa.
+	      </p>
 	    </dd>
 	    <br />
 	    <dt><i><u>Unsubscribed:</u></i></dt>
 	    <dd>
-	      Added to Confusa, but not yet formally approved to start using
-	      the service.
+	      <p class="info">
+		The subscriber has been added to the register of
+		Subscriber, but has not yet signed the contractual
+		agreements and can therefore not be elevated to state
+		"Subscribed".
+	      </p>
 	    </dd>
 	    <br />
 	    <dt><i><u>Suspended:</u></i></dt>
 	    <dd>
-	      Unable to create new certs, no existing will be revoked.
+	      <p class="info">
+		Due to violations of the terms in the contracts, all
+		activity for the subscriber has been ceased. No
+		certificates will be removed, but new will not be issued
+		for the users.Once the issues have been resolved, state
+		can be changed back to "Subscribed".
+	      </p>
 	    </dd>
 	    <br />
 
