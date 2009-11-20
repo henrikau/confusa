@@ -208,8 +208,8 @@ class Subscriber
 		$this->setDNName(	$res[0]['dn_name']);
 		$this->setState(	$res[0]['org_state'],		false);
 		$this->setComment(	$res[0]['subscr_comment'],	false);
-		$this->setLanguage(	$res[0]['lang'],			false);
-
+		$this->setLanguage(	$res[0]['lang'],		false);
+		$this->setHelpURL(	$res[0]['subscr_help_url'],	false);
 		return true;
 	} /* end updateFromDB() */
 
@@ -497,9 +497,10 @@ class Subscriber
 			$query  = "UPDATE subscribers SET ";
 			$query .= "subscr_email=?, subscr_phone=?, ";
 			$query .= "subscr_resp_name=?, subscr_resp_email=?, ";
-			$query .= "org_state=?, subscr_comment=?, lang=? ";
+			$query .= "org_state=?, subscr_comment=?, lang=?, subscr_help_url=? ";
+			$query .= "org_state=?, subscr_comment=?, subscr_help_url=? ";
 			$query .= "WHERE subscriber_id=?";
-			$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
+			$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
 			$data	= array($this->getEmail(),
 					$this->getPhone(),
 					$this->getRespName(),
@@ -507,6 +508,7 @@ class Subscriber
 					$this->getState(),
 					$this->getComment(),
 					$this->getLanguage(),
+					$this->getHelpURL(),
 					$this->getDBID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);
