@@ -211,10 +211,10 @@ abstract class CertManager
     $mm = new MailManager($this->person,
 			  Config::get_config('sys_from_address'),
 			  '"' . Config::get_config('system_name') . '"',
-			  Config::get_config('sys_header_from_address'),
-			  $subject,
-			  $msg);
-    $mm->send_mail();
+			  Config::get_config('sys_header_from_address'));
+	$mm->setSubject($subject);
+	$mm->setBody($msg);
+	$mm->sendMail();
   } /* end sendMailNotification */
 } /* end class CertManager */
 

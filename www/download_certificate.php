@@ -162,15 +162,19 @@ final class CP_DownloadCertificate extends Content_Page
 	{
 		try {
 			$cert = $this->certManager->get_cert($authKey);
+
 			if (isset($cert)) {
 				$mm = new MailManager($this->person,
 						      Config::get_config('sys_from_address'),
 						      '"' . Config::get_config('system_name') . '"',
-						      Config::get_config('sys_header_from_address'),
-						      "Signed certificate",
-						      "Attached is your new certificate. Remember to store this in \$HOME/.globus/usercert.pem for ARC to use");
-				$mm->add_attachment($cert, 'usercert.pem');
-				if (!$mm->send_mail()) {
+						      Config::get_config('sys_header_from_address'));
+				$mm->setSubject("Signed certificate");
+				$mm->setBody("Attached is your new certificate. Remember to " .
+				             "store this in \$HOME/.globus/usercert.pem for " .
+							 "ARC to use");
+				$mm->addAttachment($cert, 'usercert.pem');
+
+				if (!$mm->sendMail()) {
 					Framework::error_output("Could not send mail properly!");
 					return false;
 				}

@@ -53,11 +53,11 @@ class CP_Tools extends Content_Page
 		$mail = new MailManager($this->person,
 					Config::get_config('sys_from_address'),
 					'"' . Config::get_config('system_name') . '"',
-					Config::get_config('sys_header_from_address'),
-					$subject,
-					$body);
-		$mail->add_attachment($keyscript->create_script(), "create_cert.sh");
-		if ($mail->send_mail()) {
+					Config::get_config('sys_header_from_address'));
+		$mail->setSubject($subject);
+		$mail->setBody($body);
+		$mail->addAttachment($keyscript->create_script(), "create_cert.sh");
+		if ($mail->sendMail()) {
 			Framework::message_output("Mail sent to " . htmlentities($this->person->getEmail()) .
 			                          " with new version of create_cert.sh");
 		} else {
