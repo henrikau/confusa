@@ -190,28 +190,40 @@ abstract class CertManager
    * Send a notification upon the issuance of a new X.509 certificate, as it is
    * required in section 3.2 of the MICS-profile.
    *
-   * @param $auth_key The unique identifier of the certificate - good to supply
+   * @param $orderNumber The unique identifier of the certificate - good to supply
    * that to the user
    * @param $timestamp Also include the time at which the certificate was signed
    * @param $ip And the IP-address of the contacting endpoint
    */
-  protected function sendMailNotification($auth_key, $timestamp, $ip)
+  protected function sendMailNotification($orderNumber, $timestamp, $ip)
   {
-    $subject = "Issued a new certificate for " . $this->person->getX509SubjectDN();
-    $msg = "A new X.509 certificate was just issued to *you*, with subject-DN " . $this->person->getX509SubjectDN() . ".\n\n";
-    $msg .= "The certificate was signed using the Confusa portal (";
-    $msg .= Config::get_config('server_url') . "), at date " . $timestamp . ".\n";
-    $msg .= "The IP address of the contacting user agent was $ip. ";
-    $msg .= "Probably this happened because you requested a certificate by Confusa. If this is not the case, ";
-    $msg .= "please notify " . Config::get_config('sys_from_address') . " or an admin contact in your local ";
-    $msg .= "institution!\n\n";
-    $msg .= "The unique identifier of your certificate is: " . $auth_key . ".\n";
-    $msg .= "\nBest regards,\n";
-    $msg .= "   The Confusa team\n";
-    $mm = new MailManager($this->person,
-			  Config::get_config('sys_from_address'),
-			  '"' . Config::get_config('system_name') . '"',
-			  Config::get_config('sys_header_from_address'));
+	/* if a notification e-mail is not a *template*, then what is? */
+	$this->tpl	= new Smarty();
+	$this->tpl->template_dir= Config::get_config('install_path') .
+	                          'lib/smarty/templates';
+	$this->tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
+	$this->tpl->config_dir	= Config::get_config('install_path') .
+	                          'lib/smarty/configs';
+	$this->tpl->cache_dir	= ConfusaConstants::$SMARTY_CACHE;
+	$this->tpl->assign('subscriber',
+	                   $this->person->getSubscriber()->getOrgName());
+	$this->tpl->assign('confusa_url', Config::get_config('server_url'));
+	$this->tpl->assign('dn', $this->person->getX509SubjectDN());
+	$this->tpl->assign('download_url', Config::get_config('server_url') .
+	                                   '/download_certificate.php');
+	$this->tpl->assign('issue_date', $timestamp);
+	$this->tpl->assign('ip_address', $ip);
+	$this->tpl->assign('order_number', $orderNumber);
+	$this->tpl->assign('nren', $this->person->getNREN());
+	$msg = $this->tpl->fetch('email/notification.tpl');
+
+	$subject = "Your new $productName certificate is ready.  Order number " .
+	           "$orderNumber, subject " . $this->person->getX509SubjectDN();
+
+	$mm = new MailManager($this->person,
+	                      Config::get_config('sys_from_address'),
+	                      '"' . Config::get_config('system_name') . '"',
+	                      Config::get_config('sys_header_from_address'));
 	$mm->setSubject($subject);
 	$mm->setBody($msg);
 	$mm->sendMail();

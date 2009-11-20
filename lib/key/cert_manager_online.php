@@ -259,7 +259,7 @@ class CertManager_Online extends CertManager
         $this->capiAuthorizeCSR();
 
         $this->cacheInvalidate();
-        $this->sendMailNotification($auth_key, date('Y-m-d H:i'), $_SERVER['REMOTE_ADDR']);
+        $this->sendMailNotification($this->order_number, date('Y-m-d H:i T'), $_SERVER['REMOTE_ADDR']);
 	/* FIXME: conflict, not sure how to resolve, do we need both? */
         Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
 	/* FIXME: <END> */
@@ -301,10 +301,14 @@ class CertManager_Online extends CertManager
             break;
         }
 
-        $this->capiAuthorizeCSR();
-        $this->cacheInvalidate();
-        $this->sendMailNotification($auth_key, date('Y-m-d H:i'), $_SERVER['REMOTE_ADDR']);
-        Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
+		$this->capiAuthorizeCSR();
+		$this->cacheInvalidate();
+		$this->sendMailNotification($this->order_number,
+		                            date('Y-m-d H:i T'),
+		                            $_SERVER['REMOTE_ADDR']);
+
+		Logger::log_event(LOG_INFO, "Signed CSR for user with order_number " .
+		                            $order_number);
         return $this->order_number;
     }
 
