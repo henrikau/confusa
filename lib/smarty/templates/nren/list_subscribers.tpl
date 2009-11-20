@@ -18,6 +18,36 @@
     *}
   </p>
   <br />
+  <p class="info">
+    You can <b>modify</b> and <b>delete</b> subscribers here. If you
+    want to add new subscriber, you can do this
+    under <a href="?target=add">"Add new"</a>.
+  </p>
+  <br />
+  <p class="info">
+    A subscriber can be in one of three states:
+    <table>
+      <tr>
+	<td><b>Subscribed:</b></td>
+	<td width="10px"><div class="spacer"></div>
+	<td>Users can get certificates from the portal</td>
+      </tr>
+
+      <tr>
+	<td><b>Unsubscribed:</b></td>
+	<td><div class="spacer"></div>
+	<td>Not yet ready to issue certificates to theusers.</td>
+      </tr>
+
+      <tr>
+	<td><b>Suspended:</b></td>
+	<td><div class="spacer"></div>
+	<td>Users may not issue new certificates.</td>
+      </tr>
+    </table>
+  <br />
+  </p>
+
   <hr class="table" />
   <br />
   <table>
