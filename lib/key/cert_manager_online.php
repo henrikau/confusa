@@ -451,6 +451,9 @@ class CertManager_Online extends CertManager
         $cn =  "/CN=" . str_replace("%", "(.)*", $common_name) . "/";
 
         for ($i = 1; $i <= $params['noOfResults']; $i++) {
+		if (!array_key_exists($i . '_1_status', $params)) {
+			continue;
+		}
             $status = $params[$i . '_1_status'];
 
             /* don't consider expired, revoked or pending certificates */
