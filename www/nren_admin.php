@@ -78,6 +78,11 @@ class CP_NREN_Admin extends Content_Page
 			} else {
 				$subscr_comment = "";
 			}
+			if(isset($_POST['subscr_help_url']) && $_POST['subscr_help_url'] != "") {
+				$subscr_help_url = Input::sanitizeText($_POST['subscr_help_url']);
+			} else {
+				$subscr_help_url= "";
+			}
 			switch(htmlentities($_POST['subscriber'])) {
 			case 'edit':
 				$subscriber = null;
@@ -259,7 +264,7 @@ class CP_NREN_Admin extends Content_Page
 	private function addSubscriber($db_name, $org_state, $dn_name,
 				       $subscr_email, $subscr_phone,
 				       $subscr_responsible_name, $subscr_responsible_email,
-				       $subscr_comment)
+				       $subscr_help_url, $subscr_comment)
 	{
 		/*
 		 * When we add a new subscriber, all attributes must be
@@ -292,6 +297,10 @@ class CP_NREN_Admin extends Content_Page
 		}
 		if (!isset($subscr_responsible_email) || $subscr_responsible_email == "") {
 			$subscr_responsible_email = "";
+		}
+
+		if (!isset($subscr_help_url) || $subscr_help_url == "") {
+			$subscr_help_url = "";
 		}
 
 		if (!isset($subscr_comment) || $subscr_comment == "") {
@@ -331,14 +340,12 @@ class CP_NREN_Admin extends Content_Page
 		$newSubscriber->setComment($subscr_comment);
 
 		try {
-			$newSubscriber->save();
+			return $newSubscriber->save();
 		} catch (ConfusaGenException $cge) {
 			Logger::log_event(LOG_NOTICE, $cge->getMessage());
 			Framework::error_output(htmlentities($cge->getMessage()));
 			return false;
 		}
-
-		return true;
 	} /* end addSubscriber() */
 
 

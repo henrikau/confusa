@@ -163,6 +163,32 @@
       <tr><td><div class="spacer"></div></td><td></td></tr>
 
 
+
+      {* ------------------------------------------------------ *}
+      {* Helpdesk information					*}
+      {* ------------------------------------------------------ *}
+      <tr><td colspan="2"><h3>HelpDesk contact information</h3></td></tr>
+      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td colspan="2">
+	  <p class="info">
+	    Whenever an end-user needs help, the user should be
+	    directed to the helpdesk run by the subscriber. Operational
+	    support or NREN-support should <b>not</b> be required to
+	    handle large number of issues that can (and should) be
+	    resolved by local IT-support staff.
+	  </p>
+	</td>
+      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr>
+	<td><font color="gray"><i>HelpDesk URL:</i></font></td>
+	<td><input type="text" name="subscr_help_url" /></td>
+      </tr>
+
+
+      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td colspan="2"><hr class="table"/><br /></td></tr>
+      <tr><td><div class="spacer"></td><td></td></tr>
+
       {* ------------------------------------------------------ *}
       {* Comment						*}
       {* ------------------------------------------------------ *}
