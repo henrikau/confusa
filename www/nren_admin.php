@@ -97,6 +97,7 @@ class CP_NREN_Admin extends Content_Page
 					$update |= $subscriber->setRespName(	$_POST['subscr_responsible_name']);
 					$update |= $subscriber->setRespEmail(	$_POST['subscr_responsible_email']);
 					$update |= $subscriber->setComment(	$_POST['subscr_comment']);
+					$update |= $subscriber->setHelpURL(	$_POST['subscr_help_url']);
 					if ($update) {
 						if (!$subscriber->save(true)) {
 							Framework::error_output("Could not update Subscriber, even with changed information.");
@@ -138,6 +139,7 @@ class CP_NREN_Admin extends Content_Page
 							 $subscr_phone,
 							 $subscr_responsible_name,
 							 $subscr_responsible_email,
+							 $subscr_help_url,
 							 $subscr_comment)) {
 					Framework::success_output("Added new subscriber " . htmlentities($dn_name) . " to database.");
 				}

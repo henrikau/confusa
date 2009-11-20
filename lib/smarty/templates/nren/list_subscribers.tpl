@@ -230,6 +230,18 @@
       </tr>
 
       <tr>
+	<td align="right" style="padding-right: 10px">Help-desk URL</td>
+	<td>
+	  <input type="text" name="subscr_help_url" value="{$subscr_details.subscr_help_url}" />
+	</td>
+      </tr>
+      <tr>
+	<td><div class="spacer"></div></td>
+	<td></td>
+	<td></td>
+      </tr>
+
+      <tr>
 	<td align="right" valign="top" style="padding-right: 10px">Comments</td>
 	<td>
 	  <textarea name="subscr_comment" rows="10" cols="60"
