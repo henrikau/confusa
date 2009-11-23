@@ -11,11 +11,22 @@ require_once 'confusa_constants.php';
 
 class CP_Stylist extends Content_Page
 {
-
 	/* maximum width for custom logos */
 	private $allowed_width;
 	/* maximum height for custom logos */
 	private $allowed_height;
+	/* allowed smarty tags for the notification mail template */
+	private $NOTIFICATION_MAIL_TAGS = array('subscriber',
+	                                        'product_name',
+	                                        'confusa_url',
+	                                        'dn',
+	                                        'download_url',
+	                                        'subscriber_support_email',
+	                                        'subscriber_support_url',
+	                                        'order_number',
+	                                        'issue_date',
+	                                        'ip_address',
+	                                        'nren');
 
 	function __construct() {
 		parent::__construct("Stylist", true);
@@ -58,6 +69,18 @@ class CP_Stylist extends Content_Page
 					* such as { : ' anyways, so it would be hard to insert it into the DB properly*/
 					$new_css = Input::sanitizeCSS($_POST['css_content']);
 					$this->updateNRENCSS($this->person->getNREN(), $new_css);
+				}
+				break;
+			case 'change_mail':
+				if (isset($_POST['reset'])) {
+					$this->resetNRENMailTpl($this->person->getNREN());
+				} else if (isset($_POST['download'])) {
+					$new_template = strip_tags($_POST['mail_content']);
+					$this->downloadNRENMailTpl($content);
+				} else if (isset($_POST['change'])) {
+					$new_template = strip_tags($_POST['mail_content']);
+					$this->updateNRENMailTpl($this->person->getNREN(),
+					                         $new_template);
 				}
 				break;
 			case 'upload_logo':
@@ -115,6 +138,15 @@ class CP_Stylist extends Content_Page
 				$this->tpl->assign('extensions', $extensions);
 				$this->tpl->assign('width', $this->allowed_width);
 				$this->tpl->assign('height', $this->allowed_height);
+				break;
+			case 'mail':
+				$this->tpl->assign('edit_mail', true);
+				$this->tpl->assign('tags', $this->NOTIFICATION_MAIL_TAGS);
+				$template_string = $this->fetchNRENMailTpl($this->person->getNREN());
+
+				if (isset($template_string)) {
+					$this->tpl->assign('mail_content', $template_string);
+				}
 				break;
 
 			default:
@@ -290,6 +322,43 @@ class CP_Stylist extends Content_Page
 		}
 	}
 
+	/**
+	 * get the custom mail template defined per NREN
+	 *
+	 * @param $nren string the name of the NREN for which the custom template
+	 *                     exists
+	 */
+	private function fetchNRENMailTpl($nren)
+	{
+		$tpl_path = Config::get_config('custom_mail_tpl') . $nren . '/custom.tpl';
+
+		if (file_exists($tpl_path) === true) {
+			try {
+				$tpl_string = File_IO::readFromFile($tpl_path);
+				return $tpl_string;
+			} catch (FileException $fexp) {
+				Framework::error_output("Could not open NREN-specific notification " .
+				                        "template! Server said " .
+				                        htmlentities($fexp->getMessage()) . "!");
+			}
+		}
+
+		$main_tpl_path = Config::get_config('install_path') . 'lib/smarty/templates/';
+		$main_tpl_path .= 'email/notification.tpl';
+
+		try {
+			$tpl_string = File_IO::readFromFile($main_tpl_path);
+			return $tpl_string;
+		} catch (FileException $fexp) {
+			Framework::error_output("Could not open Confusa's default notification " .
+			                        "mail template! Server said " .
+			                        htmlentities($fexp->getMessage()) . "!");
+			Logger::log_event(LOG_WARN, "[nadm] Could not open Confusa's default " .
+			                            "notification mail template! Server said " .
+			                            $fexp->getMessage());
+		}
+	}
+
 	/*
 	 * Update the customized CSS file of a certain NREN. Write the CSS file to
 	 * a certain NREN-specific folder on the filesystem.
@@ -323,6 +392,52 @@ class CP_Stylist extends Content_Page
 	}
 
 	/**
+	 * Replace the content of the notification mail template with $content
+	 *
+	 * @param $nren string the NREN for which the notification mail is updated
+	 * @param $content string the content of the new notification mail template
+	 */
+	private function updateNRENMailTpl($nren, $content)
+	{
+		$template_path = Config::get_config('custom_mail_tpl') . $nren . '/custom.tpl';
+
+		/* filter the content, only allowed smarty tags must be included */
+		$tok = strtok($content, '{$');
+
+		while ($tok !== false) {
+			$close_tag = strpos($tok, '}');
+			$variable = substr($tok, 2, $close_tag - 2);
+
+			/* tag not allowed */
+			if (array_search($variable, $this->NOTIFICATION_MAIL_TAGS) === false) {
+				/* strip the variable identifiers from it */
+				$content = str_replace('{$' . $variable . '}', $variable, $content);
+			}
+
+			$tok = strtok($content);
+		}
+
+		/* now replace all occurences of '{' not followed by '$'
+		 * (non-variable smarty control structures) */
+		$content = preg_replace('/\{[^$$].*\}/', '', $content);
+
+		try {
+			File_IO::writeToFile($template_path, $content, true, true);
+		} catch (FileException $fexp) {
+			Framework::error_output("Could not write the custom notification template! " .
+			                        "Please contact an IT-administrator.");
+			return;
+		}
+
+		Logger::log_event(LOG_INFO, "The notification mail template for NREN " .
+		                            $nren .
+		                            " was changed. User contacted us from " .
+		                            $_SERVER['REMOTE_ADDR']);
+		Framework::success_output("Notification mail template for your NREN " .
+		                          "successfully updated!");
+	}
+
+	/**
 	 * Download customized CSS to the user's harddisk
 	 *
 	 * @param $css string the updated CSS
@@ -331,6 +446,17 @@ class CP_Stylist extends Content_Page
 	{
 		require_once 'file_download.php';
 		download_file($css, 'custom.css');
+	}
+
+	/**
+	 * Download customized mail template to the admin's harddisk
+	 *
+	 * @param $template string the updated mail template
+	 */
+	private function downloadNRENMailTpl($template)
+	{
+		require_once 'file_download.php';
+		download_file($template, 'custom.tpl');
 	}
 
 	/*
@@ -352,6 +478,22 @@ class CP_Stylist extends Content_Page
 		}
 
 		Framework::message_output("CSS-file reset to Confusa settings");
+	}
+
+	private function resetNRENMailTpl($nren)
+	{
+		$tpl_file = Config::get_config('custom_mail_tpl') . $nren . '/custom.tpl';
+
+		if (file_exists($tpl_file)) {
+			$success = unlink($tpl_file);
+
+			if ($success === false) {
+				Framework::error_output("Could not reset the notification mail template!" .
+				                        "Please contact an IT-administrator.");
+			}
+		}
+
+		Framework::message_output("Notification mail template reset to Confusa settings.");
 	}
 
 	/*
