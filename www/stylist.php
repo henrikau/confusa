@@ -369,10 +369,6 @@ class CP_Stylist extends Content_Page
 	private function updateNRENCSS($nren, $content)
 	{
 		$css_path = Config::get_config('custom_css') . $nren . '/custom.css';
-		if (ini_get('magic_quotes_gpc') === "1") {
-			/* no slashes should be introduced into the content */
-			$content = stripslashes($content);
-		}
 
 		try {
 			/* if the path to the NREN's CSS file does not exist, create the
