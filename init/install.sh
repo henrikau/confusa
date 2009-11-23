@@ -821,6 +821,7 @@ function perform_postinstallation_steps
 	confusa_log=`grep "'default_log'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 	custom_css_path=`grep "'custom_css'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 	custom_graphics_path=`grep "'custom_logo'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
+	custom_template_path=`grep "'custom_mail_tpl'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
 	# bootstrap smarty directories
 	smarty_templates_c=`grep "SMARTY_TEMPLATES_C" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
 	smarty_cache=`grep "SMARTY_CACHE" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
@@ -877,9 +878,14 @@ function perform_postinstallation_steps
 	mkdir -p ${custom_graphics_path}
 	chown -R $custom_apache_user ${custom_graphics_path}
 	res=`expr $res + $?`
+	mkdir -p ${custom_template_path}
+	chown -R $custom_apache_user ${custom_template_path}
+	res=`expr $res + $?`
 	chmod 0755 ${custom_css_path}
 	res=`expr $res + $?`
 	chmod 0755 ${custom_graphics_path}
+	res=`expr $res + $?`
+	chmod 0755 ${custom_template_path}
 	res=`expr $res + $?`
 	mkdir -p ${smarty_templates_c}
 	chown -R $custom_apache_user ${smarty_templates_c}
