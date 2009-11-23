@@ -42,7 +42,6 @@
   <li>
     <a href="stylist.php?show=text"{$prot_title}>
       {$prot_l}Appearance{$prot_r}</a>
-    </a>
   </li>
   <li><a href="nren_subs_settings.php"{$prot_title}>
       {$prot_l}Settings{$prot_r}</a></li>
