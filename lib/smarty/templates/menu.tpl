@@ -15,8 +15,8 @@
 {/if}
 
 
-<h3>Certificates</h3>
-<br />
+<h3 style="padding-bottom: 1em">Certificates</h3>
+<div style="padding-bottom: 1em">
 <ul>
   <li><a href="process_csr.php"	{$prot_title}>
       {$prot_l}Request new{$prot_r}</a></li>
@@ -25,19 +25,16 @@
   <li><a href="revoke_certificate.php"{$prot_title}>
       {$prot_l}Revoke{$prot_r}</a></li>
 </ul>
-<br />
-<br />
-<br />
+</div>
 {* ------------------------------------------------------------ *}
 {*		Person is in admin-mode				*}
 {* ------------------------------------------------------------ *}
 {elseif $person->getMode() == 1}
-<h3>Admin</h3>
-
 {if $person->isNRENAdmin()}
+<div style="padding-bottom: 2em">
+<h3>Admin</h3>
 <i>(NREN)</i>
-<br />
-<br />
+</div>
 <ul>
   <li>
     <a href="stylist.php?show=text"{$prot_title}>
@@ -65,54 +62,52 @@
 
 
 {elseif $person->isSubscriberAdmin()}
+<div style="padding-bottom: 2em">
+<h3>Admin</h3>
 <i>(Subscriber)</i>
-<br />
-<br />
-<ul>
+</div>
+<ul style="padding-bottom: 1em">
   <li><a href="robot.php" {$prot_title}>
       {$prot_l}Robot{$prot_r}</a></li>
   <li><a href="nren_subs_settings.php"{$prot_title}>
       {$prot_l}Settings{$prot_r}</a></li>
 </ul>
 
-<br />
 <ul>
 <li><a href="attributes.php"{$prot_title}>
     {$prot_l}Attributes{$prot_r}</a></li>
 </ul>
 
 {else}
-<br />
-<br />
+<div style="padding-bottom: 2em">
+<h3>Admin</h3>
+</div>
 {/if} {* type admin *}
 
-  <ul>
+  <ul style="padding-bottom: 1em">
   <li><a href="admin.php"{$prot_title}>
       {$prot_l}Admins{$prot_r}</a></li>
   </ul>
-  <br />
-  <ul>
+
+  <ul style="padding-bottom: 1em">
   <li><a href="revoke_certificate.php"{$prot_title}>
       {$prot_l}Revocation{$prot_r}</a></li>
   </ul>
 
 {/if} { * Mode *}
 
-<br />
-
 {* ------------------------------------------------------------ *}
 {*		Common for all					*}
 {* ------------------------------------------------------------ *}
 <h3>Other</h3>
-<ul>
+<ul style="padding-bottom: 1em">
   {if $person->getMode() == 0 && $person->isAdmin() }
   <li><a href="{php}$_SERVER['PHP_SELF']{/php}?mode=admin">Admin menu</a></li>
   {elseif $person->isAdmin()}
   <li><a href="index.php?mode=normal">Normal mode</a></li>
   {else}
   </ul>
-  <br />
-  <ul>
+  <ul style="padding-bottom: 1em">
   {/if}
 
   <li><a href="about_you.php"{$prot_title}>
@@ -122,9 +117,10 @@
   <li><a href="root_cert.php">
       {$prot_l}CA Certificate{$prot_r}</a></li>
 </ul>
-<br />
+
+<div style="padding-bottom: 1em">
 <h3>Help</h3>
-<br />
+</div>
 <ul>
   <li><a href="about_nren.php">About</a></li>
   <li><a href="help.php">Help</a></li>
@@ -133,7 +129,6 @@
 		<li><a href="about_confusa.php">Version</a></li>
   {/if}
 </ul>
-
 
 <ul>
   {if !$person->isAuth()}
