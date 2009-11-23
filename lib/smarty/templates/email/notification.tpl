@@ -1,15 +1,14 @@
 Hi,
 
-Using your {$subscriber} account you have ordered a {$product_name|default:"TCS eScience Personal"} certificate through {$confusa_url}.
+Using your {$subscriber} account you have ordered a {$product_name} certificate through {$confusa_url}.
 
-Your new {$product_name|default:"TCS eScience Personal"} certificate with subject {$dn} is ready. Please proceed to the download page and follow the instructions:
+Your new {$product_name} certificate with subject {$dn} is ready. Please proceed to the download page and follow the instructions:
 
    {$download_url}
 
-For support please contact your local helpdesk{if isset($subscriber_support_email) || isset($subscriber_support_url)} at:
+For support please contact your local helpdesk at:
    {$subscriber_support_email}
    {$subscriber_support_url}
-{else}.{/if}
 
 When you contact your local helpdesk please be sure to include the order details you find below in your support question.
 
