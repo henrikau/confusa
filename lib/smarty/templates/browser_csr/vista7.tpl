@@ -116,7 +116,7 @@ function createIEVistaRequest(dn, keysize)
 	var spacer = document.createElement("div");
 	spacer.setAttribute("class", "spacer");
 	infoView.appendChild(spacer);
-	infoView.innerHTML += "<p class=\"info\">Please pick a cryptographic service provider (For standard requirements, pick the \"Microsoft Software Key Storage Provider\"!)</p><br />";
+	infoView.innerHTML += "<p class=\"info\">Please pick a cryptographic service provider (For standard requirements, pick the \"Microsoft Software Key Storage Provider\"!)</p>";
 	{/literal}
 {/if}
 </script>

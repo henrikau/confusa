@@ -31,9 +31,7 @@ immediately see a result entry *}
     person within your institution whose certificates you want to revoke. Use
     '%' as a wildcard.
     </p>
-    <br />
 	<p class="info">Example: "John Doe jdoe@example.org" or "%jdoe@example.org".</p>
-	<br />
     <input type="hidden" name="revoke_operation" value="search_by_cn" />
     <input type="text" name="search" value="" />
     <input type="submit" name="Search" value="Search" />
@@ -55,7 +53,6 @@ immediately see a result entry *}
     certificates should be revoked. You will be asked for confirmation before the certificates
     will actually be revoked. Separate the ePPNs in the list with a ',' comma.
     </p>
-    <br />
     <input type="hidden" name="revoke_operation" value="search_by_list" />
     <input type="hidden" name="max_file_size" value="10000000" />
     <input name="{$file_name}" type="file" />

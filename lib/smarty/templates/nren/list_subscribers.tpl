@@ -17,13 +17,11 @@
     then.
     *}
   </p>
-  <br />
   <p class="info">
     You can <b>modify</b> and <b>delete</b> subscribers here. If you
     want to add new subscriber, you can do this
     under <a href="?target=add">"Add new"</a>.
   </p>
-  <br />
   <p class="info">
     A subscriber can be in one of three states:
     <table>

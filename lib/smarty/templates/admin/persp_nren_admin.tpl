@@ -9,7 +9,6 @@
     Add and delete NREN admins for your NREN '{$nren|escape}'. You yourself are
     marked with an asterisk (*). NREN admins have many privileges:
   </p>
-  <br />
   <ul class="info">
     <li>Add/delete other NREN admins.</li>
     <li>Add/delete subscriber admins.</li>
@@ -17,13 +16,11 @@
     <li>Change the NREN's CA account</li>
     <li>Change the branding of the portal</li>
   </ul>
-  <br />
   <p class="info">
     This role has a large impact on the available
     power. Thus, you should not grant this level to
     everybody, but only to persons who you trust implicitly.
   </p>
-  <br />
 
   <table>
 {if !empty($nren_admins)}
@@ -118,16 +115,13 @@
 	<p class="info">
 	Allows you to add/delete Subscriber admins. Subscriber admins may:
 	</p>
-	<br />
 	<ul class="info">
 	<li>revoke user certificates</li>
 	<li>appoint other subscriber admins.</li>
 	</ul>
-	<br />
 	<p class="info">
 	Their scope is limited to an institution, in this case {$subscriber|escape}.
 	</p>
-	<br />
 
 	{if isset($subscriber_admins)}
 		<table>

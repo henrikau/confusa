@@ -8,7 +8,6 @@ will react if they receive notifications from Confusa. For instance,
 Confusa might contact this address in case of critical errors or to
 notify you of mass-revocation of certificates.
 </p>
-<br />
 <form method="post" action="">
   <input type="hidden" name="setting" value="nren_contact" />
   <table>

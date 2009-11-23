@@ -11,12 +11,10 @@
 	You yourself are marked with an asterisk (*). Subscriber admins have the
 	following privileges:
 	</p>
-	<br />
 	<ul class="info">
 	<li>Revoke certificates of users of their own institution</li>
 	<li>Add/delete other subscriber admins and subscriber-subadmins</li>
 	</ul>
-	<br />
 
 	{if !empty($subscriber_admins)}
 	<table>
@@ -119,11 +117,9 @@
 Add/delete subscriber-subadmins for your institution '{$subscriber|escape}'.
 Subscriber sub-admins have the following privileges:
 </p>
-<br />
 	<ul class="info">
 	<li>Revoke certificates of users of their own institution</li>
 	</ul>
-<br />
 
 {if !empty($subscriber_sub_admins)}
 <table>
@@ -210,7 +206,6 @@ Subscriber sub-admins have the following privileges:
 		hooked up to Confusa and which credentials should be used for communicating
 		with the Online-CA. Below you can find a list of them along with their e-mail addresses your NREN {$nren|escape}:
 		</p>
-		<br />
 		<ul>
 		{foreach from=$nren_admins item=nren_admin}
 			<li>{$nren_admin.eppn|escape} ({$nren_admin.email|escape|default:"<i>not assigned yet</i>"})</li>

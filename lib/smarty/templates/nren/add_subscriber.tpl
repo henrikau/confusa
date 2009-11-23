@@ -32,11 +32,9 @@
 	    The attribute-name of the subscriber, is the name the way it is
 	    exported from the IdP.
 	  </p>
-	  <br />
 	  <p class="info">
 	    Normally, this one one of the following attributes:
 	  </p>
-	  <br />
 	  <a href="http://rnd.feide.no/attribute/edupersonorgdn">
 	    eduPersonOrgDN</a><br />
 	  <a href="http://rnd.feide.no/content/schachomeorganization">
@@ -114,7 +112,6 @@
 	    subscribers in case of an emergency, but also by confusa itself
 	    when revoking certificates, adding robot-certificates etc.
 	  </p>
-	  <br />
 	  <p class="info">
 	    It is important that the contact-information is as up-to-date as
 	    possible. Note that at the moment, the subscriber cannot alter

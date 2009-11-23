@@ -11,6 +11,6 @@
 	<li>Safari</li>
 	</ul>
 
-	<p class="info">If a supported browser does not work, try upgrading to the latest version.<br /></p>
+	<p class="info">If a supported browser does not work, try upgrading to the latest version.</p>
 </div>
 </fieldset>

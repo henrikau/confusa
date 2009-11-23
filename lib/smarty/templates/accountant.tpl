@@ -15,13 +15,10 @@
     Change/enter the account with which your NREN connects to the Comodo-API.
     You should have received account information either from TERENA or any other
     contract partner via which you signed up to Confusa.</p>
-  <br />
-  <p class="info">
+  <p class="info" style="padding-bottom: 2em">
     Note: The account password will be encrypted using 256-Bit AES in CFB blockmode
     before being stored in the DB.
   </p>
-  <br />
-  <br />
   {* {if $password_label != "undefined"}*}
   <h4>Current account</h4>
   <form action="" method="post">

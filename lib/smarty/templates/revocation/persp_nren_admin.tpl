@@ -45,9 +45,7 @@ Search for a commonName or a eduPersonPrincipalName of a person within the
 institution {$subscriber|escape} whose certificates you want to revoke. Use '%' as a
 wildcard.
 </p>
-<br />
 <p class="info">Example: "John Doe jdoe@example.org" or "%jdoe@example.org".</p>
-<br />
 <input onblur="hideHint();" onfocus="showHint();" type="text" name="search" value="" />
 <input type="hidden" name="revoke_operation" value="search_by_cn" />
 <input type="hidden" name="subscriber" value="{$subscriber}" />

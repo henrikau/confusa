@@ -6,13 +6,11 @@
 	specific that users within the domain of your NREN should know, define it
 	here.
 	</p>
-	<br />
 	<p class="info">
 	Note: The field accepts UTF-8 characters. A subset of
 	<a href="http://www.textism.com/tools/textile/">Textile</a> syntax is
 	supported. No external images, no HTML, sorry.
 	</p>
-	<br />
 	<form action="" method="post">
 
 	<div style="width: 90%">
@@ -34,13 +32,11 @@
   an institution that belongs to your NREN, clicks the 'About'-link. Time to
   present yourself!
   </p>
-  <br />
   <p class="info">
 	Note: The field accepts UTF-8 characters. A subset of
 	<a href="http://www.textism.com/tools/textile/">Textile</a> syntax is
 	supported. No external images, no HTML, sorry.
   </p>
-  <br />
   <form action="" method="post">
 	<div style="width: 90%">
 		<input type="hidden" name="stylist_operation" value="change_about_text" />

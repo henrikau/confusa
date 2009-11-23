@@ -5,12 +5,10 @@
     once they are logged in. Initially, Confusa's main CSS is shown in this field,
     which you may adapt to fit your needs.
   </p>
-  <br />
   <p class="info">
     Note: All CSS properties are supported, as long as they don't include ()-brackets.
     This also means that url() is not supported.
   </p>
-  <br />
   <form action="" method="post">
 	<div style="width: 90%">
 		<textarea style="width: 100%" name="css_content" rows="20" cols="80">{$css_content}</textarea>

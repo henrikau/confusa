@@ -6,7 +6,6 @@
 		<p class="info">
 		The following are the subscriber admins that are administrating your institution (and their e-mail addresses):
 		</p>
-		<br />
 		<ul>
 		{foreach from=$subscriber_admins item=subscriber_admin}
 			<li>{$subscriber_admin.eppn|escape} ({$subscriber_admin.email|escape|default:"<i>not assigned yet</i>"})</li>
@@ -27,7 +26,6 @@
 			The following are sub-admins for your insitutions, who, like you, may revoke
 			certificates (and their e-mail addresses):
 			</p>
-			<br />
 			<ul>
 			{foreach from=$subscriber_sub_admins item=sub_admin}
 				<li>{$sub_admin.eppn|escape} ({$sub_admin.email|escape|default:"<i>not assigned yet</i>"})</li>

@@ -6,7 +6,6 @@
 	includes information considered useful such as a download-link to the
 	certificate.
 	</p>
-	<br />
 	<p class="info">
 	Note: HTML tags will be stripped. {literal}{$varname}{/literal} are variables.
 	</p>

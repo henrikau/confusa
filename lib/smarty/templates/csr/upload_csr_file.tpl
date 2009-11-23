@@ -7,7 +7,6 @@
       this with any globus-specific tools, you should look for
       the folder ".globus" in your home directory.
     </p>
-    <br />
     <table>
       <tr>
 	<td>

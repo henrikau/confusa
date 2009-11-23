@@ -216,6 +216,7 @@ div.csr {
 p.info {
     font-style: italic;
     width: 80%;
+	padding-bottom: 1em;
 }
 div.spacer
 {

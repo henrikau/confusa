@@ -102,7 +102,7 @@ function createIEXPRequest(dn, keysize)
 	var spacer = document.createElement("div");
 	spacer.setAttribute("class", "spacer");
 	infoView.appendChild(spacer);
-	infoView.innerHTML += "<p class=\"info\">Please pick a cryptographic service provider (For standard requirements, pick the \"Microsoft Enhanced Cryptographic Provider\"!)</p><br />";
+	infoView.innerHTML += "<p class=\"info\">Please pick a cryptographic service provider (For standard requirements, pick the \"Microsoft Enhanced Cryptographic Provider\"!)</p>";
 	{/literal}
 {/if}
 </script>

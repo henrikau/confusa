@@ -8,12 +8,10 @@
   certificate is listed as an orphan, or you can remove it all
   together.
 </p>
-<br />
 <p class="info">
   If you so choose, you may inspect the certificate in greater detail
   here.
 </p>
-<br />
 <hr width="90%"/>
 {if $robotCerts}
 <table>
