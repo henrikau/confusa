@@ -90,6 +90,7 @@ $confusa_config = array(
 	 */
 	'custom_css'		=> '/var/lib/confusa/custom_css/',
 	'custom_logo'		=> '/var/lib/confusa/custom_graphics/',
+	'custom_mail_tpl'	=> '/var/lib/confusa/custom_tpl/',
 
 	/* For CA handling.
 	 * Legal modes are: CA_STANDALONE and CA_ONLINE
