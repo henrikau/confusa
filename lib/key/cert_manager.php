@@ -204,8 +204,9 @@ abstract class CertManager
 	{
 	/* if a notification e-mail is not a *template*, then what is? */
 	$this->tpl	= new Smarty();
-	$this->tpl->template_dir= Config::get_config('install_path') .
-	                          'lib/smarty/templates';
+	$nren = $this->person->getNREN();
+	$custom_template = Config::get_config('custom_mail_tpl') . $nren . '/custom.tpl';
+
 	$this->tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
 	$this->tpl->config_dir	= Config::get_config('install_path') .
 	                          'lib/smarty/configs';
@@ -220,7 +221,16 @@ abstract class CertManager
 	$this->tpl->assign('ip_address', $ip);
 	$this->tpl->assign('order_number', $orderNumber);
 	$this->tpl->assign('nren', $this->person->getNREN());
-	$msg = $this->tpl->fetch('email/notification.tpl');
+
+	if (file_exists($custom_template)) {
+		$msg = $this->tpl->fetch($custom_template);
+		/* the mail will go out 7bit */
+		$msg = utf8_decode($msg);
+	} else {
+		$default_template = Config::get_config('install_path') .
+		                    '/lib/smarty/templates/email/notification.tpl';
+		$msg = $this->tpl->fetch($default_template);
+	}
 
 	$subject = "Your new $productName certificate is ready.  Order number " .
 	           "$orderNumber, subject " . $this->person->getX509SubjectDN();
