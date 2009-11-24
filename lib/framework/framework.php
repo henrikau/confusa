@@ -228,7 +228,13 @@ class Framework {
 			} catch (Exception $e) {
 				Framework::error_output("Unhandled exception found in user-function!<br />\n" . $e->getMessage());
 			}
+		} else {
+			/* if all else fails, at least give the user some recovery information */
+			Framework::message_output("Unrecoverable error and you are not NREN admin!" .
+			                          " Your eduPersonPrincipalName is " .
+			                          htmlentities($this->person->getNREN()->getName()));
 		}
+
 		$this->tpl->assign('logoutUrl', 'logout.php');
 		$this->tpl->assign('menu', $this->tpl->fetch('menu.tpl')); // see render_menu($this->person)
 		$this->tpl->assign('errors', self::$errors);
