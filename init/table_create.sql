@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS account_map (
 -- hooked into confusa, with their corresponding data (CA subaccount for
 -- COMODO)
 --
--- If Confusa operates in remote-signing mode, it will also use the
+-- If Confusa uses Comodo as its CA, it will also use the
 -- linked online account for requesting certificates for an
 -- organization.
 --

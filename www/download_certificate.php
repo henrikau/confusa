@@ -22,7 +22,7 @@ final class CP_DownloadCertificate extends Content_Page
 			if (isset($_GET['file_cert'])) {
 				$authKey = htmlentities($_GET['file_cert']);
 				try {
-					$cert = $this->certManager->get_cert($authKey);
+					$cert = $this->ca->getCert($authKey);
 					if (isset($cert)) {
 						include 'file_download.php';
 						download_file($cert, 'usercert.pem');
@@ -47,7 +47,7 @@ final class CP_DownloadCertificate extends Content_Page
 		/* test and handle flags */
 		$this->processDBCert();
 		try {
-			$certList = $this->certManager->get_cert_list();
+			$certList = $this->ca->getCertList();
 			/* sort the revoked certificates after the active certificates */
 			$revoked = array_filter($certList, array($this, 'revokedFilter'));
 			$non_revoked = array_diff_assoc($certList, $revoked);
@@ -95,7 +95,7 @@ final class CP_DownloadCertificate extends Content_Page
 	 */
 	private function deleteCert($authKey)
 	{
-		if ($this->certManager->deleteCertFromDB($authKey)) {
+		if ($this->ca->deleteCertFromDB($authKey)) {
 			$this->tpl->assign('processingResult', 'Certificate deleted');
 		}
 	} /* end deleteCert */
@@ -103,7 +103,7 @@ final class CP_DownloadCertificate extends Content_Page
 	private function installCert($authKey)
 	{
 		$ua = getUserAgent();
-		$script = $this->certManager->getCertDeploymentScript($authKey, $ua);
+		$script = $this->ca->getCertDeploymentScript($authKey, $ua);
 
 		if ($ua == "keygen") {
 			include 'file_download.php';
@@ -127,7 +127,7 @@ final class CP_DownloadCertificate extends Content_Page
 	{
 		/* FIXME */
 		try {
-			$cert = $this->certManager->get_cert($authKey);
+			$cert = $this->ca->getCert($authKey);
 			if (isset($cert)) {
 				$csr_test = openssl_x509_read($cert);
 				if (openssl_x509_export($csr_test, $text, false)) {
@@ -161,7 +161,7 @@ final class CP_DownloadCertificate extends Content_Page
 	private function mailCert($authKey)
 	{
 		try {
-			$cert = $this->certManager->get_cert($authKey);
+			$cert = $this->ca->getCert($authKey);
 
 			if (isset($cert)) {
 				$mm = new MailManager($this->person,
@@ -209,7 +209,7 @@ final class CP_DownloadCertificate extends Content_Page
 	 */
 	private function pollCertStatusAJAX($key)
 	{
-		$status = $this->certManager->pollCertStatus($key);
+		$status = $this->ca->pollCertStatus($key);
 
 		if ($status === true) {
 			echo "done";

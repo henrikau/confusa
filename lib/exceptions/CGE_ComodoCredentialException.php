@@ -16,7 +16,7 @@ require_once 'confusa_gen.php';
  * @author Thomas Zangerl <tzangerl@pdc.kth.se>
  */
 
-class CGE_RemoteCredentialException extends ConfusaGenException
+class CGE_ComodoCredentialException extends ConfusaGenException
 {
     public function __construct($message, $code=0)
     {
@@ -27,5 +27,5 @@ class CGE_RemoteCredentialException extends ConfusaGenException
     {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
     }
-} /* end class CGE_RemoteCredentialException */
+} /* end class CGE_ComodoCredentialException */
 ?>

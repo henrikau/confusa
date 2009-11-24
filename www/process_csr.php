@@ -49,14 +49,14 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('order_number', $order_number);
 			$this->tpl->assign('status_poll', true);
 
-			if ($this->certManager->pollCertStatus($order_number)) {
+			if ($this->ca->pollCertStatus($order_number)) {
 			    $this->tpl->assign('done', TRUE);
 			}
 
 		} else if (isset($_GET['install_cert'])) {
 			$order_number = Input::sanitize($_GET['install_cert']);
 			$ua = getUserAgent();
-			$script = $this->certManager->getCertDeploymentScript($order_number, $ua);
+			$script = $this->ca->getCertDeploymentScript($order_number, $ua);
 
 			if ($ua == "keygen") {
 			    include_once 'file_download.php';
@@ -147,7 +147,7 @@ final class CP_ProcessCsr extends Content_Page
 	 * processFileCSR - walk an uploaded CSR through the steps towards a certificate
 	 *
 	 * If a new CSR has been uploaded via FILE, this will retrieve it, store it in
-	 * the database and pass control over to CertManager to process it.
+	 * the database and pass control over to the CA to process it.
 	 */
 	private function processFileCSR()
 	{
@@ -165,8 +165,8 @@ final class CP_ProcessCsr extends Content_Page
 				if (count($res)>0) {
 					Framework::error_output("CSR with matching public-key already in the database. ".
 								"Cannot upload this CSR. Please generate a new keypair and try again.");
-				/* match the DN only when in standalone mode, no need to do it in online mode */
-				} else if (Config::get_config('ca_mode') == CA_ONLINE ||
+				/* match the DN only when using standalone CA, no need to do it for Comodo */
+				} else if (Config::get_config('ca_mode') == CA_COMODO ||
 						 match_dn($subject, $this->person)) {
 					$ip	= $_SERVER['REMOTE_ADDR'];
 					$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
@@ -242,7 +242,7 @@ final class CP_ProcessCsr extends Content_Page
 			return;
 		}
 
-		$order_number = $this->certManager->signBrowserCSR($csr, $browser);
+		$order_number = $this->ca->signBrowserCSR($csr, $browser);
 		return $order_number;
 	}
 
@@ -280,8 +280,8 @@ final class CP_ProcessCsr extends Content_Page
 		}
 
 		try {
-			if (!isset($this->certManager)) {
-				Framework::error_output("certManager is NULL!");
+			if (!isset($this->ca)) {
+				Framework::error_output("CA is NULL!");
 				return false;
 			}
 
@@ -294,10 +294,10 @@ final class CP_ProcessCsr extends Content_Page
 				return;
 			}
 
-			$this->certManager->sign_key($authToken, $csr);
+			$this->ca->signKey($authToken, $csr);
 
-		} catch (RemoteAPIException $rapie) {
-			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" . htmlentities($rapie));
+		} catch (CGE_ComodoAPIException $capie) {
+			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" . htmlentities($capie));
 			return false;
 		} catch (ConfusaGenException $e) {
 			$msg = "Error signing key, remote said: <br /><br /><i>" . htmlentities($e->getMessage()) . "</i><br />";

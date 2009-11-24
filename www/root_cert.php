@@ -16,7 +16,7 @@ class CP_Root_Certificate extends Content_Page
 	{
 		parent::__construct("Root Certificate(s)", false);
 
-		if (Config::get_config('ca_mode') == CA_ONLINE) {
+		if (Config::get_config('ca_mode') == CA_COMODO) {
 			$this->cert_path = "/var/tmp/tcs-ca.pem";
 			$this->crl_path = "/var/tmp/tcs-crl.crl";
 
@@ -61,7 +61,7 @@ class CP_Root_Certificate extends Content_Page
 			switch(htmlentities($_GET['link'])) {
 			case 'cacert':
 				$cert = file_get_contents($this->cert_path);
-				$cert = CertManager::PEMtoDER($cert, 'cert');
+				$cert = CA::PEMtoDER($cert, 'cert');
 				header("Content-type: application/x-x509-ca-cert");
 				// IE fix (for HTTPS only)
 				header("Cache-Control: private");
@@ -73,7 +73,7 @@ class CP_Root_Certificate extends Content_Page
 				break;
 			case 'crl':
 				$crl = file_get_contents($this->crl_path);
-				$crl = CertManager::PEMtoDER($crl, 'crl');
+				$crl = CA::PEMtoDER($crl, 'crl');
 				// IE fix (for HTTPS only)
 				header("Cache-Control: private");
 				header("Pragma: private");
@@ -119,13 +119,13 @@ class CP_Root_Certificate extends Content_Page
 	 */
 	private function makeCRLAvailable()
 	{
-		if(Config::get_config('ca_mode') == CA_ONLINE) {
+		if(Config::get_config('ca_mode') == CA_COMODO) {
 			$ch = curl_init(ConfusaConstants::$CAPI_CRL);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 			$crl_content = curl_exec($ch);
 			curl_close($ch);
 			/* get the right encoding */
-			$crl_file = CertManager::DERtoPEM($crl_content, 'crl');
+			$crl_file = CA::DERtoPEM($crl_content, 'crl');
 			file_put_contents($this->crl_path, $crl_file);
 		}
 	}
@@ -137,12 +137,12 @@ class CP_Root_Certificate extends Content_Page
 	 */
 	private function makeCertAvailable()
 	{
-		if(Config::get_config('ca_mode') == CA_ONLINE) {
+		if(Config::get_config('ca_mode') == CA_COMODO) {
 			$ch = curl_init(ConfusaConstants::$CAPI_ROOT_CERT);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 			$ca_file_content = curl_exec($ch);
 			curl_close($ch);
-			$cert_file = CertManager::DERtoPEM($ca_file_content, 'cert');
+			$cert_file = CA::DERtoPEM($ca_file_content, 'cert');
 			file_put_contents($this->cert_path, $cert_file);
 		}
 	}

@@ -1,5 +1,5 @@
 <?php
-  /* Certmanager
+  /* CA
    *
    * Class for signing certificates, verifying CSRs and storing it in the database
    *
@@ -11,7 +11,7 @@ require_once 'csr_lib.php';
 require_once 'config.php';
 require_once 'mail_manager.php';
 
-abstract class CertManager
+abstract class CA
 {
   protected $person;
 
@@ -39,7 +39,7 @@ abstract class CertManager
     } /* end destructor */
 
 
-  /* sign_key()
+  /* signKey()
    *
    * This is the signing routine of the system. In this release, it will use PHP
    * for signing, using a local CA-key.
@@ -48,7 +48,7 @@ abstract class CertManager
    * response and notify the user
    *
    */
-  abstract function sign_key($auth_key, $csr);
+  abstract function signKey($auth_key, $csr);
 
    /**
     * Sign a CSR as received from the browser's crypto mechanisms.
@@ -68,7 +68,7 @@ abstract class CertManager
    * For instance if Confusa is set to standalone-mode, the function will not return
    * remote signed certificates.
    */
-  abstract function get_cert_list();
+  abstract function getCertList();
 
 
   abstract function pollCertStatus($key);
@@ -77,7 +77,7 @@ abstract class CertManager
    *
    * @param key An identifier mapping to a certificate, dependant on the implementation.
    */
-  abstract function get_cert($key);
+  abstract function getCert($key);
 
   /*
    * Return owner and organisation belonging to the certificate with key $key
@@ -98,10 +98,10 @@ abstract class CertManager
    * @param key An identifier mapping to a certificate, dependant on the implementation.
    * @param reason The reason for revocation, as specified in RFC 5280
    */
-  abstract function revoke_cert($key, $reason);
+  abstract function revokeCert($key, $reason);
 
   /**
-   * get_cert_list_for_persons() get all valid certificates for a given user
+   * getCertListForPersons() get all valid certificates for a given user
    *
    * Search for the certificates of a person with a given common_name.
    * Common_name may include wildcard characters.
@@ -111,11 +111,11 @@ abstract class CertManager
    * @param $common_name The common_name to search for
    * @param $org The organization to restrict the search to
    */
-  abstract function get_cert_list_for_persons($common_name, $org);
+  abstract function getCertListForPersons($common_name, $org);
   /*
    * If the person has been changed in the framework or elsewhere, it can be updated here
    */
-  public function update_person($pers) {
+  public function updatePerson($pers) {
     $this->person = $pers;
   }
 
@@ -243,31 +243,31 @@ abstract class CertManager
 	$mm->setBody($msg);
 	$mm->sendMail();
   } /* end sendMailNotification */
-} /* end class CertManager */
+} /* end class CA */
 
-class CertManagerHandler
+class CAHandler
 {
-	private static $cert_manager;
-	public static function getManager($person)
+	private static $ca;
+	public static function getCA($person)
 	{
-		if (!isset(CertManagerHandler::$cert_manager)) {
+		if (!isset(CAHandler::$ca)) {
 			switch((int)Config::get_config('ca_mode')) {
 
 			case CA_STANDALONE:
-				require_once 'cert_manager_standalone.php';
-				CertManagerHandler::$cert_manager = new CertManager_Standalone($person);
+				require_once 'CA_Standalone.php';
+				CAHandler::$ca = new CA_Standalone($person);
 				break;
 
-			case CA_ONLINE:
-				require_once 'cert_manager_online.php';
-				CertManagerHandler::$cert_manager = new CertManager_Online($person);
+			case CA_COMODO:
+				require_once 'CA_Comodo.php';
+				CAHandler::$ca = new CA_Comodo($person);
 				break;
 
 			default:
 
 			}
 		}
-	        return CertManagerHandler::$cert_manager;
+	        return CAHandler::$ca;
 	}
 }
 ?>

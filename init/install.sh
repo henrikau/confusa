@@ -140,10 +140,10 @@ function configure_confusa_settings
 	echo "be used for signing certificate request, revocation etc. Currently this "
 	echo "Online-CA is Comodo. In which mode do you wish to operate Confusa?"
 	echo ""
-	select mode in online standalone; do
+	select mode in comodo standalone; do
 		case $mode in
 			"standalone") ca_mode="CA_STANDALONE" ;;
-			"online") ca_mode="CA_ONLINE" ;;
+			"comodo") ca_mode="CA_COMODO" ;;
 			*) continue ;;
 		esac
 
@@ -158,7 +158,7 @@ function configure_confusa_settings
 	# Autoconfigure:
 	# Set some config flags to feasible values
 	###############################################################################
-	if [ $mode = "online" ]; then
+	if [ $mode = "comodo" ]; then
 		sed s\|"'capi_test'[ \t]*=>.*"\|"'capi_test'    => false,"\| < $working_template > $config
 		cp $config $working_template
 	elif [ $mode = "standalone" ]; then
@@ -330,10 +330,10 @@ function configure_confusa_settings
 	replace_config_entry "smarty_path" $custom_smarty_path
 	echo ""
 
-	# ONLINE: generate a password with which the login password will be protected
+	# COMODO: generate a password with which the login password will be protected
 	# if pwgen is not installed, then ask for a password
 	###############################################################################
-	if [ $mode == "online" ]; then
+	if [ $mode == "comodo" ]; then
 		have_pwgen=`which pwgen`
 
 		if [ "$?" -eq "0" ]; then
@@ -927,7 +927,7 @@ function perform_postinstallation_steps
 	#		bootstrapNREN
 	#		bootstrapAdmin
 	#
-	#		if ca_mode = ONLINE:
+	#		if ca_mode = COMODO:
 	#			bootstrapAccount
 
 	echo ""

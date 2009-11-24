@@ -510,8 +510,8 @@ class CP_NREN_Admin extends Content_Page
 		/*
 		 * Revoke all certificates for subscriber
 		 */
-		$cm	= CertManagerHandler::getManager($this->person);
-		$list	= $cm->get_cert_list_for_persons("", $subscriberName);
+		$ca	= CAHandler::getCA($this->person);
+		$list	= $ca->getCertListForPersons("", $subscriberName);
 		$count	= 0;
 		foreach ($list as $key => $value) {
 			try {
@@ -519,7 +519,7 @@ class CP_NREN_Admin extends Content_Page
 					echo "<pre>\n";
 					print_r($value);
 					echo "</pre>\n";
-					if ($cm->revoke_cert($value['auth_key'], "privilegeWithdrawn")) {
+					if ($ca->revokeCert($value['auth_key'], "privilegeWithdrawn")) {
 						$count = $count + 1;
 					}
 				}

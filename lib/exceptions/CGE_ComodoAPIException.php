@@ -3,14 +3,14 @@ declare(encoding = 'utf-8');
 require_once 'confusa_gen.php';
 
 /**
- * RemoteAPIException thrown if a request at the remote certificate-API does not
+ * ComodoAPIException thrown if a request at the remote certificate-API does not
  * return the expected result.
  * Exception stub that can be extended in the future.
  *
  * PHP version 5
  * @author Thomas Zangerl <tzangerl@pdc.kth.se>
  */
-class RemoteAPIException extends ConfusaGenException
+class CGE_ComodoAPIException extends ConfusaGenException
 {
 
     public function __construct($message, $code=0)

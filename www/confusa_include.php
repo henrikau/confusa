@@ -15,7 +15,7 @@ define("ADMIN_MODE", 1);
 
 /* CertManager enums */
 define("CA_STANDALONE", 0);
-define("CA_ONLINE", 1);
+define("CA_COMODO", 1);
 
 define('WEB_DIR', dirname($_SERVER['SCRIPT_FILENAME']));
 $path .= PATH_SEPARATOR . "/usr/share/php/libphp-phpmailer/";

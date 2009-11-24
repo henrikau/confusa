@@ -26,7 +26,7 @@ Current attributes that are checked:
 
 The user will then be presented with a list of available (uploaded)
 CSRs and the opportunity to inspect, delete or approve for signing.
-The latter will either ship the CSR off to an online CA, or to the
+The latter will either ship the CSR off to the Comodo CA, or to the
 internal signing engine (standalone mode).
 
 The signed certificate is then made available to the user, and the

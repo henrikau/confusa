@@ -40,7 +40,7 @@ To install Confusa
 			      available through the backports, but we
 			       refrain from using this here).
 
-3 b) When using online, you will also need the mcrypt and curl libraries:
+3 b) When using Comodo, you will also need the mcrypt and curl libraries:
 
      php5-mcrypt
      php5-curl

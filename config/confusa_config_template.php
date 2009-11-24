@@ -93,18 +93,18 @@ $confusa_config = array(
 	'custom_mail_tpl'	=> '/var/lib/confusa/custom_tpl/',
 
 	/* For CA handling.
-	 * Legal modes are: CA_STANDALONE and CA_ONLINE
+	 * Legal modes are: CA_STANDALONE and CA_COMODO
 	 *
 	 * CA_STANDALONE: Use locally installed CA-certs to sign certificate signing
 	 * requests with the openssl version running on the server
 	 *
-	 * CA_ONLINE: Send the CSRs to the Comodo API with a HTTP POST message. There
+	 * CA_COMODO: Send the CSRs to the Comodo API with a HTTP POST message. There
 	 * it will be signed using the NREN's credentials and once it is processed,
 	 * downloaded again using the HTTP POST API.
 	 * */
 	'ca_mode'		=> CA_STANDALONE,
 
-		/* ========= Config flags applying only for ONLINE mode ==========
+		/* ========= Config flags applying only for COMODO-CA ==========
 		 * ===============================================================
          * if 'capi_test' is to true, Confusa will
 		 * 		- clutter all certificate subjects with 'TEST' strings
@@ -115,7 +115,7 @@ $confusa_config = array(
         /* will encrypt the NREN-Comodo-account passwords in the DB with this key */
         'capi_enc_pw'                           => '',
 
-	/* ========= Config flags applying only for STANDALONE mode ==========
+	/* ========= Config flags applying only for STANDALONE CA ==========
 	 * ===============================================================
 	 * The names should be self-explanatory. All paths are relative to the
 	 * install_path

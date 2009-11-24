@@ -56,7 +56,7 @@ class CP_RevokeCertificate extends Content_Page
 						Framework::error_output("Revoke Certificate: Errors with parameters, not set properly");
 					} elseif (!$this->checkRevocationPermissions($order_number)) {
 						Framework::error_output("You do not have the permission to revoke that certificate!");
-					} elseif (!$this->certManager->revoke_cert($order_number, $reason)) {
+					} elseif (!$this->ca->revokeCert($order_number, $reason)) {
 						Framework::error_output("Cannot revoke yet (" . htmlentities($order_number) .
 						                        ") for supplied reason: " .
 						                        htmlentities($reason));
@@ -65,7 +65,7 @@ class CP_RevokeCertificate extends Content_Page
 						                          htmlentities($order_number) .
 						                          ") successfully revoked.");
 
-						if (Config::get_config('ca_mode') === CA_ONLINE &&
+						if (Config::get_config('ca_mode') === CA_COMODO &&
 						    Config::get_config('capi_test') === true) {
 								Framework::message_output("Note that the revocation has only been simulated, " .
 									"because Confusa is in API-Test mode.");
@@ -289,7 +289,7 @@ class CP_RevokeCertificate extends Content_Page
 		}
 
 		if (!empty($subscriber)) {
-			$certs = $this->certManager->get_cert_list_for_persons($common_name, $subscriber);
+			$certs = $this->ca->getCertListForPersons($common_name, $subscriber);
 		}
 
 		if (count($certs) > 0) {
@@ -331,7 +331,7 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	private function revoke_certs($common_name, $reason)
 	{
-		if (Config::get_config('ca_mode') === CA_ONLINE &&
+		if (Config::get_config('ca_mode') === CA_COMODO &&
 		    Config::get_config('capi_test') === true) {
 			Framework::message_output("Please note that you are in Confusa's API " .
 			           "test mode. Revocation is only simulated!");
@@ -364,7 +364,7 @@ class CP_RevokeCertificate extends Content_Page
 
 		foreach($auth_key_list as $auth_key) {
 			try {
-				if (!$this->certManager->revoke_cert($auth_key, $reason)) {
+				if (!$this->ca->revokeCert($auth_key, $reason)) {
 					Framework::error_output("Could not revoke certificate properly.");
 				} else {
 					$num_certs_revoked = $num_certs_revoked + 1;
@@ -392,7 +392,7 @@ class CP_RevokeCertificate extends Content_Page
 	private function revoke_list($reason)
 	{
 
-		if (Config::get_config('ca_mode') === CA_ONLINE &&
+		if (Config::get_config('ca_mode') === CA_COMODO &&
 		    Config::get_config('capi_test') === true) {
 			Framework::message_output("Please note that you are in Confusa's API " .
 			           "test mode. Revocation is only simulated!");
@@ -422,7 +422,7 @@ class CP_RevokeCertificate extends Content_Page
 
 		foreach($auth_keys as $auth_key) {
 			try {
-				if (!$this->certManager->revoke_cert($auth_key, $reason)) {
+				if (!$this->ca->revokeCert($auth_key, $reason)) {
 					Framework::error_output("Could not revoke certificate " .
 					                        htmlentities($auth_key) . ".");
 				} else {
@@ -471,7 +471,7 @@ class CP_RevokeCertificate extends Content_Page
 
 		foreach($eppn_list as $eppn) {
 			$eppn = Input::sanitize($eppn);
-			$eppn_certs = $this->certManager->get_cert_list_for_persons($eppn, $subscriber);
+			$eppn_certs = $this->ca->getCertListForPersons($eppn, $subscriber);
 			$certs = array_merge($certs, $eppn_certs);
 		}
 
@@ -508,7 +508,7 @@ class CP_RevokeCertificate extends Content_Page
 	private function checkRevocationPermissions($auth_key)
 	{
 		try {
-			$info = $this->certManager->getCertInformation($auth_key);
+			$info = $this->ca->getCertInformation($auth_key);
 
 			if (is_null($info)) {
 				Framework::error_output("Certificate with the given auth_key/order-number " .

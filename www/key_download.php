@@ -26,14 +26,14 @@ if (isset($_GET['inspect_csr']) && $_GET['common_name']) {
       $person = new Person();
       $person->setEPPN($user);
 
-      if(Config::get_config('standalone')) {
-        $cm = new CertManager_Standalone($person);
+      if(Config::get_config('ca_mode') == CA_STANDALONE) {
+        $ca = new CA_Standalone($person);
       } else {
-        $cm = new CertManager_Online($person);
+        $ca = new CA_Comodo($person);
       }
 
       try {
-        $cert = $cm->get_cert($authvar);
+        $cert = $ca->getCert($authvar);
         echo $cert;
       } catch (ConfusaGenException $e) {
         echo $e->getMessage() . "<br />\n";

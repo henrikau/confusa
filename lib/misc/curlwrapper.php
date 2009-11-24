@@ -31,9 +31,9 @@ class CurlWrapper
         curl_close($ch);
 
 		if ($status != 0) {
-			throw new RemoteAPIException("Could not connect properly to remote API " .
-										"endpoint $url! Maybe the Confusa instance is misconfigured? " .
-										"Please contact an administrator!");
+			throw new ConfusaGenException("Could not connect properly to remote " .
+			                              "endpoint $url! Maybe the Confusa instance is misconfigured? " .
+			                              "Please contact an administrator!");
 		}
 
 		return $data;

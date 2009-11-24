@@ -6,7 +6,7 @@ abstract class Content_Page
 	private $title;
 	private $protected;
 	protected $tpl;
-	protected $certManager;
+	protected $ca;
 	protected $person;
 	protected $dictionary;
 	/**
@@ -20,7 +20,7 @@ abstract class Content_Page
 	{
 		$this->title = $title;
 		$this->protected = $protected;
-		$this->certManager = null;
+		$this->ca = null;
 		$this->dictionary = $dictionary;
 	}
 
@@ -28,22 +28,22 @@ abstract class Content_Page
 	{
 		unset($this->title);
 		unset($this->protected);
-		unset($this->certManager);
+		unset($this->ca);
 		unset($this->person);
 	}
 
-	public function setManager()
+	public function setCA()
 	{
 		if (!isset($this->person)) {
-			Framework::error_output("You are trying to set the certManager before person is set!");
+			Framework::error_output("You are trying to set the CA before person is set!");
 			return;
 		}
-		$this->certManager = CertManagerHandler::getManager($this->person);
+		$this->ca = CAHandler::getCA($this->person);
 	}
 
-	public function getManager()
+	public function getCA()
 	{
-		return $this->certManager;
+		return $this->ca;
 	}
 
 	public function setTpl(Smarty $tpl)
@@ -77,7 +77,7 @@ abstract class Content_Page
 	function pre_process($person)
 	{
 		$this->setPerson($person);
-		$this->setManager();
+		$this->setCA();
 
 		/* show the available languages in the template */
 		$available_languages = Config::get_config('language.available');

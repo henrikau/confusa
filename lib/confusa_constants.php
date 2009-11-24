@@ -11,7 +11,7 @@ class ConfusaConstants {
 	 * for certificate creation
 	 *
 	 * Probably you don't want to change them, since that will most likely break
-	 * online certificate signing. The Comodo API documentation can be found at
+	 * Comodo certificate signing. The Comodo API documentation can be found at
 	 *
 	 * http://secure.comodo.net/api/pdf/reseller/customclientcertificates/
 	 *
@@ -31,7 +31,8 @@ class ConfusaConstants {
 	public static $CAPI_PERSONAL_ID = '284';
 	/* certificate validity period */
 	public static $CAPI_VALID_DAYS = '395';
-	/* constants for the test-mode. These will go into the certificate subject in online mode */
+	/* constants for the test-mode. These will go into the certificate when
+	 * using the Comodo CA */
 	public static $CAPI_TEST_DC_PREFIX = 'TEST CERTIFICATE';
 	public static $CAPI_TEST_O_PREFIX = 'TEST UNIVERSITY ';
 	public static $CAPI_TEST_CN_PREFIX = '';

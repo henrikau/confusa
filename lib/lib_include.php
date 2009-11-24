@@ -5,7 +5,7 @@ define('LIB_DIR', dirname(dirname($_SERVER['SCRIPT_FILENAME'])) . '/lib');
 $path .= PATH_SEPARATOR . LIB_DIR . '/auth';
 $path .= PATH_SEPARATOR . LIB_DIR . '/exceptions';
 $path .= PATH_SEPARATOR . LIB_DIR . '/file';
-$path .= PATH_SEPARATOR . LIB_DIR . '/key';
+$path .= PATH_SEPARATOR . LIB_DIR . '/ca';
 $path .= PATH_SEPARATOR . LIB_DIR . '/misc';
 $path .= PATH_SEPARATOR . LIB_DIR . '/actors';
 $path .= PATH_SEPARATOR . LIB_DIR . '/framework';

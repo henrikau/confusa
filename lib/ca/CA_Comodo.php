@@ -1,25 +1,25 @@
 <?php
 declare(encoding = 'utf-8');
 require_once 'person.php';
-require_once 'cert_manager.php';
+require_once 'CA.php';
 require_once 'key_sign.php';
 require_once 'db_query.php';
 require_once 'mdb2_wrapper.php';
-require_once 'remote_api.php';
+require_once 'CGE_ComodoAPIException.php';
 require_once 'confusa_constants.php';
-require_once 'CGE_RemoteCredentialException.php';
+require_once 'CGE_ComodoCredentialException.php';
 require_once 'curlwrapper.php';
 
 /**
- * CertManager_Online. Remote extension for CertManager.
+ * CA_Comodo. Comodo signing extension for CA.
  *
- * Class for connecting to a remote CA (e.g. Comodo), uploading CSRs,
+ * Class for connecting to Comodo, uploading CSRs,
  * ordering certificates, listing certificates etc.
  *
  * PHP version 5
  * @author: Thomas Zangerl <tzangerl@pdc.kth.se>
  */
-class CertManager_Online extends CertManager
+class CA_Comodo extends CA
 {
     /* order number for communication with the remote API */
     private $order_number;
@@ -70,21 +70,21 @@ class CertManager_Online extends CertManager
 	} catch (DBStatementException $dbse) {
 		Logger::log_event(LOG_ALERT, "$errorMsg missing columns in account_map/nren_account_map_view");
 		$errorMsg .= "<br />The table does not have all required columns. Please contact operational support.";
-		throw new CGE_REmoteCredentialException($errorMsg);
+		throw new CGE_ComodoCredentialException($errorMsg);
 	} catch (DBQueryException $dbqe) {
 		if (is_null($nren) || $nren =="") {
 			Logger::log_event(LOG_NOTICE, "$errorMsg - Look for subscriber-map problems.");
 			$errorMsg .= "<br />NREN-name not properly set, cannot extract account-credentials.";
-			throw new CGE_REmoteCredentialException($errorMsg);
+			throw new CGE_ComodoCredentialException($errorMsg);
 		} else {
 			$errorMsg .= " unknown query-inconsistency";
 			Logger::log_event(LOG_NOTICE, $errorMsg);
-			throw new CGE_REmoteCredentialException($errorMsg);
+			throw new CGE_ComodoCredentialException($errorMsg);
 		}
 	}
         if (count($res) != 1) {
             Logger::log_event(LOG_NOTICE, "Could not extract the suitable remote CA credentials for NREN $nren!");
-            throw new CGE_RemoteCredentialException("Could not extract the suitable " .
+            throw new CGE_ComodoCredentialException("Could not extract the suitable " .
                            "remote CA credentials for NREN " . $this->person->getNREN() . "!<br />\n");
         }
 
@@ -253,7 +253,7 @@ class CertManager_Online extends CertManager
      * Sign the CSR identified by auth_key using the Online-CA's remote API
      * @throws ConfusaGenException
     */
-    public function sign_key($auth_key, $csr)
+    public function signKey($auth_key, $csr)
     {
         $this->capiUploadCSR($auth_key, $csr);
         $this->capiAuthorizeCSR();
@@ -318,12 +318,12 @@ class CertManager_Online extends CertManager
 
     /**
      * Return an array with all the certificates obtained by the person managed by this
-     * CertManager.
+     * CA.
      *
      * Don't include expired, revoked and rejected certificates in the list
-     * @throws RemoteAPIException
+     * @throws CGE_ComodoAPIException
      */
-    public function get_cert_list()
+    public function getCertList()
     {
 		if (!$this->cacheHasExpired()) {
 			$res = $this->cacheLookupList();
@@ -414,7 +414,7 @@ class CertManager_Online extends CertManager
      * 		- subjectDN
      * of the matched certificate.
      */
-    public function get_cert_list_for_persons($common_name, $org)
+    public function getCertListForPersons($common_name, $org)
     {
 
 		/* org-name *must* be set */
@@ -534,7 +534,7 @@ class CertManager_Online extends CertManager
      * @param $key The order-number or an auth_key that can be transformed to order_number
      * @throws ConfusaGenException
      */
-    public function get_cert($key)
+    public function getCert($key)
     {
         $key = $this->transformToOrderNumber($key);
 
@@ -572,11 +572,11 @@ class CertManager_Online extends CertManager
             /* potential error: response does not contain status code */
             if(is_numeric($error_parts[0])) {
 				$msg = $this->capiErrorMessage($error_parts[0], $error_parts[1]);
-				throw new RemoteAPIException("Received error message $data $msg\n");
+				throw new CGE_ComodoAPIException("Received error message $data $msg\n");
             } else {
               $msg = "Received an unexpected response from the remote API!n" .
                      "Maybe Confusa is not properly configured?\n";
-              throw new RemoteAPIException($msg);
+              throw new CGE_ComodoAPIException($msg);
             }
         }
         return $return_res;
@@ -589,9 +589,9 @@ class CertManager_Online extends CertManager
      * @param key The key identifying the certificate
      * @param reason A reason for revocation, as specified in RFC 5280
      *
-     * @throws RemoteAPIException if revocation fails
+     * @throws CGE_ComodoAPIException if revocation fails
      */
-    public function revoke_cert($key, $reason)
+    public function revokeCert($key, $reason)
     {
         $key = $this->transformToOrderNumber($key);
 
@@ -619,7 +619,7 @@ class CertManager_Online extends CertManager
 
         /* try to catch all kinds of errors that can happen when connecting */
         if ($data === FALSE) {
-            throw new RemoteAPIException("Could not connect to revoke-API! " .
+            throw new CGE_ComodoAPIException("Could not connect to revoke-API! " .
                                         "Check Confusa configuration!\n"
             );
         } else {
@@ -627,10 +627,10 @@ class CertManager_Online extends CertManager
 			$STATUS_OK = "0";
 
 			if (!is_numeric($error_parts[0])) {
-				throw new RemoteAPIException("Received an unexpected response from " .
-											"the remote API. Probably Confusa is " .
-											"misconfigured! Please contact an " .
-											"administrator!");
+				throw new CGE_ComodoAPIException("Received an unexpected response from " .
+				                                 "the remote API. Probably Confusa is " .
+				                                 "misconfigured! Please contact an " .
+				                                 "administrator!");
 			}
 
 			switch($error_parts[0]) {
@@ -647,7 +647,7 @@ class CertManager_Online extends CertManager
 				Logger::log_event(LOG_ERROR, "Revocation of certificate with " .
 				 "order_number $key failed! User contacted us from " .
 				 $_SERVER['REMOTE_ADDR']);
-				throw new RemoteAPIException("Received error message $data. $msg");
+				throw new CGE_ComodoAPIException("Received error message $data. $msg");
 				break;
 			}
 		}
@@ -673,16 +673,16 @@ class CertManager_Online extends CertManager
 		parse_str($data, $params);
 
 		if (!isset($params['errorCode'])) {
-			throw new RemoteAPIException("Response from Comodo API looks malformed! " .
-							"Maybe the Confusa instance is misconfigured? Please " .
-							"contact an administrator!");
+			throw new CGE_ComodoAPIException("Response from Comodo API looks malformed! " .
+			                                 "Maybe the Confusa instance is misconfigured? Please " .
+			                                 "contact an administrator!");
 		}
 
         if ($params['errorCode'] != 0) {
 			$msg = $this->capiErrorMessage($data['errorCode'], $data['errorMessage']);
-			throw new RemoteAPIException("Could not query information about " .
-				"certificate with key $key. Error was " . $data['errorMessage'] .
-				"\n\n$msg");
+			throw new CGE_ComodoAPIException("Could not query information about " .
+			                                 "certificate with key $key. Error was " .
+			                                 $data['errorMessage'] . "\n\n$msg");
 		}
 
 		$info = array();
@@ -797,16 +797,16 @@ class CertManager_Online extends CertManager
 			$msg  = "Unexpected response from remote endpoint. ";
 			$msg .= "Perhaps some configuration-switch is not properly set.";
 			$msg .= "Server gave no error-code.";
-			throw new RemoteAPIException($msg);
+			throw new CGE_ComodoAPIException($msg);
         }
 
         if ($params['errorCode'] == "0") {
             return $params;
         } else {
 			$msg = $this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
-            throw new RemoteAPIException("Received error when trying to list " .
-                                         "certificates from the remote-API: " .
-                                         $params['errorMessage'] . $msg
+			throw new CGE_ComodoAPIException("Received error when trying to list " .
+			                                 "certificates from the remote-API: " .
+			                                 $params['errorMessage'] . $msg
             );
         }
     }
@@ -835,9 +835,9 @@ class CertManager_Online extends CertManager
 			return $params;
 		} else {
 			$msg = $this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
-			throw new RemoteAPIException("Received error when trying to list " .
-										"certificates from the remote-API: " .
-										$params['errorMessage'] . $msg);
+			throw new CGE_ComodoAPIException("Received error when trying to list " .
+			                                 "certificates from the remote-API: " .
+			                                 $params['errorMessage'] . $msg);
 		}
 	} /* end capiGetOrgCertList */
 
@@ -907,15 +907,15 @@ class CertManager_Online extends CertManager
 			$msg .= " " . $params['errorItem'];
 		}
 		$this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
-		throw new RemoteAPIException($msg);
+		throw new CGE_ComodoAPIException($msg);
         }
 
         else {
 
             if (!isset($params['orderNumber'])) {
                 $msg = "Response looks malformed. Maybe there is a configuration " .
-                       "error in Confusa's online-CA configuration!";
-                throw new RemoteAPIException($msg);
+                       "error in Confusa's Comodo-CA configuration!";
+                throw new CGE_ComodoAPIException($msg);
             }
 
             $this->order_number = $params['orderNumber'];
@@ -1055,10 +1055,10 @@ class CertManager_Online extends CertManager
                    $this->order_number . $data . "\n";
 				   $error_parts = explode("\n", $data, 2);
 			$msg .= $this->capiErrorMessage($error_parts[0], $error_parts[1]);
-            throw new RemoteAPIException($msg);
+            throw new CGE_ComodoAPIException($msg);
         }
 
     } /* end capiAuthorizeCSR */
 
-} /* end class OnlineCAManager */
+} /* end class CA_Comodo */
 ?>

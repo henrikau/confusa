@@ -22,7 +22,7 @@ class CP_Accountant extends Content_Page
 	{
 		$res = false;
 
-		/*  we cannot call parent::pre_process here because CertManager
+		/*  we cannot call parent::pre_process here because CA
 		 *  will bomb if the account_map is not properly set. */
 		/* parent::pre_process($person); */
 		$this->setPerson($person);
@@ -31,7 +31,7 @@ class CP_Accountant extends Content_Page
 		 * are we going to update the account-map?
 		 */
 		/* If the caller is not a nren-admin or Confusa is not in online mode, we stop here */
-		if (!$this->person->isNRENAdmin() || Config::get_config('ca_mode') != CA_ONLINE) {
+		if (!$this->person->isNRENAdmin() || Config::get_config('ca_mode') != CA_COMODO) {
 			return false;
 		}
 
@@ -73,10 +73,10 @@ class CP_Accountant extends Content_Page
 			$this->tpl->assign('reason', 'You are not an NREN-admin');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
-		} else if (Config::get_config('ca_mode') != CA_ONLINE) {
+		} else if (Config::get_config('ca_mode') != CA_COMODO) {
 			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . "tried to access the accountant, " .
-					  "even though Confusa is not running in Online mode.");
-			$this->tpl->assign('reason', 'Confusa is not in online mode');
+					  "even though Confusa is not using the Comodo CA.");
+			$this->tpl->assign('reason', 'Confusa is not using Comodo CA');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
 		}

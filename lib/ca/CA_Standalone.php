@@ -1,7 +1,7 @@
 <?php
 
 require_once 'person.php';
-require_once 'cert_manager.php';
+require_once 'CA.php';
 require_once 'key_sign.php';
 require_once 'mdb2_wrapper.php';
 require_once 'db_query.php';
@@ -9,7 +9,7 @@ require_once 'pw.php';
 require_once 'cert_lib.php';
 require_once 'CGE_KeyRevokeException.php';
 /*
- * CertManager_Standalone Standalone-CA extension for CertManager.
+ * CA_Standalone Standalone-CA extension for CA.
  *
  * Class for signing CSRs with locally available CA certificates and storing, retrieving
  * and listing the issued certificates.
@@ -18,7 +18,7 @@ require_once 'CGE_KeyRevokeException.php';
  * @author: Henrik Austad <henrik.austad@uninett.no>
  * @author: Thomas Zangerl <tzangerl@pdc.kth.se>
  */
-class CertManager_Standalone extends CertManager
+class CA_Standalone extends CA
 {
 	/**
 	 * Verify if the subject DN matches the received sets of attributes.
@@ -27,9 +27,9 @@ class CertManager_Standalone extends CertManager
 	 *
 	 * @throws: KeySignException
 	 */
-	public function sign_key($auth_key, $csr)
+	public function signKey($auth_key, $csr)
 	{
-		if ($this->verify_csr($csr)) {
+		if ($this->verifyCSR($csr)) {
 			$cert_file_name	= tempnam("/tmp/", "REV_CERT_");
 			$cert_file = fopen($cert_file_name, "w");
 			fclose($cert_file);
@@ -108,7 +108,7 @@ class CertManager_Standalone extends CertManager
 					  " from ip ".$_SERVER['REMOTE_ADDR']);
 			throw new KeySignException("CSR subject verification failed!");
 		}
-	} /* end sign-key */
+	} /* end signKey */
 
     /**
      * Retrieve a list of the certificates associated with the managed person
@@ -116,7 +116,7 @@ class CertManager_Standalone extends CertManager
      *
      * @throws DBQueryException
      */
-    public function get_cert_list()
+    public function getCertList()
     {
         $res = MDB2Wrapper::execute("SELECT cert, auth_key, cert_owner, valid_untill FROM cert_cache WHERE ".
 				    "cert_owner=? AND valid_untill > current_timestamp()",
@@ -133,7 +133,7 @@ class CertManager_Standalone extends CertManager
 		$res[$key]['serial'] = $tmp;
 	}
         return $res;
-    } /* end get_cert_list */
+    } /* end getCertList */
 
 
     /**
@@ -148,7 +148,7 @@ class CertManager_Standalone extends CertManager
      * @return Array with results with entries of the form
      *          array('cert_owner','auth_key')
      */
-    public function get_cert_list_for_persons($common_name, $org) {
+    public function getCertListForPersons($common_name, $org) {
 	    $cn		= $common_name;
 	    $query	= "SELECT * FROM cert_cache WHERE valid_untill > current_timestamp() AND cert_owner LIKE :cn AND organization = :org";
 	    $params	= array('text', 'text');
@@ -163,14 +163,14 @@ class CertManager_Standalone extends CertManager
 		    return null;
 	    }
 	    return $res;
-    }
+    } /* end getCertListForPersons */
 
     public function signBrowserCSR($csr, $browser)
     {
 	    /* FIXME */
 	    Framework::error_output("I am sorry, but this functionality is not yet implemented for standalone.");
 	    return null;
-    }
+    } /* end signBrowserCSR */
 
 
     /**
@@ -195,14 +195,14 @@ class CertManager_Standalone extends CertManager
 		    return false;
 	    }
 	    return false;
-    }
+    } /* end pollCertStatus */
 
     /*
      * Get the certificate bound to key $key from the database
      *
      * @throws ConfusaGenException
      */
-    public function get_cert($key)
+    public function getCert($key)
     {
         $res = MDB2Wrapper::execute("SELECT cert FROM cert_cache WHERE auth_key=? AND cert_owner=? AND valid_untill > current_timestamp()",
                                       array('text', 'text'),
@@ -220,7 +220,7 @@ class CertManager_Standalone extends CertManager
             $msg .= "Queried for key $key and CN $cn\n";
             throw new DBQueryException($msg);
         }
-    }
+    } /* end getCert */
 
 	/**
 	 * Get the owner DN and the organization name for the certificate associated
@@ -243,13 +243,13 @@ class CertManager_Standalone extends CertManager
 		if (count($res) == 1) {
 			return $res[0];
 		}
-	}
+	} /* end getCertInformation */
 
     public function getCertDeploymentScript($key, $browser)
     {
 	/* TODO: I am feeling all stubby */
 	return "<script type=\"text/javascript\">var g_ccc=\"\"</script>";
-    }
+    } /* end getCertDeploymentScript */
 
     /**
      * deleteCertFromDB - delete a certificate from the database.
@@ -284,13 +284,13 @@ class CertManager_Standalone extends CertManager
 		    return false;
 	    }
 	    return true;
-    }
+    } /* end deleteCertFromDB */
 
     /*
      * Revoke the certificate identified by key
      * Key is an auth_var
      */
-    public function revoke_cert($key, $reason)
+    public function revokeCert($key, $reason)
     {
 	    /* TODO: method stub
 	     *
@@ -317,11 +317,11 @@ class CertManager_Standalone extends CertManager
 	    }
 
 	    return true;
-    } /* end revoke_cert() */
+    } /* end revokeCert() */
 
 
     /**
-     * verify_csr()
+     * verifyCSR()
      *
      * This function will test the CSR against several fields.
      * It will test the subject against the person-attributes (which in turn are
@@ -330,7 +330,7 @@ class CertManager_Standalone extends CertManager
      * @param String The CSR in base64 PEM format
      * @return Boolean True if valid CSR
      */
-  private function verify_csr($csr)
+  private function verifyCSR($csr)
   {
        /* by default, the CSR is valid, we then try to prove that it's invalid
         *
@@ -362,8 +362,8 @@ class CertManager_Standalone extends CertManager
 		       return false;
                }
 	       return true;
-    } /* end verify_csr */
+    } /* end verifyCSR */
 
 
-} /* end class CertManager_Standalone */
+} /* end class CA_Standalone */
 ?>

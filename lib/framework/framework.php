@@ -12,12 +12,12 @@ require_once 'person.php';
 require_once 'logger.php';
 require_once 'content_page.php';
 require_once 'output.php';
-require_once 'CGE_RemoteCredentialException.php';
+require_once 'CGE_ComodoCredentialException.php';
 
 /* global config */
 require_once 'config.php';
-require_once 'cert_manager_online.php';
-require_once 'cert_manager_standalone.php';
+require_once 'CA_Comodo.php';
+require_once 'CA_Standalone.php';
 
 try {
 	require_once Config::get_config('smarty_path') . 'Smarty.class.php';
@@ -210,7 +210,7 @@ class Framework {
 		$this->tpl->assign('person',	$this->person);
 		$this->tpl->assign('subscriber',$this->person->getSubscriber());
 		$this->tpl->assign('nren',	$this->person->getNREN());
-		$this->tpl->assign('is_online', (Config::get_config('ca_mode') === CA_ONLINE));
+		$this->tpl->assign('is_online', (Config::get_config('ca_mode') === CA_COMODO));
 
 		/* If we have a renderError, do not allow the user-page to
 		 * render, otherwise, run it, and catch all unhandled exception

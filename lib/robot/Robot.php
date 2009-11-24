@@ -25,21 +25,21 @@ class Robot
 	 */
 	static function createCertList($admin)
 	{
-		$cm = CertManagerHandler::getManager($admin);
-		$list = $cm->get_cert_list_for_persons("%", $admin->getSubscriber()->getOrgName());
+		$ca = CAHandler::getCA($admin);
+		$list = $ca->getCertListForPersons("%", $admin->getSubscriber()->getOrgName());
 		$res = array();
 		$found_certs = 0;
 		$found_users = 0;
 		if (isset($list) && is_array($list) && count($list) > 0) {
 			foreach($list as $value) {
-				/* cert is for instance not set in online mode */
+				/* cert is for instance not set when using the Comodo CA */
 				if (isset($value['cert'])) {
 					$cert = openssl_x509_parse(openssl_x509_read($value['cert']), false);
 					$eppn_array = explode(" ", $value['cert_owner']);
 					$eppn = $eppn_array[count($eppn_array) - 1];
 				} else {
 					$cert = array();
-					/* online has the full DN as the cert_owner */
+					/* Comodo has the full DN as the cert_owner */
 					$cert['name'] = $value['cert_owner'];
 					$cert_name = $cert['name'];
 					$cn_start = stripos($cert_name, 'CN=');
@@ -82,7 +82,7 @@ class Robot
 	static function parseRevList($list, $admin)
 	{
 		$revokedUsers = array();
-		$cm = CertManagerHandler::getManager($admin);
+		$ca = CAHandler::getCA($admin);
 		foreach ($list as $value) {
 
 			/* Get eppn from value*/
@@ -92,12 +92,12 @@ class Robot
 				break;
 			}
 			/* Search after matches for cn and subscriber */
-			$list = $cm->get_cert_list_for_persons($eppn, $admin->getSubscriber()->getOrgName());
+			$list = $ca->getCertListForPersons($eppn, $admin->getSubscriber()->getOrgName());
 			$count = 0;
 			if (count($list) > 0) {
 				foreach ($list as $key => $value) {
 					try {
-						if ($cm->revoke_cert($value['auth_key'], "privilegeWithdrawn")) {
+						if ($ca->revokeCert($value['auth_key'], "privilegeWithdrawn")) {
 							$count = $count + 1;
 						}
 
