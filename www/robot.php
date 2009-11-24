@@ -160,27 +160,30 @@ class CP_Robot_Interface extends Content_Page
 
 		/* Get subscriber,  nren and admin_id */
 		try {
-			$query  = "SELECT anj.admin AS admin, anj.admin_id AS aid, ";
-			$query .= "anj.name AS nren_name, s.name AS subscriber_name, ";
-			$query .= "s.subscriber_id, anj.nren_id AS nren_id FROM  ";
-			$query .= "(SELECT * FROM ";
-			$query .= "admins a LEFT JOIN nrens n ON n.nren_id = a.nren WHERE ";
-			$query .= "subscriber IS NOT NULL) anj left join subscribers s ON ";
-			$query .= "s.subscriber_id = anj.subscriber ";
-			$query .= "WHERE admin=? AND s.name=? AND anj.name=?";
+			$query = "SELECT * FROM admins WHERE admin=? AND subscriber=? AND nren=? ";
 			$params = array('text', 'text', 'text');
 			$data = array($this->person->getEPPN(),
-				      $this->person->getSubscriber()->getOrgName(),
-				      $this->person->getNREN());
+				      $this->person->getSubscriber()->getDBID(),
+				      $this->person->getNREN()->getID());
 			$res = MDB2Wrapper::execute($query, $params, $data);
+
 			switch(count($res)) {
+
 			case 0:
+				/*
+				 * Strange error. User is admin, yet not admin.
+				 *
+				 * Fixme: better error-reporting here, even
+				 * though we cannot do much about it.
+				 */
 				$error_code = strtoupper(create_pw(8));
 				$error_msg  = "[error_code: $error_code]<br /><br />\n";
 				$log_msg  = "[$error_code] ";
-				$admin_query_res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND admin_level=? AND subscriber IS NULL",
-									array('text', 'text', 'text'),
-									array($this->person->getEPPN(), SUBSCRIBER_ADMIN));
+
+				$query	= "SELECT * FROM admins WHERE admin=? AND admin_level=? AND subscriber IS NULL";
+				$params = array('text', 'text');
+				$data	= array($this->person->getEPPN(), SUBSCRIBER_ADMIN);
+				$admin_query_res = MDB2Wrapper::execute($query, $params, $data);
 				if (count($admin_query_res) != 0) {
 					$error_msg .= "The subscriber-admin (".$this->person->getEPPN().") is not properly connected ";
 					$error_msg .= "to any database. This is due to a database inconsistency ";
@@ -198,6 +201,7 @@ class CP_Robot_Interface extends Content_Page
 
 					$log_msg   .= "Subscriber " . $this->person->getSubscriber()->getOrgName();
 					$log_msg   .= " is not properly configured in the database.";
+
 				}
 				$error_msg .= "<br /><br />\nThis event has been logged, please contact operational support (provide the error-code) ";
 				$error_msg .= "to resolve this issue.";
@@ -206,9 +210,9 @@ class CP_Robot_Interface extends Content_Page
 
 				return false;
 			case 1:
-				$admin_id	= $res[0]['aid'];
-				$nren_id	= $res[0]['nren_id'];
-				$subscriber_id	= $res[0]['subscriber_id'];
+				$admin_id	= $res[0]['admin_id'];
+				$nren_id	= $res[0]['nren'];
+				$subscriber_id	= $res[0]['subscriber'];
 				break;
 			default:
 				/* FIXME: DB-inconsistency */
