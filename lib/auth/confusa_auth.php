@@ -107,7 +107,9 @@ abstract class Confusa_Auth
 			/* go through and add the relevant entitlement-parts.
 			 * TODO: cleanup this and move to person::setEntitlement()
 			 */
-			$entitlements = $attributes[$map['entitlement']];
+			if (!is_null($map['entitlement'])) {
+				$entitlements = $attributes[$map['entitlement']];
+			}
 			if (isset($entitlements)) {
 				$namespace = Config::get_config('entitlement_namespace');
 				foreach ($entitlements as $key => $entitlementValue) {
