@@ -122,26 +122,7 @@ class CP_Admin extends Content_Page
 		}
 
 		if ($this->person->isNRENAdmin()) { /* NREN admin display */
-			$admins=$this->getNRENAdmins($this->person->getNREN());
-			$subscribers=$this->getSubscribers($this->person->getNREN());
-			$current_subscriber = "";
-
-			/* Are we looking at a particular subscriber? */
-			if (isset($_POST['subscriber'])) {
-				$current_subscriber = Input::sanitizeText($_POST['subscriber']);
-			} else if (count($subscribers) > 0) {
-				$current_subscriber = $subscribers[0];
-			}
-
-			if (!empty($current_subscriber)) {
-				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber, SUBSCRIBER_ADMIN);
-				$this->tpl->assign('subscriber', $current_subscriber);
-				$this->tpl->assign('subscriber_admins', $subscriber_admins);
-			}
-
-			$this->tpl->assign('nren_admins', $admins);
-			$this->tpl->assign('nren', $this->person->getNREN());
-			$this->tpl->assign('subscribers', $subscribers);
+			$this->processNRENAdmin();
 
 		} else if ($this->person->isSubscriberAdmin()) { /* subscriber admin display */
 			$subscriber_dn	= $this->person->getSubscriber()->getOrgName();
@@ -155,7 +136,6 @@ class CP_Admin extends Content_Page
 
 			/* Get all subscriber-admins */
 			$subscriber_admins = $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_ADMIN);
-			print_r($subscriber_admins);
 			$this->tpl->assign('subscriber', $subscriber_dn);
 			$this->tpl->assign('subscriber_admins', $subscriber_admins);
 
@@ -269,43 +249,6 @@ class CP_Admin extends Content_Page
 		return $subscribers;
 	}
 
-	/*
-	 * Get all the subscribers that belong to an NREN
-	 *
-	 * @param $nren The NREN for which the subscribers are to be returned
-	 */
-	private function getSubscribers($nren)
-	{
-		$query = "SELECT subscriber FROM nren_subscriber_view WHERE nren=?";
-
-		try {
-			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($nren));
-		} catch(DBStatementException $dbse) {
-			Framework::error_output("Cannot retrieve subscriber from database!<BR /> " .
-				"Probably wrong syntax for query, ask an admin to investigate." .
-				"Server said: " . htmlentities($dbse->getMessage()));
-			return null;
-		} catch(DBQueryException $dbqe) {
-			Framework::error_output("Query failed. This probably means that the values passed to the "
-								. "database are wrong. Server said: " .
-								htmlentities($dbqe->getMessage()));
-			return null;
-		}
-
-		$subscribers = array();
-
-		if (count($res) > 0) {
-
-			foreach($res as $row) {
-				$subscribers[] = $row['subscriber'];
-			}
-		}
-
-		return $subscribers;
-	}
-
 	/**
 	 * addNRENAdmin() add a new NREN administrator to the admin-table.
 	 *
@@ -355,6 +298,45 @@ class CP_Admin extends Content_Page
 			return;
 		}
 	} /* end addNRENAdmin() */
+
+	/**
+	 * Render the page for a NREN-admin
+	 */
+	private function processNRENAdmin()
+	{
+			$admins=$this->getNRENAdmins($this->person->getNREN());
+
+			try {
+				$subscribers = $this->person->getNREN()->getSubscriberList();
+			} catch (DBQueryException $dbqe) {
+				Framework::error_output("Cannot retrieve subscriber from database!<br /> " .
+				                        "Probably wrong syntax for query, ask an admin to investigate." .
+				                        "Server said: " . htmlentities($dbse->getMessage()));
+			} catch (DBStatementException $dbse) {
+				Framework::error_output("Query failed. This probably means that the values passed to the "
+				                        . "database are wrong. Server said: " .
+				                        htmlentities($dbqe->getMessage()));
+			}
+
+			$current_subscriber = "";
+
+			/* Are we looking at a particular subscriber? */
+			if (isset($_POST['subscriber'])) {
+				$current_subscriber = Input::sanitizeText($_POST['subscriber']);
+			} else if (count($subscribers) > 0) {
+				$current_subscriber = $subscribers[0]->getIdPName();
+			}
+
+			if (!empty($current_subscriber)) {
+				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber, SUBSCRIBER_ADMIN);
+				$this->tpl->assign('subscriber', $current_subscriber);
+				$this->tpl->assign('subscriber_admins', $subscriber_admins);
+			}
+
+			$this->tpl->assign('nren_admins', $admins);
+			$this->tpl->assign('nren', $this->person->getNREN());
+			$this->tpl->assign('subscribers', $subscribers);
+	}
 
 	/**
 	 * addSubscriberAdmin()	Add a new subscriber admin to the table
