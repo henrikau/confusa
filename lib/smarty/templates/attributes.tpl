@@ -177,7 +177,15 @@
       <tr>
 	<td align="right"><input type="reset" value="reset"/></td>
 	<td align="right">
-	  <input type="submit" value="update map" onclick="return confirm('\tAre you sure?\n\nThis will potentially affect all users affiliated with NREN {$person->getNREN()|escape}!')" />
+	  {assign var='msg' value='Are you sure?\n\nThis will potentially affect all users affiliated with'}
+	  <input type="submit"
+		 value="update map"
+		 {if $person->isNRENAdmin()}
+		 onclick="return confirm('{$msg} NREN {$nren->getName()|escape}')" />
+		 {else}
+		 onclick="return confirm('{$msg} Subscriber {$subscriber->getOrgName()|escape}')" />
+	  {/if}
+
 	</td>
       </tr>
     </table>
