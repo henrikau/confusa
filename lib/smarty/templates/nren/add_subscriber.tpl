@@ -240,7 +240,7 @@
       </tr>
       <tr>
 	<td><font color="gray"><i>Subscriber state:</i></font></td>
-	<td>{$nren->createSelectBox('', null, 'state')}</td>
+	<td>{html_options output=$org_states values=$org_states selected=$subscriber->getState() name=state}</td>
       </tr>
 
       <tr><td><div class="spacer"></td><td></td></tr>

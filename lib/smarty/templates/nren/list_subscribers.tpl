@@ -13,7 +13,7 @@
     your TCS eScience Personal service.
     {*
     FIXME:
-    what about person cert. portal, should not mention "eSience" here
+    what about person cert. portal, should not mention "eScience" here
     then.
     *}
   </p>
@@ -63,19 +63,55 @@
 
   {foreach from=$subscriber_list item=subscriber}
   <table>
-    <tr>
-      {assign value=$nren->format_subscr_on_state($subscriber->getState()) var=style}
+      {if $subscriber->getState() == "unsubscribed"}
+           <tr style="color: gray; font-weight: bold">
+			{$subscriber->getDBID()|escape}
+	  {elseif $subscriber->getState() == "suspended"}
+			<tr style="color: red; font-weight: bold">
+	  {elseif $subscriber->getState() == "subscribed"}
+			<tr style="font-style: italic">
+	  {/if}
 
-      {* Show the delete-subscriber button *}
-      <td style="width: 25px">{$nren->delete_button('subscriber', $subscriber->getIdPName(), $subscriber->getDBID())}</td>
+	    {* Show the delete-subscriber button *}
+      <td style="width: 25px">
+		<form action="" method="post">
+		<div>
+			<input type="hidden" name="subscriber" value="delete" />
+			<input type="hidden" name="name" value="{$subscriber->getIdPName()|escape}" />
+			<input type="hidden" name="id" value="{$subscriber->getDBID()|escape}" />
 
-      <td style="width: 25px">{$nren->info_button('subscriber', $subscriber->getIdPName(), $subscriber->getDBID())}</td>
+			{if $subscriber->getIdPName() == $self_subscriber}
+				<input type="image" name="delete" title="Delete"
+				       onclick="return confirm('You are about to delete your OWN INSTITUTION ({$subscriber->getOrgName()})!\n          Are you sure about that?')"
+				       value="delete" src="graphics/delete.png"
+				       alt="delete" />
+			{else}
+				<input type="image" name="delete" title="Delete"
+				       value="delete" src="graphics/delete.png"
+				       alt="delete" />
+			{/if}
+		</div>
+		</form>
+     </td>
 
-      <td style="width: 70px; {$style}">
-	{$subscriber->getDBID()|escape}
-      </td>
-      <td style="width: 200px; {$style}">
-	{$subscriber->getIdPName()|escape}
+      <td style="width: 25px">
+		<form action="" method="post">
+			<div>
+			<input type="hidden" name="subscriber" value="info" />
+			<input type="hidden" name="name" value="{$subscriber->getIdPName()|escape}" />
+			<input type="hidden" name="id" value="{$subscriber->getDBID()|escape}" />
+			<input type="image" name="information" title="Information"
+			       value="info" src="graphics/information.png"
+			       alt="Information about {$subscriber->getIdPName()|escape}" />
+			</div>
+		</form>
+	</td>
+
+	  <td style="width: 70px">
+		{$subscriber->getDBID()|escape}
+	  </td>
+	  <td style="width: 200px">
+		{$subscriber->getIdPName()|escape}
 
 	{if $subscriber->getIdPName() == $self_subscriber}
 	<span title="Your own institution" style="cursor:help">(*)</span>
@@ -87,7 +123,7 @@
 			  <div>
 				<input type="hidden" name="subscriber" value="editState" />
 				<input type="hidden" name="id" value="{$subscriber->getDBID()}" />
-				{$nren->createSelectBox($subscriber->getState(),	null, state)}
+				{html_options output=$org_states values=$org_states selected=$subscriber->getState() name=state}
 				<input type="submit" class="button"
 				value="Update state" />
 			  </div>
@@ -205,8 +241,7 @@
 
       <tr>
 	<td align="right" style="padding-right: 10px">State</td>
-	<td>{$nren->createSelectBox($subscriber->getState(),	null,
-	state)}</td>
+	<td>{html_options output=$org_states values=$org_states selected=$subscriber->getState() name=state}</td>
       </tr>
 
       <tr>

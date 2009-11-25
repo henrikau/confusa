@@ -14,7 +14,7 @@ class CP_NREN_Admin extends Content_Page
 	function __construct()
 	{
 		parent::__construct("Admin", true);
-		$this->org_states	= array('','subscribed', 'suspended', 'unsubscribed');
+		$this->org_states	= array('subscribed', 'suspended', 'unsubscribed');
 	}
 
 
@@ -160,6 +160,7 @@ class CP_NREN_Admin extends Content_Page
 		}
 
 		$this->tpl->assign('nrenName'		, $this->person->getNREN());
+		$this->tpl->assign('org_states'		, $this->org_states);
 
 		if (isset($_GET['target'])) {
 			switch(Input::sanitize($_GET['target'])) {
@@ -188,7 +189,7 @@ class CP_NREN_Admin extends Content_Page
 		} else {
 			/* get all info from database and publish to template */
 			$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
-			$this->tpl->assign('self_subscriber'	, $this->person->getSubscriber()->getOrgName());
+			$this->tpl->assign('self_subscriber'	, $this->person->getSubscriber()->getIdPName());
 			$this->tpl->assign('list_subscribers', true);
 		}
 
@@ -451,86 +452,6 @@ class CP_NREN_Admin extends Content_Page
 			Framework::error_output($msg);
 		}
 	} /* end getSubscribers */
-
-	public function format_subscr_on_state($state)
-	{
-		switch($state) {
-		case unsubscribed:
-			$styling = "color: gray; font-weight: bold;";
-			break;
-		case suspended:
-			$styling = "color: red; font-weight: bold;";
-			break;
-		case subscribed:
-			$styling .= "font-style: italic;";
-			break;
-		default:
-			break;
-		}
-
-		return $styling;
-	}
-
-	public function info_button($key, $subscriber, $subscriber_id)
-	{
-		if (!isset($key) || !isset($subscriber))
-			return;
-
-		if ($key === "" || $subscriber === "")
-			return"";
-		$res  = "<form action=\"\" method=\"post\">\n";
-		$res .= "<div>\n";
-		$res .= '<input type="hidden" name="' . htmlentities($key) . '" value="info" />' . "\n";
-		$res .= '<input type="hidden" name="name" value="' . htmlentities($subscriber) . "\" />\n";
-		$res .= "<input type=\"hidden\" name=\"state\" value=\"\" />\n"; /* don't need state to delete */
-		$res .= '<input type="hidden" name="id" value="' . htmlentities($subscriber_id) . "\" />\n";
-		$res .= "<input type=\"image\" name=\"information\" ";
-		$res .= "title=\"Information\" ";
-		$res .= "                 value=\"info\" src=\"graphics/information.png\"";
-		$res .= '                 alt="Information about ' . htmlentities($subscriber) . "\" />\n";
-		$res .= "</div>\n";
-		$res .= "</form>\n";
-		echo $res;
-	}
-	public function delete_button($key, $target, $id)
-	{
-		if (!isset($key) || !isset($target))
-			return;
-
-		if ($key === "" || $target === "")
-			return"";
-
-		$res  = "<form action=\"\" method=\"post\">\n";
-		$res .= "<div>\n";
-		$res .= '<input type="hidden" name="' . htmlentities($key) . '" value="delete" />' . "\n";
-		$res .= '<input type="hidden" name="name" value="' . htmlentities($target) . '" />' . "\n";
-		$res .= "<input type=\"hidden\" name=\"state\" value=\"\" />\n"; /* don't need state to delete */
-		$res .= '<input type="hidden" name="id" value="' . htmlentities($id) . '" />' . "\n";
-		$res .= "<input type=\"image\" name=\"delete\" ";
-		$res .= "title=\"Delete\" ";
-		/* warning upon attempted self-deletion */
-		if ($target === $this->person->getSubscriber()->getOrgName()) {
-			$res .= "onclick=\"return confirm('You are about to delete your OWN INSTITUTION (" . htmlentities($target) . ")!\\n";
-			$res .= "          Are you sure about that?')\"";
-		} else {
-			$res .= "onclick=\"return confirm('Delete entry with ID $id? (" . htmlentities($target) . ") ')\" ";
-		}
-
-		$res .= "                 value=\"delete\" src=\"graphics/delete.png\"";
-		$res .= "                 alt=\"delete\" />\n";
-		$res .= "</div>\n";
-		$res .= "</form>\n";
-		echo $res;
-	}
-
-	public function createSelectBox($active, $list = null, $name)
-	{
-		$arg_list = $list;
-		if (!isset($list))
-			$arg_list = $this->org_states;
-
-		return Output::create_select_box($active, $arg_list, $name);
-	} /* end createSelectBox */
 }
 
 
