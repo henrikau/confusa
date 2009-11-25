@@ -201,8 +201,8 @@ function createAdminPerson()
 		return null;
 	}
 	$person->setAuth(true);
-	$person->setSubscriberOrgName($res[0]['subscriber_name']);
-	$person->setNREN($res[0]['nren_name']);
+	$person->setNREN(new NREN($res[0]['nren_name']));
+	$person->setSubscriber(new Subscriber($res[0]['subscriber_name'], $person->getNREN()));
 	$person->setName($res[0]['admin_name']);
 	$person->setEmail($res[0]['admin_email']);
 
