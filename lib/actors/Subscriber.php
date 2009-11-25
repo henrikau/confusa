@@ -12,6 +12,7 @@ class Subscriber
 	private $responsible_email;
 	private $state;
 	private $comment;
+	private $preferredLanguage;
 
 	private $pendingChanges = false;
 
@@ -30,7 +31,7 @@ class Subscriber
 	 * @param String $idp_name The name of the subscriber returned by the IdP.
 	 * @return void
 	 */
-	function __construct($idp_name, $nren)
+	function __construct($idp_name, $nren, $dn_name=null, $org_state=null, $db_id=null)
 	{
 		if (is_null($nren)) {
 			$errorCode = create_pw(8);
@@ -39,11 +40,21 @@ class Subscriber
 			Logger::log_event(LOG_NOTICE, $msg);
 			throw new ConfusaGenException($msg);
 		}
-		$this->nren	= $nren;
-		$this->idp_name = trim(stripslashes($idp_name));
-		$this->valid	= $this->updateFromDB();
-		if ($this->valid) {
-			$this->getMap();
+
+		/* ugly hack to circumvent the missing constructor overloading of PHP5 */
+		if (isset($dn_name) && isset($org_state)) {
+			$this->nren = $nren;
+			$this->idp_name = $idp_name;
+			$this->setDNName($dn_name);
+			$this->state = $org_state;
+			$this->db_id = $db_id;
+		} else {
+			$this->nren	= $nren;
+			$this->idp_name = trim(stripslashes($idp_name));
+			$this->valid	= $this->updateFromDB();
+			if ($this->valid) {
+				$this->getMap();
+			}
 		}
 	}
 
@@ -187,6 +198,7 @@ class Subscriber
 		$this->setDNName(	$res[0]['dn_name']);
 		$this->setState(	$res[0]['org_state'],		false);
 		$this->setComment(	$res[0]['subscr_comment'],	false);
+		$this->setLanguage(	$res[0]['lang'],			false);
 
 		return true;
 	} /* end updateFromDB() */
@@ -204,7 +216,7 @@ class Subscriber
 		return $id === $this->db_id;
 	}
 
-	private function getDBID()
+	public function getDBID()
 	{
 		return $this->db_id;
 	}
@@ -378,6 +390,14 @@ class Subscriber
 			}
 		}
 	}
+	public function setLanguage($lang)
+	{
+		$this->preferredLanguage = $lang;
+	}
+	public function getLanguage()
+	{
+		return $this->preferredLanguage;
+	}
 	private function retrieveMap()
 	{
 		if (is_null($this->nren->getID())) {
@@ -414,21 +434,40 @@ class Subscriber
 		}
 	} /* end retrieveMap() */
 
+	/**
+	 * Synchronize the changes in the subscriber object to the database or
+	 * freshly store the subscriber in the DB
+	 *
+	 * @param $forcedSynch boolean if true, UPDATE the db even if no the object
+	 *                             is not explicitly marked as having changed
+	 * @throws ConfusaGenException INSERT/UPDATE of the subscriber failed for
+	 *                             some reason
+	 */
 	public function save($forcedSynch = false)
+	{
+		if (isset($this->db_id)) {
+			return $this->updateExistingSubscriber($forcedSynch);
+		} else {
+			return $this->storeNewSubscriber();
+		}
+	} /* end save */
+
+	private function updateExistingSubscriber($forcedSynch)
 	{
 		if ($this->pendingChanges || $forcedSynch) {
 			$query  = "UPDATE subscribers SET ";
 			$query .= "subscr_email=?, subscr_phone=?, ";
 			$query .= "subscr_resp_name=?, subscr_resp_email=?, ";
-			$query .= "org_state=?, subscr_comment=? ";
+			$query .= "org_state=?, subscr_comment=?, lang=? ";
 			$query .= "WHERE subscriber_id=?";
-			$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text');
+			$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
 			$data	= array($this->getEmail(),
 					$this->getPhone(),
 					$this->getRespName(),
 					$this->getRespEmail(),
 					$this->getState(),
 					$this->getComment(),
+					$this->getLanguage(),
 					$this->getDBID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);
@@ -447,7 +486,46 @@ class Subscriber
 			return true;
 		}
 		return false;
-	} /* end save */
+	}
+
+	/**
+	 * Store a newly constructed subscriber in the DB
+	 */
+	private function storeNewSubscriber()
+	{
+		/* find out the NREN first */
+		$query =  "INSERT INTO subscribers(name, nren_id, org_state, subscr_email,";
+		$query .= "subscr_phone, subscr_resp_name, subscr_resp_email, subscr_comment,";
+		$query .= "dn_name) VALUES(?,?,?,?,?,?,?,?,?)";
+		$params = array('text','text','text','text','text','text','text','text','text');
+		$data = array($this->idp_name,
+		              $this->nren->getID(),
+					  $this->state,
+					  $this->email,
+					  $this->phone,
+					  $this->responsible_name,
+					  $this->responsible_email,
+					  $this->comment,
+					  $this->dn_name);
+
+		try {
+			MDB2Wrapper::update($query,
+			                    $params,
+			                    $data);
+		} catch (DBStatementException $dbse) {
+			$msg =  "Cannot insert the new subscriber into the database. Make ";
+			$msg .= "sure the DB is properly configured. " . $dbse->getMessage();
+			throw new ConfusaGenException($msg);
+		} catch (DBQueryException $dbqe) {
+			$msg =  "Cannot insert the new subscriber into the database. Probably ";
+			$msg .= "an error with the supplied data. DB said: " . $dbqe->getMessage();
+			$msg .= ". Maybe a subscriber with that name already exists?";
+			throw new ConfusaGenException($msg);
+		}
+
+		$this->pendingChanges = false;
+		return true;
+	}
 
 	static function getSubscriberByID($id, $nren)
 	{
@@ -472,6 +550,5 @@ class Subscriber
 		}
 		return new Subscriber($res[0]['name'], $nren);
 	}
-
 } /* end class Subscriber */
 ?>
