@@ -153,13 +153,21 @@ class CP_RevokeCertificate extends Content_Page
 				/* check if the given subscriber is a legitimate subscriber
 				 * for the given NREN
 				 */
-				if (array_search($subscriber, $subscribers) === false) {
+				$isNRENSubscriber = false;
+				foreach ($subscribers as $nren_subscriber) {
+					if ($subscriber === $nren_subscriber->getOrgName()) {
+						$isNRENSubscriber = true;
+						break;
+					}
+				}
+
+				if ($isNRENSubscriber === false) {
 					Logger::log_event(LOG_NOTICE, "[nadm] Administrator for NREN " .
 						$this->person->getNREN() . ", contacting us from " .
 						$_SERVER['REMOTE_ADDR'] . " tried to revoke certificates for " .
 						"subscriber $subscriber, which is not part of the NREN!");
 					Framework::error_output("Subscriber " . htmlentities($subscriber) .
-					                        "is not part of your NREN!");
+					                        " is not part of your NREN!");
 					return;
 				}
 			} else {
@@ -173,7 +181,7 @@ class CP_RevokeCertificate extends Content_Page
 				if (!isset($subscriber) || $subscriber=="") {
 					echo "[DEBUG] ".__FILE__ . ":" . __LINE__;
 					echo " no subscriber set, getting the first available.<br />\n";
-					$subscriber = $subscribers[0];
+					$subscriber = $subscribers[0]->getOrgName();
 				}
 			}
 
@@ -217,12 +225,8 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	private function getNRENSubscribers($nren)
 	{
-		$query = "SELECT subscriber_dn FROM nren_subscriber_view WHERE nren=?";
-
 		try {
-			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($nren));
+			$subscribers = $nren->getSubscriberList();
 		} catch(DBStatementException $dbse) {
 			Framework::error_output("Cannot retrieve subscriber from database!<BR /> " .
 				"Probably wrong syntax for query, ask an admin to investigate." .
@@ -232,21 +236,6 @@ class CP_RevokeCertificate extends Content_Page
 			Framework::error_output("Query failed. This probably means that the values passed to the "
 								. "database are wrong. Server said: " . htmlentities($dbqe->getMessage()));
 			return null;
-		}
-
-		$subscribers = array();
-
-		if (count($res) > 0) {
-
-			if (Config::get_config('capi_test') === true) {
-				$prefix = ConfusaConstants::$CAPI_TEST_O_PREFIX;
-			} else {
-				$prefix = "";
-			}
-
-			foreach($res as $row) {
-				$subscribers[] = $prefix . $row['subscriber_dn'];
-			}
 		}
 
 		return $subscribers;
@@ -525,7 +514,7 @@ class CP_RevokeCertificate extends Content_Page
 				$subscribers = $this->getNRENSubscribers($this->person->getNREN());
 
 				foreach ($subscribers as $subscriber) {
-					if ($subscriber === $info['organization']) {
+					if ($subscriber->getOrgName() === $info['organization']) {
 						return true;
 					}
 				}
