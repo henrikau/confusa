@@ -93,10 +93,6 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 			case "nren":
 			case "eduPersonPrincipalName":
 				break;
-			case "organization":
-				if (!$isNRENAdmin) {
-					break;
-				}
 			default:
 				$res[] = $key;
 				break;
