@@ -100,9 +100,15 @@ abstract class Confusa_Auth
 			$map = $this->person->getMap();
 
 			$this->person->setEPPN($attributes[$map['eppn']][0]);
-			$this->person->setEPPNKey($map['eppn']);
-			$this->person->setName($cnPrefix . $attributes[$map['cn']][0]);
-			$this->person->setEmail($attributes[$map['mail']][0]);
+			if (!is_null($map['eppn'])) {
+				$this->person->setEPPNKey($map['eppn']);
+			}
+			if(!is_null($map['cn'])) {
+				$this->person->setName($cnPrefix . $attributes[$map['cn']][0]);
+			}
+			if (!is_null($map['mail'])) {
+				$this->person->setEmail($attributes[$map['mail']][0]);
+			}
 
 			/* go through and add the relevant entitlement-parts.
 			 * TODO: cleanup this and move to person::setEntitlement()
