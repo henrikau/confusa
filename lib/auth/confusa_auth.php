@@ -93,9 +93,14 @@ abstract class Confusa_Auth
 		$map = $this->person->getMap();
 		/* Normal mapping, this is what we want. */
 		if (isset($map) && is_array($map)) {
+
+			/* Now that we have the NREN-map, reiterate getMap() in
+			 * case we can find the subscriber-map. */
+			$this->person->addSubscriber($attributes[$map['epodn']][0]);
+			$map = $this->person->getMap();
+
 			$this->person->setEPPN($attributes[$map['eppn']][0]);
 			$this->person->setEPPNKey($map['eppn']);
-			$this->person->addSubscriber($attributes[$map['epodn']][0]);
 			$this->person->setName($cnPrefix . $attributes[$map['cn']][0]);
 			$this->person->setEmail($attributes[$map['mail']][0]);
 
