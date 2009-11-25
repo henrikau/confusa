@@ -23,28 +23,26 @@
     under <a href="?target=add">"Add new"</a>.
   </p>
   <p class="info">
-    A subscriber can be in one of three states:
-    <table>
+    A subscriber can be in one of three states:</p>
+    <table style="padding-bottom: 1em">
       <tr>
 	<td><b>Subscribed:</b></td>
-	<td width="10px"><div class="spacer"></div>
+	<td style="width: 10px"><div class="spacer"></div></td>
 	<td>Users can get certificates from the portal</td>
       </tr>
 
       <tr>
 	<td><b>Unsubscribed:</b></td>
-	<td><div class="spacer"></div>
+	<td><div class="spacer"></div></td>
 	<td>Not yet ready to issue certificates to theusers.</td>
       </tr>
 
       <tr>
 	<td><b>Suspended:</b></td>
-	<td><div class="spacer"></div>
+	<td><div class="spacer"></div></td>
 	<td>Users may not issue new certificates.</td>
       </tr>
     </table>
-  <br />
-  </p>
 
   <hr class="table" />
   <br />

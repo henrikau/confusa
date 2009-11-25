@@ -4,7 +4,7 @@
     <input type="hidden" name="subscriber" value="add" />
 
     <table width="90%">
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td colspan="2">
 	  <p class="info">
@@ -14,7 +14,7 @@
 	  </p>
 	</td>
       </tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
 
 
       {* ------------------------------------------------------ *}
@@ -47,7 +47,7 @@
 	  </p>
 	</td>
       </tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td>
 	  <font color="gray"><i>Attribute-name:</i></font>
@@ -59,9 +59,9 @@
       {if isset($foundUniqueName)}
 		<tr><td></td><td style="font-size: 0.8em; font-style: italic">e.g.: {$foundUniqueName|escape}</td></tr>
 	{/if}
-	  <tr><td><div class="spacer"></td><td></td></tr>
+	  <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2"><hr class="table"/><br /></td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
 
 
       {* ------------------------------------------------------ *}
@@ -86,7 +86,7 @@
 	  {/if}
 	</td>
 	</tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td><font color="gray"><i>/O=</i></font></td>
 
@@ -96,16 +96,16 @@
 	<td><input type="text" name="dn_name" /></td>
 	{/if}
       </tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2"><hr class="table"/><br /></td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
 
 
       {* ------------------------------------------------------ *}
       {* Contact information for subscriber			*}
       {* ------------------------------------------------------ *}
       <tr><td colspan="2"><h3>Contact Information for subscriber</h3></td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2">
 	  <p class="info">
 	    This information is used by both the NREN-staff to contact the
@@ -119,7 +119,7 @@
 	  </p>
 	</td>
       </tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td><font color="gray"><i>Contact email:</i></font></td>
 	<td><input type="text" name="subscr_email" /></td>
@@ -158,16 +158,16 @@
         technical contact mail
       </span>
       </td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2"><hr class="table"/><br /></td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
 
 
       {* ------------------------------------------------------ *}
       {* Comment						*}
       {* ------------------------------------------------------ *}
       <tr><td colspan="2"><h3>Arbitrary comment</h3></td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2">
 	  <p class="info">
 	    In case a general comment concerning the subscriber is needed, you
@@ -176,22 +176,22 @@
 	    subscribers, nor to end entities.
 	  </p>
 	</td>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td colspan="2">
 	  <textarea name="subscr_comment" rows="10" cols="60"></textarea>
 	  </td>
       </tr>
 
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2"><hr class="table"/><br /></td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
 
       {* ------------------------------------------------------ *}
       {* Subscriber state					*}
       {* ------------------------------------------------------ *}
       <tr><td colspan="2"><h3>Subscriber State</h3></td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2">
 	  <p class="info">
 	    The state describes how a subscriber is treated. At the moment you
@@ -199,41 +199,32 @@
 	  </p>
 	</td>
       </tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2">
-	  <dl>
+	  <dl style="padding-bottom: 1em">
 	    <dt><i><u>Subscribed:</u></i></dt>
-	    <dd>
-	      <p class="info">
+	    <dd class="info">
 		When a subscriber is in this state, the contract between
 		the NREN and subscriber is signed, the subscriber has
 		agreed to follow the requirements placed upon it in the
 		CP/CPS document etc. This state indicates that the
 		subscriber is ready to use Confusa.
-	      </p>
 	    </dd>
-	    <br />
 	    <dt><i><u>Unsubscribed:</u></i></dt>
-	    <dd>
-	      <p class="info">
+	    <dd class="info">
 		The subscriber has been added to the register of
 		Subscriber, but has not yet signed the contractual
 		agreements and can therefore not be elevated to state
 		"Subscribed".
-	      </p>
 	    </dd>
-	    <br />
 	    <dt><i><u>Suspended:</u></i></dt>
 	    <dd>
-	      <p class="info">
 		Due to violations of the terms in the contracts, all
 		activity for the subscriber has been ceased. No
 		certificates will be removed, but new will not be issued
 		for the users.Once the issues have been resolved, state
 		can be changed back to "Subscribed".
-	      </p>
-	    </dd>
-	    <br />
+		</dd>
 
 	  </dl>
 	</td>
@@ -243,9 +234,9 @@
 	<td>{html_options output=$org_states values=$org_states selected=$subscriber->getState() name=state}</td>
       </tr>
 
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2"><hr class="table"/><br /></td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td colspan="2">
 	  <p class="info">
@@ -255,7 +246,7 @@
 	  </p>
 	</td>
       </tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td><input type="reset" value="Clear the form" /></td>
 	<td><input type="submit" value="Add the subscriber" /></td>

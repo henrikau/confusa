@@ -29,7 +29,7 @@
 	{literal}
 	 <script type="text/javascript">
 		//<![CDATA[
-		document.write('<style type="text/css">.expcont{display:none}</style>');
+		document.write('<style type="text/css">.expcont{display:none}<\/style>');
 		//]]>
 	</script>
 	{/literal}
