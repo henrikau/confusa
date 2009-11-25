@@ -22,7 +22,7 @@ class CP_NREN_Admin extends Content_Page
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
-		/* If user is not subscirber- or nren-admin, we stop here */
+		/* If user is not subscriber- or nren-admin, we stop here */
 		if (!$this->person->isNRENAdmin())
 			return false;
 
@@ -124,12 +124,6 @@ class CP_NREN_Admin extends Content_Page
 			case 'info':
 				/* get info */
 				try {
-					$query  = "SELECT s.* FROM subscribers s LEFT JOIN nrens n ";
-					$query .= "ON n.nren_id = s.nren_id WHERE n.name=? AND s.subscriber_id=?";
-					$data = MDB2Wrapper::execute($query,
-								     array('text', 'text'),
-								     array($this->person->getNREN(), $id));
-					$this->tpl->assign('subscr_details', $data[0]);
 					$this->tpl->assign('subscriber_details', true);
 					$this->tpl->assign('subscriber_detail_id', $id);
 				} catch(Exception $e) {
@@ -166,7 +160,6 @@ class CP_NREN_Admin extends Content_Page
 			return;
 		}
 
-		$this->tpl->assign_by_ref('nren'	, $this);
 		$this->tpl->assign('nrenName'		, $this->person->getNREN());
 
 		if (isset($_GET['target'])) {
@@ -195,7 +188,6 @@ class CP_NREN_Admin extends Content_Page
 			}
 		} else {
 			/* get all info from database and publish to template */
-			$this->tpl->assign_by_ref('nren'	, $this);
 			$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
 			$this->tpl->assign('self_subscriber'	, $this->person->getSubscriber()->getOrgName());
 			$this->tpl->assign('list_subscribers', true);
@@ -225,22 +217,14 @@ class CP_NREN_Admin extends Content_Page
 	private function editSubscriber($id, $state, $email, $phone, $rname, $remail, $comment)
 	{
 		try {
-			$res_id = MDB2Wrapper::execute("SELECT nren_id FROM nrens WHERE name=?",
-						       array('text'),
-						       array($this->person->getNREN()));
-			if (count($res_id) < 1) {
-				Framework::error_output("Could not find your NREN! Something seems to be misconfigured.");
-			}
-			$nren_id = $res_id[0]['nren_id'];
-
-
-			$update  = "UPDATE subscribers SET ";
-			$update .= "org_state=?, subscr_email=?, subscr_phone=?, ";
-			$update .= "subscr_resp_email=?, subscr_resp_name=?, subscr_comment=? ";
-			$update .= "WHERE subscriber_id=? AND nren_id=?";
-			$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
-			$data = array($state, $email, $phone, $remail, $rname, $comment, $id, $nren_id);
-			MDB2Wrapper::update($update, $params, $data);
+			$subscriber = Subscriber::getSubscriberByID($id, $this->person->getNREN());
+			$subscriber->setState($state);
+			$subscriber->setEmail($email);
+			$subscriber->setPhone($phone);
+			$subscriber->setRespName($rname);
+			$subscriber->setRespEmail($remail);
+			$subscriber->setComment($comment);
+			$subscriber->save();
 
 			Logger::log_event(LOG_NOTICE, "Updated (full) information for subscriber $subscriber_id");
 
@@ -275,7 +259,6 @@ class CP_NREN_Admin extends Content_Page
 				       $subscr_responsible_name, $subscr_responsible_email,
 				       $subscr_comment)
 	{
-
 		/*
 		 * When we add a new subscriber, all attributes must be
 		 * set. Those that are not deemed critical are given a default
@@ -334,121 +317,25 @@ class CP_NREN_Admin extends Content_Page
 			}
 		}
 
-		/*
-		 * Find the NREN
-		 */
+		$newSubscriber = new Subscriber($db_name,
+								$nren,
+								$dn_name,
+								$org_state);
+
+		$newSubscriber->setEmail($subscr_email);
+		$newSubscriber->setPhone($subscr_phone);
+		$newSubscriber->setRespEmail($subscr_responsible_email);
+		$newSubscriber->setRespName($subscr_responsible_name);
+		$newSubscriber->setComment($subscr_comment);
+
 		try {
-			$res = MDB2Wrapper::execute("SELECT nren_id FROM nrens WHERE name=?",
-						    array('text'),
-						    array($nren));
-		} catch (DBStatementException $dbse) {
-			$log_msg  = __FILE__ . ":" . __LINE__ . " Error in query syntax.";
-			$msg .=	"$log_msg<BR />Server said: " . $dbse->getMessage();
-
-			Logger::log_event(LOG_NOTICE, $log_msg);
-			Framework::error_output($msg);
-			return false;
-		} catch (DBQueryException $dbqe) {
-			$log_msg  = __FILE__ . ":" . __LINE__ . " Query-error. Constraint violation in query?";
-			$msg .= "$log_msg<BR />Server said: " . $dbqe->getMessage();
-
-			Logger::log_event(LOG_NOTICE, $msg);
-			Framework::error_output($msg);
+			$newSubscriber->save();
+		} catch (ConfusaGenException $cge) {
+			Logger::log_event(LOG_NOTICE, $cge->getMessage());
+			Framework::error_output(htmlentities($cge->getMessage()));
 			return false;
 		}
 
-		switch (count($res)) {
-		case '0':
-			Framework::error_output("Your NREN is unknown to Confusa! " .
-						"Probably something is wrong with the configuration");
-			return false;
-		case '1':
-			break;
-		default:
-			$errorCode = create_pw(8);
-			$msg  = "[error-code $errorCode] Too many hits in the database. ";
-			$msg .= "This is due to a database anomality. Please contact operational support.";
-
-			Logger::log_event(LOG_ALERT, "[$errorCode] Duplicate entry for nren $nren in the database.");
-			Framework::error_output($msg);
-			return false;
-		}
-
-		/*
-		 * Make sure that the subscriber is a unique name. We must do
-		 * this after getting the NREN-id as we can have two identical
-		 * names under two different NRENs.
-		 */
-		try {
-			$check = MDB2Wrapper::execute("SELECT subscriber_id FROM subscribers WHERE name=? and nren_id = ?",
-						      array('text', 'text'),
-						      array($db_name, $res[0]['nren_id']));
-			if (count($check) > 0) {
-				Framework::error_output("Subscriber names must be unique per NREN! " .
-							"Found an existing subscriber with the name '" . htmlentities($db_name) . "' and " .
-							"id " . htmlentities($check[0]['subscriber_id']) . "!");
-				return false;
-			}
-
-			/**
-			 * The orgname in the DN must be globally unique, or otherwise we will have
-			 * certificates from different subscribers with the same org-name in the
-			 * DN
-			 */
-			$check2 = MDB2Wrapper::execute("SELECT name FROM subscribers WHERE dn_name= ?",
-							array('text'),
-							array($dn_name));
-			if (count($check2) > 0) {
-				Framework::error_output("Organization DN-names must be globally unique. " .
-							"The organization DN-name '" . htmlentities($dn_name) . "' is already assigned " .
-							"to organization '" . htmlentities($check2[0]['name']) . "'! Please configure " .
-							"a different name.");
-				return false;
-			}
-		} catch (DBStatementException $dbse) {
-			$msg = __FILE__ . ":" . __LINE__ . " syntax error in constraint check, server said: " . $dbse->getMessage();
-			Logger::log_event(LOG_NOTICE, $msg);
-			Framework::error_output($msg);
-			return false;
-		} catch (DBQueryException $dbqe) {
-			$msg = __FILE__ . ":" . __LINE__ . " cannot check naming constraints, due to problems with the data: " .
-				$dbqe->getMessage();
-			Logger::log_event(LOG_NOTICE, $msg);
-			Framework::error_output($msg);
-			return false;
-		}
-
-		/*
-		 * Finally, we are ready to insert into subscribers.
-		 *
-		 * By now, we should have the correct NREN-id and
-		 */
-		try {
-			$update_si  = "INSERT INTO subscribers ";
-			$update_si .= "(name, dn_name, nren_id, org_state, subscr_email, subscr_phone, ";
-			$update_si .= "subscr_resp_email, subscr_resp_name, subscr_comment) ";
-			$update_si .= "VALUES(?,?,?,?,?,?,?,?, ?)";
-			$params = array('text', 'text','text','text','text','text','text','text');
-			$data = array($db_name,	$dn_name, $res[0]['nren_id'],
-				      $org_state, $subscr_email, $subscr_phone,
-				      $subscr_responsible_name, $subscr_responsible_email,
-				      $subscr_comment);
-			MDB2Wrapper::update($update_si, $params, $data);
-
-		} catch (DBStatementException $dbse) {
-			$msg = __FILE__ . ":" . __LINE__ . " synatx error in update, server said: " . $dbse->getMessage();
-			Logger::log_event(LOG_NOTICE, $msg);
-			Framework::error_output($msg);
-			return false;
-		} catch (DBQueryException $dbqe) {
-			$msg = __FILE__ . ":" . __LINE__ . " Cannot add row, duplicate entry? " . $dbqe->getMessage();
-			Framework::error_output($msg);
-			Logger::log_event(LOG_NOTICE, $msg);
-			return false;
-		}
-
-		Logger::log_event(LOG_INFO, "Added the organization $db_name with " .
-				  "NREN $nren and state $org_state as a subscriber ");
 		return true;
 	} /* end addSubscriber() */
 
@@ -551,15 +438,7 @@ class CP_NREN_Admin extends Content_Page
 	private function getSubscribers()
 	{
 		try {
-			$query = "SELECT * FROM nren_subscriber_view WHERE nren=? ORDER BY subscriber ASC";
-			$res = MDB2Wrapper::execute($query, array('text'), array($this->person->getNREN()));
-			if (count($res) == 0)
-				return;
-			$result = array();
-			foreach($res as $row)
-				$result[] = array('subscriber' => $row['subscriber'],
-						  'org_state' => $row['org_state'],
-						  'subscriber_id' => $row['subscriber_id']);
+			return $this->person->getNREN()->getSubscriberList();
 		} catch (DBStatementException $dbse) {
 			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax. Verify that the query matches the database!";
 			Logger::log_event(LOG_NOTICE, $msg);
@@ -572,7 +451,6 @@ class CP_NREN_Admin extends Content_Page
 			$msg .= "<BR />Server said: " . $dbse->getMessage();
 			Framework::error_output($msg);
 		}
-		return $result;
 	} /* end getSubscribers */
 
 	public function format_subscr_on_state($state)
