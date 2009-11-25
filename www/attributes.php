@@ -107,7 +107,7 @@ class CP_Attributes extends Content_Page
 	{
 		$subscriber = $this->person->getSubscriber()->getIdPName();
 		$nren = $this->person->getNREN();
-		$nrenMap = AuthHandler::getNRENMap($nren);
+		$nrenMap = $nren->getMap();
 		$epodn = $nrenMap['epodn'];
 
 		$query = "SELECT n.nren_id, s.subscriber_id " .
