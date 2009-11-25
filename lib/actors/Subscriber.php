@@ -45,7 +45,7 @@ class Subscriber
 		if (isset($dn_name) && isset($org_state)) {
 			$this->nren = $nren;
 			$this->idp_name = $idp_name;
-			$this->setDNName($dn_name);
+			$this->dn_name = $dn_name;
 			$this->state = $org_state;
 			$this->db_id = $db_id;
 		} else {
@@ -133,7 +133,16 @@ class Subscriber
 	 */
 	public function getOrgName()
 	{
-		return $this->dn_name;
+		$dn_name = $this->dn_name;
+		/**
+		 * set the test prefix, if confusa is in 'capi_test' mode
+		 */
+		if (Config::get_config('capi_test') &&
+			Config::get_config('ca_mode') === CA_ONLINE) {
+				$dn_name = ConfusaConstants::$CAPI_TEST_O_PREFIX .
+				           $this->dn_name;
+		}
+		return $dn_name;
 	}
 
 	/**
@@ -379,15 +388,6 @@ class Subscriber
 	{
 		if(!is_null($DNName)) {
 			$this->dn_name = Input::sanitizeText($DNName);
-
-			/**
-			 * set the test prefix, if confusa is in 'capi_test' mode
-			 */
-			if (Config::get_config('capi_test') &&
-			    Config::get_config('ca_mode') === CA_ONLINE) {
-					$this->dn_name = ConfusaConstants::$CAPI_TEST_O_PREFIX .
-					                 $this->dn_name;
-			}
 		}
 	}
 	public function setLanguage($lang)
