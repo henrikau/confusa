@@ -83,7 +83,6 @@ class CP_NREN_Subs_Settings extends Content_Page
 			$this->tpl->assign('nrenInfo', $info);
 		} else {
 			$info = $this->person->getSubscriber()->getInfo();
-			$current_language = $info['lang'];
 			$this->tpl->assign('subscriberInfo', $info);
 		}
 
