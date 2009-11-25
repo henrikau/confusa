@@ -639,7 +639,7 @@ class Person{
 	    if (is_null($map)) {
 		    return $this->nren->getMap();
 	    }
-	    return null;
+	    return $map;
     }
 
     /**
