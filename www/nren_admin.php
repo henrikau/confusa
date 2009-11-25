@@ -15,7 +15,6 @@ class CP_NREN_Admin extends Content_Page
 	{
 		parent::__construct("Admin", true);
 		$this->org_states	= array('','subscribed', 'suspended', 'unsubscribed');
-		$this->org_name_cache	= array();
 	}
 
 
