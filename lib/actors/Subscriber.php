@@ -43,7 +43,7 @@ class Subscriber
 		$this->idp_name = trim(stripslashes($idp_name));
 		$this->valid	= $this->updateFromDB();
 		if ($this->valid) {
-			$this->getMap();
+			$this->hasMap = $this->retrieveMap();
 		}
 	}
 
@@ -395,12 +395,14 @@ class Subscriber
 			$res = MDB2Wrapper::execute($query, $params, $data);
 			switch(count($res)) {
 			case 0:
+				$this->hasMap	= false;
 				return false;
 			case 1:
 				$this->hasMap	= true;
-				$this->map	= $map[0];
-				break;
+				$this->map	= $res[0];
+				return true;
 			default:
+				$this->hasMap	= false;
 				$msg  = "Too many hits (" . count($res) . ") were found in the database. ";
 				$msg .= __CLASS__ . __FUNCTION__ . " gets confused. Aborting.";
 				Logger::log_event(LOG_NOTICE, $msg);
