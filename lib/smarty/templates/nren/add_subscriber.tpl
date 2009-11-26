@@ -183,6 +183,11 @@
 	<td><font color="gray"><i>HelpDesk URL:</i></font></td>
 	<td><input type="text" name="subscr_help_url" /></td>
       </tr>
+      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr>
+	<td><font color="gray"><i>HelpDesk Email:</i></font></td>
+	<td><input type="text" name="subscr_help_email" /></td>
+      </tr>
 
 
       <tr><td><div class="spacer"></td><td></td></tr>
