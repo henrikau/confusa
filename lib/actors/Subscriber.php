@@ -3,7 +3,7 @@ require_once 'mdb2_wrapper.php';
 
 class Subscriber
 {
-	private $dn_name;
+	private $org_name;
 	private $idp_name;
 	private $db_id;
 	private $email;
@@ -71,7 +71,7 @@ class Subscriber
 		if (Config::get_config('debug')) {
 			$res .= "db_id: "	. $this->db_id		. "<br />\n";
 			$res .= "idp_name: "	. $this->idp_name	. "<br />\n";
-			$res .= "dn_name: "	. $this->dn_name	. "<br />\n";
+			$res .= "org_name: "	. $this->org_name	. "<br />\n";
 			$res .= "email: "	. $this->email		. "<br />\n";
 			$res .= "phone: "	. $this->phone		. "<br />\n";
 			$res .= "responsible_email: "	. $this->responsible_email	. "<br />\n";
@@ -141,16 +141,15 @@ class Subscriber
 	 */
 	public function getOrgName()
 	{
-		$dn_name = $this->dn_name;
+		$res = $this->org_name;
 		/**
 		 * set the test prefix, if confusa is in 'capi_test' mode
 		 */
 		if (Config::get_config('capi_test') &&
-			Config::get_config('ca_mode') === CA_COMODO) {
-				$dn_name = ConfusaConstants::$CAPI_TEST_O_PREFIX .
-				           $this->dn_name;
+		    Config::get_config('ca_mode') === CA_COMODO) {
+			$res = ConfusaConstants::$CAPI_TEST_O_PREFIX . $res;
 		}
-		return $dn_name;
+		return $res;
 	}
 
 	/**
