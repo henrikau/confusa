@@ -76,6 +76,8 @@ class Subscriber
 			$res .= "phone: "	. $this->phone		. "<br />\n";
 			$res .= "responsible_email: "	. $this->responsible_email	. "<br />\n";
 			$res .= "responsible_name: "	. $this->responsible_name	. "<br />\n";
+			$res .= "subscriber_help_url: "	. $this->help_url	. "<br />\n";
+			$res .= "subscriber_help_email: "	. $this->help_email	. "<br />\n";
 		} else {
 			$res = $this->idp_name;
 		}
