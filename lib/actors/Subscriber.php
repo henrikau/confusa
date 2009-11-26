@@ -525,8 +525,7 @@ class Subscriber
 			$query  = "UPDATE subscribers SET ";
 			$query .= "subscr_email=?, subscr_phone=?, ";
 			$query .= "subscr_resp_name=?, subscr_resp_email=?, ";
-			$query .= "org_state=?, subscr_comment=?, lang=?, subscr_help_url=? ";
-			$query .= "org_state=?, subscr_comment=?, subscr_help_url=? ";
+			$query .= "org_state=?, subscr_comment=?, subscr_help_url=?, subscr_help_url=? ";
 			$query .= "WHERE subscriber_id=?";
 			$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
 			$data	= array($this->getEmail(),
@@ -537,6 +536,7 @@ class Subscriber
 					$this->getComment(),
 					$this->getLanguage(),
 					$this->getHelpURL(),
+					$this->getHelpEmail(),
 					$this->getDBID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);
