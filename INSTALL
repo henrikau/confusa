@@ -36,6 +36,7 @@ To install Confusa
 
      libapache2-php5
      php5-mysql
+     libphp_phpmailer
      PEAR::MDB2_mysql_driver (note: pear and MDB2_Mysql_Driver is
 			      available through the backports, but we
 			       refrain from using this here).
