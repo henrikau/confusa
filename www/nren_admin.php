@@ -130,15 +130,21 @@ class CP_NREN_Admin extends Content_Page
 				}
 				break;
 			case 'add':
-				$dn_name = $_POST['dn_name'];
-				if ($this->addSubscriber($db_name,
-							 $state,
-							 $dn_name,
-							 $subscr_email,
-							 $subscr_phone,
-							 $subscr_responsible_name,
-							 $subscr_responsible_email,
-							 $subscr_comment)) {
+				$subscriber = new Subscriber($_POST['db_name'], $this->person->getNREN());
+				if ($subscriber->isValid()) {
+					Framework::error_output("Cannot create new, already existing.");
+					break;
+				}
+				$subscriber->setOrgname($_POST['dn_name']);
+				$subscriber->setState($_POST['state']);
+				$subscriber->setEmail($_POST['subscr_email']);
+				$subscriber->setPhone($_POST['subscr_phone']);
+				$subscriber->setRespName($_POST['subscr_responsible_name']);
+				$subscriber->setRespEmail($_POST['subscr_responsible_email']);
+				$subscriber->setComment($_POST['subscr_comment']);
+				$subscriber->setHelpURL($_POST['subscr_help_url']);
+				$subscriber->setHelpEmail($_POST['subscr_help_email']);
+				if ($subscriber->create()) {
 					Framework::success_output("Added new subscriber " . htmlentities($dn_name) . " to database.");
 				}
 				break;
@@ -239,106 +245,6 @@ class CP_NREN_Admin extends Content_Page
 		}
 		return true;
 	} /* end editSubscriber */
-
-	/**
-	 * addSubscriber - add a new subscriber
-	 *
-	 * @param db_name String Name of subscriber exported by the IdP. This
-	 *			 must be a unique identifier.
-	 * @param org_state String The initial state to put the subscriber in.
-	 * @param dn_name String The name set by an NREN-admin for this
-	 *			 particular subscriber
-	 * @param subscr_email String
-	 * @param subscr_phone String
-	 * @param subscr_responsible_name String
-	 * @param subscr_responsible_email String
-	 * @param subscr_comment String
-	 */
-	private function addSubscriber($db_name, $org_state, $dn_name,
-				       $subscr_email, $subscr_phone,
-				       $subscr_responsible_name, $subscr_responsible_email,
-				       $subscr_comment)
-	{
-		/*
-		 * When we add a new subscriber, all attributes must be
-		 * set. Those that are not deemed critical are given a default
-		 * value (when they are unset, that is).
-		 */
-		if (!isset($db_name) || $db_name === "") {
-			Framework::error_output("Unique, exported orgname (from the IdP) is not set. ".
-						"We need this to create a unique key for the subscriber in the database.");
-			return false;
-		}
-		if (!isset($org_state) || $org_state === "") {
-			Framework::error_output("orgstate not set, this is required.!");
-			return false;
-		}
-		if (!isset($dn_name) || $dn_name === "") {
-			Framework::error_output("The orgname to use in the certificate is not set!");
-			return false;
-		}
-		if (!isset($subscr_email) || $subscr_email === "") {
-			Framework::error_output("Need a contact-address for the subscriber.");
-			return false;
-		}
-		if (!isset($subscr_phone) || $subscr_phone == "") {
-			$subscr_phone="";
-		}
-		if (!isset($subscr_responsible_name) || $subscr_responsible_name == "") {
-			Framework::error_output("Need a responsible person from the subscriber organization.");
-			return false;
-		}
-		if (!isset($subscr_responsible_email) || $subscr_responsible_email == "") {
-			$subscr_responsible_email = "";
-		}
-
-		if (!isset($subscr_comment) || $subscr_comment == "") {
-			$subscr_comment = "";
-		}
-
-		$nren = $this->person->getNREN();
-		if (!isset($nren) || $nren === "") {
-			Framework::error_output("nren not set!");
-			return false;
-		}
-
-
-		/*
-		 * Verify length and encoding of dn_name
-		 */
-		if ($this->grid_mode) {
-			$dn_name = Output::mapUTF8ToASCII($dn_name);
-			if (strlen($dn_name) > 62) {
-				$msg  = "Too long name for subscriber DN-name. ";
-				$msg .= "Maximum length is 64 characters. Yours were ";
-				$msg .= strlen($dn_name);
-				Framework::error_output($msg);
-				return false;
-			}
-		}
-
-		$newSubscriber = new Subscriber($db_name,
-								$nren,
-								$dn_name,
-								$org_state);
-
-		$newSubscriber->setEmail($subscr_email);
-		$newSubscriber->setPhone($subscr_phone);
-		$newSubscriber->setRespEmail($subscr_responsible_email);
-		$newSubscriber->setRespName($subscr_responsible_name);
-		$newSubscriber->setComment($subscr_comment);
-
-		try {
-			$newSubscriber->save();
-		} catch (ConfusaGenException $cge) {
-			Logger::log_event(LOG_NOTICE, $cge->getMessage());
-			Framework::error_output(htmlentities($cge->getMessage()));
-			return false;
-		}
-
-		return true;
-	} /* end addSubscriber() */
-
 
 	/**
 	 * delSubscriber - remove the subscriber from the NREN and Confusa.
