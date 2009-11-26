@@ -152,6 +152,27 @@ class Subscriber
 		return $res;
 	}
 
+	public function setOrgName($org_name)
+	{
+		if(!is_null($org_name)) {
+			if ($org_name === $this->org_name) {
+				return false;
+			}
+
+			$this->org_name = Input::sanitizeText($org_name);
+
+			/**
+			 * set the test prefix, if confusa is in 'capi_test' mode
+			 */
+			if (Config::get_config('capi_test') &&
+			    Config::get_config('ca_mode') === CA_ONLINE) {
+					$this->org_name = ConfusaConstants::$CAPI_TEST_O_PREFIX .
+					                 $this->org_name;
+			}
+			return true;
+		}
+		return false;
+	} /* end setOrgName() */
 	/**
 	 * getIdPName() Return the name of the Subscriber given by the IdP
 	 *
@@ -211,7 +232,7 @@ class Subscriber
 		$this->setPhone(	$res[0]['subscr_phone'],	false);
 		$this->setRespName(	$res[0]['subscr_resp_name'],	false);
 		$this->setRespEmail(	$res[0]['subscr_resp_email'],	false);
-		$this->setDNName(	$res[0]['dn_name']);
+		$this->setOrgName(	$res[0]['dn_name']);
 		$this->setState(	$res[0]['org_state'],		false);
 		$this->setComment(	$res[0]['subscr_comment'],	false);
 		$this->setLanguage(	$res[0]['lang'],		false);
@@ -453,12 +474,6 @@ class Subscriber
 		}
 		return $this->state;
 	}
-	private function setDNName($DNName)
-	{
-		if(!is_null($DNName)) {
-			$this->dn_name = Input::sanitizeText($DNName);
-		}
-	}
 	public function setLanguage($lang)
 	{
 		$this->preferredLanguage = $lang;
@@ -467,6 +482,7 @@ class Subscriber
 	{
 		return $this->preferredLanguage;
 	}
+
 	private function retrieveMap()
 	{
 		if (is_null($this->nren->getID())) {
