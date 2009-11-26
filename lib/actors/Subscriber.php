@@ -529,6 +529,45 @@ class Subscriber
 		return true;
 	}
 
+	public function create()
+	{
+		if ($this->isValid()) {
+			return false;
+		}
+		$query  = "INSERT INTO subscribers (name, dn_name, nren_id, ";
+		$query .= "org_state, subscr_email, subscr_phone, subscr_resp_email, ";
+		$query .= "subscr_resp_name, subscr_comment, subscr_help_url, subscr_help_email) ";
+		$query .= "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
+
+		$data = array($this->getIdPName(),
+			      $this->org_name,
+			      $this->nren->getID(),
+			      $this->getState(),
+			      $this->getEmail(),
+			      $this->getPhone(),
+			      $this->getRespEmail(),
+			      $this->getRespName(),
+			      $this->getComment(),
+			      $this->getHelpURL(),
+			      $this->getHelpEmail());
+		try {
+			MDB2Wrapper::update($query, $params, $data);
+			return true;
+		} catch (DBStatementException $dbse) {
+			$msg  = __CLASS__ . "::" . __FUNCTION__ . "(" . __LINE__ . ") ";
+			$msg .= "Cannot connect properly to database, some internal error. ";
+			$msg .= "Make sure the DB is configured correctly." . $dbse->getMessage();
+			throw new ConfusaGenException($msg);
+		} catch (DBQueryException $dbqe) {
+			$msg  = __CLASS__ . "::" . __FUNCTION__ . "(" . __LINE__ . ") ";
+			$msg .= "Cannot connect properly to database, ";
+			$msg .= "errors with supplied data.";
+			throw new ConfusaGenException($msg);
+		}
+		return false;
+	}
+
 	static function getSubscriberByID($id, $nren)
 	{
 		if (is_null($nren)) {
