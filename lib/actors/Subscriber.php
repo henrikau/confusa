@@ -459,32 +459,56 @@ class Subscriber
 	 */
 	public function save($forcedSynch = false)
 	{
-		if (isset($this->db_id)) {
-			return $this->updateExistingSubscriber($forcedSynch);
-		} else {
-			return $this->storeNewSubscriber();
+		if (!$this->isValid()) {
+			return false;
 		}
-	} /* end save */
 
-	private function updateExistingSubscriber($forcedSynch)
-	{
 		if ($this->pendingChanges || $forcedSynch) {
-			$query  = "UPDATE subscribers SET ";
-			$query .= "subscr_email=?, subscr_phone=?, ";
-			$query .= "subscr_resp_name=?, subscr_resp_email=?, ";
-			$query .= "org_state=?, subscr_comment=?, lang=? ";
-			$query .= "WHERE subscriber_id=?";
-			$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
-			$data	= array($this->getEmail(),
-					$this->getPhone(),
-					$this->getRespName(),
-					$this->getRespEmail(),
-					$this->getState(),
-					$this->getComment(),
-					$this->getLanguage(),
-					$this->getDBID());
+			$query = "UPDATE subscribers SET ";
+			if (!is_null($this->getEmail())) {
+				$query .= " subscr_email=:subscr_email, ";
+				$data['subscr_email'] = $this->getEmail();
+			}
+			if (!is_null($this->getPhone())) {
+				$query .= " subscr_phone=:subscr_phone, ";
+				$data['subscr_phone'] = $this->getPhone();
+			}
+			if (!is_null($this->getRespName())) {
+				$query .= "subscr_resp_name=:subscr_resp_name, ";
+				$data['subscr_resp_name'] = $this->getRespName();
+			}
+
+			if (!is_null($this->getRespEmail())) {
+				$query .= "subscr_resp_email=:subscr_resp_email, ";
+				$data['subscr_resp_email'] = $this->getRespEmail();
+			}
+			if (!is_null($this->getState())) {
+				$query .= "org_state=:org_state, ";
+				$data['org_state'] = $this->getState();
+
+			}
+			if (!is_null($this->getComment())) {
+				$query .= "subscr_comment=:subscr_comment, ";
+				$data['subscr_comment'] = $this->getComment();
+			}
+			if (!is_null($this->getLanguage())) {
+				$query .= "lang=:lang, ";
+				$data['lang'] = $this->getLanguage();
+			}
+			if (!is_null($this->getHelpURL())) {
+				$query .= "subscr_help_url=:subscr_help_url, ";
+				$data['subscr_help_url'] = $this->getHelpURL();
+			}
+			if (!is_null($this->getHelpEmail())) {
+				$query .= "subscr_help_email=:subscr_help_email, ";
+				$data['subscr_help_email'] = $this->getHelpEmail();
+			}
+			$query = substr($query, 0, -2);
+			$query .= " WHERE subscriber_id=:subscriber_id";
+			$data['subscriber_id'] = $this->getDBID();
+
 			try {
-				MDB2Wrapper::update($query, $params, $data);
+				MDB2Wrapper::update($query, null, $data);
 			} catch (DBStatementException $dbse) {
 				/* FIXME, better error-msg */
 				$msg  = "Cannot connect properly to database, some internal error. ";
@@ -500,46 +524,7 @@ class Subscriber
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Store a newly constructed subscriber in the DB
-	 */
-	private function storeNewSubscriber()
-	{
-		/* find out the NREN first */
-		$query =  "INSERT INTO subscribers(name, nren_id, org_state, subscr_email,";
-		$query .= "subscr_phone, subscr_resp_name, subscr_resp_email, subscr_comment,";
-		$query .= "dn_name) VALUES(?,?,?,?,?,?,?,?,?)";
-		$params = array('text','text','text','text','text','text','text','text','text');
-		$data = array($this->idp_name,
-		              $this->nren->getID(),
-					  $this->state,
-					  $this->email,
-					  $this->phone,
-					  $this->responsible_name,
-					  $this->responsible_email,
-					  $this->comment,
-					  $this->dn_name);
-
-		try {
-			MDB2Wrapper::update($query,
-			                    $params,
-			                    $data);
-		} catch (DBStatementException $dbse) {
-			$msg =  "Cannot insert the new subscriber into the database. Make ";
-			$msg .= "sure the DB is properly configured. " . $dbse->getMessage();
-			throw new ConfusaGenException($msg);
-		} catch (DBQueryException $dbqe) {
-			$msg =  "Cannot insert the new subscriber into the database. Probably ";
-			$msg .= "an error with the supplied data. DB said: " . $dbqe->getMessage();
-			$msg .= ". Maybe a subscriber with that name already exists?";
-			throw new ConfusaGenException($msg);
-		}
-
-		$this->pendingChanges = false;
-		return true;
-	}
+	} /* end save() */
 
 	public function create()
 	{
@@ -548,9 +533,9 @@ class Subscriber
 		}
 		$query  = "INSERT INTO subscribers (name, dn_name, nren_id, ";
 		$query .= "org_state, subscr_email, subscr_phone, subscr_resp_email, ";
-		$query .= "subscr_resp_name, subscr_comment, subscr_help_url, subscr_help_email) ";
-		$query .= "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
+		$query .= "subscr_resp_name, lang, subscr_comment, subscr_help_url, subscr_help_email) ";
+		$query .= "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
 
 		$data = array($this->getIdPName(),
 			      $this->org_name,
@@ -560,6 +545,7 @@ class Subscriber
 			      $this->getPhone(),
 			      $this->getRespEmail(),
 			      $this->getRespName(),
+			      $this->getlanguage(),
 			      $this->getComment(),
 			      $this->getHelpURL(),
 			      $this->getHelpEmail());
