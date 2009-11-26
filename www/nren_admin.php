@@ -83,6 +83,12 @@ class CP_NREN_Admin extends Content_Page
 			} else {
 				$subscr_help_url= "";
 			}
+			if(isset($_POST['subscr_help_email']) && $_POST['subscr_help_email'] != "") {
+				$subscr_help_email = Input::sanitizeText($_POST['subscr_help_email']);
+			} else {
+				$subscr_help_email= "";
+			}
+
 			switch(htmlentities($_POST['subscriber'])) {
 			case 'edit':
 				$subscriber = null;
@@ -103,6 +109,7 @@ class CP_NREN_Admin extends Content_Page
 					$update |= $subscriber->setRespEmail(	$_POST['subscr_responsible_email']);
 					$update |= $subscriber->setComment(	$_POST['subscr_comment']);
 					$update |= $subscriber->setHelpURL(	$_POST['subscr_help_url']);
+					$update |= $subscriber->setHelpEmail(	$_POST['subscr_help_email']);
 					if ($update) {
 						if (!$subscriber->save(true)) {
 							Framework::error_output("Could not update Subscriber, even with changed information.");
