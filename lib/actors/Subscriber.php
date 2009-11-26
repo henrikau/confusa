@@ -465,6 +465,7 @@ class Subscriber
 
 		if ($this->pendingChanges || $forcedSynch) {
 			$query = "UPDATE subscribers SET ";
+			$data['subscriber_id'] = $this->getDBID();
 			if (!is_null($this->getEmail())) {
 				$query .= " subscr_email=:subscr_email, ";
 				$data['subscr_email'] = $this->getEmail();
@@ -503,20 +504,20 @@ class Subscriber
 				$query .= "subscr_help_email=:subscr_help_email, ";
 				$data['subscr_help_email'] = $this->getHelpEmail();
 			}
-			$query = substr($query, 0, -2);
-			$query .= " WHERE subscriber_id=:subscriber_id";
-			$data['subscriber_id'] = $this->getDBID();
-
+			$query = substr($query, 0, -2) . " WHERE subscriber_id=:subscriber_id";
 			try {
 				MDB2Wrapper::update($query, null, $data);
+				Logger::log_event(LOG_NOTICE,
+						  "Updated data for subscriber (".$this->getDBID().") ".
+						  $this->org_name);
 			} catch (DBStatementException $dbse) {
-				/* FIXME, better error-msg */
-				$msg  = "Cannot connect properly to database, some internal error. ";
+				$msg  = __CLASS__ . "::" . __FUNCTION__ . "(" . __LINE__ . ") ";
+				$msg .= "Cannot connect properly to database, some internal error. ";
 				$msg .= "Make sure the DB is configured correctly." . $dbse->getMessage();
 				throw new ConfusaGenException($msg);
 			} catch (DBQueryException $dbqe) {
-				/* FIXME, better error-msg */
-				$msg  = "Cannot connect properly to database, ";
+				$msg  = __CLASS__ . "::" . __FUNCTION__ . "(" . __LINE__ . ") ";
+				$msg .= "Cannot connect properly to database, ";
 				$msg .= "errors with supplied data.";
 				throw new ConfusaGenException($msg);
 			}
