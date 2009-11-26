@@ -106,6 +106,8 @@ class CP_NREN_Admin extends Content_Page
 					if ($update) {
 						if (!$subscriber->save(true)) {
 							Framework::error_output("Could not update Subscriber, even with changed information.");
+						} else {
+							Framework::success_output("Subscriber successfully saved to persistent storage.");
 						}
 					}
 				}
