@@ -186,11 +186,11 @@ class Subscriber
 					"there are uncommited messages in Subscriber";
 			}
 		}
-		$query = "SELECT * FROM subscribers WHERE name = ?";
+		$query = "SELECT * FROM subscribers WHERE name = ? AND nren_id = ?";
 		try {
 			$res = MDB2Wrapper::execute($query,
-						    array('text'),
-						    array($this->idp_name));
+						    array('text', 'text'),
+						    array($this->idp_name, $this->nren->getID()));
 			if (count($res) != 1) {
 				/* Could not find the subscriber. Aborting. */
 				return false;
