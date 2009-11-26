@@ -87,6 +87,11 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- the name of the NREN (e.g. SUNET, UNINETT, FUNET)
     name VARCHAR(30) UNIQUE NOT NULL,
 
+    -- The country-code of the NREN
+    --
+    -- E.g 'NO' or 'US'
+    country CHAR(2) NOT NULL
+
     -- if a remote signing CA is used, the ID of the subaccont there
     login_account INT,
     -- a customized help-text that the NREN may display to its consituency
@@ -109,6 +114,27 @@ CREATE TABLE IF NOT EXISTS nrens (
     url VARCHAR(128),
 
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
+) type=InnoDB;
+
+
+-- ---------------------------------------------------------
+--
+-- idp_map
+--
+-- The IdP-Map is what we use to connect an IdP to an NREN. Since one
+-- NREN can contain several IdPs, but one IdP may only belong to a
+-- single NRNEN, we reference the NREN from this table.
+--
+-- The idp_url must match the index used in
+-- metadata/saml20-idp-remote.php in SimpleSAMLphp.
+-- ---------------------------------------------------------
+CREATE TALBE IF NOT EXISTS idp_map (
+  -- E.g. https://idp.example.org/
+  -- This is the same key as used in the metadata section
+  idp_url VARCHAR(128) PRIMARY KEY,
+  nren_id INTEGER NOT NULL,
+
+  FOREIGN KEY(nren_id) REFRENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
