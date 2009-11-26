@@ -65,7 +65,7 @@
 			</form>
 			</td>
 			<td style="width: 15em">{$admin.eppn|escape}</td>
-			<td style="width: 15em">{$admin.name|escape|default:"<i>not assigned yet"}</i></td>
+			<td style="width: 15em">{$admin.name|escape|default:"<i>not assigned yet</i>"}</td>
 		{/if}
 		</tr>
 		{* air *}
