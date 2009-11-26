@@ -110,6 +110,10 @@ class CP_NREN_Admin extends Content_Page
 							Framework::success_output("Subscriber successfully saved to persistent storage.");
 						}
 					}
+					/* show info-list for subscriber */
+					$this->tpl->assign('subscr_details', Subscriber::getSubscriberByID($id, $this->person->GetNREN())->getInfo());
+					$this->tpl->assign('subscriber_details', true);
+					$this->tpl->assign('subscriber_detail_id', $id);
 				}
 				break;
 
