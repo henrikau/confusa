@@ -138,7 +138,9 @@ class CP_RevokeCertificate extends Content_Page
 	private function showAdminRevokeTable()
 	{
 		if (!$this->person->isAdmin()) {
-			Logger::log_event(LOG_ALERT, "User " . $this->person->getX509ValidCN() . " allowed to set admin-mode, but is not admin");
+			Logger::log_event(LOG_ALERT,
+					  "User " . $this->person->getX509ValidCN() .
+					  " allowed to set admin-mode, but is not admin");
 			Framework::error_output("Impossible condition. NON-Admin user in admin-mode!");
 			return;
 		}
