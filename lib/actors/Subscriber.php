@@ -145,6 +145,18 @@ class Subscriber
 		return $dn_name;
 	}
 
+	public function setOrgName($org_name)
+	{
+		if(!is_null($org_name)) {
+			if ($org_name === $this->org_name) {
+				return false;
+			}
+			$this->org_name = Input::sanitizeText($org_name);
+			return true;
+		}
+		return false;
+	} /* end setOrgName() */
+
 	/**
 	 * getIdPName() Return the name of the Subscriber given by the IdP
 	 *
