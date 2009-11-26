@@ -421,5 +421,42 @@ class NREN
 		}
 
 	} /* end retrievemap() */
+
+	/**
+	 * get the list of subscribers for that NREN
+	 *
+	 * @param void
+	 * @return array<Subscriber> the subscribers signed up to this NREN
+	 * @since Confusa v0.4-rc0
+	 * @access public
+	 */
+	public function getSubscriberList()
+	{
+		$query  = "SELECT subscriber_id, name, org_state, lang, subscr_email, ";
+		$query .= "subscr_phone, subscr_resp_name, subscr_resp_email, ";
+		$query .= "subscr_comment, dn_name FROM subscribers WHERE nren_id=?";
+
+		$res = MDB2Wrapper::execute($query,
+		                            array('integer'),
+		                            array($this->getID()));
+
+		if (count($res) > 0) {
+			foreach($res as $row) {
+				$subs = new Subscriber($row['name'],
+				                       $this->getName(),
+				                       $row['dn_name'],
+				                       $row['org_state'],
+				                       $row['subscriber_id']);
+				$subs->setEmail($row['subscr_email']);
+				$subs->setPhone($row['subscr_phone']);
+				$subs->setRespName($row['subscr_resp_name']);
+				$subs->setRespEmail($row['subscr_resp_email']);
+				$subs->setComment($row['subscr_comment']);
+				$subscribers[] = $subs;
+			}
+		}
+
+		return $subscribers;
+	}
 } /* end class NREN */
 ?>

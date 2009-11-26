@@ -43,7 +43,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'downgrade_self':
 					$this->downgradeNRENAdmin($this->person->getEPPN(),
-								  $this->person->getSubscriber()->getIdPName());
+								  $this->person->getSubscriber()->getDBID());
 					break;
 				case 'upgrade_subs_admin':
 					$admin = Input::sanitizeText($_POST['subs_admin']);
@@ -59,8 +59,8 @@ class CP_Admin extends Content_Page
 					break;
 				case 'add_subs_admin':
 					$admin = Input::sanitizeText($_POST['subs_admin']);
-					$subscriber = Input::sanitizeText($_POST['subscriber']);
-					$this->addSubscriberAdmin($admin, SUBSCRIBER_ADMIN, $subscriber);
+					$subscriberID = Input::sanitize($_POST['subscriberID']);
+					$this->addSubscriberAdmin($admin, SUBSCRIBER_ADMIN, $subscriberID);
 					break;
 				default:
 					break;
@@ -79,15 +79,15 @@ class CP_Admin extends Content_Page
 					break;
 				case 'add_subs_admin':
 					$admin = Input::sanitizeText($_POST['subs_admin']);
-					$this->addSubscriberAdmin($admin,SUBSCRIBER_ADMIN,$this->person->getSubscriber()->getIdPName());
+					$this->addSubscriberAdmin($admin,SUBSCRIBER_ADMIN,$this->person->getSubscriber()->getDBID());
 					break;
 				case 'downgrade_subs_admin':
 					$admin = Input::sanitizeText($_POST['subs_admin']);
-					$this->downgradeSubscriberAdmin($admin, $this->person->getSubscriber()->getIdPName());
+					$this->downgradeSubscriberAdmin($admin, $this->person->getSubscriber()->getDBID());
 					break;
 				case 'upgrade_subs_sub_admin':
 					$admin = Input::sanitizeText($_POST['subs_sub_admin']);
-					$this->upgradeSubscriberSubAdmin($admin, $this->person->getSubscriber()->getIdPName());
+					$this->upgradeSubscriberSubAdmin($admin, $this->person->getSubscriber()->getDBID());
 					break;
 				case 'delete_subs_sub_admin':
 					$admin = Input::sanitizeText($_POST['subs_sub_admin']);
@@ -95,7 +95,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'add_subs_sub_admin':
 					$admin = Input::sanitizeText($_POST['subs_sub_admin']);
-					$this->addSubscriberAdmin($admin,SUBSCRIBER_SUB_ADMIN,$this->person->getSubscriber()->getIdPName());
+					$this->addSubscriberAdmin($admin,SUBSCRIBER_SUB_ADMIN,$this->person->getSubscriber()->getDBID());
 					break;
 				default:
 					break;
@@ -122,58 +122,13 @@ class CP_Admin extends Content_Page
 		}
 
 		if ($this->person->isNRENAdmin()) { /* NREN admin display */
-			$admins=$this->getNRENAdmins($this->person->getNREN());
-			$subscribers=$this->getSubscribers($this->person->getNREN());
-			$current_subscriber = "";
-
-			/* Are we looking at a particular subscriber? */
-			if (isset($_POST['subscriber'])) {
-				$current_subscriber = Input::sanitizeText($_POST['subscriber']);
-			} else if (count($subscribers) > 0) {
-				$current_subscriber = $subscribers[0];
-			}
-
-			if (!empty($current_subscriber)) {
-				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber, SUBSCRIBER_ADMIN);
-				$this->tpl->assign('subscriber', $current_subscriber);
-				$this->tpl->assign('subscriber_admins', $subscriber_admins);
-			}
-
-			$this->tpl->assign('nren_admins', $admins);
-			$this->tpl->assign('nren', $this->person->getNREN());
-			$this->tpl->assign('subscribers', $subscribers);
+			$this->processNRENAdmin();
 
 		} else if ($this->person->isSubscriberAdmin()) { /* subscriber admin display */
-			$subscriber_dn	= $this->person->getSubscriber()->getOrgName();
-			$subscriber_db  = $this->person->getSubscriber()->getIdPName();
-			$nren		= $this->person->getNREN();
-
-			/* get all NREN-admins */
-			$nren_admins = $this->getNRENAdmins($nren);
-			$this->tpl->assign('nren_admins', $nren_admins);
-			$this->tpl->assign('nren', $nren);
-
-			/* Get all subscriber-admins */
-			$subscriber_admins = $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_ADMIN);
-			print_r($subscriber_admins);
-			$this->tpl->assign('subscriber', $subscriber_dn);
-			$this->tpl->assign('subscriber_admins', $subscriber_admins);
-
-			/* get a list of all subadmins */
-			$subscriber_sub_admins = $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_SUB_ADMIN);
-			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
+			$this->processSubscriberAdmin();
 
 		} else if ($this->person->isSubscriberSubAdmin()) { /* subscriber-sub-admin display */
-			$subscriber_dn		= $this->person->getSubscriber()->getOrgName();
-			$subscriber_db		= $this->person->getSubscriber()->getIdPName();
-			$subscriber_admins	= $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_ADMIN);
-			$subscriber_sub_admins	= $this->getSubscriberAdmins($subscriber_db, SUBSCRIBER_SUB_ADMIN);
-
-			/* remove the administrator herself from the list */
-			$subscriber_sub_admins = array_diff($subscriber_sub_admins, array($this->person->getEPPN()));
-			$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
-			$this->tpl->assign('subscriber_admins', $subscriber_admins);
-			$this->tpl->assign('subscriber', $subscriber_db);
+			$this->processSubscriberSubAdmin();
 		}
 
 		/* output sanitation */
@@ -185,19 +140,20 @@ class CP_Admin extends Content_Page
 	/**
 	 * Get all the NREN admins that belong to a certain NREN
 	 *
-	 * @param $nren The NREN for which the respective admins are queried
+	 * @param $nren NREN The NREN for which the respective admins are queried
 	 */
 	private function getNRENAdmins($nren)
 	{
 
 		$query  = "SELECT admin, admin_name, admin_email ";
-		$query .= "FROM admins WHERE admin_level='2' AND nren=";
-		$query .= "(SELECT nren_id FROM nrens WHERE name = ?)";
+		$query .= "FROM admins WHERE admin_level='2' AND nren=?";
+
+		$nrenID = $nren->getID();
 
 		try {
 			$res = MDB2Wrapper::execute($query,
 										array('text'),
-										array($nren));
+										array($nrenID));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Cannot retrieve (nren)admins from database!<BR /> " .
 				"Probably wrong syntax for query, ask an admin to investigate. Server said: " .
@@ -233,16 +189,15 @@ class CP_Admin extends Content_Page
 	 *		 SUBSCRIBER_ADMIN	- 1
 	 *		 SUBSCRIBER_SUB_ADMIN	- 0
 	 */
-	private function getSubscriberAdmins($subscriber, $level)
+	private function getSubscriberAdmins($subscriberID, $level)
 	{
 		$query  = "SELECT admin, admin_name, admin_email ";
-		$query .= "FROM admins WHERE admin_level=? AND subscriber=";
-		$query .= "(SELECT subscriber_id FROM subscribers WHERE name=?)";
+		$query .= "FROM admins WHERE admin_level=? AND subscriber=?";
 
 		try {
 			$res = MDB2Wrapper::execute($query,
 						    array('text','text'),
-						    array($level, $subscriber));
+						    array($level, $subscriberID));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Cannot retrieve (subscriber) admins from database!<BR /> " .
 				"Probably wrong syntax for query, ask an admin to investigate. Server said: " .
@@ -261,45 +216,8 @@ class CP_Admin extends Content_Page
 
 			foreach($res as $row) {
 				$subscribers[] = array('eppn' => $row['admin'],
-				                       'name' => $row['name'],
-				                       'email' => $row['email']);
-			}
-		}
-
-		return $subscribers;
-	}
-
-	/*
-	 * Get all the subscribers that belong to an NREN
-	 *
-	 * @param $nren The NREN for which the subscribers are to be returned
-	 */
-	private function getSubscribers($nren)
-	{
-		$query = "SELECT subscriber FROM nren_subscriber_view WHERE nren=?";
-
-		try {
-			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($nren));
-		} catch(DBStatementException $dbse) {
-			Framework::error_output("Cannot retrieve subscriber from database!<BR /> " .
-				"Probably wrong syntax for query, ask an admin to investigate." .
-				"Server said: " . htmlentities($dbse->getMessage()));
-			return null;
-		} catch(DBQueryException $dbqe) {
-			Framework::error_output("Query failed. This probably means that the values passed to the "
-								. "database are wrong. Server said: " .
-								htmlentities($dbqe->getMessage()));
-			return null;
-		}
-
-		$subscribers = array();
-
-		if (count($res) > 0) {
-
-			foreach($res as $row) {
-				$subscribers[] = $row['subscriber'];
+				                       'name' => $row['admin_name'],
+				                       'email' => $row['admin_email']);
 			}
 		}
 
@@ -318,14 +236,7 @@ class CP_Admin extends Content_Page
 			return;
 		}
 		try {
-			$res = MDB2Wrapper::execute("SELECT nren_id FROM nrens WHERE name=?",
-						    array('text'),
-						    array($this->person->getNREN()));
-			if (count($res)!=1) {
-				Framepwork::error_output("Could not find a unique NREN based on name ($nren). Cannot contine.");
-				return;
-			}
-			$nrenID=$res[0]['nren_id'];
+			$nrenID = $this->person->getNREN()->getID();
 			/* See if ADMIN is unique within NREN_umbrella */
 			$res = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND nren=?",
 						    array('text', 'text'),
@@ -334,8 +245,8 @@ class CP_Admin extends Content_Page
 				$msg = "Admin $admin already present as admin in table.\n<ul>";
 				foreach ($res as $key => $val) {
 					$msg .= "<li>" . htmlentities($val['admin']) . " in NREN: " .
-					        htmlentities($val['nren']) . " for subscriber " .
-					        htmlentities($val['subscriber']) . "</li>\n";
+					        htmlentities($this->person->getNREN()->getName()) . " for subscriber " .
+					        htmlentities($this->person->getSubscriber()->getIdPName()) . "</li>\n";
 				}
 				$msg .= "</ul>\n";
 				Framework::error_output($msg);
@@ -357,6 +268,95 @@ class CP_Admin extends Content_Page
 	} /* end addNRENAdmin() */
 
 	/**
+	 * Render the page for a NREN-admin
+	 */
+	private function processNRENAdmin()
+	{
+			$admins=$this->getNRENAdmins($this->person->getNREN());
+
+			try {
+				$subscribers = $this->person->getNREN()->getSubscriberList();
+			} catch (DBQueryException $dbqe) {
+				Framework::error_output("Cannot retrieve subscriber from database!<br /> " .
+				                        "Probably wrong syntax for query, ask an admin to investigate." .
+				                        "Server said: " . htmlentities($dbse->getMessage()));
+			} catch (DBStatementException $dbse) {
+				Framework::error_output("Query failed. This probably means that the values passed to the "
+				                        . "database are wrong. Server said: " .
+				                        htmlentities($dbqe->getMessage()));
+			}
+
+			$current_subscriber = "";
+
+			/* Are we looking at a particular subscriber? */
+			if (isset($_POST['subscriberID'])) {
+				$current_subscriber_id = Input::sanitize($_POST['subscriberID']);
+
+				foreach($subscribers as $nren_subscriber) {
+					if ($nren_subscriber->getDBID() == $current_subscriber_id) {
+						$current_subscriber = $nren_subscriber->getIdPName();
+						break;
+					}
+				}
+			} else {
+				$current_subscriber = $subscribers[0]->getIdPName();
+				$current_subscriber_id = $subscribers[0]->getDBID();
+			}
+
+			if (!empty($current_subscriber)) {
+				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber_id, SUBSCRIBER_ADMIN);
+				$this->tpl->assign('subscriber', $current_subscriber);
+				$this->tpl->assign('subscriberID', $current_subscriber_id);
+				$this->tpl->assign('subscriber_admins', $subscriber_admins);
+			}
+
+			$this->tpl->assign('nren_admins', $admins);
+			$this->tpl->assign('nren', $this->person->getNREN());
+			$this->tpl->assign('subscribers', $subscribers);
+	}
+
+	/**
+	 * Render the page for a subscriber admin
+	 */
+	private function processSubscriberAdmin()
+	{
+		$subscriber_db	= $this->person->getSubscriber()->getIdPName();
+		$subscriber_id  = $this->person->getSubscriber()->getDBID();
+		$nren		= $this->person->getNREN();
+
+		/* get all NREN-admins */
+		$nren_admins = $this->getNRENAdmins($nren);
+		$this->tpl->assign('nren_admins', $nren_admins);
+		$this->tpl->assign('nren', $nren);
+
+		/* Get all subscriber-admins */
+		$subscriber_admins = $this->getSubscriberAdmins($subscriber_id, SUBSCRIBER_ADMIN);
+		$this->tpl->assign('subscriber', $subscriber_db);
+		$this->tpl->assign('subscriber_admins', $subscriber_admins);
+
+		/* get a list of all subadmins */
+		$subscriber_sub_admins = $this->getSubscriberAdmins($subscriber_id, SUBSCRIBER_SUB_ADMIN);
+		$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
+	}
+
+	/**
+	 * render the page for a subscriber sub-admin
+	 */
+	private function processSubscriberSubAdmin()
+	{
+		$subscriber_id		= $this->person->getSubscriber()->getDBID();
+		$subscriber_db		= $this->person->getSubscriber()->getIdPName();
+		$subscriber_admins	= $this->getSubscriberAdmins($subscriber_id, SUBSCRIBER_ADMIN);
+		$subscriber_sub_admins	= $this->getSubscriberAdmins($subscriber_id, SUBSCRIBER_SUB_ADMIN);
+
+		/* remove the administrator herself from the list */
+		$subscriber_sub_admins = array_diff($subscriber_sub_admins, array($this->person->getEPPN()));
+		$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
+		$this->tpl->assign('subscriber_admins', $subscriber_admins);
+		$this->tpl->assign('subscriber', $subscriber_db);
+	}
+
+	/**
 	 * addSubscriberAdmin()	Add a new subscriber admin to the table
 	 *
 	 * This function will take the $admin and add it as a new
@@ -365,13 +365,13 @@ class CP_Admin extends Content_Page
 	 * @param String admin	The ePPN of the admin to add
 	 * @param String level	Subscriber-admin level (either subscribera-admin
 	 *			or sub-admin).
-	 * @param String subscriber The name of the subscriber as exported by
+	 * @param subscriberID integer The ID of the subscriber as exported by
 	 *			the IdP. IOW, this is *not* the subscriber-dn,
 	 *			but the db_name.
 	 *
 	 * @return void
 	 */
-	private function addSubscriberAdmin($admin, $level, $subscriber)
+	private function addSubscriberAdmin($admin, $level, $subscriberID)
 	{
 		/* FIXME: Change signature to boolean, indicating the result of adding a
 		 * new subscriber-admin
@@ -381,7 +381,7 @@ class CP_Admin extends Content_Page
 			Framework::error_output("Need the name of the new admin.");
 			return;
 		}
-		if (!isset($subscriber)) {
+		if (!isset($subscriberID)) {
 			Framework::error_output("Need the subscriber-name in order to add a new subscriber admin.");
 		}
 		if (!isset($level)) {
@@ -396,10 +396,14 @@ class CP_Admin extends Content_Page
 			return;
 		}
 
-		/* get nren and subscriber id */
-		$query = "SELECT * FROM nrens n LEFT JOIN subscribers s ON s.nren_id = n.nren_id WHERE n.name=? AND s.name=?";
+		$nrenID = $this->person->getNREN()->getID();
+
+		/* check if the subscriber really belongs to the current NREN */
+		$query = " SELECT * FROM subscribers s WHERE s.nren_id=? and s.subscriber_id=?;";
 		try {
-			$res = MDB2Wrapper::execute($query, array('text', 'text'), array($this->person->getNREN(), $subscriber));
+			$res = MDB2Wrapper::execute($query,
+			                            array('text', 'text'),
+										array($nrenID, $subscriberID));
 		} catch (DBStatementException $dbse) {
 			$msg =  "Serverside issues. Cannot find IDs for NREN and subscriber in database. ";
 			$msg .= "Server said: " . htmlentities($dbse->getMessage());
@@ -413,14 +417,12 @@ class CP_Admin extends Content_Page
 		}
 
 		if (count($res) != 1) {
-			$msg  = "Could not find unique subscriber/nren combination for subscriber ";
-			$msg .= htmlentities($subscriber);
+			$msg  = "Could not find unique subscriber/nren combination for subscriber with ID ";
+			$msg .= htmlentities($subscriberID);
 			$msg .= " and NREN ". htmlentities($this->person->getNREN()) . ". Cannot continue.";
 			Framework::error_output($msg);
 			return;
 		}
-		$nrenID		= $res[0]['nren_id'];
-		$subscriberID	= $res[0]['subscriber_id'];
 
 		/* make sure that the admin is not already present in the database */
 		try {
@@ -469,16 +471,15 @@ class CP_Admin extends Content_Page
 	 * downgradeNRENAdmin() Downgrade a NREN admin to the status of a subscriber admin
 	 *
 	 * @param $admin	The admin that should be downgraded to subscriber level
-	 * @param $subscriber	The subscriber of which the is to become
-	 *			admin. This string must be the db-name, i.e. the
-	 *			unique identifier sent from the IdP.
+	 * @param $subscriberID integer	The ID of the subscriber of which the admin is to become
+	 *			admin.
 	 *
 	 * @return void
 	 */
-	private function downgradeNRENAdmin($admin, $subscriber)
+	private function downgradeNRENAdmin($admin, $subscriberID)
 	{
 		$nren = $this->person->getNREN();
-		if (is_null($subscriber) || $subscriber=="") {
+		if (empty($subscriberID)) {
 			$msg  = "Tried to downgrade NREN admin " . htmlentities($admin) . " from NREN " .
 			        htmlentities($nren) . " to subscriber admin, ";
 			$msg .= "but admin's subscriber affiliaton is not set. Cannot continue.";
@@ -486,45 +487,12 @@ class CP_Admin extends Content_Page
 			Framework::error_output($msg);
 		}
 
-		$sid_query = "SELECT subscriber_id AS sid FROM subscribers s LEFT JOIN nrens n on n.nren_id=s.nren_id WHERE n.name=? AND s.name=?";
-		try {
-			$res = MDB2Wrapper::execute($sid_query,
-						    array('text','text'),
-						    array($nren, $subscriber));
-		} catch (DBQueryException $dbqe) {
-			$msg  = "Problem getting the ID of your subscriber, probably serverside issues. ";
-			$msg .= " Server said: " . htmlentities($dbqe->getMessage());
-			Framework::error_output($msg);
-			Logger::log_event(LOG_NOTICE, "ADMIN: Did not get subscriber_id for admin $admin, nren $nren, " .
-							 "subscriber $subscriber. Error is " . $dbqe->getMessage());
-			return;
-		} catch (DBStatementException $dbse) {
-			Framework::error_output("Problem getting the ID of your subscriber, server said: " .
-									htmlentities($dbse->getMessage()));
-			Logger::log_event(LOG_NOTICE, "ADMIN: Did not get subscriber_id for admin $admin, nren $nren, " .
-					  "subscriber $subscriber. Error is " . $dbse->getMessage());
-			return;
-		}
-
-		if (count($res) == 1) {
-			$sid=$res[0]['sid'];
-		} else {
-			Framework::error_ouput("Did not find your subscriber ID!");
-			/* Log the (hopefully) rare inconsistency case */
-			if (count($res) > 1) {
-				Logger::log_event(LOG_WARNING, "ADMIN: Database inconsistency when looking for " .
-								"the subscriber-ID linked to subscriber $subscriber and NREN $nren");
-			}
-
-			return;
-		}
-
 		$query="UPDATE admins SET admin_level='1', subscriber=? WHERE admin=?";
 
 		try {
 			$res2 = MDB2Wrapper::update($query,
 										array('text','text'),
-										array($sid,$admin));
+										array($subscriberID, $admin));
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating your admin status. Server said: " . htmlentities($dbqe->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
@@ -546,17 +514,17 @@ class CP_Admin extends Content_Page
 	 * "Downgrade" a subscriber admin to the level of a subscriber-sub-admin
 	 *
 	 * @param $admin The eduPersonPN of the subscriber that is downgrader
-	 * @param $subscriber The subscriber within which that happens
+	 * @param $subscriberID integer The ID of the subscriber within which that happens
 	 */
-	private function downgradeSubscriberAdmin($admin, $subscriber)
+	private function downgradeSubscriberAdmin($admin, $subscriberID)
 	{
 		$update = "UPDATE admins SET admin_level='0' WHERE admin=? ";
-		$update .= "AND subscriber=(SELECT subscriber_id FROM subscribers WHERE name=?)";
+		$update .= "AND subscriber=?";
 
 		try {
 			MDB2Wrapper::update($update,
 								array('text', 'text'),
-								array($admin, $subscriber));
+								array($admin, $subscriberID));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("ADMIN: Could not downgrade admin " . htmlentities($admin) .
 			                        "! Seems like a problem " .
@@ -592,38 +560,8 @@ class CP_Admin extends Content_Page
 	 */
 	private function upgradeSubscriberAdmin($admin)
 	{
-		$snren_id = "SELECT nren_id FROM nrens WHERE name=?";
-		$nren = $this->person->getNREN();
-		try {
-			$res=MDB2Wrapper::execute($snren_id,
-						  array('text'),
-						  array($nren));
-		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Problem determining the ID of your NREN! Server said " .
-									htmlentities($dbqe->getMessage()));
-			Logger::log_event(LOG_NOTICE, "ADMIN: Problem getting NREN-ID for NREN $nren " .
-								$dbqe->getMessage());
-			return;
-		} catch (DBStatementException $dbse) {
-			Framework::error_output("Problem determining the ID of your NREN! Server said " .
-									htmlentities($dbse->getMessage()));
-			Logger::log_event(LOG_NOTICE, "ADMIN: Problem getting NREN-ID for NREN $nren " .
-								$dbse->getMessage());
-			return;
-		}
 
-		if (count($res) == 1) {
-			$nren_id=$res[0]['nren_id'];
-		} else {
-			Framework::error_output("Could not retrieve your NREN in the DB!");
-
-			if (count($res) > 1) {
-				Logger::log_event(LOG_WARNING, "ADMIN: Database inconsistency when looking for " .
-								"the nren-ID linked to nren $nren");
-			}
-
-			return;
-		}
+		$nren_id = $this->person->getNREN()->getID();
 
 		$update="UPDATE admins SET admin_level='2',nren=? WHERE admin=?";
 
@@ -645,29 +583,27 @@ class CP_Admin extends Content_Page
 			return;
 		}
 
-		Logger::log_event(LOG_NOTICE, "ADMIN: Subscriber admin $admin upgraded to NREN level (NREN $nren)");
-		Framework::success_output("Upgraded subscriber-admin " . htmlentities($admin) . " to NREN level " .
-		                          htmlentities($nren));
+		Logger::log_event(LOG_NOTICE, "ADMIN: Subscriber admin $admin upgraded to NREN level (NREN-ID $nren_id)");
+		Framework::success_output("Upgraded subscriber-admin " . htmlentities($admin) . " to NREN level.");
 	}
 
 	/*
 	 * "Upgrade" a subscriber-sub-admin to a subscriber admin
 	 *
 	 * @param $admin The ePPN of the admin
-	 * @param $subscriber The name of the subscriber within which everything happens
+	 * @param $subscriberID integer The ID of the subscriber within which everything happens
 	 */
-	private function upgradeSubscriberSubAdmin($admin, $subscriber)
+	private function upgradeSubscriberSubAdmin($admin, $subscriberID)
 	{
-		$update="UPDATE admins SET admin_level='1' WHERE admin=? and subscriber=";
-		$update .= "(SELECT subscriber_id FROM subscribers WHERE name=?)";
+		$update="UPDATE admins SET admin_level='1' WHERE admin=? and subscriber=?";
 
 		try {
 			MDB2Wrapper::update($update,
 								array('text','text'),
-								array($admin,$subscriber));
+								array($admin,$subscriberID));
 		} catch (DBStatementException $dbse) {
 			Logger::log_event(LOG_NOTICE, "ADMIN: Problem when trying to upgrade subscriber-sub-admin " .
-							"$admin in subscriber $subscriber. Error with the statement: " .
+							"$admin in subscriber $subscriberID. Error with the statement: " .
 							$dbse->getMessage());
 			Framework::error_output("Problem when upgrading sub-admin " . htmlentities($admin) .
 			                        " Probably an error with the configuration! Server said: " .
@@ -675,7 +611,7 @@ class CP_Admin extends Content_Page
 			return;
 		} catch (DBQueryException $dbqe) {
 			Logger::log_event(LOG_NOTICE, "ADMIN: Problem when trying to upgrade subscriber-sub-admin " .
-							"$admin in subscriber $subscriber. Error with supplied data: " .
+							"$admin in subscriber with ID $subscriberID. Error with supplied data: " .
 							$dbqe->getMessage());
 			Framework::error_output("Problem when upgrading sub_admin " . htmlentities($admin) .
 			                        " Probably a problem with the supplied data! Server said: " .
@@ -683,8 +619,8 @@ class CP_Admin extends Content_Page
 			return;
 		}
 
-		Logger::log_event(LOG_NOTICE, "ADMIN: Upgraded subscriber-sub-admin $admin to a subscriber-admin " .
-						"within subscriber $subscriber");
+		Logger::log_event(LOG_NOTICE, "[sadm] Upgraded subscriber-sub-admin $admin to a subscriber-admin " .
+						"within subscriber with ID $subscriberID");
 		Framework::success_output("Upgraded subscriber-sub-admin " . htmlentities($admin) .
 		                          " to a subscriber-admin");
 	}

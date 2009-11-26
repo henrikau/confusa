@@ -83,7 +83,6 @@ class CP_NREN_Subs_Settings extends Content_Page
 			$this->tpl->assign('nrenInfo', $info);
 		} else {
 			$info = $this->person->getSubscriber()->getInfo();
-			$current_language = $info['lang'];
 			$this->tpl->assign('subscriberInfo', $info);
 		}
 
@@ -106,27 +105,20 @@ class CP_NREN_Subs_Settings extends Content_Page
 	 */
 	private function updateSubscriberContact($contact_email, $contact_phone, $resp_name, $resp_email)
 	{
-		$subscriber = $this->person->getSubscriber()->getIdPName();
-		$query="UPDATE subscribers SET subscr_email=?, subscr_phone=?, subscr_resp_name=?, subscr_resp_email=? WHERE name=?";
+		$subscriber = $this->person->getSubscriber();
+		$subscriber->setEmail($contact_email);
+		$subscriber->setPhone($contact_phone);
+		$subscriber->setRespName($resp_name);
+		$subscriber->setRespEmail($resp_email);
 
 		try {
-			MDB2Wrapper::update($query,
-					    array('text','text','text','text','text'),
-					    array($contact_email, $contact_phone, $resp_name, $resp_email, $subscriber));
-		} catch (DBQueryException $dqe) {
-			Framework::error_output("Could not change the subscriber contact! Maybe something is " .
-									"wrong with the data that you supplied? Server said: " .
-									$dqe->getMessage());
+			$subscriber->save();
+		} catch (ConfusaGenException $cge) {
+			Framework::error_output("Could not change the subscriber contact! " .
+									htmlentities($cge->getMessage()));
 			Logger::log_event(LOG_INFO, "[sadm] Could not update " .
 							"contact of subscriber $subscriber: " .
-							$dqe->getMessage());
-		} catch (DBStatementException $dse) {
-			Framework::error_output("Could not change the subscriber contact! Confusa " .
-									"seems to be misconfigured. Server said: " .
-									$dse->getMessage());
-			Logger::log_event(LOG_WARNING, "[sadm] Could not update " .
-							"contact of $subscriber: " .
-							$dse->getMessage());
+							$cge->getMessage());
 		}
 
 		Framework::success_output("Updated contact information for your subscriber $subscriber.");
@@ -139,27 +131,19 @@ class CP_NREN_Subs_Settings extends Content_Page
 	 * @param $nren string The name of the subscriber
 	 * @param $new_language string the ISO 639-1 code for the new default language of the subscriber
 	 */
-	private function updateSubscriberLanguage($subscriber, $new_language)
+	private function updateSubscriberLanguage($new_language)
 	{
-		$query = "UPDATE subscribers SET lang=? WHERE name=?";
+		$subscriber = $this->person->getSubscriber();
+		$subscriber->setLanguage($new_language);
 
 		try {
-			MDB2Wrapper::update($query,
-								array('text', 'text'),
-								array($new_language, $subscriber));
-		} catch (DBQueryException $dbqe) {
-			Logger::log_event(LOG_NOTICE, "Updating the language to $new_language " .
-							 "failed for subscriber $subscriber. Error was: " . $dbqe->getMessage());
+			$subscriber->save();
+		} catch (ConfusaGenException $cge) {
+			Logger::log_event(LOG_NOTICE, "[sadm] Updating the language to $new_language " .
+							 "failed for subscriber $subscriber. " . $cge->getMessage());
 			Framework::error_output("Updating the language to $new_language failed " .
 									"for subscriber $subscriber, probably due to problems " .
-									"with the supplied data. Server said: " . $dbqe->getMessage());
-			return;
-		} catch (DBStatementException $dbse) {
-			Logger::log_event(LOG_NOTICE, "Updating the language to $new_language " .
-							"faield for subscriber $subscriber. Error was: " . $dbse->getMessage());
-			Framework::error_output("Updating the language to $new_language failed " .
-									"for subscriber $subscriber, probably due to problems " .
-									"with the server configuration. Server said: " . $dbse->getMessage());
+									"with the supplied data. Server said: " . htmlentities($cge->getMessage()));
 			return;
 		}
 

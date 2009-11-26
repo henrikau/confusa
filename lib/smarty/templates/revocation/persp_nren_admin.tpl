@@ -24,7 +24,16 @@ All revocation operations currently limited to subscriber {$subscriber|escape}.
     <form action="" method="post">
     <div>
     Select subscriber (orgname in the DN):
-    {html_options name="subscriber" values=$subscribers output=$subscribers selected=$subscriber|escape}
+	<select name="subscriber">
+	{foreach from=$subscribers item=nren_subscriber}
+		{if $nren_subscriber->getOrgName() == $subscriber}
+			<option value="{$nren_subscriber->getOrgName()}" selected="selected">{$nren_subscriber->getOrgName()}</option>
+		{else}
+			<option value="{$nren_subscriber->getOrgName()}">{$nren_subscriber->getOrgName()}</option>
+		{/if}
+	{/foreach}
+	</select>
+    {*{html_options name="subscriber" values=$subscribers output=$subscribers selected=$subscriber|escape}*}
     <input type="submit" name="change" value="Change" />
     </div>
     </form>
