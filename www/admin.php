@@ -216,8 +216,8 @@ class CP_Admin extends Content_Page
 
 			foreach($res as $row) {
 				$subscribers[] = array('eppn' => $row['admin'],
-				                       'name' => $row['name'],
-				                       'email' => $row['email']);
+				                       'name' => $row['admin_name'],
+				                       'email' => $row['admin_email']);
 			}
 		}
 
