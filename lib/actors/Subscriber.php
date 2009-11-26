@@ -212,6 +212,7 @@ class Subscriber
 		$this->setComment(	$res[0]['subscr_comment'],	false);
 		$this->setLanguage(	$res[0]['lang'],		false);
 		$this->setHelpURL(	$res[0]['subscr_help_url'],	false);
+		$this->setHelpEmail(	$res[0]['subscr_help_email'],	false);
 		return true;
 	} /* end updateFromDB() */
 
