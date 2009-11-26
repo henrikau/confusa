@@ -104,7 +104,7 @@ class Subscriber
 	{
 		$res = array();
 		$res['name'] = $this->idp_name;
-		$res['org_name'] = $this->org_name;
+		$res['org_name'] = $this->getOrgName();
 		$res['subscr_email'] = $this->email;
 		$res['subscr_phone'] = $this->phone;
 		$res['subscr_resp_email'] = $this->responsible_email;
