@@ -150,11 +150,14 @@
       </tr>
 
       <tr>
+	<td colspan="3"><b>Contact information</b></td></tr>
+
+      <tr>
 	<td align="right"></td>
 	<td></td>
       </tr>
       <tr>
-	<td align="right" style="padding-right: 10px">Contact phone</td>
+	<td align="right" style="padding-right: 10px">Phone</td>
 	<td>
 	  <input type="text" name="subscr_phone"
 	  value="{$subscriber->getPhone()}" />
@@ -168,7 +171,7 @@
       </tr>
 
       <tr>
-	<td align="right" style="padding-right: 10px">Contact email</td>
+	<td align="right" style="padding-right: 10px">E-mail</td>
 	<td>
 	  <input type="text" name="subscr_email" value="{$subscriber->getEmail()}" />
 	</td>
