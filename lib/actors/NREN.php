@@ -161,36 +161,32 @@ class NREN
 	public function getNRENInfo()
 	{
 		$res = array();
-		if (!is_null($this->data['name'])) {
+		if (array_key_exists('name', $this->data) && !is_null($this->data['name'])) {
 			$res['name']	= Input::sanitizeText($this->data['name']);
 		}
-		if (!is_null($this->data['help'])) {
+		if (array_key_exists('help', $this->data) && !is_null($this->data['help'])) {
 			$res['help']	= Input::sanitizeText($this->data['help']);
 		}
-		if (!is_null($this->data['about'])) {
+		if (array_key_exists('about', $this->data) && !is_null($this->data['about'])) {
 			$res['about']	= Input::sanitizeText($this->data['about']);
 		}
-		if (!is_null($this->data['lang'])) {
+		if (array_key_exists('lang', $this->data) && !is_null($this->data['lang'])) {
 			$res['lang']	= Input::sanitizeText($this->data['lang']);
 		}
-		if (!is_null($this->data['contact_email'])) {
+		if (array_key_exists('contact_email', $this->data) && !is_null($this->data['contact_email'])) {
 			$res['contact_email'] = Input::sanitizeText($this->data['contact_email']);
 		}
-		if (!is_null($this->data['contact_phone'])) {
+		if (array_key_exists('contact_phone', $this->data) && !is_null($this->data['contact_phone'])) {
 			$res['contact_phone'] = Input::sanitizeText($this->data['contact_phone']);
 		}
-		if (!is_null($this->data['cert_email'])) {
+		if (array_key_exists('cert_email', $this->data) && !is_null($this->data['cert_email'])) {
 			$res['cert_email'] = Input::sanitizeText($this->data['cert_email']);
 		}
-		if (!is_null($this->data['cert_phone'])) {
+		if (array_key_exists('cert_phone', $this->data) && !is_null($this->data['cert_phone'])) {
 			$res['cert_phone'] = Input::sanitizeText($this->data['cert_phone']);
 		}
-		if (!is_null($this->data['url'])) {
+		if (array_key_exists('url', $this->data) && !is_null($this->data['url'])) {
 			$res['url']	= Input::sanitizeText($this->data['url']);
-		} else {
-			echo "<pre>\n";
-			print_r($this->data);
-			echo "</pre>\n";
 		}
 
 		return $res;
