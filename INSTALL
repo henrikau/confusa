@@ -110,8 +110,8 @@ configuration, this should be more of a guideline than anything else.
    You will have to either copy or symlink these into the core part of
    SimpleSAMLphp:
 
-	ln -s /var/www/confusa/include/CountryMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CountryMap.php
-	ln -s /var/www/confusa/include/NRENMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/NRENMap.php
+	ln -s /var/www/confusa/config/CountryMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CountryMap.php
+	ln -s /var/www/confusa/config/NRENMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/NRENMap.php
 
    When this is done, configure config/authsources.php as described in
 
