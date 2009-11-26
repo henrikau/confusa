@@ -107,6 +107,8 @@ class Subscriber
 		$res['subscr_phone'] = $this->phone;
 		$res['subscr_resp_email'] = $this->responsible_email;
 		$res['subscr_resp_name'] = $this->responsible_name;
+		$res['subscr_help_url'] = $this->help_url;
+		$res['subscr_help_email'] = $this->help_email;
 		return $res;
 	}
 
