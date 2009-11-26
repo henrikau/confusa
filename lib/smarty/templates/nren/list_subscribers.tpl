@@ -236,6 +236,12 @@
 	</td>
       </tr>
       <tr>
+	<td align="right" style="padding-right: 10px">Help-desk Email</td>
+	<td>
+	  <input type="text" name="subscr_help_email" value="{$subscr_details.subscr_help_email}" />
+	</td>
+      </tr>
+      <tr>
 	<td><div class="spacer"></div></td>
 	<td></td>
 	<td></td>
