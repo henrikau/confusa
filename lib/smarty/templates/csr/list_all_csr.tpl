@@ -40,7 +40,7 @@
 
       </tr>
 
-      {if $csrInspect.auth_token eq $csr.auth_key}
+      {if isset($csrInspect) && $csrInspect.auth_token eq $csr.auth_key}
     </table>
     <br />
     {$inspect_csr}

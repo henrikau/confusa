@@ -1,4 +1,4 @@
-{if $signingOk}
+{if isset($signingOk) && $signingOk == true}
 <div class="success">
 <CENTER>
 	The certificate is now being processed by the CA (Certificate Authority)<BR />
