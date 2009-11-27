@@ -53,7 +53,7 @@
 	  <font color="gray"><i>Attribute-name:</i></font>
 	</td>
 	<td>
-	  <input type="text" name="db_name" />
+	  <input type="text" name="db_name" size="40" />
 	</td>
       </tr>
       {if isset($foundUniqueName)}
@@ -91,9 +91,9 @@
 	<td><font color="gray"><i>/O=</i></font></td>
 
 	{if $confusa_grid_restrictions}
-	<td><input maxlength="62" type="text" name="dn_name" /></td>
+	<td><input maxlength="62" type="text" name="dn_name" size="40"/></td>
 	{else}
-	<td><input type="text" name="dn_name" /></td>
+	<td><input type="text" name="dn_name" size="40"/></td>
 	{/if}
       </tr>
       <tr><td><div class="spacer"></div></td><td></td></tr>
@@ -114,48 +114,47 @@
 	  </p>
 	  <p class="info">
 	    It is important that the contact-information is as up-to-date as
-	    possible. Note that at the moment, the subscriber cannot alter
-	    this information.
+	    possible.
 	  </p>
 	</td>
       </tr>
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td><font color="gray"><i>Contact email:</i></font></td>
-	<td><input type="text" name="subscr_email" /></td>
+	<td><input type="text" name="subscr_email" size="40"/></td>
       </tr>
       <tr><td></td><td>
       <span style="font-size: 0.8em; font-style: italic">
-		e.g. support team's mail address
+	The "official" contact e-mail.
       </span></td>
       <tr>
 	<td><font color="gray"><i>Contact phone:</i></font></td>
-	<td><input type="text" name="subscr_phone" /></td>
+	<td><input type="text" name="subscr_phone" size="40" /></td>
       </tr>
       <tr><td></td><td>
       <span style="font-size: 0.8em; font-style: italic">
-        e.g. support's phone number
+	The "official" subscriber phone.
       </span>
       </td>
       </tr>
       <tr>
 	<td><font color="gray"><i>Responsible Person:</i></font></td>
-	<td><input type="text" name="subscr_responsible_name"/>
+	<td><input type="text" name="subscr_responsible_name" size="40" />
       </tr>
       <tr>
       <td></td>
       <td style="font-size: 0.8em; font-style: italic">
-		technical contact - not end user support
+	Technical contact - not end user support
       </td>
       </tr>
       <tr>
 	<td><font color="gray"><i>Responsible's email:</i></font></td>
-	<td><input type="text" name="subscr_responsible_email" /></td>
+	<td><input type="text" name="subscr_responsible_email" size="40" /></td>
       </tr>
       <tr>
       <td></td><td>
       <span style="font-size: 0.8em; font-style: italic">
-        technical contact mail
+        Technical contact mail
       </span>
       </td></tr>
       <tr><td><div class="spacer"></div></td><td></td></tr>
@@ -181,12 +180,12 @@
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr>
 	<td><font color="gray"><i>HelpDesk URL:</i></font></td>
-	<td><input type="text" name="subscr_help_url" /></td>
+	<td><input type="text" name="subscr_help_url" size="40"/></td>
       </tr>
       <tr><td><div class="spacer"></td><td></td></tr>
       <tr>
 	<td><font color="gray"><i>HelpDesk Email:</i></font></td>
-	<td><input type="text" name="subscr_help_email" /></td>
+	<td><input type="text" name="subscr_help_email" size="40" /></td>
       </tr>
 
 
