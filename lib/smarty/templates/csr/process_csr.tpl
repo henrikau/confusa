@@ -14,11 +14,6 @@
 {$list_all_csr}
 {/if}
 
-{* uploading new certificate via FILE *}
-{$upload_csr_file}
-
-<div class="spacer"></div>
-
 {if empty($browserTemplate)}
 	<fieldset>
 	<legend>Apply for a certificate in browser</legend>
@@ -48,3 +43,7 @@
 	{$deployment_script}
 {/if}
 
+{*
+ * uploading new CSR via POST
+ *}
+{include file='paste_csr.tpl'}
