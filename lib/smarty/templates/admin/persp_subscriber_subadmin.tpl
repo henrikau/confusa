@@ -4,11 +4,17 @@
 	<fieldset class="infoblock">
 		<legend>Admins for your institution {$subscriber|escape}</legend>
 		<p class="info">
-		The following are the subscriber admins that are administrating your institution (and their e-mail addresses):
+		The following are the subscriber admins that are administrating your institution (and their names/emails):
 		</p>
 		<ul>
 		{foreach from=$subscriber_admins item=subscriber_admin}
-			<li>{$subscriber_admin.eppn|escape} ({$subscriber_admin.email|escape|default:"<i>not assigned yet</i>"})</li>
+			<li> {$subscriber_admin.eppn|escape}
+			{if isset($subscriber_admin.email)}
+				(<a href="mailto:{$subscriber_admin.email}">{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}</a>)
+			{else}
+				({$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"})
+			{/if}
+			</li>
 		{/foreach}
 		</ul>
 	</fieldset>
@@ -24,11 +30,17 @@
 			<legend>Subadmins for your institution {$subscriber|escape}</legend>
 			<p class="info">
 			The following are sub-admins for your insitutions, who, like you, may revoke
-			certificates (and their e-mail addresses):
+			certificates (and their names/emails):
 			</p>
 			<ul>
 			{foreach from=$subscriber_sub_admins item=sub_admin}
-				<li>{$sub_admin.eppn|escape} ({$sub_admin.email|escape|default:"<i>not assigned yet</i>"})</li>
+				<li>{$sub_admin.eppn|escape}
+				{if isset($sub_admin.email)}
+					(<a href="mailto:{$sub_admin.email}">{$sub_admin.name|escape|default:"<i>not assigned yet</i>"}</a>)
+				{else}
+					({$sub_admin.name|escape|default:"<i>not assigned yet</i>"})
+				{/if}
+				</li>
 			{/foreach}
 			</ul>
 		</fieldset>

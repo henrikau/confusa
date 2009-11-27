@@ -188,8 +188,10 @@ class CP_Admin extends Content_Page
 	 *		 admins or subscriber sub-admins. This is either
 	 *		 SUBSCRIBER_ADMIN	- 1
 	 *		 SUBSCRIBER_SUB_ADMIN	- 0
+	 * @param exclude_self boolean whether to exclude the logged in person in the
+	 *                             result set
 	 */
-	private function getSubscriberAdmins($subscriberID, $level)
+	private function getSubscriberAdmins($subscriberID, $level, $exclude_self = false)
 	{
 		$query  = "SELECT admin, admin_name, admin_email ";
 		$query .= "FROM admins WHERE admin_level=? AND subscriber=?";
@@ -215,6 +217,11 @@ class CP_Admin extends Content_Page
 		if (count($res) > 0) {
 
 			foreach($res as $row) {
+				if ($exclude_self &&
+				    $row['admin'] == $this->person->getEPPN()) {
+						continue;
+				}
+
 				$subscribers[] = array('eppn' => $row['admin'],
 				                       'name' => $row['admin_name'],
 				                       'email' => $row['admin_email']);
@@ -347,10 +354,8 @@ class CP_Admin extends Content_Page
 		$subscriber_id		= $this->person->getSubscriber()->getDBID();
 		$subscriber_db		= $this->person->getSubscriber()->getIdPName();
 		$subscriber_admins	= $this->getSubscriberAdmins($subscriber_id, SUBSCRIBER_ADMIN);
-		$subscriber_sub_admins	= $this->getSubscriberAdmins($subscriber_id, SUBSCRIBER_SUB_ADMIN);
+		$subscriber_sub_admins	= $this->getSubscriberAdmins($subscriber_id, SUBSCRIBER_SUB_ADMIN, true);
 
-		/* remove the administrator herself from the list */
-		$subscriber_sub_admins = array_diff($subscriber_sub_admins, array($this->person->getEPPN()));
 		$this->tpl->assign('subscriber_sub_admins', $subscriber_sub_admins);
 		$this->tpl->assign('subscriber_admins', $subscriber_admins);
 		$this->tpl->assign('subscriber', $subscriber_db);
@@ -496,18 +501,18 @@ class CP_Admin extends Content_Page
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating your admin status. Server said: " . htmlentities($dbqe->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
-							" of subscriber $subscriber");
+							" of subscriber with ID $subscriberID");
 			return;
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem updating your admin status. Server said: " . $dbse->getMessage());
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
-							" of subscriber $subscriber");
+							" of subscriber with ID $subscriberID");
 			return;
 		}
 
 		Logger::log_event(LOG_NOTICE, "Admin: NREN admin $admin downgraded his/her status to subscriber admin of " .
-						"subscriber $subscriber");
-		Framework::message_output("Downgraded you to subscriber admin of subscriber $subscriber");
+						"subscriber with ID $subscriberID");
+		Framework::message_output("Downgraded you to subscriber admin of subscriber with ID $subscriberID");
 	}
 
 	/*
@@ -531,7 +536,7 @@ class CP_Admin extends Content_Page
 									"with the configuration of Confusa! Server said: " .
 									htmlentities($dbse->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not downgrade subscriber-admin $admin of subscriber " .
-							"$subscriber to a subscriber-sub-admin. Something seems to " .
+							"with ID $subscriberID to a subscriber-sub-admin. Something seems to " .
 							"be wrong with the statement: " . $dbse->getMessage());
 			return;
 		} catch (DBQueryException $dbqe) {
@@ -540,13 +545,13 @@ class CP_Admin extends Content_Page
 									"with the supplied data! Server said: " .
 									htmlentities($dbqe->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not downgrade subscriber-admin $admin of subscriber " .
-							"$subscriber to a subscriber-sub-admin. Error with the " .
+							"with ID $subscriberID to a subscriber-sub-admin. Error with the " .
 							"supplied data: " . $dbqe->getMessage());
 			return;
 		}
 
 		Logger::log_event(LOG_NOTICE, "ADMIN: Downgraded admin $admin from subscriber-admin to subscriber-" .
-						"sub-admin in subscriber $subscriber.");
+						"sub-admin in subscriber with ID $subscriberID.");
 		Framework::success_output("Downgraded " . htmlentities($admin) .
 		                          " from subscriber admin to subscriber-sub-admin");
 	}

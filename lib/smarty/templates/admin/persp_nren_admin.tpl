@@ -65,7 +65,13 @@
 			</form>
 			</td>
 			<td style="width: 15em">{$admin.eppn|escape}</td>
-			<td style="width: 15em">{$admin.name|escape|default:"<i>not assigned yet</i>"}</td>
+			<td style="width: 15em">
+				{if isset($admin.email)}
+					<a href="mailto:{$admin.email}" />{$admin.name|escape|default:"<i>not assigned yet</i>"}</a>
+				{else}
+					{$admin.name|escape|default:"<i>not assigned yet</i>"}
+				{/if}
+			</td>
 		{/if}
 		</tr>
 		{* air *}
@@ -160,7 +166,13 @@
 					</div>
 					</form>
 			</td><td style="width: 15em">{$subscriber_admin.eppn|escape}</td>
-			<td style="width: 15em">{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}</td>
+			<td style="width: 15em">
+			{if isset($subscriber_admin.email)}
+				<a href="mailto:{$subscriber_admin.email}">{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}</a>
+			{else}
+				{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}
+			{/if}
+			</td>
 			</tr>
 			<tr>
 			<td style="height: 0.5em"></td>

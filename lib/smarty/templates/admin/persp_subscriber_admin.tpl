@@ -67,7 +67,13 @@
 			</form>
 			</td>
 			<td>{$subscriber_admin.eppn|escape}</td>
-			<td>{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}</td>
+			<td>
+			{if isset($subscriber_admin.email)}
+				<a href="mailto:{$subscriber_admin.email}">{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}</a>
+			{else}
+				{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}
+			{/if}
+			</td>
 		{/if}
 		</tr>
 		<tr>
@@ -157,7 +163,13 @@ Subscriber sub-admins have the following privileges:
 		</form>
 		</td>
 		<td>{$admin.eppn|escape}</td>
-		<td>{$admin.name|escape|default:"<i>not assigned yet</i>"}</td>
+		<td>
+			{if isset($admin.email)}
+				<a href="mailto:{$admin.email}">{$admin.name|escape|default:"<i>not assigned yet</i>"}</a>
+			{else}
+				{$admin.name|escape|default:"<i>not assigned yet</i>"}
+			{/if}
+		</td>
 	</tr>
 	{* air *}
 	<tr>
