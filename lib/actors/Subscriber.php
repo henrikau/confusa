@@ -3,7 +3,7 @@ require_once 'mdb2_wrapper.php';
 
 class Subscriber
 {
-	private $dn_name;
+	private $org_name;
 	private $idp_name;
 	private $db_id;
 	private $email;
@@ -13,12 +13,15 @@ class Subscriber
 	private $state;
 	private $comment;
 	private $preferredLanguage;
+	private $help_url;
+	private $help_email;
 
 	private $pendingChanges = false;
 
 	/* Subscriber-map */
 	private $hasMap;
 	private $map;
+
 
 	/* is the subscriber valid (i.e. found in the database)? */
 	private $valid;
@@ -68,11 +71,13 @@ class Subscriber
 		if (Config::get_config('debug')) {
 			$res .= "db_id: "	. $this->db_id		. "<br />\n";
 			$res .= "idp_name: "	. $this->idp_name	. "<br />\n";
-			$res .= "dn_name: "	. $this->dn_name	. "<br />\n";
+			$res .= "org_name: "	. $this->org_name	. "<br />\n";
 			$res .= "email: "	. $this->email		. "<br />\n";
 			$res .= "phone: "	. $this->phone		. "<br />\n";
 			$res .= "responsible_email: "	. $this->responsible_email	. "<br />\n";
 			$res .= "responsible_name: "	. $this->responsible_name	. "<br />\n";
+			$res .= "subscriber_help_url: "	. $this->help_url	. "<br />\n";
+			$res .= "subscriber_help_email: "	. $this->help_email	. "<br />\n";
 		} else {
 			$res = $this->idp_name;
 		}
@@ -99,11 +104,14 @@ class Subscriber
 	{
 		$res = array();
 		$res['name'] = $this->idp_name;
-		$res['dn_name'] = $this->dn_name;
+		$res['org_name'] = $this->org_name;
 		$res['subscr_email'] = $this->email;
 		$res['subscr_phone'] = $this->phone;
 		$res['subscr_resp_email'] = $this->responsible_email;
 		$res['subscr_resp_name'] = $this->responsible_name;
+		$res['subscr_help_url'] = $this->help_url;
+		$res['subscr_help_email'] = $this->help_email;
+		$res['subscr_comment'] = $this->getComment();
 		return $res;
 	}
 
@@ -133,16 +141,15 @@ class Subscriber
 	 */
 	public function getOrgName()
 	{
-		$dn_name = $this->dn_name;
+		$res = $this->org_name;
 		/**
 		 * set the test prefix, if confusa is in 'capi_test' mode
 		 */
 		if (Config::get_config('capi_test') &&
-			Config::get_config('ca_mode') === CA_COMODO) {
-				$dn_name = ConfusaConstants::$CAPI_TEST_O_PREFIX .
-				           $this->dn_name;
+		    Config::get_config('ca_mode') === CA_COMODO) {
+			$res = ConfusaConstants::$CAPI_TEST_O_PREFIX . $res;
 		}
-		return $dn_name;
+		return $res;
 	}
 
 	public function setOrgName($org_name)
@@ -191,11 +198,11 @@ class Subscriber
 					"there are uncommited messages in Subscriber";
 			}
 		}
-		$query = "SELECT * FROM subscribers WHERE name = ?";
+		$query = "SELECT * FROM subscribers WHERE name = ? AND nren_id = ?";
 		try {
 			$res = MDB2Wrapper::execute($query,
-						    array('text'),
-						    array($this->idp_name));
+						    array('text', 'text'),
+						    array($this->idp_name, $this->nren->getID()));
 			if (count($res) != 1) {
 				/* Could not find the subscriber. Aborting. */
 				return false;
@@ -216,11 +223,12 @@ class Subscriber
 		$this->setPhone(	$res[0]['subscr_phone'],	false);
 		$this->setRespName(	$res[0]['subscr_resp_name'],	false);
 		$this->setRespEmail(	$res[0]['subscr_resp_email'],	false);
-		$this->setDNName(	$res[0]['dn_name']);
+		$this->setOrgName(	$res[0]['dn_name']);
 		$this->setState(	$res[0]['org_state'],		false);
 		$this->setComment(	$res[0]['subscr_comment'],	false);
-		$this->setLanguage(	$res[0]['lang'],			false);
-
+		$this->setLanguage(	$res[0]['lang'],		false);
+		$this->setHelpURL(	$res[0]['subscr_help_url'],	false);
+		$this->setHelpEmail(	$res[0]['subscr_help_email'],	false);
 		return true;
 	} /* end updateFromDB() */
 
@@ -363,6 +371,67 @@ class Subscriber
 		}
 		return null;
 	}
+
+	/**
+	 * setHelpURL() Set a new help-url for the subscriber.
+	 *
+	 * The help-URL is meant to be given to the users when they need
+	 * help. In most cases, the portal will not run locally at each
+	 * subscriber's sites.
+	 *
+	 * @param String $url the URL to the helpdesk
+	 * @param boolean $external external update (trigger pendingChanges)
+	 * @return boolean true if update was successful (and requires save())
+	 * @access public
+	 */
+	public function setHelpURL($url, $external=true)
+	{
+		if (is_null($url)) {
+			return false;
+		}
+		$url = Input::sanitizeText($url);
+		if ($this->help_url === $url) {
+			return false;
+		}
+		$this->help_url = $url;
+		if ($external) {
+			$this->pendingChanges = true;
+		}
+		return true;
+	}
+	public function getHelpURL()
+	{
+		if (!is_null($this->help_url)) {
+			return $this->help_url;
+		}
+		return null;
+	}
+
+	/**
+	 * setHelpEmail() set the email for the HelpDesk at the subscriber's
+	 */
+	public function setHelpEmail($email, $external=true)
+	{
+		if (is_null($email)) {
+			return false;
+		}
+		$email = Input::sanitizeText($email);
+		if ($this->help_email === $email) {
+			return false;
+		}
+		$this->help_email = $email;
+		if ($external) {
+			$this->pendingChanges = true;
+		}
+		return true;
+	}
+	public function getHelpEmail()
+	{
+		if (!is_null($this->help_email)) {
+			return $this->help_email;
+		}
+		return null;
+	}
 	/**
 	 * setState() Set new state for the subscriber
 	 *
@@ -396,12 +465,6 @@ class Subscriber
 		}
 		return $this->state;
 	}
-	private function setDNName($DNName)
-	{
-		if(!is_null($DNName)) {
-			$this->dn_name = Input::sanitizeText($DNName);
-		}
-	}
 	public function setLanguage($lang)
 	{
 		$this->preferredLanguage = $lang;
@@ -410,6 +473,7 @@ class Subscriber
 	{
 		return $this->preferredLanguage;
 	}
+
 	private function retrieveMap()
 	{
 		if (is_null($this->nren->getID())) {
@@ -465,7 +529,6 @@ class Subscriber
 
 		if ($this->pendingChanges || $forcedSynch) {
 			$query = "UPDATE subscribers SET ";
-			$data['subscriber_id'] = $this->getDBID();
 			if (!is_null($this->getEmail())) {
 				$query .= " subscr_email=:subscr_email, ";
 				$data['subscr_email'] = $this->getEmail();
@@ -505,11 +568,13 @@ class Subscriber
 				$data['subscr_help_email'] = $this->getHelpEmail();
 			}
 			$query = substr($query, 0, -2) . " WHERE subscriber_id=:subscriber_id";
+			$data['subscriber_id'] = $this->getDBID();
+
 			try {
 				MDB2Wrapper::update($query, null, $data);
 				Logger::log_event(LOG_NOTICE,
 						  "Updated data for subscriber (".$this->getDBID().") ".
-						  $this->org_name);
+						  $this->getOrgName());
 			} catch (DBStatementException $dbse) {
 				$msg  = __CLASS__ . "::" . __FUNCTION__ . "(" . __LINE__ . ") ";
 				$msg .= "Cannot connect properly to database, some internal error. ";

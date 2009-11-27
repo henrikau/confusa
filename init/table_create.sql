@@ -145,6 +145,10 @@ CREATE TABLE IF NOT EXISTS subscribers (
     subscr_resp_email  VARCHAR(64) NOT NULL,
     subscr_comment TEXT DEFAULT "",
 
+    -- Help-section.
+    subscr_help_url VARCHAR(128) DEFAULT "",
+    subscr_help_email VARCHAR(64) DEFAULT "",
+
     FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
 
