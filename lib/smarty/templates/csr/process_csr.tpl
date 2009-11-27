@@ -14,6 +14,9 @@
 {$list_all_csr}
 {/if}
 
+{*
+ * Generate CSR in the browser.
+ *}
 {if empty($browserTemplate)}
 	<fieldset>
 	<legend>Apply for a certificate in browser</legend>
@@ -37,10 +40,21 @@
 {else}
 	{$browserTemplate}
 {/if}
+<div class="spacer"></div>
 
-{* This part will be JavaScript or another script executable by the browser (ActiveX?) *}
+{*
+ * Upload CSR from file
+ *}
+<div class="spacer"></div>
+{$upload_csr_file}
+
+<div class="spacer"></div>
+{*
+ * This part will be JavaScript or another script executable by the browser (ActiveX?)
+ *}
 {if isset($deployment_script)}
 	{$deployment_script}
+	<div class="spacer"></div>
 {/if}
 
 {*
