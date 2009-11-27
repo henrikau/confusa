@@ -21,3 +21,4 @@
       </tr>
     </table>
   </fieldset>
+</div>
