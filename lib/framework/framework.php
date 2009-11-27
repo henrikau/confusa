@@ -13,6 +13,7 @@ require_once 'logger.php';
 require_once 'content_page.php';
 require_once 'output.php';
 require_once 'CGE_ComodoCredentialException.php';
+require_once 'confusa_handler.php';
 
 /* global config */
 require_once 'config.php';
@@ -61,6 +62,7 @@ class Framework {
 			echo "You do not have a valid configuration. Please edit the confusa_config.php properly first<BR>\n";
 			exit(0);
 		}
+
 		$this->contentPage = $contentPage;
 		$this->person	= new Person();
 		$this->tpl	= new Smarty();
