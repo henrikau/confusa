@@ -2,7 +2,6 @@
 {* ------------------------------------------------------------ *}
 {*		If the person is in normal-mode			*}
 {* ------------------------------------------------------------ *}
-{if $person->getMode() == 0}
 
 {if ! $person->isAuth()}
 {assign var=prot_title value='title="You will be redirected to login before you can view this page"'}
@@ -14,6 +13,7 @@
 {assign var=prot_r value=''}
 {/if}
 
+{if $person->getMode() == 0}
 
 <h3 style="padding-bottom: 1em">Certificates</h3>
 <div style="padding-bottom: 1em">
