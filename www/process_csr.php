@@ -86,7 +86,7 @@ final class CP_ProcessCsr extends Content_Page
 	{
 
 		/* show upload-form. If it returns false, no uploaded CSRs were processed */
-		$this->processFileCSR($this->person);
+		$this->processUploadedCSR($this->person);
 
 		/* if flags are set, process the CSR*/
 		if ($this->processCSRFlagsSet()) {
@@ -144,12 +144,12 @@ final class CP_ProcessCsr extends Content_Page
 		return $msg;
 	}
 	/**
-	 * processFileCSR - walk an uploaded CSR through the steps towards a certificate
+	 * processUploadedCSR - walk an uploaded CSR through the steps towards a certificate
 	 *
 	 * If a new CSR has been uploaded via FILE, this will retrieve it, store it in
 	 * the database and pass control over to the CA to process it.
 	 */
-	private function processFileCSR()
+	private function processUploadedCSR()
 	{
 		$csr = null;
 		/* Testing for uploaded files */
@@ -199,7 +199,7 @@ final class CP_ProcessCsr extends Content_Page
 				Logger::log_event(LOG_INFO, $logmsg);
 			}
 		}
-	} /* end processFileCSR() */
+	} /* end processUploadedCSR() */
 
 	/**
 	 * processDBCsr()
