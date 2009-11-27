@@ -151,44 +151,55 @@ final class CP_ProcessCsr extends Content_Page
 	 */
 	private function processFileCSR()
 	{
+		$csr = null;
 		/* Testing for uploaded files */
 		if(isset($_FILES['user_csr']['name'])) {
 			$fu = new FileUpload('user_csr', true, true, 'test_content');
 			if ($fu->file_ok()) {
 				$csr = $fu->get_content();
-				$subject = openssl_csr_get_subject($csr, true);
-				$authvar = substr(pubkey_hash($fu->get_content(), true), 0, ConfusaConstants::$AUTH_KEY_LENGTH);
-				/* is the CSR already uploaded? */
-				$res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE auth_key=?",
-							    array('text'),
-							    array($authvar));
-				if (count($res)>0) {
-					Framework::error_output("CSR with matching public-key already in the database. ".
-								"Cannot upload this CSR. Please generate a new keypair and try again.");
-				/* match the DN only when using standalone CA, no need to do it for Comodo */
-				} else if (Config::get_config('ca_mode') == CA_COMODO ||
-						 match_dn($subject, $this->person)) {
-					$ip	= $_SERVER['REMOTE_ADDR'];
-					$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
-					$query .= " common_name, auth_key)";
-					$query .= " VALUES(?, current_timestamp(), ?, ?, ?)";
-
-					MDB2Wrapper::update($query,
-							    array('text', 'text', 'text', 'text'),
-							    array($csr, $ip, $this->person->getX509ValidCN(), $authvar));
-
-					$logmsg  = __FILE__ . " Inserted new CSR from $ip (" . $this->person->getX509ValidCN();
-					$logmsg .=") with hash " . pubkey_hash($csr, true);
-					Logger::log_event(LOG_INFO, $logmsg);
-				}
 			} else {
 				/* File NOT OK */
-					$msg  = "There were errors encountered when processing the file.<br />";
-					$msg .= "Please create a new keypair and upload a new CSR to the server.";
-					Framework::error_output($msg);
+				$msg  = "There were errors encountered when processing the file.<br />";
+				$msg .= "Please create a new keypair and upload a new CSR to the server.";
+				Framework::error_output($msg);
+			}
+		} else if (isset($_POST['user_csr'])) {
+			echo "Handling pasted CSR<br />\n";
+			$csr = $_POST['user_csr'];
+		}
+
+		if (!is_null($csr)) {
+			$subject = openssl_csr_get_subject($csr, true);
+			$authvar = substr(pubkey_hash($csr, true), 0, ConfusaConstants::$AUTH_KEY_LENGTH);
+			if (is_null($authvar) || $authvar == "") {
+				Framework::error_output("Problems with CSR. Please create a new CSR and try again.");
+				return;
+			}
+			/* is the CSR already uploaded? */
+			$res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE auth_key=?",
+						    array('text'),
+						    array($authvar));
+			if (count($res)>0) {
+				Framework::error_output("CSR with matching public-key already in the database. ".
+							"Cannot upload this CSR. Please generate a new keypair and try again.");
+				/* match the DN only when using standalone CA, no need to do it for Comodo */
+			} else if (Config::get_config('ca_mode') == CA_COMODO ||
+				   match_dn($subject, $this->person)) {
+				$ip	= $_SERVER['REMOTE_ADDR'];
+				$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
+				$query .= " common_name, auth_key)";
+				$query .= " VALUES(?, current_timestamp(), ?, ?, ?)";
+
+				MDB2Wrapper::update($query,
+						    array('text', 'text', 'text', 'text'),
+						    array($csr, $ip, $this->person->getX509ValidCN(), $authvar));
+
+				$logmsg  = __FILE__ . " Inserted new CSR from $ip (" . $this->person->getX509ValidCN();
+				$logmsg .=") with hash " . pubkey_hash($csr, true);
+				Logger::log_event(LOG_INFO, $logmsg);
 			}
 		}
-	}
+	} /* end processFileCSR() */
 
 	/**
 	 * processDBCsr()
