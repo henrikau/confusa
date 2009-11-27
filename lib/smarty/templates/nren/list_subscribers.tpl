@@ -149,77 +149,15 @@
 	<td style="width: 300px"></td>
       </tr>
 
+      <tr><td colspan="3"><b>Certificate Information:</b></td></tr>
       <tr>
-	<td colspan="3"><b>Contact information</b></td></tr>
-
-      <tr>
-	<td align="right"></td>
-	<td></td>
-      </tr>
-      <tr>
-	<td align="right" style="padding-right: 10px">Phone</td>
-	<td>
-	  <input type="text" size="35" name="subscr_phone"
-	  value="{$subscriber->getPhone()}" />
+	<td style="font-size: 0.8em; font-style: italic" colspan="2">
+	  The name that goes into the certificate <b>must</b> be a
+	  stable value. If this needs to change, the subscriber must
+	  be <b>removed</b> and created anew with the new name.
 	</td>
       </tr>
-      <tr>
-		<td></td>
-		<td style="font-size: 0.8em; font-style: italic">
-			e.g. the support teams's phone number
-		</td>
-      </tr>
-
-      <tr>
-	<td align="right" style="padding-right: 10px">E-mail</td>
-	<td>
-	  <input type="text" size="35" name="subscr_email" value="{$subscriber->getEmail()}" />
-	</td>
-      </tr>
-       <tr>
-		<td></td>
-		<td style="font-size: 0.8em; font-style: italic">
-			e.g. the support teams's e-mail address
-		</td>
-      </tr>
-      <tr>
-	<td><div class="spacer"></div></td>
-	<td></td>
-	<td></td>
-      </tr>
-
-      <tr>
-	<td align="right" style="padding-right: 10px">Responsible Person</td>
-	<td>
-	  <input type="text" size="35" name="subscr_responsible_name" value="{$subscriber->getRespName()}" />
-	</td>
-      </tr>
-       <tr>
-		<td></td>
-		<td style="font-size: 0.8em; font-style: italic">
-			technical contact - not enduser support
-		</td>
-      </tr>
-      <tr>
-	<td align="right" style="padding-right: 10px">Responsible Person email</td>
-	<td>
-	  <input type="text" size="35" name="subscr_responsible_email" value="{$subscriber->getRespEmail()}" />
-	</td>
-      </tr>
-
-       <tr>
-		<td></td>
-		<td style="font-size: 0.8em; font-style: italic">
-			technical contact's mail address
-		</td>
-      </tr>
-
-      <tr>
-	<td><div class="spacer"></div></td>
-	<td></td>
-	<td></td>
-      </tr>
-
+      <tr><td><div class="spacer"></div></td><td></td><td></td></tr>
       <tr>
 	<td align="right" style="padding-right: 10px">DN: /O=</td>
 	<td><b>{$subscriber->getOrgName()|escape}</b></td>
@@ -232,16 +170,77 @@
 	<td></td>
       </tr>
 
+
+      <tr><td colspan="3"><b>Contact information</b></td></tr>
       <tr>
-	<td align="right" style="padding-right: 10px">Help-desk URL</td>
+	<td style="font-size: 0.8em; font-style: italic" colspan="2">
+	  Official contact. This is where the policy-makers
+	  reside. Whenever a contract needs signing etc.
+	</td>
+      </tr>
+      <tr><td><div class="spacer"></div></td><td></td><td></td></tr>
+      <tr>
+	<td align="right" style="padding-right: 10px">Phone</td>
 	<td>
-	  <input type="text" size="35" name="subscr_help_url" value="{$subscr_details.subscr_help_url}" />
+	  <input type="text" size="40" name="subscr_phone"
+	  value="{$subscriber->getPhone()}" />
 	</td>
       </tr>
       <tr>
-	<td align="right" style="padding-right: 10px">Help-desk Email</td>
+	<td align="right" style="padding-right: 10px">E-mail</td>
 	<td>
-	  <input type="text" size="35" name="subscr_help_email" value="{$subscr_details.subscr_help_email}" />
+	  <input type="text" size="40" name="subscr_email" value="{$subscriber->getEmail()}" />
+	</td>
+      </tr>
+      <tr><td><div class="spacer"></div></td><td></td><td></td></tr>
+
+
+      <tr><td colspan="3"><b>Responsible person</b></td></tr>
+      <tr>
+	<td style="font-size: 0.8em; font-style: italic" colspan="2">
+	  Technical contact - not enduser support. Whenever there are
+	  issues with attributes etc.
+	</td>
+      </tr>
+      <tr><td><div class="spacer"></div></td><td></td><td></td></tr>
+      <tr>
+	<td align="right" style="padding-right: 10px">Name</td>
+	<td>
+	  <input type="text" size="40" name="subscr_responsible_name" value="{$subscriber->getRespName()}" />
+	</td>
+      </tr>
+      <tr>
+	<td align="right" style="padding-right: 10px">E-mail</td>
+	<td>
+	  <input type="text" size="40" name="subscr_responsible_email" value="{$subscriber->getRespEmail()}" />
+	</td>
+      </tr>
+
+      <tr>
+	<td><div class="spacer"></div></td>
+	<td></td>
+	<td></td>
+      </tr>
+
+      <tr><td colspan="3"><b>Help desk information</b></td></tr>
+       <tr>
+	 <td style="font-size: 0.8em; font-style: italic" colspan="2">
+	   End-user support. Where you want the portal to send general
+	   inquiries (support questions).
+	 </td>
+      </tr>
+      <tr><td><div class="spacer"></div></td><td></td><td></td></tr>
+      <tr>
+	<td align="right" style="padding-right: 10px">URL</td>
+	<td>
+	  <input type="text" size="40" name="subscr_help_url" value="{$subscr_details.subscr_help_url}" />
+	</td>
+	<td></td>
+      </tr>
+      <tr>
+	<td align="right" style="padding-right: 10px">E-mail</td>
+	<td>
+	  <input type="text" size="40" name="subscr_help_email" value="{$subscr_details.subscr_help_email}" />
 	</td>
       </tr>
       <tr>
@@ -250,9 +249,17 @@
 	<td></td>
       </tr>
 
+      <tr><td colspan="3"><b>Comments</b></td></tr>
+       <tr>
+	 <td style="font-size: 0.8em; font-style: italic" colspan="2">
+	   Comments regarding the subscriber that cannot fit into the
+	   pre-defined fields. Note that this field will never be
+	   exposed to the subscriber, so you cannot use this to send
+	   in-portal messages to the Subscriber's administrators.
+	 </td>
+      </tr>
       <tr>
-	<td align="right" valign="top" style="padding-right: 10px">Comments</td>
-	<td>
+	<td colspan="2">
 	  <textarea name="subscr_comment" rows="10" cols="60"
 	            title="Arbitrary comment about the subscriber">{$subscriber->getComment()|escape}</textarea>
 	</td>
