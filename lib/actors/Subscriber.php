@@ -13,6 +13,7 @@ class Subscriber
 	private $state;
 	private $comment;
 	private $preferredLanguage;
+	private $help_url;
 
 	private $pendingChanges = false;
 
@@ -351,6 +352,42 @@ class Subscriber
 		}
 		return null;
 	}
+
+	/**
+	 * setHelpURL() Set a new help-url for the subscriber.
+	 *
+	 * The help-URL is meant to be given to the users when they need
+	 * help. In most cases, the portal will not run locally at each
+	 * subscriber's sites.
+	 *
+	 * @param String $url the URL to the helpdesk
+	 * @param boolean $external external update (trigger pendingChanges)
+	 * @return boolean true if update was successful (and requires save())
+	 * @access public
+	 */
+	public function setHelpURL($url, $external=true)
+	{
+		if (is_null($url)) {
+			return false;
+		}
+		$url = Input::sanitizeText($url);
+		if ($this->help_url === $url) {
+			return false;
+		}
+		$this->help_url = $url;
+		if ($external) {
+			$this->pendingChanges = true;
+		}
+		return true;
+	}
+	public function getHelpURL()
+	{
+		if (!is_null($this->help_url)) {
+			return $this->help_url;
+		}
+		return null;
+	}
+
 	/**
 	 * setState() Set new state for the subscriber
 	 *
