@@ -599,7 +599,7 @@ class Person{
      */
     public function getNREN()
     {
-	    if (is_null($this->nren)) {
+	    if (empty($this->nren)) {
 		    return null;
 	    }
 	    return $this->nren;
