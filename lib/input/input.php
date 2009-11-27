@@ -51,11 +51,7 @@ class Input
 			}
 		}
 
-		if (ini_get("magic_quotes_gpc") === "1") {
-			/* strip the slashes automatically inserted before doing more complete
-			 * escaping */
-			$input = stripslashes($input);
-		}
+		$input = stripslashes($input);
 
 		/* in text is feasible to want newlines, to format the appearance of the
 		 * text. Since it is undesired to directly insert newlines into the DB
