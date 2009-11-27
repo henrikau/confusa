@@ -129,13 +129,10 @@ class CP_NREN_Admin extends Content_Page
 				}
 				break;
 			case 'info':
-				/* get info */
-				try {
-					$this->tpl->assign('subscriber_details', true);
-					$this->tpl->assign('subscriber_detail_id', $id);
-				} catch(Exception $e) {
-					;
-				}
+				$this->tpl->assign('subscr_details',
+						   Subscriber::getSubscriberByID($id, $this->person->GetNREN())->getInfo());
+				$this->tpl->assign('subscriber_details', true);
+				$this->tpl->assign('subscriber_detail_id', $id);
 				break;
 			case 'add':
 				$dn_name = $_POST['dn_name'];
