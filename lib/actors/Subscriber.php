@@ -48,7 +48,7 @@ class Subscriber
 		if (isset($dn_name) && isset($org_state)) {
 			$this->nren = $nren;
 			$this->idp_name = $idp_name;
-			$this->dn_name = $dn_name;
+			$this->org_name = $dn_name;
 			$this->state = $org_state;
 			$this->db_id = $db_id;
 		} else {
