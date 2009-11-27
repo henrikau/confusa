@@ -121,13 +121,16 @@
 	<table>
 		<tr><td></td></tr>
 		{foreach from=$certList item=cert}
-			{assign var='key' value=$cert.auth_key}
-			{assign var='serial' value=$cert.serial}
 			{assign var='name' value=$cert.cert_owner}
-			{assign var='valid' value=$cert.valid_untill}
+
+			{if isset($cert.valid_untill)}
+				{assign var='valid' value=$cert.valid_untill}
+			{/if}
 
 			{if $standalone}
 
+				{assign var='key' value=$cert.auth_key}
+				{assign var='serial' value=$cert.serial}
 				<tr>
 				<td></td>
 				<td>
@@ -311,7 +314,11 @@
 	</fieldset>
 	</div>
 {/if} {* empty(certList) *}
-{$processingResult|escape}
+
+{if isset($processingResult)}
+	{$processingResult|escape}
+{/if}
+
 {if isset($script)}
 {$script}
 {/if}
