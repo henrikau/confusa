@@ -213,6 +213,10 @@ abstract class CA
 	$this->tpl->cache_dir	= ConfusaConstants::$SMARTY_CACHE;
 	$this->tpl->assign('subscriber',
 	                   $this->person->getSubscriber()->getOrgName());
+	$this->tpl->assign('subscriber_support_email',
+	                   $this->person->getSubscriber()->getHelpEmail());
+	$this->tpl->assign('subscriber_support_url',
+	                   $this->person->getSubscriber()->getHelpURL());
 	$this->tpl->assign('confusa_url', Config::get_config('server_url'));
 	$this->tpl->assign('dn', $this->person->getX509SubjectDN());
 	$this->tpl->assign('download_url', Config::get_config('server_url') .
