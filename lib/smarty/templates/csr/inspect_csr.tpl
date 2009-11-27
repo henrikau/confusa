@@ -1,4 +1,5 @@
 <div class="csr">
+  {if isset($csrInspect)}
   <fieldset class="inpsect_csr">
     {*<legend>Inspect CSR</legend>*}
     <table>
@@ -91,4 +92,5 @@
       </tr>
     </table>
   </fieldset>
+  {/if}
 </div> <!-- inspect_csr -->
