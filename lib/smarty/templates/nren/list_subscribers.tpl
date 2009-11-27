@@ -159,7 +159,7 @@
       <tr>
 	<td align="right" style="padding-right: 10px">Phone</td>
 	<td>
-	  <input type="text" name="subscr_phone"
+	  <input type="text" size="35" name="subscr_phone"
 	  value="{$subscriber->getPhone()}" />
 	</td>
       </tr>
@@ -173,7 +173,7 @@
       <tr>
 	<td align="right" style="padding-right: 10px">E-mail</td>
 	<td>
-	  <input type="text" name="subscr_email" value="{$subscriber->getEmail()}" />
+	  <input type="text" size="35" name="subscr_email" value="{$subscriber->getEmail()}" />
 	</td>
       </tr>
        <tr>
@@ -191,7 +191,7 @@
       <tr>
 	<td align="right" style="padding-right: 10px">Responsible Person</td>
 	<td>
-	  <input type="text" name="subscr_responsible_name" value="{$subscriber->getRespName()}" />
+	  <input type="text" size="35" name="subscr_responsible_name" value="{$subscriber->getRespName()}" />
 	</td>
       </tr>
        <tr>
@@ -203,7 +203,7 @@
       <tr>
 	<td align="right" style="padding-right: 10px">Responsible Person email</td>
 	<td>
-	  <input type="text" name="subscr_responsible_email" value="{$subscriber->getRespEmail()}" />
+	  <input type="text" size="35" name="subscr_responsible_email" value="{$subscriber->getRespEmail()}" />
 	</td>
       </tr>
 
@@ -235,13 +235,13 @@
       <tr>
 	<td align="right" style="padding-right: 10px">Help-desk URL</td>
 	<td>
-	  <input type="text" name="subscr_help_url" value="{$subscr_details.subscr_help_url}" />
+	  <input type="text" size="35" name="subscr_help_url" value="{$subscr_details.subscr_help_url}" />
 	</td>
       </tr>
       <tr>
 	<td align="right" style="padding-right: 10px">Help-desk Email</td>
 	<td>
-	  <input type="text" name="subscr_help_email" value="{$subscr_details.subscr_help_email}" />
+	  <input type="text" size="35" name="subscr_help_email" value="{$subscr_details.subscr_help_email}" />
 	</td>
       </tr>
       <tr>
