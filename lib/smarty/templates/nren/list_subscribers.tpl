@@ -52,7 +52,7 @@
       <td style="width: 25px"></td>
       <td style="width: 70px"><b>ID</b></td>
       <td style="width: 200px"><b>Name</b></td>
-      {if !$subscriber_details}
+      {if empty($subscriber_details)}
          <td><b>State</b></td>
       {/if}
       <td></td>
@@ -115,7 +115,7 @@
 	<span title="Your own institution" style="cursor:help">(*)</span>
 	{/if}
       </td>
-      {if !$subscriber_details || $subscriber->getDBID() != $subscriber_detail_id}
+      {if empty($subscriber_details) || $subscriber->getDBID() != $subscriber_detail_id}
       <td>
 			<form action="" method="post">
 			  <div>
@@ -132,7 +132,7 @@
   </table>
 
   {* show subscriber info *}
-  {if $subscriber_details && $subscriber->getDBID() == $subscriber_detail_id}
+  {if isset($subscriber_details) && $subscriber->getDBID() == $subscriber_detail_id}
   <div class="spacer"></div>
   <fieldset style="border: 1px dotted #C0C0C0">
     <legend style="border: none; color: #303030">Details for
