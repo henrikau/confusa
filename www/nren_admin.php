@@ -146,7 +146,9 @@ class CP_NREN_Admin extends Content_Page
 				$this->tpl->assign('subscriber_detail_id', $id);
 				break;
 			case 'add':
-				$subscriber = new Subscriber($_POST['db_name'], $this->person->getNREN());
+				$db_name = Input::sanitizeText($_POST['db_name']);
+				echo "The db_name after the post is " . $db_name . "<br />\n";
+				$subscriber = new Subscriber($db_name, $this->person->getNREN());
 				if ($subscriber->isValid()) {
 					Framework::error_output("Cannot create new, already existing.");
 					break;
