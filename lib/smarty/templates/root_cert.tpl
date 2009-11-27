@@ -43,7 +43,7 @@ certificates published by this CA.
 </ul>
 
 <br />
-{if $ca_dump}
+{if isset($ca_dump)}
 <br />
 <h4>CA certificate dump:</h4>
 <hr width="80%">
@@ -52,10 +52,10 @@ certificates published by this CA.
 </pre>
 {/if}
 
-{if $crl_dump}
+{if isset($crl_dump)}
 <br />
 <h4>CRL dump:</h4>
-<hr width="80%">
+<hr width="80%" />
 <pre class="certificate">
 {$crl_dump|escape}
 </pre>
