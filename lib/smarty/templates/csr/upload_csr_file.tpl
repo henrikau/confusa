@@ -1,7 +1,6 @@
 <div class="csr">
   <fieldset>
     <legend>Upload new CSR</legend>
-    <br />
     <p class="info">
       Upload a local CSR for signing by the CA. If you created
       this with any globus-specific tools, you should look for
