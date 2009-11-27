@@ -18,13 +18,13 @@
 [ <a href="?show=logo">Logo</a> ]
 [ <a href="?show=mail">Not. Mail</a> ]
 <div class="spacer"></div>
-  {if $edit_help_text === TRUE}
+  {if isset($edit_help_text) && $edit_help_text === TRUE}
 	{include file='stylist/edit_help_text.tpl'}
-  {elseif $edit_css === TRUE}
+  {elseif isset($edit_css) && $edit_css === TRUE}
 	{include file='stylist/edit_css.tpl'}
-  {elseif $edit_logo === TRUE}
+  {elseif isset($edit_logo) && $edit_logo === TRUE}
 	{include file='stylist/edit_logo.tpl'}
-  {elseif $edit_mail === TRUE}
+  {elseif isset($edit_mail) && $edit_mail === TRUE}
 	{include file='stylist/edit_mail.tpl'}
   {/if}
 {/if}
