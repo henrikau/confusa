@@ -15,7 +15,7 @@
 	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
 	pollStatus('Processing order number {$order_number|escape}.');
 
-	{if $done === TRUE}
+	{if isset($done) && $done === TRUE}
 		clearTimeout(timer1);
 		statusDone({$order_number|escape});
 	{/if}
