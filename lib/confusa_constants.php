@@ -125,6 +125,16 @@ class ConfusaConstants {
 	/* name of the eScience product */
 	public static $ESCIENCE_PRODUCT = 'TCS eScience Personal';
 
+	/* logging headers */
+	public static $LOG_HEADER_DEBUG = 'debug:';
+	public static $LOG_HEADER_INFO = 'info:';
+	public static $LOG_HEADER_NOTICE = 'notice:';
+	public static $LOG_HEADER_WARNING = 'WARNING:';
+	public static $LOG_HEADER_ERR = ' ERROR:';
+	public static $LOG_HEADER_CRIT = ' -= CRITICAL =-';
+	public static $LOG_HEADER_ALERT = ' -= [ ALERT ] =-';
+	public static $LOG_HEADER_EMERG = ' EMERG EMERG EMERG';
+
 }
 
 ?>

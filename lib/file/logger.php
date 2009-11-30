@@ -17,6 +17,7 @@
   /* get name of default log-file (in addition to syslog)
    * require_once(dirname(WEB_DIR).'/www/_include.php'); */
 require_once 'config.php';
+require_once 'confusa_constants.php';
 class Logger {
 /* log_event
  *
@@ -74,28 +75,28 @@ class Logger {
 
 		switch($pri) {
 		case LOG_DEBUG:
-			$header .= "debug:";
+			$header .= ConfusaConstants::$LOG_HEADER_DEBUG;
 			break;
 		case LOG_INFO:
-			$header .= "info:";
+			$header .= ConfusaConstants::$LOG_HEADER_INFO;
 			break;
 		case LOG_NOTICE:
-			$header .= "notice:";
+			$header .= ConfusaConstants::$LOG_HEADER_NOTICE;
 			break;
 		case LOG_WARNING:
-			$header .= "WARNING:";
+			$header .= ConfusaConstants::$LOG_HEADER_WARNING;
 			break;
 		case LOG_ERR:
-			$header .= " ERROR:";
+			$header .= ConfusaConstants::$LOG_HEADER_ERR;
 			break;
 		case LOG_CRIT:
-			$header .= " -= CRITICAL =-";
+			$header .= ConfusaConstants::$LOG_HEADER_CRIT;
 			break;
 		case LOG_ALERT:
-			$header .= " -= [ ALERT ] =-";
+			$header .= ConfusaConstants::$LOG_HEADER_ALERT;
 			break;
 		case LOG_EMERG:
-			$header .= " EMERG EMERG EMERG";
+			$header .= ConfusaConstants::$LOG_HEADER_EMERG;
 			break;
 		default:
 			/* don't log things when you don't know how (un)important it is */
