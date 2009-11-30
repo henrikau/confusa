@@ -1,6 +1,6 @@
 <?php
 $path = ini_get('include_path');
-define('LIB_DIR', dirname(dirname($_SERVER['SCRIPT_FILENAME'])) . '/lib');
+define('LIB_DIR', dirname(__FILE__));
 
 $path .= PATH_SEPARATOR . LIB_DIR . '/auth';
 $path .= PATH_SEPARATOR . LIB_DIR . '/exceptions';

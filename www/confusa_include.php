@@ -17,7 +17,7 @@ define("ADMIN_MODE", 1);
 define("CA_STANDALONE", 0);
 define("CA_COMODO", 1);
 
-define('WEB_DIR', dirname($_SERVER['SCRIPT_FILENAME']));
+define('WEB_DIR', dirname(__FILE__));
 $path .= PATH_SEPARATOR . "/usr/share/php/libphp-phpmailer/";
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/www';
