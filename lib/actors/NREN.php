@@ -115,10 +115,10 @@ class NREN
 		$doUpdate = false;
 		if ($this->hasMap) {
 			/* compare value */
-			if ($epodn	!= Input::sanitizeText($map['epodn']) ||
-			    $cn		!= Input::sanitizeText($map['cn']) ||
-			    $mail	!= Input::sanitizeText($map['mail']) ||
-			    $entitlement!= Input::sanitizeText($map['entitlement'])) {
+			if ($epodn	!= Input::sanitizeText($this->map['epodn']) ||
+			    $cn		!= Input::sanitizeText($this->map['cn']) ||
+			    $mail	!= Input::sanitizeText($this->map['mail']) ||
+			    $entitlement!= Input::sanitizeText($this->map['entitlement'])) {
 				$doUpdate = true;
 				$update = "UPDATE attribute_mapping SET epodn=?, cn=?, ".
 					" mail=?, entitlement=? WHERE nren_id=? ".
