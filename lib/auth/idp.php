@@ -153,7 +153,8 @@ class Confusa_Auth_IdP extends Confusa_Auth
 
 
 		if ($this->person->isAuth()) {
-			$this->decoratePerson($this->as->getAttributes());
+			$this->decoratePerson($this->as->getAttributes(),
+					      $session->getIdP());
 			return true;
 		}
 		/* Session is invalid, thus user is not authN */
