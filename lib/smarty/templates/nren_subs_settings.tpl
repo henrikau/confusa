@@ -12,4 +12,7 @@
 
 {/if}
 
+{else}
+{* User is not admin *}
+{include file='not_authorized.tpl'}
 {/if}
