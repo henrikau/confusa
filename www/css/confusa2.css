@@ -110,6 +110,20 @@ div.warning {
 	border: 2px solid #FBB117;
 }
 
+
+h2.unauthz {
+             color:		#990033;
+             font-size:		140%;
+             font-weight:	bold;
+             margin-top:	5px;
+             margin-bottom:	10px;
+}
+
+div.unauthz {
+              width:		80%;
+              float:		center;
+}
+
 div.message {
 	border: 2px solid black;
 }
