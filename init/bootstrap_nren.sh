@@ -7,66 +7,108 @@
 # It is probably a good idea to run this script for new NRENs that get connected
 # to Confusa.
 #
+# Exit-codes:
+# 3: Cannot insert data in table
+# 4: Cannot get requested data from database (and should be present)
+# 5: Cannot include all requested files
 
 
-if [ $# != 3 ]; then
-	echo -e "\tUsage: $0 <nren_name> <principal> <contact>"
-	echo -e "\tnren_name:\tThe name of the NREN, e.g. UNINETT"
-	echo -e "\tprincipal:\teduPersonPrincipalName or another unique identifier for \n\t\t\tan initial NREN-admin"
-	echo -e "\tcontact:\tA contact information for the NREN"
-	exit 1
-fi;
+# set path
+base=`dirname $0`
+pushd $base >/dev/null
 
-source ../programs/db_connect.sh
 
-function get_nren_id
+#------------------------------------------------------------------------#
+#		Function usage
+#
+# Show how to use the program and explain the meaning of the
+# different parameters the script expects
+#------------------------------------------------------------------------#
+function usage
 {
-	res=`$MYSQL -e "USE ${database}; SELECT nren_id FROM nrens WHERE name='$1'"`
-	result=$?
-
-	if [ $result -ne 0 ]; then
-		echo "Could not lookup NREN $1 in the database. Do you have the correct"
-		echo "database credentials specified there?"
-		perror $result
-		exit 1
-	fi
+prog_name=`basename $0`
+cat <<EOF
+Usage $prog_name  <nren_name> <Country> <principal> <contact>
+    nren_name:   The name of the NREN. Must be unique within the database.
+    country:     Two-letter country-code
+    principal:   eduPersonPrincipalName or another unique identifier
+                 for an initial NREN-admin
+    contact:     A contact information for the NREN
+EOF
 }
 
-# Try to find the NREN in the DB
+# make sure we have all required parameters
+if [ $# != 4 ]; then
+    usage
+    exit 1
+fi;
+nren_name=$1
+country=$2
+eppn=$3
+contact=$4
 
-echo "Looking up if NREN was already defined"
-get_nren_id $1
-if [ -n "$res" ]; then
-	echo "NREN was found, new administrator will be added to it"
-elif [ -z "$res" ]; then
-	echo "NREN not found, newly inserting NREN into the database"
-	res=`$MYSQL -e "USE ${database}; INSERT INTO nrens(name, contact_email) \
-		VALUES('$1', '$3')"`
+# Include libraries
+if [ -z ../lib/bash/config_lib.sh ]; then
+    echo "Cannot find config-library. Aborting."
+    exit 5
+fi
+. ../lib/bash/config_lib.sh
+
+if [ -z ../lib/bash/db_lib.sh ]; then
+    echo "Cannot find db-library. Aborting."
+    exit 5
+fi
+. ../lib/bash/db_lib.sh
+
+
+#------------------------------------------------------------------------#
+#		NREN already present?
+#------------------------------------------------------------------------#
+echo -ne "Is the NREN already present in the database? "
+res=`run_query "SELECT nren_id FROM nrens WHERE name='$nren_name'"`
+if [ -z "$res" ]; then
+    echo -ne " ... no, creating ... "
+    res=`run_query "INSERT INTO nrens(name, country, contact_email) VALUES('$nren_name', '$country', '$contact')"`
 	result=$?
-
 	if [ $result -ne 0 ]; then
+	    echo ""
 		echo "Could not insert the new NREN $1 with contact $3 into the DB"
 		echo "Is the supplied data wellformed and does your confusa_config.php"
 		echo "contain the right database access credentials?"
 		perror $result
-		exit 1
+		exit 3
 	fi
-
-	get_nren_id $1
+	res=`run_query "SELECT nren_id FROM nrens WHERE name='$nren_name'"`
+	if [ -z "$res" ]; then
+	    echo ""
+	    echo "Problems getting the new NREN from the database. Cannot continue."
+	    exit 4
+	fi
+	echo " done!"
+else
+    echo " ... yes"
 fi
-
 nren_id=`echo $res | cut -d " " -f 2`
 
-res=`$MYSQL -e "USE ${database}; SELECT * FROM admins WHERE admin='${2}' AND nren=${nren_id}"`
 
+#------------------------------------------------------------------------#
+#		Can we add the admin
+#------------------------------------------------------------------------#
+res=`run_query "SELECT * FROM admins WHERE admin='${eppn}'"`
 if [ -n "$res" ]; then
-	echo "ERROR: An administrator with eppn ${2} already exists for NREN ${1}. Aborting..."
-	exit 1
+    cat <<EOF
+An administrator with eppn ${eppn} already exists in the database. Since the eduPersonPrincipalName
+is supposed to be an unique identifier, we cannot add this admin.
+
+If this is not what you'd expected, you should have a look at the database and make sure that you
+have provided the correct ePPN, and that the admin is not already present. The result from the database was:
+EOF
+echo $res
+exit 0
 fi
 
-echo "Adding new administrator to NREN $1, internal ID $nren_id"
-res=`$MYSQL -e "USE ${database}; INSERT INTO admins(admin, admin_level, admin_email, nren) \
-		VALUES('$2', '2', '$3', $nren_id)"`
+echo "Adding new administrator to NREN ${nren}, internal ID ${nren_id}"
+res=`run_query "INSERT INTO admins(admin, admin_level, nren) VALUES('$eppn', '2', $nren_id)"`
 result=$?
 
 if [ $result -ne 0 ]; then
@@ -74,7 +116,7 @@ if [ $result -ne 0 ]; then
 	echo "Please check if all credentials are specified and if you supplied"
 	echo "a valid ePPN for the new admin"
 	perror $result
-	exit 1
+	exit 3
 fi
 
-echo "NREN-administrator successfully bootstrapped"
+popd >/dev/null
