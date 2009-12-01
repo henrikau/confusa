@@ -16,21 +16,23 @@ require_once 'CriticalAttributeException.php';
  */
 class NREN
 {
-
+	private $idp_name;
 	private $map;
 	private $hasMap;
 
 	private $data;
 	private $pendingChanges;
 
-	function __construct($name)
+	function __construct($idp_name)
 	{
 		$this->data = array();
-		$this->data['nren_name'] = $name;
+		$this->idp_name = Input::sanitizeText($idp_name);
 		$this->pendingChanges = false;
 
-		if (!$this->decorateNREN($name)) {
-			echo __FILE__ .":".__LINE__." could not decorate NREN (" . $this->name . ")<br />\n";
+		if (!$this->decorateNREN()) {
+			Logger::log_event(LOG_ALERT,
+					  __FILE__ .":".__LINE__." could not decorate NREN (".
+					  $this->name . ")<br />\n");
 		}
 		$this->retrieveMap();
 	}
@@ -72,9 +74,13 @@ class NREN
 	 */
 	function getName()
 	{
-		return $this->data['nren_name'];
+		return $this->data['name'];
 	}
 
+	function getCountry()
+	{
+		return $this->data['country'];
+	}
 	/**
 	 * getID() return the database ID for the NREN
 	 *
@@ -327,9 +333,11 @@ class NREN
 	/**
 	 * decorateNREN() Add information about the NREN to the object.
 	 *
-	 * This function will take the supplied name and query the database for
-	 * information. It will store all elements in the row in the object so
-	 * it can be used at a later time.
+	 * This function will use the idp_name to find the NREN from the
+	 * database.
+	 *
+	 * It will store all elements in the row in the object so it can be used
+	 * at a later time.
 	 *
 	 * The database looks like the following:
 	 *
@@ -338,6 +346,7 @@ class NREN
 	 * +---------------+-------------+------+-----+---------+----------------+
 	 * | nren_id       | int(11)     | NO   | PRI | NULL    | auto_increment |
 	 * | name          | varchar(30) | YES  |     | NULL    |                |
+	 * | country       | char(2)     | NO   |     | NULL    |                |
 	 * | login_account | int(11)     | YES  | MUL | NULL    |                |
 	 * | about         | text        | YES  |     | NULL    |                |
 	 * | help          | text        | YES  |     | NULL    |                |
@@ -352,23 +361,26 @@ class NREN
 	 * 'about') are ignored, and will only be retrieved if specifically
 	 * asked for.
 	 *
-	 * @param	String	$nren_name The name of the NREN
+	 * @param	void
 	 * @return	void
 	 * @access	private
 	 */
 	private function decorateNREN()
 	{
-		$query  = "SELECT nren_id, name, login_account, contact_email, ".
-			"contact_phone, cert_email, cert_phone, lang, url FROM nrens WHERE name = ?";
+		/* $query  = "SELECT nren_id, name, login_account, contact_email, ". */
+		/* 	"contact_phone, cert_email, cert_phone, lang, url FROM nrens WHERE name = ?"; */
+		$query  = "SELECT	n.nren_id,		n.name,		n.login_account, ";
+		$query .= "		n.contact_email,	n.contact_phone,n.cert_email, ";
+		$query .= "		n.cert_phone,		n.lang,		n.url, ";
+		$query .= "		n.country,		idp.idp_url as idp_url ";
+		$query .= "FROM idp_map idp LEFT JOIN ";
+		$query .= "nrens n on idp.nren_id = n.nren_id WHERE idp.idp_url=?";
 		try {
-			$res = MDB2Wrapper::execute($query,
-						    array('text'),
-						    array($this->data['nren_name']));
-
+			$res = MDB2Wrapper::execute($query, null, array($this->idp_name));
 			switch (count($res)) {
 			case 0:
 				if (Config::get_config('debug')) {
-					echo "no NREN with name (".$this->data['nren_name'].") found in db!<br />\n";
+					echo "no IdP with name (".$this->idp_name.") found in db!<br />\n";
 				}
 				return false;
 			case 1:
