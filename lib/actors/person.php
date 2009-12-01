@@ -432,24 +432,6 @@ class Person{
     }
 
     /**
-     * setSubscriber()
-     *
-     * This name is used to find the correct row in the database, and from that,
-     * get what we use in the certificate (the subscriberName).
-     *
-     * @param String the name to use for the subscriber in the database.
-     * @return void
-     */
-    public function addSubscriber($db_name)
-    {
-	    if (isset($db_name) && $db_name != "") {
-		    if (!isset($this->subscriber)) {
-			    $this->subscriber = new Subscriber($db_name, $this->nren);
-		    }
-	    }
-    }
-
-    /**
      * getSubscriberIdPName() Return the name we use as key in the database.
      *
      * @param void
@@ -621,12 +603,24 @@ class Person{
 	    return $this->subscriber;
     }
 
+    /**
+     * setSubscriber()
+     *
+     * This name is used to find the correct row in the database, and from that,
+     * get what we use in the certificate (the subscriberName).
+     *
+     * @param String|Subscriber the name of, or the subscriber itself
+     * @return void
+     */
     public function setSubscriber($subscriber)
     {
 	    if (is_null($subscriber)) {
 		    return;
+	    } else if ($subscriber instanceof Subscriber) {
+		    $this->subscriber = $subscriber;
+	    } else {
+		    $this->subscriber = new Subscriber($subscriber, $this->nren);
 	    }
-	    $this->subscriber = new Subscriber($subscriber, $this->nren);
     }
 
     public function getMap()
