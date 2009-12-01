@@ -40,7 +40,7 @@ class MDB2Wrapper
       *                                 array('int'),
       *                                 array('$_GET['age'])");
       */
-     public static function execute($query, $types, $data)
+     public static function execute($query, $types, $data, $update = false)
      {
 
           if (!isset(MDB2Wrapper::$conn))
@@ -76,7 +76,10 @@ class MDB2Wrapper
      } /* end execute */
 
      /* at the moment, it just uses execute, without returning anything */
-     public static function update($query, $types, $data) { MDB2Wrapper::execute($query, $types, $data); }
+     public static function update($query, $types, $data)
+     {
+	     MDB2Wrapper::execute($query, $types, $data, true);
+     }
 
     /*
      * MySQL/the MDB2-MySQL wrapper seems to not support prepared
