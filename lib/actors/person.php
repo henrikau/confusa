@@ -538,11 +538,19 @@ class Person{
      * getCountry() - return the country-code for the user's country.
      *
      * @return String two-letter country code
+     * @deprecated  use nren->getCountry() instead
      */
     public function getCountry()
     {
-		return $this->country;
-    }
+	    if (Config::get_config('debug')) {
+		    $msg = __CLASS__ . "::" . __FUNCTION__ . " Warning: calling deprecated function. Use NREN::getCountry() instead.";
+		    Logger::log_event(LOG_DEBUG, $msg);
+		    Framework::error_output($msg);
+	    }
+	    if (isset($this->nren)) {
+		    return $this->nren->getCountry();
+	    }
+    } /* end getCountry() */
 
 
     /**
