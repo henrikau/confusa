@@ -572,12 +572,12 @@ class Person{
      * The nren will be stored as lowercase only to make sure things are
      * consistent all the way through confusa.
      *
-     * @param String the name of the NREN the user ultimately belongs to.
+     * @param NREN the NREN to store
      * @return void
      */
-    public function setNREN($input_nren) {
-	    if (isset($input_nren)) {
-		    $this->nren = new NREN($input_nren);
+    public function setNREN($nren) {
+	    if (isset($nren)) {
+		    $this->nren = $nren;
 	    }
     }
 
