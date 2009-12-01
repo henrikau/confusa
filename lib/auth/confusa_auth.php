@@ -56,10 +56,11 @@ abstract class Confusa_Auth
 	 * @author Henrik Austad <henrik.austad@uninett.no>
 	 * @author Thomas Zangerl <tzangerl@pdc.kth.se>
 	 *
-	 * @param array $attributes
+	 * @param array	$attributes
+	 * @param String $idp
 	 * @throws MapNotFoundException
 	 */
-	public function decoratePerson($attributes)
+	public function decoratePerson($attributes, $idp)
 	{
 		$cnPrefix = "";
 		$oPrefix  = "";
@@ -68,27 +69,23 @@ abstract class Confusa_Auth
 			$oPrefix  = ConfusaConstants::$CAPI_TEST_O_PREFIX;
 		}
 
-		if (!isset($attributes)) {
+		if (is_null($idp)){
+			throw new CrititicalAttributeException("Need the URL of the IdP in order to create an NREN-object!");
+		}
+
+		if (is_null($attributes)) {
 			throw new CrititicalAttributeException("Cannot find <b>any</b> attributes!");
 		}
 
+		/* From the IdP, find the NREN-details */
+		$this->person->setNREN(new NREN($idp));
 
-		if (is_null($attributes['nren'][0])) {
+		if (is_null($this->person->getNREN())) {
 			$msg  = "Could not map from the identity provider to the NREN. ";
-			$msg .= "Probably the NRENMap is not configured. ";
+			$msg .= "Probably the idp_map in the database is not configured for your idp ($idp) ";
 			$msg .= "Please tell an administrator about that problem!";
 			throw new CriticalAttributeException($msg);
 		}
-		$this->person->setNREN($attributes['nren'][0]);
-
-
-		if (is_null($attributes['country'][0])) {
-			$msg = "Could not map from the identity provider to the country. ";
-			$msg .= "Probably the CountryMap is not configured. ";
-			$msg .= "Please tell an administrator about that problem!";
-			throw new CriticalAttributeException($msg);
-		}
-		$this->person->setCountry($attributes['country'][0]);
 
 		$map = $this->person->getMap();
 		/* Normal mapping, this is what we want. */
@@ -96,7 +93,8 @@ abstract class Confusa_Auth
 
 			/* Now that we have the NREN-map, reiterate getMap() in
 			 * case we can find the subscriber-map. */
-			$this->person->addSubscriber($attributes[$map['epodn']][0]);
+			$this->person->setSubscriber(new Subscriber($attributes[$map['epodn']][0],
+								    $this->person->getNREN()));
 			$map = $this->person->getMap();
 
 			$this->person->setEPPN($attributes[$map['eppn']][0]);
