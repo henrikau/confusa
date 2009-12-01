@@ -116,15 +116,15 @@ class MDB2Wrapper
       */
      public static function query($query)
      {
-       if (!isset(MDB2Wrapper::$conn)) {
-         MDB2Wrapper::create();
-       }
-
-       $affected_rows = MDB2Wrapper::$conn->query($query);
-       if (PEAR::isError($affected_rows)) {
-         die("statement: " . $affected_rows->getMessage() . "<br />$query");
-       }
-     }
+	     if (!isset(MDB2Wrapper::$conn)) {
+		     MDB2Wrapper::create();
+	     }
+	     $affected_rows = MDB2Wrapper::$conn->query($query);
+	     if (PEAR::isError($affected_rows)) {
+		     die("statement: " . $affected_rows->getMessage() . "<br />$query");
+	     }
+	     MDB2Wrapper::$connCounter += 1;
+     } /* end query */
 
      /**
       * MDB2Wrapper::create() create the connection (connect and initialize)
