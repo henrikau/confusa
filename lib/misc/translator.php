@@ -188,10 +188,13 @@ class Translator {
 		if (include_once $sspdir . '/lib/_autoload.php') {
 			$accept_languages = SimpleSAML_Utilities::getAcceptLanguage();
 			$available_languages = Config::get_config('language.available');
-			Logger::log_event(LOG_DEBUG, "Simplesamlphp instance seems to be not " .
-									"configured, or not configured properly. Translator " .
-									"will not use the browser's accept-header to determine " .
-									"language settings.");
+
+			if (empty($accept_languages)) {
+				Logger::log_event(LOG_DEBUG, "Simplesamlphp instance seems to be not " .
+				                             "configured, or not configured properly. Translator " .
+				                             "will not use the browser's accept-header to determine " .
+				                             "language settings.");
+			}
 
 			foreach($accept_languages as $key => $value) {
 				if (array_search($key, $available_languages) === FALSE) {
