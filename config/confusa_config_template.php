@@ -154,6 +154,11 @@ $confusa_config = array(
 	/* see syslog (php) for details */
 	'loglevel_min'		=> LOG_DEBUG,
 	'syslog_min'			=> LOG_DEBUG,
+	/* the log-level from which on Confusa will regard itself as being in a
+	 * critical state
+	 * i.e. report cricital errors to Nagios, call the site admin for action
+	 * etc. */
+	'loglevel_fail'		=> LOG_ALERT,
 
 
 	/* mysql-variables */

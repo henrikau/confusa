@@ -6,33 +6,59 @@
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 </head>
 <body>
-{if isset($logLevelReached) && $logLevelReached === false}
 
-<p>
-Log-level '<strong>{$logLevel|escape}</strong>' not exceeded since last log-rotation.
-</p>
+<div style="width: 50%">
 
-<div style="display: none">
-	NAGIOS_CONST_NO_ERROR_ABOVE_LOGLEVEL
-</div>
+{if isset($generalErrors) && $generalErrors === true}
+	<p style="color: red">
+	A general error occured when trying to compile the status information!
+	</p>
+
+	<pre style="color: #333333; border: 1pt dashed">
+		{$errorMessage}
+	</pre>
+
+	<p>
+	Maybe Confusa is not configured properly. If you are an administrator,
+	please try to figure out if Confusa can connect to the DB, read the
+	configuration file etc. The fact this status page does not work properly
+	indicates that with a high probability other parts of Confusa won't work properly
+	either.
+	</p>
 
 {else}
+	{if isset($logLevelReached) && $logLevelReached === false}
 
-<p style="color: red">Errors above the given loglevel <strong>'{$logLevel|escape}'</strong> happened.</p>
+	<p>
+	No error with greater or equal severity than Confusa's configured critical log-level '<strong>{$logLevel|escape}</strong>' found!
+	</p>
 
-<div style="display: none">
-	NAGIOS_CONST_ERROR_ABOVE_LOGLEVEL
-</div>
+	<div style="display: none">
+		NAGIOS_CONST_NO_ERROR_ABOVE_LOGLEVEL
+	</div>
 
-<p>A detailed list of all the log errors:</p>
-<div style="width: 40%; border: 1px dashed">
-<ol style="margin-left: 20px">
-{foreach from=$logErrors item=logError}
-	{cycle values='background-color: #ffffff,background-color: #cccccc' assign=logEntryStyle}
-	<li style="{$logEntryStyle}">{$logError|escape}</li>
-{/foreach}
-</ol>
-</div>
+	{else}
+
+	<p style="color: red">
+	Errors with severity greater or equal than Confusa's configured critical log-level <strong>'{$logLevel|escape}'</strong> found!
+	</p>
+
+	<div style="display: none">
+		NAGIOS_CONST_ERROR_ABOVE_LOGLEVEL
+	</div>
+
+	<p>A detailed list of all the log errors:</p>
+	<div style="border: 1px dashed">
+	<ol style="margin-left: 20px">
+	{foreach from=$logErrors item=logError}
+		{cycle values='background-color: #ffffff,background-color: #cccccc' assign=logEntryStyle}
+		<li style="{$logEntryStyle}">{$logError|escape}</li>
+	{/foreach}
+	</ol>
+	</div>
+	{/if}
 {/if}
+
+</div>
 </body>
 </html>

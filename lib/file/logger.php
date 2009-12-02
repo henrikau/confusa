@@ -105,9 +105,16 @@ class Logger {
 			break;
 		}
 		/* assemble line and enter into local log */
-		$log_line = Logger::get_timestamp() . " (Confusa) " . $header . " " . $message . "\n";
+		$timestamp = Logger::get_timestamp();
+		$log_body = " (Confusa) " . $header . " " . $message;
+		$log_line = $timestamp . $log_body . "\n";
 		fputs($fd, $log_line);
 		@fclose($fd);
+
+		/* insert a critical error into the DB, if possible */
+		if ($pri <= Config::get_config('loglevel_fail')) {
+			Logger::insertCriticalErrorIntoDB($pri, $log_body);
+		}
 	}
 
 	/* create a timestamp to put in the normal log */
@@ -115,4 +122,30 @@ class Logger {
 		$timestamp = strftime("%Y %b %d %H:%M:%S");
 		return $timestamp;
 	}
+
+	/**
+	 * An error considered critical for Confusa's execution has happened, try
+	 * to insert it into the DB, so error reporting tools and admins can handle
+	 * it.
+	 *
+	 * @param $log_level const integer The log level (EMERG, CRIT...) of the
+	 *                                 log-event
+	 * @param $log_body  string        The log message itself
+	 */
+	static function insertCriticalErrorIntoDB($log_level, $log_body)
+	{
+		include_once 'mdb2_wrapper.php';
+		include_once 'confusa_gen.php';
+
+		$query = "INSERT INTO critical_errors(error_date, error_level, log_msg) ";
+		$query .= "VALUES(current_timestamp,?,?)";
+
+		try {
+			$res = @MDB2Wrapper::update($query,
+			                            array('text','text'),
+			                            array($log_level, $log_body));
+		} catch (ConfusaGenException $e) {
+			/* log the exception... no, wait... */
+		}
+	} /* end insertCriticalErrorIntoDB */
 } /* end Logger */

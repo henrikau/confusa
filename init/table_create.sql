@@ -372,4 +372,19 @@ CREATE TABLE IF NOT EXISTS schema_version (
         version INT PRIMARY KEY DEFAULT 0
 ) type=InnoDB;
 
+
+-- -----------------------------------------------------------------------------
+-- critical_error
+--
+-- Store the errors regarded as critical in this table for making error-reporting
+-- available to the outside of Confusa
+CREATE TABLE IF NOT EXISTS critical_errors (
+        errid       INT PRIMARY KEY AUTO_INCREMENT,
+        error_date  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        /* more serious errors, higher number. Start a LOG_DEBUG = 0 */
+        error_level INT NOT NULL,
+        log_msg     TEXT NOT NULL,
+        is_resolved BOOLEAN NOT NULL DEFAULT FALSE
+) type=InnoDB;
+
 SET FOREIGN_KEY_CHECKS = 1;

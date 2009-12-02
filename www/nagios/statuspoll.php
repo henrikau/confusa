@@ -2,6 +2,7 @@
 require_once '../confusa_include.php';
 require_once 'config.php';
 require_once 'confusa_constants.php';
+require_once 'mdb2_wrapper.php';
 
 try {
 	require_once Config::get_config('smarty_path') . 'Smarty.class.php';
@@ -27,6 +28,7 @@ class StatusPoll
 
 	private $tpl;
 	private $logErrors;
+	private $earliestTimestamp;
 	private $ALLOWED_LEVELS = array('notice', 'warning', 'err', 'alert',
 	                                'emerg', 'crit');
 
@@ -43,6 +45,26 @@ class StatusPoll
 		$this->logErrors = array();
 	}
 
+	public function getCriticalErrors()
+	{
+		$query = "SELECT error_date, log_msg FROM critical_errors WHERE " .
+		         "is_resolved = false";
+
+		try {
+			$res = MDB2Wrapper::execute($query, null, null);
+		} catch (ConfusaGenException $e) {
+			$this->tpl->assign('generalErrors', true);
+			$this->tpl->assign('errorMessage', $e->getMessage());
+			return false;
+		}
+
+		foreach ($res as $row) {
+			$this->logErrors[] = $row['error_date'] . " " . $row['log_msg'];
+		}
+
+		return true;
+	} /* end getCriticalErrors */
+
 	/**
 	 * Assign all the smarty variables to the template. This is roughly
 	 * equivalent to pre_process in the Framework-parts of Confusa.
@@ -53,100 +75,29 @@ class StatusPoll
 	 */
 	public function assignVars()
 	{
-		$confusaLog = Config::get_config('default_log');
-		$logLevelReached = false;
+		$failureLevel = Config::get_config('loglevel_fail');
+		$failureLevelStrings = array(LOG_EMERG   => 'LOG_EMERG',
+		                             LOG_ALERT   => 'LOG_ALERT',
+		                             LOG_CRIT    => 'LOG_CRIT',
+		                             LOG_ERR     => 'LOG_ERR',
+		                             LOG_WARNING => 'LOG_WARNING',
+		                             LOG_NOTICE  => 'LOG_NOTICE',
+		                             LOG_INFO    => 'LOG_INFO',
+		                             LOG_DEBUG   => 'LOG_DEBUG');
 
-		if (file_exists($confusaLog) === false) {
-			/* let's be optimistic */
-			$this->tpl->assign('logLevelReached', false);
-			$this->tpl->assign('logLevel', $_GET['level']);
-			return;
-		}
-
-		if (isset($_GET['level'])) {
-			if (array_search($_GET['level'], $this->ALLOWED_LEVELS) === false) {
-				$this->tpl->assign('logLevelReached', false);
-				$this->tpl->assign('logLevel', "unknown level");
-				return;
-			}
-
-			$level = $_GET['level'];
+		if (array_key_exists($failureLevel, $failureLevelStrings)) {
+			$this->tpl->assign('logLevel', $failureLevelStrings[$failureLevel]);
 		} else {
-			$level = "crit";
+			$this->tpl->assign('logLevel', 'unknown');
 		}
 
-		$lineregex = "";
-
-		switch($level) {
-		case 'emerg':
-			$emerg = ConfusaConstants::$LOG_HEADER_EMERG;
-			$lineregex = "\".*(Confusa) $emerg.*\"";
-			break;
-		case 'alert':
-			$emerg = ConfusaConstants::$LOG_HEADER_EMERG;
-			$alert = ConfusaConstants::$LOG_HEADER_ALERT;
-			$lineregex = "\".*(Confusa) $emerg.*\|.*(Confusa) $alert.*\"";
-			break;
-		case 'crit':
-			$emerg = ConfusaConstants::$LOG_HEADER_EMERG;
-			$alert = ConfusaConstants::$LOG_HEADER_ALERT;
-			$crit  = ConfusaConstants::$LOG_HEADER_CRIT;
-			$lineregex = "\".*(Confusa) $emerg.*\|.*(Confusa) $alert.*\|" .
-			              ".*(Confusa) $crit.*\"";
-			break;
-		case 'err':
-			$emerg = ConfusaConstants::$LOG_HEADER_EMERG;
-			$alert = ConfusaConstants::$LOG_HEADER_ALERT;
-			$crit  = ConfusaConstants::$LOG_HEADER_CRIT;
-			$err   = ConfusaConstants::$LOG_HEADER_ERR;
-			$lineregex = "\".*(Confusa) $emerg.*\|.*(Confusa) $alert.*\|" .
-			              ".*(Confusa) $crit.*\|.*(Confusa) $err.*\"";
-			break;
-		case 'warning':
-			$emerg   = ConfusaConstants::$LOG_HEADER_EMERG;
-			$alert   = ConfusaConstants::$LOG_HEADER_ALERT;
-			$crit    = ConfusaConstants::$LOG_HEADER_CRIT;
-			$err     = ConfusaConstants::$LOG_HEADER_ERR;
-			$warning = ConfusaConstants::$LOG_HEADER_WARNING;
-			$lineregex = "\".*(Confusa) $emerg.*\|.*(Confusa) $alert.*\|" .
-			              ".*(Confusa) $crit.*\|.*(Confusa) $err.*\|" .
-			              ".*(Confusa) $warning.*\"";
-			break;
-		/* won't poll the status below notice */
-		case 'notice':
-		default:
-			$emerg   = ConfusaConstants::$LOG_HEADER_EMERG;
-			$alert   = ConfusaConstants::$LOG_HEADER_ALERT;
-			$crit    = ConfusaConstants::$LOG_HEADER_CRIT;
-			$err     = ConfusaConstants::$LOG_HEADER_ERR;
-			$warning = ConfusaConstants::$LOG_HEADER_WARNING;
-			$notice  = ConfusaConstants::$LOG_HEADER_NOTICE;
-			$lineregex = "\".*(Confusa) $emerg.*\|.*(Confusa) $alert.*\|" .
-			              ".*(Confusa) $crit.*\|.*(Confusa) $err.*\|" .
-			              ".*(Confusa) $warning.*\|.*(Confusa) $notice.*\"";
-			$level = "notice";
-			break;
+		if (count($this->logErrors) > 0) {
+			$this->tpl->assign('logErrors', $this->logErrors);
+			$this->tpl->assign('logLevelReached', true);
+		} else {
+			$this->tpl->assign('logLevelReached', false);
 		}
 
-		$this->tpl->assign('logLevel', $level);
-		$grep = "grep " . $lineregex;
-
-		/* filter the data through the regex while reading it */
-		$handle = popen($grep . " " . $confusaLog, "r");
-		if ($handle) {
-			while (!feof($handle)) {
-				$line = fgets($handle, 4096);
-				if (strlen($line) > 0) {
-					$logLevelReached = true;
-					$this->logErrors[] = $line;
-				}
-			}
-
-			pclose($handle);
-		}
-
-		$this->tpl->assign('logErrors', $this->logErrors);
-		$this->tpl->assign('logLevelReached', $logLevelReached);
 	}
 
 	/**
@@ -160,7 +111,9 @@ class StatusPoll
 
 
 $sp = new StatusPoll();
-$sp->assignVars();
+if ($sp->getCriticalErrors()) {
+	$sp->assignVars();
+}
 $sp->process();
 
 
