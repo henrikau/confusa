@@ -167,7 +167,7 @@
       {* Helpdesk information					*}
       {* ------------------------------------------------------ *}
       <tr><td colspan="2"><h3>HelpDesk contact information</h3></td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer" /></td><td></td></tr>
       <tr><td colspan="2">
 	  <p class="info">
 	    Whenever an end-user needs help, the user should be
@@ -177,21 +177,21 @@
 	    resolved by local IT-support staff.
 	  </p>
 	</td>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer" /></td><td></td></tr>
       <tr>
 	<td><font color="gray"><i>HelpDesk URL:</i></font></td>
 	<td><input type="text" name="subscr_help_url" size="40"/></td>
       </tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer" /></td><td></td></tr>
       <tr>
 	<td><font color="gray"><i>HelpDesk Email:</i></font></td>
 	<td><input type="text" name="subscr_help_email" size="40" /></td>
       </tr>
 
 
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer" /></td><td></td></tr>
       <tr><td colspan="2"><hr class="table"/><br /></td></tr>
-      <tr><td><div class="spacer"></td><td></td></tr>
+      <tr><td><div class="spacer" /></td><td></td></tr>
 
       {* ------------------------------------------------------ *}
       {* Comment						*}
