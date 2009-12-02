@@ -317,6 +317,8 @@ class NREN
 						  $dse->getMessage());
 				echo $query . "<br />\n";
 			}
+
+			$nren = $this->data['nren_name'];
 			Framework::success_output("Updated contact information for your NREN $nren.");
 			Logger::log_event(LOG_DEBUG, "[nadm] Updated contact for NREN $nren");
 			$this->pendingChanges = false;
