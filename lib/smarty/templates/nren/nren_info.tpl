@@ -14,7 +14,7 @@ notify you of mass-revocation of certificates.
   <table>
     <tr>
       <td></td>
-      <td width="25px"><div class="spacer"></div></td>
+      <td style="width: 25px"><div class="spacer"></div></td>
       <td></td>
     </tr>
 
@@ -84,18 +84,19 @@ notify you of mass-revocation of certificates.
     output=$languages values=$language_codes}</td>
   </tr>
 
-      <tr>
-	<td></td>
-	<td></td>
-	<td>
-	  <div class="spacer"></div>
-	</td>
-      </tr>
-      <tr>
-	<td align="right"><input type="reset" value="reset" /></td>
-	<td></td>
-	<td><input type="submit" value="Update" /></td>
-      </tr>
-    </table>
-  </form>
+    <tr>
+      <td></td>
+      <td></td>
+      <td>
+	<div class="spacer"></div>
+      </td>
+    </tr>
+  <tr>
+    <td align="right"><input type="reset" value="reset" /></td>
+    <td></td>
+    <td><input type="submit" value="Update" /></td>
+    </tr>
+  </table>
+</form>
+<br />
 </fieldset>
