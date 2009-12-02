@@ -67,7 +67,7 @@
 			<td style="width: 15em">{$admin.eppn|escape}</td>
 			<td style="width: 15em">
 				{if isset($admin.email)}
-					<a href="mailto:{$admin.email}" />{$admin.name|escape|default:"<i>not assigned yet</i>"}</a>
+					<a href="mailto:{$admin.email}">{$admin.name|escape|default:"<i>not assigned yet</i>"}</a>
 				{else}
 					{$admin.name|escape|default:"<i>not assigned yet</i>"}
 				{/if}
