@@ -17,57 +17,8 @@ if [ $# != 3 ]; then
 	exit 1
 fi;
 
-if [ -f "../config/confusa_config.php" ]; then
-	config_dir="../config"
-elif [ -f "/etc/confusa/confusa_config.php" ]; then
-	config_dir="/etc/confusa"
-else
-	echo "Confusa config file not found! Looked in"
-	echo "../config/confusa_config.php and in"
-	echo "/etc/confusa/confusa_config.php. Please create a config"
-	echo "file, e.g. from the template or using the Installer before"
-	echo "invoking this bootstrap script!"
-	exit 5
-fi
+source ../programs/db_connect.sh
 
-confusa_config=${config_dir}/confusa_config.php
-
-# if the DB was configured by dbconfig-common, get the connection information
-# from dbconfig-common's configuration file
-if [ -f "/etc/confusa/confusa_config.inc.php" ]; then
-	db_config_file="/etc/confusa/confusa_config.inc.php"
-
-	webuser=`grep "\\$dbuser=" $db_config_file | cut -d '=' -f 2 \
-		| cut -d "'" -f 2`
-	pw=`grep "\\$dbpass=" $db_config_file | cut -d '=' -f 2 \
-		| cut -d "'" -f 2`
-	webhost=`grep "\\$dbserver=" $db_config_file | cut -d '=' -f 2 \
-		| cut -d "'" -f 2`
-	database=`grep "\\$dbname=" $db_config_file | cut -d '=' -f 2 \
-		| cut -d "'" -f 2`
-else
-# Get the MySQL connection credentials from Confusa's own config file
-	webuser=`grep "mysql_username'[^]]" $confusa_config | cut -d '=' -f 2 \
-		| cut -d "'" -f 2`
-	pw=`grep "mysql_password'[^]]" $confusa_config | cut -d '=' -f 2 \
-		| cut -d "'" -f 2`
-	webhost=`grep "mysql_host'[^]]" $confusa_config | cut -d '=' -f 2 \
-		| cut -d "'" -f 2`
-	database=`grep "mysql_db'[^]]" $confusa_config | cut -d '=' -f 2 \
-		| cut -d "'" -f 2`
-fi
-
-if [ -z $database ]; then
-    echo "mysql-db not set in config-file!"
-    echo "Please set this value and try again"
-    exit
-fi
-
-if [ -z $webhost ]; then
-	webhost="localhost"
-fi
-
-MYSQL="/usr/bin/mysql -u'${webuser}' -h${webhost} -p${pw}"
 function get_nren_id
 {
 	res=`$MYSQL -e "USE ${database}; SELECT nren_id FROM nrens WHERE name='$1'"`
