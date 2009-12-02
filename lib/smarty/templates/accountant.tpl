@@ -91,7 +91,7 @@
 	<td></td>
 	<td></td>
       </tr>
-</table
+</table>
 </form>
 
 <div class="spacer"></div>
@@ -144,7 +144,8 @@
 	<td><input type="submit" value="Add account" /></td>
 	<td></td>
       </tr>
-</table
+</table>
 </form>
+</fieldset>
 
 {/if} {* if in CA-mode *}
