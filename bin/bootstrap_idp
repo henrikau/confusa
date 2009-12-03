@@ -79,7 +79,7 @@ function search_for_mapping
 {
     url=$1
     query="SELECT idp.idp_url AS IdP, n.nren_id, name AS NREN_name FROM idp_map idp LEFT JOIN nrens n on n.nren_id = idp.nren_id AND idp.idp_url='$url' \G"
-    run_query $query || echo $query
+    run_query "$query" || echo $query
 }
 
 while getopts ":a:d:hi:lLs:" opt; do
