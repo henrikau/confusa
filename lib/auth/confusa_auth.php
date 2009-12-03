@@ -4,6 +4,7 @@ require_once 'person.php';
 require_once 'config.php';
 
 require_once 'MapNotFoundException.php';
+require_once 'CriticalAttributeException.php';
 
 /**
  * Confusa_Auth - base class for all authentication managers
@@ -70,11 +71,11 @@ abstract class Confusa_Auth
 		}
 
 		if (is_null($idp)){
-			throw new CrititicalAttributeException("Need the URL of the IdP in order to create an NREN-object!");
+			throw new CriticalAttributeException("Need the URL of the IdP in order to create an NREN-object!");
 		}
 
 		if (is_null($attributes)) {
-			throw new CrititicalAttributeException("Cannot find <b>any</b> attributes!");
+			throw new CriticalAttributeException("Cannot find <b>any</b> attributes!");
 		}
 
 		/* From the IdP, find the NREN-details */
