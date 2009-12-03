@@ -43,7 +43,8 @@ do
 done
 shift $(($OPTIND -1))
 
-source $(dirname $0)/db_connect.sh
+source $(dirname $0)/../lib/bash/config_lib.sh
+source $(dirname $0)/../lib/bash/db_lib.sh
 
 
 # Call this function for interactive questions with the questions as an argument
@@ -65,7 +66,7 @@ function get_user_action
 # interactive mode, ask for every critical log-line whether to resolve, skip or
 # purge it
 if [ $interact -eq 1 ]; then
-	res=`${MYSQL} -e "USE ${database}; SELECT errid, error_date, log_msg FROM \
+	res=`${MYSQL} -e "SELECT errid, error_date, log_msg FROM \
 	                   critical_errors WHERE is_resolved=false"`
 	oldifs="$IFS"
 	IFS=$'\n'
@@ -73,7 +74,7 @@ if [ $interact -eq 1 ]; then
 	IFS=$oldifs
 
 	# The first line will be the column-names
-	for (( i=1;i<${#lines[@]};i++ ))
+	for (( i=0;i<${#lines[@]};i++ ))
 	do
 		echo "Next critical error: ${lines[${i}]}"
 		get_user_action
@@ -86,14 +87,13 @@ if [ $interact -eq 1 ]; then
 			errid=`echo ${lines[${i}]} | cut -d " " -f 1`
 			echo "Purging critical error with ID $errid from DB"
 			echo ""
-			${MYSQL} -e "USE ${database}; DELETE FROM critical_errors WHERE \
-			             errid=$errid"
+			${MYSQL} -e "DELETE FROM critical_errors WHERE errid=$errid"
 			result=$?
 		elif [ $answer = "m" ]; then
 			errid=`echo ${lines[${i}]} | cut -d " " -f 1`
 			echo "Marking critical error with ID $errid resolved in DB"
 			echo ""
-			${MYSQL} -e "USE ${database}; UPDATE critical_errors SET \
+			${MYSQL} -e "UPDATE critical_errors SET \
 			             is_resolved=true WHERE errid=${errid}"
 			result=$?
 		else
@@ -112,11 +112,11 @@ if [ $interact -eq 1 ]; then
 else # non-interactive mode
 	if [ $purge -eq 1 ]; then
 		echo "Purging all critical errors from the database!"
-		$MYSQL -e "USE ${database}; DELETE FROM critical_errors"
+		$MYSQL -e "DELETE FROM critical_errors"
 		result=$?
 	elif [ $resolve -eq 1 ]; then
 		echo "Setting all critical error in the DB to 'resolved'."
-		$MYSQL -e "USE ${database}; UPDATE critical_errors SET is_resolved=true"
+		$MYSQL -e "UPDATE critical_errors SET is_resolved=true"
 		result=$?
 	else
 		echo -e "Resolve errors called in neither interactive mode, nor purge "
