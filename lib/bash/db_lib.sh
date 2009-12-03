@@ -26,7 +26,9 @@ if [ "$pw" == "" ]; then
 else
     pw="-p$pw"
 fi
-MYSQL="/usr/bin/mysql -N -h$host -u$username -D$db $pw -B"
+
+MYSQL="/usr/bin/mysql --skip-column-names -h$host -u'${username}' -D$db ${pw}"
+
 function run_query ()
 {
     if [ ! $# -eq 1 ]; then
