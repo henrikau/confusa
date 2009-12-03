@@ -20,10 +20,18 @@
 #		fi
 function get_config_entry ()
 {
-    if [ ! -f ../config/confusa_config.php ]; then
-	echo "Cannot find config-file!"
-	exit 127
-    fi
+	if [ -f "../config/confusa_config.php" ]; then
+		config_dir="../config"
+	elif [ -f "/etc/confusa/confusa_config.php" ]; then
+		config_dir="/etc/confusa"
+	else
+		echo "Confusa config file not found! Looked in"
+		echo "../config/confusa_config.php and in"
+		echo "/etc/confusa/confusa_config.php. Please create a config"
+		echo "file, e.g. from the template or using the Installer before"
+		echo "invoking this bootstrap script!"
+		exit 64
+	fi
 
     # Need one and only *one* parameter
     if [ ! $# -eq 1 ]; then
@@ -34,9 +42,9 @@ function get_config_entry ()
     # TODO
 
     # Find the key
-    res=`grep "$1" ../config/confusa_config.php | cut -d '=' -f 2 | cut -d "'" -f 2`
+    res=`grep "$1'[^]]" ${config_dir}/confusa_config.php | cut -d '=' -f 2 | cut -d "'" -f 2`
     if [ "$res" == "" ]; then
-	echo "did not find key $1" >&2
+		echo "did not find key $1" >&2
 	return 1
     fi
     echo $res
