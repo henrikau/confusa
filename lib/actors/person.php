@@ -186,7 +186,7 @@ class Person{
     function getX509SubjectDN()
     {
 	    $dn = "";
-	    $country	= $this->getCountry();
+	    $country	= $this->nren->getCountry();
 	    $son	= Output::mapUTF8ToASCII($this->getSubscriber()->getOrgName());
 
 	    if (isset($country)) {
@@ -211,7 +211,7 @@ class Person{
     function getBrowserFriendlyDN()
     {
 	$dn = "";
-	$country	= $this->getCountry();
+	$country	= $this->nren->getCountry();
 	$son		= Output::mapUTF8ToASCII($this->getSubscriber()->getOrgName());
 
 	if (isset($country)) {

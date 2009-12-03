@@ -9,7 +9,7 @@
 	<tr><td><b>eduPersonPrincipalName:</b></td><td>{$person->getEPPN()|escape}</td></tr>
 	<tr><td><b>CommonName in DN</b></td><td>{$person->getX509ValidCN()|escape}</td></tr>
 	<tr><td><b>email:</b></td><td>{$person->getEmail()|escape}</td></tr>
-	<tr><td><b>Country:</b></td><td>{$person->getCountry()|escape}</td></tr>
+	<tr><td><b>Country:</b></td><td>{$nren->getCountry()|escape}</td></tr>
 
 	<tr><td><b>OrganizationalName:</b></td><td>{$subscriber->getOrgName()|escape}</td></tr>
 	<tr><td><b>Organizational Identifier:</b></td><td>{$subscriber->getIdPName()|escape}</td></tr>

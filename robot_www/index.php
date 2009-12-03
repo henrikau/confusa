@@ -272,7 +272,7 @@ if (false && Config::get_config('debug')) {
 	echo "<tr><td><b>eduPersonPrincipalName:</b></td><td>".htmlentities($admin->getEPPN())."</td></tr>";
 	echo "<tr><td><b>CommonName in DN</b></td><td>".htmlentities($admin->getX509ValidCN())."</td></tr>";
 	echo "<tr><td><b>email:</b></td><td>".htmlentities($admin->getEmail())."</td></tr>";
-	echo "<tr><td><b>Country:</b></td><td>".htmlentities($admin->getCountry())."</td></tr>";
+	echo "<tr><td><b>Country:</b></td><td>".htmlentities($admin->getNREN()->getCountry())."</td></tr>";
 	echo "<tr><td><b>OrganizationalName:</b></td><td>".htmlentities($admin->getSubscriber()->getOrgName())."</td></tr>";
 	echo "<tr><td><b>Entitlement:</b></td><td>".htmlentities($admin->getEntitlement())."</td></tr>";
 	echo "<tr><td><b>NREN:</b></td><td>".htmlentities($admin->getNREN())."</td></tr>";

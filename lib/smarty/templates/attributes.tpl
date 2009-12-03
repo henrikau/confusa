@@ -82,7 +82,7 @@
       <tr>
 	<td align="right">Country</td>
 	<td align="center"><b><span style="color: darkgray">-</span></b></td>
-	<td>{$person->getCountry()|escape}
+	<td>{$nren->getCountry()|escape}
 	<input type="hidden" name="attributes_operation" value="update_map" />
 	</td>
       </tr>

@@ -885,7 +885,7 @@ class CA_Comodo extends CA
 
         $postfields_sign_req["subject_organizationName_2"] =
 		$this->person->getSubscriber()->getOrgName();
-        $postfields_sign_req["subject_countryName_3"] = $this->person->getCountry();
+        $postfields_sign_req["subject_countryName_3"] = $this->person->getNREN()->getCountry();
         $postfields_sign_req["subject_domainComponent_4"] = "tcs";
         $postfields_sign_req["subject_domainComponent_5"] = "terena";
         $postfields_sign_req["subject_domainComponent_6"] = "org";
