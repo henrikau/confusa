@@ -128,13 +128,13 @@ CREATE TABLE IF NOT EXISTS nrens (
 -- The idp_url must match the index used in
 -- metadata/saml20-idp-remote.php in SimpleSAMLphp.
 -- ---------------------------------------------------------
-CREATE TALBE IF NOT EXISTS idp_map (
+CREATE TABLE IF NOT EXISTS idp_map (
   -- E.g. https://idp.example.org/
   -- This is the same key as used in the metadata section
   idp_url VARCHAR(128) PRIMARY KEY,
   nren_id INTEGER NOT NULL,
 
-  FOREIGN KEY(nren_id) REFRENCES nrens(nren_id) ON DELETE CASCADE
+  FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) type=InnoDB;
 
 -- ---------------------------------------------------------
