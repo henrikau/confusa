@@ -231,10 +231,20 @@ class Framework {
 				Framework::error_output("Unhandled exception found in user-function!<br />\n" . $e->getMessage());
 			}
 		} else {
-			/* if all else fails, at least give the user some recovery information */
-			Framework::message_output("Unrecoverable error and you are not NREN admin!" .
-			                          " Your eduPersonPrincipalName is " .
-			                          htmlentities($this->person->getNREN()->getName()));
+			$nren = $this->person->getNREN();
+
+			if (isset($nren)) {
+				/* if all else fails, at least give the user some recovery information */
+				Framework::message_output("Unrecoverable error and you are not NREN admin!" .
+				                          " Your eduPersonPrincipalName is " .
+				                          htmlentities($nren->getName()));
+			} else {
+				Framework::error_output("Seems like the portal can not figure out your NREN " .
+				                        "from your identity provider. This is probably a portal " .
+				                        "configuration error!");
+				Logger::log_event(LOG_WARNING, "User contacting us from " . $_SERVER['REMOTE_ADDR'] .
+				                  " tried to login from IdP that appears to have no NREN-mapping!");
+			}
 		}
 
 		$this->tpl->assign('logoutUrl', 'logout.php');
