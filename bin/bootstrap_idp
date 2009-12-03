@@ -1,0 +1,98 @@
+#!/bin/bash
+#
+# bootstrap_idp
+# Add a new IdP to the database and connect it to an already created NREN
+#
+# The script has a few other options as well to help streamline the process.
+#
+# Author: Henrik Austad <henrik.austad@uninett.no> 2009
+
+# Jump to directory where file resides (simplifies the include-process etc)
+base=`dirname $0`
+pushd $base >/dev/null
+
+
+# Include libraries
+if [ -z ../lib/bash/config_lib.sh ]; then
+    echo "Cannot find config-library. Aborting."
+    exit 127
+fi
+. ../lib/bash/config_lib.sh
+if [ -z ../lib/bash/db_lib.sh ]; then
+    echo "Cannot find db-library. Aborting."
+    exit 127
+fi
+. ../lib/bash/db_lib.sh
+
+
+function usage
+{
+    prog_name=`basename $0`
+cat <<EOF
+Usage: $prog_name [options]
+Options:
+  -a <idp.url.org>    Add a new IdP to the map
+  -d <idp_url>        Delete the specified IdP-url from the database
+  -i <NREN_id>        Set the NREN_ID for later usage (must be set before -a to avoid interactive input)
+  -l                  List all NRENs in the database.
+  -L                  List all NRENs in the database joined with configured IdPs
+  -h                  This help-text
+  -s <idp_url>        Search the DB for the mapping with the given IdP-url
+EOF
+}
+
+
+function add
+{
+    if [ -z "$id" ]; then
+	list_db
+	echo -ne "Please enter the ID of the NREN to use: "
+	read id
+    fi
+    url=$1
+    # Show list of nrens, ask for ID
+    run_query "INSERT INTO idp_map VALUES('$url', '$id')" && \
+	echo "$url successfully connected to $id" || \
+	echo "FAILED: Could not add $url to $id"
+}
+
+function list_db
+{
+    echo "Stored (and hopefully configured) NRENs in the database:"
+    run_query "SELECT nren_id, name, country FROM nrens"
+}
+
+function list_nren_idp
+{
+    echo ""
+    echo "Listing the table of NRENs connected to IdP-URLs"
+    run_query "SELECT n.nren_id, name AS NREN_name, country, idp_url FROM nrens n LEFT JOIN idp_map idp ON n.nren_id = idp.nren_id"
+    echo ""
+}
+function delete
+{
+    idp=`run_query "SELECT * FROM idp_map WHERE idp_url='$1'"`
+    echo $idp
+}
+
+function search_for_mapping
+{
+    url=$1
+    query="SELECT idp.idp_url AS IdP, n.nren_id, name AS NREN_name FROM idp_map idp LEFT JOIN nrens n on n.nren_id = idp.nren_id AND idp.idp_url='$url' \G"
+    run_query $query || echo $query
+}
+
+while getopts ":a:d:hi:lLs:" opt; do
+    case $opt in
+	a) add $OPTARG ;;
+	d) delete $OPTARG ;;
+	h) usage ;;
+	i) id=$OPTARG ;;
+	s) search_for_mapping $OPTARG ;;
+	l) list_db ;;
+	L) list_nren_idp ;;
+	*) usage ;;
+    esac
+done
+
+popd >/dev/null
