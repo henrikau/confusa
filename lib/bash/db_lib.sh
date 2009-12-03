@@ -10,7 +10,7 @@ if [ "$pw" == "" ]; then
 else
     pw="-p$pw"
 fi
-MYSQL="/usr/bin/mysql -N -h$host -u$username -D$db $pw"
+MYSQL="/usr/bin/mysql -N -h$host -u$username -D$db $pw -B"
 function run_query ()
 {
     if [ ! $# -eq 1 ]; then
