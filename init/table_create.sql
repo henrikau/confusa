@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- The country-code of the NREN
     --
     -- E.g 'NO' or 'US'
-    country CHAR(2) NOT NULL
+    country CHAR(2) NOT NULL,
 
     -- if a remote signing CA is used, the ID of the subaccont there
     login_account INT,
@@ -406,7 +406,7 @@ CREATE TABLE IF NOT EXISTS schema_version (
 -- available to the outside of Confusa
 CREATE TABLE IF NOT EXISTS critical_errors (
         errid       INT PRIMARY KEY AUTO_INCREMENT,
-        error_date  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        error_date  DATETIME NOT NULL,
         /* more serious errors, higher number. Start a LOG_DEBUG = 0 */
         error_level INT NOT NULL,
         log_msg     TEXT NOT NULL,
