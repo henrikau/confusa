@@ -185,6 +185,9 @@ class Person{
      */
     function getX509SubjectDN()
     {
+	    if (is_null($this->getSubscriber())) {
+		    return null;
+	    }
 	    $dn = "";
 	    $country	= $this->nren->getCountry();
 	    $son	= Output::mapUTF8ToASCII($this->getSubscriber()->getOrgName());
