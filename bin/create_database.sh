@@ -78,7 +78,7 @@ fi
 
 # add tables
 echo "Creating tables in the database. Existing databases will be reset according to table_create.sql"
-$MYSQL -D$database < table_create.sql
+$MYSQL -D$database < ../init/table_create.sql
 res=$?
 
 if [ $res -ne 0 ]; then
@@ -134,6 +134,6 @@ else
 fi
 
 echo "Confusa-setup complete, adding views"
-$MYSQL -D$database  < views_create.sql
+$MYSQL -D$database  < ../init/views_create.sql
 echo "Views created. Database bootstrap complete."
 echo ""
