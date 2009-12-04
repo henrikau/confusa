@@ -886,7 +886,7 @@ class Person{
 			$permission->addReason("Need an email-address to send notifications to!");
 		}
 
-		if (empty($this->getNREN()->getCountry())) {
+		if (is_null($this->getNREN()->getCountry()) || $this->getNREN()->getCountry() == "") {
 			$permission->setPermissionGranted(false);
 			$permission->addReason("Need a country name for the certificates!");
 		}
