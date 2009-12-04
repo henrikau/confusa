@@ -228,7 +228,7 @@
 					[Install]
 					</td>
 
-					{if isset($cert.valid_untill) && isset($cert.order_number)}
+					{if isset($cert.valid_untill) && isset($cert.order_number) && $cert.status == "Awaiting Validation"}
 						<script type="text/javascript">pollCertStatus({$cert.order_number}, 30000)</script>
 					{/if}
 				{else}
