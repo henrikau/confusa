@@ -18,7 +18,9 @@
 {/literal}
 
 {* Offer the NREN-admin a subscriber pre-selection *}
-All revocation operations currently limited to subscriber {$subscriber|escape}.
+{if $subscriber}
+All revocation operations currently limited to subscriber
+{$subscriber|escape}.
 <div class="spacer"></div>
 <div style="text-align: right">
     <form action="" method="post">
@@ -103,4 +105,9 @@ wildcard.
         {/foreach}
         </table>
     {/if}
+{/if}
+
+{else} {* subscriber is null *}
+	No subscriber is currently available. You can therefore not revoke any
+	certificates (since you have none available).
 {/if}
