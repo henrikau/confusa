@@ -60,4 +60,5 @@
 {*
  * uploading new CSR via POST
  *}
-{include file='paste_csr.tpl'}
+{include file='csr/paste_csr.tpl'}
+
