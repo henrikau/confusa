@@ -82,17 +82,20 @@ function search_for_mapping
     run_query "$query" || echo $query
 }
 
-while getopts ":a:d:hi:lLs:" opt; do
-    case $opt in
-	a) add $OPTARG ;;
-	d) delete $OPTARG ;;
-	h) usage ;;
-	i) id=$OPTARG ;;
-	s) search_for_mapping $OPTARG ;;
-	l) list_db ;;
-	L) list_nren_idp ;;
-	*) usage ;;
-    esac
-done
-
+if [ $# == "0" ]; then
+    usage
+else
+    while getopts ":a:d:hi:lLs:" opt; do
+	case $opt in
+	    a) add $OPTARG ;;
+	    d) delete $OPTARG ;;
+	    h) usage ;;
+	    i) id=$OPTARG ;;
+	    s) search_for_mapping $OPTARG ;;
+	    l) list_db ;;
+	    L) list_nren_idp ;;
+	    *) usage ;;
+	esac
+    done
+fi
 popd >/dev/null
