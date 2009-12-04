@@ -50,8 +50,9 @@ class MailManager
 		$this->mailer->Sender = $sender;
 
 		/* set the header "from" address */
-		$this->mailer->SetFrom($sendHeader, $senderName);
-
+		/* $this->mailer->SetFrom($sendHeader, $senderName); */
+		$this->mailer->From = $sendHeader;
+		$this->mailer->FromName = $senderName;
 		$this->mailer->WordWrap = 80;
 
 		$this->mailer->AddAddress($pers->getEmail(),
