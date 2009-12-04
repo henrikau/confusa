@@ -40,11 +40,15 @@ class MailManager
 		}
 
 		$this->mailer = new PHPMailer();
-
+		if (is_null($this->mailer)) {
+			Framework::error_output("Could not create mailer. Aborting");
+			return;
+		}
 		$this->mailer->Mailer = "sendmail";
 		/* set the envelope "from" address using the sendmail option -f, and
 		 * the return-path header */
 		$this->mailer->Sender = $sender;
+
 		/* set the header "from" address */
 		$this->mailer->SetFrom($sendHeader, $senderName);
 
@@ -70,11 +74,13 @@ class MailManager
 	 */
 	public function __destruct()
 	{
-		$this->mailer->clearAddresses();
-		$this->mailer->clearAllRecipients();
-		$this->mailer->clearAttachments();
-		$this->mailer->clearCustomHeaders();
-		$this->mailer->clearReplyTos();
+		if (!is_null($this->mailer)) {
+			$this->mailer->clearAddresses();
+			$this->mailer->clearAllRecipients();
+			$this->mailer->clearAttachments();
+			$this->mailer->clearCustomHeaders();
+			$this->mailer->clearReplyTos();
+		}
 	}
 
 	/**
