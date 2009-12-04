@@ -66,7 +66,7 @@ function get_user_action
 # interactive mode, ask for every critical log-line whether to resolve, skip or
 # purge it
 if [ $interact -eq 1 ]; then
-	res=`${MYSQL} -e "SELECT errid, error_date, log_msg FROM \
+	res=`run_query "SELECT errid, error_date, log_msg FROM \
 	                   critical_errors WHERE is_resolved=false"`
 	oldifs="$IFS"
 	IFS=$'\n'
@@ -80,7 +80,7 @@ if [ $interact -eq 1 ]; then
 		get_user_action
 
 		if [ $answer = "s" ]; then
-			echo "Skipping critical error with ID ${errid}"
+			echo "Skipping critical error with ID $errid"
 			echo ""
 			continue
 		elif [ $answer = "p" ]; then
