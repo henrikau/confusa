@@ -82,7 +82,6 @@ class Person{
 	    unset($this->eppn);
 	    unset($this->eppnKey);
 	    unset($this->email);
-	    unset($this->country);
 
 	    unset($this->nren);
 
@@ -529,12 +528,16 @@ class Person{
      *
      * @param String The country of the NREN (and in effect, person)
      * @return void
+     * @deprecated use nren->setCountry()
      */
     public function setCountry($country)
     {
-	    if (isset($country)) {
-		    $this->country = strtoupper(Input::sanitize(substr($country,0, 2)));
+	    if (Config::get_config('debug')) {
+		    $msg = __CLASS__ . "::" . __FUNCTION__ . " Warning: calling deprecated function. Use NREN::getCountry() instead.";
+		    Logger::log_event(LOG_DEBUG, $msg);
+		    Framework::error_output($msg);
 	    }
+	    return false;
     }
 
     /**
