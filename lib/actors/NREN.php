@@ -116,9 +116,10 @@ class NREN
 		return null;
 	}
 
-	public function saveMap($epodn, $cn, $mail, $entitlement)
+	public function saveMap($eppnkey, $epodn, $cn, $mail, $entitlement)
 	{
 		$doUpdate = false;
+		$eppnkey  = Input::sanitizeText($eppnkey);
 		if ($this->hasMap) {
 			/* compare value */
 			if ($epodn	!= Input::sanitizeText($this->map['epodn']) ||
@@ -140,7 +141,7 @@ class NREN
 			$doUpdate = true;
 			$update = "INSERT INTO attribute_mapping(nren_id, eppn, epodn, cn, mail, entitlement) VALUES(?, ?, ?, ?, ?, ?)";
 			$params = array('text', 'text', 'text', 'text', 'text', 'text');
-			$data = array($nren_id[0]['nren_id'], $this->person->getEPPNKey(),
+			$data = array($this->getID(), $eppnkey,
 				      $epodn, $cn, $mail, $entitlement);
 		}
 		if ($doUpdate) {
