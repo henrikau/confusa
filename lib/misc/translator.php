@@ -145,7 +145,10 @@ class Translator {
 
 		if ($this->person->isAuth()) {
 			if (is_null($this->person->getSubscriber())) {
-				return $_SESSION['language'];
+				if (array_key_exists('language', $_SESSION)) {
+					return $_SESSION['language'];
+				}
+				return null;
 			}
 			try {
 				$query = "SELECT lang FROM subscribers WHERE name=?";
