@@ -282,6 +282,8 @@ class CP_Admin extends Content_Page
 			$admins=$this->getNRENAdmins($this->person->getNREN());
 
 			try {
+				/* Get a list of subscribers (as
+				 * Subscriber-objects) */
 				$subscribers = $this->person->getNREN()->getSubscriberList();
 			} catch (DBQueryException $dbqe) {
 				Framework::error_output("Cannot retrieve subscriber from database!<br /> " .
@@ -293,7 +295,7 @@ class CP_Admin extends Content_Page
 				                        htmlentities($dbqe->getMessage()));
 			}
 
-			$current_subscriber = "";
+			$current_subscriber = null;
 
 			/* Are we looking at a particular subscriber? */
 			if (isset($_POST['subscriberID'])) {
@@ -301,16 +303,16 @@ class CP_Admin extends Content_Page
 
 				foreach($subscribers as $nren_subscriber) {
 					if ($nren_subscriber->getDBID() == $current_subscriber_id) {
-						$current_subscriber = $nren_subscriber->getIdPName();
+						$current_subscriber = $nren_subscriber;
 						break;
 					}
 				}
-			} else {
+			} else if (! is_null($subscribers)) {
 				$current_subscriber = $subscribers[0]->getIdPName();
 				$current_subscriber_id = $subscribers[0]->getDBID();
 			}
 
-			if (!empty($current_subscriber)) {
+			if (!is_null($current_subscriber)) {
 				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber_id, SUBSCRIBER_ADMIN);
 				$this->tpl->assign('subscriber', $current_subscriber);
 				$this->tpl->assign('subscriberID', $current_subscriber_id);
