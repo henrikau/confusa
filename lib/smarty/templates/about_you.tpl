@@ -11,8 +11,20 @@
 	<tr><td><b>email:</b></td><td>{$person->getEmail()|escape}</td></tr>
 	<tr><td><b>Country:</b></td><td>{$nren->getCountry()|escape}</td></tr>
 
-	<tr><td><b>OrganizationalName:</b></td><td>{$subscriber->getOrgName()|escape}</td></tr>
-	<tr><td><b>Organizational Identifier:</b></td><td>{$subscriber->getIdPName()|escape}</td></tr>
+	<tr><td><b>OrganizationalName:</b></td>
+	  <td>
+	    {if $subscriber}
+	    {$subscriber->getOrgName()|escape}
+	    {/if}
+	  </td>
+	</tr>
+	<tr><td><b>Organizational Identifier:</b></td>
+	  <td>
+	    {if $subscriber}
+	    {$subscriber->getIdPName()|escape}
+	    {/if}
+	  </td>
+	</tr>
 	<tr><td><b>Entitlement:</b></td><td>{$person->getEntitlement()|escape}</td></tr>
 	<tr><td><b>NREN:</b></td><td>{$person->getNREN()|escape}</td></tr>
 	<tr><td><b>Complete /DN:</b></td><td>{$person->getX509SubjectDN()|escape}</td></tr>
