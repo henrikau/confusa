@@ -64,12 +64,16 @@ class CP_Robot_Interface extends Content_Page
 			switch(Input::sanitize($_GET['robot_view'])) {
 			case 'list':
 				$this->tpl->assign('rv_list', true);
+				$this->tpl->assign('rv_upload', false);
 				$this->tpl->assign('robotCerts', $this->getRobotCertList());
 				break;
 			case 'upload':
 				$this->tpl->assign('rv_upload', true);
+				$this->tpl->assign('rv_list', false);
 				break;
 			default:
+				$this->tpl->assign('rv_upload', false);
+				$this->tpl->assign('rv_list', false);
 				break;
 			}
 		} else {
