@@ -443,6 +443,7 @@ class NREN
 	 */
 	public function getSubscriberList()
 	{
+		$subscribers = null;
 		$query  = "SELECT subscriber_id, name, org_state, lang, subscr_email, ";
 		$query .= "subscr_phone, subscr_resp_name, subscr_resp_email, ";
 		$query .= "subscr_comment, dn_name FROM subscribers WHERE nren_id=?";
