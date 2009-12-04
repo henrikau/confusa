@@ -194,6 +194,15 @@ class Framework {
 				$this->renderError = true;
 			}
 			Framework::warning_output($msg);
+		} catch (KeyNotFoundException $knfe) {
+				$this->renderError = true;
+
+				$msg  = "[".create_pw(8)."] config-file not properly configured. " .$knfe->getMessage();
+				Logger::log_event(LOG_INFO, $msg);
+
+				$msg .= "<br />Please contact operational support to resolve this isse, ";
+				$msg .= "be sure to include the error-code in the message.";
+				Framework::error_output($msg);
 		} catch (Exception $e) {
 			Framework::error_output("Uncaught exception occured!<br />\n" . $e->getMessage());
 			$this->renderError = true;
@@ -227,6 +236,12 @@ class Framework {
 		if (!$this->renderError || $this->person->isNRENAdmin()) {
 			try {
 				$this->contentPage->process($this->person);
+			} catch (KeyNotFoundException $knfe) {
+				$msg  = "[".create_pw(8)."] config-file not properly configured. " .$knfe->getMessage();
+				Logger::log_event(LOG_INFO, $msg);
+				$msg .= "<br />Please contact operational support to resolve this isse, ";
+				$msg .= "be sure to include the error-code in the message.";
+				Framework::error_output($msg);
 			} catch (Exception $e) {
 				Framework::error_output("Unhandled exception found in user-function!<br />\n" . $e->getMessage());
 			}
