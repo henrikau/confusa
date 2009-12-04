@@ -150,7 +150,7 @@ abstract class Confusa_Auth
 
 			/* is ePPN registred as NREN admin (from bootstrap) */
 			if ($this->person->isNRENAdmin()) {
-				$msg  = "No map for your NREN (".$nren.") is set <br />\n";
+				$msg  = "No map for your NREN (".$this->person->getNREN()->getName().") is set <br />\n";
 				$msg .= "You need to do this <b>now</b> so the normal users can utilize Confusa's functionality.<br />\n";
 				$msg .= "<br /><center>Go <a href=\"attributes.php?mode=admin\">here</a> to update the map.</center><br />\n";
 				if (Config::get_config('debug')) {
