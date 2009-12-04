@@ -115,7 +115,7 @@
 {* *********************************************************************** *}
 <fieldset>
 	<legend>
-	Admins for subscriber {$subscriber->getOrgName()|escape}
+	Admins for subscriber {$subscriber|escape}
 	</legend>
 
 	<p class="info">
@@ -126,7 +126,7 @@
 	<li>appoint other subscriber admins.</li>
 	</ul>
 	<p class="info">
-	Their scope is limited to an institution, in this case {$subscriber->getOrgName()|escape}.
+	Their scope is limited to an institution, in this case {$subscriber|escape}.
 	</p>
 
 	{if isset($subscriber_admins)}
@@ -145,7 +145,7 @@
 			<td style="width: 30px">
 				<form action="" method="post">
 				<input type="hidden" name="nren_operation" value="upgrade_subs_admin" />
-				<input type="hidden" name="subscriber" value="{$subscriber->getOrgName()}" />
+				<input type="hidden" name="subscriber" value="{$subscriber}" />
 				<input type="hidden" name="subscriberID" value="{$subscriberID}" />
 				<input type="hidden" name="subs_admin" value="{$subscriber_admin.eppn}" />
 				<input type="image" src="graphics/arrow_up.png" alt="Upgrade admin"
