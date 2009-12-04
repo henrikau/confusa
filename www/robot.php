@@ -105,6 +105,7 @@ class CP_Robot_Interface extends Content_Page
 		} catch (Exception $e) {
 			/* fixme */
 			Framework::error_output("Errors getting robot-certificates from DB.<br />" . $e->getMessage());
+			return null;
 		}
 		$certs = array();
 		foreach ($res as $key => $val) {
