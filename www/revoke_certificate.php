@@ -179,16 +179,19 @@ class CP_RevokeCertificate extends Content_Page
 				 * Subscriber set, not even via the IdP, use the
 				 * first in the list.
 				 */
-				$subscriber = $this->person->getSubscriber()->getOrgName();
-				if (!isset($subscriber) || $subscriber=="") {
-					echo "[DEBUG] ".__FILE__ . ":" . __LINE__;
-					echo " no subscriber set, getting the first available.<br />\n";
-					$subscriber = $subscribers[0]->getOrgName();
+				$subscriber = $this->person->getSubscriber();
+				if (is_null($subscriber)) {
+					$subscriber = $subscribers[0];
 				}
 			}
-
-			$this->tpl->assign('subscriber', htmlentities($subscriber));
-			$this->tpl->assign('subscribers', $subscribers);
+			if (! is_null($subscriber)) {
+				$this->tpl->assign('subscriber', htmlentities($subscriber->getOrgName()));
+			}
+			if (! is_null($subscribers)) {
+				$this->tpl->assign('subscribers', $subscribers);
+			} else {
+				$this->tpl->assign('subscribers', false);
+			}
 		} else {
 			$subscriber = $this->person->getSubscriber()->getOrgName();
 		}
