@@ -79,7 +79,10 @@ class CP_NREN_Subs_Settings extends Content_Page
 	{
 		if ($this->person->isNRENAdmin()) {
 			$info = $this->person->getNREN()->getNRENInfo();
-			$current_language = $info['lang'];
+			$current_language = null;
+			if (array_key_exists('lang', $info)) {
+				$current_language = $info['lang'];
+			}
 			$this->tpl->assign('nrenInfo', $info);
 		} else {
 			$info = $this->person->getSubscriber()->getInfo();
