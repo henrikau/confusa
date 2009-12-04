@@ -151,6 +151,7 @@ class CP_RevokeCertificate extends Content_Page
 
 			if (isset($_POST['subscriber'])) {
 				$subscriber = Input::sanitize($_POST['subscriber']);
+				$this->tpl->assign('active_subscriber', $subscriber);
 
 				/* check if the given subscriber is a legitimate subscriber
 				 * for the given NREN
@@ -184,8 +185,8 @@ class CP_RevokeCertificate extends Content_Page
 					$subscriber = $subscribers[0];
 				}
 			}
-			if (! is_null($subscriber)) {
-				$this->tpl->assign('subscriber', htmlentities($subscriber->getOrgName()));
+			if (!is_null($subscriber) && $subscriber instanceof Subscriber) {
+				$this->tpl->assign('active_subscriber', htmlentities($subscriber->getOrgName()));
 			}
 			if (! is_null($subscribers)) {
 				$this->tpl->assign('subscribers', $subscribers);
@@ -193,7 +194,9 @@ class CP_RevokeCertificate extends Content_Page
 				$this->tpl->assign('subscribers', false);
 			}
 		} else {
+			/* not specified any subscriber, use user's subscriber */
 			$subscriber = $this->person->getSubscriber()->getOrgName();
+			$this->tpl->assign('active_subscriber', $this->person->getSubscriber()->getOrgName());
 		}
 
 		$this->tpl->assign('file_name', 'eppn_list');

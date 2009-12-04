@@ -18,9 +18,9 @@
 {/literal}
 
 {* Offer the NREN-admin a subscriber pre-selection *}
-{if $subscriber}
+{if $active_subscriber}
 All revocation operations currently limited to subscriber
-{$subscriber|escape}.
+{$active_subscriber|escape}.
 <div class="spacer"></div>
 <div style="text-align: right">
     <form action="" method="post">
@@ -28,14 +28,13 @@ All revocation operations currently limited to subscriber
     Select subscriber (orgname in the DN):
 	<select name="subscriber">
 	{foreach from=$subscribers item=nren_subscriber}
-		{if $nren_subscriber->getOrgName() == $subscriber}
+		{if $nren_subscriber->getOrgName() == $active_subscriber}
 			<option value="{$nren_subscriber->getOrgName()}" selected="selected">{$nren_subscriber->getOrgName()}</option>
 		{else}
 			<option value="{$nren_subscriber->getOrgName()}">{$nren_subscriber->getOrgName()}</option>
 		{/if}
 	{/foreach}
 	</select>
-    {*{html_options name="subscriber" values=$subscribers output=$subscribers selected=$subscriber|escape}*}
     <input type="submit" name="change" value="Change" />
     </div>
     </form>
@@ -49,17 +48,17 @@ immediately see a result entry *}
 <div class="spacer"></div>
 <form action="" method="post">
 <fieldset id="inputField">
-<legend>CN-search ({$subscriber|escape})</legend>
+<legend>CN-search ({$active_subscriber|escape})</legend>
 
 <p class="info">
 Search for a commonName or a eduPersonPrincipalName of a person within the
-institution {$subscriber|escape} whose certificates you want to revoke. Use '%' as a
+institution {$active_subscriber|escape} whose certificates you want to revoke. Use '%' as a
 wildcard.
 </p>
 <p class="info">Example: "John Doe jdoe@example.org" or "%jdoe@example.org".</p>
 <input onblur="hideHint();" onfocus="showHint();" type="text" name="search" value="" />
 <input type="hidden" name="revoke_operation" value="search_by_cn" />
-<input type="hidden" name="subscriber" value="{$subscriber}" />
+<input type="hidden" name="subscriber" value="{$active_subscriber}" />
 <input type="submit" name="Search" value="Search" />
 <br />
 <noscript>
