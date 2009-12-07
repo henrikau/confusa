@@ -57,6 +57,14 @@ class MailManager
 
 		$this->mailer->AddAddress($pers->getEmail(),
 		                          $pers->getName());
+
+		$help_desk = $pers->getSubscriber()->getHelpEmail();
+		/* add a reply-to to the helpdesk, if a helpdesk is defined */
+		if (isset($help_desk)) {
+			$support_name = $pers->getSubscriber()->getOrgName() . " support";
+			$this->mailer->AddReplyTo($help_desk,
+			                          $support_name);
+		}
 	} /* end constructor */
 
 	/**
