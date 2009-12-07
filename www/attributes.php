@@ -74,25 +74,33 @@ class CP_Attributes extends Content_Page
 			}
 		}
 		$session = $this->person->getSession();
-		if (!is_null($session)) {
+		if (isset($session)) {
 			if (isset($map['epodn'])) {
 				$orgName = $session->getAttribute($map['epodn']);
 				$this->tpl->assign('epodn', implode(', ', $orgName));
+			} else {
+				$this->tpl->assign('epodn', '');
 			}
 
 			if (isset($map['cn'])) {
 				$cn = $session->getAttribute($map['cn']);
 				$this->tpl->assign('cn', implode(', ', $cn));
+			} else {
+				$this->tpl->assign('cn', '');
 			}
 
 			if (isset($map['mail'])) {
 				$mail = $session->getAttribute($map['mail']);
 				$this->tpl->assign('mail', implode(', ', $mail));
+			} else {
+				$this->tpl->assign('mail', '');
 			}
 
 			if (isset($map['entitlement'])) {
 				$entitlement = $session->getAttribute($map['entitlement']);
 				$this->tpl->assign('entitlement', implode(', ', $entitlement));
+			} else {
+				$this->tpl->assign('entitlement', '');
 			}
 		}
 		$this->tpl->assign('map',		$map);
