@@ -33,11 +33,13 @@ class CP_Attributes extends Content_Page
 				if ($this->person->isNRENAdmin()) {
 					$epodn		= $_POST['epodn'];
 					if ($this->person->getNREN()->saveMap($this->person->getEPPNKey(), $epodn, $cn, $mail, $entitlement)) {
-						Framework::success_output("Updated map successfully.");
+						Framework::success_output("Updated map successfully. You will have to logout and login again " .
+						                          "to see the the effects of the changed map!");
 					}
 				} else if ($this->person->isSubscriberAdmin()) {
 					if ($this->updateMapSubscriber($cn, $mail, $entitlement)) {
-						Framework::success_output("Updated map successfully.");
+						Framework::success_output("Updated map successfully. You will have to logout and login again " .
+						                          "to see the the effects of the changed map!");
 					}
 				}
 				break;
