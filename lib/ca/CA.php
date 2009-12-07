@@ -243,7 +243,7 @@ abstract class CA
 
 	$mm = new MailManager($recipient,
 	                      Config::get_config('sys_from_address'),
-	                      '"' . Config::get_config('system_name') . '"',
+	                      Config::get_config('system_name'),
 	                      Config::get_config('sys_header_from_address'));
 	$mm->setSubject($subject);
 	$mm->setBody($msg);

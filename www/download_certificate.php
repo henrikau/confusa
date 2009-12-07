@@ -166,7 +166,7 @@ final class CP_DownloadCertificate extends Content_Page
 			if (isset($cert)) {
 				$mm = new MailManager($this->person,
 						      Config::get_config('sys_from_address'),
-						      '"' . Config::get_config('system_name') . '"',
+						      Config::get_config('system_name'),
 						      Config::get_config('sys_header_from_address'));
 				$mm->setSubject("Signed certificate");
 				$mm->setBody("Attached is your new certificate. Remember to " .
