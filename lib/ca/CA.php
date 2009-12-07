@@ -196,50 +196,52 @@ abstract class CA
    * @param $ip And the IP-address of the contacting endpoint
    * @param $productName string the name of the certificate (eScience, personal,
    *                            code-signing) that we actually issued
+   * @param $recipient person the person that is going to receive the
+   *                          notification mail
    */
-	protected function sendMailNotification($orderNumber,
-	                                        $timestamp,
-	                                        $ip,
-	                                        $productName)
+	public static function sendMailNotification($orderNumber,
+	                                            $timestamp,
+	                                            $ip,
+	                                            $productName,
+	                                            $recipient)
 	{
 	/* if a notification e-mail is not a *template*, then what is? */
-	$this->tpl	= new Smarty();
-	$nren = $this->person->getNREN();
+	$tpl	= new Smarty();
+	$nren = $recipient->getNREN();
 	$custom_template = Config::get_config('custom_mail_tpl') . $nren . '/custom.tpl';
 
-	$this->tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
-	$this->tpl->config_dir	= Config::get_config('install_path') .
+	$tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
+	$tpl->config_dir	= Config::get_config('install_path') .
 	                          'lib/smarty/configs';
-	$this->tpl->cache_dir	= ConfusaConstants::$SMARTY_CACHE;
-	$this->tpl->assign('subscriber',
-	                   $this->person->getSubscriber()->getOrgName());
-	$this->tpl->assign('subscriber_support_email',
-	                   $this->person->getSubscriber()->getHelpEmail());
-	$this->tpl->assign('subscriber_support_url',
-	                   $this->person->getSubscriber()->getHelpURL());
-	$this->tpl->assign('confusa_url', Config::get_config('server_url'));
-	$this->tpl->assign('dn', $this->person->getX509SubjectDN());
-	$this->tpl->assign('download_url', Config::get_config('server_url') .
-	                                   '/download_certificate.php');
-	$this->tpl->assign('issue_date', $timestamp);
-	$this->tpl->assign('ip_address', $ip);
-	$this->tpl->assign('order_number', $orderNumber);
-	$this->tpl->assign('nren', $this->person->getNREN());
+	$tpl->cache_dir	= ConfusaConstants::$SMARTY_CACHE;
+	$tpl->assign('subscriber', $recipient->getSubscriber()->getOrgName());
+	$tpl->assign('subscriber_support_email',
+	             $recipient->getSubscriber()->getHelpEmail());
+	$tpl->assign('subscriber_support_url',
+	             $recipient->getSubscriber()->getHelpURL());
+	$tpl->assign('confusa_url', Config::get_config('server_url'));
+	$tpl->assign('dn', $recipient->getX509SubjectDN());
+	$tpl->assign('download_url', Config::get_config('server_url') .
+	                             '/download_certificate.php');
+	$tpl->assign('issue_date', $timestamp);
+	$tpl->assign('ip_address', $ip);
+	$tpl->assign('order_number', $orderNumber);
+	$tpl->assign('nren', $nren);
 
 	if (file_exists($custom_template)) {
-		$msg = $this->tpl->fetch($custom_template);
+		$msg = $tpl->fetch($custom_template);
 		/* the mail will go out 7bit */
 		$msg = utf8_decode($msg);
 	} else {
 		$default_template = Config::get_config('install_path') .
 		                    '/lib/smarty/templates/email/notification.tpl';
-		$msg = $this->tpl->fetch($default_template);
+		$msg = $tpl->fetch($default_template);
 	}
 
 	$subject = "Your new $productName certificate is ready.  Order number " .
-	           "$orderNumber, subject " . $this->person->getX509SubjectDN();
+	           "$orderNumber, subject " . $recipient->getX509SubjectDN();
 
-	$mm = new MailManager($this->person,
+	$mm = new MailManager($recipient,
 	                      Config::get_config('sys_from_address'),
 	                      '"' . Config::get_config('system_name') . '"',
 	                      Config::get_config('sys_header_from_address'));

@@ -94,10 +94,11 @@ class CA_Standalone extends CA
 				throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
 			}
 
-			$this->sendMailNotification($auth_key,
-			                            date('Y-m-d H:i T'),
-			                            $_SERVER['REMOTE_ADDR'],
-			                            ConfusaConstants::$ESCIENCE_PRODUCT);
+			CA::sendMailNotification($auth_key,
+			                         date('Y-m-d H:i T'),
+			                         $_SERVER['REMOTE_ADDR'],
+			                         ConfusaConstants::$ESCIENCE_PRODUCT,
+			                         $this->person);
 			Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
 					  $this->person->getX509ValidCN() .
 					  " Contacting us from ".
