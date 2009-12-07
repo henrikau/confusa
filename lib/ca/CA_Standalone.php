@@ -41,7 +41,7 @@ class CA_Standalone extends CA
 
 			$cmd = "$path $auth_key $cert_file_name " . ConfusaConstants::$OPENSSL_SERIAL_FILE;
 			$res = shell_exec($cmd);
-			$val = split("\n", $res);
+			$val = explode("\n", $res);
 
 			/* FIXME: add better logic here.
 			 */
