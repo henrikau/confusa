@@ -158,6 +158,8 @@ class NREN
 				return false;
 			}
 		}
+
+		return true;
 	}
 	/**
 	 * Get the contact information for a NREN
