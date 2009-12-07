@@ -114,8 +114,7 @@
       {$prot_l}About you{$prot_r}</a></li>
   <li><a href="tools.php"{$prot_title}>
       {$prot_l}Tools{$prot_r}</a></li>
-  <li><a href="root_cert.php">
-      {$prot_l}CA Certificate{$prot_r}</a></li>
+  <li><a href="root_cert.php">CA Certificate</a></li>
 </ul>
 
 <div style="padding-bottom: 1em">
