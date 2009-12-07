@@ -10,6 +10,11 @@ require_once 'content_page.php';
  */
 class CP_Attributes extends Content_Page
 {
+	function __construct()
+	{
+		parent::__construct("Attribute mapping", true);
+	}
+
 	public function pre_process($person)
 	{
 		parent::pre_process($person);

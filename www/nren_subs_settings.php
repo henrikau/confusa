@@ -9,7 +9,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 {
 	function __construct()
 	{
-		parent::__construct("NREN_Subs_Settings", true);
+		parent::__construct("NREN/subscriber settings", true);
 		$available_languages = Config::get_config('language.available');
 		$this->full_names = Translator::getFullNamesForISOCodes($available_languages);
 	}

@@ -9,7 +9,7 @@ class CP_Tools extends Content_Page
 {
 	public function __construct()
 	{
-		parent::__construct("Revoke Certificate(s)", true, "tools.php");
+		parent::__construct("Tools of the trade", true, "tools.php");
 	}
 
 	function __destruct()
