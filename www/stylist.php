@@ -452,6 +452,9 @@ class CP_Stylist extends Content_Page
 		                         $ip,
 		                         $product_name,
 		                         $recipient);
+
+		$email = $recipient->getEmail();
+		Framework::success_output("Test mail sent to $email.");
 	} /* end sendNRENTestMail */
 
 	/**
