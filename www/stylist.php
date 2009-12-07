@@ -85,7 +85,7 @@ class CP_Stylist extends Content_Page
 			case 'upload_logo':
 				if (isset($_FILES['nren_logo']['name'])) {
 					/* only allow image uploads */
-					if (eregi('image/', $_FILES['nren_logo']['type'])) {
+					if (strpos($_FILES['nren_logo']['type'], 'image/') !== false) {
 						$this->uploadLogo('nren_logo', $this->person->getNREN());
 					}
 				}
