@@ -227,6 +227,7 @@ abstract class CA
 	$tpl->assign('ip_address', $ip);
 	$tpl->assign('order_number', $orderNumber);
 	$tpl->assign('nren', $nren);
+	$tpl->assign('product_name', $productName);
 
 	if (file_exists($custom_template)) {
 		$msg = $tpl->fetch($custom_template);
