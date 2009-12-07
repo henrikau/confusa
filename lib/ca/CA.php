@@ -230,8 +230,6 @@ abstract class CA
 
 	if (file_exists($custom_template)) {
 		$msg = $tpl->fetch($custom_template);
-		/* the mail will go out 7bit */
-		$msg = utf8_decode($msg);
 	} else {
 		$default_template = Config::get_config('install_path') .
 		                    '/lib/smarty/templates/email/notification.tpl';

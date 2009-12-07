@@ -44,6 +44,7 @@ class MailManager
 			Framework::error_output("Could not create mailer. Aborting");
 			return;
 		}
+		$this->mailer->CharSet = "UTF-8";
 		$this->mailer->Mailer = "sendmail";
 		/* set the envelope "from" address using the sendmail option -f, and
 		 * the return-path header */
@@ -88,7 +89,7 @@ class MailManager
 	 */
 	public function setBody($body)
 	{
-		$wrapped_body = $this->mailer->WrapText($body, 75, true);
+		$wrapped_body = $this->mailer->WrapText($body, 75, false);
 		$this->mailer->Body = $body;
 	}
 
