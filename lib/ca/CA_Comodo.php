@@ -313,7 +313,7 @@ class CA_Comodo extends CA
 		                         $this->person);
 
 		Logger::log_event(LOG_INFO, "Signed CSR for user with order_number " .
-		                            $order_number);
+		                            $this->order_number);
         return $this->order_number;
     }
 
