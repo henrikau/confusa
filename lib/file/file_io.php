@@ -34,9 +34,9 @@ class File_IO
 
 
 		if ($overwrite) {
-			$result = file_put_contents($path, $content, FILE_TEXT);
+			$result = file_put_contents($path, $content);
 		} else {
-			$result = file_put_contents($path, $content, FILE_APPEND|FILE_TEXT);
+			$result = file_put_contents($path, $content, FILE_APPEND);
 		}
 
 		if ($result === FALSE) {
@@ -56,7 +56,7 @@ class File_IO
 			throw new FileException("File in $path not found");
 		}
 
-		$content=file_get_contents($path, FILE_TEXT);
+		$content=file_get_contents($path);
 
 		if ($content === FALSE) {
 			throw new FileException("Could not read file in $path");
