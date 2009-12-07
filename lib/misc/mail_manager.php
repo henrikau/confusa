@@ -50,24 +50,12 @@ class MailManager
 		$this->mailer->Sender = $sender;
 
 		/* set the header "from" address */
-		/* $this->mailer->SetFrom($sendHeader, $senderName); */
 		$this->mailer->From = $sendHeader;
 		$this->mailer->FromName = $senderName;
 		$this->mailer->WordWrap = 80;
 
 		$this->mailer->AddAddress($pers->getEmail(),
 		                          $pers->getName());
-
-		try {
-			$confusaVersion = MetaInfo::getConfusaVersion();
-		} catch (ConfusaGenException $cge) {
-			/* take a version that won't appear that fast */
-			$confusaVersion = "17.2.11";
-		}
-
-		/* want "our own" X-Mailer :) */
-		$header = "X-Mailer: Confusa/$confusaVersion\r\n";
-		$this->mailer->AddCustomHeader($header);
 	} /* end constructor */
 
 	/**
@@ -79,7 +67,6 @@ class MailManager
 			$this->mailer->clearAddresses();
 			$this->mailer->clearAllRecipients();
 			$this->mailer->clearAttachments();
-			$this->mailer->clearCustomHeaders();
 			$this->mailer->clearReplyTos();
 		}
 	}
