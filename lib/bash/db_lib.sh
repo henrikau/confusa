@@ -27,7 +27,13 @@ else
     pw="-p$pw"
 fi
 
-MYSQL="/usr/bin/mysql --skip-column-names -h$host -u'${username}' -D$db ${pw} -B"
+if [ "$host" == "" ]; then
+    host=""
+else
+    host="-h$host"
+fi
+
+MYSQL="/usr/bin/mysql --skip-column-names ${host} -u'${username}' -D$db ${pw} -B"
 
 function run_query ()
 {
