@@ -94,18 +94,18 @@ class CP_NREN_Admin extends Content_Page
 					/* Other subscruber than user's
 					 * subscriber, must create new object
 					 * from DB */
-					$subscriber = Subscriber::getSubscriberByID($_POST['id'], $this->person->getNREN());
+					$subscriber = Subscriber::getSubscriberByID($id, $this->person->getNREN());
 				}
 				if (!is_null($subscriber)) {
 					/* subscriber will clean input */
-					$update  = $subscriber->setState(	$_POST['state']);
-					$update |= $subscriber->setEmail(	$_POST['subscr_email']);
-					$update |= $subscriber->setPhone(	$_POST['subscr_phone']);
-					$update |= $subscriber->setRespName(	$_POST['subscr_responsible_name']);
-					$update |= $subscriber->setRespEmail(	$_POST['subscr_responsible_email']);
-					$update |= $subscriber->setComment(	$_POST['subscr_comment']);
-					$update |= $subscriber->setHelpURL(	$_POST['subscr_help_url']);
-					$update |= $subscriber->setHelpEmail(	$_POST['subscr_help_email']);
+					$update  = $subscriber->setState(	$state);
+					$update |= $subscriber->setEmail(	$subscr_email);
+					$update |= $subscriber->setPhone(	$subscr_phone);
+					$update |= $subscriber->setRespName(	$subscr_responsible_name);
+					$update |= $subscriber->setRespEmail(	$subscr_responsible_email);
+					$update |= $subscriber->setComment(		$subscr_comment);
+					$update |= $subscriber->setHelpURL(		$subscr_help_url);
+					$update |= $subscriber->setHelpEmail(	$subscr_help_email);
 					if ($update) {
 						if (!$subscriber->save(true)) {
 							Framework::error_output("Could not update Subscriber, even with changed information.");
@@ -125,7 +125,7 @@ class CP_NREN_Admin extends Content_Page
 				if ($this->person->getSubscriber()->hasDBID($id)) {
 					$subscriber = $this->person->getSubscriber();
 				} else {
-					$subscriber = Subscriber::getSubscriberByID($_POST['id'], $this->person->getNREN());
+					$subscriber = Subscriber::getSubscriberByID($id, $this->person->getNREN());
 				}
 				if (!is_null($subscriber)) {
 					if ($subscriber->setState($state)) {
@@ -149,15 +149,15 @@ class CP_NREN_Admin extends Content_Page
 					Framework::error_output("Cannot create new, already existing.");
 					break;
 				}
-				$subscriber->setOrgname($_POST['dn_name']);
-				$subscriber->setState($_POST['state']);
-				$subscriber->setEmail($_POST['subscr_email']);
-				$subscriber->setPhone($_POST['subscr_phone']);
-				$subscriber->setRespName($_POST['subscr_responsible_name']);
-				$subscriber->setRespEmail($_POST['subscr_responsible_email']);
-				$subscriber->setComment($_POST['subscr_comment']);
-				$subscriber->setHelpURL($_POST['subscr_help_url']);
-				$subscriber->setHelpEmail($_POST['subscr_help_email']);
+				$subscriber->setOrgname($dn_name);
+				$subscriber->setState($state);
+				$subscriber->setEmail($subscr_email);
+				$subscriber->setPhone($subscr_phone);
+				$subscriber->setRespName($subscr_responsible_name);
+				$subscriber->setRespEmail($subscr_responsible_email);
+				$subscriber->setComment($subscr_comment);
+				$subscriber->setHelpURL($subscr_help_url);
+				$subscriber->setHelpEmail($subscr_help_email);
 				if ($subscriber->create()) {
 					Framework::success_output("Added new subscriber " . htmlentities($dn_name) . " to database.");
 				}
