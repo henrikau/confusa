@@ -47,6 +47,7 @@ class ConfusaConstants {
 	 */
 	public static $ALLOWED_IMG_SUFFIXES = array('png','jpg','gif');
 
+	public static $ORG_STATES = array('subscribed', 'suspended', 'unsubscribed');
 	/*
 	 * STANDALONE constants
 	 * the length of the auth_key, as it is used in standalone signing */

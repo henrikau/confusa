@@ -14,7 +14,6 @@ class CP_NREN_Admin extends Content_Page
 	function __construct()
 	{
 		parent::__construct("Admin", true);
-		$this->org_states	= array('subscribed', 'suspended', 'unsubscribed');
 	}
 
 
@@ -180,7 +179,7 @@ class CP_NREN_Admin extends Content_Page
 		}
 
 		$this->tpl->assign('nrenName'		, $this->person->getNREN());
-		$this->tpl->assign('org_states'		, $this->org_states);
+		$this->tpl->assign('org_states'		, ConfusaConstants::$ORG_STATES);
 
 		if (isset($_GET['target'])) {
 			switch(Input::sanitize($_GET['target'])) {
