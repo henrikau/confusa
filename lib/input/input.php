@@ -2,6 +2,9 @@
 
 require_once 'confusa_constants.php';
 
+mb_internal_encoding("UTF-8");
+mb_regex_encoding("UTF-8");
+
 class Input
 {
 	private static $bootstrapped = false;
@@ -122,8 +125,6 @@ class Input
 	 */
 	static function sanitizePersonName($input)
 	{
-		mb_internal_encoding("UTF-8");
-		mb_regex_encoding("UTF-8");
 		/* allow UTF-8 characters in names.
 		 * Note that mb_ereg_replace is somewhat notorious for being slow. */
 		$output = mb_ereg_replace('[^[:alpha:]\s\.]', '', $input, 'ip');
