@@ -3,7 +3,7 @@ require_once 'confusa_include.php';
 require_once 'config.php';
 require_once 'input.php';
 
-$nren = Input::sanitize($_GET['nren']);
+$nren = Input::sanitizeNRENName($_GET['nren']);
 $css_path = Config::get_config('custom_css') . $nren . '/custom.css';
 
 if (file_exists($css_path)) {
