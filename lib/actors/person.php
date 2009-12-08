@@ -745,7 +745,9 @@ class Person{
      */
     public function isAdmin()
     {
-	    return (int)$this->getAdminStatus() != NORMAL_USER;
+	    return $this->isNRENAdmin() ||
+		    $this->isSubscriberAdmin() ||
+		    $this->isSubscriberSubAdmin();
     } /* end function isAdmin() */
 
 
