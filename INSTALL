@@ -96,27 +96,6 @@ configuration, this should be more of a guideline than anything else.
    Contains excellent guides on how to configure simpelSAMLphp, and is
    *required* reading.
 
-   In simpleSAMLphp's config/config.php you should also add the custom
-   Authentication Processing Filters for Confusa. This is done in the
-   authproc.sp-section of the file:
-
-   'authproc.sp' => array(
-      ...
-      62 => array( 'class' => 'core:CountryMap'),
-      63 => array( 'class' => 'core:NRENMap'),
-      ...
-   ),
-
-   You will have to either copy or symlink these into the core part of
-   SimpleSAMLphp:
-
-	ln -s /var/www/confusa/config/CountryMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/CountryMap.php
-	ln -s /var/www/confusa/config/NRENMap.php /var/www/simplesamlphp/modules/core/lib/Auth/Process/NRENMap.php
-
-   When this is done, configure config/authsources.php as described in
-
-	http://rnd.feide.no/content/using-simplesamlphp-service-provider
-
    Until IdP discovery will be implemented in simplesamlphp's SAML2
    module, the IdP must be hardcoded in the configuration. E.g. add/edit
    the following line to <simplesamlphp-dir>/config/authsources.php:
