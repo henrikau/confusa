@@ -257,9 +257,6 @@ class Person{
      *
      *		http://rnd.feide.no/content/cn
      *
-     * The name is NOT sanitized due to the possible existance of UTF-8
-     * characters such as ä or å which we want to preserve. Make sure to
-     * sanitize it in all depending functions such as getX509SubjectDN()
      *
      * @param String given_name (the full name of the person)
      * @return void
@@ -304,7 +301,7 @@ class Person{
 		$msg .= "Please make operational support aware of this issue.";
 		throw new CriticalAttributeException($msg);
 	}
-	$this->eppn = Input::sanitize($eppn);
+	$this->eppn = $eppn;
     }
 
     /**
@@ -389,7 +386,7 @@ class Person{
     public function setEmail($email)
     {
 	    if (!is_null($email)) {
-		    $this->email = Input::sanitize($email);
+		    $this->email = $email;
 	    } else {
 		    $msg  = "Troubles with attributes. No mail address available. ";
 		    $msg .=" You will not be able to sign new certificates until this attribute is available.<br />\n";
@@ -473,7 +470,7 @@ class Person{
 				    $this->setEntitlement($value);
 			    }
 		    } else {
-			    $val = Input::sanitize($entitlement);
+			    $val = $entitlement;
 			    $this->entitlement[strtolower($val)] = $val;
 		    }
 	    }
@@ -515,7 +512,7 @@ class Person{
     public function testEntitlementAttribute($attribute)
     {
 	    $hasAttribute = false;
-	    $attr = strtolower(Input::sanitize($attribute));
+	    $attr = strtolower($attribute);
 	    return isset($this->entitlement[$attr]);
     }
 
