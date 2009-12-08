@@ -823,7 +823,7 @@ class Person{
 	    require_once 'mdb2_wrapper.php';
 	    $errorCode = create_pw(8);
 
-	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->eppn));
+	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND nren=?", array('text', 'text'), array($this->eppn, $this->nren->getID()));
 	    $size	= count($res);
 	    db_array_debug($res);
 	    if ($size == 1) {
