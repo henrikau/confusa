@@ -149,24 +149,6 @@ configuration, this should be more of a guideline than anything else.
                         Allow from all
              </Directory>
 
-   For the robotic interface:
-
-             Alias /confusa_robot "/var/www/confusa/robot_www/"
-             <Directory /var/www/confusa/robot_www/>
-			SSLVerifyClient require
-			SSLVerifyClient optional_no_ca
-			Options Indexes FollowSymLinks Multiviews
-			AllowOverride None
-			Order deny,allow
-			allow from all
-             </Directory>
-
-   You want to create a separate directory so you can enforce the
-   certificate requirement and let apache fail if the client does not
-   provide a certificate. Confusa *will* halt if no certificate is
-   present, but you will save some extra cycles by setting Apache to
-   handle this.
-
    Then reload apache:
 
 	/etc/init.d/apache2 reload (or httpd (or
