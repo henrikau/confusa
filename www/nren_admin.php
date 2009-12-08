@@ -35,36 +35,36 @@ class CP_NREN_Admin extends Content_Page
 		/* handle nren-flags */
 		if (isset($_POST['subscriber'])) {
 			if (isset($_POST['id']))
-				$id	= Input::sanitize($_POST['id']);
+				$id	= Input::sanitizeID($_POST['id']);
 
 			if (isset($_POST['state']))
-				$state	= Input::sanitize($_POST['state']);
+				$state	= Input::sanitizeOrgState($_POST['state']);
 
 			if (isset($_POST['db_name'])) {
-				$db_name	= $_POST['db_name'];
+				$db_name	= Input::sanitizeIdPName($_POST['db_name']);
 			}
 
 			if (isset($_POST['dn_name'])) {
-				$dn_name = Input::sanitize($_POST['dn_name']);
+				$dn_name = Input::sanitizeOrgName($_POST['dn_name']);
 			}
 
 			if(isset($_POST['subscr_email']) && $_POST['subscr_email'] != "") {
-				$subscr_email = Input::sanitizeText($_POST['subscr_email']);
+				$subscr_email = Input::sanitizeEmail($_POST['subscr_email']);
 			} else {
 				$subscr_email = "";
 			}
 			if(isset($_POST['subscr_phone']) && $_POST['subscr_phone'] != "") {
-				$subscr_phone = Input::sanitizeText($_POST['subscr_phone']);
+				$subscr_phone = Input::sanitizePhone($_POST['subscr_phone']);
 			} else {
 				$subscr_phone = "";
 			}
 			if(isset($_POST['subscr_responsible_name']) && $_POST['subscr_responsible_name'] != "") {
-				$subscr_responsible_name = Input::sanitizeText($_POST['subscr_responsible_name']);
+				$subscr_responsible_name = Input::sanitizePersonName($_POST['subscr_responsible_name']);
 			} else {
 				$subscr_responsible_name = "";
 			}
 			if(isset($_POST['subscr_responsible_email']) && $_POST['subscr_responsible_email'] != "") {
-					$subscr_responsible_email = Input::sanitizeText($_POST['subscr_responsible_email']);
+					$subscr_responsible_email = Input::sanitizeEmail($_POST['subscr_responsible_email']);
 			} else {
 				$subscr_responsible_email = "";
 			}
@@ -74,12 +74,12 @@ class CP_NREN_Admin extends Content_Page
 				$subscr_comment = "";
 			}
 			if(isset($_POST['subscr_help_url']) && $_POST['subscr_help_url'] != "") {
-				$subscr_help_url = Input::sanitizeText($_POST['subscr_help_url']);
+				$subscr_help_url = Input::sanitizeURL($_POST['subscr_help_url']);
 			} else {
 				$subscr_help_url= "";
 			}
 			if(isset($_POST['subscr_help_email']) && $_POST['subscr_help_email'] != "") {
-				$subscr_help_email = Input::sanitizeText($_POST['subscr_help_email']);
+				$subscr_help_email = Input::sanitizeEmail($_POST['subscr_help_email']);
 			} else {
 				$subscr_help_email= "";
 			}
@@ -136,13 +136,12 @@ class CP_NREN_Admin extends Content_Page
 				break;
 			case 'info':
 				$this->tpl->assign('subscr_details',
-						   Subscriber::getSubscriberByID($id, $this->person->GetNREN())->getInfo());
+						   Subscriber::getSubscriberByID($id, $this->person->getNREN())->getInfo());
 				$this->tpl->assign('subscriber_details', true);
 				$this->tpl->assign('subscriber_detail_id', $id);
 				break;
 			case 'add':
-				$db_name = Input::sanitizeText($_POST['db_name']);
-				echo "The db_name after the post is " . $db_name . "<br />\n";
+				$db_name = Input::sanitizeIdPName($_POST['db_name']);
 				$subscriber = new Subscriber($db_name, $this->person->getNREN());
 				if ($subscriber->isValid()) {
 					Framework::error_output("Cannot create new, already existing.");
