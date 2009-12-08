@@ -32,7 +32,7 @@ final class CP_DownloadCertificate extends Content_Page
 					Framework::error_output("Could not download the certificate, server said: " . htmlentities($cge->getMessage()));
 				}
 			} else if (isset($_GET['cert_status'])) {
-				$this->pollCertStatusAJAX(Input::sanitize($_GET['cert_status']));
+				$this->pollCertStatusAJAX(Input::sanitizeCertKey($_GET['cert_status']));
 			}
 		}
 		return false;

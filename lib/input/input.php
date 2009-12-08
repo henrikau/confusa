@@ -179,6 +179,19 @@ class Input
 		return $output;
 	}
 
+	/**
+	 * Sanitize the main cert-identifier (auth-key/order-number). The
+	 * order-number is numeric and the auth_key is a pubkey-hash which is a
+	 * hexadecimal sequence so 0-9 and a-f are allowed, the rest is dropped.
+	 * @param $input string The unsanitized string
+	 * @return the sanitized string
+	 */
+	static function sanitizeCertKey($input)
+	{
+		$output = preg_replace('/[^0-9a-f]/i', '', $input);
+		return $output;
+	}
+
 	/*
 	 * For text e.g. defined by the NREN admin to view on the help/about page
 	 * we can not make too many assumptions about how the input will look like
