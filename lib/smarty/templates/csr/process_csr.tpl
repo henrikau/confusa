@@ -10,10 +10,19 @@
 </div>
 {/if}
 
-{if ! empty($csrList)}
-{$list_all_csr}
-{/if}
-
+<p class="info">
+  Please choose one of the options available below to create your
+  certificate.
+</p>
+<p class="info">
+  You have several different ways of creating the certificate, ranging
+  from a complete in-browser experience to different ways of uploading
+  an existing CSR.
+</p>
+<p class="info">
+  If you are unsure about what an CSR is, you probably want the
+  in-browser approach.
+</p>
 {*
  * Generate CSR in the browser.
  *}
@@ -41,6 +50,12 @@
 	{$browserTemplate}
 {/if}
 <div class="spacer"></div>
+<div class="spacer"></div>
+
+
+{if ! empty($csrList)}
+{$list_all_csr}
+{/if}
 
 {*
  * Upload CSR from file
