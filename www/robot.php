@@ -24,7 +24,8 @@ class CP_Robot_Interface extends Content_Page
 			switch($action) {
 			case 'paste_new':
 				if (isset($_POST['cert']) && $_POST['cert'] != "") {
-					$res = $this->insertCertificate($_POST['cert'], $comment);
+					$cert = Input::sanitizeBase64($_POST['cert']);
+					$res = $this->insertCertificate($cert, $comment);
 				}
 				break;
 			case 'upload_new':
@@ -124,6 +125,7 @@ class CP_Robot_Interface extends Content_Page
 		if (FileUpload::testError('cert')) {
 			$cert = openssl_x509_read(FileUpload::getContent('cert'));
 			if (openssl_x509_export($cert, $certDump, true)) {
+				$cert = Input::sanitizeBase64($cert);
 				return $this->insertCertificate($certDump, $comment);
 			}
 		}
