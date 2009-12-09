@@ -47,14 +47,16 @@
 		<div class="confusa_corners_br">
 		  <div class="confusa_corners">
 		    <div id="header">
-		      {if is_null($logo)}
-		      <div id="logo"><img src="graphics/logo-sigma.png" alt="UNINETT Sigma Logo" /></div>
-		      {else}
+		      <a href="index.php">
 		      <div id="logo">
-		      <img src="{$logo}" alt="NREN logo" />
+			{if is_null($logo)}
+			<img src="graphics/logo-sigma.png" alt="UNINETT Sigma Logo" />
+			{else}
+			<img src="{$logo}" alt="NREN logo" />
+			{/if}
 		      </div>
-		      {/if}
-		      <div id="title">Confusa</div>
+		      <div id="title">{$system_title}</div>
+		      </a>
 		      <!-- fix for adjusting the header's height to the image's height. Breaks in IE6 -->
 		      <div style="clear: left"></div>
 		    </div> <!-- header -->
