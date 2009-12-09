@@ -110,8 +110,6 @@
   <ul style="padding-bottom: 1em">
   {/if}
 
-  <li><a href="about_you.php"{$prot_title}>
-      {$prot_l}About you{$prot_r}</a></li>
   <li><a href="tools.php"{$prot_title}>
       {$prot_l}Tools{$prot_r}</a></li>
   <li><a href="root_cert.php">CA Certificate</a></li>
