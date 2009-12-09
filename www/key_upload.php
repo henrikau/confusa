@@ -36,8 +36,8 @@ require_once 'csr_lib.php';
    */
 $ip=$_SERVER['REMOTE_ADDR'];
 if ( isset($_GET['remote_csr']) && $_GET['inspect_csr']) {
-	$csr = base64_decode(htmlentities($_GET['remote_csr']));
-     $auth_var = htmlentities($_GET['inspect_csr']);
+	$csr = base64_decode($_GET['remote_csr']);
+     $auth_var = Input::sanitizeCertKey($_GET['inspect_csr']);
      $csr_subject=openssl_csr_get_subject($csr);
      if ($csr_subject) {
           $common = $csr_subject['CN'];
