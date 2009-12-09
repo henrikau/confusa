@@ -1,33 +1,108 @@
 
-<h1>{$system_title}</h1>
 <br />
-
+<br />
 {if ! $person->isAuth()}
 <p class="info">
   {$unauth_welcome_1}<br />
   {$unauth_login_notice}
 </p>
 
+<br />
+<hr width="90%"/>
+<br />
 <center>
-<br />
-<hr width="60%"/>
-<br />
 <h2><a href="?start_login=yes">Log in</a></h2>
-<br />
-<hr width="60%"/>
-<br />
 </center>
+<br />
+<hr width="90%"/>
+<br />
 
 {else}
+<p class="info">
+{$auth_welcome_1}
+</p>
+<br />
+<hr width="90%" />
+<br />
+<h3>Info about you</h3>
+<p class="info">
+  This is information we have received from your home organization
+  combined with information entered for your NREN ({$nren->getName()})
+  and subscriber ({$subscriber->getOrgName()}).
+</p>
+<br />
+{assign var='bg1' value='style="background-color: #ededed"'}
+{assign var='bg2' value='style="background-color: #ffffff"'}
 
+<table class="small" width="90%">
+   <tr {$bg1}>
+     <td width="20%"><b>Name:</b></td>
+     <td width="20px"></td>
+     <td>{$person->getName()|escape}</td>
+   </tr>
 
-	{if $person->getMode() == 0}
+   <tr {$bg2}>
+     <td><b>E-mail address:</b></td>
+     <td width="20px"></td>
+     <td>{$person->getEmail()|escape}</td>
+   </tr>
 
-	<h3>Showing normal-mode splash</h3>
-	{elseif $person->getMode() == 1}
+   <tr {$bg1}>
+     <td><b>Entitlement:</b></td>
+     <td width="20px"></td>
+     <td>{$person->getEntitlement()|escape}</td>
+   </tr>
 
-	<h3>Showing admin-mode splash</h3>
-	{/if}
+   <tr {$bg2}>
+     <td><b>Unique Name:</b></td>
+     <td width="20px"></td>
+     <td>{$person->getEPPN()|escape}</td>
+   </tr>
+
+   <tr {$bg1}>
+     <td><b>Home organization:</b></td>
+     <td width="20px"></td>
+     <td>
+       {if $subscriber}
+       {$subscriber->getOrgName()|escape}
+       {/if}
+     </td>
+   </tr>
+
+   <tr {$bg2}>
+     <td><b>Country:</b></td>
+     <td width="20px"></td>
+     <td>{$nren->getCountry()|escape}</td>
+   </tr>
+
+   <tr {$bg1}>
+     <td><b>Org ID:</b></td>
+     <td width="20px"></td>
+     <td>
+       {if $subscriber}
+       {$subscriber->getIdPName()|escape}
+       {/if}
+     </td>
+   </tr>
+
+   <tr {$bg2}>
+     <td><b>NREN-name:</b></td>
+     <td width="20px"></td>
+     <td>{$person->getNREN()|escape}</td>
+   </tr>
+
+   <tr {$bg1}>
+     <td><b>Full \DN</b></td>
+     <td width="20px"></td>
+     <td><pre>{$person->getX509SubjectDN()|escape}</pre></td>
+   </tr>
+
+ </table>
+ <br />
+
+<br />
+<hr width="90%" />
+<br />
 {/if}
 
 <br />
