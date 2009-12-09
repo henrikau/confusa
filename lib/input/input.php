@@ -192,6 +192,19 @@ class Input
 		return $output;
 	}
 
+	/**
+	 * Sanitize a language code. Can be of the form 'no', 'sv' or 'de', but also
+	 * for instance 'en-GB', 'de-AT' aso. should be legal.
+	 *
+	 * @param $input string unsanitized language code
+	 * @return sanitized language code
+	 */
+	static function sanitizeLangCode($input)
+	{
+		$output = preg_replace('/a-z\-/i', '', $input);
+		return $output;
+	}
+
 	/*
 	 * For text e.g. defined by the NREN admin to view on the help/about page
 	 * we can not make too many assumptions about how the input will look like

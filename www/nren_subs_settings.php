@@ -23,15 +23,15 @@ class CP_NREN_Subs_Settings extends Content_Page
 			return false;
 
 		if (isset($_POST['setting'])) {
-			switch(htmlentities($_POST['setting'])) {
+			switch($_POST['setting']) {
 			case 'nren_contact':
 				if ($this->person->isNRENAdmin()) {
-					$this->person->getNREN()->set_contact_email(	$_POST['contact_email']);
-					$this->person->getNREN()->set_contact_phone(	$_POST['contact_phone']);
-					$this->person->getNREN()->set_cert_phone(	$_POST['cert_phone']);
-					$this->person->getNREN()->set_cert_email(	$_POST['cert_email']);
-					$this->person->getNREN()->set_url(		$_POST['url']);
-					$this->person->getNREN()->set_lang(		$_POST['language']);
+					$this->person->getNREN()->set_contact_email(Input::sanitizeEmail($_POST['contact_email']));
+					$this->person->getNREN()->set_contact_phone(Input::sanitizePhone($_POST['contact_phone']));
+					$this->person->getNREN()->set_cert_phone(   Input::sanitizePhone($_POST['cert_phone']));
+					$this->person->getNREN()->set_cert_email(   Input::sanitizeEmail($_POST['cert_email']));
+					$this->person->getNREN()->set_url(          Input::sanitizeURL($_POST['url']));
+					$this->person->getNREN()->set_lang(         Input::sanitizeLangCode($_POST['language']));
 					$this->person->getNREN()->saveNREN();
 				}
 				break;
@@ -39,10 +39,10 @@ class CP_NREN_Subs_Settings extends Content_Page
 				if ($this->person->isSubscriberAdmin()) {
 					/* ($contact_email, $contact_phone, $resp_name, $resp_email) */
 					$this->updateSubscriberContact(
-						Input::sanitizeText($_POST['contact_email']),
-						Input::sanitizeText($_POST['contact_phone']),
-						Input::sanitizeText($_POST['resp_name']),
-						Input::sanitizeText($_POST['resp_email']));
+						Input::sanitizeEmail($_POST['contact_email']),
+						Input::sanitizePhone($_POST['contact_phone']),
+						Input::sanitizePersonName($_POST['resp_name']),
+						Input::sanitizeEmail($_POST['resp_email']));
 				}
 				break;
 			default:
@@ -53,13 +53,13 @@ class CP_NREN_Subs_Settings extends Content_Page
 				switch ($_POST['language_operation']) {
 					case 'update':
 						if (isset($_POST['language'])) {
-							$new_language = Input::sanitize($_POST['language']);
+							$new_language = Input::sanitizeLangCode($_POST['language']);
 
 							if ($person->isSubscriberAdmin()) {
 								$this->updateSubscriberLanguage($person->getSubscriber()->getOrgName(),
 												$new_language);
 							} else if ($person->isNRENAdmin()) {
-								$this->person->getNREN()->set_lang(Input::sanitize($_POST['language']));
+								$this->person->getNREN()->set_lang(Input::sanitizeLangCode($_POST['language']));
 								$this->person->getNREN()->saveNREN();
 							}
 						}
