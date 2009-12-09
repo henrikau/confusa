@@ -41,10 +41,10 @@ final class CP_ProcessCsr extends Content_Page
 		parent::pre_process($person);
 		$res = false;
 		if (isset($_GET['sign_csr'])) {
-			$res = $this->approveCsr(htmlentities($_GET['sign_csr']));
+			$res = $this->approveCsr(Input::sanitizeBase64($_GET['sign_csr']));
 
 		} else if (isset($_GET['status_poll'])) {
-			$order_number = htmlentities($_GET['status_poll']);
+			$order_number = Input::sanitizeCertKey($_GET['status_poll']);
 			/* assign the order_number again */
 			$this->tpl->assign('order_number', $order_number);
 			$this->tpl->assign('status_poll', true);
@@ -54,7 +54,7 @@ final class CP_ProcessCsr extends Content_Page
 			}
 
 		} else if (isset($_GET['install_cert'])) {
-			$order_number = Input::sanitize($_GET['install_cert']);
+			$order_number = Input::sanitizeCertKey($_GET['install_cert']);
 			$ua = getUserAgent();
 			$script = $this->ca->getCertDeploymentScript($order_number, $ua);
 
@@ -68,8 +68,8 @@ final class CP_ProcessCsr extends Content_Page
 		}
 
 		if (isset($_POST['browserRequest'])) {
-			$request = trim($_POST['browserRequest']);
-			$request = str_replace(array("\n","\r"),array('',''),$request);
+			$request = Input::sanitizeBase64($_POST['browserRequest']);
+			$request = trim($request);
 			if (!empty($request)) {
 				$order_number = $this->approveBrowserGenerated($request, getUserAgent());
 				$this->tpl->assign('order_number', $order_number);
@@ -97,7 +97,7 @@ final class CP_ProcessCsr extends Content_Page
 
 		if($this->signing_ok) {
 			$this->tpl->assign('signingOk', $this->signing_ok);
-			$this->tpl->assign('sign_csr', htmlentities($_GET['sign_csr']));
+			$this->tpl->assign('sign_csr', Input::sanitizeBase64($_GET['sign_csr']));
 		}
 
 		$this->tpl->assign('inspect_csr',	$this->tpl->fetch('csr/inspect_csr.tpl'));
@@ -165,7 +165,7 @@ final class CP_ProcessCsr extends Content_Page
 			}
 		} else if (isset($_POST['user_csr'])) {
 			echo "Handling pasted CSR<br />\n";
-			$csr = $_POST['user_csr'];
+			$csr = Input::sanitizeBase64($_POST['user_csr']);
 		}
 
 		if (!is_null($csr)) {
@@ -213,7 +213,7 @@ final class CP_ProcessCsr extends Content_Page
 	{
 		$res = false;
 		if (isset($_GET['delete_csr'])) {
-			$res = delete_csr_from_db($this->person, htmlentities($_GET['delete_csr']));
+			$res = delete_csr_from_db($this->person, Input::sanitizeCertKey($_GET['delete_csr']));
 			if ($res) {
 				Framework::message_output("Successfully deleted CSR for user " . htmlentities($this->person->getEPPN()) . ".");
 			} else {
@@ -222,7 +222,8 @@ final class CP_ProcessCsr extends Content_Page
 		}
 		elseif (isset($_GET['inspect_csr'])) {
 			try {
-				$this->tpl->assign('csrInspect', get_csr_details($this->person, Input::sanitize($_GET['inspect_csr'])));
+				$this->tpl->assign('csrInspect', get_csr_details($this->person,
+				                   Input::sanitizeCertKey($_GET['inspect_csr'])));
 				$res = true;
 			} catch (CSRNotFoundException $csrnfe) {
 				$msg  = "Error with auth-token (" . htmlentities($auth_key) . ") - not found. ";

@@ -205,6 +205,19 @@ class Input
 		return $output;
 	}
 
+	/**
+	 * Sanitize base64, somewhat geared towards CSRs. They follow a quoted-
+	 * printable-encoding, with characters a-z, 0-9, '+', '/' and '=' as the
+	 * final delimiter. -- and whitespace is used in the header and footer.
+	 * @param $input string the unsanitized base64-string
+	 * @return string the sanitized base64-string
+	 */
+	static function sanitizeBase64($input)
+	{
+		$output = preg_replace('/a-z0-9\+\/\-\s=/i', '', $input);
+		return $output;
+	}
+
 	/*
 	 * For text e.g. defined by the NREN admin to view on the help/about page
 	 * we can not make too many assumptions about how the input will look like
