@@ -12,6 +12,11 @@ $lang['unauth_login_notice'] = array(
 	'en' => 'To use this service, you will need to log in.',
 	);
 
+$lang['auth_welcome_1'] = array(
+	'en' => 'You have successfully authenticated to your home organization,
+		 and you can now use the rest of the portal.',
+	);
+
 $lang['log_in_msg'] = array(
 	'en' => "Log in",
 	);
