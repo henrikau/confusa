@@ -33,7 +33,7 @@ try {
  * want to render the content-page with.
  * The object will then check for login (or you can force it to login) create
  * menu and finally, include the content of your page.
- * 
+ *
  * All pages that wants to use the confusa functionality, must call
  * render_page, and pass along a function-pointer which renders the content of
  * the page. (see index.php for an example).
@@ -90,11 +90,11 @@ class Framework {
 				}
 			}
 		} catch (CriticalAttributeException $cae) {
-			Framework::error_output($cae->getMessage());
+			Framework::error_output(htmlentities($cae->getMessage()));
 			$this->renderError = true;
 			return;
 		} catch (ConfusaGenException $cge) {
-			Framework::error_output($cge->getMessage());
+			Framework::error_output(htmlentities($cge->getMessage()));
 			$this->renderError = true;
 			return;
 		}
@@ -153,7 +153,7 @@ class Framework {
 		} catch (CriticalAttributeException $cae) {
 			$msg  = "<center>";
 			$msg .= "<b>Error(s) with attributes</b><br /><br />";
-			$msg .= $cae->getMessage() . "<br /><br />";
+			$msg .= htmlentities($cae->getMessage()) . "<br /><br />";
 			$msg .= "<b>Cannot continue</b><br /><br />";
 			$msg .= "Please contact your local IT-support, and ask them to resolve this issue.";
 			$msg .= "</center>";
@@ -169,7 +169,7 @@ class Framework {
 			$this->renderError = true;
 		} catch (ConfusaGenException $cge) {
 			Framework::error_output("Could not authenticate you! Error was: " .
-									$cge->getMessage());
+									htmlentities($cge->getMessage()));
 			$this->renderError = true;
 		}
 
@@ -185,7 +185,7 @@ class Framework {
 			$msg  = "The credentials for your NREN are not specified or incorrect! Some ";
 			$msg .= "certificate operations will not work.";
 			$msg .= "<br /><br />Backend said: <br />";
-			$msg .= "<i>".$rce->getMessage() . "</i><br /><br />";
+			$msg .= "<i>". htmlentities($rce->getMessage()) . "</i><br /><br />";
 
 			if ($this->person->isNRENAdmin()) {
 				$msg .=  "<center>Please update the credentials <a href=\"accountant.php\">here</a></center>";
@@ -197,14 +197,16 @@ class Framework {
 		} catch (KeyNotFoundException $knfe) {
 				$this->renderError = true;
 
-				$msg  = "[".create_pw(8)."] config-file not properly configured. " .$knfe->getMessage();
-				Logger::log_event(LOG_INFO, $msg);
+				$msg  = "[".create_pw(8)."] config-file not properly configured. ";
+				Logger::log_event(LOG_INFO, $msg . $knfe->getMessage());
 
+				$msg .= htmlentities($knfe->getMessage());
 				$msg .= "<br />Please contact operational support to resolve this isse, ";
 				$msg .= "be sure to include the error-code in the message.";
 				Framework::error_output($msg);
 		} catch (Exception $e) {
-			Framework::error_output("Uncaught exception occured!<br />\n" . $e->getMessage());
+			Framework::error_output("Uncaught exception occured!<br />\n" .
+			                        htmlentities($e->getMessage()));
 			$this->renderError = true;
 		}
 
@@ -237,13 +239,15 @@ class Framework {
 			try {
 				$this->contentPage->process($this->person);
 			} catch (KeyNotFoundException $knfe) {
-				$msg  = "[".create_pw(8)."] config-file not properly configured. " .$knfe->getMessage();
-				Logger::log_event(LOG_INFO, $msg);
+				$msg  = "[".create_pw(8)."] config-file not properly configured. ";
+				Logger::log_event(LOG_INFO, $msg . $knfe->getMessage());
+				$msg .= htmlentities($knfe->getMessage());
 				$msg .= "<br />Please contact operational support to resolve this isse, ";
 				$msg .= "be sure to include the error-code in the message.";
 				Framework::error_output($msg);
 			} catch (Exception $e) {
-				Framework::error_output("Unhandled exception found in user-function!<br />\n" . $e->getMessage());
+				Framework::error_output("Unhandled exception found in user-function!<br />\n" .
+				                        htmlentities($e->getMessage()));
 			}
 		} else {
 			$nren = $this->person->getNREN();

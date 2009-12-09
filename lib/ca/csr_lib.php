@@ -143,7 +143,7 @@ function get_csr_from_db_raw($eppn, $auth_key)
 		return $csr_res[0];
 	}
 	throw new ConfusaGenException("Too many CSRs found in the database with token $auth_token");
-	
+
 }
 function get_csr_from_db($person, $auth_key)
 {
@@ -166,8 +166,8 @@ function delete_csr_from_db($person, $auth_key)
 		Logger::log_event(LOG_NOTICE, $msg);
 		return false;
 	} catch (ConfusaGenException $cge) {
-		$msg  = "Error in deleting CSR (" . $auth_key . ")";
-		$msg .= "for user: " . $person->getX509ValidCN() . " ";
+		$msg  = "Error in deleting CSR (" . htmlentities($auth_key) . ")";
+		$msg .= "for user: " . htmlentities($person->getX509ValidCN()) . " ";
 		$msg .= "Too many hits!";
 		Framework::error_output($msg);
 		Logger::log_event(LOG_ALERT, $msg);
@@ -188,7 +188,7 @@ function print_csr_details($person, $auth_key)
 	try {
 		$csr = get_csr_from_db_raw($person->getX509ValidCN(), $auth_key);
 	} catch (CSRNotFoundException $csrnfe) {
-		$msg  = "Error with auth-token ($auth_key) - not found. ";
+		$msg  = "Error with auth-token (" . htmlentities($auth_key) . ") - not found. ";
 		$msg .= "Please verify that you have entered the correct auth-url and try again.";
 		$msg .= "If this problem persists, try to upload a new CSR and inspect the fields carefully";
 		Framework::error_output($msg);
@@ -262,7 +262,10 @@ function match_dn($subject, $person)
 		$composed_dn .= "/CN=".$subject['CN'];
 	$res = $person->getX509SubjectDN() === $composed_dn;
 	if (!$res) {
-		Framework::error_output("Supplied (".$composed_dn.") and required subject (".$person->getX509SubjectDN() .") differs!");
+		Framework::error_output("Supplied (". htmlentities($composed_dn) .
+		                        ") and required subject (".
+		                        htmlentities($person->getX509SubjectDN()) .
+		                        ") differs!");
 	}
 	return $res;
 }

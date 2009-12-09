@@ -1,5 +1,10 @@
 <?php
 
+require_once 'confusa_constants.php';
+
+mb_internal_encoding("UTF-8");
+mb_regex_encoding("UTF-8");
+
 class Input
 {
 	private static $bootstrapped = false;
@@ -25,6 +30,205 @@ class Input
 		}
 
 		$output = preg_replace('/[^a-z0-9_.@ ]+/i','',$input);
+		return $output;
+	}
+
+	/**
+	 * sanitize a subscriber org-name (the /O= name in the subject DN).
+	 * This function does not perform any validation whatsoever, it just removes
+	 * characters that are not meant to be in subject-DN org-name.
+	 * @param $input string an input which is supposed to be a subscriber
+	 *               org-name
+	 * @return string the sanitized input string
+	 */
+	static function sanitizeOrgName($input)
+	{
+		$output = preg_replace('/[^a-z0-9@_,\.\-\s]/i', '', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize Confusa's internal representation of a subscriber-name. This
+	 * equals the value sent in the attribute identifying the subscriber
+	 * (eduPersonOrgDN, schacHomeOrganization).
+	 * No validation, just removal of "bad" characters
+	 * @param $input string The unsanitized subscriber-db-name
+	 * @return string The sanitized subscriber-IdP-name
+	 */
+	static function sanitizeIdPName($input)
+	{
+		$output = preg_replace('/[^a-z0-9_=,\s\.\-@]/i','', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize a numeric ID (like the primary key in a DB)
+	 * @param $input string ID input
+	 * @return integer the input with all non-numeric components removed
+	 */
+	static function sanitizeID($input)
+	{
+		$output = preg_replace('/[^0-9]/', '', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize an org-state. Return the input string, if it is found in the
+	 * org-states in Confusa's constants or return an empty string otherwise.
+	 * @param $input string The org-state
+	 * @return string The input, if in ConfusaConstants::$ORG_STATES or the
+	 *                empty string otherwise
+	 */
+	static function sanitizeOrgState($input)
+	{
+		if (array_search($input, ConfusaConstants::$ORG_STATES) !== false) {
+			return $input;
+		} else {
+			return '';
+		}
+	}
+
+	/**
+	 * Sanitize an e-mail address. No validation, just dropping unwanted
+	 * characters.
+	 * @param $input string the unsanitized e-mail address
+	 * @return string the sanitized e-mail address
+	 */
+	static function sanitizeEmail($input)
+	{
+		$output = preg_replace('/[^a-z0-9._%\+\-@\.]/i', '', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize a phone number. A phone number may contain numbers and the +
+	 * symbol.
+	 * Drop all other characters.
+	 * @param $input string unsanitized phone number
+	 * @return string the sanitized phone number
+	 */
+	static function sanitizePhone($input)
+	{
+		$output = preg_replace('/[^\+0-9]/', '', $input);
+		return $output;
+	}
+	/**
+	 * Sanitize the name of a person. Allow UTF-8 characters, spaces and '.'
+	 * symbols for initials.
+	 * Drop all other characters. Due to the UTF-8 regex, this function is
+	 * slower than normal sanitation (measured factor 3 to around 8,
+	 * although on a few-10-microseconds scale).
+	 * It should probably not be used in a loop for a lot of data in time or
+	 * performance critical code parts.
+	 * @param $input string the unsanitized name string
+	 * @return string the sanitized name string
+	 */
+	static function sanitizePersonName($input)
+	{
+		/* allow UTF-8 characters in names.
+		 * Note that mb_ereg_replace is somewhat notorious for being slow. */
+		$output = mb_ereg_replace('[^[:alpha:]\s\.]', '', $input, 'ip');
+		return $output;
+	}
+
+	/**
+	 * Allow the union of the charsets in sanitizePersonName and sanitizeEPPN.
+	 * NB: Uses UTF-8 compatible mb_ereg_replace, which is slower than normal
+	 * regex-replacing. Don't use excessively!
+	 * @param $input string unsanitized common name
+	 * @return string sanitized common name
+	 */
+	static function sanitizeCommonName($input)
+	{
+		$output = mb_ereg_replace('[^[:alpha:]\s\.0-9@_\-\+]', '', $input, 'ip');
+		return $output;
+	}
+
+	/**
+	 * Sanitize an URL. Include most characters needed for protocol-, host-,
+	 * domain- and query-part. Drop the rest. No punycode URLs.
+	 * @param $input the unsanitized URL
+	 * @return string the sanitized URL
+	 */
+	static function sanitizeURL($input)
+	{
+		$output = preg_replace('|[^\:/\.a-z0-9\-\?&%\=~_]|i', '', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize an eduPersonPrincipalName. No validation, just dropping of
+	 * undesired characters.
+	 * @param $input string the unsanitized ePPN
+	 * @return string the santitized ePPN
+	 */
+	static function sanitizeEPPN($input)
+	{
+		$output = preg_replace('/[^a-z0-9@_\.\-\+]/i', '', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize the entitlement attribute. Typical characters will include
+	 * alphanumerics and a colon ':'. Allow also '_' and '-', drop the rest.
+	 * @param $input string An unsanitized entitlement attribute.
+	 * @return string The sanitized entitlement-string.
+	 */
+	static function sanitizeEntitlement($input)
+	{
+		$output = preg_replace('/[^a-z0-9_\-]/i', '', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize a NREN-name-string. Alphanumerics, '.', '-' and '_'. The site
+	 * admin can pick the NREN-name him/herself, so we can be stricter in this
+	 * validation.
+	 * @param $input string the unsanitized NREN-name
+	 * @return string the sanitized NREN-name
+	 */
+	static function sanitizeNRENName($input)
+	{
+		$output = preg_replace('/[^a-z0-9_\-\.]/i','', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize the main cert-identifier (auth-key/order-number). The
+	 * order-number is numeric and the auth_key is a pubkey-hash which is a
+	 * hexadecimal sequence so 0-9 and a-f are allowed, the rest is dropped.
+	 * @param $input string The unsanitized string
+	 * @return the sanitized string
+	 */
+	static function sanitizeCertKey($input)
+	{
+		$output = preg_replace('/[^0-9a-f]/i', '', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize a language code. Can be of the form 'no', 'sv' or 'de', but also
+	 * for instance 'en-GB', 'de-AT' aso. should be legal.
+	 *
+	 * @param $input string unsanitized language code
+	 * @return sanitized language code
+	 */
+	static function sanitizeLangCode($input)
+	{
+		$output = preg_replace('/a-z\-/i', '', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize base64, somewhat geared towards CSRs. They follow a quoted-
+	 * printable-encoding, with characters a-z, 0-9, '+', '/' and '=' as the
+	 * final delimiter. -- and whitespace is used in the header and footer.
+	 * @param $input string the unsanitized base64-string
+	 * @return string the sanitized base64-string
+	 */
+	static function sanitizeBase64($input)
+	{
+		$output = preg_replace('/a-z0-9\+\/\-\s=/i', '', $input);
 		return $output;
 	}
 

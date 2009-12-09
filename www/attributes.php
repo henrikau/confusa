@@ -26,12 +26,12 @@ class CP_Attributes extends Content_Page
 		if (isset($_POST['attributes_operation'])) {
 			switch($_POST['attributes_operation']) {
 			case 'update_map':
-				$cn		= $_POST['cn'];
-				$mail		= $_POST['mail'];
-				$entitlement	= $_POST['entitlement'];
+				$cn		= Input::sanitizeText($_POST['cn']);
+				$mail		= Input::sanitizeText($_POST['mail']);
+				$entitlement	= Input::sanitizeText($_POST['entitlement']);
 
 				if ($this->person->isNRENAdmin()) {
-					$epodn		= $_POST['epodn'];
+					$epodn		= Input::sanitizeText($_POST['epodn']);
 					if ($this->person->getNREN()->saveMap($this->person->getEPPNKey(), $epodn, $cn, $mail, $entitlement)) {
 						Framework::success_output("Updated map successfully. You will have to logout and login again " .
 						                          "to see the the effects of the changed map!");
@@ -60,6 +60,9 @@ class CP_Attributes extends Content_Page
 		}
 
 		if (isset($_GET['attr_value'])) {
+			/* no need for sanitization, only used in array lookup & does not go
+			 * into the DB
+			 */
 			$this->handleAttrValueAJAX($_GET['attr_value']);
 			return;
 		}
