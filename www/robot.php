@@ -32,7 +32,8 @@ class CP_Robot_Interface extends Content_Page
 				$res = $this->handleFileCertificate($comment);
 				break;
 			default:
-				Framework::error_output("Unknown robot-action ($action)");
+				Framework::error_output("Unknown robot-action (" .
+				                        htmlentities($action) . ").");
 				$res = false;
 			}
 		} else if (isset($_GET['robot_action'])) {
@@ -105,7 +106,8 @@ class CP_Robot_Interface extends Content_Page
 			$res = MDB2Wrapper::execute($query, $params, $data);
 		} catch (Exception $e) {
 			/* fixme */
-			Framework::error_output("Errors getting robot-certificates from DB.<br />" . $e->getMessage());
+			Framework::error_output("Errors getting robot-certificates from DB.<br />" .
+			                        htmlentities($e->getMessage()));
 			return null;
 		}
 		$certs = array();
@@ -146,7 +148,7 @@ class CP_Robot_Interface extends Content_Page
 		try {
 			$cert = new Certificate($certificate);
 		} catch (KeyNotFoundException $knfe) {
-			Framework::error_output($knfe->getMessage());
+			Framework::error_output(htmlentities($knfe->getMessage()));
 			return false;
 		}
 
@@ -163,7 +165,8 @@ class CP_Robot_Interface extends Content_Page
 			}
 		} catch (Exception $e) {
 			/* FIXME, add better exception mask & handling */
-			Framework::error_output(__FILE__ . ":" . __LINE__ . " FIXME: " . $e->getMessage());
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " FIXME: " .
+			                        htmlentities($e->getMessage()));
 			return false;
 		}
 
@@ -194,7 +197,7 @@ class CP_Robot_Interface extends Content_Page
 				$data	= array($this->person->getEPPN(), SUBSCRIBER_ADMIN);
 				$admin_query_res = MDB2Wrapper::execute($query, $params, $data);
 				if (count($admin_query_res) != 0) {
-					$error_msg .= "The subscriber-admin (".$this->person->getEPPN().") is not properly connected ";
+					$error_msg .= "The subscriber-admin (". htmlentites($this->person->getEPPN()) .") is not properly connected ";
 					$error_msg .= "to any database. This is due to a database inconsistency ";
 					$error_msg .= "and is a direct result of someone manually adding the admin to the database ";
 					$error_msg .= "without connecting the admin to a subscriber.";
@@ -204,7 +207,7 @@ class CP_Robot_Interface extends Content_Page
 					$log_msg   .= " It should be " . $this->person->getSubscriber()->getOrgName();
 					$log_msg   .= ", but is NULL. Please update the database.";
 				} else {
-					$error_msg .= "For some reason, the subscriber (".$this->person->getSubscriber()->getOrgName().") ";
+					$error_msg .= "For some reason, the subscriber (".htmlentities($this->person->getSubscriber()->getOrgName()).") ";
 					$error_msg .= "is not properly configured in the database. ";
 					$error_msg .= "The exact reason is unknown. Please contact operational support.";
 
@@ -237,7 +240,7 @@ class CP_Robot_Interface extends Content_Page
 				return false;
 			}
 		} catch (Exception $e) {
-			Framework::error_output($e->getMessage());
+			Framework::error_output(hmtlentities($e->getMessage()));
 			/* FIXME, add proper exception handling */
 			return false;
 		}
@@ -254,7 +257,8 @@ class CP_Robot_Interface extends Content_Page
 
 		} catch (Exception $e) {
 			/* FIXME */
-			Framework::error_output("coultn't update robot_certs, server said:<br />\n" . $e->getMessage());
+			Framework::error_output("Couldn't update robot_certs, server said:<br />\n" .
+			                        htmlentities($e->getMessage()));
 			return false;
 		}
 		Framework::message_output("Certificate uploaded to keystore.");
@@ -269,14 +273,15 @@ class CP_Robot_Interface extends Content_Page
 				MDB2Wrapper::update("DELETE FROM robot_certs WHERE id=? AND serial=?",
 						    array('text','text'),
 						    array($cert['id'], $serial));
-				Framework::message_output("Certificate ($serial) removed from database.");
+				Framework::message_output("Certificate (" . htmlentities($serial) .
+				                          ") removed from database.");
 				return true;
 			} catch (Exception $e) {
-				Framework::error_output($e->getMessage());
+				Framework::error_output(htmlentities($e->getMessage()));
 				return false;
 			}
 		} else {
-			Framework::error_output("Could not find certificate (".$serial.") in database.");
+			Framework::error_output("Could not find certificate (".htmlentities($serial).") in database.");
 			return false;
 		}
 
@@ -298,7 +303,7 @@ class CP_Robot_Interface extends Content_Page
 			}
 			return $res[0];
 		} catch (Exception $e) {
-			Framework::error_output("Could not find cert. Server said: " . $e->getMessage());
+			Framework::error_output("Could not find cert. Server said: " . htmlentities($e->getMessage()));
 			return null;
 		}
 		return null;

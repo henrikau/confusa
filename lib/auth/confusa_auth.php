@@ -144,7 +144,7 @@ abstract class Confusa_Auth
 		} else {
 			/* At this point we're on shaky ground as we have to
 			 * 'see if we can find anything'
-			 * 
+			 *
 			 *		no map is set, can we find the ePPN in there?
 			 */
 			$eppnKey = $this->findEPPN($attributes);
@@ -168,7 +168,7 @@ abstract class Confusa_Auth
 							$tabs .= "\t\t";
 						else if (strlen($key) < 16)
 							$tabs .= "\t";
-						$msg .= "$key$tabs{$val[0]}\n";
+						$msg .= htmlentities("$key$tabs{$val[0]}") . "\n";
 					}
 					$msg .= "</pre><br />\n";
 				}

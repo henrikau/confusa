@@ -149,7 +149,7 @@ class CP_Accountant extends Content_Page
 	 * @param String ap_name	The "alliance partner" name used to
 	 *				identify a reseller.
 	 *
-	 * @return Boolean indicating if the change was successful.				
+	 * @return Boolean indicating if the change was successful.
 	 */
 	private function editNRENAccount($login_name, $password, $ap_name)
 	{
@@ -386,8 +386,8 @@ class CP_Accountant extends Content_Page
 						htmlentities($dbqe->getMessage()));
 			return false;
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Error adding new account $login_name. " .
-						"Server said: " . htmlentities($dbse->getMessage()));
+			Framework::error_output("Error adding new account " . htmlentities($login_name) .
+						". Server said: " . htmlentities($dbse->getMessage()));
 			return false;
 		}
 
@@ -408,8 +408,8 @@ class CP_Accountant extends Content_Page
 						htmlentities($dbqe->getMessage()));
 			return false;
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Error adding new account $login_name. " .
-						"Server said: " . htmlentities($dbse->getMessage()));
+			Framework::error_output("Error adding new account " . htmlentities($login_name) .
+						". Server said: " . htmlentities($dbse->getMessage()));
 			return false;
 		}
 

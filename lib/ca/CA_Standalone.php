@@ -192,7 +192,7 @@ class CA_Standalone extends CA
 			    return true;
 		    }
 	    } catch (Exception $e) {
-		    Framework::error_output($e->getMessage());
+		    Framework::error_output(htmlentities($e->getMessage()));
 		    return false;
 	    }
 	    return false;
@@ -269,7 +269,7 @@ class CA_Standalone extends CA
 		    $msg  = __FILE__ . ":" . __LINE__ . " Error in query syntax.";
 		    Logger::log_event(LOG_NOTICE, $msg);
 		    $msg .= "<BR />Could not delete the certificate with hash: $key.<br />Try to do a manual deletion.";
-		    $msg .=	"<BR />Server said: " . $dbse->getMessage();
+		    $msg .=	"<BR />Server said: " . htmlentities($dbse->getMessage());
 		    Framework::error_output($msg);
 
 		    /* Even though we fail, the certificate was
@@ -280,7 +280,7 @@ class CA_Standalone extends CA
 	    } catch (DBQueryException $dbqe) {
 		    $msg  = __FILE__ . ":" . __LINE__ . " Query-error. Constraint violoation in query?";
 		    Logger::log_event(LOG_NOTICE, $msg);
-		    $msg .= "<BR />Server said: " . $dbqe->getMessage();
+		    $msg .= "<BR />Server said: " . htmlentities($dbqe->getMessage());
 		    Framework::error_output($msg);
 		    return false;
 	    }

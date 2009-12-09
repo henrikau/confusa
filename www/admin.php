@@ -506,7 +506,7 @@ class CP_Admin extends Content_Page
 							" of subscriber with ID $subscriberID");
 			return;
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Problem updating your admin status. Server said: " . $dbse->getMessage());
+			Framework::error_output("Problem updating your admin status. Server said: " . htmlentities($dbse->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
 							" of subscriber with ID $subscriberID");
 			return;
@@ -514,7 +514,8 @@ class CP_Admin extends Content_Page
 
 		Logger::log_event(LOG_NOTICE, "Admin: NREN admin $admin downgraded his/her status to subscriber admin of " .
 						"subscriber with ID $subscriberID");
-		Framework::message_output("Downgraded you to subscriber admin of subscriber with ID $subscriberID");
+		Framework::message_output("Downgraded you to subscriber admin of subscriber with ID " .
+		                          htmlentities($subscriberID));
 	}
 
 	/*
