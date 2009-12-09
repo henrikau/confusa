@@ -46,7 +46,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 				}
 				break;
 			default:
-				Framework::error_output("Unknown action (".$_POST['setting'] . ")");
+				Framework::error_output("Unknown action (" . htmlentities($_POST['setting']) . ")");
 				break;
 			}
 		} else if (isset($_POST['language_operation'])) {
@@ -57,7 +57,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 
 							if ($person->isSubscriberAdmin()) {
 								$this->updateSubscriberLanguage($person->getSubscriber()->getOrgName(),
-												$new_language);
+								                                $new_language);
 							} else if ($person->isNRENAdmin()) {
 								$this->person->getNREN()->set_lang(Input::sanitizeLangCode($_POST['language']));
 								$this->person->getNREN()->saveNREN();
@@ -124,7 +124,8 @@ class CP_NREN_Subs_Settings extends Content_Page
 							$cge->getMessage());
 		}
 
-		Framework::success_output("Updated contact information for your subscriber $subscriber.");
+		Framework::success_output("Updated contact information for your subscriber " .
+		                          htmlentities($subscriber));
 		Logger::log_event(LOG_DEBUG, "[sadm] Updated contact for subscriber $subscriber.");
 	} /* end updateSubscriberContact */
 
@@ -144,9 +145,10 @@ class CP_NREN_Subs_Settings extends Content_Page
 		} catch (ConfusaGenException $cge) {
 			Logger::log_event(LOG_NOTICE, "[sadm] Updating the language to $new_language " .
 							 "failed for subscriber $subscriber. " . $cge->getMessage());
-			Framework::error_output("Updating the language to $new_language failed " .
-									"for subscriber $subscriber, probably due to problems " .
-									"with the supplied data. Server said: " . htmlentities($cge->getMessage()));
+			Framework::error_output("Updating the language to " . htmlentities($new_language) . " failed " .
+			                        "for subscriber " . htmlentities($subscriber) .
+			                        ", probably due to problems with the supplied data. Server said: " .
+			                        htmlentities($cge->getMessage()));
 			return;
 		}
 
