@@ -130,6 +130,20 @@ class Input
 		$output = mb_ereg_replace('[^[:alpha:]\s\.]', '', $input, 'ip');
 		return $output;
 	}
+
+	/**
+	 * Allow the union of the charsets in sanitizePersonName and sanitizeEPPN.
+	 * NB: Uses UTF-8 compatible mb_ereg_replace, which is slower than normal
+	 * regex-replacing. Don't use excessively!
+	 * @param $input string unsanitized common name
+	 * @return string sanitized common name
+	 */
+	static function sanitizeCommonName($input)
+	{
+		$output = mb_ereg_replace('[^[:alpha:]\s\.0-9@_\-\+]', '', $input, 'ip');
+		return $output;
+	}
+
 	/**
 	 * Sanitize an URL. Include most characters needed for protocol-, host-,
 	 * domain- and query-part. Drop the rest. No punycode URLs.
