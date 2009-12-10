@@ -26,14 +26,13 @@
 {*
  * Generate CSR in the browser.
  *}
-{if empty($browserTemplate)}
-	<fieldset>
-	<legend>Apply for a certificate in browser</legend>
-	<div id="info_view">
-		<p class="info">Press the start button <b>once</b> to generate a certificate request in your browser.<br /><br />
-		Sometimes it will take a little while until you can see a browser reaction and there
-		can be delays between browser actions.</p>
-	</div>
+<fieldset>
+<legend>Apply for a certificate in browser</legend>
+<div id="info_view">
+	<p class="info">Press the start button <b>once</b> to generate a certificate request in your browser.<br /><br />
+	Sometimes it will take a little while until you can see a browser reaction and there
+	can be delays between browser actions.</p>
+</div>
 
 	<br />
 	<form id="startForm" method="post" action="process_csr.php">
@@ -46,9 +45,6 @@
 	{/if}
 	</form>
 	</fieldset>
-{else}
-	{$browserTemplate}
-{/if}
 <div class="spacer"></div>
 <div class="spacer"></div>
 
@@ -64,16 +60,7 @@
 {$upload_csr_file}
 
 <div class="spacer"></div>
-{*
- * This part will be JavaScript or another script executable by the browser (ActiveX?)
- *}
-{if isset($deployment_script)}
-	{$deployment_script}
-	<div class="spacer"></div>
-{/if}
 
-{*
- * uploading new CSR via POST
- *}
+{* uploading new CSR via POST *}
 {include file='csr/paste_csr.tpl'}
 </div>

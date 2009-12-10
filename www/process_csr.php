@@ -113,11 +113,14 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('dn',				$browser_adapted_dn);
 			$this->tpl->assign('keysize',			Config::get_config('key_length'));
 			$browserTemplate = $this->dispatchBrowserTemplate();
-			$this->tpl->assign('browserTemplate',	$browserTemplate);
+			$extraScript = array('js/cert_request.js');
+			$this->tpl->assign('extraScripts', $extraScript);
+			Framework::message_output("Generating certificate signing request in " .
+			                          "the browser. <a href=\"process_csr.php\">Change</a>.");
+			$this->tpl->assign('content',	$this->tpl->fetch($browserTemplate));
+			return;
 		}
 
-		$extraScript = array('js/cert_request.js');
-		$this->tpl->assign('extraScripts', $extraScript);
 		$this->tpl->assign('upload_csr_file', $this->tpl->fetch('csr/upload_csr_file.tpl'));
 		$this->tpl->assign('content',		$this->tpl->fetch('csr/process_csr.tpl'));
 	}
@@ -362,19 +365,19 @@ final class CP_ProcessCsr extends Content_Page
 
 		switch($ua) {
 		case "msie_post_vista":
-			return $this->tpl->fetch("browser_csr/vista7.tpl");
+			return "browser_csr/vista7.tpl";
 			break;
 		case "msie_pre_vista":
-			return $this->tpl->fetch("browser_csr/xp2003.tpl");
+			return "browser_csr/xp2003.tpl";
 			break;
 		case "keygen":
-			return $this->tpl->fetch("browser_csr/keygen.tpl");
+			return "browser_csr/keygen.tpl";
 			break;
 		case "other":
-			return $this->tpl->fetch("browser_csr/unsupported.tpl");
+			return "browser_csr/unsupported.tpl";
 			break;
 		default:
-			return $this->tpl->fetch("browser_csr/unsupported.tpl");
+			return "browser_csr/unsupported.tpl";
 			break;
 		}
 	}

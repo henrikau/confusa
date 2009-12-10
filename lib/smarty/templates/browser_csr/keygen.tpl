@@ -1,3 +1,4 @@
+<br />
 <fieldset>
 <legend>Apply for a certificate in browser</legend>
 <div id="info_view">
