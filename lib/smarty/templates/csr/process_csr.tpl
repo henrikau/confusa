@@ -27,10 +27,10 @@
 	<form id="startForm" method="post" action="process_csr.php">
 	<input type="hidden" name="browserSigning" value="start" />
 	{if $user_cert_enabled}
-	<input type="submit" name="Send" id="startButton" value="Start" />
+	<input type="submit" name="Send" id="startButton" value="Apply" />
 	{* Disable the element if the user does not have the right entitlement *}
 	{else}
-	<input disabled type="submit" name="Send" id="startButton" value="Start" />
+	<input disabled type="submit" name="Send" id="startButton" value="Apply" />
 	{/if}
 	</form>
 	</fieldset>
