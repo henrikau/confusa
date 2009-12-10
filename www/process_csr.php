@@ -167,7 +167,6 @@ final class CP_ProcessCsr extends Content_Page
 				Framework::error_output($msg);
 			}
 		} else if (isset($_POST['user_csr'])) {
-			echo "Handling pasted CSR<br />\n";
 			$csr = Input::sanitizeBase64($_POST['user_csr']);
 		}
 
