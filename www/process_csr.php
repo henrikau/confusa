@@ -86,7 +86,7 @@ final class CP_ProcessCsr extends Content_Page
 	{
 
 		/* show upload-form. If it returns false, no uploaded CSRs were processed */
-		$this->processUploadedCSR($this->person);
+		$authkey = $this->processUploadedCSR($this->person);
 
 		/* if flags are set, process the CSR*/
 		if ($this->processCSRFlagsSet()) {
@@ -100,9 +100,8 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('sign_csr', Input::sanitizeBase64($_GET['sign_csr']));
 		}
 
-		$this->tpl->assign('inspect_csr',	$this->tpl->fetch('csr/inspect_csr.tpl'));
-		$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
-		$this->tpl->assign('list_all_csr',	$this->tpl->fetch('csr/list_all_csr.tpl'));
+		//$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
+		//$this->tpl->assign('list_all_csr',	$this->tpl->fetch('csr/list_all_csr.tpl'));
 		if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_user'))) {
 			$this->tpl->assign('user_cert_enabled', true);
 		}
@@ -119,10 +118,31 @@ final class CP_ProcessCsr extends Content_Page
 			                          "the browser. <a href=\"process_csr.php\">Change</a>.");
 			$this->tpl->assign('content',	$this->tpl->fetch($browserTemplate));
 			return;
-		}
+		} else if (isset($_POST['pastedCSR'])) {
+			Framework::message_output("Received CSR through the copy/paste form. " .
+			                          "<a href=\"process_csr.php\">Change</a>.");
+			$this->tpl->assign('post', 'pastedCSR');
 
-		$this->tpl->assign('upload_csr_file', $this->tpl->fetch('csr/upload_csr_file.tpl'));
-		$this->tpl->assign('content',		$this->tpl->fetch('csr/process_csr.tpl'));
+			$this->tpl->assign('csrInspect', get_csr_details($this->person,
+			                                 $authkey));
+
+			$this->tpl->assign('legendTitle', 'Pasted CSR');
+			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
+			return;
+		} else if (isset($_POST['uploadedCSR'])) {
+			Framework::message_output("Received CSR through file upload. ".
+			                          "<a href=\"process_csr.php\">Change</a>.");
+			$this->tpl->assign('post', 'uploadedCSR');
+
+			$this->tpl->assign('csrInspect', get_csr_details($this->person,
+			                                 $authkey));
+			$this->tpl->assign('legendTitle', 'Uploaded CSR');
+			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
+			return;
+		} else {
+			$this->tpl->assign('upload_csr_file', $this->tpl->fetch('csr/upload_csr_file.tpl'));
+			$this->tpl->assign('content',		$this->tpl->fetch('csr/process_csr.tpl'));
+		}
 	}
 
 	/**
@@ -154,6 +174,7 @@ final class CP_ProcessCsr extends Content_Page
 	 */
 	private function processUploadedCSR()
 	{
+		$authvar = "";
 		$csr = null;
 		/* Testing for uploaded files */
 		if(isset($_FILES['user_csr']['name'])) {
@@ -182,8 +203,14 @@ final class CP_ProcessCsr extends Content_Page
 						    array('text'),
 						    array($authvar));
 			if (count($res)>0) {
-				Framework::error_output("CSR with matching public-key already in the database. ".
-							"Cannot upload this CSR. Please generate a new keypair and try again.");
+				Framework::warning_output("CSR with matching public-key already in the database. ".
+				                        "Cannot upload this CSR. Your options: " .
+				                        "<ul style=\"padding-top: 1em; padding-bottom: 1em; margin-left: 5em\">" .
+				                        "<li>Approve your old CSR (displayed below)</li>" .
+				                        "<li>Delete your old CSR and try again</li>" .
+				                        "<li>Go <a href=\"process_csr.php\">back</a> and provide a different CSR</li></ul>");
+				$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
+				$this->tpl->assign('list_all_csr',	true);
 				/* match the DN only when using standalone CA, no need to do it for Comodo */
 			} else if (Config::get_config('ca_mode') == CA_COMODO ||
 				   match_dn($subject, $this->person)) {
@@ -201,6 +228,8 @@ final class CP_ProcessCsr extends Content_Page
 				Logger::log_event(LOG_INFO, $logmsg);
 			}
 		}
+
+		return $authvar;
 	} /* end processUploadedCSR() */
 
 	/**

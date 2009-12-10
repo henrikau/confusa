@@ -1,7 +1,12 @@
 <div class="csr">
-  {if isset($csrInspect)}
   <fieldset class="inpsect_csr">
-    {*<legend>Inspect CSR</legend>*}
+    <legend>{$legendTitle}</legend>
+    <p class="info">
+       You provided a certificate signing request consisting of the following
+       fields. Press "Sign certificate" to get your request signed and
+       "Delete" to cancel the signing operation.
+    </p>
+
     <table>
       <tr><td></td></tr>
       {* Auth Token *}
@@ -92,5 +97,4 @@
       </tr>
     </table>
   </fieldset>
-  {/if}
 </div> <!-- inspect_csr -->

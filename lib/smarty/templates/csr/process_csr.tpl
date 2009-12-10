@@ -1,15 +1,4 @@
 <div>
-{if isset($signingOk) && $signingOk == true}
-<div class="success">
-<CENTER>
-	The certificate is now being processed by the CA (Certificate Authority)<BR />
-	Depending on the load, this takes approximately 2 minutes.<BR /><BR />
-
-	You will now be redirected to the certificate-download area found
-	<a href="download_certificate.php?poll={$sign_csr}">here</a>
-</CENTER>
-</div>
-{/if}
 <p class="info">
   Please choose one of the options available below to create your
   certificate.
@@ -47,11 +36,6 @@
 	</fieldset>
 <div class="spacer"></div>
 <div class="spacer"></div>
-
-
-{if ! empty($csrList)}
-{$list_all_csr}
-{/if}
 
 {*
  * Upload CSR from file
