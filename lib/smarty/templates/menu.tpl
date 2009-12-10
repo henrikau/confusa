@@ -21,7 +21,7 @@
   <li><a href="process_csr.php"	{$prot_title}>
       {$prot_l}Request new{$prot_r}</a></li>
   <li><a href="download_certificate.php"{$prot_title}>
-      {$prot_l}Download{$prot_r}</a></li>
+      {$prot_l}My certificates{$prot_r}</a></li>
   <li><a href="revoke_certificate.php"{$prot_title}>
       {$prot_l}Revoke{$prot_r}</a></li>
 </ul>
