@@ -48,11 +48,15 @@
 		  <div class="confusa_corners">
 		    <div id="header">
 		      <a href="index.php">
-		      <div id="logo">
+			<div id="logo">
 			{if is_null($logo)}
-			<img src="graphics/logo-sigma.png" alt="UNINETT Sigma Logo" />
+			<img src="graphics/logo-sigma.png"
+			     alt="UNINETT Sigma Logo"
+			     class="url"/>
 			{else}
-			<img src="{$logo}" alt="NREN logo" />
+			<img src="{$logo}"
+			     alt="NREN logo"
+			     class="url"/>
 			{/if}
 		      </div>
 		      <div id="title">{$system_title}</div>
