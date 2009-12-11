@@ -392,7 +392,7 @@ class CP_RevokeCertificate extends Content_Page
 									  "Administrator contacted us from " .
 									  $_SERVER['REMOTE_ADDR']
 		);
-		Framework::message_output("Successfully revoked $num_certs_revoked out of $num_certs certificates!");
+		Framework::message_success("Successfully revoked $num_certs_revoked out of $num_certs certificates!");
 	}
 
 	/**
