@@ -349,6 +349,7 @@ class CP_RevokeCertificate extends Content_Page
 			Framework::message_output("Please note that you are in Confusa's API " .
 			           "test mode. Revocation is only simulated!");
 		}
+		$auth_keys = array();
 
 		if (isset($_SESSION['auth_keys'])) {
 			$auth_keys = $_SESSION['auth_keys'];
@@ -359,9 +360,15 @@ class CP_RevokeCertificate extends Content_Page
 			                        htmlentities($common_name) .
 			                        " during the session! Please try again!");
 		}
-
+		if (!array_key_exists($common_name, $auth_keys)) {
+			Framework::error_output("Auth-keys has no such common-name ($common_name). Cannot continue.");
+			return;
+		}
 		$auth_key_list = $auth_keys[$common_name];
-
+		if (is_null($auth_key_list) || (int)count($auth_key_list) == 0) {
+			Framework::message_output("Stopping revocation-process, 0 certificates to revoke.");
+			return;
+		}
 		$num_certs = count($auth_key_list);
 		$num_certs_revoked = 0;
 		Logger::log_event(LOG_INFO, "Trying to revoke $num_certs certificates." .
