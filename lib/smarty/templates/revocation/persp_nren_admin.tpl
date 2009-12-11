@@ -50,8 +50,10 @@
 	   onfocus="showHint();"
 	   type="text"
 	   name="search"
-	   value="{$search_string}" />
-
+	   {if $search_string != ""}
+	   value="{$search_string}"
+	   {/if}
+	   />
     <input type="hidden"
 	   name="revoke_operation"
 	   value="search_by_cn" />

@@ -220,13 +220,14 @@ class CP_RevokeCertificate extends Content_Page
 			$this->tpl->assign('active_subscriber', $this->person->getSubscriber()->getOrgName());
 		}
 
-		$this->tpl->assign('search_string', htmlentities($common_name));
 
 		$this->tpl->assign('file_name', 'eppn_list');
 
 		/* No need to do processing */
-		if (!isset($_POST['revoke_operation']))
+		if (!isset($_POST['revoke_operation'])) {
+			$this->tpl->assign('search_string', htmlentities($common_name));
 			return;
+		}
 
 		/* Test for revoke-commands */
 		switch($_POST['revoke_operation']) {
@@ -243,6 +244,7 @@ class CP_RevokeCertificate extends Content_Page
 		default:
 			break;
 		}
+		$this->tpl->assign('search_string', htmlentities($common_name));
 
 	} /* end showAdminRevokeTable */
 
