@@ -87,13 +87,7 @@ final class CP_ProcessCsr extends Content_Page
 
 		/* show upload-form. If it returns false, no uploaded CSRs were processed */
 		$authkey = $this->processUploadedCSR($this->person);
-
-		/* if flags are set, process the CSR*/
-		if ($this->processCSRFlagsSet()) {
-			if (!$this->processDBCsr()) {
-				Framework::error_output("Errors were encountered when processing " . $this->getActualFlags());
-			}
-		}
+		$this->processDBCsr();
 
 		if($this->signing_ok) {
 			$this->tpl->assign('signingOk', $this->signing_ok);
@@ -145,27 +139,6 @@ final class CP_ProcessCsr extends Content_Page
 		}
 	}
 
-	/**
-	 * processCSRFlags_set - test to see if any of the CSR flags are set.
-	 */
-	private function processCSRFlagsSet()
-	{
-		return isset($_GET['delete_csr']) || isset($_GET['inspect_csr']);
-	}
-
-	private function getActualFlags()
-	{
-		$msg = "";
-		if (isset($_GET['delete_csr']))
-			$msg .= "delete_csr : " . htmlentities($_GET['delete_csr']) . " ";
-
-		if (isset($_GET['sign_csr']))
-			$msg .= "sign_csr : " . htmlentities($_GET['sign_csr']) . " ";
-
-		if (isset($_GET['inspect_csr']))
-			$msg .= "inspect_csr : " . htmlentities($_GET['inspect_csr']) . " ";
-		return $msg;
-	}
 	/**
 	 * processUploadedCSR - walk an uploaded CSR through the steps towards a certificate
 	 *
@@ -242,7 +215,6 @@ final class CP_ProcessCsr extends Content_Page
 	 */
 	private function processDBCSR()
 	{
-		$res = false;
 		if (isset($_GET['delete_csr'])) {
 			$res = delete_csr_from_db($this->person, Input::sanitizeCertKey($_GET['delete_csr']));
 			if ($res) {
@@ -255,23 +227,21 @@ final class CP_ProcessCsr extends Content_Page
 			try {
 				$this->tpl->assign('csrInspect', get_csr_details($this->person,
 				                   Input::sanitizeCertKey($_GET['inspect_csr'])));
-				$res = true;
 			} catch (CSRNotFoundException $csrnfe) {
 				$msg  = "Error with auth-token (" . htmlentities($auth_key) . ") - not found. ";
 				$msg .= "Please verify that you have entered the correct auth-url and try again.";
 				$msg .= "If this problem persists, try to upload a new CSR and inspect the fields carefully";
 				Framework::error_output($msg);
-				return false;
+				return;
 			} catch (ConfusaGenException $cge) {
 				$msg = "Too menu returns received. This can indicate database inconsistency.";
 				Framework::error_output($msg);
 				Logger::log_event(LOG_ALERT, "Several identical CSRs (" .
 						  $auth_token . ") exists in the database for user " .
 						  $this->person->getX509ValidCN());
-				return false;
+				return;
 			}
 		}
-		return $res;
 	} /* end processDBCSR() */
 
 	private function approveBrowserGenerated($csr, $browser)
