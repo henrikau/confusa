@@ -47,8 +47,8 @@
 		<div class="confusa_corners_br">
 		  <div class="confusa_corners">
 		    <div id="header">
-		      <a href="index.php">
 			<div id="logo">
+			<a href="index.php">
 			{if is_null($logo)}
 			<img src="graphics/logo-sigma.png"
 			     alt="UNINETT Sigma Logo"
@@ -58,9 +58,9 @@
 			     alt="NREN logo"
 			     class="url"/>
 			{/if}
+			</a>
 		      </div>
-		      <div id="title">{$system_title}</div>
-		      </a>
+		      <div id="title"><a href="index.php">{$system_title}</a></div>
 		      <!-- fix for adjusting the header's height to the image's height. Breaks in IE6 -->
 		      <div style="clear: left"></div>
 		    </div> <!-- header -->
