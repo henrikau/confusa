@@ -84,14 +84,18 @@ class CP_RevokeCertificate extends Content_Page
 		}
 
 		if (isset($_POST['revoke_operation'])) {
-			if (!array_key_exists('reason', $_POST)) {
-				Framework::error_output("Trying to revoke certificate(s) without supplying a reason. Cannot continue.");
-				return;
+			$reason = null;
+			if (array_key_exists('reason', $_POST)) {
+				$reason = Input::sanitizeText(trim($_POST['reason']));
 			}
-			$reason = Input::sanitizeText(trim($_POST['reason']));
 
 			switch($_POST['revoke_operation']) {
 			case 'revoke_by_cn':
+				if (is_null($reason)) {
+					Framework::error_output("Trying to revoke certificate(s) by CN without supplying a reason. Cannot continue.");
+					return;
+
+				}
 				try {
 					/**
 					 * POST['reason'] sanitized by checking inclusion in the
@@ -105,6 +109,11 @@ class CP_RevokeCertificate extends Content_Page
 				break;
 
 			case 'revoke_by_list':
+				if (is_null($reason)) {
+					Framework::error_output("Trying to revoke list of certificates without a reason. Cannot continue.");
+					return;
+
+				}
 				try {
 					$this->revoke_list($reason);
 				} catch (ConfusaGenException $cge) {
