@@ -17,64 +17,82 @@
 </script>
 {/literal}
 
+<p class="info">
+  You have the access-level of NREN-administrator. This means that you
+  can revoke <b>all</b> certificates for <b>all</b> users within
+  your <b>entire</b> constituency.
+</p>
+<p class="info">
+  You should therefore take care by
+  making sure the search-string is spelled correctly, and that the
+  returned results make sense.
+</p>
+<br />
+
 {* Offer the NREN-admin a subscriber pre-selection *}
 {if $active_subscriber}
-All revocation operations currently limited to subscriber
-{$active_subscriber|escape}.
-<div class="spacer"></div>
-<div style="text-align: right">
-    <form action="" method="post">
-    <div>
-    Select subscriber (orgname in the DN):
-	<select name="subscriber">
-	{foreach from=$subscribers item=nren_subscriber}
-		{if $nren_subscriber->getOrgName() == $active_subscriber}
-			<option value="{$nren_subscriber->getOrgName()}" selected="selected">{$nren_subscriber->getOrgName()}</option>
-		{else}
-			<option value="{$nren_subscriber->getOrgName()}">{$nren_subscriber->getOrgName()}</option>
-		{/if}
-	{/foreach}
-	</select>
-    <input type="submit" name="change" value="Change" />
-    </div>
-    </form>
-</div>
-
 
 {* The search part *}
-{* A normal person isn't offered any search options. Instead, he/she will
-immediately see a result entry *}
-
-<div class="spacer"></div>
-<form action="" method="post">
 <fieldset id="inputField">
-<legend>CN-search ({$active_subscriber|escape})</legend>
+  <legend>Search for certificates</legend>
+  <p class="info">
+    Search for a commonName or a eduPersonPrincipalName of a person within
+    the institution {$active_subscriber|escape} whose certificates you want
+    to revoke. Use '%' as a wildcard.
+  </p>
 
-<p class="info">
-Search for a commonName or a eduPersonPrincipalName of a person within the
-institution {$active_subscriber|escape} whose certificates you want to revoke. Use '%' as a
-wildcard.
-</p>
-<p class="info">Example: "John Doe jdoe@example.org" or "%jdoe@example.org".</p>
-<input onblur="hideHint();" onfocus="showHint();" type="text" name="search" value="" />
-<input type="hidden" name="revoke_operation" value="search_by_cn" />
-<input type="hidden" name="subscriber" value="{$active_subscriber}" />
-<input type="submit" name="Search" value="Search" />
-<br />
-<noscript>
-<p>
-<span style="font-size: 0.8em; font-style: italic">input is case
-  sensitive</span>
-</p>
-</noscript>
-<span id="hint" style="display: none; font-size: 0.8em; font-style: italic">input is case sensitive</span>
+  <p class="info">
+    Example: "John Doe jdoe@example.org" or "%jdoe@example.org".
+  </p>
+
+  <form action="" method="post">
+    <input onblur="hideHint();"
+	   onfocus="showHint();"
+	   type="text"
+	   name="search"
+	   value="{$search_string}" />
+
+    <input type="hidden"
+	   name="revoke_operation"
+	   value="search_by_cn" />
+
+    <select name="subscriber">
+      {foreach from=$subscribers item=nren_subscriber}
+      {if $nren_subscriber->getOrgName() == $active_subscriber}
+      <option value="{$nren_subscriber->getOrgName()}" {*"*}
+	      selected="selected">
+	{$nren_subscriber->getOrgName()}
+      </option>
+      {else}
+      <option value="{$nren_subscriber->getOrgName()}">
+	{$nren_subscriber->getOrgName()}
+      </option>
+      {/if}
+      {/foreach}
+    </select>
+
+    <input type="submit" name="Search" value="Search" /><br />
+
+    <noscript>
+      <p>
+	<span style="font-size: 0.8em; font-style: italic">
+	  input is case sensitive
+	</span>
+      </p>
+    </noscript>
+    <span id="hint" style="display: none; font-size: 0.8em; font-style:
+    italic">input is case sensitive</span>
+
+  </form>
+  <br />
 </fieldset>
-</form>
 
 {* The display part *}
 
 {if isset($owners)}
     {if $revoke_cert}
+<br />
+<h4>Found results for search:"<i>{$search_string}</i>"</h4>
         <table>
         <tr>
             <td>
