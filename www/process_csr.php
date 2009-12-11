@@ -75,6 +75,7 @@ final class CP_ProcessCsr extends Content_Page
 				$this->tpl->assign('order_number', $order_number);
 			}
 		}
+
 		/* If $res is false, we risk that a '1' is printed, we do not
 		 * want that :-) */
 		if (!$res)
@@ -85,22 +86,18 @@ final class CP_ProcessCsr extends Content_Page
 	public function process()
 	{
 
-		/* show upload-form. If it returns false, no uploaded CSRs were processed */
-		$authkey = $this->processUploadedCSR($this->person);
 		$this->processDBCsr();
 
+		/* signing finished, redirect to download */
 		if($this->signing_ok) {
 			$this->tpl->assign('signingOk', $this->signing_ok);
-			$this->tpl->assign('sign_csr', Input::sanitizeBase64($_GET['sign_csr']));
-		}
-
-		//$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
-		//$this->tpl->assign('list_all_csr',	$this->tpl->fetch('csr/list_all_csr.tpl'));
-		if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_user'))) {
-			$this->tpl->assign('user_cert_enabled', true);
+			$this->tpl->assign('sign_csr',  Input::sanitizeBase64($_GET['sign_csr']));
+			$this->tpl->assign('content',   $this->tpl->fetch('csr/approve_csr.tpl'));
+			return;
 		}
 
 		/* set the browser signing variables only if browser signing is enabled */
+		/* browser-signing */
 		if (isset($_POST['browserSigning']) || isset($_GET['status_poll'])) {
 			$browser_adapted_dn = $this->person->getBrowserFriendlyDN();
 			$this->tpl->assign('dn',				$browser_adapted_dn);
@@ -112,7 +109,10 @@ final class CP_ProcessCsr extends Content_Page
 			                          "the browser. <a href=\"process_csr.php\">Change</a>.");
 			$this->tpl->assign('content',	$this->tpl->fetch($browserTemplate));
 			return;
+		/* signing of a copied/pasted CSR */
 		} else if (isset($_POST['pastedCSR'])) {
+			/* show upload-form. If it returns false, no uploaded CSRs were processed */
+			$authkey = $this->processUploadedCSR($this->person);
 			Framework::message_output("Received CSR through the copy/paste form. " .
 			                          "<a href=\"process_csr.php\">Change</a>.");
 			$this->tpl->assign('post', 'pastedCSR');
@@ -123,7 +123,10 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('legendTitle', 'Pasted CSR');
 			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
 			return;
+		/* signing of a CSR that was uploaded from a file */
 		} else if (isset($_POST['uploadedCSR'])) {
+			/* show upload-form. If it returns false, no uploaded CSRs were processed */
+			$authkey = $this->processUploadedCSR($this->person);
 			Framework::message_output("Received CSR through file upload. ".
 			                          "<a href=\"process_csr.php\">Change</a>.");
 			$this->tpl->assign('post', 'uploadedCSR');
@@ -133,7 +136,10 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('legendTitle', 'Uploaded CSR');
 			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
 			return;
+		/* showing the normal UI */
 		} else {
+			$user_cert_enabled = $this->person->testEntitlementAttribute(Config::get_config('entitlement_user'));
+			$this->tpl->assign('user_cert_enabled', $user_cert_enabled);
 			$this->tpl->assign('upload_csr_file', $this->tpl->fetch('csr/upload_csr_file.tpl'));
 			$this->tpl->assign('content',		$this->tpl->fetch('csr/process_csr.tpl'));
 		}
