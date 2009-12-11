@@ -165,7 +165,7 @@ class CP_RevokeCertificate extends Content_Page
 			Framework::error_output("Impossible condition. NON-Admin user in admin-mode!");
 			return;
 		}
-
+		$common_name = "";
 		/* Get the right subscriber for which revocation should happen */
 		if ($this->person->isNRENAdmin()) {
 			$subscribers = $this->getNRENSubscribers($this->person->getNREN());
@@ -220,6 +220,8 @@ class CP_RevokeCertificate extends Content_Page
 			$this->tpl->assign('active_subscriber', $this->person->getSubscriber()->getOrgName());
 		}
 
+		$this->tpl->assign('search_string', htmlentities($common_name));
+
 		$this->tpl->assign('file_name', 'eppn_list');
 
 		/* No need to do processing */
@@ -232,7 +234,6 @@ class CP_RevokeCertificate extends Content_Page
 		 * to revoke. */
 		case 'search_by_cn':
 			$common_name = Input::sanitizeText($_POST['search']);
-			$this->tpl->assign('search_string', htmlentities($common_name));
 			$this->searchCertsDisplay($common_name, $subscriber);
 			break;
 		case 'search_by_list':
