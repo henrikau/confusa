@@ -82,8 +82,12 @@
 	</span>
       </p>
     </noscript>
-    <span id="hint" style="display: none; font-size: 0.8em; font-style:
-    italic">input is case sensitive</span>
+      <p>
+	<span id="hint"
+	      style="display: none; font-size: 0.8em; font-style: italic">
+	  input is case sensitive
+	</span>
+      </p>
 
   </form>
   <br />
