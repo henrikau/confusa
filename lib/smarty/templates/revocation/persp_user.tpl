@@ -1,18 +1,3 @@
-{* The display part *}
-<p class="info">
-  You can now revoke all your certificates. Do to this, you must first
-  specify a reason, and then press 'Revoke all'.
-</p>
-<p class="info">
-  If you want to revoke a specific certificate, you must go
-  to <a href="download_certificate.php">My Certificates</a> and choose
-  the particular certificate to revoke.
-</p>
-
-{if isset($owners)}
-    {if $revoke_cert}
-
-        {foreach from=$owners item=owner}
 	<hr style="width:90%" />
 	<br />
 	<i><b>{$owner|escape|replace:',':', '}</b></i>
@@ -43,7 +28,4 @@
         </form>
 	<br />
 	<br />
-        {/foreach}
-    {/if}
-{/if}
 
