@@ -231,8 +231,7 @@ class CP_RevokeCertificate extends Content_Page
 		 * to revoke. */
 		case 'search_by_cn':
 			$common_name = Input::sanitizeText($_POST['search']);
-			Framework::message_output("Your search string was '" .
-			                          htmlentities($common_name) . "'.");
+			$this->tpl->assign('search_string', htmlentities($common_name));
 			$this->searchCertsDisplay($common_name, $subscriber);
 			break;
 		case 'search_by_list':
