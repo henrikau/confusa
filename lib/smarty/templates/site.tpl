@@ -46,24 +46,20 @@
 	      <div class="confusa_corners_bl">
 		<div class="confusa_corners_br">
 		  <div class="confusa_corners">
-		    <div id="header">
-			<div id="logo">
+		      <div id="title" style="vertical-align: middle;">
 			<a href="index.php">
-			{if is_null($logo)}
-			<img src="graphics/logo-sigma.png"
-			     alt="UNINETT Sigma Logo"
-			     class="url"/>
-			{else}
-			<img src="{$logo}"
-			     alt="NREN logo"
-			     class="url"/>
-			{/if}
+			  {if is_null($logo)}
+			  <img src="graphics/logo-sigma.png"
+			       alt="UNINETT Sigma Logo"
+			       class="url"/>
+			  {else}
+			  <img src="{$logo}"
+			       alt="NREN logo"
+			       class="url"/>
+			  {/if}
+			  {$system_title}
 			</a>
-		      </div>
-		      <div id="title"><a href="index.php">{$system_title}</a></div>
-		      <!-- fix for adjusting the header's height to the image's height. Breaks in IE6 -->
-		      <div style="clear: left"></div>
-		    </div> <!-- header -->
+		      </div> <!-- title -->
 		    <div id="language_bar">
 		    {foreach from=$available_languages key=code item=lang}
 			{if $code == $selected_language}
