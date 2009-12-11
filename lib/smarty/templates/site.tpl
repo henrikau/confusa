@@ -130,5 +130,8 @@
   </div> <!-- end rounded border -->
 
 </div> <!-- site -->
+{if $db_debug}
+{$db_debug}
+{/if}
 </body>
 </html>

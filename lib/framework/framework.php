@@ -279,17 +279,18 @@ class Framework {
 		$css = "get_css.php?nren=" . $this->person->getNREN();
 		$this->tpl->assign('logo', $logo);
 		$this->tpl->assign('css',$css);
+
+		if (Config::get_config('debug')) {
+			$res  = "<center>\n";
+			$res .= "<address>\n";
+			$res .= "During this session, we had " . MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
+			$res .= "</address>\n";
+			$res .= "</center>\n";
+			$this->tpl->assign('db_debug', $res);
+		}
 		$this->tpl->display('site.tpl');
 
-
 		$this->contentPage->post_process($this->person);
-		if (Config::get_config('debug')) {
-			echo "<center>\n";
-			echo "<address>\n";
-			echo "During this session, we had " . MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
-			echo "</address>\n";
-			echo "</center>\n";
-		}
 	} /* end start() */
 
 	public static function error_output($message)
