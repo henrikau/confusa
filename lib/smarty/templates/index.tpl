@@ -8,13 +8,13 @@
 </p>
 
 <br />
-<hr width="90%"/>
+<hr style="width: 90%"/>
 <br />
 <center>
 <h2><a href="?start_login=yes">Log in</a></h2>
 </center>
 <br />
-<hr width="90%"/>
+<hr style="width: 90%"/>
 <br />
 
 {else}
@@ -22,7 +22,7 @@
 {$auth_welcome_1}
 </p>
 <br />
-<hr width="90%" />
+<hr style="width 90%" />
 <br />
 <h3>Info about you</h3>
 <p class="info">
@@ -34,34 +34,34 @@
 {assign var='bg1' value='style="background-color: #ededed"'}
 {assign var='bg2' value='style="background-color: #ffffff"'}
 
-<table class="small" width="90%">
+<table class="small" style="width: 90%">
    <tr {$bg1}>
-     <td width="20%"><b>Name:</b></td>
-     <td width="20px"></td>
+     <td style="width: 20%"><b>Name:</b></td>
+     <td style="width: 20px"></td>
      <td>{$person->getName()|escape}</td>
    </tr>
 
    <tr {$bg2}>
      <td><b>E-mail address:</b></td>
-     <td width="20px"></td>
+     <td></td>
      <td>{$person->getEmail()|escape}</td>
    </tr>
 
    <tr {$bg1}>
      <td><b>Entitlement:</b></td>
-     <td width="20px"></td>
+     <td></td>
      <td>{$person->getEntitlement()|escape}</td>
    </tr>
 
    <tr {$bg2}>
      <td><b>Unique Name:</b></td>
-     <td width="20px"></td>
+     <td></td>
      <td>{$person->getEPPN()|escape}</td>
    </tr>
 
    <tr {$bg1}>
      <td><b>Home organization:</b></td>
-     <td width="20px"></td>
+     <td></td>
      <td>
        {if $subscriber}
        {$subscriber->getOrgName()|escape}
@@ -71,13 +71,13 @@
 
    <tr {$bg2}>
      <td><b>Country:</b></td>
-     <td width="20px"></td>
+     <td></td>
      <td>{$nren->getCountry()|escape}</td>
    </tr>
 
    <tr {$bg1}>
      <td><b>Org ID:</b></td>
-     <td width="20px"></td>
+     <td></td>
      <td>
        {if $subscriber}
        {$subscriber->getIdPName()|escape}
@@ -87,13 +87,13 @@
 
    <tr {$bg2}>
      <td><b>NREN-name:</b></td>
-     <td width="20px"></td>
+     <td></td>
      <td>{$person->getNREN()|escape}</td>
    </tr>
 
    <tr {$bg1}>
      <td><b>Full \DN</b></td>
-     <td width="20px"></td>
+     <td></td>
      <td><pre>{$person->getX509SubjectDN()|escape}</pre></td>
    </tr>
 
@@ -101,7 +101,7 @@
  <br />
 
 <br />
-<hr width="90%" />
+<hr style="width: 90%" />
 <br />
 {/if}
 
