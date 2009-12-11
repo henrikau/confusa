@@ -1,4 +1,4 @@
-<h3>Certificate Revocation Area</h3>
+<h3>Revoke certificates</h3>
 <div class="spacer"></div>
 
 {if $person->inAdminMode()}
