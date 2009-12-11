@@ -21,7 +21,7 @@
 	{if isset($owners)}
 		{if $revoke_cert}
 			{foreach from=$owners item=owner}
-				{include file='revocation/persp_user.tpl'}
+				{include file='revocation/revoke_cert_set.tpl'}
 			{/foreach}
 		{/if}
 	{/if}
