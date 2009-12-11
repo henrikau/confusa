@@ -152,16 +152,13 @@ class Framework {
 		try {
 			$this->authenticate();
 		} catch (CriticalAttributeException $cae) {
-			$msg  = "<center>";
 			$msg .= "<b>Error(s) with attributes</b><br /><br />";
 			$msg .= htmlentities($cae->getMessage()) . "<br /><br />";
 			$msg .= "<b>Cannot continue</b><br /><br />";
 			$msg .= "Please contact your local IT-support, and ask them to resolve this issue.";
-			$msg .= "</center>";
 			Framework::error_output($msg);
 			$this->renderError = true;
 		} catch (MapNotFoundException $mnfe) {
-			$msg  = "<center>\n";
 			$msg .= "<b>Error(s) with attributes</b><br /><br />";
 			$msg .= "No map has been configured for your subscriber. ";
 			$msg .= "Please contact your local IT-departement and ask them to forward the request ";
@@ -189,7 +186,9 @@ class Framework {
 			$msg .= "<i>". htmlentities($rce->getMessage()) . "</i><br /><br />";
 
 			if ($this->person->isNRENAdmin()) {
-				$msg .=  "<center>Please update the credentials <a href=\"accountant.php\">here</a></center>";
+				$msg .=  "<div style=\"text-align: center\">";
+				$msg .= "Please update the credentials <a href=\"accountant.php\">";
+				$msg .= "here</a></div>";
 			} else {
 				$msg .= "Please contact an IT-administrator.";
 				$this->renderError = true;
@@ -281,11 +280,10 @@ class Framework {
 		$this->tpl->assign('css',$css);
 
 		if (Config::get_config('debug')) {
-			$res  = "<center>\n";
 			$res .= "<address>\n";
-			$res .= "During this session, we had " . MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
+			$res .= "During this session, we had ";
+			$res .= MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
 			$res .= "</address>\n";
-			$res .= "</center>\n";
 			$this->tpl->assign('db_debug', $res);
 		}
 		$this->tpl->display('site.tpl');

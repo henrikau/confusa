@@ -131,7 +131,9 @@
 
 </div> <!-- site -->
 {if $db_debug}
+<div style="text-align: center;">
 {$db_debug}
+</div>
 {/if}
 </body>
 </html>
