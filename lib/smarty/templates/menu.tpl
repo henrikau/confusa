@@ -141,7 +141,7 @@
 
 <!-- <ul>-->
   {if !$person->isAuth()}
-  <h3><a href="?start_login=yes">Login</a></h3>
+  <h3><a href="index.php?start_login=yes">Login</a></h3>
   {else}
   <h3><a href="{$logoutUrl}">Log out</a></h3>
   {/if}
