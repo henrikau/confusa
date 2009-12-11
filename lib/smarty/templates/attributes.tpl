@@ -112,7 +112,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td id="orgNameField" class="attval" title="{$map.epodn|escape}">{$map.epodn|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
+	<td id="orgNameField" class="attval" title="{$epodn|escape}">{$epodn|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
       </tr>
 
 
@@ -131,7 +131,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td id="cnField" class="attval" title="{$map.cn|escape}">{$map.cn|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
+	<td id="cnField" class="attval" title="{$cn|escape}">{$cn|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
       </tr>
 
       {*
@@ -149,7 +149,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td id="emailField" class="attval" title="{$map.mail|escape}">{$map.mail|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
+	<td id="emailField" class="attval" title="{$mail|escape}">{$mail|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
       </tr>
 
       {*
@@ -167,7 +167,7 @@
 	    {/foreach}
 	  </select>
 	</td>
-	<td id="entitlementField" class="attval" title="{$map.entitlement|escape}">{$map.entitlement|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
+	<td id="entitlementField" class="attval" title="{$entitlement|escape}">{$entitlement|escape|default:"<span style=\"color: red\">undefined</span>"}</td>
       </tr>
 
       <tr>

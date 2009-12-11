@@ -74,19 +74,18 @@ class CP_Stylist extends Content_Page
 			case 'change_mail':
 				if (isset($_POST['reset'])) {
 					$this->resetNRENMailTpl($this->person->getNREN());
-				} else if (isset($_POST['download'])) {
-					$new_template = strip_tags($_POST['mail_content']);
-					$this->downloadNRENMailTpl($content);
 				} else if (isset($_POST['change'])) {
 					$new_template = strip_tags($_POST['mail_content']);
 					$this->updateNRENMailTpl($this->person->getNREN(),
 					                         $new_template);
+				} else if (isset($_POST['test'])) {
+					$this->sendNRENTestMail($this->person);
 				}
 				break;
 			case 'upload_logo':
 				if (isset($_FILES['nren_logo']['name'])) {
 					/* only allow image uploads */
-					if (eregi('image/', $_FILES['nren_logo']['type'])) {
+					if (strpos($_FILES['nren_logo']['type'], 'image/') !== false) {
 						$this->uploadLogo('nren_logo', $this->person->getNREN());
 					}
 				}
@@ -434,6 +433,31 @@ class CP_Stylist extends Content_Page
 	}
 
 	/**
+	 * Send a test mail to the given recipient using the customized NREN
+	 * template of the recipient.
+	 *
+	 * @param $recipient Person The recipient to which the test-email is sent
+	 */
+	private function sendNRENTestMail($recipient)
+	{
+		require_once 'mail_manager.php';
+		require_once 'CA.php';
+
+		$timestamp			= date('Y-m-d H:i T');
+		$ip					= $_SERVER['REMOTE_ADDR'];
+		$order_number		= '1234567890 (invalid example)';
+		$product_name		= ConfusaConstants::$ESCIENCE_PRODUCT;
+		CA::sendMailNotification($order_number,
+		                         $timestamp,
+		                         $ip,
+		                         $product_name,
+		                         $recipient);
+
+		$email = $recipient->getEmail();
+		Framework::success_output("Test mail sent to $email.");
+	} /* end sendNRENTestMail */
+
+	/**
 	 * Download customized CSS to the user's harddisk
 	 *
 	 * @param $css string the updated CSS
@@ -442,17 +466,6 @@ class CP_Stylist extends Content_Page
 	{
 		require_once 'file_download.php';
 		download_file($css, 'custom.css');
-	}
-
-	/**
-	 * Download customized mail template to the admin's harddisk
-	 *
-	 * @param $template string the updated mail template
-	 */
-	private function downloadNRENMailTpl($template)
-	{
-		require_once 'file_download.php';
-		download_file($template, 'custom.tpl');
 	}
 
 	/*

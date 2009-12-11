@@ -43,7 +43,7 @@ if [ $# != 4 ]; then
     exit 1
 fi;
 nren_name=$1
-country=$2
+country=`echo $2 | tr '[:lower:]' '[:upper:]'`
 eppn=$3
 contact=$4
 

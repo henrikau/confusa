@@ -17,6 +17,16 @@
 </script>
 {/literal}
 
+<p class="info">
+  This is where you can search for certificates belonging to your
+  organization ({$subscriber->getOrgName()}). After a search, you will
+  be given a number of hits, where each hit represent a <i>set</i> of
+  certificates.
+</p>
+<p class="info">
+  It is <b>your</b> responsibility to pick the correct set to revoke.
+</p>
+
 {* The search part *}
 
 {* A normal person isn't offered any search options. Instead, he/she will
@@ -37,63 +47,47 @@ immediately see a result entry *}
     <input type="submit" name="Search" value="Search" />
 	<br />
 	<noscript>
-	<span style="font-size: 0.8em; font-style: italic">input is case sensitive</span>
+	  <p>
+	    <span style="font-size: 0.8em; font-style: italic">
+	      input is case sensitive
+	    </span>
+	  </p>
 	</noscript>
 	<span id="hint" style="display: none; font-size: 0.8em; font-style: italic">input is case sensitive</span>
+    <br />
     </fieldset>
     </form>
+<br />
+<br />
 
-    <div class="spacer"></div>
-
-    <form enctype="multipart/form-data" action="" method="post">
     <fieldset>
     <legend>List upload</legend>
 
-    <p class="info">Upload a comma separated list of eduPersonPrincipalNames whose
-    certificates should be revoked. You will be asked for confirmation before the certificates
-    will actually be revoked. Separate the ePPNs in the list with a ',' comma.
+    <p class="info">
+      Upload a comma separated list of eduPersonPrincipalNames whose
+      certificates should be revoked. You will be asked for confirmation
+      before the certificates will actually be revoked. Separate the
+      ePPNs in the list with a ',' comma.
     </p>
-    <input type="hidden" name="revoke_operation" value="search_by_list" />
-    <input type="hidden" name="max_file_size" value="10000000" />
-    <input name="{$file_name}" type="file" />
-    <input type="submit" value="Upload list" />
-    </fieldset>
-    </form>
 
+    <form enctype="multipart/form-data" action="" method="post">
+      <input type="hidden" name="revoke_operation" value="search_by_list" />
+      <input type="hidden" name="max_file_size" value="10000000" />
+      <input name="{$file_name}" type="file" />
+      <input type="submit" value="Upload list" />
+    </form>
+    <br />
+    </fieldset>
+
+    <br />
+    <br />
 {* The display part *}
 
 {if isset($owners)}
     {if $revoke_cert}
-        <table>
-        <tr>
-            <td>
-                <b>Full Subject DN</b>
-            </td>
-            <td>
-                <b>Revocation reason</b>
-            </td>
-            <td></td>
-        </tr>
-
         {foreach from=$owners item=owner}
-            <tr>
-                <td>
-                    {$owner|escape|replace:',':', '}
-                </td>
-                <td>
-                    <form action="" method="post">
-                    <div>
-                    <input type="hidden" name="revoke_operation" value="revoke_by_cn" />
-                    <input type="hidden" name="common_name" value="{$owner}" />
-                    {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
-                    <input type="submit" name="submit" value="Revoke all"
-                            onclick="return confirm('Revoking {$stats[$owner]} certificates! Are you sure?')" />
-                    </div>
-                    </form>
-                </td>
-            </tr>
+		{include file='revocation/revoke_cert_set.tpl'}
         {/foreach}
-        </table>
 
     {* Revoke the certificates from a list of cert-owners *}
     {elseif $revoke_list}

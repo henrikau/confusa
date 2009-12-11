@@ -25,18 +25,8 @@ final class CP_Index extends Content_Page
 	 */
 	function process()
 	{
-		if ($this->person->isAuth()) {
-			if ($this->person->getMode() > 1) {
-				$code = create_pw(8);
-				Framework::error_output("Unknown mode, contact the administrator with this error code " . $code);
-				$msg  = $code . " ";
-				$msg .= "User " . $this->person->getEPPN() . " was given mode " . $this->person->getMode();
-				$msg .= ". This is not a valid mode. Verify content in admins-table";
-				Logger::log_event(LOG_WARNING, $msg);
-			}
-		}
-
-		$this->tpl->assign('content', $this->tpl->fetch('index.tpl'));
+		$this->tpl->assign('content',
+				   $this->tpl->fetch('index.tpl'));
 	} /* end process() */
 }
 

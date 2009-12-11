@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS account_map (
 
     foreign key(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
 
-) type=InnoDB;
+) engine=InnoDB;
 
 -- ---------------------------------------------------------
 --
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- The country-code of the NREN
     --
     -- E.g 'NO' or 'US'
-    country CHAR(2) NOT NULL
+    country CHAR(2) NOT NULL,
 
     -- if a remote signing CA is used, the ID of the subaccont there
     login_account INT,
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS nrens (
     url VARCHAR(128),
 
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
-) type=InnoDB;
+) engine=InnoDB;
 
 
 -- ---------------------------------------------------------
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS idp_map (
   nren_id INTEGER NOT NULL,
 
   FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
-) type=InnoDB;
+) engine=InnoDB;
 
 -- ---------------------------------------------------------
 --
@@ -176,7 +176,7 @@ CREATE TABLE IF NOT EXISTS subscribers (
     subscr_help_email VARCHAR(64) DEFAULT "",
 
     FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
-) type=InnoDB;
+) engine=InnoDB;
 
 -- ---------------------------------------------------------
 -- If the standalone CA is not used for signing the CSRs, the CSRs are
@@ -201,7 +201,7 @@ CREATE TABLE order_store (
 	order_date DATETIME NOT NULL,
 	authorized ENUM('authorized', 'unauthorized', 'unknown') DEFAULT 'unknown',
 	expires DATETIME NOT NULL
-) type=InnoDB;
+) engine=InnoDB;
 -- ---------------------------------------------------------
 
 -- ---------------------------------------------------------
@@ -229,7 +229,7 @@ CREATE TABLE csr_cache (
        -- the system will generate a one-time password and encrypt it with the
        -- uploaded public-key.
        auth_key char(40) UNIQUE NOT NULL
-) type=InnoDB;
+) engine=InnoDB;
 
 -- ---------------------------------------------------------
 --
@@ -252,7 +252,7 @@ CREATE TABLE cert_cache (
 	-- to-be-revoked e.g. when operating in stand-alone mode
 	organization varchar(64) NOT NULL,
 	valid_untill DATETIME NOT NULL
-) type=InnoDB;
+) engine=InnoDB;
 
 -- admins
 --
@@ -298,7 +298,7 @@ CREATE TABLE IF NOT EXISTS admins (
        UNIQUE(admin, nren),
        FOREIGN KEY(subscriber) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
        FOREIGN KEY(nren) REFERENCES nrens(nren_id) ON DELETE CASCADE
-) type=InnoDB;
+) engine=InnoDB;
 
  
 -- ---------------------------------------------------------
@@ -314,7 +314,7 @@ CREATE TABLE IF NOT EXISTS user_crls (
        owner varchar(128), -- ePPN of the owner
        cert_sn INT NOT NULL,
        valid_untill DATETIME NOT NULL
-) type=InnoDB;
+) engine=InnoDB;
 
 -- ---------------------------------------------------------
 -- The map of the attributes.
@@ -335,7 +335,7 @@ CREATE TABLE IF NOT EXISTS attribute_mapping (
        entitlement varchar(64) NOT NULL,
        FOREIGN KEY(subscriber_id) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
        FOREIGN KEY(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
-) type=InnoDB;
+) engine=InnoDB;
 
 
 -- ---------------------------------------------------------
@@ -383,7 +383,7 @@ CREATE TABLE IF NOT EXISTS robot_certs (
 
        FOREIGN KEY(subscriber_id) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
        FOREIGN KEY(uploaded_by) REFERENCES admins(admin_id) ON DELETE CASCADE
-) type=InnoDB;
+) engine=InnoDB;
 
 -- -----------------------------------------------------------------------------
 -- schema_version
@@ -396,7 +396,7 @@ CREATE TABLE IF NOT EXISTS robot_certs (
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS schema_version (
         version INT PRIMARY KEY DEFAULT 0
-) type=InnoDB;
+) engine=InnoDB;
 
 
 -- -----------------------------------------------------------------------------
@@ -406,11 +406,11 @@ CREATE TABLE IF NOT EXISTS schema_version (
 -- available to the outside of Confusa
 CREATE TABLE IF NOT EXISTS critical_errors (
         errid       INT PRIMARY KEY AUTO_INCREMENT,
-        error_date  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        error_date  DATETIME NOT NULL,
         /* more serious errors, higher number. Start a LOG_DEBUG = 0 */
         error_level INT NOT NULL,
         log_msg     TEXT NOT NULL,
         is_resolved BOOLEAN NOT NULL DEFAULT FALSE
-) type=InnoDB;
+) engine=InnoDB;
 
 SET FOREIGN_KEY_CHECKS = 1;

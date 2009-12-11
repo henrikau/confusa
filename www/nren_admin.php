@@ -14,7 +14,6 @@ class CP_NREN_Admin extends Content_Page
 	function __construct()
 	{
 		parent::__construct("Admin", true);
-		$this->org_states	= array('subscribed', 'suspended', 'unsubscribed');
 	}
 
 
@@ -36,36 +35,36 @@ class CP_NREN_Admin extends Content_Page
 		/* handle nren-flags */
 		if (isset($_POST['subscriber'])) {
 			if (isset($_POST['id']))
-				$id	= Input::sanitize($_POST['id']);
+				$id	= Input::sanitizeID($_POST['id']);
 
 			if (isset($_POST['state']))
-				$state	= Input::sanitize($_POST['state']);
+				$state	= Input::sanitizeOrgState($_POST['state']);
 
 			if (isset($_POST['db_name'])) {
-				$db_name	= $_POST['db_name'];
+				$db_name	= Input::sanitizeIdPName($_POST['db_name']);
 			}
 
 			if (isset($_POST['dn_name'])) {
-				$dn_name = Input::sanitize($_POST['dn_name']);
+				$dn_name = Input::sanitizeOrgName($_POST['dn_name']);
 			}
 
 			if(isset($_POST['subscr_email']) && $_POST['subscr_email'] != "") {
-				$subscr_email = Input::sanitizeText($_POST['subscr_email']);
+				$subscr_email = Input::sanitizeEmail($_POST['subscr_email']);
 			} else {
 				$subscr_email = "";
 			}
 			if(isset($_POST['subscr_phone']) && $_POST['subscr_phone'] != "") {
-				$subscr_phone = Input::sanitizeText($_POST['subscr_phone']);
+				$subscr_phone = Input::sanitizePhone($_POST['subscr_phone']);
 			} else {
 				$subscr_phone = "";
 			}
 			if(isset($_POST['subscr_responsible_name']) && $_POST['subscr_responsible_name'] != "") {
-				$subscr_responsible_name = Input::sanitizeText($_POST['subscr_responsible_name']);
+				$subscr_responsible_name = Input::sanitizePersonName($_POST['subscr_responsible_name']);
 			} else {
 				$subscr_responsible_name = "";
 			}
 			if(isset($_POST['subscr_responsible_email']) && $_POST['subscr_responsible_email'] != "") {
-					$subscr_responsible_email = Input::sanitizeText($_POST['subscr_responsible_email']);
+					$subscr_responsible_email = Input::sanitizeEmail($_POST['subscr_responsible_email']);
 			} else {
 				$subscr_responsible_email = "";
 			}
@@ -75,12 +74,12 @@ class CP_NREN_Admin extends Content_Page
 				$subscr_comment = "";
 			}
 			if(isset($_POST['subscr_help_url']) && $_POST['subscr_help_url'] != "") {
-				$subscr_help_url = Input::sanitizeText($_POST['subscr_help_url']);
+				$subscr_help_url = Input::sanitizeURL($_POST['subscr_help_url']);
 			} else {
 				$subscr_help_url= "";
 			}
 			if(isset($_POST['subscr_help_email']) && $_POST['subscr_help_email'] != "") {
-				$subscr_help_email = Input::sanitizeText($_POST['subscr_help_email']);
+				$subscr_help_email = Input::sanitizeEmail($_POST['subscr_help_email']);
 			} else {
 				$subscr_help_email= "";
 			}
@@ -94,18 +93,18 @@ class CP_NREN_Admin extends Content_Page
 					/* Other subscruber than user's
 					 * subscriber, must create new object
 					 * from DB */
-					$subscriber = Subscriber::getSubscriberByID($_POST['id'], $this->person->getNREN());
+					$subscriber = Subscriber::getSubscriberByID($id, $this->person->getNREN());
 				}
 				if (!is_null($subscriber)) {
 					/* subscriber will clean input */
-					$update  = $subscriber->setState(	$_POST['state']);
-					$update |= $subscriber->setEmail(	$_POST['subscr_email']);
-					$update |= $subscriber->setPhone(	$_POST['subscr_phone']);
-					$update |= $subscriber->setRespName(	$_POST['subscr_responsible_name']);
-					$update |= $subscriber->setRespEmail(	$_POST['subscr_responsible_email']);
-					$update |= $subscriber->setComment(	$_POST['subscr_comment']);
-					$update |= $subscriber->setHelpURL(	$_POST['subscr_help_url']);
-					$update |= $subscriber->setHelpEmail(	$_POST['subscr_help_email']);
+					$update  = $subscriber->setState(	$state);
+					$update |= $subscriber->setEmail(	$subscr_email);
+					$update |= $subscriber->setPhone(	$subscr_phone);
+					$update |= $subscriber->setRespName(	$subscr_responsible_name);
+					$update |= $subscriber->setRespEmail(	$subscr_responsible_email);
+					$update |= $subscriber->setComment(		$subscr_comment);
+					$update |= $subscriber->setHelpURL(		$subscr_help_url);
+					$update |= $subscriber->setHelpEmail(	$subscr_help_email);
 					if ($update) {
 						if (!$subscriber->save(true)) {
 							Framework::error_output("Could not update Subscriber, even with changed information.");
@@ -125,7 +124,7 @@ class CP_NREN_Admin extends Content_Page
 				if ($this->person->getSubscriber()->hasDBID($id)) {
 					$subscriber = $this->person->getSubscriber();
 				} else {
-					$subscriber = Subscriber::getSubscriberByID($_POST['id'], $this->person->getNREN());
+					$subscriber = Subscriber::getSubscriberByID($id, $this->person->getNREN());
 				}
 				if (!is_null($subscriber)) {
 					if ($subscriber->setState($state)) {
@@ -137,27 +136,26 @@ class CP_NREN_Admin extends Content_Page
 				break;
 			case 'info':
 				$this->tpl->assign('subscr_details',
-						   Subscriber::getSubscriberByID($id, $this->person->GetNREN())->getInfo());
+						   Subscriber::getSubscriberByID($id, $this->person->getNREN())->getInfo());
 				$this->tpl->assign('subscriber_details', true);
 				$this->tpl->assign('subscriber_detail_id', $id);
 				break;
 			case 'add':
-				$db_name = Input::sanitizeText($_POST['db_name']);
-				echo "The db_name after the post is " . $db_name . "<br />\n";
+				$db_name = Input::sanitizeIdPName($_POST['db_name']);
 				$subscriber = new Subscriber($db_name, $this->person->getNREN());
 				if ($subscriber->isValid()) {
 					Framework::error_output("Cannot create new, already existing.");
 					break;
 				}
-				$subscriber->setOrgname($_POST['dn_name']);
-				$subscriber->setState($_POST['state']);
-				$subscriber->setEmail($_POST['subscr_email']);
-				$subscriber->setPhone($_POST['subscr_phone']);
-				$subscriber->setRespName($_POST['subscr_responsible_name']);
-				$subscriber->setRespEmail($_POST['subscr_responsible_email']);
-				$subscriber->setComment($_POST['subscr_comment']);
-				$subscriber->setHelpURL($_POST['subscr_help_url']);
-				$subscriber->setHelpEmail($_POST['subscr_help_email']);
+				$subscriber->setOrgname($dn_name);
+				$subscriber->setState($state);
+				$subscriber->setEmail($subscr_email);
+				$subscriber->setPhone($subscr_phone);
+				$subscriber->setRespName($subscr_responsible_name);
+				$subscriber->setRespEmail($subscr_responsible_email);
+				$subscriber->setComment($subscr_comment);
+				$subscriber->setHelpURL($subscr_help_url);
+				$subscriber->setHelpEmail($subscr_help_email);
 				if ($subscriber->create()) {
 					Framework::success_output("Added new subscriber " . htmlentities($dn_name) . " to database.");
 				}
@@ -180,7 +178,7 @@ class CP_NREN_Admin extends Content_Page
 		}
 
 		$this->tpl->assign('nrenName'		, $this->person->getNREN());
-		$this->tpl->assign('org_states'		, $this->org_states);
+		$this->tpl->assign('org_states'		, ConfusaConstants::$ORG_STATES);
 
 		if (isset($_GET['target'])) {
 			switch(Input::sanitize($_GET['target'])) {
@@ -249,11 +247,13 @@ class CP_NREN_Admin extends Content_Page
 			Logger::log_event(LOG_NOTICE, "Updated (full) information for subscriber $subscriber_id");
 
 		} catch (DBStatementException $dbse) {
-			Framework::error_output(__FILE__ . ":" . __LINE__ . " Error in query-syntax.<BR />Server said " . $dbse->getMessage());
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " Error in query-syntax.<BR />Server said " .
+			                        htmlentities($dbse->getMessage()));
 			Logger::log_event(LOG_NOTICE, "Problem occured when editing the information of subscriber $id: " . $dbse->getMessage());
 			return false;
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output(__FILE__ . ":" . __LINE__ . " Problems with query.<BR />Server said " . $dbqe->getMessage());
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " Problems with query.<BR />Server said " .
+			                        htmlentities($dbqe->getMessage()));
 			Logger::log_event(LOG_NOTICE, "Problem occured when editing subscriber $id: " . $dbse->getMessage());
 			return false;
 		}
@@ -288,14 +288,14 @@ class CP_NREN_Admin extends Content_Page
 		} catch (DBQueryException $dbqe) {
 			$msg = "Could not delete subscriber with ID $id from DB.";
 			Logger::log_event(LOG_NOTICE, $msg);
-			Framework::message_output($msg . "<BR />Server said: " . $dbqe->getMessage());
+			Framework::message_output($msg . "<br />Server said: " . htmlentities($dbqe->getMessage()));
 			return false;
 		} catch (DBStatementException $dbse) {
-			$msg = "Could not delete subsriber with ID " .htmlentities($id) . " from DB, due to problems with the " .
+			$msg = "Could not delete subsriber with ID $id from DB, due to problems with the " .
 				"statement. Probably this is a configuration error. Server said: " .
 				$dbse->getMessage();
 			Logger::log_event(LOG_NOTICE, "ADMIN: " . $msg);
-			Framework::message_output($msg);
+			Framework::message_output(htmlentities($msg));
 			return false;
 		}
 
@@ -362,13 +362,13 @@ class CP_NREN_Admin extends Content_Page
 		} catch (DBStatementException $dbse) {
 			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax. Verify that the query matches the database!";
 			Logger::log_event(LOG_NOTICE, $msg);
-			$msg .= "<BR />Server said: " . $dbse->getMessage();
+			$msg .= "<BR />Server said: " . htmlentities($dbse->getMessage());
 			Framework::error_output($msg);
 			return;
 		} catch (DBQueryException $dbqe) {
 			$msg =  __FILE__ . ":" . __LINE__ . " Possible constraint-violation in query. Compare query to db-schema";
 			Logger::log_event(LOG_NOTICE, $msg);
-			$msg .= "<BR />Server said: " . $dbse->getMessage();
+			$msg .= "<BR />Server said: " . htmlentities($dbse->getMessage());
 			Framework::error_output($msg);
 		}
 	} /* end getSubscribers */

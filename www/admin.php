@@ -38,7 +38,7 @@ class CP_Admin extends Content_Page
 			/* operations called by the NREN-admin */
 			switch(htmlentities($_POST['nren_operation'])) {
 				case 'delete_nren_admin':
-					$admin = Input::sanitizeText($_POST['nren_admin']);
+					$admin = Input::sanitizeEPPN($_POST['nren_admin']);
 					$this->deleteAdmin($admin, NREN_ADMIN);
 					break;
 				case 'downgrade_self':
@@ -46,20 +46,20 @@ class CP_Admin extends Content_Page
 								  $this->person->getSubscriber()->getDBID());
 					break;
 				case 'upgrade_subs_admin':
-					$admin = Input::sanitizeText($_POST['subs_admin']);
+					$admin = Input::sanitizeEPPN($_POST['subs_admin']);
 					$this->upgradeSubscriberAdmin($admin);
 					break;
 				case 'add_nren_admin':
-					$admin = Input::sanitizeText($_POST['nren_admin']);
+					$admin = Input::sanitizeEPPN($_POST['nren_admin']);
 					$this->addNRENAdmin($admin);
 					break;
 				case 'delete_subs_admin':
-					$admin = Input::sanitizeText($_POST['subs_admin']);
+					$admin = Input::sanitizeEPPN($_POST['subs_admin']);
 					$this->deleteAdmin($admin,SUBSCRIBER_ADMIN);
 					break;
 				case 'add_subs_admin':
-					$admin = Input::sanitizeText($_POST['subs_admin']);
-					$subscriberID = Input::sanitize($_POST['subscriberID']);
+					$admin = Input::sanitizeEPPN($_POST['subs_admin']);
+					$subscriberID = Input::sanitizeID($_POST['subscriberID']);
 					$this->addSubscriberAdmin($admin, SUBSCRIBER_ADMIN, $subscriberID);
 					break;
 				default:
@@ -74,27 +74,27 @@ class CP_Admin extends Content_Page
 
 			switch(htmlentities($_POST['subs_operation'])) {
 				case 'delete_subs_admin':
-					$admin = Input::sanitizeText($_POST['subs_admin']);
+					$admin = Input::sanitizeEPPN($_POST['subs_admin']);
 					$this->deleteAdmin($admin, SUBSCRIBER_ADMIN);
 					break;
 				case 'add_subs_admin':
-					$admin = Input::sanitizeText($_POST['subs_admin']);
+					$admin = Input::sanitizeEPPN($_POST['subs_admin']);
 					$this->addSubscriberAdmin($admin,SUBSCRIBER_ADMIN,$this->person->getSubscriber()->getDBID());
 					break;
 				case 'downgrade_subs_admin':
-					$admin = Input::sanitizeText($_POST['subs_admin']);
+					$admin = Input::sanitizeEPPN($_POST['subs_admin']);
 					$this->downgradeSubscriberAdmin($admin, $this->person->getSubscriber()->getDBID());
 					break;
 				case 'upgrade_subs_sub_admin':
-					$admin = Input::sanitizeText($_POST['subs_sub_admin']);
+					$admin = Input::sanitizeEPPN($_POST['subs_sub_admin']);
 					$this->upgradeSubscriberSubAdmin($admin, $this->person->getSubscriber()->getDBID());
 					break;
 				case 'delete_subs_sub_admin':
-					$admin = Input::sanitizeText($_POST['subs_sub_admin']);
+					$admin = Input::sanitizeEPPN($_POST['subs_sub_admin']);
 					$this->deleteAdmin($admin,SUBSCRIBER_SUB_ADMIN);
 					break;
 				case 'add_subs_sub_admin':
-					$admin = Input::sanitizeText($_POST['subs_sub_admin']);
+					$admin = Input::sanitizeEPPN($_POST['subs_sub_admin']);
 					$this->addSubscriberAdmin($admin,SUBSCRIBER_SUB_ADMIN,$this->person->getSubscriber()->getDBID());
 					break;
 				default:
@@ -299,7 +299,7 @@ class CP_Admin extends Content_Page
 
 			/* Are we looking at a particular subscriber? */
 			if (isset($_POST['subscriberID'])) {
-				$current_subscriber_id = Input::sanitize($_POST['subscriberID']);
+				$current_subscriber_id = Input::sanitizeID($_POST['subscriberID']);
 
 				foreach($subscribers as $nren_subscriber) {
 					if ($nren_subscriber->getDBID() == $current_subscriber_id) {
@@ -506,7 +506,7 @@ class CP_Admin extends Content_Page
 							" of subscriber with ID $subscriberID");
 			return;
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Problem updating your admin status. Server said: " . $dbse->getMessage());
+			Framework::error_output("Problem updating your admin status. Server said: " . htmlentities($dbse->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
 							" of subscriber with ID $subscriberID");
 			return;
@@ -514,7 +514,8 @@ class CP_Admin extends Content_Page
 
 		Logger::log_event(LOG_NOTICE, "Admin: NREN admin $admin downgraded his/her status to subscriber admin of " .
 						"subscriber with ID $subscriberID");
-		Framework::message_output("Downgraded you to subscriber admin of subscriber with ID $subscriberID");
+		Framework::message_output("Downgraded you to subscriber admin of subscriber with ID " .
+		                          htmlentities($subscriberID));
 	}
 
 	/*

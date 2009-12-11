@@ -41,10 +41,10 @@ final class CP_ProcessCsr extends Content_Page
 		parent::pre_process($person);
 		$res = false;
 		if (isset($_GET['sign_csr'])) {
-			$res = $this->approveCsr(htmlentities($_GET['sign_csr']));
+			$res = $this->approveCsr(Input::sanitizeBase64($_GET['sign_csr']));
 
 		} else if (isset($_GET['status_poll'])) {
-			$order_number = htmlentities($_GET['status_poll']);
+			$order_number = Input::sanitizeCertKey($_GET['status_poll']);
 			/* assign the order_number again */
 			$this->tpl->assign('order_number', $order_number);
 			$this->tpl->assign('status_poll', true);
@@ -54,7 +54,7 @@ final class CP_ProcessCsr extends Content_Page
 			}
 
 		} else if (isset($_GET['install_cert'])) {
-			$order_number = Input::sanitize($_GET['install_cert']);
+			$order_number = Input::sanitizeCertKey($_GET['install_cert']);
 			$ua = getUserAgent();
 			$script = $this->ca->getCertDeploymentScript($order_number, $ua);
 
@@ -68,13 +68,14 @@ final class CP_ProcessCsr extends Content_Page
 		}
 
 		if (isset($_POST['browserRequest'])) {
-			$request = trim($_POST['browserRequest']);
-			$request = str_replace(array("\n","\r"),array('',''),$request);
+			$request = Input::sanitizeBase64($_POST['browserRequest']);
+			$request = trim($request);
 			if (!empty($request)) {
 				$order_number = $this->approveBrowserGenerated($request, getUserAgent());
 				$this->tpl->assign('order_number', $order_number);
 			}
 		}
+
 		/* If $res is false, we risk that a '1' is printed, we do not
 		 * want that :-) */
 		if (!$res)
@@ -85,64 +86,65 @@ final class CP_ProcessCsr extends Content_Page
 	public function process()
 	{
 
-		/* show upload-form. If it returns false, no uploaded CSRs were processed */
-		$this->processUploadedCSR($this->person);
+		$this->processDBCsr();
 
-		/* if flags are set, process the CSR*/
-		if ($this->processCSRFlagsSet()) {
-			if (!$this->processDBCsr()) {
-				Framework::error_output("Errors were encountered when processing " . $this->getActualFlags());
-			}
-		}
-
+		/* signing finished, redirect to download */
 		if($this->signing_ok) {
 			$this->tpl->assign('signingOk', $this->signing_ok);
-			$this->tpl->assign('sign_csr', htmlentities($_GET['sign_csr']));
-		}
-
-		$this->tpl->assign('inspect_csr',	$this->tpl->fetch('csr/inspect_csr.tpl'));
-		$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
-		$this->tpl->assign('list_all_csr',	$this->tpl->fetch('csr/list_all_csr.tpl'));
-		if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_user'))) {
-			$this->tpl->assign('user_cert_enabled', true);
+			$this->tpl->assign('sign_csr',  Input::sanitizeBase64($_GET['sign_csr']));
+			$this->tpl->assign('content',   $this->tpl->fetch('csr/approve_csr.tpl'));
+			return;
 		}
 
 		/* set the browser signing variables only if browser signing is enabled */
+		/* browser-signing */
 		if (isset($_POST['browserSigning']) || isset($_GET['status_poll'])) {
 			$browser_adapted_dn = $this->person->getBrowserFriendlyDN();
 			$this->tpl->assign('dn',				$browser_adapted_dn);
 			$this->tpl->assign('keysize',			Config::get_config('key_length'));
 			$browserTemplate = $this->dispatchBrowserTemplate();
-			$this->tpl->assign('browserTemplate',	$browserTemplate);
+			$extraScript = array('js/cert_request.js');
+			$this->tpl->assign('extraScripts', $extraScript);
+			Framework::message_output("Generating certificate signing request in " .
+			                          "the browser. <a href=\"process_csr.php\">Change</a>.");
+			$this->tpl->assign('content',	$this->tpl->fetch($browserTemplate));
+			return;
+		/* signing of a copied/pasted CSR */
+		} else if (isset($_POST['pastedCSR'])) {
+			/* show upload-form. If it returns false, no uploaded CSRs were processed */
+			$authkey = $this->processUploadedCSR($this->person);
+			Framework::message_output("Received CSR through the copy/paste form. " .
+			                          "<a href=\"process_csr.php\">Change</a>.");
+			$this->tpl->assign('post', 'pastedCSR');
+
+			$this->tpl->assign('csrInspect', get_csr_details($this->person,
+			                                 $authkey));
+
+			$this->tpl->assign('legendTitle', 'Pasted CSR');
+			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
+			return;
+		/* signing of a CSR that was uploaded from a file */
+		} else if (isset($_POST['uploadedCSR'])) {
+			/* show upload-form. If it returns false, no uploaded CSRs were processed */
+			$authkey = $this->processUploadedCSR($this->person);
+			Framework::message_output("Received CSR through file upload. ".
+			                          "<a href=\"process_csr.php\">Change</a>.");
+			$this->tpl->assign('post', 'uploadedCSR');
+
+			$this->tpl->assign('csrInspect', get_csr_details($this->person,
+			                                 $authkey));
+			$this->tpl->assign('legendTitle', 'Uploaded CSR');
+			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
+			return;
+		/* showing the normal UI */
+		} else {
+			$user_cert_enabled = $this->person->testEntitlementAttribute(Config::get_config('entitlement_user'));
+			$this->tpl->assign('user_cert_enabled', $user_cert_enabled);
+			$this->tpl->assign('upload_csr_file', $this->tpl->fetch('csr/upload_csr_file.tpl'));
+			$this->tpl->assign('content',		$this->tpl->fetch('csr/process_csr.tpl'));
 		}
-
-		$extraScript = array('js/cert_request.js');
-		$this->tpl->assign('extraScripts', $extraScript);
-		$this->tpl->assign('upload_csr_file', $this->tpl->fetch('csr/upload_csr_file.tpl'));
-		$this->tpl->assign('content',		$this->tpl->fetch('csr/process_csr.tpl'));
 	}
 
-	/**
-	 * processCSRFlags_set - test to see if any of the CSR flags are set.
-	 */
-	private function processCSRFlagsSet()
-	{
-		return isset($_GET['delete_csr']) || isset($_GET['inspect_csr']);
-	}
-
-	private function getActualFlags()
-	{
-		$msg = "";
-		if (isset($_GET['delete_csr']))
-			$msg .= "delete_csr : " . htmlentities($_GET['delete_csr']) . " ";
-
-		if (isset($_GET['sign_csr']))
-			$msg .= "sign_csr : " . htmlentities($_GET['sign_csr']) . " ";
-
-		if (isset($_GET['inspect_csr']))
-			$msg .= "inspect_csr : " . htmlentities($_GET['inspect_csr']) . " ";
-		return $msg;
-	}
 	/**
 	 * processUploadedCSR - walk an uploaded CSR through the steps towards a certificate
 	 *
@@ -151,6 +153,7 @@ final class CP_ProcessCsr extends Content_Page
 	 */
 	private function processUploadedCSR()
 	{
+		$authvar = "";
 		$csr = null;
 		/* Testing for uploaded files */
 		if(isset($_FILES['user_csr']['name'])) {
@@ -164,8 +167,7 @@ final class CP_ProcessCsr extends Content_Page
 				Framework::error_output($msg);
 			}
 		} else if (isset($_POST['user_csr'])) {
-			echo "Handling pasted CSR<br />\n";
-			$csr = $_POST['user_csr'];
+			$csr = Input::sanitizeBase64($_POST['user_csr']);
 		}
 
 		if (!is_null($csr)) {
@@ -180,8 +182,14 @@ final class CP_ProcessCsr extends Content_Page
 						    array('text'),
 						    array($authvar));
 			if (count($res)>0) {
-				Framework::error_output("CSR with matching public-key already in the database. ".
-							"Cannot upload this CSR. Please generate a new keypair and try again.");
+				Framework::warning_output("CSR with matching public-key already in the database. ".
+				                        "Cannot upload this CSR. Your options: " .
+				                        "<ul style=\"padding-top: 1em; padding-bottom: 1em; margin-left: 5em\">" .
+				                        "<li>Approve your old CSR (displayed below)</li>" .
+				                        "<li>Delete your old CSR and try again</li>" .
+				                        "<li>Go <a href=\"process_csr.php\">back</a> and provide a different CSR</li></ul>");
+				$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
+				$this->tpl->assign('list_all_csr',	true);
 				/* match the DN only when using standalone CA, no need to do it for Comodo */
 			} else if (Config::get_config('ca_mode') == CA_COMODO ||
 				   match_dn($subject, $this->person)) {
@@ -199,6 +207,8 @@ final class CP_ProcessCsr extends Content_Page
 				Logger::log_event(LOG_INFO, $logmsg);
 			}
 		}
+
+		return $authvar;
 	} /* end processUploadedCSR() */
 
 	/**
@@ -211,9 +221,8 @@ final class CP_ProcessCsr extends Content_Page
 	 */
 	private function processDBCSR()
 	{
-		$res = false;
 		if (isset($_GET['delete_csr'])) {
-			$res = delete_csr_from_db($this->person, htmlentities($_GET['delete_csr']));
+			$res = delete_csr_from_db($this->person, Input::sanitizeCertKey($_GET['delete_csr']));
 			if ($res) {
 				Framework::message_output("Successfully deleted CSR for user " . htmlentities($this->person->getEPPN()) . ".");
 			} else {
@@ -222,24 +231,23 @@ final class CP_ProcessCsr extends Content_Page
 		}
 		elseif (isset($_GET['inspect_csr'])) {
 			try {
-				$this->tpl->assign('csrInspect', get_csr_details($this->person, Input::sanitize($_GET['inspect_csr'])));
-				$res = true;
+				$this->tpl->assign('csrInspect', get_csr_details($this->person,
+				                   Input::sanitizeCertKey($_GET['inspect_csr'])));
 			} catch (CSRNotFoundException $csrnfe) {
 				$msg  = "Error with auth-token (" . htmlentities($auth_key) . ") - not found. ";
 				$msg .= "Please verify that you have entered the correct auth-url and try again.";
 				$msg .= "If this problem persists, try to upload a new CSR and inspect the fields carefully";
 				Framework::error_output($msg);
-				return false;
+				return;
 			} catch (ConfusaGenException $cge) {
 				$msg = "Too menu returns received. This can indicate database inconsistency.";
 				Framework::error_output($msg);
 				Logger::log_event(LOG_ALERT, "Several identical CSRs (" .
 						  $auth_token . ") exists in the database for user " .
 						  $this->person->getX509ValidCN());
-				return false;
+				return;
 			}
 		}
-		return $res;
 	} /* end processDBCSR() */
 
 	private function approveBrowserGenerated($csr, $browser)
@@ -361,19 +369,19 @@ final class CP_ProcessCsr extends Content_Page
 
 		switch($ua) {
 		case "msie_post_vista":
-			return $this->tpl->fetch("browser_csr/vista7.tpl");
+			return "browser_csr/vista7.tpl";
 			break;
 		case "msie_pre_vista":
-			return $this->tpl->fetch("browser_csr/xp2003.tpl");
+			return "browser_csr/xp2003.tpl";
 			break;
 		case "keygen":
-			return $this->tpl->fetch("browser_csr/keygen.tpl");
+			return "browser_csr/keygen.tpl";
 			break;
 		case "other":
-			return $this->tpl->fetch("browser_csr/unsupported.tpl");
+			return "browser_csr/unsupported.tpl";
 			break;
 		default:
-			return $this->tpl->fetch("browser_csr/unsupported.tpl");
+			return "browser_csr/unsupported.tpl";
 			break;
 		}
 	}

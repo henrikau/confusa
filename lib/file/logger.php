@@ -44,8 +44,7 @@ class Logger {
  * LOG_DEBUG		debug-level message
  */
      static function log_event($pri, $message)
-          {
-               define_syslog_variables();
+     {
 
 		/* add this after the pri-test, as we don't want to  */
 		if ($pri <= Config::get_config('syslog_min')) {

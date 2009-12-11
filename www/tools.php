@@ -9,7 +9,7 @@ class CP_Tools extends Content_Page
 {
 	public function __construct()
 	{
-		parent::__construct("Revoke Certificate(s)", true, "tools.php");
+		parent::__construct("Tools of the trade", true, "tools.php");
 	}
 
 	function __destruct()
@@ -52,7 +52,7 @@ class CP_Tools extends Content_Page
 		$subject = 'Custom-tailored script for creating key and certificate request for ARC';
 		$mail = new MailManager($this->person,
 					Config::get_config('sys_from_address'),
-					'"' . Config::get_config('system_name') . '"',
+					Config::get_config('system_name'),
 					Config::get_config('sys_header_from_address'));
 		$mail->setSubject($subject);
 		$mail->setBody($body);

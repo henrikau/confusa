@@ -11,6 +11,7 @@
 	<td>
 	  <form action="process_csr.php" method="post" enctype="multipart/form-data">
 	    <div><!-- XHTML strict won't allow inputs just within forms -->
+	      <input type="hidden" name="uploadedCSR" value="uploadedCSR" />
 	      <input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
 	      <input type="file" name="user_csr" />
 	      <input type="submit" value="Upload CSR" />

@@ -14,14 +14,13 @@
 {/if}
 
 {if $person->getMode() == 0}
-
 <h3 style="padding-bottom: 1em">Certificates</h3>
 <div style="padding-bottom: 1em">
 <ul>
   <li><a href="process_csr.php"	{$prot_title}>
       {$prot_l}Request new{$prot_r}</a></li>
   <li><a href="download_certificate.php"{$prot_title}>
-      {$prot_l}Download{$prot_r}</a></li>
+      {$prot_l}My certificates{$prot_r}</a></li>
   <li><a href="revoke_certificate.php"{$prot_title}>
       {$prot_l}Revoke{$prot_r}</a></li>
 </ul>
@@ -99,29 +98,19 @@
 {* ------------------------------------------------------------ *}
 {*		Common for all					*}
 {* ------------------------------------------------------------ *}
-<h3>Other</h3>
-<ul style="padding-bottom: 1em">
-  {if $person->getMode() == 0 && $person->isAdmin() }
-  <li><a href="{php}$_SERVER['PHP_SELF']{/php}?mode=admin">Admin menu</a></li>
-  {elseif $person->isAdmin()}
-  <li><a href="index.php?mode=normal">Normal mode</a></li>
-  {else}
-  </ul>
-  <ul style="padding-bottom: 1em">
-  {/if}
 
-  <li><a href="about_you.php"{$prot_title}>
-      {$prot_l}About you{$prot_r}</a></li>
+{if $person->getMode() == 0}
+<h3 style="padding-bottom: 1em">Extras</h3>
+<ul style="padding-bottom: 1em">
   <li><a href="tools.php"{$prot_title}>
       {$prot_l}Tools{$prot_r}</a></li>
-  <li><a href="root_cert.php">
-      {$prot_l}CA Certificate{$prot_r}</a></li>
+  <li><a href="root_cert.php">CA Certificate</a></li>
 </ul>
 
 <div style="padding-bottom: 1em">
 <h3>Help</h3>
 </div>
-<ul>
+<ul style="padding-bottom: 1em">
   <li><a href="about_nren.php">About</a></li>
   <li><a href="help.php">Help</a></li>
 
@@ -129,11 +118,31 @@
 		<li><a href="about_confusa.php">Version</a></li>
   {/if}
 </ul>
+{/if}
 
-<ul>
-  {if !$person->isAuth()}
-  <li><a href="index.php?start_login=yes">Login</a></li>
-  {else}
-  <li><a href="{$logoutUrl}">Log out</a></li>
-  {/if}
+  {if $person->getMode() == 0 && $person->isAdmin() }
+  <div style="padding-bottom: 1em">
+<h3>View menu</h3>
+</div>
+<ul style="padding-bottom: 1em">
+<li>User</li>
+<li><a href="index.php?mode=admin" title="Change">Admin</a></li>
 </ul>
+
+  {elseif $person->isAdmin()}
+  <div style="padding-bottom: 1em">
+<h3>View menu</h3>
+</div>
+<ul style="padding-bottom: 1em">
+<li><a href="index.php?mode=normal">User</a></li>
+<li>Admin</li>
+</ul>
+{/if}
+
+<!-- <ul>-->
+  {if !$person->isAuth()}
+  <h3><a href="index.php?start_login=yes">Login</a></h3>
+  {else}
+  <h3><a href="{$logoutUrl}">Log out</a></h3>
+  {/if}
+<!-- </ul>-->

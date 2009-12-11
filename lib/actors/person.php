@@ -82,7 +82,6 @@ class Person{
 	    unset($this->eppn);
 	    unset($this->eppnKey);
 	    unset($this->email);
-	    unset($this->country);
 
 	    unset($this->nren);
 
@@ -258,9 +257,6 @@ class Person{
      *
      *		http://rnd.feide.no/content/cn
      *
-     * The name is NOT sanitized due to the possible existance of UTF-8
-     * characters such as ä or å which we want to preserve. Make sure to
-     * sanitize it in all depending functions such as getX509SubjectDN()
      *
      * @param String given_name (the full name of the person)
      * @return void
@@ -305,7 +301,7 @@ class Person{
 		$msg .= "Please make operational support aware of this issue.";
 		throw new CriticalAttributeException($msg);
 	}
-	$this->eppn = Input::sanitize($eppn);
+	$this->eppn = $eppn;
     }
 
     /**
@@ -390,7 +386,7 @@ class Person{
     public function setEmail($email)
     {
 	    if (!is_null($email)) {
-		    $this->email = Input::sanitize($email);
+		    $this->email = $email;
 	    } else {
 		    $msg  = "Troubles with attributes. No mail address available. ";
 		    $msg .=" You will not be able to sign new certificates until this attribute is available.<br />\n";
@@ -474,7 +470,7 @@ class Person{
 				    $this->setEntitlement($value);
 			    }
 		    } else {
-			    $val = Input::sanitize($entitlement);
+			    $val = $entitlement;
 			    $this->entitlement[strtolower($val)] = $val;
 		    }
 	    }
@@ -516,7 +512,7 @@ class Person{
     public function testEntitlementAttribute($attribute)
     {
 	    $hasAttribute = false;
-	    $attr = strtolower(Input::sanitize($attribute));
+	    $attr = strtolower($attribute);
 	    return isset($this->entitlement[$attr]);
     }
 
@@ -529,12 +525,16 @@ class Person{
      *
      * @param String The country of the NREN (and in effect, person)
      * @return void
+     * @deprecated use nren->setCountry()
      */
     public function setCountry($country)
     {
-	    if (isset($country)) {
-		    $this->country = strtoupper(Input::sanitize(substr($country,0, 2)));
+	    if (Config::get_config('debug')) {
+		    $msg = __CLASS__ . "::" . __FUNCTION__ . " Warning: calling deprecated function. Use NREN::getCountry() instead.";
+		    Logger::log_event(LOG_DEBUG, $msg);
+		    Framework::error_output($msg);
 	    }
+	    return false;
     }
 
     /**
@@ -742,7 +742,9 @@ class Person{
      */
     public function isAdmin()
     {
-	    return (int)$this->getAdminStatus() != NORMAL_USER;
+	    return $this->isNRENAdmin() ||
+		    $this->isSubscriberAdmin() ||
+		    $this->isSubscriberSubAdmin();
     } /* end function isAdmin() */
 
 
@@ -820,7 +822,7 @@ class Person{
 	    require_once 'mdb2_wrapper.php';
 	    $errorCode = create_pw(8);
 
-	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=?", array('text'), array($this->eppn));
+	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND nren=?", array('text', 'text'), array($this->eppn, $this->nren->getID()));
 	    $size	= count($res);
 	    db_array_debug($res);
 	    if ($size == 1) {
@@ -883,7 +885,7 @@ class Person{
 			$permission->addReason("Need an email-address to send notifications to!");
 		}
 
-		if (empty($this->country)) {
+		if (is_null($this->getNREN()->getCountry()) || $this->getNREN()->getCountry() == "") {
 			$permission->setPermissionGranted(false);
 			$permission->addReason("Need a country name for the certificates!");
 		}

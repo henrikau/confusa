@@ -1,11 +1,11 @@
 <?php
-require_once '../www/confusa_include.php';
+require_once 'confusa_include.php';
 require_once 'Robot.php';
 require_once 'mdb2_wrapper.php';
 require_once 'cert_lib.php';
 require_once 'logger.php';
 require_once 'person.php';
-require_once 'cert_manager.php';
+require_once 'CA.php';
 
 $log_error_code = create_pw(8);
 

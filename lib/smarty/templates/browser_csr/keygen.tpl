@@ -1,3 +1,4 @@
+<br />
 <fieldset>
 <legend>Apply for a certificate in browser</legend>
 <div id="info_view">
@@ -25,7 +26,7 @@
 	<table>
 	<tr>
 	<td width="20%">
-	<keygen name="browserRequest" keytype="RSA"></keygen>
+	<keygen name="browserRequest" keytype="RSA" />
 	</td>
 	<td>
 	<p class="info">We strongly recommend to choose a key with keysize
@@ -36,8 +37,6 @@
 	<input type="submit" value="Send" />
 	</td><td><br /><p class="info">Please press the send button only <b>once</b>.</p></td>
 	</tr></table></form>
-	</form>
 {/if}
 </div>
-<br />
 </fieldset>

@@ -94,19 +94,23 @@ abstract class Confusa_Auth
 
 			/* Now that we have the NREN-map, reiterate getMap() in
 			 * case we can find the subscriber-map. */
-			$this->person->setSubscriber(new Subscriber($attributes[$map['epodn']][0],
+			$subscriberIdPName = Input::sanitizeIdPName($attributes[$map['epodn']][0]);
+			$this->person->setSubscriber(new Subscriber($subscriberIdPName,
 								    $this->person->getNREN()));
 			$map = $this->person->getMap();
 
-			$this->person->setEPPN($attributes[$map['eppn']][0]);
+			$eppn = Input::sanitizeEPPN($attributes[$map['eppn']][0]);
+			$this->person->setEPPN($eppn);
 			if (!is_null($map['eppn'])) {
 				$this->person->setEPPNKey($map['eppn']);
 			}
 			if(!is_null($map['cn'])) {
-				$this->person->setName($cnPrefix . $attributes[$map['cn']][0]);
+				$cn = Input::sanitizePersonName($attributes[$map['cn']][0]);
+				$this->person->setName($cnPrefix . $cn);
 			}
 			if (!is_null($map['mail'])) {
-				$this->person->setEmail($attributes[$map['mail']][0]);
+				$mail = Input::sanitizeEmail($attributes[$map['mail']][0]);
+				$this->person->setEmail($mail);
 			}
 
 			/* go through and add the relevant entitlement-parts.
@@ -132,19 +136,21 @@ abstract class Confusa_Auth
 						}
 						/* only set the part *after*
 						 * entitlement-namespace */
-						$this->person->setEntitlement($val[count($val)-1]);
+						$entitlement = Input::sanitizeEntitlement($val[count($val)-1]);
+						$this->person->setEntitlement($entitlement);
 					}
 				}
 			}
 		} else {
 			/* At this point we're on shaky ground as we have to
 			 * 'see if we can find anything'
-			 * 
+			 *
 			 *		no map is set, can we find the ePPN in there?
 			 */
 			$eppnKey = $this->findEPPN($attributes);
 			if (!is_null($eppnKey)) {
-				$this->person->setEPPN($eppnKey['value']);
+				$eppn = Input::sanitizeEPPN($eppnKey['value']);
+				$this->person->setEPPN($eppn);
 				$this->person->setEPPNKey($eppnKey['key']);
 			}
 
@@ -162,7 +168,7 @@ abstract class Confusa_Auth
 							$tabs .= "\t\t";
 						else if (strlen($key) < 16)
 							$tabs .= "\t";
-						$msg .= "$key$tabs{$val[0]}\n";
+						$msg .= htmlentities("$key$tabs{$val[0]}") . "\n";
 					}
 					$msg .= "</pre><br />\n";
 				}

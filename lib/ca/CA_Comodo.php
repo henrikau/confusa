@@ -249,20 +249,21 @@ class CA_Comodo extends CA
         }
     }
 
-    /**
-     * Sign the CSR identified by auth_key using the Online-CA's remote API
-     * @throws ConfusaGenException
-    */
-    public function signKey($auth_key, $csr)
-    {
-        $this->capiUploadCSR($auth_key, $csr);
-        $this->capiAuthorizeCSR();
+	/**
+	 * Sign the CSR identified by auth_key using the Online-CA's remote API
+	 * @throws ConfusaGenException
+	*/
+	public function signKey($auth_key, $csr)
+	{
+		$this->capiUploadCSR($auth_key, $csr);
+		$this->capiAuthorizeCSR();
 
-        $this->cacheInvalidate();
-		$this->sendMailNotification($this->order_number,
-		                            date('Y-m-d H:i T'),
-		                            $_SERVER['REMOTE_ADDR'],
-		                            ConfusaConstants::$ESCIENCE_PRODUCT);
+		$this->cacheInvalidate();
+		CA::sendMailNotification($this->order_number,
+		                         date('Y-m-d H:i T'),
+		                         $_SERVER['REMOTE_ADDR'],
+		                         ConfusaConstants::$ESCIENCE_PRODUCT,
+		                         $this->person);
 	/* FIXME: conflict, not sure how to resolve, do we need both? */
         Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
 	/* FIXME: <END> */
@@ -284,7 +285,6 @@ class CA_Comodo extends CA
     {
         /* use the last 64-characters of the CRMF as an auth_key */
 		$auth_key = substr($csr, strlen($csr)-65, strlen($csr)-1);
-        /* FIXME: Recognize IE format, that is PKCS10 */
 
         switch($browser) {
         case "msie_post_vista":
@@ -306,13 +306,14 @@ class CA_Comodo extends CA
 
 		$this->capiAuthorizeCSR();
 		$this->cacheInvalidate();
-		$this->sendMailNotification($this->order_number,
-		                            date('Y-m-d H:i T'),
-		                            $_SERVER['REMOTE_ADDR'],
-		                            ConfusaConstants::$ESCIENCE_PRODUCT);
+		CA::sendMailNotification($this->order_number,
+		                         date('Y-m-d H:i T'),
+		                         $_SERVER['REMOTE_ADDR'],
+		                         ConfusaConstants::$ESCIENCE_PRODUCT,
+		                         $this->person);
 
 		Logger::log_event(LOG_INFO, "Signed CSR for user with order_number " .
-		                            $order_number);
+		                            $this->order_number);
         return $this->order_number;
     }
 

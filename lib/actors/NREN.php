@@ -158,6 +158,8 @@ class NREN
 				return false;
 			}
 		}
+
+		return true;
 	}
 	/**
 	 * Get the contact information for a NREN
@@ -311,14 +313,14 @@ class NREN
 			} catch (DBQueryException $dqe) {
 				Framework::error_output("Could not change the NREN contact! Maybe something is " .
 							"wrong with the data that you supplied? Server said: " .
-							$dqe->getMessage());
+							htmlentities($dqe->getMessage()));
 				Logger::log_event(LOG_INFO, "[nadm] Could not update " .
 						  "contact of NREN $nren: " .
 						  $dqe->getMessage());
 			} catch (DBStatementException $dse) {
 				Framework::error_output("Could not change the NREN contact! Confusa " .
 							"seems to be misconfigured. Server said: " .
-							$dse->getMessage());
+							htmlentities($dse->getMessage()));
 				Logger::log_event(LOG_WARNING, "[nadm] Could not update " .
 						  "contact of $nren: " .
 						  $dse->getMessage());
@@ -427,7 +429,7 @@ class NREN
 			}
 		} catch (ConfusaGenException $e) {
 			/* FIXME */
-			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . $e->getMessage());
+			Framework::error_output(__FILE__ . ":" . __LINE__ . " " . htmlentities($e->getMessage()));
 		}
 
 	} /* end retrievemap() */

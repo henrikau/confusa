@@ -10,6 +10,11 @@ require_once 'content_page.php';
  */
 class CP_Attributes extends Content_Page
 {
+	function __construct()
+	{
+		parent::__construct("Attribute mapping", true);
+	}
+
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
@@ -21,18 +26,20 @@ class CP_Attributes extends Content_Page
 		if (isset($_POST['attributes_operation'])) {
 			switch($_POST['attributes_operation']) {
 			case 'update_map':
-				$cn		= $_POST['cn'];
-				$mail		= $_POST['mail'];
-				$entitlement	= $_POST['entitlement'];
+				$cn		= Input::sanitizeText($_POST['cn']);
+				$mail		= Input::sanitizeText($_POST['mail']);
+				$entitlement	= Input::sanitizeText($_POST['entitlement']);
 
 				if ($this->person->isNRENAdmin()) {
-					$epodn		= $_POST['epodn'];
+					$epodn		= Input::sanitizeText($_POST['epodn']);
 					if ($this->person->getNREN()->saveMap($this->person->getEPPNKey(), $epodn, $cn, $mail, $entitlement)) {
-						Framework::success_output("Updated map successfully.");
+						Framework::success_output("Updated map successfully. You will have to logout and login again " .
+						                          "to see the the effects of the changed map!");
 					}
 				} else if ($this->person->isSubscriberAdmin()) {
 					if ($this->updateMapSubscriber($cn, $mail, $entitlement)) {
-						Framework::success_output("Updated map successfully.");
+						Framework::success_output("Updated map successfully. You will have to logout and login again " .
+						                          "to see the the effects of the changed map!");
 					}
 				}
 				break;
@@ -53,6 +60,9 @@ class CP_Attributes extends Content_Page
 		}
 
 		if (isset($_GET['attr_value'])) {
+			/* no need for sanitization, only used in array lookup & does not go
+			 * into the DB
+			 */
 			$this->handleAttrValueAJAX($_GET['attr_value']);
 			return;
 		}
@@ -69,25 +79,33 @@ class CP_Attributes extends Content_Page
 			}
 		}
 		$session = $this->person->getSession();
-		if (!is_null($session)) {
+		if (isset($session)) {
 			if (isset($map['epodn'])) {
 				$orgName = $session->getAttribute($map['epodn']);
 				$this->tpl->assign('epodn', implode(', ', $orgName));
+			} else {
+				$this->tpl->assign('epodn', '');
 			}
 
 			if (isset($map['cn'])) {
 				$cn = $session->getAttribute($map['cn']);
 				$this->tpl->assign('cn', implode(', ', $cn));
+			} else {
+				$this->tpl->assign('cn', '');
 			}
 
 			if (isset($map['mail'])) {
 				$mail = $session->getAttribute($map['mail']);
 				$this->tpl->assign('mail', implode(', ', $mail));
+			} else {
+				$this->tpl->assign('mail', '');
 			}
 
 			if (isset($map['entitlement'])) {
 				$entitlement = $session->getAttribute($map['entitlement']);
 				$this->tpl->assign('entitlement', implode(', ', $entitlement));
+			} else {
+				$this->tpl->assign('entitlement', '');
 			}
 		}
 		$this->tpl->assign('map',		$map);

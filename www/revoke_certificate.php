@@ -9,19 +9,6 @@ require_once 'mdb2_wrapper.php';
 
 class CP_RevokeCertificate extends Content_Page
 {
-	/*
-	 * CRL reason codes according to RFC 3280.
-	 *
-	 * Those having no real meaning for NREN and institution admins have
-	 * been removed from this list.
-	 */
-	private $nren_reasons = array('unspecified',
-				      'keyCompromise',
-				      'affiliationChanged',
-				      'superseded',
-				      'certificateHold',
-				      'privilegeWithdrawn',
-				      'aACompromise');
 
 	function __construct()
 	{
@@ -42,6 +29,13 @@ class CP_RevokeCertificate extends Content_Page
 	{
 		parent::pre_process($person);
 
+		if (isset($_POST['reason'])) {
+			if (array_search(trim($_POST['reason']), ConfusaConstants::$REVOCATION_REASONS) === false) {
+				Framework::error_output("Unknown reason for certificate revocation!");
+				return;
+			}
+		}
+
 		if(isset($_GET['revoke'])) {
 			switch($_GET['revoke']) {
 
@@ -49,8 +43,15 @@ class CP_RevokeCertificate extends Content_Page
 				 * request. This is to allow for dedicated urls
 				 * for revocation to be used. */
 			case 'revoke_single':
-				$order_number	= Input::sanitize($_GET['order_number']);
-				$reason		= Input::sanitize($_GET['reason']);
+				$order_number	= Input::sanitizeCertKey($_GET['order_number']);
+				/* sanitized by checking inclusion in the REVOCATION_REASONS
+				 * array
+				 */
+				if (!array_key_exists('reason', $_GET)) {
+					Framework::error_output("Tyring to revoke single certificate without supplying the reason. Cannot continue.");
+					return;
+				}
+				$reason		= Input::sanitizeText(trim($_GET['reason']));
 				try {
 					if (!isset($order_number) || !isset($reason)) {
 						Framework::error_output("Revoke Certificate: Errors with parameters, not set properly");
@@ -83,19 +84,39 @@ class CP_RevokeCertificate extends Content_Page
 		}
 
 		if (isset($_POST['revoke_operation'])) {
+			$reason = null;
+			if (array_key_exists('reason', $_POST)) {
+				$reason = Input::sanitizeText(trim($_POST['reason']));
+			}
+
 			switch($_POST['revoke_operation']) {
 			case 'revoke_by_cn':
+				if (is_null($reason)) {
+					Framework::error_output("Trying to revoke certificate(s) by CN without supplying a reason. Cannot continue.");
+					return;
+
+				}
 				try {
-					$this->revoke_certs(Input::sanitize($_POST['common_name']), Input::sanitize($_POST['reason']));
+					/**
+					 * POST['reason'] sanitized by checking inclusion in the
+					 * REVOCATION_REASONS array
+					 */
+					$this->revoke_certs(Input::sanitizeCommonName($_POST['common_name']), $reason);
 				} catch (ConfusaGenException $cge) {
 					Framework::error_output("Could not revoke certificates because of the " .
-											"following problem: " . htmlentities($cge->getMessage()));
+								"following problem: " .
+								htmlentities($cge->getMessage()));
 				}
 				break;
 
 			case 'revoke_by_list':
+				if (is_null($reason)) {
+					Framework::error_output("Trying to revoke list of certificates without a reason. Cannot continue.");
+					return;
+
+				}
 				try {
-					$this->revoke_list(Input::sanitize($_POST['reason']));
+					$this->revoke_list($reason);
 				} catch (ConfusaGenException $cge) {
 					Framework::error_output("Could not revoke certificates because of the " .
 											"following problem: " . htmlentities($cge->getMessage()));
@@ -144,13 +165,14 @@ class CP_RevokeCertificate extends Content_Page
 			Framework::error_output("Impossible condition. NON-Admin user in admin-mode!");
 			return;
 		}
-
+		$common_name = "";
 		/* Get the right subscriber for which revocation should happen */
 		if ($this->person->isNRENAdmin()) {
 			$subscribers = $this->getNRENSubscribers($this->person->getNREN());
 
 			if (isset($_POST['subscriber'])) {
-				$subscriber = Input::sanitize($_POST['subscriber']);
+				$subscriber = Input::sanitizeOrgName($_POST['subscriber']);
+				$this->tpl->assign('active_subscriber', $subscriber);
 
 				/* check if the given subscriber is a legitimate subscriber
 				 * for the given NREN
@@ -184,8 +206,8 @@ class CP_RevokeCertificate extends Content_Page
 					$subscriber = $subscribers[0];
 				}
 			}
-			if (! is_null($subscriber)) {
-				$this->tpl->assign('subscriber', htmlentities($subscriber->getOrgName()));
+			if (!is_null($subscriber) && $subscriber instanceof Subscriber) {
+				$this->tpl->assign('active_subscriber', htmlentities($subscriber->getOrgName()));
 			}
 			if (! is_null($subscribers)) {
 				$this->tpl->assign('subscribers', $subscribers);
@@ -193,14 +215,19 @@ class CP_RevokeCertificate extends Content_Page
 				$this->tpl->assign('subscribers', false);
 			}
 		} else {
+			/* not specified any subscriber, use user's subscriber */
 			$subscriber = $this->person->getSubscriber()->getOrgName();
+			$this->tpl->assign('active_subscriber', $this->person->getSubscriber()->getOrgName());
 		}
+
 
 		$this->tpl->assign('file_name', 'eppn_list');
 
 		/* No need to do processing */
-		if (!isset($_POST['revoke_operation']))
+		if (!isset($_POST['revoke_operation'])) {
+			$this->tpl->assign('search_string', htmlentities($common_name));
 			return;
+		}
 
 		/* Test for revoke-commands */
 		switch($_POST['revoke_operation']) {
@@ -208,8 +235,6 @@ class CP_RevokeCertificate extends Content_Page
 		 * to revoke. */
 		case 'search_by_cn':
 			$common_name = Input::sanitizeText($_POST['search']);
-			Framework::message_output("Your search string was '" .
-			                          htmlentities($common_name) . "'.");
 			$this->searchCertsDisplay($common_name, $subscriber);
 			break;
 		case 'search_by_list':
@@ -219,6 +244,7 @@ class CP_RevokeCertificate extends Content_Page
 		default:
 			break;
 		}
+		$this->tpl->assign('search_string', htmlentities($common_name));
 
 	} /* end showAdminRevokeTable */
 
@@ -298,7 +324,7 @@ class CP_RevokeCertificate extends Content_Page
 				 * back via the POST the cert_owner wouldn't match the stored one
 				 * any more.
 				 */
-				$orders[Input::sanitize($row['cert_owner'])][] = $row['auth_key'];
+				$orders[Input::sanitizeCommonName($row['cert_owner'])][] = $row['auth_key'];
 			}
 
 			/* total number of occurences for every owner */
@@ -308,7 +334,12 @@ class CP_RevokeCertificate extends Content_Page
 			$this->tpl->assign('owners', $owners);
 			$this->tpl->assign('stats', $stats);
 			$this->tpl->assign('revoke_cert', true);
-			$this->tpl->assign('nren_reasons', $this->nren_reasons);
+
+			$reason = array();
+			foreach (ConfusaConstants::$REVOCATION_REASONS as $key => $value) {
+				$reasons[] = " " . $value;
+			}
+			$this->tpl->assign('nren_reasons', $reasons);
 			$this->tpl->assign('selected', 'unspecified');
 		}
 	}
@@ -330,6 +361,7 @@ class CP_RevokeCertificate extends Content_Page
 			Framework::message_output("Please note that you are in Confusa's API " .
 			           "test mode. Revocation is only simulated!");
 		}
+		$auth_keys = array();
 
 		if (isset($_SESSION['auth_keys'])) {
 			$auth_keys = $_SESSION['auth_keys'];
@@ -340,15 +372,15 @@ class CP_RevokeCertificate extends Content_Page
 			                        htmlentities($common_name) .
 			                        " during the session! Please try again!");
 		}
-
-		$auth_key_list = $auth_keys[$common_name];
-
-		if (array_search($reason, $this->nren_reasons) === FALSE) {
-			Framework::error_output("Encountered an unknown revocation " .
-										  "reason!"
-			);
+		if (!array_key_exists($common_name, $auth_keys)) {
+			Framework::error_output("Auth-keys has no such common-name ($common_name). Cannot continue.");
+			return;
 		}
-
+		$auth_key_list = $auth_keys[$common_name];
+		if (is_null($auth_key_list) || (int)count($auth_key_list) == 0) {
+			Framework::message_output("Stopping revocation-process, 0 certificates to revoke.");
+			return;
+		}
 		$num_certs = count($auth_key_list);
 		$num_certs_revoked = 0;
 		Logger::log_event(LOG_INFO, "Trying to revoke $num_certs certificates." .
@@ -372,7 +404,7 @@ class CP_RevokeCertificate extends Content_Page
 									  "Administrator contacted us from " .
 									  $_SERVER['REMOTE_ADDR']
 		);
-		Framework::message_output("Successfully revoked $num_certs_revoked out of $num_certs certificates!");
+		Framework::message_success("Successfully revoked $num_certs_revoked out of $num_certs certificates!");
 	}
 
 	/**
@@ -399,10 +431,6 @@ class CP_RevokeCertificate extends Content_Page
 		} else {
 			Framework::error_output("Lost session! Please log-out of Confusa, " .
 									"log-in again and try again!\n");
-		}
-
-		if (array_search($reason, $this->nren_reasons) === false) {
-			Framework::error_output("Unknown reason for certificate revocation!");
 		}
 
 		$num_certs = count($auth_keys);
@@ -464,7 +492,7 @@ class CP_RevokeCertificate extends Content_Page
 		$auth_keys = array();
 
 		foreach($eppn_list as $eppn) {
-			$eppn = Input::sanitize($eppn);
+			$eppn = Input::sanitizeEPPN($eppn);
 			$eppn_certs = $this->ca->getCertListForPersons($eppn, $subscriber);
 			$certs = array_merge($certs, $eppn_certs);
 		}
@@ -482,7 +510,7 @@ class CP_RevokeCertificate extends Content_Page
 			$_SESSION['auth_keys'] = $auth_keys;
 			$this->tpl->assign('owners', $owners);
 			$this->tpl->assign('revoke_list', true);
-			$this->tpl->assign('nren_reasons', $this->nren_reasons);
+			$this->tpl->assign('nren_reasons', ConfusaConstants::$REVOCATION_REASONS);
 			$this->tpl->assign('selected', 'unspecified');
 		}
 	}

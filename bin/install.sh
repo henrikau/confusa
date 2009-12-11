@@ -832,26 +832,6 @@ function perform_postinstallation_steps
 		write_cron_jobs ${install_path}
 	fi
 
-	# Link the necessary AuthProc filters
-	ln -s -f ${prefix}/CountryMap.php ${simplesaml_path}modules/core/lib/Auth/Process/CountryMap.php
-	ln -s -f ${prefix}/NRENMap.php ${simplesaml_path}modules/core/lib/Auth/Process/NRENMap.php
-
-	# Check if the NRENMap has already been included in the simplesamlphp config
-	# If so, no need to do it again
-	hasNRENMap=`grep "core:NRENMap" ${simplesaml_path}/config/config.php`
-
-	if [ -z "${hasNRENMap}" ]; then
-		get_user_alternative "Do you want setup to add the NRENMap/CountryMap filters to simplesamlphp's configuration? (y/n)"
-	else
-		answer="n"
-	fi
-
-	if [ $answer == "y" ]; then
-		 sed s\|"'authproc.sp'[ \t]*=>[ \t]*array("\|"'authproc.sp' => array(\n\t\t62 => 'core:NRENMap',\n\t\t63 => 'core:CountryMap',"\| \
-		  < ${simplesaml_path}/config/config.php > ${simplesaml_path}/config/.config.php.tmp
-		 mv ${simplesaml_path}/config/.config.php.tmp ${simplesaml_path}/config/config.php
-	fi
-
 	# Get the permissions right
 	# Guess the name of the apache/httpd user
 	# Note that the [ ] is used to make ps aux NOT include the grep command itself
@@ -924,17 +904,19 @@ function perform_postinstallation_steps
 	fi # standalone handling
 
 	# TODO: add in that order, once NREN bootstrapping exists:
-	#		bootstrapNREN
-	#		bootstrapAdmin
+	#		bootstrap_nren.sh
+	#		bootstrap_idp.sh
 	#
-	#		if ca_mode = COMODO:
-	#			bootstrapAccount
 
 	echo ""
 	echo ""
 	echo "*********************************************************************"
 	echo "Thanks for using the Confusa installer. Please find further notes on "
 	echo "Confusa's configuration in ${install_path}INSTALL"
+	echo ""
+	echo "Scripts you might want to run:"
+	echo "bootstrap_nren : Connect a new NREN to Confusa"
+	echo "bootstrap_idp  : Connect an identity provider to that NREN"
 	echo "*********************************************************************"
 	echo ""
 	echo ""

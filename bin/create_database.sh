@@ -20,7 +20,7 @@ if [ ! `whoami` == "root" ]; then
 fi
 
 MYSQL_ROOT="/usr/bin/mysql -uroot -h localhost $root_pw"
-if [ -f /root/mysql_root.pw ]; then 
+if [ -f /root/mysql_root.pw ]; then
     root_pw="-p`cat /root/mysql_root.pw`"
 else
     echo "Did not find /root/mysql_root.pw. If the root-account is password-protected, this step will fail"
@@ -78,7 +78,7 @@ fi
 
 # add tables
 echo "Creating tables in the database. Existing databases will be reset according to table_create.sql"
-$MYSQL -D$database < table_create.sql
+$MYSQL -D$database < ../init/table_create.sql
 res=$?
 
 if [ $res -ne 0 ]; then
@@ -134,6 +134,6 @@ else
 fi
 
 echo "Confusa-setup complete, adding views"
-$MYSQL -D$database  < views_create.sql
+$MYSQL -D$database  < ../init/views_create.sql
 echo "Views created. Database bootstrap complete."
 echo ""

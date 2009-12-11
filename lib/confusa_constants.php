@@ -47,6 +47,15 @@ class ConfusaConstants {
 	 */
 	public static $ALLOWED_IMG_SUFFIXES = array('png','jpg','gif');
 
+	public static $ORG_STATES = array('subscribed', 'suspended', 'unsubscribed');
+	/* CRL reason codes according to RFC 3280. */
+	public static $REVOCATION_REASONS = array('unspecified',
+	                                          'keyCompromise',
+	                                          'affiliationChanged',
+	                                          'superseded',
+	                                          'certificateHold',
+	                                          'privilegeWithdrawn',
+	                                          'aACompromise');
 	/*
 	 * STANDALONE constants
 	 * the length of the auth_key, as it is used in standalone signing */

@@ -41,7 +41,7 @@ class CA_Standalone extends CA
 
 			$cmd = "$path $auth_key $cert_file_name " . ConfusaConstants::$OPENSSL_SERIAL_FILE;
 			$res = shell_exec($cmd);
-			$val = split("\n", $res);
+			$val = explode("\n", $res);
 
 			/* FIXME: add better logic here.
 			 */
@@ -94,10 +94,11 @@ class CA_Standalone extends CA
 				throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
 			}
 
-			$this->sendMailNotification($auth_key,
-			                            date('Y-m-d H:i T'),
-			                            $_SERVER['REMOTE_ADDR'],
-			                            ConfusaConstants::$ESCIENCE_PRODUCT);
+			CA::sendMailNotification($auth_key,
+			                         date('Y-m-d H:i T'),
+			                         $_SERVER['REMOTE_ADDR'],
+			                         ConfusaConstants::$ESCIENCE_PRODUCT,
+			                         $this->person);
 			Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
 					  $this->person->getX509ValidCN() .
 					  " Contacting us from ".
@@ -191,7 +192,7 @@ class CA_Standalone extends CA
 			    return true;
 		    }
 	    } catch (Exception $e) {
-		    Framework::error_output($e->getMessage());
+		    Framework::error_output(htmlentities($e->getMessage()));
 		    return false;
 	    }
 	    return false;
@@ -268,7 +269,7 @@ class CA_Standalone extends CA
 		    $msg  = __FILE__ . ":" . __LINE__ . " Error in query syntax.";
 		    Logger::log_event(LOG_NOTICE, $msg);
 		    $msg .= "<BR />Could not delete the certificate with hash: $key.<br />Try to do a manual deletion.";
-		    $msg .=	"<BR />Server said: " . $dbse->getMessage();
+		    $msg .=	"<BR />Server said: " . htmlentities($dbse->getMessage());
 		    Framework::error_output($msg);
 
 		    /* Even though we fail, the certificate was
@@ -279,7 +280,7 @@ class CA_Standalone extends CA
 	    } catch (DBQueryException $dbqe) {
 		    $msg  = __FILE__ . ":" . __LINE__ . " Query-error. Constraint violoation in query?";
 		    Logger::log_event(LOG_NOTICE, $msg);
-		    $msg .= "<BR />Server said: " . $dbqe->getMessage();
+		    $msg .= "<BR />Server said: " . htmlentities($dbqe->getMessage());
 		    Framework::error_output($msg);
 		    return false;
 	    }

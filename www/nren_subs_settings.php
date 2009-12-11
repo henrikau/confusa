@@ -9,7 +9,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 {
 	function __construct()
 	{
-		parent::__construct("NREN_Subs_Settings", true);
+		parent::__construct("NREN/subscriber settings", true);
 		$available_languages = Config::get_config('language.available');
 		$this->full_names = Translator::getFullNamesForISOCodes($available_languages);
 	}
@@ -23,15 +23,15 @@ class CP_NREN_Subs_Settings extends Content_Page
 			return false;
 
 		if (isset($_POST['setting'])) {
-			switch(htmlentities($_POST['setting'])) {
+			switch($_POST['setting']) {
 			case 'nren_contact':
 				if ($this->person->isNRENAdmin()) {
-					$this->person->getNREN()->set_contact_email(	$_POST['contact_email']);
-					$this->person->getNREN()->set_contact_phone(	$_POST['contact_phone']);
-					$this->person->getNREN()->set_cert_phone(	$_POST['cert_phone']);
-					$this->person->getNREN()->set_cert_email(	$_POST['cert_email']);
-					$this->person->getNREN()->set_url(		$_POST['url']);
-					$this->person->getNREN()->set_lang(		$_POST['language']);
+					$this->person->getNREN()->set_contact_email(Input::sanitizeEmail($_POST['contact_email']));
+					$this->person->getNREN()->set_contact_phone(Input::sanitizePhone($_POST['contact_phone']));
+					$this->person->getNREN()->set_cert_phone(   Input::sanitizePhone($_POST['cert_phone']));
+					$this->person->getNREN()->set_cert_email(   Input::sanitizeEmail($_POST['cert_email']));
+					$this->person->getNREN()->set_url(          Input::sanitizeURL($_POST['url']));
+					$this->person->getNREN()->set_lang(         Input::sanitizeLangCode($_POST['language']));
 					$this->person->getNREN()->saveNREN();
 				}
 				break;
@@ -39,27 +39,27 @@ class CP_NREN_Subs_Settings extends Content_Page
 				if ($this->person->isSubscriberAdmin()) {
 					/* ($contact_email, $contact_phone, $resp_name, $resp_email) */
 					$this->updateSubscriberContact(
-						Input::sanitizeText($_POST['contact_email']),
-						Input::sanitizeText($_POST['contact_phone']),
-						Input::sanitizeText($_POST['resp_name']),
-						Input::sanitizeText($_POST['resp_email']));
+						Input::sanitizeEmail($_POST['contact_email']),
+						Input::sanitizePhone($_POST['contact_phone']),
+						Input::sanitizePersonName($_POST['resp_name']),
+						Input::sanitizeEmail($_POST['resp_email']));
 				}
 				break;
 			default:
-				Framework::error_output("Unknown action (".$_POST['setting'] . ")");
+				Framework::error_output("Unknown action (" . htmlentities($_POST['setting']) . ")");
 				break;
 			}
 		} else if (isset($_POST['language_operation'])) {
 				switch ($_POST['language_operation']) {
 					case 'update':
 						if (isset($_POST['language'])) {
-							$new_language = Input::sanitize($_POST['language']);
+							$new_language = Input::sanitizeLangCode($_POST['language']);
 
 							if ($person->isSubscriberAdmin()) {
 								$this->updateSubscriberLanguage($person->getSubscriber()->getOrgName(),
-												$new_language);
+								                                $new_language);
 							} else if ($person->isNRENAdmin()) {
-								$this->person->getNREN()->set_lang(Input::sanitize($_POST['language']));
+								$this->person->getNREN()->set_lang(Input::sanitizeLangCode($_POST['language']));
 								$this->person->getNREN()->saveNREN();
 							}
 						}
@@ -124,7 +124,8 @@ class CP_NREN_Subs_Settings extends Content_Page
 							$cge->getMessage());
 		}
 
-		Framework::success_output("Updated contact information for your subscriber $subscriber.");
+		Framework::success_output("Updated contact information for your subscriber " .
+		                          htmlentities($subscriber));
 		Logger::log_event(LOG_DEBUG, "[sadm] Updated contact for subscriber $subscriber.");
 	} /* end updateSubscriberContact */
 
@@ -144,9 +145,10 @@ class CP_NREN_Subs_Settings extends Content_Page
 		} catch (ConfusaGenException $cge) {
 			Logger::log_event(LOG_NOTICE, "[sadm] Updating the language to $new_language " .
 							 "failed for subscriber $subscriber. " . $cge->getMessage());
-			Framework::error_output("Updating the language to $new_language failed " .
-									"for subscriber $subscriber, probably due to problems " .
-									"with the supplied data. Server said: " . htmlentities($cge->getMessage()));
+			Framework::error_output("Updating the language to " . htmlentities($new_language) . " failed " .
+			                        "for subscriber " . htmlentities($subscriber) .
+			                        ", probably due to problems with the supplied data. Server said: " .
+			                        htmlentities($cge->getMessage()));
 			return;
 		}
 

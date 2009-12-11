@@ -9,11 +9,19 @@ class CP_About_Confusa extends Content_Page
 {
 	function __construct()
 	{
-		parent::__construct("About Confusa", false);
+		/* Only show to authenticated users */
+		parent::__construct("About Confusa", true);
 	}
 
 	function process()
 	{
+		/*
+		 * Only show this to admins, normal users have no need for this information.
+		 */
+		if (!$this->person->isAdmin()) {
+			$this->tpl->assign('content', $this->tpl->fetch('not_authorized.tpl'));
+			return;
+		}
 		$this->assignVersionVariables();
 		$this->assignDBVariables();
 

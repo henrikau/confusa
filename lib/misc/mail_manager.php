@@ -40,29 +40,31 @@ class MailManager
 		}
 
 		$this->mailer = new PHPMailer();
-
+		if (is_null($this->mailer)) {
+			Framework::error_output("Could not create mailer. Aborting");
+			return;
+		}
+		$this->mailer->CharSet = "UTF-8";
 		$this->mailer->Mailer = "sendmail";
 		/* set the envelope "from" address using the sendmail option -f, and
 		 * the return-path header */
 		$this->mailer->Sender = $sender;
-		/* set the header "from" address */
-		$this->mailer->SetFrom($sendHeader, $senderName);
 
+		/* set the header "from" address */
+		$this->mailer->From = $sendHeader;
+		$this->mailer->FromName = $senderName;
 		$this->mailer->WordWrap = 80;
 
 		$this->mailer->AddAddress($pers->getEmail(),
 		                          $pers->getName());
 
-		try {
-			$confusaVersion = MetaInfo::getConfusaVersion();
-		} catch (ConfusaGenException $cge) {
-			/* take a version that won't appear that fast */
-			$confusaVersion = "17.2.11";
+		$help_desk = $pers->getSubscriber()->getHelpEmail();
+		/* add a reply-to to the helpdesk, if a helpdesk is defined */
+		if (isset($help_desk)) {
+			$support_name = $pers->getSubscriber()->getOrgName() . " support";
+			$this->mailer->AddReplyTo($help_desk,
+			                          $support_name);
 		}
-
-		/* want "our own" X-Mailer :) */
-		$header = "X-Mailer: Confusa/$confusaVersion\r\n";
-		$this->mailer->AddCustomHeader($header);
 	} /* end constructor */
 
 	/**
@@ -70,11 +72,12 @@ class MailManager
 	 */
 	public function __destruct()
 	{
-		$this->mailer->clearAddresses();
-		$this->mailer->clearAllRecipients();
-		$this->mailer->clearAttachments();
-		$this->mailer->clearCustomHeaders();
-		$this->mailer->clearReplyTos();
+		if (!is_null($this->mailer)) {
+			$this->mailer->clearAddresses();
+			$this->mailer->clearAllRecipients();
+			$this->mailer->clearAttachments();
+			$this->mailer->clearReplyTos();
+		}
 	}
 
 	/**
@@ -94,7 +97,7 @@ class MailManager
 	 */
 	public function setBody($body)
 	{
-		$wrapped_body = $this->mailer->WrapText($body, 75, true);
+		$wrapped_body = $this->mailer->WrapText($body, 75, false);
 		$this->mailer->Body = $body;
 	}
 

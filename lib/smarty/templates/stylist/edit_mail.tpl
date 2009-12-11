@@ -8,6 +8,7 @@
 	</p>
 	<p class="info">
 	Note: HTML tags will be stripped. {literal}{$varname}{/literal} are variables.
+	You can try out how your e-mail will look like by using the "Send to {$person->getEmail()}" button.
 	</p>
 	<div style="padding-top: 1em; padding-bottom: 2em">
 		<span style="font-style: italic">
@@ -30,7 +31,9 @@
 	</div>
 	<div class="spacer"></div>
 	<div style="width: 90%">
-		<span style="float: left"><input type="submit" name="download" value="Download" /></span>
+		<span style="float: left">
+			<input type="submit" name="test" value="Send to {$person->getEmail()}"/>
+		</span>
 		<span style="float: right">
 			 <input type="submit" name="reset" value="Reset"
 			        onclick="return confirm('Reset notification mail template to Confusa\'s shipped template?')" />
