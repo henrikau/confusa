@@ -30,7 +30,7 @@ class CP_RevokeCertificate extends Content_Page
 		parent::pre_process($person);
 
 		if (isset($_POST['reason'])) {
-			if (array_search($_POST['reason'], ConfusaConstants::$REVOCATION_REASONS) === false) {
+			if (array_search(trim($_POST['reason']), ConfusaConstants::$REVOCATION_REASONS) === false) {
 				Framework::error_output("Unknown reason for certificate revocation!");
 				return;
 			}
@@ -47,7 +47,11 @@ class CP_RevokeCertificate extends Content_Page
 				/* sanitized by checking inclusion in the REVOCATION_REASONS
 				 * array
 				 */
-				$reason		= $_GET['reason'];
+				if (!array_key_exists('reason', $_GET)) {
+					Framework::error_output("Tyring to revoke single certificate without supplying the reason. Cannot continue.");
+					return;
+				}
+				$reason		= Input::sanitizeText(trim($_GET['reason']));
 				try {
 					if (!isset($order_number) || !isset($reason)) {
 						Framework::error_output("Revoke Certificate: Errors with parameters, not set properly");
@@ -80,6 +84,12 @@ class CP_RevokeCertificate extends Content_Page
 		}
 
 		if (isset($_POST['revoke_operation'])) {
+			if (!array_key_exists('reason', $_POST)) {
+				Framework::error_output("Trying to revoke certificate(s) without supplying a reason. Cannot continue.");
+				return;
+			}
+			$reason = Input::sanitizeText(trim($_POST['reason']));
+
 			switch($_POST['revoke_operation']) {
 			case 'revoke_by_cn':
 				try {
@@ -87,8 +97,7 @@ class CP_RevokeCertificate extends Content_Page
 					 * POST['reason'] sanitized by checking inclusion in the
 					 * REVOCATION_REASONS array
 					 */
-					$this->revoke_certs(Input::sanitizeCommonName($_POST['common_name']),
-					                    $_POST['reason']);
+					$this->revoke_certs(Input::sanitizeCommonName($_POST['common_name']), $reason);
 				} catch (ConfusaGenException $cge) {
 					Framework::error_output("Could not revoke certificates because of the " .
 											"following problem: " . htmlentities($cge->getMessage()));
@@ -97,7 +106,7 @@ class CP_RevokeCertificate extends Content_Page
 
 			case 'revoke_by_list':
 				try {
-					$this->revoke_list($_POST['reason']);
+					$this->revoke_list($reason);
 				} catch (ConfusaGenException $cge) {
 					Framework::error_output("Could not revoke certificates because of the " .
 											"following problem: " . htmlentities($cge->getMessage()));
@@ -313,7 +322,12 @@ class CP_RevokeCertificate extends Content_Page
 			$this->tpl->assign('owners', $owners);
 			$this->tpl->assign('stats', $stats);
 			$this->tpl->assign('revoke_cert', true);
-			$this->tpl->assign('nren_reasons', ConfusaConstants::$REVOCATION_REASONS);
+
+			$reason = array();
+			foreach (ConfusaConstants::$REVOCATION_REASONS as $key => $value) {
+				$reasons[] = " " . $value;
+			}
+			$this->tpl->assign('nren_reasons', $reasons);
 			$this->tpl->assign('selected', 'unspecified');
 		}
 	}
