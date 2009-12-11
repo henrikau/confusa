@@ -94,7 +94,7 @@
    <tr {$bg1}>
      <td><b>Full \DN</b></td>
      <td></td>
-     <td><pre>{$person->getX509SubjectDN()|escape}</pre></td>
+     <td><pre class="certificate">{$person->getX509SubjectDN()|escape}</pre></td>
    </tr>
 
  </table>
