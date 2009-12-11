@@ -1,3 +1,4 @@
+<div style="padding-top: 3em">
 <fieldset>
 <legend>Apply for a certificate in browser</legend>
 <div id="info_view">
@@ -14,3 +15,4 @@
 	<p class="info">If a supported browser does not work, try upgrading to the latest version.</p>
 </div>
 </fieldset>
+</div>

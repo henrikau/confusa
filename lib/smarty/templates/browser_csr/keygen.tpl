@@ -1,4 +1,4 @@
-<br />
+<div style="padding-top: 3em">
 <fieldset>
 <legend>Apply for a certificate in browser</legend>
 <div id="info_view">
@@ -40,3 +40,4 @@
 {/if}
 </div>
 </fieldset>
+</div>
