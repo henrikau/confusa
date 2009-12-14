@@ -9,7 +9,7 @@
 	{$index_summary_line2}
 </p>
 <br />
-	<ul style="margin-left: inherit">
+	<ul style="margin-left: 5em">
 	<li>{$index_enum_line1}</li>
 	<li>{$index_enum_line2}</li>
 	</ul>
