@@ -712,7 +712,6 @@ class CA_Comodo extends CA
      * @param $key The order-number/auth-key for the certificate
      * @param $browser The browser for which the certificate should be returned
      *      Current legal values for that:
-     *          firefox: return full chain as CMMF in JavaScript
      *          msie_post_vista: return full chain as PKCS7 in JavaScript
      *          msie_pre_vista: return full chain as PKCS7 in JavaScript
      *          keygen: return certificate only as string enclosed base64-encoded PKCS7
