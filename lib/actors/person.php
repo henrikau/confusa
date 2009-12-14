@@ -641,8 +641,9 @@ class Person{
 	    if (!is_null($this->subscriber)) {
 		    $map = $this->subscriber->getMap();
 	    }
+	    /* if not, get the NREN-map */
 	    if (is_null($map)) {
-		    return $this->nren->getMap();
+		    $map = $this->nren->getMap();
 	    }
 	    return $map;
     }
