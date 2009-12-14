@@ -114,6 +114,11 @@ $confusa_config = array(
         'capi_test'                             => true,
         /* will encrypt the NREN-Comodo-account passwords in the DB with this key */
         'capi_enc_pw'                           => '',
+        /* how many days back in history are the certificates in the download
+         * list shown?
+         * note that this is only in the default view, for faster page load, the
+         * user can always click "show all" */
+        'capi_default_cert_poll_days'           => 7,
 
 	/* ========= Config flags applying only for STANDALONE CA ==========
 	 * ===============================================================

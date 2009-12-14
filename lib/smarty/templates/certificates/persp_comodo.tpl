@@ -101,3 +101,13 @@
 			</td></tr>
 	{/foreach}
 </table>
+
+<div style="text-align: right; font-size: 0.9em; padding-bottom: 1em; padding-right: 1em">
+	{if isset($showAll) && ($showAll===false)}
+		Showing certificates ordered within the last {$defaultDays} days.<br />
+		<a href="download_certificate.php?certlist_all=true">Show all valid certificates.</a>
+	{else}
+		Showing all valid certificates.<br />
+		<a href="download_certificate.php?certlist_all=false">Hide older than {$defaultDays} days.</a>
+	{/if}
+</div>

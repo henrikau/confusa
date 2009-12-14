@@ -8,6 +8,9 @@ require_once 'output.php';
 
 final class CP_DownloadCertificate extends Content_Page
 {
+
+	private $showAll = false;
+
 	public function __construct()
 	{
 		parent::__construct("Download Certificates", true);
@@ -33,6 +36,8 @@ final class CP_DownloadCertificate extends Content_Page
 				}
 			} else if (isset($_GET['cert_status'])) {
 				$this->pollCertStatusAJAX(Input::sanitizeCertKey($_GET['cert_status']));
+			} else if (isset($_GET['certlist_all'])) {
+				$this->showAll = ($_GET['certlist_all'] == "true");
 			}
 		}
 		return false;
@@ -47,12 +52,15 @@ final class CP_DownloadCertificate extends Content_Page
 		/* test and handle flags */
 		$this->processDBCert();
 		try {
-			$certList = $this->ca->getCertList();
+			$certList = $this->ca->getCertList($this->showAll);
 			/* sort the revoked certificates after the active certificates */
 			$revoked = array_filter($certList, array($this, 'revokedFilter'));
 			$non_revoked = array_diff_assoc($certList, $revoked);
 			$certList = $non_revoked + $revoked;
 			$this->tpl->assign('certList', $certList);
+			$this->tpl->assign('showAll', $this->showAll);
+			$this->tpl->assign('defaultDays',
+				               Config::get_config('capi_default_cert_poll_days'));
 		} catch (ConfusaGenException $e) {
 			Framework::error_output("Could not retrieve certificates from the database. Server said: " .  htmlentities($e->getMessage()));
 		}

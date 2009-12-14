@@ -128,8 +128,10 @@ class CA_Comodo extends CA
      *
      * @param $raw_list the (unprocessed) array of certificates as they were
      *        received
+     * @param $days integer the number of days of certificate history that is
+     *                      included in raw_list
      */
-    private function cacheInsertList($raw_list)
+    private function cacheInsertList($raw_list, $days)
     {
         $session = $this->person->getSession();
         /* session can be null, e.g. when in auth_bypass mode */
@@ -138,6 +140,7 @@ class CA_Comodo extends CA
                               'rawCertList',
                               $raw_list,
                               SimpleSAML_Session::DATA_TIMEOUT_LOGOUT);
+            $session->setData('integer', 'confusaCachedDays', $days);
         }
     } /* end cacheInsertList */
 
@@ -214,25 +217,37 @@ class CA_Comodo extends CA
 	}
 
 	/**
-	 * Return true if the confusa certificate cache data has expired. Expiry
-	 * is mainly set by cacheSetExpiryDate
+	 * Return true if all certs going back for $days days are stored in the
+	 * certificate cache. The cache has also an expiry-date, so the function
+	 * additionally checks if the cache has not expired. If both conditions are
+	 * met (number of days stored in cache and cache not expired),
+	 * the function returns true.
 	 *
-	 * @return boolean true if cache data has expired, false otherwise
+	 * @param $days integer The number of days in the certificate history
+	 *                      that the cache stores
+	 * @return boolean true if valid cert history found, false otherwise
 	 */
-	private function cacheHasExpired()
+	private function cacheHasCertHistory($days)
 	{
 		$session = $this->person->getSession();
 
 		if (isset($session)) {
 			$cacheTimeout = $session->getData('integer', 'confusaCacheTimeout');
+			$cachedDays   = $session->getData('integer', 'confusaCachedDays');
 
 			if (empty($cacheTimeout)) {
-				return true;
+				return false;
+			} else if (empty($cachedDays)) {
+				return false;
+			/* do we have the full history? */
+			} else if ($cachedDays >= $days) {
+				/* is the cache not expired? */
+				return $cacheTimeout > time();
 			} else {
-				return $cacheTimeout < time();
+				return false;
 			}
 		} else {
-			return true;
+			return false;
 		}
 	}
 
@@ -322,22 +337,48 @@ class CA_Comodo extends CA
      * CA.
      *
      * Don't include expired, revoked and rejected certificates in the list
+     * @param $showAll boolean If showAll is set to true
      * @throws CGE_ComodoAPIException
      */
-    public function getCertList()
+    public function getCertList($getAll = false)
     {
-		if (!$this->cacheHasExpired()) {
+		if ($getAll === true) {
+			if (Config::get_config('capi_test') == true) {
+				$days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
+			} else {
+				$days = ConfusaConstants::$CAPI_VALID_DAYS;
+			}
+		} else {
+			$days = Config::get_config('capi_default_cert_poll_days');
+		}
+
+		/*
+		 * TODO: Refactor the whole mess - for instance by making a separate
+		 * "Certificate" class
+		 */
+		if ($this->cacheHasCertHistory($days)) {
 			$res = $this->cacheLookupList();
 
 			if (isset($res)) {
-				return $res;
+				/* apply local date filtering (much faster than querying again) */
+				if (!$getAll) {
+					$filtered_res = array();
+					foreach ($res as $row) {
+						if ($row['valid_from'] >= (time() - $days*24*3600)) {
+							$filtered_res[] = $row;
+						}
+					}
+					return $filtered_res;
+				} else {
+					return $res;
+				}
 			}
 		}
 
         $common_name = $this->person->getX509ValidCN();
         $organization = 'O=' . $this->person->getSubscriber()->getOrgName();
 
-        $params = $this->capiGetCertList($common_name);
+        $params = $this->capiGetCertList($common_name, $days);
         $res=array();
 		$dates = array();
 
@@ -364,7 +405,6 @@ class CA_Comodo extends CA
 				continue;
 			}
 
-
 			if (isset($params[$i . '_1_notAfter'])) {
 				/* for simplicity, format the time just as an SQL server would return it */
 				$valid_untill = $params[$i . '_1_notAfter'];
@@ -375,11 +415,18 @@ class CA_Comodo extends CA
             $res[$i-1]['order_number'] = $params[$i . '_orderNumber'];
             $res[$i-1]['cert_owner'] = $this->person->getX509ValidCN();
 			$res[$i-1]['status'] = $status;
+
+			if (isset($params[$i . '_1_notBefore'])) {
+				$res[$i-1]['valid_from'] = $params[$i . '_1_notBefore'];
+			} else {
+				$res[$i-1]['valid_from'] = 0;
+			}
+
 			$dates[] = time() - $params[$i . '_dateTime'];
         }
 
 		$this->cacheSetExpiryDate(min($dates));
-		$this->cacheInsertList($res);
+		$this->cacheInsertList($res, $days);
         return $res;
     }
     /* delete a certificate from the DB (Deprecated)
@@ -423,6 +470,12 @@ class CA_Comodo extends CA
 			return NULL;
 		}
 
+		if (Config::get_config('capi_test') === true) {
+			$days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
+		} else {
+			$days = ConfusaConstants::$CAPI_VALID_DAYS;
+		}
+
 		/* don't want to do work twice - if one of these is set, don't match
 		 * orgname or CN in PHP any more */
 		$organizationVerified = false;
@@ -431,7 +484,7 @@ class CA_Comodo extends CA
 		/* the common-name consists only of a wildcard, effectively this is an
 		 * organization-wide search */
 		if (trim($common_name) == "%") {
-			$params = $this->capiGetOrgCertList($org);
+			$params = $this->capiGetOrgCertList($org, $days);
 			$organizationVerified = true;
 			$cnVerified = true;
 		/* the common-name consists of two non-adjacent wildcards with a total
@@ -441,16 +494,16 @@ class CA_Comodo extends CA
 		} else if (substr_count($common_name, "%") >= 2 &&
 		           stripos($common_name, "%%") === false &&
 		           strlen($common_name) < 9) {
-			$params = $this->capiGetOrgCertList($org);
+			$params = $this->capiGetOrgCertList($org, $days);
 			$organizationVerified = true;
 		/* eppn-ish, expecting fewer results, do a common_name search */
 		} else if (stripos($common_name, "@") !== false) {
-			$params = $this->capiGetCertList($common_name);
+			$params = $this->capiGetCertList($common_name, $days);
 			$cnVerified = true;
 		/* longer search string, expecting fewer results if querying for the
 		 * common-name first */
 		} else {
-			$params = $this->capiGetCertList($common_name);
+			$params = $this->capiGetCertList($common_name, $days);
 			$cnVerified = true;
 		}
 
@@ -526,8 +579,6 @@ class CA_Comodo extends CA
 
     /**
      * Retrieve a certificate from a remote endpoint (e.g. Comodo).
-     * TODO cache the certs locally for 30 minutes, in order
-     * not to have to make remote calls all the time.
      *
      * @params key either an order-number that can be used to retrieve a certificate
      * directly or an auth-key with which we can retrieve the order-number
@@ -778,8 +829,9 @@ class CA_Comodo extends CA
      * common_name $common_name.
      *
      * @param $common_name The common-name for which the list is retrieved
+     * @param $days The number of days that search should look "back" in time
      */
-    private function capiGetCertList($common_name)
+    private function capiGetCertList($common_name, $days)
     {
         Logger::log_event(LOG_DEBUG, "Trying to get the list with the certificates " .
                                     "for person $common_name");
@@ -788,6 +840,7 @@ class CA_Comodo extends CA
         $postfields_list["loginName"]		= $this->login_name;
         $postfields_list["loginPassword"]	= $this->login_pw;
         $postfields_list["commonName"]		= $common_name;
+        $postfields_list["notBefore"]		= time() - $days*24*3600;
 
         $data = CurlWrapper::curlContact($list_endpoint, "post", $postfields_list);
         $params=array();
@@ -816,8 +869,9 @@ class CA_Comodo extends CA
 	 * organization $organization.
 	 *
 	 * @param $organization The organization for which the list is retrieved
+	 * @param $days Days to look "back" in history in the reporting
 	 */
-    private function capiGetOrgCertList($organization)
+    private function capiGetOrgCertList($organization, $days)
     {
 		Logger::log_event(LOG_DEBUG, "Trying to get the list with the certificates " .
 							"for organization $organization");
@@ -826,6 +880,7 @@ class CA_Comodo extends CA
 		$postfieldsList["loginName"]		= $this->login_name;
 		$postfieldsList["loginPassword"]	= $this->login_pw;
 		$postfieldsList["organizationName"]	= $organization;
+		$postfieldsList["notBefore"] 		= time() - $days*24*3600;
 
 		$data = CurlWrapper::curlContact($listEndpoint, "post", $postfieldsList);
 		$params =array();
@@ -1005,7 +1060,6 @@ class CA_Comodo extends CA
         */
         return $auth_key;
       } else if(strlen($auth_key) == ConfusaConstants::$AUTH_KEY_LENGTH) {
-          // TODO: Replace getEPPN with get_eppn or whatever...
           $res = MDB2Wrapper::execute("SELECT order_number FROM order_store WHERE auth_key=? AND owner=?",
                                   array('text', 'text'),
                                   array($auth_key, $this->person->getEPPN()));
