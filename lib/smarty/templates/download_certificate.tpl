@@ -81,8 +81,17 @@
 		req.onreadystatechange = function() {
 			if (req.readyState == 4) {
 				if (req.status == 200) {
-					inspectArea.innerHTML = req.responseText;
-					inspectText.innerHTML = "Collapse";
+					var certHTML = req.responseText;
+
+					if (certHTML.substring(0,8) == "Success:") {
+						certHTML=certHTML.substring(8,certHTML.length);
+						inspectArea.innerHTML = certHTML;
+						inspectText.innerHTML = "Collapse";
+					} else {
+						/* force the user to login again */
+						window.location.reload();
+					}
+
 				} else {
 					/* no op */
 				}

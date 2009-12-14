@@ -144,7 +144,7 @@ final class CP_DownloadCertificate extends Content_Page
 					 * just print the textual string
 					 */
 					if (isset($_GET['ajax'])) {
-						echo "<pre class=\"certificate\">" .
+						echo "Success:<pre class=\"certificate\">" .
 						     htmlentities($text) .
 						     "</pre>";
 						exit(0);
