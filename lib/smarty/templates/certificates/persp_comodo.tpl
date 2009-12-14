@@ -1,4 +1,4 @@
-	<table>
+	<table style="width: 100%; table-layout: fixed; margin-left: 1em; padding-left: 0em">
 		{foreach from=$certList item=cert}
 			{assign var='name' value=$cert.cert_owner}
 
@@ -6,14 +6,12 @@
 				{assign var='valid' value=$cert.valid_untill}
 			{/if}
 		<tr>
-			<td></td>
 			<td>
 			<i>{$cert.order_number|escape}</i>
 			</td>
 			</tr>
 
 			<tr>
-			<td></td>
 			{if $cert.status == "Awaiting Validation" || $cert.status == "Revoked"}
 				<td>
 				[Email]
@@ -82,7 +80,6 @@
 			</tr>
 
 			<tr>
-			<td></td>
 			{if $cert.status == "Awaiting Validation" }
 			<td id="certInfoText{$cert.order_number|escape}"
 			    style="color: gray; font-weight: bold">Processing pending</td>

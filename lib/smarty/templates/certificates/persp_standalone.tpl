@@ -1,5 +1,5 @@
-<table>
-	<tr><td></td></tr>
+<table style="width: 100%; table-layout: fixed; margin-left: 1em; padding-left: 0em">
+	<tr></tr>
 	{foreach from=$certList item=cert}
 		{assign var='name' value=$cert.cert_owner}
 
@@ -18,14 +18,12 @@
 		</tr>
 
 		<tr>
-		<td></td>
 		<td>
 		Serial number: <B>{$serial|escape}</B>
 		</td>
 		</tr>
 
 		<tr>
-		<td></td>
 		<td>
 		  <a href="download_certificate.php?email_cert={$key}">
 		    <img src="graphics/email.png" alt=""
@@ -77,7 +75,6 @@
 		<td></td>
 		</tr>
 		<tr>
-		<td></td>
 		<td>{$cert.valid_untill|escape}</td>
 		</tr>
 		<tr><td colspan="3">

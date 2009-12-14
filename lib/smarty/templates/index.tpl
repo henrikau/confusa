@@ -34,7 +34,7 @@
 {assign var='bg1' value='style="background-color: #ededed"'}
 {assign var='bg2' value='style="background-color: #ffffff"'}
 
-<table class="small" style="width: 90%">
+<table class="small" style="width: 90%; table-layout: fixed">
    <tr {$bg1}>
      <td style="width: 20%"><b>Name:</b></td>
      <td style="width: 20px"></td>

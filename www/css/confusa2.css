@@ -398,5 +398,8 @@ span.wtf {
 }
 
 pre.certificate {
-	white-space: pre-wrap;
+    white-space: pre-wrap; /* css-3 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+    width: 95%;
+    display: block;
 }
