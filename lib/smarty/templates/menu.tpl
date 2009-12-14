@@ -14,8 +14,7 @@
 {/if}
 
 {if $person->getMode() == 0}
-<h3 style="padding-bottom: 1em">Certificates</h3>
-<div style="padding-bottom: 1em">
+<h3>Certificates</h3>
 <ul>
   <li><a href="process_csr.php"	{$prot_title}>
       {$prot_l}Request new{$prot_r}</a></li>
@@ -24,7 +23,7 @@
   <li><a href="revoke_certificate.php"{$prot_title}>
       {$prot_l}Revoke{$prot_r}</a></li>
 </ul>
-</div>
+
 {* ------------------------------------------------------------ *}
 {*		Person is in admin-mode				*}
 {* ------------------------------------------------------------ *}
@@ -65,7 +64,7 @@
 <h3>Admin</h3>
 <i>(Subscriber)</i>
 </div>
-<ul style="padding-bottom: 1em">
+<ul>
   <li><a href="robot.php" {$prot_title}>
       {$prot_l}Robot{$prot_r}</a></li>
   <li><a href="nren_subs_settings.php"{$prot_title}>
@@ -83,12 +82,12 @@
 </div>
 {/if} {* type admin *}
 
-  <ul style="padding-bottom: 1em">
+  <ul>
   <li><a href="admin.php"{$prot_title}>
       {$prot_l}Admins{$prot_r}</a></li>
   </ul>
 
-  <ul style="padding-bottom: 1em">
+  <ul>
   <li><a href="revoke_certificate.php"{$prot_title}>
       {$prot_l}Revocation{$prot_r}</a></li>
   </ul>
@@ -100,17 +99,15 @@
 {* ------------------------------------------------------------ *}
 
 {if $person->getMode() == 0}
-<h3 style="padding-bottom: 1em">Extras</h3>
-<ul style="padding-bottom: 1em">
+<h3>Extras</h3>
+<ul>
   <li><a href="tools.php"{$prot_title}>
       {$prot_l}Tools{$prot_r}</a></li>
   <li><a href="root_cert.php">CA Certificate</a></li>
 </ul>
 
-<div style="padding-bottom: 1em">
 <h3>Help</h3>
-</div>
-<ul style="padding-bottom: 1em">
+<ul>
   <li><a href="about_nren.php">About</a></li>
   <li><a href="help.php">Help</a></li>
 
@@ -121,28 +118,22 @@
 {/if}
 
   {if $person->getMode() == 0 && $person->isAdmin() }
-  <div style="padding-bottom: 1em">
 <h3>View menu</h3>
-</div>
-<ul style="padding-bottom: 1em">
+<ul>
 <li>User</li>
-<li><a href="index.php?mode=admin" title="Change">Admin</a></li>
+<li><a href="?mode=admin">Admin</a></li>
 </ul>
 
   {elseif $person->isAdmin()}
-  <div style="padding-bottom: 1em">
 <h3>View menu</h3>
-</div>
-<ul style="padding-bottom: 1em">
-<li><a href="index.php?mode=normal">User</a></li>
+<ul>
+<li><a href="?mode=normal">User</a></li>
 <li>Admin</li>
 </ul>
 {/if}
 
-<!-- <ul>-->
-  {if !$person->isAuth()}
-  <h3><a href="index.php?start_login=yes">Login</a></h3>
-  {else}
-  <h3><a href="{$logoutUrl}">Log out</a></h3>
-  {/if}
-<!-- </ul>-->
+{if !$person->isAuth()}
+<h3><a href="index.php?start_login=yes">Login</a></h3>
+{else}
+<h3><a href="{$logoutUrl}">Log out</a></h3>
+{/if}
