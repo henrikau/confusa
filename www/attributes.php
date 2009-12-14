@@ -72,11 +72,9 @@ class CP_Attributes extends Content_Page
 		if ($this->person->isNRENAdmin()) {
 			$map = $this->person->getNREN()->getMap();
 		} else if ($this->person->isSubscriberAdmin()) {
-			$map = $this->person->getSubscriber()->getMap();
-			if (count($map) == 0) {
-				/* no subscriber map, fall back to NREN map */
-				$map = $this->person->getNREN()->getMap();
-			}
+			/* This will get the Subscriber-map if available,
+			 * otherwise it will return the NREN-map. */
+			$map = $this->person->getMap();
 		}
 		$session = $this->person->getSession();
 		if (isset($session)) {
