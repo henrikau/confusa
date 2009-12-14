@@ -56,7 +56,7 @@ class Subscriber
 			$this->idp_name = trim($idp_name);
 			$this->valid	= $this->updateFromDB();
 			if ($this->valid) {
-				$this->getMap();
+				$this->retrieveMap();
 			}
 		}
 	}
