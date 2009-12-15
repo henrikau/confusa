@@ -7,6 +7,9 @@ require_once 'cert_lib.php';
 require_once 'file_upload.php';
 require_once 'certificate.php';
 
+/**
+ * CP_Robot_Interface
+ */
 class CP_Robot_Interface extends Content_Page
 {
 	function __construct()
@@ -97,11 +100,9 @@ class CP_Robot_Interface extends Content_Page
 	 */
 	private function getRobotCertList()
 	{
-		$query = "SELECT * FROM robot_certs rc, admins a, subscribers s ";
-		$query .= "WHERE s.subscriber_id=rc.subscriber_id ";
-		$query .= "AND rc.uploaded_by=a.admin_id AND s.name=?";
+		$query = "SELECT * FROM robot_certs rc LEFT JOIN admins a ON rc.uploaded_by = a.admin_id WHERE subscriber_id=?";
 		$params = array('text');
-		$data = array($this->person->getSubscriber()->getIdPName());
+		$data = array($this->person->getSubscriber()->getDBID());
 		$res = null;
 
 		try {
@@ -272,9 +273,9 @@ class CP_Robot_Interface extends Content_Page
 		$cert = $this->getRobotCert($serial);
 		if (isset($cert)) {
 			try {
-				MDB2Wrapper::update("DELETE FROM robot_certs WHERE id=? AND serial=?",
-						    array('text','text'),
-						    array($cert['id'], $serial));
+				MDB2Wrapper::update("DELETE FROM robot_certs WHERE id=? AND serial=? AND subscriber_id=?",
+						    array('text','text', 'text'),
+						    array($cert['id'], $serial, $this->person->getSubscriber()->getDBID()));
 				Framework::message_output("Certificate (" . htmlentities($serial) .
 				                          ") removed from database.");
 				return true;
@@ -292,12 +293,10 @@ class CP_Robot_Interface extends Content_Page
 	}
 	private function getRobotCert($serial)
 	{
-		$query  = "SELECT * FROM robot_certs rc LEFT JOIN nren_subscriber_view nsv";
-		$query .= " ON nsv.subscriber_id = rc.subscriber_id WHERE ";
-		$query .= " nren=? AND subscriber=? AND serial=?";
+		$query = "SELECT * FROM robot_certs where subscriber_id=? AND serial=?";
 
-		$params = array('text', 'text', 'text');
-		$data	= array($this->person->getNREN(), $this->person->getSubscriber()->getOrgName(), $serial);
+		$params = array('text', 'text');
+		$data	= array($this->person->getSubscriber()->getDBID(), $serial);
 		try {
 			$res = MDB2Wrapper::execute($query,$params, $data);
 			if (count($res)!= 1) {
