@@ -299,9 +299,9 @@ class CP_Robot_Interface extends Content_Page
 		$cert = $this->getRobotCert($serial);
 		if (isset($cert)) {
 			try {
-				MDB2Wrapper::update("DELETE FROM robot_certs WHERE id=? AND serial=? AND subscriber_id=?",
-						    array('text','text', 'text'),
-						    array($cert['id'], $serial, $this->person->getSubscriber()->getDBID()));
+				MDB2Wrapper::update("DELETE FROM robot_certs WHERE id=?",
+						    array('text'),
+						    array($cert['id']));
 				Framework::message_output("Certificate (" . htmlentities($serial) .
 				                          ") removed from database.");
 				return true;
