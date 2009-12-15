@@ -99,18 +99,17 @@
 {* ------------------------------------------------------------ *}
 
 {if $person->getMode() == 0}
+<h3>Help</h3>
+<ul>
+  <li><a href="about_nren.php">About</a></li>
+  <li><a href="help.php">Help</a></li>
+</ul>
+
 <h3>Extras</h3>
 <ul>
   <li><a href="tools.php"{$prot_title}>
       {$prot_l}Tools{$prot_r}</a></li>
   <li><a href="root_cert.php">CA Certificate</a></li>
-</ul>
-
-<h3>Help</h3>
-<ul>
-  <li><a href="about_nren.php">About</a></li>
-  <li><a href="help.php">Help</a></li>
-
   {if $person->isAdmin()}
 		<li><a href="about_confusa.php">Version</a></li>
   {/if}
