@@ -282,7 +282,7 @@ class CP_Robot_Interface extends Content_Page
 			                        htmlentities($e->getMessage()));
 			return false;
 		}
-		Framework::success_output("Certificate ($serial)u  ploaded to keystore.");
+		Framework::success_output("Certificate (". $cert->serial() .") uploaded to keystore.");
 		return true;
 	}
 
