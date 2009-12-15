@@ -115,7 +115,7 @@
 {* *********************************************************************** *}
 <fieldset>
 	<legend>
-	Admins for subscriber {$subscriber|escape}
+	Admins for subscriber {$subscriber->getOrgName()|escape}
 	</legend>
 
 	<p class="info">
@@ -126,7 +126,7 @@
 	<li>appoint other subscriber admins.</li>
 	</ul>
 	<p class="info">
-	Their scope is limited to an institution, in this case {$subscriber|escape}.
+	Their scope is limited to an institution, in this case {$subscriber->getOrgName()|escape}.
 	</p>
 
 	{if isset($subscriber_admins)}
