@@ -43,7 +43,14 @@ immediately see a result entry *}
     </p>
 	<p class="info">Example: "John Doe jdoe@example.org" or "%jdoe@example.org".</p>
     <input type="hidden" name="revoke_operation" value="search_by_cn" />
-    <input type="text" name="search" value="" />
+    <input onblur="hideHint();"
+	   onfocus="showHint();"
+	   type="text"
+	   name="search"
+	   {if $search_string != ""}
+	   value="{$search_string}"
+	   {/if}
+	   />
     <input type="submit" name="Search" value="Search" />
 	<br />
 	<noscript>
