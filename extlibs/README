@@ -1,0 +1,9 @@
+This folder contains external libraries.
+
+These are *NOT* libraries created by others in use by Confusa.
+
+The files/folders here are tools provided *by* Confusa *for* external users.
+
+All come with the basic assumption: we have done our best to make them
+as good as possible, but they may contain errors, so you are using these
+on your own peril. Pretty standard GPLvX-clause that.
