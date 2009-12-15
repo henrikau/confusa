@@ -48,9 +48,9 @@ final class Config_Holder {
      function get_config_val($entry)
           {
                if (!array_key_exists($entry, $this->config))
-                    throw new KeyNotFoundException("<FONT CLASS=\"exception\">Did not find " . $entry . " in config</FONT>");
+                    throw new KeyNotFoundException("Did not find " . $entry . " in config!");
                return $this->config[$entry];
           }
-     
+
 }
 ?>
