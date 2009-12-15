@@ -62,8 +62,7 @@ function assertEnvironment()
 	if (!isset($cert) || $cert == "") {
 		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Connection from client (".
 				  $_SERVER['REMOTE_ADDR'].
-				  ") without certificate. Dropping connection.");
-		phpinfo();
+				  ") without certificate. Dropping connection. Make sure apache is configured with SSLVerifyClient optional_no_ca");
 		exit(0);
 	}
 
