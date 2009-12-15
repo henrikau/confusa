@@ -5,7 +5,7 @@
 $lang = array();
 
 $lang['unauth_welcome_1'] = array(
-	'en' => 'This service allows you to get or deactive a personal certificate',
+	'en' => 'This service allows you to get or deactive a personal certificate.',
 	);
 
 $lang['unauth_login_notice'] = array(
