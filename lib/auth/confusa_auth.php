@@ -81,7 +81,7 @@ abstract class Confusa_Auth
 		/* From the IdP, find the NREN-details */
 		$this->person->setNREN(new NREN($idp));
 
-		if (is_null($this->person->getNREN())) {
+		if (is_null($this->person->getNREN()) || !$this->person->getNREN()->isValid()) {
 			$msg  = "Could not map from the identity provider to the NREN. ";
 			$msg .= "Probably the idp_map in the database is not configured for your idp ($idp) ";
 			$msg .= "Please tell an administrator about that problem!";
