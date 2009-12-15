@@ -18,6 +18,10 @@ class CP_Robot_Interface extends Content_Page
 	{
 		$res = false;
 		parent::pre_process($person);
+
+		/* Set flags to default-values */
+		$this->tpl->assign('cert_info', false);
+
 		if (isset($_POST['robot_action'])) {
 			$action = Input::sanitize($_POST['robot_action']);
 			$comment = Input::sanitize($_POST['comment']);
@@ -62,20 +66,18 @@ class CP_Robot_Interface extends Content_Page
 	public function process()
 	{
 		/* get menu-flags and assign to the framework */
+		$this->tpl->assign('rv_list', false);
+		$this->tpl->assign('rv_upload', false);
 		if (isset($_GET['robot_view'])) {
 			switch(Input::sanitize($_GET['robot_view'])) {
 			case 'list':
 				$this->tpl->assign('rv_list', true);
-				$this->tpl->assign('rv_upload', false);
 				$this->tpl->assign('robotCerts', $this->getRobotCertList());
 				break;
 			case 'upload':
 				$this->tpl->assign('rv_upload', true);
-				$this->tpl->assign('rv_list', false);
 				break;
 			default:
-				$this->tpl->assign('rv_upload', false);
-				$this->tpl->assign('rv_list', false);
 				break;
 			}
 		} else {
