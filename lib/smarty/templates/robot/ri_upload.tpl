@@ -1,7 +1,7 @@
 <fieldset>
   <legend>Paste new certificate for <i>{$subscriber->getOrgName()|escape}</i></legend>
   <br />
-  <form action="" method="post">
+  <form action="?robot_view=list" method="post">
     <input type="hidden" name="robot_action" value="paste_new" />
     <table>
       <tr>
