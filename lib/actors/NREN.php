@@ -378,7 +378,7 @@ class NREN
 		$query .= "FROM idp_map idp LEFT JOIN ";
 		$query .= "nrens n on idp.nren_id = n.nren_id WHERE idp.idp_url=?";
 		try {
-			$res = MDB2Wrapper::execute($query, null, array($this->idp_name));
+			$res = MDB2Wrapper::execute($query, array('text'), array($this->idp_name));
 			switch (count($res)) {
 			case 0:
 				if (Config::get_config('debug')) {
