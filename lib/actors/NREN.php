@@ -19,6 +19,7 @@ class NREN
 	private $idp_name;
 	private $map;
 	private $hasMap;
+	private $isValid;
 
 	private $data;
 	private $pendingChanges;
@@ -29,10 +30,12 @@ class NREN
 		$this->idp_name = Input::sanitizeText($idp_name);
 		$this->pendingChanges = false;
 
-		if (!$this->decorateNREN()) {
+		$this->isValid = $this->decorateNREN();
+		if (!$this->isValid) {
 			Logger::log_event(LOG_ALERT,
 					  __FILE__ .":".__LINE__." could not decorate NREN (".
 					  $this->name . ")<br />\n");
+			return;
 		}
 		$this->retrieveMap();
 	}
@@ -42,6 +45,10 @@ class NREN
 		return $this->data['name'];
 	}
 
+	public function isValid()
+	{
+		return $this->isValid();
+	}
 
 	/**
 	 * dumpDebug() Print debug-info for the class to screen
