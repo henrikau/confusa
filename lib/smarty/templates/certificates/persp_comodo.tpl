@@ -1,4 +1,4 @@
-	<table style="width: 100%; table-layout: fixed; margin-left: 1em; padding-left: 0em">
+<table style="width: 100%; table-layout: fixed; padding: 1em 0em 1em 1em; margin: 0em 0em 0em 0em">
 		{foreach from=$certList item=cert}
 			{assign var='name' value=$cert.cert_owner}
 
@@ -102,12 +102,26 @@
 	{/foreach}
 </table>
 
-<div style="text-align: right; font-size: 0.9em; padding-bottom: 1em; padding-right: 1em">
+<div style="padding: 0em 0em 1em 1em; font-size: 0.9em">
+{assign var='numCerts' value=$certList|@count}
 	{if isset($showAll) && ($showAll===false)}
-		Showing certificates ordered within the last {$defaultDays} days.<br />
-		<a href="download_certificate.php?certlist_all=true">Show all valid certificates.</a>
+		{if $numCerts == 0}
+			No new certificates in the last {$defaultDays} days.<br />
+		{else}
+			<p>
+			Certificates of the last {$defaultDays} days.</p>
+		{/if}
+
+		<a href="download_certificate.php?certlist_all=true">
+		Show all <img src="graphics/triangle_down.png" alt="Show older" style="border: none" /></a>
 	{else}
-		Showing all valid certificates.<br />
-		<a href="download_certificate.php?certlist_all=false">Hide older than {$defaultDays} days.</a>
+		{if $numCerts == 0}
+			No valid certificates have been issued to you.<br />
+		{else}
+			Showing all valid certificates.<br />
+		{/if}
+
+		<a href="download_certificate.php?certlist_all=false">
+		Hide old <img src="graphics/triangle_up.png" alt="Hide older" style="border: none" /> </a>
 	{/if}
 </div>
