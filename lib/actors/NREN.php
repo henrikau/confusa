@@ -47,7 +47,7 @@ class NREN
 
 	public function isValid()
 	{
-		return $this->isValid();
+		return $this->isValid;
 	}
 
 	/**
