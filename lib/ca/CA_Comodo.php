@@ -337,7 +337,7 @@ class CA_Comodo extends CA
      * CA.
      *
      * Don't include expired, revoked and rejected certificates in the list
-     * @param $showAll boolean If showAll is set to true
+     * @param $showAll boolean retrieve all certificates (time limit does not apply)
      * @throws CGE_ComodoAPIException
      */
     public function getCertList($getAll = false)
@@ -381,6 +381,10 @@ class CA_Comodo extends CA
         $params = $this->capiGetCertList($common_name, $days);
         $res=array();
 		$dates = array();
+		/* initiallize the array with a high value, so that the cache stays
+		 * valid very long if there are no certificates at all (ordering a
+		 * cert will invalidate it anyways) */
+		$dates[] = time();
 
         /* transfer the orders from the string representation in the response
          * to the array representation we use internally */
