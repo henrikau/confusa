@@ -1,6 +1,5 @@
 {if $person->inAdminMode() && $person->isNRENAdmin()}
 <h3>NREN customization</h3>
-<br />
 
 { * ------------------------------------------------------------------ *
   * Page header link section
@@ -13,11 +12,6 @@
   *
   * -------------------------------------------------------------------* }
 
-[ <a href="?show=text">Texts</a> ]
-[ <a href="?show=css">CSS</a> ]
-[ <a href="?show=logo">Logo</a> ]
-[ <a href="?show=mail">Not. Mail</a> ]
-<div class="spacer"></div>
   {if isset($edit_help_text) && $edit_help_text === TRUE}
 	{include file='stylist/edit_help_text.tpl'}
   {elseif isset($edit_css) && $edit_css === TRUE}

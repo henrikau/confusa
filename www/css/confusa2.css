@@ -403,3 +403,59 @@ pre.certificate {
     width: 95%;
     display: block;
 }
+
+div.tabheader {
+	position: relative;
+	width: 100%;
+	height: 3em;
+	margin-bottom: 0.5em;
+}
+
+div.tabheader ul.tabs {
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	bottom: -1px;
+	width: 45em;
+}
+
+div.tabheader ul.tabs li {
+	display: inline;
+	list-style: none;
+}
+
+/* all tabs */
+div.tabheader ul.tabs a,div.tabheader ul.tabs span {
+	width: auto;
+	display: block;
+	float: left;
+	padding: 4px 10px 4px 10px;
+	margin: 1px 5px 0 0;
+	text-align: center;
+	font-size: 0.9em;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+/* currently active tab */
+div.tabheader ul.tabs span {
+	border: 1px solid #666666;
+	background: #eeeeee;
+}
+
+/* currently inactive tab */
+div.tabheader ul.tabs a {
+	background: #ffffff;
+	border: 1px solid #aaaaaa;
+}
+
+/* currently hovered tab */
+div.tabheader ul.tabs a:hover {
+	margin-top: 0;
+	border-color: #666666;
+	background: #eeeeee;
+	color: #000000;
+	padding-bottom: 5px;
+}
+
+

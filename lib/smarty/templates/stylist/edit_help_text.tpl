@@ -1,3 +1,12 @@
+<div class="tabheader">
+<ul class="tabs">
+<li><span>Texts</span></li>
+<li><a href="?show=css">CSS</a></li>
+<li><a href="?show=logo">Logo</a></li>
+<li><a href="?show=mail">Not. Mail</a></li>
+</ul>
+</div>
+
   <fieldset>
   <legend>Change the help-text</legend>
 	<p class="info">

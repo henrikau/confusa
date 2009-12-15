@@ -1,3 +1,12 @@
+<div class="tabheader">
+<ul class="tabs">
+<li><a href="?show=text">Texts</a></li>
+<li><a href="?show=css">CSS</a></li>
+<li><a href="?show=logo">Logo</a></li>
+<li><span>Not. Mail</span></li>
+</ul>
+</div>
+
 <fieldset>
 	<legend>Custom notification template</legend>
 	<p class="info">

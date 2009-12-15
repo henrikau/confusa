@@ -1,3 +1,12 @@
+<div class="tabheader">
+<ul class="tabs">
+<li><a href="?show=text">Texts</a></li>
+<li><a href="?show=css">CSS</a></li>
+<li><span>Logo</span></li>
+<li><a href="?show=mail">Not. Mail</a></li>
+</ul>
+</div>
+
 <fieldset>
   <legend>Custom NREN logo</legend>
   <p class="info">
