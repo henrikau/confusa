@@ -6,7 +6,7 @@ require_once 'mdb2_wrapper.php';
 require_once 'cert_lib.php';
 require_once 'file_upload.php';
 require_once 'certificate.php';
-
+require_once 'CertificateException.php';
 /**
  * CP_Robot_Interface
  */
@@ -167,6 +167,9 @@ class CP_Robot_Interface extends Content_Page
 			$cert = new Certificate($certificate);
 		} catch (KeyNotFoundException $knfe) {
 			Framework::error_output(htmlentities($knfe->getMessage()));
+			return false;
+		} catch (CertificateException $ce) {
+			Framework::error_output(htmlentities($ce->getMessage()));
 			return false;
 		}
 
