@@ -1,6 +1,7 @@
 <?php
 require_once 'cert_lib.php';
 require_once 'key_not_found.php';
+require_once 'CertificateException.php';
 
 class Certificate
 {
@@ -26,6 +27,18 @@ class Certificate
 			$msg  = "Cannot instansiate a certificate-object with mangled data.<br />\n";
 			$msg .= "The data received was:\n<pre>$cert</pre>\n";
 			throw new KeyNotFoundException($msg);
+		}
+		/* Length ok? */
+		if ((int)openssl_x509_keylength($this->cert) < Config::get_config('key_length')) {
+			throw new CertificateException("The key is too short. Need a minimum of " .
+						       Config::get_config('key_length') .
+						       " bits");
+		}
+
+		/* Not expired? */
+		$vu = $this->validTo();
+		if ($vu < date("Y-m-d H:i:s")) {
+			throw new CertificateException("The certificate has expired, will not accept this.");
 		}
 	}
 
