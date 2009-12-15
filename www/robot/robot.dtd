@@ -23,10 +23,10 @@
 <!---->
 
 <!ATTLIST ConfusaRobot
-	  date		CDATA	#IMPLIED
-	  subscriber	CDATA	#IMPLIED
+	  date		CDATA	#REQUIRED
+	  subscriber	CDATA	#REQUIRED
 	  elementCount	CDATA	#REQUIRED
-	  version	CDATA	"1.0">
+	  version	CDATA	#REQUIRED>
 
 <!-- General element attribute -->
 <!-- eppn:	The unique identifier used in Confusa, normally	-->
