@@ -125,15 +125,30 @@ class CP_Robot_Interface extends Content_Page
 		return $certs;
 	}
 
+	/**
+	 * handleFileCertificate() Insert new RI-cert from FILE-upload
+	 *
+	 * This function is called whenever a certificate is uploaded via the
+	 * FILE-interface. Simple validation is performed before passing the
+	 * content on to the generic insertCertificate()-function
+	 *
+	 * It will use the comment provided via Post, so a mixture of FILE and
+	 * POST is used here.
+	 *
+	 * @param String $comment The comment associated with the certificate
+	 * @param Bolean $res indication if the certificate was uploaded successfully
+	 */
 	private function handleFileCertificate($comment)
 	{
+		$res = false;
 		if (FileUpload::testError('cert')) {
 			$cert = openssl_x509_read(FileUpload::getContent('cert'));
 			if (openssl_x509_export($cert, $certDump, true)) {
 				$cert = Input::sanitizeBase64($cert);
-				return $this->insertCertificate($certDump, $comment);
+				$res= $this->insertCertificate($certDump, $comment);
 			}
 		}
+		return $res;
 	}
 
 	/**
@@ -264,10 +279,18 @@ class CP_Robot_Interface extends Content_Page
 			                        htmlentities($e->getMessage()));
 			return false;
 		}
-		Framework::message_output("Certificate uploaded to keystore.");
+		Framework::success_output("Certificate ($serial)u  ploaded to keystore.");
 		return true;
 	}
 
+
+	/**
+	 * deleteCertificate() - remove a certificate associated with the
+	 * subscriber from the database.
+	 *
+	 * @param String $serial the serial-number of the certificate.
+	 * @return Boolean the result.
+	 */
 	private function deleteCertificate($serial)
 	{
 		$cert = $this->getRobotCert($serial);
