@@ -374,7 +374,7 @@ CREATE TABLE IF NOT EXISTS robot_certs (
        last_warning_sent DATETIME,
 
        cert TEXT NOT NULL,
-       serial char(16) NOT NULL,
+       serial char(60) NOT NULL,
        fingerprint char(60) NOT NULL,
 
        -- Allow for a comment/description to be stored alongside the
