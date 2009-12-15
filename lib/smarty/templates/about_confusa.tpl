@@ -29,7 +29,7 @@
 
 <div class="spacer"></div>
 
-{if $debug === true}
+{if isset($debug) && $debug === true}
 {* debug information *}
 <table style="border-style: dashed; border-width: 0.1em">
 <thead>
