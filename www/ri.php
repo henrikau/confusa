@@ -21,7 +21,6 @@ $log_error_code = create_pw(8);
 function assertEnvironment()
 {
 	global $log_error_code;
-
 	/*
 	 * are we on SSL
 	 */
@@ -64,6 +63,7 @@ function assertEnvironment()
 		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Connection from client (".
 				  $_SERVER['REMOTE_ADDR'].
 				  ") without certificate. Dropping connection.");
+		phpinfo();
 		exit(0);
 	}
 
@@ -90,19 +90,18 @@ function assertEnvironment()
  */
 function createAdminPerson()
 {
-	/*
-	 * Once confusa_auth has been extended, this part should be moved into
-	 * that section. Until then, we do the nitty-gritty work here.
-	 */
-
-
 	global $log_error_code;
 	/*
-	 * Find the cert in the robot_cert table
+	 * Try to find the certificate in the robot_certs-table. If we have a
+	 * match, we have a legit user and create a proxy-admin.
 	 *
 	 * If the query fails for some reason, we jumb out, returning null
 	 */
 	$fingerprint = openssl_x509_fingerprint($_SERVER['SSL_CLIENT_CERT'], true);
+	if (is_null($fingerprint)) {
+		return null;
+	}
+
 	try {
 		$cert_res = MDB2Wrapper::execute("SELECT * FROM robot_certs WHERE fingerprint = ?",
 						 array('text'),
@@ -150,50 +149,76 @@ function createAdminPerson()
 
 	/*
 	 * Get the details for the owner of the certificate, use this as a
-	 * basis for authenticating the person
+	 * basis for authenticating the person.
+	 *
+	 * It does not really matter which IdP-map we use, as long as we get one
+	 * that points to the correct NREN. This is probably not the 'correct'
+	 * way of using the idp_map, but atm, this is the only 'correct' way of
+	 * decorating the NREN-object.
 	 */
 	try {
-		$query  = "SELECT sa.*, n.name as nren_name FROM ";
-		$query .= "(SELECT s.name as subscriber_name, nren_id, a.* ";
-		$query .= "FROM admins a LEFT JOIN subscribers s ON ";
-		$query .= "a.subscriber = s.subscriber_id WHERE admin_id=? AND name iS NOT NULL) ";
-		$query .= "sa LEFT JOIN nrens n ON n.nren_id = sa.nren_id";
-		$res = MDB2Wrapper::execute($query,
+		/* get admin */
+		$ares = MDB2Wrapper::execute("SELECT * FROM admins WHERE admin_id=?",
 					    array('text'),
 					    array($cert_res[0]['uploaded_by']));
+
+		if (count($ares) != 1) {
+			/* no admin found. This should not be possible, but be
+			 * safe and test nevertheless */
+			return null;
+		}
+
+		/* get Subscriber */
+		$sres = MDB2Wrapper::execute("SELECT * FROM subscribers WHERE subscriber_id=?",
+					     array('text'),
+					     array($cert_res[0]['subscriber_id']));
+		if (count($sres) != 1) {
+			/* No subscriber found */
+			return null;
+		}
+
+		/* get NREN */
+		$nres = MDB2Wrapper::execute("SELECT n.*,im.idp_url FROM nrens n LEFT JOIN idp_map im ON im.nren_id = n.nren_id WHERE n.nren_id=?",
+					     array('text'),
+					     array($sres[0]['nren_id']));
+		if (count($nres) < 1) {
+			/* No nrens found at all, which means that the
+			 * subscriber is bogus. Since this is a foreign-key
+			 * constraint, we've run into a corrupt db. Let's hope
+			 * this'll never happen :-) */
+			Logger::log_event(LOG_EMERG,
+					  "Found subscriber (".
+					  $sres[0]['subscriber_id'] . ":" .
+					  $sres[0]['name'] .
+					  ") without a corresponding NREN (".
+					  $sres[0]['nren_id']
+					  ."), you have a corrupt database");
+		}
 	} catch (DBStatementException $dbse) {
 		$msg = "[$log_error_code] Problem executing query. Is the database-schema outdated?. ";
-		Logger::log_message(LOG_INFO, $msg . " Server said: " . $dbse->getMessage());
+		Logger::log_event(LOG_INFO, $msg . " Server said: " . $dbse->getMessage());
 		echo $msg . "<br />\nServer said: " . htmlentities($dbse->getMessage()) . "<br />\n";
 		return null;
 	} catch (DBQueryException $dbqe) {
 		/* FIXME */
 		$msg = "Could not find owner-details for certificate, probably issues with supplied data. ";
 		$msg .= "Admin_id: " . htmlentities($cert_res[0]['uploaded_by']);
-		Logger::log_message(LOG_INFO, $msg . " Server said: " . $dbqe->getMessage());
+		Logger::log_event(LOG_INFO, $msg . " Server said: " . $dbqe->getMessage());
 		echo $msg . "<br />\nServer said: " . htmlentities($dbqe->getMessage()) . "<br />\n";
 		return null;
 	}
 
-	if (count($res) != 1) {
-		echo "[$log_error_code] Did not find the owner (". htmlentities($cert_res[0]['uploaded_by']) .") of the certificate ";
-		echo "(got " . count($res) . " rows in return). <br />\n";
-		echo "This certificate should not be present in the DB.<br />\n";
-		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) No admins appear to own certificate $fingerprint.");
-		return null;
-	}
 	/*
 	 * Decorate person.
-	 *
 	 */
 	$person = new Person();
-	if (isset($res[0]['admin_name']) && $res[0]['admin_name'] != "") {
-		$person->setName($res[0]['admin_name']);
+	if (isset($ares[0]['admin_name']) && $ares[0]['admin_name'] != "") {
+		$person->setName($ares[0]['admin_name']);
 	} else {
-		$person->setName($res[0]['admin']);
+		$person->setName($ares[0]['admin']);
 	}
 	try {
-		$person->setEPPN($res[0]['admin']);
+		$person->setEPPN($ares[0]['admin']);
 	} catch (CriticalAttributeException $cae) {
 		echo "[$log_error_code] Problems with setting the eduPersonPrincipalName for robot-admin.<br />\n";
 		echo "Check the data in admins (admin_id: " . htmlentities($cert_res[0]['uploaded_by']) . ")<br />\n";
@@ -201,12 +226,16 @@ function createAdminPerson()
 		return null;
 	}
 	$person->setAuth(true);
-	$person->setNREN(new NREN($res[0]['nren_name']));
-	$person->setSubscriber(new Subscriber($res[0]['subscriber_name'], $person->getNREN()));
-	$person->setName($res[0]['admin_name']);
-	$person->setEmail($res[0]['admin_email']);
+	$person->setNREN(new NREN($nres[0]['idp_url']));
+	$person->setSubscriber(new Subscriber($sres[0]['name'], $person->getNREN()));
+	$person->setName($ares[0]['admin_name']);
+	$person->setEmail($ares[0]['admin_email']);
 
-	Logger::log_event(LOG_NOTICE, "[RI]: Authenticated robot-client via cert $fingerprint belonging to " . $person->getEPPN());
+	/* Robot authenticated, we can return the person and live happily ever
+	 * after */
+	Logger::log_event(LOG_NOTICE,
+			  "[RI]: Authenticated robot-client via cert $fingerprint belonging to " .
+			  $person->getEPPN());
 	return $person;
 } /* end createAdminPerson() */
 
