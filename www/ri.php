@@ -248,10 +248,18 @@ function printXMLRes($resArray, $type = 'userList')
 {
 	/* lets hope that the header has not yet been set so we can trigger
 	 * proper XML headers */
+	global $admin;
+
 	header ("content-type: text/xml");
 
-	echo "<?xml version=\"1.0\" standalone=\"yes\" ?>\n";
-	echo "<ConfusaRobot>\n";
+	/* Print XML header and 'master table' */
+	echo "<?xml standalone=\"yes\" ?>\n";
+	echo "<ConfusaRobot ";
+	echo "date=\"".date("Y-m-d H:i:s")."\" ";
+	echo "subscriber=\"".$admin->getSubscriber()->getOrgName()."\" ";
+	echo "elementCount=\"".count($resArray)."\" ";
+	echo "version=\"1.0\">\n";
+
 	$ending = "";
 	switch(strtolower($type)) {
 
