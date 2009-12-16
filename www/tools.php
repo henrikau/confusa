@@ -29,12 +29,33 @@ class CP_Tools extends Content_Page
 		} else if (isset($_GET['xml_client_file'])) {
 			if ($this->person->isAdmin()) {
 				require_once 'file_download.php';
-				$xml_client = file_get_contents(Config::get_config('install_path') . "/extlibs/XML_Client/XML_Client.py");
-				if (!is_null($xml_client) || $xml_client != "") {
-					download_file($xml_client, "XML_Client.py");
-					Logger::log_event(LOG_NOTICE, "Sending XML_Client.py to " . $this->person->getEPPN());
-				exit(0);
+				$xml_client = file_get_contents(Config::get_config('install_path')
+								. "/extlibs/XML_Client/XML_Client.py");
+				$confusa_parser = file_get_contents(Config::get_config('install_path')
+								    . "/extlibs/XML_Client/Confusa_Parser.py");
+				$readme		= file_get_contents(Config::get_config('install_path') .
+								    "/extlibs/XML_Client/README");
+				$init = file_get_contents(Config::get_config('install_path') . "/extlibs/XML_Client/__init__.py");
+
+
+				$zip = new ZipArchive();
+				$name = tempnam("/tmp/", 'meh');
+				$zip->open($name, ZipArchive::OVERWRITE);
+				$zip->addFromString("XML_Client/XML_Client.py",		$xml_client);
+				$zip->addFromString("XML_Client/Confusa_Parser.py",	$confusa_parser);
+				$zip->addFromString("XML_Client/README",		$readme);
+				$zip->addFromString("XML_Client/__init__.py",		$init);
+				if ($zip->numFiles != 4) {
+					echo "Could not add all files, aborting<br />\n";
+					return;
 				}
+				if ($zip->close()) {
+					$contents = file_get_contents($name);
+					download_zip($contents, "XML_Client.zip");
+				}
+				unlink($name);
+				Logger::log_event(LOG_NOTICE, "Sending XML_Client.zip to " . $this->person->getEPPN());
+				exit(0);
 			}
 		}
 		parent::pre_process($person);
