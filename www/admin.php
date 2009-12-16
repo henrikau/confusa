@@ -308,14 +308,12 @@ class CP_Admin extends Content_Page
 					}
 				}
 			} else if (! is_null($subscribers)) {
-				$current_subscriber = $subscribers[0]->getIdPName();
-				$current_subscriber_id = $subscribers[0]->getDBID();
+				$current_subscriber = $subscribers[0];
 			}
 
-			if (!is_null($current_subscriber)) {
-				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber_id, SUBSCRIBER_ADMIN);
+			if (isset($current_subscriber)) {
+				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber->getDBID(), SUBSCRIBER_ADMIN);
 				$this->tpl->assign('subscriber', $current_subscriber);
-				$this->tpl->assign('subscriberID', $current_subscriber_id);
 				$this->tpl->assign('subscriber_admins', $subscriber_admins);
 			}
 

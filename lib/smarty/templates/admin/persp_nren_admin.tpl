@@ -145,8 +145,8 @@
 			<td style="width: 30px">
 				<form action="" method="post">
 				<input type="hidden" name="nren_operation" value="upgrade_subs_admin" />
-				<input type="hidden" name="subscriber" value="{$subscriber}" />
-				<input type="hidden" name="subscriberID" value="{$subscriberID}" />
+				<input type="hidden" name="subscriber" value="{$subscriber->getOrgName()}" />
+				<input type="hidden" name="subscriberID" value="{$subscriber->getDBID()}" />
 				<input type="hidden" name="subs_admin" value="{$subscriber_admin.eppn}" />
 				<input type="image" src="graphics/arrow_up.png" alt="Upgrade admin"
 				name="Upgrade" title="Upgrade admin"
@@ -157,8 +157,8 @@
 					<form action="" method="post">
 					<div>
 					<input type="hidden" name="nren_operation" value="delete_subs_admin" />
-					<input type="hidden" name="subscriber" value="{$subscriber}" />
-					<input type="hidden" name="subscriberID" value="{$subscriberID}" />
+					<input type="hidden" name="subscriber" value="{$subscriber->getOrgName()}" />
+					<input type="hidden" name="subscriberID" value="{$subscriber->getDBID()}" />
 					<input type="hidden" name="subs_admin" value="{$subscriber_admin.eppn}" />
 					<input type="image" src="graphics/delete.png" alt="Delete entry"
 					title="Delete admin"
@@ -194,8 +194,8 @@
 			</td>
 		<td style="width: 15em">
 			<input type="hidden" name="nren_operation" value="add_subs_admin" />
-			<input type="hidden" name="subscriber" value="{$subscriber}" />
-			<input type="hidden" name="subscriberID" value="{$subscriberID}" />
+			<input type="hidden" name="subscriber" value="{$subscriber->getOrgName()}" />
+			<input type="hidden" name="subscriberID" value="{$subscriber->getDBID()}" />
 			<input type="text" name="subs_admin" />
 		</td>
 		<td style="width: 15em">
@@ -215,11 +215,11 @@
 			<div>
 			Select subscriber:
 			<select name="subscriberID">
-			{foreach from=$subscribers item=subscriber}
-			{if $subscriber->getDBID() == $subscriberID}
-				<option value="{$subscriber->getDBID()|escape}" selected="selected">{$subscriber->getIdPName()|escape}</option>
+			{foreach from=$subscribers item=other}
+			{if $other->getDBID() == $subscriber->getDBID()}
+				<option value="{$other->getDBID()|escape}" selected="selected">{$other->getIdPName()|escape}</option>
 			{else}
-				<option value="{$subscriber->getDBID()|escape}">{$subscriber->getIdPName()|escape}</option>
+				<option value="{$other->getDBID()|escape}">{$other->getIdPName()|escape}</option>
 			{/if}
 			{/foreach}
 			</select>
