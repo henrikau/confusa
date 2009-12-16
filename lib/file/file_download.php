@@ -11,16 +11,7 @@
  */
 function download_file($file, $filename)
 {
-     header('Content-Type: application/force-download');
-     header('Content-Disposition: attachment; filename="'.$filename.'"');
-     header('Content-Transfer-Encoding: binary');
-     header('Accept-Ranges: bytes');
-     header('Content-Length: ' . strlen($file));
-
-     // IE fix (for HTTPS only)
-     header('Cache-Control: private');
-     header('Pragma: private');
-     echo $file;
+	download($file, $filename, "application/force-download");
 }
 
 /**
@@ -33,11 +24,28 @@ function download_file($file, $filename)
  */
 function download_certificate($cert_content, $filename)
 {
-    header('Content-Type: application/x-x509-user-cert');
-    header('Accept-Ranges: bytes');
-    header('Content-Length: ' . strlen($cert_content));
-    header('Content-Disposition: inline; filename="'. $filename. '"');
-
-    echo $cert_content;
+	download($cert_content, $filname, "application/x-x509-user-cert");
 }
+
+
+/**
+ * download() generic file-download
+ *
+ * This function makes it easy to download a variety of files without
+ * re-implementing other than the Application-header.
+ */
+function download($content, $filename, $type_header)
+{
+	header("Content-Type: " . $type_header);
+	header("Content-Disposition: attachment; filename=\"$filename\"");
+	header('Content-Transfer-Encoding: binary');
+	header('Accept-Ranges: bytes');
+	header('Content-Length: ' . strlen($content));
+
+	// IE fix (for HTTPS only)
+	header('Cache-Control: private');
+	header('Pragma: private');
+	echo $content;
+}
+
 ?>
