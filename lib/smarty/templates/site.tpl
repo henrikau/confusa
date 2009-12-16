@@ -61,13 +61,16 @@
 			</a>
 		      </div> <!-- title -->
 		    <div id="language_bar">
-		    {foreach from=$available_languages key=code item=lang}
-			{if $code == $selected_language}
-				{$lang} |
-			{else}
-				<a href="?lang={$code}">{$lang}</a> |
-			{/if}
-		    {/foreach}
+		    {* only display language options if there actually *are* such *}
+		    {if $available_languages|@count > 1}
+			    {foreach from=$available_languages key=code item=lang}
+				{if $code == $selected_language}
+					| {$lang}
+				{else}
+					| <a href="?lang={$code}">{$lang}</a>
+				{/if}
+			    {/foreach}
+		    {/if}
 		    </div>
 		    <div id="menu">
 		      {$menu}
