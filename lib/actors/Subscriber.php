@@ -592,6 +592,61 @@ class Subscriber
 		return false;
 	} /* end save() */
 
+	/**
+	 * Save a subscriber attribute-map which overrides the map of the respective
+	 * NREN. Take all map keys which can't be overriden on subscriber-side from
+	 * the referenced NREN object (epodn, eppn, etc.). Update the map if it
+	 * exists and insert it newly otherwise.
+	 *
+	 * DBQueryException and DBStatementException are bubbled up (library classes
+	 * should remain unaware of Framework and thus Framework::error_output and
+	 * just rethrowing a new exception does not make sense, does it).
+	 *
+	 * @param string $cn The map-key for the common-name of persons that log on
+	 * @param string $mail The map-key for the mail address of persons that log
+	 *                     on
+	 * @param unknown_type $entitlement The map key for the person's entitlement
+	 * @return true upon success, nothing otherwise
+	 *
+	 * @throws DBQueryException If something goes wrong updating the DB,
+	 *                          probably related to the data
+	 * @throws DBStatementException If something goes wrong in contacting the DB,
+	 *                              probably due to a configuration error
+	 */
+	public function saveMap($cn, $mail, $entitlement)
+	{
+		$doUpdate = false;
+		$nrenMap = $this->nren->getMap();
+		$nrenID = $this->nren->getID();
+
+		if ($this->hasMap) {
+			if (($cn != $this->map['cn']) ||
+			     ($mail != $this->map['mail']) ||
+			     ($entitlement != $this->map['entitlement'])) {
+				$doUpdate = true;
+				$statement = "UPDATE attribute_mapping " .
+				          "SET cn = ?, mail = ?, entitlement = ? " .
+				          "WHERE nren_id = ? AND subscriber_id = ?";
+				$types = array('text', 'text', 'text', 'text', 'text', 'text');
+				$data = array($cn, $mail, $entitlement, $nrenID, $this->db_id);
+			}
+		} else {
+			$statement = "INSERT INTO attribute_mapping";
+			$statement .= "(nren_id, subscriber_id, eppn, epodn, cn, mail, entitlement) ";
+			$statement .= "VALUES(?,?,?,?,?,?,?)";
+			$types = array('text', 'text', 'text', 'text', 'text', 'text');
+			$data = array($nrenID, $this->db_id, $nrenMap['eppn'],
+			              $nrenMap['epodn'], $cn, $mail, $entitlement);
+		}
+
+		if ($doUpdate) {
+			MDB2Wrapper::update($statement, $types, $data);
+			$this->retrieveMap();
+		}
+
+		return true;
+	}
+
 	public function create()
 	{
 		if ($this->isValid()) {
