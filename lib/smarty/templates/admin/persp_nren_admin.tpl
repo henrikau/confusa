@@ -114,8 +114,8 @@
 {* ***** NREN-admin/subscriber-admin view ***** *}
 {* *********************************************************************** *}
 <fieldset>
-	<legend>
-	Admins for subscriber {$subscriber->getOrgName()|escape}
+	<legend style="width: 100%; overflow: hidden">
+	Admins for subscriber {$subscriber->getOrgName()|escape|truncate:30:"...":true}
 	</legend>
 
 	<p class="info">
