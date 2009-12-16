@@ -3,6 +3,7 @@
 {* show menu *}
 [ <a href="?robot_view=list">List</a> ]
 [ <a href="?robot_view=upload">Upload</a>]
+[ <a href="?robot_view=info">Info</a>]
 <br />
 <br />
 <br />
@@ -15,5 +16,10 @@
 
 {if $rv_upload}
 {include file='robot/ri_upload.tpl'}
+<br />
+{/if}
+
+{if $rv_info}
+{include file='robot/ri_info.tpl'}
 <br />
 {/if}

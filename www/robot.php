@@ -71,6 +71,7 @@ class CP_Robot_Interface extends Content_Page
 		/* get menu-flags and assign to the framework */
 		$this->tpl->assign('rv_list', false);
 		$this->tpl->assign('rv_upload', false);
+		$this->tpl->assign('rv_info', false);
 		if (isset($_GET['robot_view'])) {
 			switch(Input::sanitize($_GET['robot_view'])) {
 			case 'list':
@@ -79,6 +80,10 @@ class CP_Robot_Interface extends Content_Page
 				break;
 			case 'upload':
 				$this->tpl->assign('rv_upload', true);
+				break;
+			case 'info':
+				$this->tpl->assign('rv_info', true);
+				$this->tpl->assign('ri_path', Config::get_config('server_url') . "ri.php");
 				break;
 			default:
 				break;
