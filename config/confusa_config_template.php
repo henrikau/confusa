@@ -234,7 +234,7 @@ $confusa_config = array(
 	/*
 	 * Languages available and what language is default
 	 */
-	'language.available'	=> array('en', 'sv', 'de', 'lb'),
+	'language.available'	=> array('en'),
 	'language.default'	=> 'en',
 
 	/* entitlement namespace
