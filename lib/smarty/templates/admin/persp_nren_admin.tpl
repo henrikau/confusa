@@ -25,8 +25,9 @@
   <table>
 {if !empty($nren_admins)}
 		<tr>
-	  <td style="width: 30px"></td><td style="width: 30px"></td><td><b>Principal identifier</b></td>
-	   <td><b>Admin name</b></td>
+	  <td style="width: 30px"></td><td style="width: 30px"></td>
+	  <td style="width: 15em"><b>Principal identifier</b></td>
+	   <td style="width: 15em"><b>Admin name</b></td>
     </tr>
 	<tr>
 	<td style="height: 1em"></td>
@@ -132,10 +133,10 @@
 	{if isset($subscriber_admins)}
 		<table>
 		<tr>
-			<td></td>
-			<td></td>
-			<td><b>Principal identifier</b></td>
-			<td><b>Admin name</b></td>
+			<td style="width: 30px"></td>
+			<td style="width: 30px"></td>
+			<td style="width: 15em"><b>Principal identifier</b></td>
+			<td style="width: 15em"><b>Admin name</b></td>
 		</tr>
 		<tr>
 		<td style="height: 1em"></td>
