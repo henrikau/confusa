@@ -1,0 +1,6 @@
+This is a short readme.
+
+To use this archive, import the needed files, and play around.
+
+As a start, use XML_Client to download the XML_File from the url,
+possibly by passing it along to Confusa_Parser.
