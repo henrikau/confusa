@@ -36,3 +36,18 @@ This means that you cannot use someone else's script, nor they yours.
   </tr>
 </table>  
 <HR />
+
+{if $person->isSubscriberAdmin()}
+<br />
+<hr style="width: 90%" />
+<h4>XML_Client</h4>
+<p class="info">
+  XML_Client is a library tool for connecting to the Robotic
+  interface. Specific information can be found in
+  the <a href="robot.php?mode=admin&robot_view=info">RI Section</a>
+</p>
+<form method="GET" action="tools.php">
+  <input type="hidden" name="xml_client_file">
+  <input type="submit" value="Download file">
+</form>
+{/if}

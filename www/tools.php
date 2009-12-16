@@ -26,6 +26,16 @@ class CP_Tools extends Content_Page
 			download_file($keyscript->create_script(), "create_cert.sh");
 			Logger::log_event(LOG_NOTICE, "Sending script via file to ". $this->person->getEPPN());
 			exit(0);
+		} else if (isset($_GET['xml_client_file'])) {
+			if ($this->person->isAdmin()) {
+				require_once 'file_download.php';
+				$xml_client = file_get_contents(Config::get_config('install_path') . "/extlibs/XML_Client/XML_Client.py");
+				if (!is_null($xml_client) || $xml_client != "") {
+					download_file($xml_client, "XML_Client.py");
+					Logger::log_event(LOG_NOTICE, "Sending XML_Client.py to " . $this->person->getEPPN());
+				exit(0);
+				}
+			}
 		}
 		parent::pre_process($person);
 		return false;
