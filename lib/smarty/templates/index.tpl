@@ -27,8 +27,8 @@
 <h3>Info about you</h3>
 <p class="info">
   This is information we have received from your home organization
-  combined with information entered for your NREN ({$nren->getName()})
-  and subscriber ({$subscriber->getOrgName()}).
+  combined with information entered for your NREN ({$nren->getName()|escape})
+  and subscriber ({$subscriber->getOrgName()|escape}).
 </p>
 <br />
 {assign var='bg1' value='style="background-color: #ededed"'}
