@@ -15,6 +15,14 @@ function download_file($file, $filename)
 }
 
 /**
+ * download_zip() Send a zip-archive to the user.
+ */
+function download_zip($content, $filename)
+{
+	download($content, $filename, "application/zip");
+}
+
+/**
  * download a certificate - set the header flags accordingly
  * Note that this is for installation in browsers where the certificate was
  * generated with keygen
