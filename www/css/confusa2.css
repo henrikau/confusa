@@ -248,10 +248,15 @@ div.csr {
 	margin-bottom: 5%;
 }
 
-.info {
+p.info {
     font-style: italic;
     width: 80%;
 	padding-bottom: 1em;
+}
+ul.info {
+    font-style: italic;
+    width: 80%;
+    margin: 0em 0em 1em 4em;
 }
 div.spacer
 {
