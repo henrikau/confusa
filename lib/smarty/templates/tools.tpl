@@ -18,7 +18,7 @@ server. This can be downloaded either directly through the browser, or,
 you can receive it via email.
 </p>
 <p class="info">
-<B>Note</B> this is a strictly <I>personal</I> script, and it is
+<b>Note</b> this is a strictly <i>personal</i> script, and it is
 tailored to your user-credentials.  This means that you cannot use
 someone else's script, nor they yours.
 </p>
@@ -31,24 +31,11 @@ manually. Download and use it the following way:
        bash create_cert.sh -new_no_push
 </pre>
 <br />
-<table width="30%">
-  <tr>
-    <td>
-      <form method="GET" action="">
-      <input type="hidden" name="send_email">
-      <input type="submit" value="Send as email">
-      </form>
-    </td>
-    <td> </td>
-    <td>
-      <form method="GET" action="tools.php">
-      <input type="hidden" name="send_file">
-      <input type="submit" value="Direct download">
-      </form>
-    </td>
-  </tr>
-</table>
-<br />
+<form method="get" action="tools.php">
+  <input type="hidden" name="send_file" value="0">
+  <input type="submit" value="Download script">
+</form>
+  <br />
 <hr style="width: 90%"/>
 
 {if $person->isSubscriberAdmin()}
@@ -61,17 +48,18 @@ manually. Download and use it the following way:
 </p>
 <p class="info">
   You will have to write the wrapper and your local logic for this, but
-  the library will handle SSL and X.509 authentication for you.
+  the library will handle SSL and X.509 authentication for you. Download
+  the zip-archive and follow the instructions in the README.
 </p>
 <p class="info">
-  To use the library, add the following lines to your python-script:
+  To use the library, add the following lines to your python-script.
 </p>
 <pre>
        from XML_Client import XML_Client
-       cli = Confusa_Client("/path/to/private.key", "/path/to/certificate", "url")
+       from Confusa_Parser import ConfusaParser
 </pre>
 <br />
-<form method="GET" action="tools.php">
+<form method="get" action="tools.php">
   <input type="hidden" name="xml_client_file">
   <input type="submit" value="Download file">
 </form>
