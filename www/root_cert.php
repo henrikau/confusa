@@ -17,8 +17,8 @@ class CP_Root_Certificate extends Content_Page
 		parent::__construct("Root Certificate(s)", false);
 
 		if (Config::get_config('ca_mode') == CA_COMODO) {
-			$this->cert_path = "/var/tmp/tcs-ca.pem";
-			$this->crl_path = "/var/tmp/tcs-crl.crl";
+			$this->cert_path = tempnam("/tmp/", "tcs-ca.pem.");
+			$this->crl_path = tempnam("/tmp/", "tcs-crl.crl.");
 
 			$this->cert_url = ConfusaConstants::$CAPI_ROOT_CERT;
 			$this->crl_url = ConfusaConstants::$CAPI_CRL;

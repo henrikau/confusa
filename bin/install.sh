@@ -21,7 +21,7 @@ fi
 
 constants="../lib/confusa_constants.php"
 config_template=${prefix}"confusa_config_template.php"
-working_template="/tmp/.confusa_wrk_template"
+working_template=`mktemp /tmp/.confusa_wrk_template_XXXXXX`
 # The template written by the debian configuration helper dbconfig-common
 dbconfig_template="/etc/confusa/confusa_config.inc.php"
 config=${prefix}"confusa_config.php"
