@@ -43,7 +43,7 @@ class CP_Tools extends Content_Page
 
 
 				$zip = new ZipArchive();
-				$name = tempnam("/tmp/", 'meh');
+				$name = tempnam($ZIP_CACHE, 'meh');
 				$zip->open($name, ZipArchive::OVERWRITE);
 				$zip->addFromString("XML_Client/Confusa_Client.py",	$confusa_client);
 				$zip->addFromString("XML_Client/Confusa_Parser.py",	$confusa_parser);

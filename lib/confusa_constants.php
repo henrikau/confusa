@@ -130,6 +130,7 @@ class ConfusaConstants {
 	 * webserver user, hence it should not be in the normal directory tree */
 	public static $SMARTY_TEMPLATES_C = '/var/cache/confusa/templates_c';
 	public static $SMARTY_CACHE = '/var/cache/confusa/smarty_cache/';
+	public static $ZIP_CACHE    = '/tmp/';
 
 	/* name of the eScience product */
 	public static $ESCIENCE_PRODUCT = 'TCS eScience Personal';
