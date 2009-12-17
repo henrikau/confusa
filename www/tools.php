@@ -29,23 +29,29 @@ class CP_Tools extends Content_Page
 		} else if (isset($_GET['xml_client_file'])) {
 			if ($this->person->isAdmin()) {
 				require_once 'file_download.php';
-				$xml_client = file_get_contents(Config::get_config('install_path')
-								. "/extlibs/XML_Client/XML_Client.py");
+				$confusa_client = file_get_contents(Config::get_config('install_path')
+								. "/extlibs/XML_Client/Confusa_Client.py");
 				$confusa_parser = file_get_contents(Config::get_config('install_path')
 								    . "/extlibs/XML_Client/Confusa_Parser.py");
-				$readme		= file_get_contents(Config::get_config('install_path') .
-								    "/extlibs/XML_Client/README");
+				$https_client	= file_get_contents(Config::get_config('install_path')
+								    . "/extlibs/XML_Client/HTTPSClient.py");
+				$timeout	= file_get_contents(Config::get_config('install_path')
+								    . "/extlibs/XML_Client/Timeout.py");
+				$readme		= file_get_contents(Config::get_config('install_path')
+								    . "/extlibs/XML_Client/README");
 				$init = file_get_contents(Config::get_config('install_path') . "/extlibs/XML_Client/__init__.py");
 
 
 				$zip = new ZipArchive();
 				$name = tempnam("/tmp/", 'meh');
 				$zip->open($name, ZipArchive::OVERWRITE);
-				$zip->addFromString("XML_Client/XML_Client.py",		$xml_client);
+				$zip->addFromString("XML_Client/Confusa_Client.py",	$confusa_client);
 				$zip->addFromString("XML_Client/Confusa_Parser.py",	$confusa_parser);
+				$zip->addFromString("XML_Client/HTTPSClient.py",	$https_client);
+				$zip->addFromString("XML_Client/Timeout.py",	$timeout);
 				$zip->addFromString("XML_Client/README",		$readme);
 				$zip->addFromString("XML_Client/__init__.py",		$init);
-				if ($zip->numFiles != 4) {
+				if ($zip->numFiles != 6) {
 					echo "Could not add all files, aborting<br />\n";
 					return;
 				}
