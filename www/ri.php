@@ -320,7 +320,6 @@ if (false && Config::get_config('debug')) {
 	echo "<hr />\n";
 }
 
-
 /* Get list of issued certiticates */
 if (isset($_POST['action'])) {
 	$action = Input::sanitize($_POST['action']);
@@ -337,16 +336,22 @@ case 'cert_list':
 	break;
 case 'revoke_list':
 	if (!isset($_POST['list'])) {
-		echo "No data provided.<br />\n";
+		echo "No data provided.\n";
+		exit(0);
 
 	}
-	$xml = $_POST['list'];
+	$xml = str_replace("\\", "", $_POST['list']);
 	/* Start parsing */
-	if (isset($xml)) {
-		$parsedXML = new SimpleXMLElement($xml);
+	if (!is_null($xml)) {
+		try {
+			$parsedXML = new SimpleXMLElement($xml);
+		} catch(Exception $e) {
+			echo $e->getMessage();
+			exit(0);
+		}
 		$name	= $parsedXML->getName();
 		if ($name != "ConfusaRobot") {
-			echo "wrong type of XML. Aborting...<br />\n";
+			echo "Wrong type of XML. Aborting.\n";
 			exit(0);
 		}
 
@@ -356,12 +361,16 @@ case 'revoke_list':
 				$res = Robot::parseRevList($value, $admin);
 				break;
 			default:
-				echo "Unknown type. Are you sure you are following the DTD?<br />\n";
+				echo "Unknown type ($key). Are you sure you are following the DTD?\n";
+				exit(0);
 				break;
 			}
 		}
 	}
-	printXMLRes($res, 'revokeList');
+
+	if (! is_null($res)) {
+		printXMLRes($res, 'revokeList');
+	}
 	break;
 default:
 	echo "Unknown action.<br />\n";
