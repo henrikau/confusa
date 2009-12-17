@@ -4,3 +4,23 @@ To use this archive, import the needed files, and play around.
 
 As a start, use XML_Client to download the XML_File from the url,
 possibly by passing it along to Confusa_Parser.
+
+A short function will contain somethine like this:
+
+
+"""
+from Confusa_Client import Confusa_Client
+
+cli = Confusa_Client("userkey.pem",
+                 "usercert.pem",
+                 "https://localhost/ri.php")
+
+res = cli.get_list()
+if res:
+    print res
+
+"""
+
+This will connect to localhost (assuming Confusa is configured to answer
+to the root-section), using userkey and usercert in the current folder
+and ask for the list of currently "active users".
