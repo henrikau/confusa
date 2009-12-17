@@ -21,6 +21,10 @@ class CP_Robot_Interface extends Content_Page
 	{
 		$res = false;
 		parent::pre_process($person);
+		if (!$this->person->isSubscriberAdmin()) {
+			Framework::error_output("You are not authorized to view this page");
+			return false;
+		}
 		$this->person->setMode(ADMIN_MODE);
 
 		/* Set flags to default-values */
@@ -69,6 +73,10 @@ class CP_Robot_Interface extends Content_Page
 
 	public function process()
 	{
+		if (!$this->person->isSubscriberAdmin()) {
+			/* not authorized */
+			return false;
+		}
 		/* get menu-flags and assign to the framework */
 		$this->tpl->assign('rv_list', false);
 		$this->tpl->assign('rv_upload', false);
