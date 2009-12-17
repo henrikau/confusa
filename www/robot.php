@@ -129,12 +129,16 @@ class CP_Robot_Interface extends Content_Page
 		}
 		$certs = array();
 		foreach ($res as $key => $val) {
-			$cert = new Certificate($val['cert']);
-			$cert->setMadeAvailable($val['uploaded_date']);
-			$cert->setOwner($val['admin']);
-			$cert->setComment($val['comment']);
-			$cert->setLastWarningSent($val['last_warning_sent']);
-			$certs[] = $cert;
+			try {
+				$cert = new Certificate($val['cert']);
+				$cert->setMadeAvailable($val['uploaded_date']);
+				$cert->setOwner($val['admin']);
+				$cert->setComment($val['comment']);
+				$cert->setLastWarningSent($val['last_warning_sent']);
+				$certs[] = $cert;
+			} catch (CertificateException $ce) {
+				continue;
+			}
 		}
 		return $certs;
 	}
