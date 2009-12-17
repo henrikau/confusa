@@ -32,10 +32,13 @@ manually. Download and use it the following way:
 </pre>
 <br />
 <form method="get" action="tools.php">
-  <input type="hidden" name="send_file" value="0">
-  <input type="submit" value="Download script">
+  <p>
+    <input type="hidden" name="send_file" value="0" />
+    <input type="submit" value="Download script" />
+  </p>
 </form>
-  <br />
+
+<br />
 <hr style="width: 90%"/>
 
 {if $person->isSubscriberAdmin()}
@@ -44,7 +47,7 @@ manually. Download and use it the following way:
 <p class="info">
   XML_Client is a library tool for connecting to the Robotic
   interface. Specific information can be found in
-  the <a href="robot.php?mode=admin&robot_view=info">RI Section</a>
+  the <a href="robot.php?robot_view=info">RI Section</a>
 </p>
 <p class="info">
   You will have to write the wrapper and your local logic for this, but
@@ -60,7 +63,9 @@ manually. Download and use it the following way:
 </pre>
 <br />
 <form method="get" action="tools.php">
-  <input type="hidden" name="xml_client_file">
-  <input type="submit" value="Download file">
+  <p>
+    <input type="hidden" name="xml_client_file" />
+    <input type="submit" value="Download file" />
+  </p>
 </form>
 {/if}
