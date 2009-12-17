@@ -71,7 +71,7 @@ img.url {
 
 #content {
 	border: 1px solid #00000;
-	margin-left: 20%;
+	margin-left: 21%;
 	width: 79%;
 	/* the menu size is in em (padding and font size) thus the min-height should
 	 * also be given in em */
