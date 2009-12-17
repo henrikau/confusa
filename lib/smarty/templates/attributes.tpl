@@ -21,8 +21,10 @@
 		req.onreadystatechange = function() {
 			if (req.readyState == 4 /*complete*/) {
 				if (req.status == 200) {
-					field.innerHTML = req.responseText;
-					field.title = req.responseText;
+					if (req.responseText.length > 0) {
+						field.innerHTML = req.responseText;
+						field.title = req.responseText;
+					}
 				} else {
 					field.innerHTML = "<i>Attribute value could not be retrieved</i>";
 				}

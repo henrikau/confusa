@@ -120,6 +120,11 @@ class CP_Attributes extends Content_Page
 			} else {
 				$this->tpl->assign('entitlement', '');
 			}
+		} else { /* session is not set */
+			$this->tpl->assign('epodn', $this->person->getSubscriber()->getIdPName());
+			$this->tpl->assign('cn', $this->person->getName());
+			$this->tpl->assign('mail', $this->person->getEmail());
+			$this->tpl->assign('entitlement', $this->person->getEntitlement());
 		}
 		$this->tpl->assign('map',		$map);
 		$this->tpl->assign('keys',		AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
@@ -139,9 +144,11 @@ class CP_Attributes extends Content_Page
 		}
 
 		$session = $this->person->getSession();
-		if (!is_null($session)) {
+		if (isset($session)) {
 			$attr_value = @implode(", ", $session->getAttribute($attr_key));
 			echo htmlentities($attr_value, ENT_COMPAT, "UTF-8");
+		} else {
+			exit(0); /* don't print any AJAX key-value hints if the session is not set */
 		}
 		exit(0);
 	}
