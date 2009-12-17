@@ -32,7 +32,7 @@ function download_zip($content, $filename)
  */
 function download_certificate($cert_content, $filename)
 {
-	download($cert_content, $filname, "application/x-x509-user-cert");
+	download($cert_content, $filename, "application/x-x509-user-cert", "inline");
 }
 
 
@@ -42,10 +42,10 @@ function download_certificate($cert_content, $filename)
  * This function makes it easy to download a variety of files without
  * re-implementing other than the Application-header.
  */
-function download($content, $filename, $type_header)
+function download($content, $filename, $type_header, $disposition="attachment")
 {
 	header("Content-Type: " . $type_header);
-	header("Content-Disposition: attachment; filename=\"$filename\"");
+	header("Content-Disposition: $disposition; filename=\"$filename\"");
 	header('Content-Transfer-Encoding: binary');
 	header('Accept-Ranges: bytes');
 	header('Content-Length: ' . strlen($content));
