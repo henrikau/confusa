@@ -253,7 +253,7 @@ function printXMLRes($resArray, $type = 'userList')
 	header ("content-type: text/xml");
 
 	/* Print XML header and 'master table' */
-	echo "<?xml standalone=\"yes\" ?>\n";
+	/* echo "<?xml standalone=\"yes\" ?>\n"; */
 	echo "<ConfusaRobot ";
 	echo "date=\"".date("Y-m-d H:i:s")."\" ";
 	echo "subscriber=\"".$admin->getSubscriber()->getOrgName()."\" ";
