@@ -7,15 +7,11 @@
   {$unauth_login_notice}
 </p>
 
-<br />
-<hr style="width: 90%"/>
-<br />
-<center>
-<h2><a href="?start_login=yes">Log in</a></h2>
-</center>
-<br />
-<hr style="width: 90%"/>
-<br />
+<div style="text-align: center; margin: 2em 0 2em 0">
+<a href="?start_login=yes">
+<img src="graphics/login_button.gif" alt="Login" style="border: 0" />
+</a>
+</div>
 
 {else}
 <p class="info">
