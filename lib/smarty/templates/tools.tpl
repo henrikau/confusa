@@ -58,10 +58,12 @@ manually. Download and use it the following way:
   To use the library, add the following lines to your python-script.
 </p>
 <pre>
-       from XML_Client import XML_Client
-       from Confusa_Parser import ConfusaParser
+       from Confusa_Client import Confusa_Client
 </pre>
 <br />
+<p>
+  You should also look in the README-file for a short code-example.
+</p>
 <form method="get" action="tools.php">
   <p>
     <input type="hidden" name="xml_client_file" />
