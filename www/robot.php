@@ -21,6 +21,7 @@ class CP_Robot_Interface extends Content_Page
 	{
 		$res = false;
 		parent::pre_process($person);
+		$this->person->setMode(ADMIN_MODE);
 
 		/* Set flags to default-values */
 		$this->tpl->assign('cert_info', false);
