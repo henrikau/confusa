@@ -1,10 +1,8 @@
 <h3>Robot Interface</h3>
-<br />
 {* show menu *}
 [ <a href="?robot_view=list">List</a> ]
 [ <a href="?robot_view=upload">Upload</a>]
 [ <a href="?robot_view=info">Info</a>]
-<br />
 <br />
 <br />
 
