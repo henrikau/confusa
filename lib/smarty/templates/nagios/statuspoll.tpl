@@ -30,7 +30,10 @@
 	{if isset($logLevelReached) && $logLevelReached === false}
 
 	<p>
-	No error with greater or equal severity than Confusa's configured critical log-level '<strong>{$logLevel|escape}</strong>' found!
+	There was <span style="color: green"><strong>no error</strong></span> logged with a severity equal or greater Confusa's critical log-level.
+	</p>
+	<p>
+	(The currently configured log-level for critical errors is <strong>{$logLevel|escape}</strong>.)
 	</p>
 
 	<div style="display: none">
