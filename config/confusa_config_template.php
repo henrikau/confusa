@@ -155,7 +155,8 @@ $confusa_config = array(
 	'key_length'		=> '2048',
 
 	/* logs */
-	'default_log'		=> '/var/log/confusa/tmp.log',
+	'default_log'		=> '/var/log/confusa.log',
+
 	/* see syslog (php) for details */
 	'loglevel_min'		=> LOG_DEBUG,
 	'syslog_min'			=> LOG_DEBUG,
