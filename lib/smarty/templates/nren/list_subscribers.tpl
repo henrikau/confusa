@@ -63,7 +63,6 @@
   <table>
       {if $subscriber->getState() == "unsubscribed"}
            <tr style="color: gray; font-weight: bold">
-			{$subscriber->getDBID()|escape}
 	  {elseif $subscriber->getState() == "suspended"}
 			<tr style="color: red; font-weight: bold">
 	  {elseif $subscriber->getState() == "subscribed"}
