@@ -9,6 +9,7 @@ You should have
   how it's used) but not much more is required.
 - some, but not excessive, knowledge about PHP and bash-scripting, as
   this will help both *you* and *us* to track down bugs
+- Some knowlegde about server administration and virtual machine management.
 - an open and positive mind (for a more pleasent interaction with the
   world as a whole). This has nothing to do with Confusa
 
@@ -23,7 +24,17 @@ To install Confusa
  - Smarty (the PHP template engine)
 
 === Install process ===
+0) Using UvT's apt repository. If you choose this, move to step 4 when
+   you have completed step 0.
 
+   a) Add to /etc/apt/sources.list
+
+     deb http://non-gnu.uvt.nl/debian lenny uvt simplesamlphp confusa
+     deb-src http://non-gnu.uvt.nl/debian lenny uvt simplesamlphp confusa
+
+  b) update apt (apt-get update)
+
+  c) apt-get install confusa
 1) Webserver (apache)
 
      apache2
@@ -63,29 +74,33 @@ To install Confusa
    (you will have to add Confsua-specific settings, see 6b for
    details).
 
-# Redirect http to https
-<VirtualHost your.host.org:80>
-        Servername your.server.org
-        Redirect permanent / https://your.host.org/
-</VirtualHost>
+   # Redirect http to https
+   <VirtualHost your.host.org:80>
+           Servername your.server.org
+           Redirect permanent / https://your.host.org/
+   </VirtualHost>
 
-<VirtualHost your.host.org:443>
-        Servername your.server.org
-        SSLEngine On
-        SSLProtocol All
-        SSLCipherSuite ALL:!ADH:!EXPORT56:!EXPORT40:RC4+RSA:!SSLv2:+HIGH:+MEDIUM:+LOW:+EXP
-        SSLVerifyClient optional_no_ca
-        SSLVerifyDepth 10
-        SSLOptions +StdEnvVars +ExportCertData
-        SSLCertificateFile /etc/apache2/ssl/your_host.crt
-        SSLCertificateKeyFile /etc/apache2/ssl/your_host.key
+   <VirtualHost your.host.org:443>
+           Servername your.server.org
+           SSLEngine On
+           SSLProtocol All-SSLv2
+           SSLCipherSuite ALL:!ADH:!EXPORT56:!EXPORT40:RC4+RSA:!SSLv2:+HIGH:+MEDIUM:+LOW:+EXP
+           SSLVerifyClient optional_no_ca
+           SSLVerifyDepth 10
+           SSLOptions +StdEnvVars +ExportCertData
+           SSLCertificateFile /etc/apache2/ssl/your_host.crt
+           SSLCertificateKeyFile /etc/apache2/ssl/your_host.key
+	   ...
+   </VirtualHost>
 
-	...
-</VirtualHost>
+   Set Apache to listen on port 443 as well in /etc/apache2/ports.conf
 
+   Load ssl-mod:
 
-This is a *sample* configuration. If you know your way around an Apache
-configuration, this should be more of a guideline than anything else.
+	a2enmod ssl
+
+   This is a *sample* configuration. If you know your way around an Apache
+   configuration, this should be more of a guideline than anything else.
 
 5) simpleSAMLphp
    Confusa uses simpleSAMLphp to handle AuthN, and thus, you should
@@ -136,7 +151,7 @@ c) Configure the confusa_config.php file (copy the
    confusa_config_template.php and modify with values that makes sense
    to you - the template explaines the attributes).
 
-d) Run the create_database.sh script in confusa/init folder
+d) Run the create_database.sh script in the confusa/bin/ folder
    This will create the database, the user and the tables. it will use
    the confusa_config.php file, so make sure that this is configured
    properly before you run this script.
