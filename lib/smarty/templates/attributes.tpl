@@ -126,7 +126,7 @@
 	<td align="right">Full Name<br /></td>
 	<td align="right">
 	  <select name="cn" onchange="fetchAttributeValue(this, 'cnField');">
-	    <option value=""></option>
+	    <option value="&nbsp;">&nbsp; </option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $map.cn}selected="selected"{/if} value="{$element}">
 	      {$element}
@@ -144,7 +144,7 @@
 	<td align="right">E-Mail<br /></td>
 	<td align="right">
 	  <select name="mail" onchange="fetchAttributeValue(this, 'emailField');">
-	    <option value=""></option>
+	    <option value="&nbsp;">&nbsp; </option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $map.mail}selected="selected"{/if} value="{$element}">
 	      {$element}
@@ -162,7 +162,7 @@
 	<td align="right">entitlement<br /></td>
 	<td align="right">
 	  <select name="entitlement" onchange="fetchAttributeValue(this, 'entitlementField')">
-	    <option value=""></option>
+	    <option value="&nbsp;">&nbsp; </option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $map.entitlement}selected="selected"{/if} value="{$element}">
 	      {$element|escape}
