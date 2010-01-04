@@ -1,5 +1,5 @@
 <h3>Issuing CA</h3>
-<hr width="80%" />
+<hr style="width: 80%" />
 <p class="info">
 This is the Certificate we use for signing the CSRs we receive.
 </p>
@@ -12,18 +12,20 @@ This is the Certificate we use for signing the CSRs we receive.
 </li>
 <li>
 	<form method="get" action="root_cert.php">
+	  <p>
 		<input type="hidden" name="send_file" value="cacert" />
 		If you want to download it directly: 
 		<input type="submit" name="submit" value="Download" />
+	  </p>
 	</form>
 </li>
 </ul>
 
 <div class="spacer"></div>
-<div clasS="spacer"></div>
+<div class="spacer"></div>
 
 <h3>CRL</h3>
-<hr width="80%" />
+<hr style="width: 80%" />
 <p class="info">
 The CRL (Certificate Revocation List) is a list of all revoked (invalid)
 certificates published by this CA.
@@ -35,9 +37,11 @@ certificates published by this CA.
 <li>Direct link to crl (install): <a href="{$crl_download_link}">here</a>.</li>
 <li>
 	<form method="get" action="">
-		<input type="hidden" name="send_file" value="crl" />
-		If you want to download it directly: 
-		<input type="submit" name="submit" value="Download" />
+	  <p>
+	    <input type="hidden" name="send_file" value="crl" />
+	    If you want to download it directly:
+	    <input type="submit" name="submit" value="Download" />
+	  </p>
 	</form>
 </li>
 </ul>
@@ -46,7 +50,7 @@ certificates published by this CA.
 {if isset($ca_dump)}
 <br />
 <h4>CA certificate dump:</h4>
-<hr width="80%">
+<hr style="width: 80%" />
 <pre class="certificate">
 {$ca_dump|escape}
 </pre>
@@ -55,9 +59,9 @@ certificates published by this CA.
 {if isset($crl_dump)}
 <br />
 <h4>CRL dump:</h4>
-<hr width="80%" />
+<hr style="width: 80%" />
 <pre class="certificate">
 {$crl_dump|escape}
 </pre>
-<hr width="80%" />
+<hr style="width: 80%" />
 {/if}
