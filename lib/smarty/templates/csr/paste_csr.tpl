@@ -6,12 +6,13 @@
       CSR to the portal.
     </p>
     <form action="" method="post">
-    <input type="hidden" name="pastedCSR" value="pastedCSR" />
+      <p>
+	<input type="hidden" name="pastedCSR" value="pastedCSR" />
+      </p>
       <table>
 	<tr>
 	  <td colspan="2">
-	    <textarea name="user_csr" value="" rows="20" cols=" 60"
-		      wrap="off"></textarea><br />
+	    <textarea name="user_csr" rows="20" cols=" 60"></textarea><br />
 	  </td>
 	</tr>
 	<tr>
