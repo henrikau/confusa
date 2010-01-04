@@ -1,16 +1,17 @@
 {if $person->isNRENAdmin() || $person->isSubscriberAdmin()}
 {literal}
 <script type="text/javascript">
-	/**
-	 * Ask the stylist for the value of the attribute key currently selected
-	 * in 'selectElement' with a polite asynchronous GET message
-	 *
-     * @param selectElement DOM-Node The <select> containing the selected
-     *                      attribute key
-     * @param targetElementID string The ID of the element where the value
-     *                        should be written to
-     * @return void
-     */
+  <!-- Ask the stylist for the value of the attribute key	-->
+  <!-- currently selected in 'selectElement' with a polite 	-->
+  <!-- asynchronous GET message					-->
+  <!--  -->
+  <!-- @param	selectElement DOM-Node	The <select> containing	-->
+  <!--					the selected attribute	-->
+  <!--					key			-->
+  <!-- @param	targetElementID string	The ID of the element	-->
+  <!--					where the value should	-->
+  <!--					be written to		-->
+  <!-- @return	void						-->
 	function fetchAttributeValue(selectElement, targetElementID)
 	{
 		var req = new XMLHttpRequest();
