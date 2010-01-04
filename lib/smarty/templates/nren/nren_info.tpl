@@ -10,7 +10,9 @@ notify you of mass-revocation of certificates.
 </p>
 
 <form method="post" action="">
-  <input type="hidden" name="setting" value="nren_contact" />
+  <p>
+    <input type="hidden" name="setting" value="nren_contact" />
+  </p>
   <table>
     <tr>
       <td></td>
