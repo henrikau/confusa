@@ -27,7 +27,7 @@
 						field.title = req.responseText;
 					}
 				} else {
-					field.innerHTML = "<i>Attribute value could not be retrieved</i>";
+					field.innerHTML = "Attribute value could not be retrieved.";
 				}
 			}
 		}
