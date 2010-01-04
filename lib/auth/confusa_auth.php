@@ -105,19 +105,25 @@ abstract class Confusa_Auth
 				$this->person->setEPPNKey($map['eppn']);
 			}
 			if(!is_null($map['cn'])) {
-				$cn = Input::sanitizePersonName($attributes[$map['cn']][0]);
-				$this->person->setName($cnPrefix . $cn);
+				if (array_key_exists($map['cn'], $attributes)) {
+					$cn = Input::sanitizePersonName($attributes[$map['cn']][0]);
+					$this->person->setName($cnPrefix . $cn);
+				}
 			}
 			if (!is_null($map['mail'])) {
-				$mail = Input::sanitizeEmail($attributes[$map['mail']][0]);
-				$this->person->setEmail($mail);
+				if (array_key_exists($map['mail'], $attributes)) {
+					$mail = Input::sanitizeEmail($attributes[$map['mail']][0]);
+					$this->person->setEmail($mail);
+				}
 			}
 
 			/* go through and add the relevant entitlement-parts.
 			 * TODO: cleanup this and move to person::setEntitlement()
 			 */
 			if (!is_null($map['entitlement'])) {
-				$entitlements = $attributes[$map['entitlement']];
+				if (array_key_exists($map['entitlement'], $attributes)) {
+					$entitlements = $attributes[$map['entitlement']];
+				}
 			}
 			if (isset($entitlements)) {
 				$namespace = Config::get_config('entitlement_namespace');
