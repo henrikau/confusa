@@ -46,18 +46,18 @@
   </p>
 
   <form action="" method="post">
-    <input onblur="hideHint();"
-	   onfocus="showHint();"
-	   type="text"
-	   name="search"
-	   {if $search_string != ""}
-	   value="{$search_string}"
-	   {/if}
-	   />
-    <input type="hidden"
-	   name="revoke_operation"
-	   value="search_by_cn" />
-
+    <p>
+      <input onblur="hideHint();"
+	     onfocus="showHint();"
+	     type="text"
+	     name="search"
+	     {if $search_string != ""}
+	     value="{$search_string}"
+	     {/if}
+	     />
+      <input type="hidden"
+	     name="revoke_operation"
+	     value="search_by_cn" />
     <select name="subscriber">
       {foreach from=$subscribers item=nren_subscriber}
       {if $nren_subscriber->getOrgName() == $active_subscriber}
@@ -72,8 +72,8 @@
       {/if}
       {/foreach}
     </select>
-
-    <input type="submit" name="Search" value="Search" /><br />
+    <input type="submit" name="Search" value="Search" />
+    </p>
 
     <noscript>
       <p>
