@@ -79,6 +79,9 @@ class CP_Stylist extends Content_Page
 					$this->updateNRENMailTpl($this->person->getNREN(),
 					                         $new_template);
 				} else if (isset($_POST['test'])) {
+					/* see where mail_content is set in
+					 * process() for how the current
+					 * template is kept. */
 					$this->sendNRENTestMail($this->person);
 				}
 				break;
@@ -141,10 +144,27 @@ class CP_Stylist extends Content_Page
 			case 'mail':
 				$this->tpl->assign('edit_mail', true);
 				$this->tpl->assign('tags', $this->NOTIFICATION_MAIL_TAGS);
-				$template_string = $this->fetchNRENMailTpl($this->person->getNREN());
 
+
+				/* set the supplied mail_content back in the
+				 * form (exported to tpl with same name. */
+				$template_string = $this->fetchNRENMailTpl($this->person->getNREN());
+				$changed_template = $template_string;
+
+				if (isset($_POST['mail_content'])) {
+					/* we have new content, store and
+					 * compare later with
+					 * default-template. This is so we can
+					 * retain the values between
+					 * iterations. */
+					$changed_template = strip_tags($_POST['mail_content']);
+				}
 				if (isset($template_string)) {
-					$this->tpl->assign('mail_content', $template_string);
+					if ($template_string == $changed_template) {
+						$this->tpl->assign('mail_content', $template_string);
+					} else {
+						$this->tpl->assign('mail_content', $changed_template);
+					}
 				}
 				break;
 
