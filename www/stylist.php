@@ -82,7 +82,7 @@ class CP_Stylist extends Content_Page
 					/* see where mail_content is set in
 					 * process() for how the current
 					 * template is kept. */
-					$this->sendNRENTestMail($this->person);
+					$this->sendNRENTestMail($this->person, strip_tags($_POST['mail_content']));
 				}
 				break;
 			case 'upload_logo':
@@ -458,7 +458,8 @@ class CP_Stylist extends Content_Page
 	 *
 	 * @param $recipient Person The recipient to which the test-email is sent
 	 */
-	private function sendNRENTestMail($recipient)
+	private function sendNRENTestMail($recipient, $template)
+
 	{
 		require_once 'mail_manager.php';
 		require_once 'CA.php';
@@ -471,7 +472,8 @@ class CP_Stylist extends Content_Page
 		                         $timestamp,
 		                         $ip,
 		                         $product_name,
-		                         $recipient);
+		                         $recipient,
+					 $template);
 
 		$email = $recipient->getEmail();
 		Framework::success_output("Test mail sent to $email.");
