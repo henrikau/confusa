@@ -6,7 +6,7 @@
 <li><span>Not. Mail</span></li>
 </ul>
 </div>
-
+<br />
 <fieldset>
 	<legend>Custom notification template</legend>
 	<p class="info">
@@ -51,4 +51,6 @@
 		<input type="hidden" name="stylist_operation" value="change_mail" />
 	</div>
 	</form>
+	<br />
+	<br />
 </fieldset>
