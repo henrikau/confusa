@@ -198,18 +198,21 @@ abstract class CA
    *                            code-signing) that we actually issued
    * @param $recipient person the person that is going to receive the
    *                          notification mail
+   * @param $custom_content String|null the custom template to use when sending
+   *					 the mail. If set, this will be used
+   *					 instead of the default (from Config)
    */
 	public static function sendMailNotification($orderNumber,
 	                                            $timestamp,
 	                                            $ip,
 	                                            $productName,
-	                                            $recipient)
+	                                            $recipient,
+						    $custom_content = null)
 	{
 	/* if a notification e-mail is not a *template*, then what is? */
 	$tpl	= new Smarty();
 	$nren = $recipient->getNREN();
 	$custom_template = Config::get_config('custom_mail_tpl') . $nren . '/custom.tpl';
-
 	$tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
 	$tpl->config_dir	= Config::get_config('install_path') .
 	                          'lib/smarty/configs';
@@ -229,14 +232,17 @@ abstract class CA
 	$tpl->assign('nren', $nren);
 	$tpl->assign('product_name', $productName);
 
-	if (file_exists($custom_template)) {
-		$msg = $tpl->fetch($custom_template);
+	if (!is_null($custom_content)) {
+		$msg = $custom_content;
 	} else {
-		$default_template = Config::get_config('install_path') .
-		                    '/lib/smarty/templates/email/notification.tpl';
-		$msg = $tpl->fetch($default_template);
+		if (file_exists($custom_template)) {
+			$msg = $tpl->fetch($custom_template);
+		} else {
+			$default_template = Config::get_config('install_path') .
+				'/lib/smarty/templates/email/notification.tpl';
+			$msg = $tpl->fetch($default_template);
+		}
 	}
-
 	$subject = "Your new $productName certificate is ready.  Order number " .
 	           "$orderNumber, subject " . $recipient->getX509SubjectDN();
 
