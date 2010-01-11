@@ -63,6 +63,27 @@ class Framework {
 			exit(0);
 		}
 
+		/* is the connection running over SSL? */
+		if (!(array_key_exists('HTTPS', $_SERVER) || array_key_exists('https', $_SERVER)) ||
+		    strtolower($_SERVER['HTTPS']) != "on") {
+			if (Config::get_config('debug')) {
+				Framework::warning_output("WARNING: SSL is OFF.<br />".
+							  " We <b>strongly</b> recommend that ".
+							  "you enable SSLv3/TLS for this instance ".
+							  "even though you are running in debug-mode.");
+				Logger::log_event(LOG_WARNING, " Confusa is running (in debug-mode), ".
+						  "and is accessible over plain HTTP.");
+			} else {
+				echo "Framework: HTTPS is OFF!<br />\n";
+				echo "This is deemed to be a critical installation, and it debug-mode is OFF.<br /><br />\n";
+				echo "Until this has been resolved, Confusa will <b>not</b> run.<br /><br />\n";
+				echo "Please configure Apache to serve content over SSL, and make sure that ";
+				echo "the instance is either not available over HTTP, or that it is ";
+				echo "redirected to a secure connection.";
+				Logger::log_event(LOG_CRIT, " Confusa is available via HTTP. Please configure HTTPS properly.");
+				exit(0);
+			}
+		}
 		$this->contentPage = $contentPage;
 		$this->person	= new Person();
 		$this->tpl	= new Smarty();
