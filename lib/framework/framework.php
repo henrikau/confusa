@@ -277,7 +277,7 @@ class Framework {
 				/* if all else fails, at least give the user some recovery information */
 				Framework::message_output("Unrecoverable error and you are not NREN admin!" .
 				                          " Your eduPersonPrincipalName is " .
-				                          htmlentities($nren->getName()));
+				                          htmlentities($this->person->getEPPN()));
 			} else {
 				Framework::error_output("Seems like the portal can not figure out your NREN " .
 				                        "from your identity provider. This is probably a portal " .
