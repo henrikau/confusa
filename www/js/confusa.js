@@ -54,8 +54,10 @@ function installIEVistaCertificate()
 	 */
 	objEnroll.InstallResponse(4, g_ccc, 1, "");
     } catch (e) {
-	var message="Hit the following problem when trying to install the cert: " + e.description;
-	alert(message);
+		var message="Hit the following problem when trying to install the cert: "
+		+ e.description +
+		"\n\nPlease check if the certificate is already installed in your keystore.";
+		alert(message);
     }
 }
 
