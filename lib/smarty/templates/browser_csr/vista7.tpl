@@ -16,6 +16,8 @@ function createIEVistaRequest(dn, keysize)
 		var objPrivateKey = classFactory.CreateObject("X509Enrollment.CX509PrivateKey");
 		var objRequest = classFactory.CreateObject("X509Enrollment.CX509CertificateRequestPkcs10");
 		var objDN = classFactory.CreateObject("X509Enrollment.CX500DistinguishedName");
+		var hashObjID = classFactory.CreateObject("X509Enrollment.CObjectId");
+		hashObjID.InitializeFromName("89");
 
 		var providerSelector = document.getElementById("providerSelector");
 		var providerName = providerSelector.options[providerSelector.selectedIndex].text;
@@ -32,6 +34,10 @@ function createIEVistaRequest(dn, keysize)
 		/* use "RSA-full" as the key algorithm */
 		objPrivateKey.ProviderType = "1";
 		objRequest.InitializeFromPrivateKey(1, objPrivateKey, "");
+
+		// Comodo API does not support SHA-256 yet, specify SHA-1
+		objRequest.HashAlgorithm = hashObjID;
+
 		objDN.Encode(dn, 0);
 		objRequest.Subject = objDN;
 		objEnroll.InitializeFromRequest(objRequest);
