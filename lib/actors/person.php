@@ -897,6 +897,13 @@ class Person{
 			$permission->addReason("Need a properly formatted Subscriber name!");
 		}
 
+		if (Config::get_config('capi_test') &&
+		    Config::get_config('ca_mode') === CA_COMODO &&
+		    $subscriberOrgName == ConfusaConstants::$CAPI_TEST_O_PREFIX) {
+			$permission->setPermissionGranted(false);
+			$permission->addReason("Need a properly formatted Subscriber name!");
+		}
+
 		if (empty($this->entitlement)
 				|| !$this->testEntitlementAttribute(Config::get_config('entitlement_user'))) {
 			$permission->setPermissionGranted(false);
