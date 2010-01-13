@@ -75,33 +75,62 @@ class Translator {
 	}
 
 	/**
-	 * Decorate a given template with the tags from the dictornary in the
+	 * Decorate a given template with the tags from the dictiornary in the
 	 * right language. This is nothing more than repeated consulation of a
-	 * LUT. Don't decorate the template if the passed dictionary is null or
-	 * the file does not exists.
+	 * LUT. The dictionary usually consists of two components: A definition file
+	 * including all the tags plus their translation in one language, usually
+	 * English. The second file contains the tags again and a number of
+	 * translations. We merge together the contents of both files and see what
+	 * we can find regarding the currently set language.
+	 *
+	 * Don't decorate the template if the passed dictionary is null or
+	 * the definition file does not exists.
 	 *
 	 * @param $template The template that is to be decorated
-	 * @param $dictionary The dictionary from which the texts are taken
+	 * @param $dictionaryName The definition file prefix from which the texts
+	 *                        are taken
 	 *
 	 * @return The decorated template
 	 */
-	public function decorateTemplate($template, $dictionary)
+	public function decorateTemplate($template, $dictionaryName)
 	{
 		/* if the dictionary is null or does not exist, don't decorate the template */
-		if (is_null($dictionary)) {
-			return $template;
-		}
-
-		$dictionaryPath = Config::get_config('install_path') . "/dictionaries/" . $dictionary;
-
-		if (file_exists($dictionaryPath) === FALSE) {
+		if (empty($dictionaryName)) {
 			return $template;
 		}
 
 		/* warn only *once* if dictionary entries are missing */
 		$warn_missing=FALSE;
-		include($dictionaryPath);
-		foreach($lang as $tag => $entry) {
+		try {
+			$dictionaryBase = Config::get_config('install_path') . "/dictionaries/";
+			$definitionPath = $dictionaryBase . $dictionaryName . ".definition.json";
+			$translationPath = $dictionaryBase . $dictionaryName . ".translation.json";
+			include_once 'file_io.php';
+			$definitionFile = File_IO::readFromFile($definitionPath);
+			$translationFile = File_IO::readFromFile($translationPath);
+		} catch (FileException $fexp) {
+		}
+
+		if (isset($definitionFile)) {
+			$definitions = (array) json_decode($definitionFile);
+		} else {
+			Logger::log_event(LOG_WARNING, "Could not load definitions for " .
+			                  "dictionary with name $dictionaryName!");
+			return $template;
+		}
+
+		if (isset($translationFile)) {
+			$translations = (array) json_decode($translationFile);
+			foreach ($translations as $tag => $entry) {
+				$definitions[$tag] = array_merge((array)$definitions[$tag],
+				                                 (array)$entry);
+			}
+		}
+
+		foreach($definitions as $tag => $entry) {
+			/* manual cast, because json_decode returns objects of stdClass */
+			$entry = (array)$entry;
+
 			if (isset($entry[$this->language])) {
 				$template->assign($tag, $entry[$this->language]);
 			} else {
