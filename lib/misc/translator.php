@@ -75,6 +75,70 @@ class Translator {
 	}
 
 	/**
+	 * The translation definitions are located in two files: a definition file,
+	 * containing all the tags plus the translation - usually - in Enlish and
+	 * a translation containing all other files. Read in the information from
+	 * these files and return it in a tag-sorted array.
+	 *
+	 * @param dictionaryName string The name of the dictionary from where to
+	 *                              look up definitions
+	 *
+	 * @return array containing all definitions
+	 */
+	private function getTranslationArray($dictionaryName)
+	{
+		try {
+			$dictionaryBase = Config::get_config('install_path') . "/dictionaries/";
+			$definitionPath = $dictionaryBase . $dictionaryName . ".definition.json";
+			$translationPath = $dictionaryBase . $dictionaryName . ".translation.json";
+			include_once 'file_io.php';
+			$definitionFile = File_IO::readFromFile($definitionPath);
+			$translationFile = File_IO::readFromFile($translationPath);
+		} catch (FileException $fexp) {
+		}
+
+		if (isset($definitionFile)) {
+			$definitions = (array) json_decode($definitionFile);
+		} else {
+			Logger::log_event(LOG_WARNING, "Could not load definitions for " .
+			                  "dictionary with name $dictionaryName!");
+			return null;
+		}
+
+		if (isset($translationFile)) {
+			$translations = (array) json_decode($translationFile);
+			foreach ($translations as $tag => $entry) {
+				$definitions[$tag] = array_merge((array)$definitions[$tag],
+				                                 (array)$entry);
+			}
+		}
+
+		return $definitions;
+	}
+
+	/**
+	 * Get the translation text from the dictionary specified in
+	 * dictionaryName for the tag $tag. Use the translators language as the
+	 * lookup-language.
+	 *
+	 * @param $tag string the tag-name to look up
+	 * @param $dictionaryName string the dictionary in which to look for the
+	 *                               translation
+	 * @return string the translated string for the tag
+	 */
+	public function getTextForTag($tag, $dictionaryName)
+	{
+		$definitions = $this->getTranslationArray($dictionaryName);
+		$translations = (array)$definitions[$tag];
+
+		if (isset($translations[$this->language])) {
+			return $translations[$this->language];
+		} else {
+			return $translations[$this->defaultLanguage];
+		}
+	}
+
+	/**
 	 * Decorate a given template with the tags from the dictiornary in the
 	 * right language. This is nothing more than repeated consulation of a
 	 * LUT. The dictionary usually consists of two components: A definition file
@@ -99,33 +163,14 @@ class Translator {
 			return $template;
 		}
 
-		/* warn only *once* if dictionary entries are missing */
-		$warn_missing=FALSE;
-		try {
-			$dictionaryBase = Config::get_config('install_path') . "/dictionaries/";
-			$definitionPath = $dictionaryBase . $dictionaryName . ".definition.json";
-			$translationPath = $dictionaryBase . $dictionaryName . ".translation.json";
-			include_once 'file_io.php';
-			$definitionFile = File_IO::readFromFile($definitionPath);
-			$translationFile = File_IO::readFromFile($translationPath);
-		} catch (FileException $fexp) {
-		}
+		$definitions = $this->getTranslationArray($dictionaryName);
 
-		if (isset($definitionFile)) {
-			$definitions = (array) json_decode($definitionFile);
-		} else {
-			Logger::log_event(LOG_WARNING, "Could not load definitions for " .
-			                  "dictionary with name $dictionaryName!");
+		if (empty($definitions)) {
 			return $template;
 		}
 
-		if (isset($translationFile)) {
-			$translations = (array) json_decode($translationFile);
-			foreach ($translations as $tag => $entry) {
-				$definitions[$tag] = array_merge((array)$definitions[$tag],
-				                                 (array)$entry);
-			}
-		}
+		/* warn only *once* if dictionary entries are missing */
+		$warn_missing=FALSE;
 
 		foreach($definitions as $tag => $entry) {
 			/* manual cast, because json_decode returns objects of stdClass */
