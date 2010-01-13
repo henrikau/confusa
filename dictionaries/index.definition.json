@@ -1,0 +1,74 @@
+{
+	"unauth_welcome_1": {
+		"en": "This service allows you to get or deactive a personal certificate."
+	},
+	"unauth_login_notice": {
+		"en": "To use this service, you will need to log in."
+	},
+	"auth_welcome_1": {
+		"en": "You have successfully authenticated to your home organization, and you can now use the rest of the portal."
+	},
+	"index_faq_heading1": {
+		"en": "How does it work?"
+	},
+	"index_faq_text1": {
+		"en": "The basis for it is trust. We trust your home institution to autheniticate you correctly and the Online-CA trusts Confusa to do its job properly.  Your home institution already identified you when you signed up with it, so why verify the same information twice or three times?"
+	},
+	"index_faq_heading2": {
+		"en": "How long are the certificates valid?"
+	},
+	"index_faq_text2": {
+		"en": "Certificates issued by Confusa are valid for 13 months."
+	},
+	"index_faq_heading3": {
+		"en": "Why do I have to login?"
+	},
+	"index_faq_text3": {
+		"en": "Before we can issue a certificate to <i>you</i>, we need to be sure about <i>who</i> you are. Your home institution can do this much better than what we can ever hope to do, so we delegate this task. This way we can focus on what's important, to issue certificates as quickly and user-friendly as possible."
+	},
+	"index_faq_heading4": {
+		"en": "Does Confusa store my private data?"
+	},
+	"index_faq_text4": {
+		"en": "Privacy has been a very big concern in the design of Confusa. When you login, Confusa doesn't store any data about you! Only if you get a certificate issued by Confusa, Confusa and/or the Online-CA store the subject name of that certificate. Such a subject name usually contains your country, organization and full name. We <b>have</b> to store that information."
+	},
+	"index_faq_heading5": {
+		"en": "What is this \"Confusa\" I see everywhere?"
+	},
+	"index_faq_text5": {
+		"en": "\"Confusa\" is the name of the portal software. This means that the portal <i>is</i> Confusa, yet it is not. A bit like the spoon. If you really want to know, have a look at <a href=\"http://www.confusa.org/\">www.confusa.org</a>"
+	},
+	"attribute_info1": {
+		"en": "This is information we have received from your home organization combined with information entered for your NREN"
+	},
+	"attribute_info2": {
+		"en": "and subscriber"
+	},
+	"attribute_name": {
+		"en": "Name:"
+	},
+	"attribute_email": {
+		"en": "E-mail address:"
+	},
+	"attribute_entitlement": {
+		"en": "Entitlement:"
+	},
+	"attribute_eppn": {
+		"en": "Unique Name:"
+	},
+	"attribute_orgname": {
+		"en": "Home organization:"
+	},
+	"attribute_country": {
+		"en": "Country:"
+	},
+	"attribute_idpname": {
+		"en": "Org ID:"
+	},
+	"attribute_nrenname": {
+		"en": "NREN-name:"
+	},
+	"attribute_fulldn": {
+		"en": "Full-DN:"
+	}
+}

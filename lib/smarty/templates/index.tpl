@@ -3,8 +3,8 @@
 <br />
 {if ! $person->isAuth()}
 <p class="info">
-  {$unauth_welcome_1}<br />
-  {$unauth_login_notice}
+  {$unauth_welcome_1|escape}<br />
+  {$unauth_login_notice|escape}
 </p>
 
 <div style="text-align: center; margin: 2em 0 2em 0">
@@ -15,16 +15,16 @@
 
 {else}
 <p class="info">
-{$auth_welcome_1}
+{$auth_welcome_1|escape}
 </p>
 <br />
 <hr style="width 90%" />
 <br />
 <h3>Info about you</h3>
 <p class="info">
-  This is information we have received from your home organization
-  combined with information entered for your NREN ({$nren->getName()|escape})
-  and subscriber ({$subscriber->getOrgName()|escape}).
+  {$attribute_info1|escape}
+  ({$nren->getName()|escape})
+  {$attribute_info2|escape} ({$subscriber->getOrgName()|escape}).
 </p>
 <br />
 {assign var='bg1' value='style="background-color: #ededed"'}
@@ -32,31 +32,31 @@
 
 <table class="small" style="width: 90%; table-layout: fixed">
    <tr {$bg1}>
-     <td style="width: 20%"><b>Name:</b></td>
+     <td style="width: 20%"><b>{$attribute_name|escape}</b></td>
      <td style="width: 20px"></td>
      <td>{$person->getName()|escape}</td>
    </tr>
 
    <tr {$bg2}>
-     <td><b>E-mail address:</b></td>
+     <td><b>{$attribute_email|escape}</b></td>
      <td></td>
      <td>{$person->getEmail()|escape}</td>
    </tr>
 
    <tr {$bg1}>
-     <td><b>Entitlement:</b></td>
+     <td><b>{$attribute_entitlement|escape}</b></td>
      <td></td>
      <td>{$person->getEntitlement()|escape}</td>
    </tr>
 
    <tr {$bg2}>
-     <td><b>Unique Name:</b></td>
+     <td><b>{$attribute_eppn|escape}</b></td>
      <td></td>
      <td>{$person->getEPPN()|escape}</td>
    </tr>
 
    <tr {$bg1}>
-     <td><b>Home organization:</b></td>
+     <td><b>{$attribute_orgname|escape}</b></td>
      <td></td>
      <td>
        {if $subscriber}
@@ -66,13 +66,13 @@
    </tr>
 
    <tr {$bg2}>
-     <td><b>Country:</b></td>
+     <td><b>{$attribute_country|escape}</b></td>
      <td></td>
      <td>{$nren->getCountry()|escape}</td>
    </tr>
 
    <tr {$bg1}>
-     <td><b>Org ID:</b></td>
+     <td><b>{$attribute_idpname|escape}</b></td>
      <td></td>
      <td>
        {if $subscriber}
@@ -82,13 +82,13 @@
    </tr>
 
    <tr {$bg2}>
-     <td><b>NREN-name:</b></td>
+     <td><b>{$attribute_nrenname|escape}</b></td>
      <td></td>
      <td>{$person->getNREN()|escape}</td>
    </tr>
 
    <tr {$bg1}>
-     <td><b>Full DN:</b></td>
+     <td><b>{$attribute_fulldn|escape}</b></td>
      <td></td>
      <td><pre class="certificate">{$person->getX509SubjectDN()|escape}</pre></td>
    </tr>
