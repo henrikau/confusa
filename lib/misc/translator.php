@@ -1,4 +1,6 @@
 <?php
+require_once 'Confusa_Session.php';
+
 /**
  * Translator - lookup dictionary entries for a page and decorate the template
  * with the right texts
@@ -139,15 +141,13 @@ class Translator {
 	 */
 	private function getBestLanguage()
 	{
-		if (isset($_SESSION['language'])) {
-			return $_SESSION['language'];
+		$session_language = CS::getSessionKey('language');
+		if (!is_null($session_language)) {
+			return $session_language;
 		}
 
 		if ($this->person->isAuth()) {
 			if (is_null($this->person->getSubscriber())) {
-				if (array_key_exists('language', $_SESSION)) {
-					return $_SESSION['language'];
-				}
 				return null;
 			}
 			try {
@@ -157,8 +157,8 @@ class Translator {
 							    array($this->person->getSubscriber()->getIdPName()));
 
 				if (isset($res[0]['lang'])) {
-					$_SESSION['language'] = $res[0]['lang'];
-					return $res[0]['lang'];
+					CS::setSessionKey('language', $res[0]['lang']);
+					return CS::getSessionKey('language');
 				}
 
 				$query = "SELECT lang FROM nrens WHERE name=?";
@@ -167,8 +167,8 @@ class Translator {
 											array($this->person->getNREN()));
 
 				if (isset($res[0]['lang'])) {
-					$_SESSION['language'] = $res[0]['lang'];
-					return $res[0]['lang'];
+					CS::setSessionKey('language', $res[0]['lang']);
+					return CS::getSessionKey('language');
 				}
 			} catch (DBQueryException $dbqe) {
 				Logger::log_event(LOG_WARNING, "Could not query subscriber/NREN default language. " .
@@ -178,7 +178,6 @@ class Translator {
 								  "Falling back to system default! " . $dbse->getMessage());
 			}
 		}
-
 		$sspdir = Config::get_config('simplesaml_path');
 		/* turn off warnings to keep the page header tidy */
 		$level = error_reporting(E_ERROR);
