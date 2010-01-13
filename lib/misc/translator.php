@@ -153,6 +153,16 @@ class Translator {
 	}
 
 	/**
+	 * "Forcefully" set the language to $lang
+	 * @param $lang string two-char language code to which the language should
+	 *                     be set
+	 */
+	public function setLanguage($lang)
+	{
+		$this->language = $lang;
+	}
+
+	/**
 	 * Get the "best" language for a user. The "best" language is determined by
 	 * the following order of steps:
 	 *
@@ -168,6 +178,15 @@ class Translator {
 	 */
 	private function getBestLanguage()
 	{
+		$sspdir = Config::get_config('simplesaml_path');
+
+		/* person object not yet decorated, session not assigned, manually grab
+		 * it */
+		if (empty($_SESSION)) {
+			include_once $sspdir . '/lib/_autoload.php';
+			SimpleSAML_Session::getInstance();
+		}
+
 		if (isset($_SESSION['language'])) {
 			return $_SESSION['language'];
 		}
@@ -208,7 +227,6 @@ class Translator {
 			}
 		}
 
-		$sspdir = Config::get_config('simplesaml_path');
 		/* turn off warnings to keep the page header tidy */
 		$level = error_reporting(E_ERROR);
 

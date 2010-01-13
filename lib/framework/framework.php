@@ -14,6 +14,7 @@ require_once 'content_page.php';
 require_once 'output.php';
 require_once 'CGE_ComodoCredentialException.php';
 require_once 'confusa_handler.php';
+require_once 'translator.php';
 
 /* global config */
 require_once 'config.php';
@@ -43,6 +44,7 @@ class Framework {
 	private $contentPage;
 	private $tpl;
 	private $renderError = false;
+	public static $translator;
 	private static $errors = array();
 	private static $messages = array();
 	private static $warnings = array();
@@ -84,6 +86,7 @@ class Framework {
 				exit(0);
 			}
 		}
+
 		$this->contentPage = $contentPage;
 		$this->person	= new Person();
 		$this->tpl	= new Smarty();
@@ -99,6 +102,9 @@ class Framework {
 			$this->tpl->display('site.tpl');
 			exit(0);
 		}
+
+		/* get localization into place */
+		Framework::$translator = new Translator($this->person);
 	}
 
 	public function authenticate() {
