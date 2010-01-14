@@ -386,7 +386,11 @@ class Person{
     public function setEmail($email)
     {
 	    if (!is_null($email)) {
-		    $this->email = $email;
+		    if (is_array($email)) {
+			    $this->email = $email;
+		    } else {
+			    $this->email[0] = $email;
+		    }
 	    } else {
 		    $msg  = "Troubles with attributes. No mail address available. ";
 		    $msg .=" You will not be able to sign new certificates until this attribute is available.<br />\n";
@@ -395,18 +399,21 @@ class Person{
     } /* end setEmail() */
 
     /**
-     * getEmail() return the registred email-address
+     * getEmail() return the registred email-address specified by $index
      *
-     * @return: string containing the email-address
+     * @param  : int $index the index in the array (0-indexed)
+     * @return : string containing the specified email-address
      */
-    public function getEmail() {
+    public function getEmail($index=0) {
 	    if (!isset($this->email)) {
 		    return null;
 	    }
-
-		return $this->email;
-	}
-
+	    if ($index >= count($this->email) || $index < 0) {
+		    Framework::error_output("email-index is out of range");
+		    $index = 0;
+	    }
+	    return $this->email[$index];
+    }
 
     /**
      * getSubscriberOrgName() The name of the person's subscriber organization name.
