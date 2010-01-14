@@ -86,14 +86,13 @@ abstract class Content_Page
 
 		if (isset($_GET['lang'])) {
 			$lang = Input::sanitize($_GET['lang']);
+			Framework::$translator->setLanguage($lang);
 			$_SESSION['language'] = $lang;
 		}
 
-		/* Get the translation in place */
-		$trans = new Translator($person);
-		$this->tpl = $trans->decorateTemplate($this->tpl, $this->dictionary);
-		$this->tpl->assign('selected_language', $trans->getLanguage());
-
+		$this->tpl = Framework::$translator->decorateTemplate($this->tpl, 'menu');
+		$this->tpl = Framework::$translator->decorateTemplate($this->tpl, $this->dictionary);
+		$this->tpl->assign('selected_language', Framework::$translator->getLanguage());
 		return false;
 	}
 

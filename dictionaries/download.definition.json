@@ -1,0 +1,98 @@
+{
+	"l10n_item_email": {
+		"en": 	"Email"
+	},
+	"l10n_item_download": {
+		"en":	"Download"
+	},
+	"l10n_item_inspect": {
+		"en":	"Inspect"
+	},
+	"l10n_item_install": {
+		"en":	"Install"
+	},
+	"l10n_item_download_cert": {
+		"en":	"Download certificate"
+	},
+	"l10n_item_install_ks": {
+		"en":	"Install to keystore"
+	},
+	"l10n_button_revoke": {
+		"en":	"Revoke"
+	},
+	"l10n_confirm_revoke1": {
+		"en":	"Really revoke certificate?"
+	},
+	"l10n_confirm_revoke2": {
+		"en":	"Expiry date:"
+	},
+	"l10n_text_ordernumber": {
+		"en":	"Order number:"
+	},
+	"l10n_text_authkey": {
+		"en":	"Auth-key:"
+	},
+	"l10n_status_processing": {
+		"en":	"Processing pending"
+	},
+	"l10n_status_revoked": {
+		"en":	"Revoked!!"
+	},
+	"l10n_status_nonew": {
+		"en":	"No new certificates in the last"
+	},
+	"l10n_status_days": {
+		"en":	"days"
+	},
+	"l10n_status_certhist": {
+		"en":	"Certificates of the last"
+	},
+	"l10n_text_showall": {
+		"en":	"Show all"
+	},
+	"l10n_text_novalid": {
+		"en":	"No valid certificates have been issued to you."
+	},
+	"l10n_text_showingall": {
+		"en":	"Showing all valid certificates."
+	},
+	"l10n_text_hideold": {
+		"en":	"Hide old"
+	},
+	"l10n_title_email": {
+		"en":	"Send certificate via email"
+	},
+	"l10n_title_download_cert": {
+		"en":	"Save certificate directly to disk"
+	},
+	"l10n_title_inspect": {
+		"en":	"Inspect certificate details"
+	},
+	"l10n_title_install_ks": {
+		"en":	"Install certificate to keystore"
+	},
+	"l10n_text_serial_number": {
+		"en":	"Serial number"
+	},
+	"l10n_title_delete": {
+		"en":	"Delete certificate from the database"
+	},
+	"l10n_item_delete": {
+		"en":	"Delete"
+	},
+	"l10n_noscript_notice": {
+		"en":	"Please enable JavaScript to install certificates in your browser's keystore!"
+	},
+	"l10n_mail_subject": {
+		"en":	"Signed certificate"
+	},
+	"l10n_mail_body": {
+		"en":	"Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use"
+	},
+	"l10n_heading_nocerts": {
+		"en":	"No certificates in database"
+	},
+	"l10n_legend_availcerts": {
+		"en":	"Available Certificates"
+	}
+}

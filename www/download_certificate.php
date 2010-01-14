@@ -13,7 +13,7 @@ final class CP_DownloadCertificate extends Content_Page
 
 	public function __construct()
 	{
-		parent::__construct("Download Certificates", true);
+		parent::__construct("Download Certificates", true, "download");
 		Framework::sensitive_action();
 	}
 	public function pre_process($person)
@@ -32,7 +32,8 @@ final class CP_DownloadCertificate extends Content_Page
 						exit(0);
 					}
 				} catch(ConfusaGenException $cge) {
-					Framework::error_output("Could not download the certificate, server said: " . htmlentities($cge->getMessage()));
+					Framework::error_output(Framework::translateMessageTag('downl_err_nodownload')
+					                        . " " . htmlentities($cge->getMessage()));
 				}
 			} else if (isset($_GET['cert_status'])) {
 				$this->pollCertStatusAJAX(Input::sanitizeCertKey($_GET['cert_status']));
@@ -62,7 +63,8 @@ final class CP_DownloadCertificate extends Content_Page
 			$this->tpl->assign('defaultDays',
 				               Config::get_config('capi_default_cert_poll_days'));
 		} catch (ConfusaGenException $e) {
-			Framework::error_output("Could not retrieve certificates from the database. Server said: " .  htmlentities($e->getMessage()));
+			Framework::error_output(Framework::translateMessageTag('downl_err_db') .
+			                        htmlentities($e->getMessage()));
 		}
 		$this->tpl->assign('standalone', (Config::get_config('ca_mode') === CA_STANDALONE));
 		$this->tpl->assign('content', $this->tpl->fetch('download_certificate.tpl'));
@@ -80,10 +82,7 @@ final class CP_DownloadCertificate extends Content_Page
 		else if (isset($_GET['email_cert'])) {
 			$mail = $this->person->getEmail();
 			if (!isset($mail) || $mail === "") {
-				$msg = "No email-address is set. Cannot email certificate to you!<br />\n";
-				$msg .= "This is a required attribute for many operations, and you should therefore contact ";
-				$msg .= "your local IT-support and ask them to verify your user-cerdentials.<br />\n";
-				Framework::error_output($msg);
+				Framework::error_output(Framework::translateMessageTag('downl_err_noemail'));
 			} else {
 				$this->mailCert(htmlentities($_GET['email_cert']));
 			}
@@ -118,8 +117,9 @@ final class CP_DownloadCertificate extends Content_Page
 			download_certificate($script, "install.crt");
 			exit(0);
 		} else {
-			$script .= "<noscript><b>Please enable JavaScript to install certificates ";
-			$script .= "in your browser's keystore!</b></noscript>";
+			$script .= "<noscript><b>" .
+			           Framework::$translator->getTextForTag('l10n_noscript_notice', 'download') .
+			           "</b></noscript>";
 			$this->tpl->assign("script", $script);
 		}
 	}
@@ -157,7 +157,8 @@ final class CP_DownloadCertificate extends Content_Page
 				}
 			}
 		} catch (ConfusaGenException $e) {
-			Framework::error_output("Could not retrieve the certificate, server said: " . htmlentities($e->getMessage()));
+			Framework::error_output(Framework::translateMessageTag('downl_err_misc')
+			                        . " " . htmlentities($e->getMessage()));
 		}
 
 		$inspectElement = array();
@@ -176,24 +177,23 @@ final class CP_DownloadCertificate extends Content_Page
 						      Config::get_config('sys_from_address'),
 						      Config::get_config('system_name'),
 						      Config::get_config('sys_header_from_address'));
-				$mm->setSubject("Signed certificate");
-				$mm->setBody("Attached is your new certificate. Remember to " .
-				             "store this in \$HOME/.globus/usercert.pem for " .
-							 "ARC to use");
+				$mm->setSubject(Framework::$translator->getTextForTag('l10n_mail_subject', 'download'));
+				$mm->setBody(Framework::$translator->getTextForTag('l10n_mail_body', 'download'));
 				$mm->addAttachment($cert, 'usercert.pem');
 
 				if (!$mm->sendMail()) {
-					Framework::error_output("Could not send mail properly!");
+					Framework::error_output(Framework::translateMessageTag('downl_err_sendmail'));
 					return false;
 				}
 			} else {
 				return false;
 			}
 		} catch (ConfusaGenException $e) {
-			Framework::error_output("Could not mail the certificate, server said: " . htmlentities($e->getMessage()));
+			Framework::error_output(Framework::translateMessageTag('downl_err_sendmail2')
+			                        . " " . htmlentities($e->getMessage()));
 			return false;
 		}
-		Framework::success_output("Your e-mail has been sent");
+		Framework::success_output('downl_suc_mail');
 	} /* end send_cert */
 
 	/**

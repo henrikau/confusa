@@ -1,0 +1,95 @@
+{
+	"prot_title_text1": {
+		"en": "You will be redirected to login before you can view this page"
+	},
+	"heading_certificates": {
+		"en": "Certificates"
+	},
+	"item_request_new": {
+		"en": "Request new"
+	},
+	"item_my_certificates": {
+		"en": "My certificates"
+	},
+	"item_revoke_certificates": {
+		"en": "Revoke"
+	},
+	"heading_help": {
+		"en": "Help"
+	},
+	"item_about": {
+		"en": "About"
+	},
+	"item_help": {
+		"en": "Help"
+	},
+	"heading_extras": {
+		"en": "Extras"
+	},
+	"item_tools": {
+		"en": "Tools"
+	},
+	"item_cacert": {
+		"en": "CA Certificate"
+	},
+	"heading_view_menu": {
+		"en": "View menu"
+	},
+	"item_view_user": {
+		"en": "User"
+	},
+	"item_view_nren_admin": {
+		"en": "NREN-Admin"
+	},
+	"item_view_subscr_admin": {
+		"en": "Subscr. Admin"
+	},
+	"item_view_admin": {
+		"en": "Admin"
+	},
+	"item_logout": {
+		"en": "Log out"
+	},
+	"item_login": {
+		"en": "Login"
+	},
+	"heading_portal": {
+		"en": "Portal"
+	},
+	"item_admins": {
+		"en": "Admins"
+	},
+	"item_appearance": {
+		"en": "Appearance"
+	},
+	"heading_nren": {
+		"en": "NREN"
+	},
+	"item_attributes": {
+		"en": "Attributes"
+	},
+	"item_ca_account": {
+		"en": "CA Account"
+	},
+	"item_contact_info": {
+		"en": "Contact info"
+	},
+	"item_subscribers": {
+		"en": "Subscribers"
+	},
+	"item_revocation": {
+		"en": "Revocation"
+	},
+	"heading_info": {
+		"en": "Info"
+	},
+	"item_version": {
+		"en": "Version"
+	},
+	"heading_subscriber": {
+		"en": "Subscriber"
+	},
+	"item_robot": {
+		"en": "Robot"
+	}
+}

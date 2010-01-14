@@ -1,0 +1,20 @@
+{
+	"l10n_heading_tools": {
+		"en":	"Tools of the trade"
+	},
+	"l10n_text_explanation1": {
+		"en":	"This is where you find the tools needed when using Confusa. These tools will not help you obtain certificates in one step, but they will ease the work."
+	},
+	"l10n_text_explanation2": {
+		"en":	"Tool for creating key, CSR and general filetransfer with the server. This can be downloaded either directly through the browser, or, you can receive it via email."
+	},
+	"l10n_text_explanation3": {
+		"en":	"<b>Note</b> this is a strictly <i>personal</i> script, and it is tailored to your user-credentials.  This means that you cannot use someone else's script, nor they yours."
+	},
+	"l10n_text_explanation4": {
+		"en":	"<b>Note:</b> this tool has become <b>deprecated</b>. It is still available for those who do not want to create their own CSR manually. Download and use it the following way:"
+	},
+	"l10n_download_certscript": {
+		"en":	"Download script"
+	}
+}

@@ -11,7 +11,7 @@ final class CP_Index extends Content_Page
 
 	function __construct()
 	{
-		parent::__construct("Index", false, "index.php");
+		parent::__construct("Index", false, "index");
 	}
 
 	/**

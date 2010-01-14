@@ -122,11 +122,11 @@
 
 
 {if empty($certList)}
-<h3>No certificates in database</h3>
+<h3>{$l10n_heading_nocerts|escape}</h3>
 {else}
 	<div class="csr">
 	<fieldset>
-	<legend>Available Certificates</legend>
+	<legend>{$l10n_legend_availcerts|escape}</legend>
 
 	{if $standalone}
 		{include file='certificates/persp_standalone.tpl'}

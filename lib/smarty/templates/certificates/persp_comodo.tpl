@@ -14,10 +14,10 @@
 			<tr>
 			{if $cert.status == "Awaiting Validation" || $cert.status == "Revoked"}
 				<td>
-				[Email]
-				[Download]
-				[Inspect]
-				[Install]
+				[{$l10n_item_email|escape}]
+				[{$l10n_item_download|escape}]
+				[{$l10n_item_inspect|escape}]
+				[{$l10n_item_install|escape}]
 				</td>
 
 				{if isset($cert.valid_untill) && isset($cert.order_number) && $cert.status == "Awaiting Validation"}
@@ -27,15 +27,15 @@
 		<td>
 		  <a href="download_certificate.php?email_cert={$cert.order_number}">
 		    <img src="graphics/email.png" alt=""
-			 title="Send certificate via email" class ="url" /> Email
+			 title="{$l10n_title_email|escape}" class ="url" /> {$l10n_item_email|escape}
 		  </a><br />
 
 		  <a href="download_certificate.php?file_cert={$cert.order_number}">
 		    <img src="graphics/disk.png"
 			 alt=""
-			 title="Save certificate directly to disk"
+			 title="{$l10n_title_download_cert|escape}"
 			 class="url" />
-		    Download Certificate
+		    {$l10n_item_download_cert|escape}
 		  </a>
 		  <br />
 
@@ -44,10 +44,10 @@
 		     onclick="return inspectCertificateAJAX('{$cert.order_number}');">
 		    <img src="graphics/information.png"
 			 alt=""
-			 title="Inspect certificate details"
+			 title="{$l10n_title_inspect|escape}"
 			 class="url" />
 			 <span id="inspectText{$cert.order_number}">
-		    Inspect
+		    {$l10n_item_inspect|escape}
 			</span>
 		  </a>
 		  <br />
@@ -55,9 +55,9 @@
 		  <a href="download_certificate.php?install_cert={$cert.order_number}">
 		    <img src="graphics/database_add.png"
 		    alt=""
-		    title="Install certificate to keystore"
+		    title="{$l10n_title_install_ks|escape}"
 		    class="url" />
-		    Install to keystore
+		    {$l10n_item_install_ks|escape}
 		  </a>
 		  <br />
 
@@ -69,9 +69,9 @@
 				<input type="hidden" name="revoke"		value="revoke_single" />
 				<input type="hidden" name="order_number"	value="{$cert.order_number|escape}" />
 				<input type="hidden" name="reason"		value="unspecified" />
-				<input type="submit" name="submit"		value="Revoke"
+				<input type="submit" name="submit"		value="{$l10n_button_revoke|escape}"
 								 style=" background-color:#660000; color:#FFFFFF;"
-								onclick="return confirm('\t\tReally revoke certificate?\n\Order number: {$cert.order_number|escape}\nExpiry date:     {$valid|escape}')" />
+								onclick="return confirm('\t\t{$l10n_confirm_revoke1|escape}\n\n{$l10n_text_ordernumber} {$cert.order_number|escape}\n{$l10n_confirm_revoke2|escape}     {$valid|escape}')" />
 					</div>
 					</form>
 				</td>
@@ -82,10 +82,10 @@
 			<tr>
 			{if $cert.status == "Awaiting Validation" }
 			<td id="certInfoText{$cert.order_number|escape}"
-			    style="color: gray; font-weight: bold">Processing pending</td>
+			    style="color: gray; font-weight: bold">{$l10n_status_processing|escape}</td>
 			{elseif $cert.status === "Revoked"}
 			<td id="certInfoText{$cert.order_number|escape}"
-			    style="color: red; font-weight: bold">Revoked!!</td>
+			    style="color: red; font-weight: bold">{$l10n_status_revoked|escape}</td>
 			{else}
 			<td id="certInfoText{$cert.order_number|escape}">
 			    {$cert.valid_untill|escape}</td>
@@ -106,22 +106,22 @@
 {assign var='numCerts' value=$certList|@count}
 	{if isset($showAll) && ($showAll===false)}
 		{if $numCerts == 0}
-			No new certificates in the last {$defaultDays} days.<br />
+			{$l10n_status_nonew|escape} {$defaultDays} {$l10n_status_days|escape}.<br />
 		{else}
 			<p>
-			Certificates of the last {$defaultDays} days.</p>
+			{$l10n_status_certhist|escape} {$defaultDays} {$l10n_status_days|escape}.</p>
 		{/if}
 
 		<a href="download_certificate.php?certlist_all=true">
-		Show all <img src="graphics/triangle_down.png" alt="Show older" style="border: none" /></a>
+		{$l10n_text_showall|escape} <img src="graphics/triangle_down.png" alt="Show older" style="border: none" /></a>
 	{else}
 		{if $numCerts == 0}
-			No valid certificates have been issued to you.<br />
+			{$l10n_text_novalid|escape}<br />
 		{else}
-			Showing all valid certificates.<br />
+			{$l10n_text_showingall|escape}<br />
 		{/if}
 
 		<a href="download_certificate.php?certlist_all=false">
-		Hide old <img src="graphics/triangle_up.png" alt="Hide older" style="border: none" /> </a>
+		{$l10n_text_hideold|escape} <img src="graphics/triangle_up.png" alt="Hide older" style="border: none" /> </a>
 	{/if}
 </div>

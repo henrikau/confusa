@@ -1,0 +1,41 @@
+{
+	"l10n_heading_rootca": {
+		"en": "Issuing CA"
+	},
+	"l10n_text_rootcaexpl1": {
+		"en": "This is the Certificate we use for signing the CSRs we receive."
+	},
+	"l10n_text_rootcaexpl2": {
+		"en": "To view the certificate in the browser, press"
+	},
+	"l10n_text_here": {
+		"en": "here"
+	},
+	"l10n_link_direct": {
+		"en": "Direct link"
+	},
+	"l10n_text_rootcaexpl3": {
+		"en": "to the certificate (install)."
+	},
+	"l10n_text_downldirect": {
+		"en": "If you want to download it directly:"
+	},
+	"l10n_button_download": {
+		"en": "Download"
+	},
+	"l10n_text_crlexpl1": {
+		"en": "The CRL (Certificate Revocation List) is a list of all revoked (invalid) certificates published by this CA."
+	},
+	"l10n_text_crlexpl2": {
+		"en": "View the CRL in the brower:"
+	},
+	"l10n_text_crldili": {
+		"en": "Direct link to crl (install):"
+	},
+	"l10n_heading_cadump": {
+		"en": "CA certificate dump:"
+	},
+	"l10n_heading_crldump": {
+		"en": "CRL dump:"
+	}
+}

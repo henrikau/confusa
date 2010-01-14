@@ -1,0 +1,23 @@
+{
+	"l10n_heading_revocation": {
+		"en": 	"Revoke certificates"
+	},
+	"l10n_text_uinfoall": {
+		"en":	"You can now revoke all your certificates. Do to this, you must first specify a reason, and then press 'Revoke all'."
+	},
+	"l10n_text_uinfospec1": {
+		"en":	"If you want to revoke a specific certificate, you must go to"
+	},
+	"l10n_text_uinfospec2": {
+		"en":	"and choose the particular certificate to revoke."
+	},
+	"l10n_button_revokeall": {
+		"en":	"Revoke all"
+	},
+	"l10n_confirm_revokeall1": {
+		"en":	"Revoking"
+	},
+	"l10n_confirm_revokeall2": {
+		"en":	"certificates! Are you sure?"
+	}
+}

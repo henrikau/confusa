@@ -1,8 +1,8 @@
-<h2>Help</h2>
+<h2>{$l10n_heading_help}</h2>
 
 {if $person->isAuth()}
 <div class="spacer"></div>
-<h3>{$nren}'s Advice:</h3>
+<h3>{$nren}{$l10n_heading_nrenadvice}</h3>
 {$nren_help_text}
 {/if}
 <div class="spacer"></div>

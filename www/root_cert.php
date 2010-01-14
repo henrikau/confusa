@@ -14,7 +14,7 @@ class CP_Root_Certificate extends Content_Page
 
 	function __construct()
 	{
-		parent::__construct("Root Certificate(s)", false);
+		parent::__construct("Root Certificate(s)", false, "rootcert");
 
 		if (Config::get_config('ca_mode') == CA_COMODO) {
 			$this->cert_path = tempnam("/tmp/", "tcs-ca.pem.");

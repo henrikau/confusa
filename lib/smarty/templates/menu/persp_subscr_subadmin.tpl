@@ -1,25 +1,25 @@
-<h3>Portal</h3>
+<h3>{$heading_portal|escape}</h3>
 
 <ul>
 	<li><a href="admin.php"{$prot_title}>
-      {$prot_l}View admins{$prot_r}</a></li>
+      {$prot_l}{$item_admins|escape}{$prot_r}</a></li>
 </ul>
 
-<h3>Certificates</h3>
+<h3>{$heading_certificates|escape}</h3>
 
 <ul>
     <li><a href="revoke_certificate.php"{$prot_title}>
-      {$prot_l}Revocation{$prot_r}</a></li>
+      {$prot_l}{$item_revocation|escape}{$prot_r}</a></li>
 </ul>
 
-<h3>Info</h3>
+<h3>{$heading_info|escape}</h3>
 
 <ul>
-	<li><a href="about_confusa.php">Version</a></li>
+	<li><a href="about_confusa.php">{$item_version|escape}</a></li>
 </ul>
 
-<h3>View menu</h3>
+<h3>{$heading_view_menu|escape}</h3>
 <ul>
-<li><a href="?mode=normal">User</a></li>
-<li>Admin</li>
+<li><a href="?mode=normal">{$item_view_user|escape}</a></li>
+<li>{$item_view_admin|escape}</li>
 </ul>

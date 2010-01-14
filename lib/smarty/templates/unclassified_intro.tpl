@@ -1,21 +1,7 @@
 <h3>Confusa</h3>
 <br />
-<p>
-	{$index_summary_line1}
-</p>
-<br />
-
-<p>
-	{$index_summary_line2}
-</p>
-<br />
-	<ul style="margin-left: 5em">
-	<li>{$index_enum_line1}</li>
-	<li>{$index_enum_line2}</li>
-	</ul>
-<br />
-<p>
-	{$index_summary_line3}
+<p class="info">
+  {$unauth_welcome_1|escape}<br />
 </p>
 
 <br />

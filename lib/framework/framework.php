@@ -14,6 +14,7 @@ require_once 'content_page.php';
 require_once 'output.php';
 require_once 'CGE_ComodoCredentialException.php';
 require_once 'confusa_handler.php';
+require_once 'translator.php';
 
 /* global config */
 require_once 'config.php';
@@ -43,6 +44,7 @@ class Framework {
 	private $contentPage;
 	private $tpl;
 	private $renderError = false;
+	public static $translator;
 	private static $errors = array();
 	private static $messages = array();
 	private static $warnings = array();
@@ -84,6 +86,7 @@ class Framework {
 				exit(0);
 			}
 		}
+
 		$this->contentPage = $contentPage;
 		$this->person	= new Person();
 		$this->tpl	= new Smarty();
@@ -99,6 +102,9 @@ class Framework {
 			$this->tpl->display('site.tpl');
 			exit(0);
 		}
+
+		/* get localization into place */
+		Framework::$translator = new Translator($this->person);
 	}
 
 	public function authenticate() {
@@ -125,9 +131,7 @@ class Framework {
 		if ($this->person->isAuth()) {
 			if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_user')) == false) {
 				if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_admin')) == false) {
-					Framework::message_output("'Confusa' Entitlement not set. You do not qualify " .
-								"to request certificates at this time. Please ask an IT-administrator at your " .
-								"institution to resolve this issue.");
+					Framework::message_output(self::translateMessageTag('fw_error_entitlement_unset'));
 				}
 			}
 		}
@@ -173,22 +177,17 @@ class Framework {
 		try {
 			$this->authenticate();
 		} catch (CriticalAttributeException $cae) {
-			$msg .= "<b>Error(s) with attributes</b><br /><br />";
+			$msg .= "<b>" . self::translateMessageTag('fw_error_critical_attribute1') . "</b><br /><br />";
 			$msg .= htmlentities($cae->getMessage()) . "<br /><br />";
-			$msg .= "<b>Cannot continue</b><br /><br />";
-			$msg .= "Please contact your local IT-support, and ask them to resolve this issue.";
+			$msg .= self::translateMessageTag('fw_error_critical_attribute2');
 			Framework::error_output($msg);
 			$this->renderError = true;
 		} catch (MapNotFoundException $mnfe) {
-			$msg .= "<b>Error(s) with attributes</b><br /><br />";
-			$msg .= "No map has been configured for your subscriber. ";
-			$msg .= "Please contact your local IT-departement and ask them to forward the request ";
-			$msg .= "to the registred NREN administrator for your domain.";
-			Framework::error_output($msg);
+			Framework::error_output(self::translateMessageTag('fw_error_map_notfound'));
 			$this->renderError = true;
 		} catch (ConfusaGenException $cge) {
-			Framework::error_output("Could not authenticate you! Error was: " .
-									htmlentities($cge->getMessage()));
+			Framework::error_output(self::translateMessageTag('fw_error_auth') .
+			                         htmlentities($cge->getMessage()));
 			$this->renderError = true;
 		}
 
@@ -201,33 +200,29 @@ class Framework {
 				$this->tpl->assign('extraHeader', $res);
 			}
 		} catch (CGE_RemoteCredentialException $rce) {
-			$msg  = "The credentials for your NREN are not specified or incorrect! Some ";
-			$msg .= "certificate operations will not work.";
-			$msg .= "<br /><br />Backend said: <br />";
+			$msg  = self::translateMessageTag('fw_error_remote_credential1');
 			$msg .= "<i>". htmlentities($rce->getMessage()) . "</i><br /><br />";
 
 			if ($this->person->isNRENAdmin()) {
 				$msg .=  "<div style=\"text-align: center\">";
-				$msg .= "Please update the credentials <a href=\"accountant.php\">";
-				$msg .= "here</a></div>";
+				$msg .= self::translateMessageTag('fw_error_remote_credential2') . "</div>";
 			} else {
-				$msg .= "Please contact an IT-administrator.";
+				$msg .= Framework::error_output(self::translateMessageTag('fw_error_remote_credential3'));
 				$this->renderError = true;
 			}
 			Framework::warning_output($msg);
 		} catch (KeyNotFoundException $knfe) {
 				$this->renderError = true;
 
-				$msg  = "[".create_pw(8)."] config-file not properly configured. ";
+				$msg  = "[".create_pw(8)."] " . self::translateMessageTag('fw_keynotfound1');
 				Logger::log_event(LOG_INFO, $msg . $knfe->getMessage());
 
 				$msg .= htmlentities($knfe->getMessage());
-				$msg .= "<br />Please contact operational support to resolve this isse, ";
-				$msg .= "be sure to include the error-code in the message.";
+				$msg .= "<br />" . self::translateMessageTag('fw_keynotfound2');
 				Framework::error_output($msg);
 		} catch (Exception $e) {
-			Framework::error_output("Uncaught exception occured!<br />\n" .
-			                        htmlentities($e->getMessage()));
+			Framework::error_output(self::translateMessageTag('fw_unhandledexp1') .
+			                        "<br />" . htmlentities($e->getMessage()));
 			$this->renderError = true;
 		}
 
@@ -260,28 +255,25 @@ class Framework {
 			try {
 				$this->contentPage->process($this->person);
 			} catch (KeyNotFoundException $knfe) {
-				$msg  = "[".create_pw(8)."] config-file not properly configured. ";
+				$msg  = "[".create_pw(8)."] " .
+				        self::translateMessageTag('fw_keynotfound1');
 				Logger::log_event(LOG_INFO, $msg . $knfe->getMessage());
 				$msg .= htmlentities($knfe->getMessage());
-				$msg .= "<br />Please contact operational support to resolve this isse, ";
-				$msg .= "be sure to include the error-code in the message.";
+				$msg .= "<br />" . self::translateMessageTag('fw_keynotfound2');
 				Framework::error_output($msg);
 			} catch (Exception $e) {
-				Framework::error_output("Unhandled exception found in user-function!<br />\n" .
-				                        htmlentities($e->getMessage()));
+				Framework::error_output(self::translateMessageTag('fw_unhandledexp1')
+				                        . "<br />\n" . htmlentities($e->getMessage()));
 			}
 		} else {
 			$nren = $this->person->getNREN();
 
 			if (isset($nren)) {
 				/* if all else fails, at least give the user some recovery information */
-				Framework::message_output("Unrecoverable error and you are not NREN admin!" .
-				                          " Your eduPersonPrincipalName is " .
+				Framework::message_output(self::translateMessageTag('fw_unrecoverable_nren') .
 				                          htmlentities($this->person->getEPPN()));
 			} else {
-				Framework::error_output("Seems like the portal can not figure out your NREN " .
-				                        "from your identity provider. This is probably a portal " .
-				                        "configuration error!");
+				Framework::error_output(self::translateMessageTag('fw_unrecoverable_nonren'));
 				Logger::log_event(LOG_WARNING, "User contacting us from " . $_SERVER['REMOTE_ADDR'] .
 				                  " tried to login from IdP that appears to have no NREN-mapping!");
 			}
@@ -329,6 +321,11 @@ class Framework {
 	public static function warning_output($message)
 	{
 		self::$warnings[] = $message;
+	}
+
+	public static function translateMessageTag($tag)
+	{
+		return self::$translator->getTextForTag($tag, 'messages');
 	}
 
 } /* end class Framework */
