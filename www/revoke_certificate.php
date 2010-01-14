@@ -12,7 +12,7 @@ class CP_RevokeCertificate extends Content_Page
 
 	function __construct()
 	{
-		parent::__construct("Revoke Certificate(s)", true);
+		parent::__construct("Revoke Certificate(s)", true, "revocation");
 		Framework::sensitive_action();
 	}
 
@@ -141,6 +141,8 @@ class CP_RevokeCertificate extends Content_Page
 				}
 			}
 
+		$this->tpl->assign('l10n_menuitem_mycerts',
+		                   Framework::$translator->getTextForTag('item_my_certificates', 'menu'));
 		$this->tpl->assign('content', $this->tpl->fetch('revoke_certificate.tpl'));
 
 		} catch (ConfusaGenException $cge) {

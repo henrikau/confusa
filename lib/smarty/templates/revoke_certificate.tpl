@@ -1,4 +1,4 @@
-<h3>Revoke certificates</h3>
+<h3>{$l10n_heading_revocation|escape}</h3>
 <div class="spacer"></div>
 
 {if $person->inAdminMode()}
@@ -9,13 +9,10 @@
     {/if}
 {else}
 	<p class="info">
-	  You can now revoke all your certificates. Do to this, you must first
-	  specify a reason, and then press 'Revoke all'.
+	  {$l10n_text_uinfoall|escape}
 	</p>
 	<p class="info">
-	  If you want to revoke a specific certificate, you must go
-	  to <a href="download_certificate.php">My Certificates</a> and choose
-	  the particular certificate to revoke.
+	  {$l10n_text_uinfospec1|escape} <a href="download_certificate.php">{$l10n_menuitem_mycerts|escape}</a> {$l10n_text_uinfospec2|escape}
 	</p>
 	{* The display part *}
 	{if isset($owners)}

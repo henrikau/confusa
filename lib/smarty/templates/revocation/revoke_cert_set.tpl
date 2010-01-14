@@ -20,8 +20,8 @@
       <td>
 	<input type="submit"
 	       name="submit"
-	       value="Revoke all"
-	       onclick="return confirm('Revoking {$stats[$owner]} certificates! Are you sure?')" />
+	       value="{$l10n_button_revokeall|escape}"
+	       onclick="return confirm('{$l10n_confirm_revokeall1} stats[$owner]} {$l10n_confirm_revokeall2}')" />
       </td>
     </tr>
   </table>
