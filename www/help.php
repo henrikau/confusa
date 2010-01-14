@@ -3,6 +3,7 @@ require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'person.php';
 require_once 'classTextile.php';
+require_once 'logger.php';
 
 class CP_Help extends Content_Page
 {
@@ -38,14 +39,14 @@ class CP_Help extends Content_Page
 										array('text'),
 										array($nren));
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Could not retrieve the help text of your NREN due " .
-									"to an error with the statement. Server said " .
-									htmlentities($dbse->getMessage()));
+			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the help " .
+			                  "text of NREN $nren due to an error with the " .
+			                  "statement. Server said " . $dbse->getMessage());
 			return "";
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Could not retrieve the help text of your NREN due " .
-									"to an error in the query. Server said " .
-									htmlentities($dbqe->getMessage()));
+			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the help " .
+			                  "text of NREN $nren due to an error in the " .
+			                  "query. Server said " . $dbqe->getMessage());
 			return "";
 		}
 
