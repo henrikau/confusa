@@ -1,5 +1,5 @@
 {if $person->isAuth()}
-<h2>About NREN</h2>
+<h2>{$l10n_heading_aboutnren}</h2>
 <div class="spacer"></div>
 
 {if !is_null($logo)}

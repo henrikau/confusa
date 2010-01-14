@@ -9,7 +9,7 @@ class CP_Help extends Content_Page
 {
 	function __construct()
 	{
-		parent::__construct("Help", false);
+		parent::__construct("Help", false, "index");
 	}
 
 	public function process()

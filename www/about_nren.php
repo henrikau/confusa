@@ -8,7 +8,7 @@ class CP_About_NREN extends Content_Page
 {
 	function __construct()
 	{
-		parent::__construct("About NREN", false, "index.php");
+		parent::__construct("About NREN", false, "index");
 	}
 
 

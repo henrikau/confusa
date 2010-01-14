@@ -70,5 +70,14 @@
 	},
 	"attribute_fulldn": {
 		"en": "Full-DN:"
+	},
+	"l10n_heading_aboutnren": {
+		"en": "About NREN"
+	},
+	"l10n_heading_help": {
+		"en": "Help"
+	},
+	"l10n_heading_nrenadvice": {
+		"en": "'s Advice:"
 	}
 }
