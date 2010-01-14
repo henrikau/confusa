@@ -1,21 +1,21 @@
-<h3>Issuing CA</h3>
+<h3>{$l10n_heading_rootca}</h3>
 <hr style="width: 80%" />
 <p class="info">
-This is the Certificate we use for signing the CSRs we receive.
+{$l10n_text_rootcaexpl1}
 </p>
 <ul style="margin-left: 18px">
 <li>
-	To view the certificate in the browser, press <a href="root_cert.php?show_root_cert=yes">here</a>.
+	{$l10n_text_rootcaexpl2} <a href="root_cert.php?show_root_cert=yes">{$l10n_text_here}</a>.
 </li>
 <li>
-	<a href="{$ca_download_link}">Direct link</a> to the certificate (install).
+	<a href="{$ca_download_link}">{$l10n_link_direct}</a> {$l10n_text_rootcaexpl3}
 </li>
 <li>
 	<form method="get" action="root_cert.php">
 	  <p>
 		<input type="hidden" name="send_file" value="cacert" />
-		If you want to download it directly: 
-		<input type="submit" name="submit" value="Download" />
+		{$l10n_text_downldirect}
+		<input type="submit" name="submit" value="{$l10n_button_download}" />
 	  </p>
 	</form>
 </li>
@@ -27,20 +27,19 @@ This is the Certificate we use for signing the CSRs we receive.
 <h3>CRL</h3>
 <hr style="width: 80%" />
 <p class="info">
-The CRL (Certificate Revocation List) is a list of all revoked (invalid)
-certificates published by this CA.
+{$l10n_text_crlexpl1}
 </p>
 
 <ul style="margin-left: 18px">
-<li>View the CRL in the brower: 
-<a href="root_cert.php?show_crl=yes">here </a></li>
-<li>Direct link to crl (install): <a href="{$crl_download_link}">here</a>.</li>
+<li>{$l10n_text_crlexpl2}
+<a href="root_cert.php?show_crl=yes">{$l10n_text_here} </a></li>
+<li>{$l10n_text_crldili} <a href="{$crl_download_link}">{$l10n_text_here}</a>.</li>
 <li>
 	<form method="get" action="">
 	  <p>
 	    <input type="hidden" name="send_file" value="crl" />
-	    If you want to download it directly:
-	    <input type="submit" name="submit" value="Download" />
+	    {$l10n_text_downldirect}
+	    <input type="submit" name="submit" value="{$l10n_button_download}" />
 	  </p>
 	</form>
 </li>
@@ -49,7 +48,7 @@ certificates published by this CA.
 <br />
 {if isset($ca_dump)}
 <br />
-<h4>CA certificate dump:</h4>
+<h4>{$l10n_heading_cadump}</h4>
 <hr style="width: 80%" />
 <pre class="certificate">
 {$ca_dump|escape}
@@ -58,7 +57,7 @@ certificates published by this CA.
 
 {if isset($crl_dump)}
 <br />
-<h4>CRL dump:</h4>
+<h4>{$l10n_heading_crldump}</h4>
 <hr style="width: 80%" />
 <pre class="certificate">
 {$crl_dump|escape}
