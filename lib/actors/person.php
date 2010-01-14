@@ -37,6 +37,7 @@ class Person{
     private $eppnKey;
 
     private $email;
+    private $certEmails;
     private $country;
 
     /* array storing all provided entitlements for the user. */
@@ -82,6 +83,7 @@ class Person{
 	    unset($this->eppn);
 	    unset($this->eppnKey);
 	    unset($this->email);
+	    unset($this->certEmails);
 
 	    unset($this->nren);
 
@@ -447,6 +449,54 @@ class Person{
 	     * away our 'master copy' of the list, only a blueprint. */
 	    foreach ($this->email as $key => $value) {
 		    $res[$key] = ($webready ? " ":"") . $value;
+	    }
+	    return $res;
+    }
+
+    /**
+     * regCertEmail() 'register' a new email to place in the certificate.
+     *
+     * This does not create a *new* certificate, but it takes a provided
+     * address from the user, matches it to the list of attribute-provided
+     * address(es), and if we find a match, store it in an array for later use.
+     *
+     * We have to do this to avoid users adding 'random' addresses to the
+     * certificates.
+     *
+     * @param  : $mail String a new email to add to the list
+     * @return : void
+     */
+    public function regCertEmail($mail)
+    {
+	    if (!is_null($mail)) {
+		    if (in_array($mail, $this->email, true)) {
+			    $this->certEmails[] = $mail;
+
+		    }
+	    }
+    }
+
+    /**
+     * getRegCertEmails() return the registred emails mathced to 'valid' emails.
+     *
+     * This function will be used to 'register' email-addresses the user wants
+     * to include in the certificate. Since we do not control what the user does
+     * with the hidden fields, we have to match these to the set of supplied
+     * addresses from the fedration.
+     *
+     * @param  : void
+     * @return : array|null the list of valid,
+     *		 requested emails for a certificate.
+     */
+    public function getRegCertEmails()
+    {
+	    if (!isset($this->certEmails)) {
+		    return null;
+	    }
+
+	    $res = array();
+	    foreach ($this->certEmails as $key => $value) {
+		    $res[$key] = $value;
 	    }
 	    return $res;
     }
