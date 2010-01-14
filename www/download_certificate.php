@@ -13,7 +13,7 @@ final class CP_DownloadCertificate extends Content_Page
 
 	public function __construct()
 	{
-		parent::__construct("Download Certificates", true);
+		parent::__construct("Download Certificates", true, "download");
 		Framework::sensitive_action();
 	}
 	public function pre_process($person)
@@ -117,8 +117,9 @@ final class CP_DownloadCertificate extends Content_Page
 			download_certificate($script, "install.crt");
 			exit(0);
 		} else {
-			$script .= "<noscript><b>Please enable JavaScript to install certificates ";
-			$script .= "in your browser's keystore!</b></noscript>";
+			$script .= "<noscript><b>" .
+			           Framework::$translator->getTextForTag('l10n_noscript_notice', 'download') .
+			           "</b></noscript>";
 			$this->tpl->assign("script", $script);
 		}
 	}
@@ -176,10 +177,8 @@ final class CP_DownloadCertificate extends Content_Page
 						      Config::get_config('sys_from_address'),
 						      Config::get_config('system_name'),
 						      Config::get_config('sys_header_from_address'));
-				$mm->setSubject("Signed certificate");
-				$mm->setBody("Attached is your new certificate. Remember to " .
-				             "store this in \$HOME/.globus/usercert.pem for " .
-							 "ARC to use");
+				$mm->setSubject(Framework::$translator->getTextForTag('l10n_mail_subject', 'download'));
+				$mm->setBody(Framework::$translator->getTextForTag('l10n_mail_body', 'download'));
 				$mm->addAttachment($cert, 'usercert.pem');
 
 				if (!$mm->sendMail()) {

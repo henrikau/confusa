@@ -19,7 +19,7 @@
 
 		<tr>
 		<td>
-		Serial number: <B>{$serial|escape}</B>
+		{$l10n_text_serial_number|escape}: <B>{$serial|escape}</B>
 		</td>
 		</tr>
 
@@ -27,15 +27,15 @@
 		<td>
 		  <a href="download_certificate.php?email_cert={$key}">
 		    <img src="graphics/email.png" alt=""
-			 title="Send certificate via email" class ="url" /> Email
+			 title="{$l10n_title_email|escape}" class ="url" /> {$l10n_item_email|escape}
 		  </a><br />
 
 		  <a href="download_certificate.php?file_cert={$key}">
 		    <img src="graphics/disk.png"
 			 alt=""
-			 title="Save certificate directly to disk"
+			 title="{$l10n_title_download_cert|escape}"
 			 class="url" />
-		    Download Certificate
+		    {$l10n_item_download_cert|escape}
 		  </a><br />
 
 		  {if empty($inspectElement[$key])}
@@ -43,19 +43,19 @@
 		     onclick="return inspectCertificateAJAX('{$key}');">
 		    <img src="graphics/information.png"
 			 alt=""
-			 title="Inspect certificate details"
+			 title="{$l10n_title_inspect|escape}"
 			 class="url" />
 			 <span id="inspectText{$key}">
-		    Inspect
+		    {$l10n_item_inspect|escape}
 			</span>
 		  </a><br />
 		  {/if}
 		  <a href="download_certificate.php?delete_cert={$key}">
 		    <img src="graphics/delete.png"
 			 alt=""
-			 title="Delete certificate from the database"
+			 title="{$l10n_title_delete|escape}"
 			 class="url" />
-		    Delete
+		    {$l10n_item_delete|escape}
 		  </a><br />
 		</td>
 		<td>
@@ -68,7 +68,7 @@
 		<input type="hidden" name="reason"		value="unspecified" />
 		<input type="submit" name="submit"		value="Revoke"
 		       style=" background-color:#660000; color:#FFFFFF;"
-		       onclick="return confirm('\t\tReally revoke certificate?\n\nAuth_key:       {$key}\nExpiry date:   {$cert.valid_untill|escape}')" />
+		       onclick="return confirm('\t\t{$l10n_confirm_revoke1|escape}\n\n{$l10n_text_authkey|escape}      {$key}\n{$l10n_confirm_revoke2}:   {$cert.valid_untill|escape}')" />
 		</div>
 		</form>
 		</td>
