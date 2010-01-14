@@ -79,5 +79,14 @@
 	},
 	"l10n_heading_nrenadvice": {
 		"en": "'s Advice:"
+	},
+	"l10n_heading_logout": {
+		"en": "You have been logged out of Confusa"
+	},
+	"l10n_text_logoutreturn1": {
+		"en": "Return to"
+	},
+	"l10n_link_start": {
+		"en": "start"
 	}
 }

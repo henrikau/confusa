@@ -1,7 +1,7 @@
 {if is_null($person) || !$person->isAuth()}
-	<h2>You have been logged out of Confusa</h2>
+	<h2>{$l10n_heading_logout}</h2>
 	<br />
-	Return to <a href="index.php">start</a>
+	{$l10n_text_logoutreturn1} <a href="index.php">{$l10n_link_start}</a>
 {else}
 	<h2>Logout failed</h2>
 	<br />

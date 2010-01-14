@@ -7,7 +7,7 @@ class Logout extends Content_Page
 {
 	public function __construct()
 	{
-		parent::__construct("Logout", false);
+		parent::__construct("Logout", false, "index");
 	}
 
 	public function pre_process($person)
