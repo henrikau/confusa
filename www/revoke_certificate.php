@@ -31,7 +31,7 @@ class CP_RevokeCertificate extends Content_Page
 
 		if (isset($_POST['reason'])) {
 			if (array_search(trim($_POST['reason']), ConfusaConstants::$REVOCATION_REASONS) === false) {
-				Framework::error_output("Unknown reason for certificate revocation!");
+				Framework::error_output(Framework::translateMessageTag('rev_err_unknreason'));
 				return;
 			}
 		}
@@ -48,7 +48,7 @@ class CP_RevokeCertificate extends Content_Page
 				 * array
 				 */
 				if (!array_key_exists('reason', $_GET)) {
-					Framework::error_output("Tyring to revoke single certificate without supplying the reason. Cannot continue.");
+					Framework::error_output(Framework::translateMessageTag('rev_err_singlenoreason'));
 					return;
 				}
 				$reason		= Input::sanitizeText(trim($_GET['reason']));
@@ -56,15 +56,16 @@ class CP_RevokeCertificate extends Content_Page
 					if (!isset($order_number) || !isset($reason)) {
 						Framework::error_output("Revoke Certificate: Errors with parameters, not set properly");
 					} elseif (!$this->checkRevocationPermissions($order_number)) {
-						Framework::error_output("You do not have the permission to revoke that certificate!");
+						Framework::error_output(Framework::translateMessageTag('rev_err_singlenoperm'));
 					} elseif (!$this->ca->revokeCert($order_number, $reason)) {
-						Framework::error_output("Cannot revoke yet (" . htmlentities($order_number) .
-						                        ") for supplied reason: " .
+						Framework::error_output(Framework::translateMessageTag('rev_err_notyet1') .
+						                        htmlentities($order_number) .
+						                        Framework::translateMessageTag('rev_err_notyet2') .
 						                        htmlentities($reason));
 					} else {
-						Framework::message_output("Certificate (" .
+						Framework::message_output(Framework::translateMessageTag('rev_suc_single1') .
 						                          htmlentities($order_number) .
-						                          ") successfully revoked.");
+						                          Framework::translateMessageTag('rev_suc_single2'));
 
 						if (Config::get_config('ca_mode') === CA_COMODO &&
 						    Config::get_config('capi_test') === true) {
@@ -73,8 +74,8 @@ class CP_RevokeCertificate extends Content_Page
 						}
 					}
 				} catch (ConfusaGenException $cge) {
-					Framework::error_output("Revocation failed, the following problem was reported: " .
-											htmlentities($cge->getMessage()));
+					Framework::error_output(Framework::translateMessageTag('rev_err_singleunspec')
+											. " " . htmlentities($cge->getMessage()));
 				}
 				break;
 			default:
@@ -259,13 +260,12 @@ class CP_RevokeCertificate extends Content_Page
 		try {
 			$subscribers = $nren->getSubscriberList();
 		} catch(DBStatementException $dbse) {
-			Framework::error_output("Cannot retrieve subscriber from database!<BR /> " .
-				"Probably wrong syntax for query, ask an admin to investigate." .
-				"Server said: " . htmlentities($dbse->getMessage()));
+			Framework::error_output(Framework::translateMessageTag('rev_err_nrensubs1') .
+			                        htmlentities($dbse->getMessage()));
 			return null;
 		} catch(DBQueryException $dbqe) {
-			Framework::error_output("Query failed. This probably means that the values passed to the "
-								. "database are wrong. Server said: " . htmlentities($dbqe->getMessage()));
+			Framework::error_output(Framework::translateMessageTag('rev_err_nrensubs2') .
+			                        htmlentities($dbqe->getMessage()));
 			return null;
 		}
 

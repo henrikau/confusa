@@ -34,12 +34,12 @@ class CP_About_NREN extends Content_Page
 										array('text'),
 										array($nren));
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Error fetching the NREN about-page. Probably a " .
-									"configuration problem! Server said: " . htmlentities($dbse->getMessage()));
+			Framework::error_output(Framework::translateMessageTag('abt_err_dbstat') . " " .
+			                        htmlentities($dbse->getMessage()));
 			return "";
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Error fetching the NREN about-page. Looks like a " .
-									"problem with the supplied data. Queried NREN was " . htmlentities($nren));
+			Framework::error_output(Framework::translateMessageTag('abt_err_dbquery') .  " " .
+			                        htmlentities($nren));
 			return "";
 		}
 

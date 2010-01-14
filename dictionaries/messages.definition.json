@@ -1,0 +1,98 @@
+{
+	"fw_error_entitlement_unset": {
+		"en": 	"'Confusa' Entitlement not set. You do not qualify to request certificates at this time. Please ask an IT-administrator at your  institution to resolve this issue."
+	},
+	"fw_error_map_notfound": {
+		"en":	"<b>Error(s) with attributes</b><br /><br />No map has been configured for your subscriber. Please contact your local IT-departement and ask them to forward the request to the registred NREN administrator for your domain."
+	},
+	"fw_error_critical_attribute1": {
+		"en":	"Error(s) with attributes"
+	},
+	"fw_error_critical_attribute2": {
+		"en":	"<b>Cannot continue</b><br /><br />Please contact your local IT-support, and ask them to resolve this issue."
+	},
+	"fw_error_auth": {
+		"en":	"Could not authenticate you! Error was: "
+	},
+	"fw_error_remote_credential1": {
+		"en":	"The credentials for your NREN are not specified or incorrect! Some certificate operations will not work. <br /><br />Backend said: <br />"
+	},
+	"fw_error_remote_credential2": {
+		"en":	"Please update the credentials <a href=\"accountant.php\">here</a>"
+	},
+	"fw_error_remote_credential3": {
+		"en":	"Please contact an IT-administrator."
+	},
+	"fw_keynotfound1": {
+		"en":	"config-file not properly configured."
+	},
+	"fw_keynotfound2": {
+		"en":	"Please contact operational support to resolve this issue, be sure to include the error-code in the message."
+	},
+	"fw_unhandledexp1": {
+		"en":	"Unhandled exception found in user-function!"
+	},
+	"fw_unrecoverable_nren": {
+		"en":	"Unrecoverable error and you are not NREN admin! Your eduPersonPrincipalName is "
+	},
+	"fw_unrecoverable_nonren": {
+		"en":	"Seems like the portal can not figure out your NREN from your identity provider. This is probably a portal configuration error!"
+	},
+	"downl_err_nodownload": {
+		"en":	"Could not download the certificate, server said:"
+	},
+	"downl_err_db": {
+		"en":	"Could not retrieve certificates from the database. Server said:"
+	},
+	"downl_err_noemail": {
+		"en":	"No email-address is set. Cannot email certificate to you!<br />\nThis is a required attribute for many operations, and you should therefore contact your local IT-support and ask them to verify your user-credentials.<br />\n"
+	},
+	"downl_err_misc": {
+		"en":	"Could not retrieve the certificate, server said:"
+	},
+	"downl_err_sendmail": {
+		"en":	"Could not send mail properly!"
+	},
+	"downl_err_sendmail2": {
+		"en":	"Could not mail the certificate, server said:"
+	},
+	"downl_suc_mail": {
+		"en":	"Your e-mail has been sent."
+	},
+	"rev_err_unknreason": {
+		"en":	"Unknown reason for certificate revocation!"
+	},
+	"rev_err_singlenoreason": {
+		"en":	"You can not revoke a single certificate without specifying the reason"
+	},
+	"rev_err_singlenoperm": {
+		"en":	"You do not have the permission to revoke that certificate!"
+	},
+	"rev_err_notyet1": {
+		"en":	"Cannot revoke yet ("
+	},
+	"rev_err_notyet2": {
+		"en":	") for supplied reason: "
+	},
+	"rev_suc_single1": {
+		"en":	"Certificate ("
+	},
+	"rev_suc_single2": {
+		"en":	") successfully revoked."
+	},
+	"rev_err_singleunspec": {
+		"en":	"Revocation failed, the following problem was reported:"
+	},
+	"rev_err_nrensubs1": {
+		"en":	"Cannot retrieve subscriber from database!<br />Probably wrong syntax for query, ask an admin to investigate. Server said:"
+	},
+	"rev_err_nrensubs2": {
+		"en":	"Query failed. This probably means that the values passed to the database are wrong. Server said:"
+	},
+	"abt_err_dbstat": {
+		"en":	"Error fetching the NREN about-page. Probably a configuration problem! Server said:"
+	},
+	"abt_err_dbquery": {
+		"en":	"Error fetching the NREN about-page. Looks like a problem with the supplied data. Queried NREN was"
+	}
+}
