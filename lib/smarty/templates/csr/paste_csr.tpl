@@ -1,11 +1,11 @@
-<div class="csr">
-  <fieldset>
-    <legend><i>Paste new CSR</i></legend>
-    <p class="info">
-      Paste an already created CSR here and press "Upload CSR" to send the
-      CSR to the portal.
-    </p>
-    <form action="" method="post">
+<form action="" method="post">
+  <div class="csr">
+    <fieldset>
+      <legend><i>Paste new CSR</i></legend>
+      <p class="info">
+	Paste an already created CSR here and press "Upload CSR" to send the
+	CSR to the portal.
+      </p>
       <p>
 	<input type="hidden" name="pastedCSR" value="pastedCSR" />
       </p>
@@ -24,7 +24,7 @@
 	  <td align="left"><input type="submit" class="button" value="Upload CSR"/><br /></td>
 	</tr>
       </table>
-    </form>
-  </fieldset>
-</div>
+    </fieldset>
+  </div>
 
+</form>

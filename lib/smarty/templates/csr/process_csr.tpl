@@ -1,4 +1,3 @@
-<div>
 <p class="info">
   Please choose one of the options available below to create your
   certificate.
@@ -12,53 +11,43 @@
   If you are unsure about what an CSR is, you probably want the
   in-browser approach.
 </p>
+
+<div class="tabheader">
+  <ul class="tabs">
+    <li><a href="?show=browser_csr">Browser generation</a></li>
+    <li><a href="?show=upload_csr">Upload CSR</a></li>
+    <li><a href="?show=paste_csr">Paste CSR</a></li>
+</ul>
+</div>
+
+{*
+ * Approve CSR.
+ * After a successful upload or paste, the CSR should be inspected.
+ *}
+{if $approve_csr}
+{include file='csr/approvce_csr.tpl'}
+{/if}
+
 {*
  * Generate CSR in the browser.
  *}
-<fieldset>
-<legend>Apply for a certificate in browser</legend>
-<div id="info_view">
-	<p class="info">Press the start button <b>once</b> to generate a certificate request in your browser.<br /><br />
-	Sometimes it will take a little while until you can see a browser reaction and there
-	can be delays between browser actions.</p>
-</div>
-
-	<br />
-	<form id="startForm" method="post" action="process_csr.php">
-	  <p>
-	    <input type="hidden"
-		   name="browserSigning"
-		   value="start" />
-	    {if $user_cert_enabled}
-	    <input type="submit"
-		   name="Send"
-		   id="startButton"
-		   value="Apply" />
-	    {* Disable the element if the user does not have the right entitlement *}
-	    {else}
-	    <input disabled
-		   type="submit"
-		   name="Send"
-		   id="startButton"
-		   value="Apply" />
-	    {/if}
-	</p>
-	</form>
-	</fieldset>
-<div class="spacer"></div>
-<div class="spacer"></div>
+{if $browser_csr}
+{include file='csr/browser_csr.tpl'}
+{/if}
 
 {*
  * Upload CSR from file
  *}
-<div class="spacer"></div>
-{$upload_csr_file}
+{if $upload_csr}
+{include file='csr/upload_csr_file.tpl'}
+{/if}
 
-<div class="spacer"></div>
-
-{* uploading new CSR via POST *}
+{*
+ * uploading new CSR via POST
+ *}
+{if $paste_csr}
 {include file='csr/paste_csr.tpl'}
-</div>
+{/if}
 
 {*
  * Here comes JavaScript or another script executable by the browser (ActiveX?)

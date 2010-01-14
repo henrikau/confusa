@@ -87,12 +87,17 @@ final class CP_ProcessCsr extends Content_Page
 	{
 
 		$this->processDBCsr();
+		/* Set default-values to false to avoid warnings */
+		$this->tpl->assign('approve_csr', false);
+		$this->tpl->assign('browser_csr', false);
+		$this->tpl->assign('upload_csr',  false);
+		$this->tpl->assign('paste_csr',   false);
 
 		/* signing finished, redirect to download */
 		if($this->signing_ok) {
 			$this->tpl->assign('signingOk', $this->signing_ok);
 			$this->tpl->assign('sign_csr',  Input::sanitizeBase64($_GET['sign_csr']));
-			$this->tpl->assign('content',   $this->tpl->fetch('csr/approve_csr.tpl'));
+			$this->tpl->assign('approve_csr.tpl', true);
 			return;
 		}
 
