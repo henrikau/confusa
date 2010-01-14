@@ -63,7 +63,6 @@ class Translator {
 	{
 		$this->person = $person;
 		$this->defaultLanguage = Config::get_config('language.default');
-		$this->language = $this->getBestLanguage();
 	}
 
 	/**
@@ -130,6 +129,10 @@ class Translator {
 	 */
 	public function getTextForTag($tag, $dictionaryName)
 	{
+		if (!isset($this->language)) {
+			$this->language = $this->getBestLanguage();
+		}
+
 		$definitions = $this->getTranslationArray($dictionaryName);
 		$translations = (array)$definitions[$tag];
 
@@ -160,6 +163,11 @@ class Translator {
 	 */
 	public function decorateTemplate($template, $dictionaryName)
 	{
+
+		if (!isset($this->language)) {
+			$this->language = $this->getBestLanguage();
+		}
+
 		/* if the dictionary is null or does not exist, don't decorate the template */
 		if (empty($dictionaryName)) {
 			return $template;
