@@ -415,6 +415,42 @@ class Person{
 	    return $this->email[$index];
     }
 
+
+    /**
+     * getNumEmails - return the number of registred emails
+     *
+     * This will return the total number of emails the user has available.
+     *
+     * @param  : none
+     * @return : int the number of registred emails.
+     */
+    public function getNumEmails() {
+	    if (is_null($this->email)) {
+		    return 0;
+	    }
+	    return count($this->email);
+    }
+
+    /**
+     * getAllEmails() - return an array of all available addresses
+     *
+     * @param  : boolean $webread add extra space to make list-rendering more readable.
+     * @return : array|null array of all emails
+     */
+    public function getAllEmails($webready = false)
+    {
+	    if (is_null($this->email)) {
+		    return null;
+	    }
+	    $res = array();
+	    /* probably a simpler way to clone this, but we do not want to send
+	     * away our 'master copy' of the list, only a blueprint. */
+	    foreach ($this->email as $key => $value) {
+		    $res[$key] = ($webready ? " ":"") . $value;
+	    }
+	    return $res;
+    }
+
     /**
      * getSubscriberOrgName() The name of the person's subscriber organization name.
      *
