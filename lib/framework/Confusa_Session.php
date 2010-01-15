@@ -24,7 +24,6 @@ class CS
 	private static function testSession()
 	{
 		if (session_name() != self::$name) {
-			session_write_close();
 			self::$cs_started = false;
 		}
 
