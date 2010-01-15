@@ -9,6 +9,8 @@ abstract class Content_Page
 	protected $ca;
 	protected $person;
 	protected $dictionary;
+	protected $translator;
+
 	/**
 	 * Constructor - create the Content Page.
 	 *
@@ -22,6 +24,7 @@ abstract class Content_Page
 		$this->protected = $protected;
 		$this->ca = null;
 		$this->dictionary = $dictionary;
+		$this->translator = new Translator();
 	}
 
 	function __destruct()
@@ -30,6 +33,7 @@ abstract class Content_Page
 		unset($this->protected);
 		unset($this->ca);
 		unset($this->person);
+		unset($this->translator);
 	}
 
 	public function setCA()
@@ -50,6 +54,40 @@ abstract class Content_Page
 	{
 		$this->tpl = $tpl;
 	}
+
+	/**
+	 * Get the translator member of this content_page
+	 * @return Translator that was constructed with this content_page
+	 */
+	public function getTranslator()
+	{
+		return $this->translator;
+	} /* end getTranslator */
+
+	/**
+	 * Translate a tag output by Framework::*_output. All of these
+	 * messages should be translated in messages.definition.json.
+	 *
+	 * @param $tag string The tag that should be translated
+	 * @return string the translated tag
+	 */
+	public function translateMessageTag($tag)
+	{
+		return $this->translator->getTextForTag($tag, 'messages');
+	} /* end translateMessageTag */
+
+	/**
+	 * Translate a tag using a specified dictionary.
+	 *
+	 * @param $tag string The tag that should be translated
+	 * @param $dictionaryName string The name of the dictionary in which to
+	 *                               look the tag up
+	 * @return string The translated tag
+	 */
+	public function translateTag($tag, $dictionaryName)
+	{
+		return $this->translator->getTextForTag($tag, $dictionaryName);
+	} /* end translateTag */
 
 	public function setPerson($person)
 	{
@@ -86,13 +124,13 @@ abstract class Content_Page
 
 		if (isset($_GET['lang'])) {
 			$lang = Input::sanitize($_GET['lang']);
-			Framework::$translator->setLanguage($lang);
-			$_SESSION['language'] = $lang;
+			CS::setSessionKey('language', $lang);
 		}
 
-		$this->tpl = Framework::$translator->decorateTemplate($this->tpl, 'menu');
-		$this->tpl = Framework::$translator->decorateTemplate($this->tpl, $this->dictionary);
-		$this->tpl->assign('selected_language', Framework::$translator->getLanguage());
+		$this->translator->guessBestLanguage($person);
+		$this->tpl = $this->translator->decorateTemplate($this->tpl, 'menu');
+		$this->tpl = $this->translator->decorateTemplate($this->tpl, $this->dictionary);
+		$this->tpl->assign('selected_language', $this->translator->getLanguage());
 		return false;
 	}
 

@@ -13,7 +13,6 @@ require_once 'Confusa_Session.php';
 class Translator {
 	private $language;
 	private $defaultLanguage;
-	private $person;
 
 	private static $code_language_map = array(
 								'bg' => 'Български език (Bulgarian)',
@@ -57,12 +56,20 @@ class Translator {
 		);
 
 	/**
-	 * Construct a new translator. Guess the best language
+	 * Construct a new translator. Look in the session for a chosen language,
+	 * otherwise use default.
 	 */
-	public function __construct($person)
+	public function __construct()
 	{
-		$this->person = $person;
 		$this->defaultLanguage = Config::get_config('language.default');
+		$sesslang = CS::getSessionKey('language');
+
+		/* if a lanuage is set in the session already, use this one */
+		if (isset($sesslang)) {
+			$this->language = $sesslang;
+		} else {
+			$this->language = $this->defaultLanguage;
+		}
 	}
 
 	/**
@@ -129,10 +136,6 @@ class Translator {
 	 */
 	public function getTextForTag($tag, $dictionaryName)
 	{
-		if (!isset($this->language)) {
-			$this->language = $this->getBestLanguage();
-		}
-
 		$definitions = $this->getTranslationArray($dictionaryName);
 		$translations = (array)$definitions[$tag];
 
@@ -163,11 +166,6 @@ class Translator {
 	 */
 	public function decorateTemplate($template, $dictionaryName)
 	{
-
-		if (!isset($this->language)) {
-			$this->language = $this->getBestLanguage();
-		}
-
 		/* if the dictionary is null or does not exist, don't decorate the template */
 		if (empty($dictionaryName)) {
 			return $template;
@@ -218,8 +216,9 @@ class Translator {
 	}
 
 	/**
-	 * Get the "best" language for a user. The "best" language is determined by
-	 * the following order of steps:
+	 * Guess the "best" language for a user. This should be called whenever a
+	 * decorated person object is availabe.
+	 * The "best" language is determined by the following order of steps:
 	 *
 	 * 1.) The language stored in the session of the user dominates over everything else
 	 *		Thus, manually changing the language only means setting a session variable.
@@ -230,44 +229,51 @@ class Translator {
 	 *		first available language from the user's language accept-headers
 	 * 5.) If none of the languages in the user's accept header is available,
 	 *		take the default language of the Confusa instance (usually but not necessarily English)
+	 *
+	 * @param $person Person-oject (Decorated) Person, from the subscriber or
+	 *                             NREN of which translator can deduce the
+	 *                             best language
+	 * @return void
 	 */
-	private function getBestLanguage()
+	public function guessBestLanguage($person)
 	{
 		$session_language = CS::getSessionKey('language');
 		if (!is_null($session_language)) {
-			return $session_language;
+			$this->language = $session_language;
+			return;
 		}
 
-		if ($this->person->isAuth()) {
-			if (is_null($this->person->getSubscriber())) {
-				return null;
-			}
-			try {
-				$query = "SELECT lang FROM subscribers WHERE name=?";
-				$res = MDB2Wrapper::execute($query,
-							    array('text'),
-							    array($this->person->getSubscriber()->getIdPName()));
+		if ($person->isAuth()) {
+			if (!is_null($person->getSubscriber())) {
+				try {
+					$query = "SELECT lang FROM subscribers WHERE name=?";
+					$res = MDB2Wrapper::execute($query,
+									array('text'),
+									array($person->getSubscriber()->getIdPName()));
 
-				if (isset($res[0]['lang'])) {
-					CS::setSessionKey('language', $res[0]['lang']);
-					return CS::getSessionKey('language');
+					if (isset($res[0]['lang'])) {
+						CS::setSessionKey('language', $res[0]['lang']);
+						$this->language = CS::getSessionKey('language');
+						return;
+					}
+
+					$query = "SELECT lang FROM nrens WHERE name=?";
+					$res = MDB2Wrapper::execute($query,
+												array('text'),
+												array($person->getNREN()));
+
+					if (isset($res[0]['lang'])) {
+						CS::setSessionKey('language', $res[0]['lang']);
+						$this->language = CS::getSessionKey('language');
+						return;
+					}
+				} catch (DBQueryException $dbqe) {
+					Logger::log_event(LOG_WARNING, "Could not query subscriber/NREN default language. " .
+									  "Falling back to system language default! " . $dbqe->getMessage());
+				} catch (DBStatementException $dbse) {
+					Logger::log_event(LOG_WARNING, "Could not query subscriber/NREN default language. " .
+									  "Falling back to system default! " . $dbse->getMessage());
 				}
-
-				$query = "SELECT lang FROM nrens WHERE name=?";
-				$res = MDB2Wrapper::execute($query,
-											array('text'),
-											array($this->person->getNREN()));
-
-				if (isset($res[0]['lang'])) {
-					CS::setSessionKey('language', $res[0]['lang']);
-					return CS::getSessionKey('language');
-				}
-			} catch (DBQueryException $dbqe) {
-				Logger::log_event(LOG_WARNING, "Could not query subscriber/NREN default language. " .
-								  "Falling back to system language default! " . $dbqe->getMessage());
-			} catch (DBStatementException $dbse) {
-				Logger::log_event(LOG_WARNING, "Could not query subscriber/NREN default language. " .
-								  "Falling back to system default! " . $dbse->getMessage());
 			}
 		}
 
@@ -295,7 +301,8 @@ class Translator {
 				if (array_search($key, $available_languages) === FALSE) {
 					continue;
 				} else {
-					return $key;
+					$this->language = $key;
+					return;
 				}
 			}
 		}
@@ -303,7 +310,8 @@ class Translator {
 		/* turn on warnings again */
 		error_reporting($level);
 
-		return $this->defaultLanguage;
+		$this->language = $this->defaultLanguage;
+		return;
 	}
 
 	/**

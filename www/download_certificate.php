@@ -32,7 +32,7 @@ final class CP_DownloadCertificate extends Content_Page
 						exit(0);
 					}
 				} catch(ConfusaGenException $cge) {
-					Framework::error_output(Framework::translateMessageTag('downl_err_nodownload')
+					Framework::error_output($this->translateMessageTag('downl_err_nodownload')
 					                        . " " . htmlentities($cge->getMessage()));
 				}
 			} else if (isset($_GET['cert_status'])) {
@@ -63,7 +63,7 @@ final class CP_DownloadCertificate extends Content_Page
 			$this->tpl->assign('defaultDays',
 				               Config::get_config('capi_default_cert_poll_days'));
 		} catch (ConfusaGenException $e) {
-			Framework::error_output(Framework::translateMessageTag('downl_err_db') .
+			Framework::error_output($this->translateMessageTag('downl_err_db') .
 			                        htmlentities($e->getMessage()));
 		}
 		$this->tpl->assign('standalone', (Config::get_config('ca_mode') === CA_STANDALONE));
@@ -82,7 +82,7 @@ final class CP_DownloadCertificate extends Content_Page
 		else if (isset($_GET['email_cert'])) {
 			$mail = $this->person->getEmail();
 			if (!isset($mail) || $mail === "") {
-				Framework::error_output(Framework::translateMessageTag('downl_err_noemail'));
+				Framework::error_output($this->translateMessageTag('downl_err_noemail'));
 			} else {
 				$this->mailCert(htmlentities($_GET['email_cert']));
 			}
@@ -118,7 +118,7 @@ final class CP_DownloadCertificate extends Content_Page
 			exit(0);
 		} else {
 			$script .= "<noscript><b>" .
-			           Framework::$translator->getTextForTag('l10n_noscript_notice', 'download') .
+			           $this->translateTag('l10n_noscript_notice', 'download') .
 			           "</b></noscript>";
 			$this->tpl->assign("script", $script);
 		}
@@ -157,7 +157,7 @@ final class CP_DownloadCertificate extends Content_Page
 				}
 			}
 		} catch (ConfusaGenException $e) {
-			Framework::error_output(Framework::translateMessageTag('downl_err_misc')
+			Framework::error_output($this->translateMessageTag('downl_err_misc')
 			                        . " " . htmlentities($e->getMessage()));
 		}
 
@@ -177,19 +177,19 @@ final class CP_DownloadCertificate extends Content_Page
 						      Config::get_config('sys_from_address'),
 						      Config::get_config('system_name'),
 						      Config::get_config('sys_header_from_address'));
-				$mm->setSubject(Framework::$translator->getTextForTag('l10n_mail_subject', 'download'));
-				$mm->setBody(Framework::$translator->getTextForTag('l10n_mail_body', 'download'));
+				$mm->setSubject($this->translateTag('l10n_mail_subject', 'download'));
+				$mm->setBody($this->translateTag('l10n_mail_body', 'download'));
 				$mm->addAttachment($cert, 'usercert.pem');
 
 				if (!$mm->sendMail()) {
-					Framework::error_output(Framework::translateMessageTag('downl_err_sendmail'));
+					Framework::error_output($this->translateMessageTag('downl_err_sendmail'));
 					return false;
 				}
 			} else {
 				return false;
 			}
 		} catch (ConfusaGenException $e) {
-			Framework::error_output(Framework::translateMessageTag('downl_err_sendmail2')
+			Framework::error_output($this->translateMessageTag('downl_err_sendmail2')
 			                        . " " . htmlentities($e->getMessage()));
 			return false;
 		}

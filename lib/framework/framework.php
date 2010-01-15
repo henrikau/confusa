@@ -44,7 +44,6 @@ class Framework {
 	private $contentPage;
 	private $tpl;
 	private $renderError = false;
-	public static $translator;
 	private static $errors = array();
 	private static $messages = array();
 	private static $warnings = array();
@@ -102,9 +101,6 @@ class Framework {
 			$this->tpl->display('site.tpl');
 			exit(0);
 		}
-
-		/* get localization into place */
-		Framework::$translator = new Translator($this->person);
 	}
 
 	public function authenticate() {
@@ -131,7 +127,7 @@ class Framework {
 		if ($this->person->isAuth()) {
 			if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_user')) == false) {
 				if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_admin')) == false) {
-					Framework::message_output(self::translateMessageTag('fw_error_entitlement_unset'));
+					Framework::message_output($this->contentPage->translateMessageTag('fw_error_entitlement_unset'));
 				}
 			}
 		}
@@ -177,16 +173,16 @@ class Framework {
 		try {
 			$this->authenticate();
 		} catch (CriticalAttributeException $cae) {
-			$msg .= "<b>" . self::translateMessageTag('fw_error_critical_attribute1') . "</b><br /><br />";
+			$msg .= "<b>" . $this->contentPage->translateMessageTag('fw_error_critical_attribute1') . "</b><br /><br />";
 			$msg .= htmlentities($cae->getMessage()) . "<br /><br />";
-			$msg .= self::translateMessageTag('fw_error_critical_attribute2');
+			$msg .= $this->contentPage->translateMessageTag('fw_error_critical_attribute2');
 			Framework::error_output($msg);
 			$this->renderError = true;
 		} catch (MapNotFoundException $mnfe) {
-			Framework::error_output(self::translateMessageTag('fw_error_map_notfound'));
+			Framework::error_output($this->contentPage->translateMessageTag('fw_error_map_notfound'));
 			$this->renderError = true;
 		} catch (ConfusaGenException $cge) {
-			Framework::error_output(self::translateMessageTag('fw_error_auth') .
+			Framework::error_output($this->contentPage->translateMessageTag('fw_error_auth') .
 			                         htmlentities($cge->getMessage()));
 			$this->renderError = true;
 		}
@@ -200,28 +196,28 @@ class Framework {
 				$this->tpl->assign('extraHeader', $res);
 			}
 		} catch (CGE_RemoteCredentialException $rce) {
-			$msg  = self::translateMessageTag('fw_error_remote_credential1');
+			$msg  = $this->contentPage->translateMessageTag('fw_error_remote_credential1');
 			$msg .= "<i>". htmlentities($rce->getMessage()) . "</i><br /><br />";
 
 			if ($this->person->isNRENAdmin()) {
 				$msg .=  "<div style=\"text-align: center\">";
 				$msg .= self::translateMessageTag('fw_error_remote_credential2') . "</div>";
 			} else {
-				$msg .= Framework::error_output(self::translateMessageTag('fw_error_remote_credential3'));
+				$msg .= Framework::error_output($this->contentPage->translateMessageTag('fw_error_remote_credential3'));
 				$this->renderError = true;
 			}
 			Framework::warning_output($msg);
 		} catch (KeyNotFoundException $knfe) {
 				$this->renderError = true;
 
-				$msg  = "[".create_pw(8)."] " . self::translateMessageTag('fw_keynotfound1');
+				$msg  = "[".create_pw(8)."] " . $this->contentPage->translateMessageTag('fw_keynotfound1');
 				Logger::log_event(LOG_INFO, $msg . $knfe->getMessage());
 
 				$msg .= htmlentities($knfe->getMessage());
-				$msg .= "<br />" . self::translateMessageTag('fw_keynotfound2');
+				$msg .= "<br />" . $this->contentPage->translateMessageTag('fw_keynotfound2');
 				Framework::error_output($msg);
 		} catch (Exception $e) {
-			Framework::error_output(self::translateMessageTag('fw_unhandledexp1') .
+			Framework::error_output($this->contentPage->translateMessageTag('fw_unhandledexp1') .
 			                        "<br />" . htmlentities($e->getMessage()));
 			$this->renderError = true;
 		}
@@ -256,13 +252,13 @@ class Framework {
 				$this->contentPage->process($this->person);
 			} catch (KeyNotFoundException $knfe) {
 				$msg  = "[".create_pw(8)."] " .
-				        self::translateMessageTag('fw_keynotfound1');
+				        $this->contentPage->translateMessageTag('fw_keynotfound1');
 				Logger::log_event(LOG_INFO, $msg . $knfe->getMessage());
 				$msg .= htmlentities($knfe->getMessage());
-				$msg .= "<br />" . self::translateMessageTag('fw_keynotfound2');
+				$msg .= "<br />" . $this->contentPage->translateMessageTag('fw_keynotfound2');
 				Framework::error_output($msg);
 			} catch (Exception $e) {
-				Framework::error_output(self::translateMessageTag('fw_unhandledexp1')
+				Framework::error_output($this->contentPage->translateMessageTag('fw_unhandledexp1')
 				                        . "<br />\n" . htmlentities($e->getMessage()));
 			}
 		} else {
@@ -270,10 +266,10 @@ class Framework {
 
 			if (isset($nren)) {
 				/* if all else fails, at least give the user some recovery information */
-				Framework::message_output(self::translateMessageTag('fw_unrecoverable_nren') .
+				Framework::message_output($this->contentPage->translateMessageTag('fw_unrecoverable_nren') .
 				                          htmlentities($this->person->getEPPN()));
 			} else {
-				Framework::error_output(self::translateMessageTag('fw_unrecoverable_nonren'));
+				Framework::error_output($this->contentPage->translateMessageTag('fw_unrecoverable_nonren'));
 				Logger::log_event(LOG_WARNING, "User contacting us from " . $_SERVER['REMOTE_ADDR'] .
 				                  " tried to login from IdP that appears to have no NREN-mapping!");
 			}
@@ -322,10 +318,4 @@ class Framework {
 	{
 		self::$warnings[] = $message;
 	}
-
-	public static function translateMessageTag($tag)
-	{
-		return self::$translator->getTextForTag($tag, 'messages');
-	}
-
 } /* end class Framework */

@@ -34,11 +34,11 @@ class CP_About_NREN extends Content_Page
 										array('text'),
 										array($nren));
 		} catch (DBStatementException $dbse) {
-			Framework::error_output(Framework::translateMessageTag('abt_err_dbstat') . " " .
+			Framework::error_output($this->translateMessageTag('abt_err_dbstat') . " " .
 			                        htmlentities($dbse->getMessage()));
 			return "";
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output(Framework::translateMessageTag('abt_err_dbquery') .  " " .
+			Framework::error_output($this->translateMessageTag('abt_err_dbquery') .  " " .
 			                        htmlentities($nren));
 			return "";
 		}
