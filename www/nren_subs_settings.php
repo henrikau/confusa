@@ -89,7 +89,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 			$this->tpl->assign('subscriberInfo', $info);
 		}
 
-		if (is_null($current_language)) {
+		if (empty($current_language)) {
 			$current_language = Config::get_config('language.default');
 		}
 
