@@ -121,7 +121,11 @@ class CP_Attributes extends Content_Page
 				$this->tpl->assign('entitlement', '');
 			}
 		} else { /* session is not set */
-			$this->tpl->assign('epodn', $this->person->getSubscriber()->getIdPName());
+			if (!is_null($this->person->getSubscriber())) {
+				$this->tpl->assign('epodn', $this->person->getSubscriber()->getIdPName());
+			} else {
+				$this->tpl->assign('epodn', "");
+			}
 			$this->tpl->assign('cn', $this->person->getName());
 			$this->tpl->assign('mail', $this->person->getEmail());
 			$this->tpl->assign('entitlement', $this->person->getEntitlement());
