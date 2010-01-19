@@ -13,13 +13,29 @@
 </a>
 </div>
 
-{else}
+{else} {* person is authenticated, but is the subscriber added? *}
+
+{if is_null($subscriber)} {* no *}
+<p class="info">
+  You have authenticated, but no subscriber is set. This normally
+  indicates that your home-organization is not properly configured at
+  the portal.
+</p>
+
+<p class="info">
+  Most likely, this will happen soon, but in case it does not, please
+  contact your local IT-department and ask them about the progress.
+</p>
+
+{else} {* yes, subscriber is added, person is authN, show 'about-you'
+	  stuff *}
 <p class="info">
 {$auth_welcome_1|escape}
 </p>
 <br />
 <hr style="width 90%" />
 <br />
+
 <h3>Info about you</h3>
 <p class="info">
   {$attribute_info1|escape}
@@ -99,7 +115,8 @@
 <br />
 <hr style="width: 90%" />
 <br />
-{/if}
+{/if} {* else, !is_null($subscriber) *}
+{/if} {* !person->isAuth() *}
 
 <br />
 <fieldset>
