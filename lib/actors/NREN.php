@@ -34,7 +34,7 @@ class NREN
 		if (!$this->isValid) {
 			Logger::log_event(LOG_ALERT,
 					  __FILE__ .":".__LINE__." could not decorate NREN (".
-					  $this->name . ")<br />\n");
+					  $this->idp_name . ")\n");
 			return;
 		}
 		$this->retrieveMap();
