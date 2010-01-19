@@ -404,7 +404,10 @@ class NREN
 				return false;
 			}
 		} catch (ConfusaGenException $cge) {
-			echo __FILE__ . ":" . __LINE__ . " error with db-connect. " . $cge->getMessage() . "<br />\n";
+			Framework::error_output("Cannot connect to DB. Server said:<br />"
+						. $cge->getMessage());
+			Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . " error with db-connect. " . $cge->getMessage());
+			return false;
 		}
 		return true;
 	} /* end decorateNREN() */
