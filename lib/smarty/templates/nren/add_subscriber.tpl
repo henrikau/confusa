@@ -261,7 +261,7 @@
       </tr>
       <tr>
 	<td><font color="gray"><i>Subscriber state:</i></font></td>
-	<td>{html_options output=$org_states values=$org_states selected=$subscriber->getState() name=state}</td>
+	<td>{html_options output=$org_states values=$org_states selected="unsubscribed" name=state}</td>
       </tr>
 
       <tr><td><div class="spacer"></div></td><td></td></tr>
