@@ -90,9 +90,24 @@ class Framework {
 		$this->person	= new Person();
 		$this->tpl	= new Smarty();
 		$this->tpl->template_dir= Config::get_config('install_path').'lib/smarty/templates';
+		if (!is_dir(ConfusaConstants::$SMARTY_TEMPLATES_C) ||
+		    !is_writable(ConfusaConstants::$SMARTY_TEMPLATES_C)) {
+			Logger::log_event(LOG_NOTICE, "smarty template-compile-dir (" .
+					  ConfusaConstants::$SMARTY_TEMPLATES_C.
+					  ")  not writable to webserver. Please correct.");
+		}
 		$this->tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
+
 		$this->tpl->config_dir	= Config::get_config('install_path').'lib/smarty/configs';
+
+		if (!is_dir(ConfusaConstants::$SMARTY_CACHE) ||
+		    !is_writable(ConfusaConstants::$SMARTY_CACHE)) {
+			Logger::log_event(LOG_NOTICE, "smarty template cache(" .
+					  ConfusaConstants::$SMARTY_CACHE.
+					  ")  not writable to webserver. Please correct.");
+		}
 		$this->tpl->cache_dir	= ConfusaConstants::$SMARTY_CACHE;
+
 		$this->tpl->assign('title', Config::get_config('system_name').' - '.$this->contentPage->get_title());
 		$this->tpl->assign('system_title', Config::get_config('system_name'));
 		if (Config::get_config('maint')) {
