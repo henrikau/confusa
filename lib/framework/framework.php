@@ -138,7 +138,8 @@ class Framework {
 			return;
 		}
 
-		/* show a warning if the person does not have Confusa entitlement and ConfusaAdmin entitlement */
+		/* show a warning if the person does not have Confusa
+		 * entitlement and ConfusaAdmin entitlement */
 		if ($this->person->isAuth()) {
 			if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_user')) == false) {
 				if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_admin')) == false) {
@@ -225,7 +226,8 @@ class Framework {
 		} catch (KeyNotFoundException $knfe) {
 				$this->renderError = true;
 
-				$msg  = "[".create_pw(8)."] " . $this->contentPage->translateMessageTag('fw_keynotfound1');
+				$msg  = "[".create_pw(8)."] " .
+					$this->contentPage->translateMessageTag('fw_keynotfound1');
 				Logger::log_event(LOG_INFO, $msg . $knfe->getMessage());
 
 				$msg .= htmlentities($knfe->getMessage());
@@ -290,9 +292,9 @@ class Framework {
 				                  " tried to login from IdP that appears to have no NREN-mapping!");
 			}
 		}
-
 		$this->tpl->assign('logoutUrl', 'logout.php');
-		$this->tpl->assign('menu', $this->tpl->fetch('menu.tpl')); // see render_menu($this->person)
+		// see render_menu($this->person)
+		$this->tpl->assign('menu', $this->tpl->fetch('menu.tpl'));
 		$this->tpl->assign('errors', self::$errors);
 		$this->tpl->assign('messages', self::$messages);
 		$this->tpl->assign('successes', self::$successes);
