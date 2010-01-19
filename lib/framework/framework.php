@@ -273,6 +273,7 @@ class Framework {
 				$msg .= "<br />" . $this->contentPage->translateMessageTag('fw_keynotfound2');
 				Framework::error_output($msg);
 			} catch (Exception $e) {
+				Logger::log_event(LOG_INFO, "Unhandleded exception when running contentPage->process()");
 				Framework::error_output($this->contentPage->translateMessageTag('fw_unhandledexp1')
 				                        . "<br />\n" . htmlentities($e->getMessage()));
 			}
