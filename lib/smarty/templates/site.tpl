@@ -45,22 +45,36 @@
 	    <div class="confusa_corners_tr">
 	      <div class="confusa_corners_bl">
 		<div class="confusa_corners_br">
+		{if isset($logo_bg)}
+		  <div class="confusa_corners" style="background-image: url('{$logo_bg}')">
+		{else}
 		  <div class="confusa_corners">
-		      <div id="title" style="vertical-align: middle;">
-			<a href="index.php">
-			  {if is_null($logo)}
-			  <img src="graphics/logo-sigma.png"
-			       alt="UNINETT Sigma Logo"
-			       class="url"/>
-			  {else}
-			  <img src="{$logo}"
-			       alt="NREN logo"
-			       class="url"/>
-			  {/if}
-			  {$system_title}
-			</a>
-		      </div> <!-- title -->
-		    <div id="language_bar">
+		{/if}
+		<div class="logo_area">
+		      <div id="logo_header_left">
+				{if isset($logo_tl)}
+					<img src="{$logo_tl}"
+				     alt="NREN logo" />
+				{else}
+					{* empty *}&nbsp;
+				{/if}
+			  </div>
+			  <div id="logo_header_center">
+				<a href="index.php" class="url">
+				{if is_null($logo_tc)}
+					{* empty *}&nbsp;{$system_title}
+				{else}
+				<img src="{$logo_tc}"
+				     alt="NREN logo" />{$system_title}
+				{/if}
+				</a>
+			  </div>
+			    <div id="logo_header_right">
+			 <img src="{$logo_tr}"
+			       alt="NREN logo" />&nbsp;
+		      </div>
+		</div>
+		    <div id="language_bar" style="clear: both">
 		    {* only display language options if there actually *are* such *}
 		    {if $available_languages|@count > 1}
 			    {foreach from=$available_languages key=code item=lang}
@@ -118,6 +132,32 @@
 		      {$content}
 		    {/if} {* maint *}
 		    </div> <!-- content -->
+			<div id="footer" class="logo_area">
+		      <div id="logo_footer_left">
+			  {if isset($logo_bl)}
+				<img src="{$logo_bl}"
+				     alt="NREN logo" />
+			   {else}
+				 &nbsp;
+			   {/if}
+			 </div>
+			  <div id="logo_footer_center">
+			   {if isset($logo_bc)}
+			   <img src="{$logo_bc}"
+				     alt="NREN logo" />
+			   {else}
+				&nbsp;
+			   {/if}
+			  </div>
+			  <div id="logo_footer_right">
+			   {if isset($logo_br)}
+			 <img src="{$logo_br}"
+			       alt="NREN logo" />
+			   {else}
+			   &nbsp;
+			   {/if}
+		      </div>
+			  </div>
 		  </div> <!-- rounded borders -->
 		</div>
 	      </div>
