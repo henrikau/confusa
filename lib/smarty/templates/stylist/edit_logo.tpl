@@ -15,7 +15,7 @@
 
 		switch(pos) {
 		case 'tl':
-			infoDiv.innerHTML = "<span>Use the form below to upload a new left-header logo.<\/span><br />" + infoDiv.innerHTML;
+			infoDiv.innerHTML = "<span>Use the form above to upload a new left-header logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="tl";
 
 			var logo=document.getElementById('logo_tl');
@@ -32,7 +32,7 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'tc':
-			infoDiv.innerHTML= "<span>Use the form below to upload a new central-header logo.<\/span><br />" + infoDiv.innerHTML;
+			infoDiv.innerHTML= "<span>Use the form above to upload a new central-header logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="tc";
 
 			var logo=document.getElementById('logo_tc');
@@ -49,7 +49,7 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'tr':
-			infoDiv.innerHTML="<span>Use the form below to upload a new right-header-logo.<\/span><br />" + infoDiv.innerHTML;
+			infoDiv.innerHTML="<span>Use the form above to upload a new right-header-logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="tr";
 
 			var logo=document.getElementById('logo_tr');
@@ -66,7 +66,7 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'bg':
-			infoDiv.innerHTML="<span>Use the form below to upload a new background image.<\/span><br />" + infoDiv.innerHTML;
+			infoDiv.innerHTML="<span>Use the form above to upload a new background image.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="bg";
 
 			var logo=document.getElementById('logo_bg');
@@ -83,7 +83,7 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'bl':
-			infoDiv.innerHTML="<span>Use the form below to upload a new left-footer logo.<\/span><br />" + infoDiv.innerHTML;
+			infoDiv.innerHTML="<span>Use the form above to upload a new left-footer logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="bl";
 
 			var logo=document.getElementById('logo_bl');
@@ -100,7 +100,7 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'bc':
-			infoDiv.innerHTML="<span>Use the form below to upload a new central-footer logo.<\/span><br />" + infoDiv.innerHTML;
+			infoDiv.innerHTML="<span>Use the form above to upload a new central-footer logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="bc";
 
 			var logo=document.getElementById('logo_bc');
@@ -116,7 +116,7 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'br':
-			infoDiv.innerHTML="<span>Use the form below to upload a new right-footer logo.<\/span><br />" + infoDiv.innerHTML;
+			infoDiv.innerHTML="<span>Use the form above to upload a new right-footer logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="br";
 
 			var logo=document.getElementById('logo_br');
@@ -395,10 +395,6 @@
 	</div>
   </div>
 
-  <div class="spacer" style="clear: left"></div>
-  <div id="infoDiv" style="margin-bottom: 1em; display: none">
-	<a href="stylist.php?show=logo" style="margin-bottom: 1em">Go back.</a>
-  </div>
   <form id="logoUpForm" style="display: none" action="" method="post"
         enctype="multipart/form-data">
 	<div>
@@ -409,6 +405,8 @@
 		<input type="submit" value="Upload image" />
 	</div>
   </form>
-
   <div class="spacer"></div>
+  <div id="infoDiv" style="margin-bottom: 1em; display: none">
+  <a href="stylist.php?show=logo" style="margin-bottom: 1em">Go back.</a>
+  </div>
 </fieldset>
