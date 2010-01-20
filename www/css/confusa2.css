@@ -82,8 +82,13 @@ img.url {
 	margin-bottom: 25px;
 }
 
-#logo {
-	float: left;
+#footer {
+	margin-top: 25px;
+}
+
+div.logo_area {
+	width: 100%;
+	overflow: hidden;
 }
 
 #logo_in_text {
@@ -92,9 +97,51 @@ img.url {
 	margin-bottom: 10px;
 }
 
-#title {
-	margin-left: 200px;
+#logo_header_left {
+	float: left;
+	min-width: 183px;
+	max-width: 183px;
+	overflow: hidden;
+}
+
+#logo_header_center {
+	float: left;
+	min-width: 500px;
+	max-width: 500px;
+	overflow: hidden;
+
+	/* system-name */
 	font-size: 28px;
+}
+
+#logo_header_right {
+	float: right;
+	text-align: right;
+	min-width: 183px;
+	max-width: 183px;
+	overflow: hidden;
+}
+
+#logo_footer_left {
+	float: left;
+	min-width: 183px;
+	max-width: 183px;
+	overflow: hidden;
+}
+
+#logo_footer_center {
+	float: left;
+	min-width: 500px;
+	max-width: 500px;
+	overflow: hidden;
+}
+
+#logo_footer_right {
+	float: right;
+	text-align: right;
+	min-width: 183px;
+	max-width: 183px;
+	overflow: hidden;
 }
 
 #language_bar {
@@ -394,6 +441,11 @@ a.exphead span.expchar {
 
 .expcont {
     display: block;
+}
+
+a img {
+	border: 0px;
+	border-style: none;
 }
 
 span.wtf {
