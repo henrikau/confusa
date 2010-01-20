@@ -300,10 +300,20 @@ class Framework {
 		$this->tpl->assign('successes', self::$successes);
 		$this->tpl->assign('warnings', self::$warnings);
 
-		/* get custom logo if there is any */
-		$logo = "view_logo.php?nren=" . $this->person->getNREN();
+		$nren = $this->person->getNREN();
+		$logo_path = Config::get_config('custom_logo') . $nren . "/custom_";
+
+		foreach(ConfusaConstants::$ALLOWED_LOGO_POSITIONS as $pos) {
+			foreach (ConfusaConstants::$ALLOWED_IMG_SUFFIXES as $sfx) {
+				$logo_file = $logo_path . $pos . "." . $sfx;
+				if (file_exists($logo_file)) {
+					$imgurl = "view_logo.php?nren=$nren&amp;pos=$pos&amp;suffix=$sfx";
+					$this->tpl->assign("logo_$pos", $imgurl);
+					break;
+				}
+			}
+		}
 		$css = "get_css.php?nren=" . $this->person->getNREN();
-		$this->tpl->assign('logo', $logo);
 		$this->tpl->assign('css',$css);
 
 		if (Config::get_config('debug')) {
