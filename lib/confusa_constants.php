@@ -145,6 +145,15 @@ class ConfusaConstants {
 	public static $LOG_HEADER_ALERT = ' -= [ ALERT ] =-';
 	public static $LOG_HEADER_EMERG = ' EMERG EMERG EMERG';
 
+	/* positions at which a logo can be placed in the branding process */
+	public static $ALLOWED_LOGO_POSITIONS = array('tl',  /* top left */
+	                                              'tc',  /* top center */
+	                                              'tr',  /* top right */
+	                                              'bg',  /* background */
+	                                              'bl',  /* bottom-left */
+	                                              'bc',  /* bottom center */
+	                                              'br'); /* bottom-right */
+
 }
 
 ?>

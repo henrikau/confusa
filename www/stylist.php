@@ -80,12 +80,31 @@ class CP_Stylist extends Content_Page
 				}
 				break;
 			case 'upload_logo':
+				$position = $_POST['position'];
+				if (array_search($position, ConfusaConstants::$ALLOWED_LOGO_POSITIONS) === FALSE) {
+					Framework::error_output("The specified position " .
+					                        htmlentities($position) .
+					                        " is not a legal logo position!");
+					return;
+				}
+
 				if (isset($_FILES['nren_logo']['name'])) {
 					/* only allow image uploads */
 					if (strpos($_FILES['nren_logo']['type'], 'image/') !== false) {
-						$this->uploadLogo('nren_logo', $this->person->getNREN());
+						$this->uploadLogo('nren_logo', $position, $this->person->getNREN());
 					}
 				}
+				break;
+			case 'delete_logo':
+				$position = $_POST['position'];
+				if (array_search($position, ConfusaConstants::$ALLOWED_LOGO_POSITIONS) === FALSE) {
+					Framework::error_output("The specified position " .
+					                        htmlentities($position) .
+					                        " is not a legal logo position!");
+					return;
+				}
+
+				$this->deleteLogo($position, $this->person->getNREN());
 				break;
 			default:
 				Framework::error_output("Unknown operation chosen in the stylist!");
@@ -127,16 +146,29 @@ class CP_Stylist extends Content_Page
 
 				break;
 			case 'logo':
+				$nren = $this->person->getNREN();
+				$basepath = Config::get_config('custom_logo') . $nren .
+				                  "/custom";
+				foreach (ConfusaConstants::$ALLOWED_LOGO_POSITIONS as $pos) {
+					foreach (ConfusaConstants::$ALLOWED_IMG_SUFFIXES as $sfx) {
+						$logo_name = $basepath . "_" . $pos . "." . $sfx;
+						if (file_exists($logo_name)) {
+							$imgurl = "view_logo.php?nren=$nren&amp;pos=$pos&amp;suffix=$sfx";
+							$this->tpl->assign("logo_$pos", $imgurl);
+							break;
+						}
+					}
+				}
+
+				$this->assignLogoDimsFromCSS($this->person->getNREN());
+
 				$this->tpl->assign('edit_logo', true);
-				$logo = "view_logo.php?nren=" . $this->person->getNREN();
-				$this->tpl->assign('logo', $logo);
 				$extensions = implode(", ", ConfusaConstants::$ALLOWED_IMG_SUFFIXES);
 				$this->tpl->assign('extensions', $extensions);
 				break;
 			case 'mail':
 				$this->tpl->assign('edit_mail', true);
 				$this->tpl->assign('tags', $this->NOTIFICATION_MAIL_TAGS);
-
 
 				/* set the supplied mail_content back in the
 				 * form (exported to tpl with same name. */
@@ -174,7 +206,7 @@ class CP_Stylist extends Content_Page
 	 *
 	 * @param $nren The name of the NREN for which to retrieve the texts
 	 * @return list($help, $about) where $help Individual help text
-	 * 									 $about Individual about text
+	 *									 $about Individual about text
 	 */
 	private function getNRENTexts($nren)
 	{
@@ -520,11 +552,17 @@ class CP_Stylist extends Content_Page
 	}
 
 	/*
-	 * Upload a custom logo for a certain NREN. Enforce dimensional constraints,
-	 * as well as filename (suffix) constraints. Store the file in a NREN-specific
-	 * subdirectory of the graphics-folder
+	 * Upload a custom logo for a certain NREN. Enforce
+	 * filename (suffix) constraints. Store the file in a NREN-specific
+	 * subdirectory of the graphics-folder, suffixed with the position within
+	 * Confusa (tl - top left, tc - top center, tr - top right, bg - background,
+	 * bl - bottom left, bc - bottom center, br - bottom right).
+	 *
+	 * @param $filename string the filename of the uploaded file
+	 * @param $pos char(2) the position within confusa
+	 * @param $nren string the name of the NREN the logo belongs to
 	 */
-	private function uploadLogo($filename, $nren) {
+	private function uploadLogo($filename, $pos, $nren) {
 		$fu = new FileUpload($filename, false, false, NULL);
 
 		if ($fu->file_ok()) {
@@ -545,21 +583,7 @@ class CP_Stylist extends Content_Page
 				return;
 			}
 
-			if ($width > $this->allowed_width) {
-				Framework::error_output("The width of your image is $width pixel, greater than " .
-										"the allowed image-width $this->allowed_width pixel. Please " .
-										"crop or resize your image and upload it again");
-				return;
-			}
-
-			if ($height > $this->allowed_height) {
-				Framework::error_output("The height of your image is $width pixel, greater than " .
-										"the allowed image-height $this->allowed_height pixel. Please " .
-										"crop or resize your image and upload it again");
-				return;
-			}
-
-			/* keep the suffix but change the name to custom.suffix
+			/* keep the suffix but change the name to custom_[pos].suffix
 			 */
 			$logo_path = Config::get_config('custom_logo');
 			$logo_path .= $nren;
@@ -569,7 +593,7 @@ class CP_Stylist extends Content_Page
 			} else {
 				/* delete all the other potential logos that might be there */
 				foreach (ConfusaConstants::$ALLOWED_IMG_SUFFIXES as $all_suffix) {
-					$file = $logo_path . "/custom.$all_suffix";
+					$file = $logo_path . "/custom_$pos.$all_suffix";
 					if (file_exists($file)) {
 						unlink($file);
 					}
@@ -577,7 +601,7 @@ class CP_Stylist extends Content_Page
 			}
 
 			$content = $fu->get_content();
-			$logo_file = $logo_path . '/custom.' . $suffix;
+			$logo_file = $logo_path . '/custom_' . $pos . '.' . $suffix;
 
 			try {
 				$fu->write_content_to_file($logo_file);
@@ -591,6 +615,97 @@ class CP_Stylist extends Content_Page
 							  "logo custom.$suffix User contacted us from " .
 							  $_SERVER['REMOTE_ADDR']);
 			Framework::success_output("Logo successfully updated!");
+		}
+	}
+
+	/**
+	 * Parse the CSS for the current logo dimensioning and assign it to the
+	 * smarty template. This should give the administrator that is using the
+	 * stylist some help in picking correctly dimensioned logos or adapting
+	 * the CSS.
+	 *
+	 * @param $nren string the NREN whose customized CSS applies
+	 * @return void
+	 */
+	private function assignLogoDimsFromCSS($nren) {
+		$css_string = $this->fetchNRENCSS($nren);
+
+		if (isset($css_string)) {
+			$pos_tl = stripos($css_string, "#logo_header_left");
+			$width_tl_b = stripos($css_string, "min-width:", $pos_tl);
+			$width_tl_b += 10;
+			$width_tl_e = stripos($css_string, ";", $width_tl_b);
+			$width_tl = substr($css_string, $width_tl_b, $width_tl_e - $width_tl_b);
+			$this->tpl->assign("css_tl", $width_tl);
+
+			$pos_tc = stripos($css_string, "#logo_header_center");
+			$width_tc_b = stripos($css_string, "min-width:", $pos_tc);
+			$width_tc_b += 10;
+			$width_tc_e = stripos($css_string, ";", $width_tc_b);
+			$width_tc = substr($css_string, $width_tc_b, $width_tc_e - $width_tc_b);
+			$this->tpl->assign("css_tc", $width_tc);
+
+			$pos_tr = stripos($css_string, "#logo_header_right");
+			$width_tr_b = stripos($css_string, "min-width:", $pos_tr);
+			$width_tr_b += 10;
+			$width_tr_e = stripos($css_string, ";", $width_tr_b);
+			$width_tr = substr($css_string, $width_tr_b, $width_tr_e - $width_tr_b);
+			$this->tpl->assign("css_tr", $width_tr);
+
+			$pos_bl = stripos($css_string, "#logo_footer_left");
+			$width_bl_b = stripos($css_string, "min-width:", $pos_bl);
+			$width_bl_b += 10;
+			$width_bl_e = stripos($css_string, ";", $width_bl_b);
+			$width_bl = substr($css_string, $width_bl_b, $width_bl_e - $width_bl_b);
+			$this->tpl->assign("css_bl", $width_bl);
+
+			$pos_bc = stripos($css_string, "#logo_footer_center");
+			$width_bc_b = stripos($css_string, "min-width:", $pos_bc);
+			$width_bc_b += 10;
+			$width_bc_e = stripos($css_string, ";", $width_bc_b);
+			$width_bc = substr($css_string, $width_bc_b, $width_bc_e - $width_bc_b);
+			$this->tpl->assign("css_bc", $width_bc);
+
+			$pos_br = stripos($css_string, "#logo_footer_right");
+			$width_br_b = stripos($css_string, "min-width:", $pos_br);
+			$width_br_b += 10;
+			$width_br_e = stripos($css_string, ";", $width_br_b);
+			$width_br = substr($css_string, $width_br_b, $width_br_e - $width_br_b);
+			$this->tpl->assign("css_br", $width_br);
+		}
+	}
+
+	/**
+	 * Delete the NREN logo for the given position within Confusa. This will
+	 * really delete the physical file containing the logo.
+	 *
+	 * @param $position string a position from
+	 *                  ConfusaConstants::$ALLOWED_IMG_POSITIONS
+	 * @param $nren string the name of the NREN, whose custom-logo should be
+	 *                     removed
+	 * @return void
+	 */
+	private function deleteLogo($position, $nren)
+	{
+		$basepath = Config::get_config('custom_logo') . $nren . "/custom_";
+		$basepath .= $position . ".";
+		$result = FALSE;
+
+		foreach (ConfusaConstants::$ALLOWED_IMG_SUFFIXES as $sfx) {
+			$logoName = $basepath . $sfx;
+			if (file_exists($logoName)) {
+				$result = unlink($logoName);
+				break;
+			}
+		}
+
+		if ($result === FALSE) {
+			Framework::error_output("Could not delete NREN-logo with name " .
+			                        htmlentities($logoName) .
+			                        ". Maybe the server is misconfigured, " .
+			                        "please contact a site-administrator.");
+			Logger::log_event(LOG_INFO, "[nadm] Error when trying to delete " .
+			                  "NREN logo $logoName, for NREN $nren.");
 		}
 	}
 }
