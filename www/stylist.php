@@ -11,10 +11,6 @@ require_once 'confusa_constants.php';
 
 class CP_Stylist extends Content_Page
 {
-	/* maximum width for custom logos */
-	private $allowed_width;
-	/* maximum height for custom logos */
-	private $allowed_height;
 	/* allowed smarty tags for the notification mail template */
 	private $NOTIFICATION_MAIL_TAGS = array('subscriber',
 	                                        'product_name',
@@ -30,8 +26,6 @@ class CP_Stylist extends Content_Page
 
 	function __construct() {
 		parent::__construct("Stylist", true);
-		$this->allowed_width = 200;
-		$this->allowed_height = 200;
 	}
 
 	/*
@@ -138,8 +132,6 @@ class CP_Stylist extends Content_Page
 				$this->tpl->assign('logo', $logo);
 				$extensions = implode(", ", ConfusaConstants::$ALLOWED_IMG_SUFFIXES);
 				$this->tpl->assign('extensions', $extensions);
-				$this->tpl->assign('width', $this->allowed_width);
-				$this->tpl->assign('height', $this->allowed_height);
 				break;
 			case 'mail':
 				$this->tpl->assign('edit_mail', true);
