@@ -51,30 +51,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 				Framework::error_output("Unknown action (" . htmlentities($_POST['setting']) . ")");
 				break;
 			}
-		} else if (isset($_POST['language_operation'])) {
-				switch ($_POST['language_operation']) {
-					case 'update':
-						if (isset($_POST['language'])) {
-							$new_language = Input::sanitizeLangCode($_POST['language']);
-
-							if ($person->isSubscriberAdmin()) {
-								$this->updateSubscriberLanguage($person->getSubscriber()->getOrgName(),
-								                                $new_language);
-							} else if ($person->isNRENAdmin()) {
-								$this->person->getNREN()->set_lang(Input::sanitizeLangCode($_POST['language']));
-								$this->person->getNREN()->saveNREN();
-							}
-						}
-
-						break;
-
-					default:
-						Framework::error_output("Unknown operation");
-						break;
-				}
-			} else {
-				return;
-			}
+		}
 	}
 
 	public function process()
@@ -145,35 +122,6 @@ class CP_NREN_Subs_Settings extends Content_Page
 		                          htmlentities($subscriber));
 		Logger::log_event(LOG_DEBUG, "[sadm] Updated contact for subscriber $subscriber.");
 	} /* end updateSubscriberContact */
-
-	/**
-	 * Update the default language for a subscriber
-	 *
-	 * @param $nren string The name of the subscriber
-	 * @param $new_language string the ISO 639-1 code for the new default language of the subscriber
-	 */
-	private function updateSubscriberLanguage($new_language)
-	{
-		$subscriber = $this->person->getSubscriber();
-		$subscriber->setLanguage($new_language);
-
-		try {
-			$subscriber->save();
-		} catch (ConfusaGenException $cge) {
-			Logger::log_event(LOG_NOTICE, "[sadm] Updating the language to $new_language " .
-							 "failed for subscriber $subscriber. " . $cge->getMessage());
-			Framework::error_output("Updating the language to " . htmlentities($new_language) . " failed " .
-			                        "for subscriber " . htmlentities($subscriber) .
-			                        ", probably due to problems with the supplied data. Server said: " .
-			                        htmlentities($cge->getMessage()));
-			return;
-		}
-
-		Logger::log_event(LOG_DEBUG, "Default language changed to $new_language for " .
-							"subscriber $subscriber");
-		Framework::success_output("Default language for your subscriber successfully changed to " .
-									$this->full_names[$new_language]);
-	} /* end updateSubscriberLanguage */
 }
 
 $fw = new Framework(new CP_NREN_Subs_Settings());
