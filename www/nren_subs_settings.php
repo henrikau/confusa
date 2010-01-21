@@ -119,7 +119,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 		}
 
 		Framework::success_output("Updated contact information for your subscriber " .
-		                          htmlentities($subscriber));
+		                          htmlentities($subscriber->getIdPName()) . ".");
 		Logger::log_event(LOG_DEBUG, "[sadm] Updated contact for subscriber $subscriber.");
 	} /* end updateSubscriberContact */
 }
