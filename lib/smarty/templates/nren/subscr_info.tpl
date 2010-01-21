@@ -39,6 +39,18 @@
 	<td><input type="text" name="resp_email" value="{$subscriberInfo.subscr_resp_email}" /></td>
       </tr>
 
+	  <tr>
+	<td align="right">Helpdesk URL:</td>
+	<td></td>
+	<td><input type="text" name="helpdesk_url" value="{$subscriberInfo.subscr_help_url}" /></td>
+	</tr>
+
+	<tr>
+	<td align="right">Helpdesk e-mail:</td>
+	<td></td>
+	<td><input type="text" name="helpdesk_email" value="{$subscriberInfo.subscr_help_email}" /></td>
+	</tr>
+
       <tr>
 	<td align="right">
 	  <input type="reset" value="reset" />

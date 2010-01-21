@@ -37,12 +37,13 @@ class CP_NREN_Subs_Settings extends Content_Page
 				break;
 			case 'subscriber_contact':
 				if ($this->person->isSubscriberAdmin()) {
-					/* ($contact_email, $contact_phone, $resp_name, $resp_email) */
 					$this->updateSubscriberContact(
 						Input::sanitizeEmail($_POST['contact_email']),
 						Input::sanitizePhone($_POST['contact_phone']),
 						Input::sanitizePersonName($_POST['resp_name']),
-						Input::sanitizeEmail($_POST['resp_email']));
+						Input::sanitizeEmail($_POST['resp_email']),
+						Input::sanitizeURL($_POST['helpdesk_url']),
+						Input::sanitizeEmail($_POST['helpdesk_email']));
 				}
 				break;
 			default:
@@ -102,17 +103,27 @@ class CP_NREN_Subs_Settings extends Content_Page
 	/**
 	 * Update the contact information for a subscriber to a new value
 	 *
-	 * @param $subscriber string The subscriber for which the contact information
-	 *		should be updated
-	 * @param $contact string The new contact information
+	 * @param $contact_email string A general subscriber-mail address
+	 * @param $contact_phone string The (main) phone number of the subscriber
+	 * @param $resp_name string The name of a responsible person at the subscr.
+	 * @param $resp_email string e-mail address of a responsible person
+	 * @param $help_url string URL of the subscriber's helpdesk
+	 * @param $help_email string e-mail address of the subscriber's helpdesk
 	 */
-	private function updateSubscriberContact($contact_email, $contact_phone, $resp_name, $resp_email)
+	private function updateSubscriberContact($contact_email,
+	                                         $contact_phone,
+	                                         $resp_name,
+	                                         $resp_email,
+	                                         $help_url,
+	                                         $help_email)
 	{
 		$subscriber = $this->person->getSubscriber();
 		$subscriber->setEmail($contact_email);
 		$subscriber->setPhone($contact_phone);
 		$subscriber->setRespName($resp_name);
 		$subscriber->setRespEmail($resp_email);
+		$subscriber->setHelpURL($help_url);
+		$subscriber->setHelpEmail($help_email);
 
 		try {
 			$subscriber->save();
