@@ -220,6 +220,9 @@ class NREN
 			$res['url']	= Input::sanitizeText($this->data['url']);
 		}
 
+		if (array_key_exists('enable_email', $this->data) && !is_null($this->data['enable_email'])) {
+			$res['enable_email']	= Input::sanitizeText($this->data['enable_email']);
+		}
 		return $res;
 	}
 
