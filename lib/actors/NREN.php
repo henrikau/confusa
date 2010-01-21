@@ -123,6 +123,21 @@ class NREN
 		return null;
 	}
 
+	/**
+	 * getEnableEmail() return the stored value about whether or not to
+	 * include emails in the certificates.
+	 *
+	 * @param  : void
+	 * @return : String|null 0,1 or multiple addresses to store in the certs.
+	 */
+	public function getEnableEmail()
+	{
+		if ($this->data && array_key_exists('enable_email', $this->data)) {
+			return $this->data['enable_email'];
+		}
+		return null;
+	}
+
 	public function saveMap($eppnkey, $epodn, $cn, $mail, $entitlement)
 	{
 		$doUpdate = false;
@@ -364,6 +379,7 @@ class NREN
 	 * | contact_phone | varchar(24) | NO   |     | NULL    |                |
 	 * | cert_email    | varchar(64) | YES  |     | NULL    |                |
 	 * | cert_phone    | varchar(16) | YES  |     | NULL    |                |
+	 * | enable_email  | enum('0','1','n') | YES  |     | NULL    |          |
 	 * +---------------+-------------+------+-----+---------+----------------+
 	 *
 	 * We do not retrieve all fields, the large text-fields ('help' and
@@ -381,7 +397,8 @@ class NREN
 		$query  = "SELECT	n.nren_id,		n.name,		n.login_account, ";
 		$query .= "		n.contact_email,	n.contact_phone,n.cert_email, ";
 		$query .= "		n.cert_phone,		n.lang,		n.url, ";
-		$query .= "		n.country,		idp.idp_url as idp_url ";
+		$query .= "		n.country,		idp.idp_url as idp_url, ";
+		$query .= "		n.enable_email ";
 		$query .= "FROM idp_map idp LEFT JOIN ";
 		$query .= "nrens n on idp.nren_id = n.nren_id WHERE idp.idp_url=?";
 		try {
