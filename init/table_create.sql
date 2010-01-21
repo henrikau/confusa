@@ -113,6 +113,12 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- NREN might want the users to visit nren.example.org.
     url VARCHAR(128),
 
+
+    -- The certificates are capable of storing one or more emails in the
+    -- subject altname. However, this should be configurable for the
+    -- NREN admins.
+    enable_email ENUM('0', '1', 'n'),
+
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) engine=InnoDB;
 
