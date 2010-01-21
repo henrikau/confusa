@@ -3,31 +3,28 @@
 {* *********************************************************************** *}
 
 <fieldset>
-  <legend>NREN admins</legend>
+  <legend>{$l10n_legend_nren_admins} {$nren|escape}</legend>
 
   <p class="info">
-    Add and delete NREN admins for your NREN '{$nren|escape}'. You yourself are
-    marked with an asterisk (*). NREN admins have many privileges:
+    {$l10n_infotext_nren_adm1} '{$nren|escape}'. {$l10n_infotext_selfmarker} {$l10n_infotext_nren_adm2}
   </p>
   <ul class="info">
-    <li>Add/delete other NREN admins.</li>
-    <li>Add/delete subscriber admins.</li>
-    <li>Give institutions within the NREN's domain access to Confusa</li>
-    <li>Change the NREN's CA account</li>
-    <li>Change the branding of the portal</li>
+    <li>{$l10n_nren_adm_priv1}.</li>
+    <li>{$l10n_nren_adm_priv2}.</li>
+    <li>{$l10n_nren_adm_priv3}</li>
+    <li>{$l10n_nren_adm_priv4}</li>
+    <li>{$l10n_nren_adm_priv5}</li>
   </ul>
   <p class="info">
-    This role has a large impact on the available
-    power. Thus, you should not grant this level to
-    everybody, but only to persons who you trust implicitly.
+    {$l10n_infotext_nren_adm3}
   </p>
 
   <table>
 {if !empty($nren_admins)}
 		<tr>
 	  <td style="width: 30px"></td><td style="width: 30px"></td>
-	  <td style="width: 15em"><b>Principal identifier</b></td>
-	   <td style="width: 15em"><b>Admin name</b></td>
+	  <td style="width: 15em"><b>{$l10n_label_eppn}</b></td>
+	   <td style="width: 15em"><b>{$l10n_label_adm_name}</b></td>
     </tr>
 	<tr>
 	<td style="height: 1em"></td>
@@ -39,8 +36,8 @@
 				<form action ="" method="post">
 					<input type="hidden" name="nren_operation" value="downgrade_self" />
 					<input type="image" src="graphics/arrow_down.png" alt="Downgrade admin"
-					name="Downgrade" title="Downgrade admin"
-					onclick="return confirm('Do you want to downgrade YOURSELF to a subscriber admin?')" />
+					name="Downgrade" title="{$l10n_title_downgrade_adm}"
+					onclick="return confirm('{$l10n_confirm_downgrade_selfn}')" />
 				</form>
 			{/if}
 		</td>
@@ -51,26 +48,26 @@
 				<input type="hidden" name="nren_admin" value="{$admin.eppn}" />
 		{if ($admin.eppn == $self)}
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
-				title="Delete admin"
-				name="delete" onclick="return confirm('You are about to delete YOURSELF!\nAre you sure?')" />
+				title="{$l10n_title_delete_adm}"
+				name="delete" onclick="return confirm('{$l10n_confirm_delete_self}')" />
 			</div>
 			</form>
 			</td>
-			<td >{$admin.eppn|escape} <span style="cursor:help" title="That's you!">(*)</span></td>
+			<td >{$admin.eppn|escape} <span style="cursor:help" title="{$l10n_title_thatsu}">(*)</span></td>
 			<td>{$admin.name|escape}</td>
 		{else}
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
-				title="Delete admin"
-				name="delete" onclick="return confirm('Delete entry {$admin.eppn|escape}?')" />
+				title="{$l10n_title_delete_adm}"
+				name="delete" onclick="return confirm('{$l10n_title_delete_adm} {$admin.eppn|escape}?')" />
 			</div>
 			</form>
 			</td>
 			<td style="width: 15em">{$admin.eppn|escape}</td>
 			<td style="width: 15em">
 				{if isset($admin.email)}
-					<a href="mailto:{$admin.email}">{$admin.name|escape|default:"<i>not assigned yet</i>"}</a>
+					<a href="mailto:{$admin.email}">{$admin.name|escape|default:"<i>$l10n_info_notassign</i>"}</a>
 				{else}
-					{$admin.name|escape|default:"<i>not assigned yet</i>"}
+					{$admin.name|escape|default:"<i>$l10n_info_notassign</i>"}
 				{/if}
 			</td>
 		{/if}
@@ -98,10 +95,10 @@
 		<input type="text" name="nren_admin" />
 	</td>
 	<td style="width: 15em">
-		<input type="text" value="Assigned at first login" disabled="disabled" />
+		<input type="text" value="{$l10n_info_ass_flogin}" disabled="disabled" />
 	</td>
 	<td>
-		<input type="submit" name="add" value="Add new" />
+		<input type="submit" name="add" value="{$l10n_button_addnew}" />
 	</td>
 </tr>
 </table>
@@ -116,18 +113,18 @@
 {* *********************************************************************** *}
 <fieldset>
 	<legend style="width: 100%; overflow: hidden">
-	Admins for subscriber {$subscriber->getOrgName()|escape|truncate:30:"...":true}
+	{$l10n_legend_subs_admins} {$subscriber->getOrgName()|escape|truncate:30:"...":true}
 	</legend>
 
 	<p class="info">
-	Allows you to add/delete Subscriber admins. Subscriber admins may:
+	{$l10n_infotext_subs_adm1} {$l10n_infotext_subs_adm2}
 	</p>
 	<ul class="info">
-	<li>revoke user certificates</li>
-	<li>appoint other subscriber admins.</li>
+	<li>{$l10n_subs_adm_priv1}.</li>
+	<li>{$l10n_subs_adm_priv2}.</li>
 	</ul>
 	<p class="info">
-	Their scope is limited to an institution, in this case {$subscriber->getOrgName()|escape}.
+	{$l10n_infotext_subs_adm3} {$subscriber->getOrgName()|escape}.
 	</p>
 
 	{if isset($subscriber_admins)}
@@ -135,8 +132,8 @@
 		<tr>
 			<td style="width: 30px"></td>
 			<td style="width: 30px"></td>
-			<td style="width: 15em"><b>Principal identifier</b></td>
-			<td style="width: 15em"><b>Admin name</b></td>
+			<td style="width: 15em"><b>{$l10n_label_eppn}</b></td>
+			<td style="width: 15em"><b>{$l10n_label_adm_name}</b></td>
 		</tr>
 		<tr>
 		<td style="height: 1em"></td>
@@ -149,9 +146,9 @@
 				<input type="hidden" name="subscriber" value="{$subscriber->getOrgName()}" />
 				<input type="hidden" name="subscriberID" value="{$subscriber->getDBID()}" />
 				<input type="hidden" name="subs_admin" value="{$subscriber_admin.eppn}" />
-				<input type="image" src="graphics/arrow_up.png" alt="Upgrade admin"
-				name="Upgrade" title="Upgrade admin"
-				onclick="return confirm('Upgrade {$subscriber_admin.eppn|escape} to a NREN-admin of NREN {$nren|escape}?')" />
+				<input type="image" src="graphics/arrow_up.png" alt="{$l10n_title_upgrade_adm}"
+				name="Upgrade" title="{$l10n_title_upgrade_adm}"
+				onclick="return confirm('{$l10n_confirm_upgrade_sadm1} {$subscriber_admin.eppn|escape} {$l10n_confirm_upgrade_sadm2} {$nren|escape}?')" />
 				</form>
 			</td>
 			<td style="width: 30px">
@@ -161,17 +158,17 @@
 					<input type="hidden" name="subscriber" value="{$subscriber->getOrgName()}" />
 					<input type="hidden" name="subscriberID" value="{$subscriber->getDBID()}" />
 					<input type="hidden" name="subs_admin" value="{$subscriber_admin.eppn}" />
-					<input type="image" src="graphics/delete.png" alt="Delete entry"
-					title="Delete admin"
-					name="delete" onclick="return confirm('Delete entry {$subscriber_admin.eppn|escape}?')" />
+					<input type="image" src="graphics/delete.png" alt="{$l10n_title_delete_adm}"
+					title="{$l10n_title_delete_adm}"
+					name="delete" onclick="return confirm('{$l10n_title_delete_adm} {$subscriber_admin.eppn|escape}?')" />
 					</div>
 					</form>
 			</td><td style="width: 15em">{$subscriber_admin.eppn|escape}</td>
 			<td style="width: 15em">
 			{if isset($subscriber_admin.email)}
-				<a href="mailto:{$subscriber_admin.email}">{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}</a>
+				<a href="mailto:{$subscriber_admin.email}">{$subscriber_admin.name|escape|default:"<i>$l10n_info_notassign</i>"}</a>
 			{else}
-				{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}
+				{$subscriber_admin.name|escape|default:"<i>$l10n_info_notassign</i>"}
 			{/if}
 			</td>
 			</tr>
@@ -200,10 +197,10 @@
 			<input type="text" name="subs_admin" />
 		</td>
 		<td style="width: 15em">
-			<input type="text" value="Assigned at first login" disabled="disabled" />
+			<input type="text" value="{$l10n_info_ass_flogin}" disabled="disabled" />
 		</td>
 		<td>
-			<input type="submit" name="add" value="Add new" />
+			<input type="submit" name="add" value="{$l10n_button_addnew}" />
 		</td>
 		</tr>
 		</table>
@@ -214,7 +211,7 @@
 		<div style="text-align: right">
 			<form action="" method="post">
 			<div>
-			Select subscriber:
+			{$l10n_label_select_subs}:
 			<select name="subscriberID">
 			{foreach from=$subscribers item=other}
 			{if $other->getDBID() == $subscriber->getDBID()}
@@ -224,7 +221,7 @@
 			{/if}
 			{/foreach}
 			</select>
-			<input type="submit" name="change" value="Change" />
+			<input type="submit" name="change" value="{$l10n_button_change}" />
 			</div>
 			</form>
 		</div>

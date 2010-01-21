@@ -3,25 +3,24 @@
 	{* ***** subscriber-admin/subscriber-admin view ***** *}
 	{* *********************************************************************** *}
 	<legend>
- Subscriber admins
+ {$l10n_legend_subs_admins2} {$subscriber|escape}
 </legend>
 
 	<p class="info">
-	Add/delete administrators for your institution '{$subscriber|escape}'.
-	You yourself are marked with an asterisk (*). Subscriber admins have the
-	following privileges:
+	{$l10n_infotext_subs_adm4} '{$subscriber|escape}'.
+	{$l10n_infotext_selfmarker} {$l10n_infotext_subs_adm2}
 	</p>
 	<ul class="info">
-	<li>Revoke certificates of users of their own institution</li>
-	<li>Add/delete other subscriber admins and subscriber-subadmins</li>
+	<li>{$l10n_subs_adm_priv1}.</li>
+	<li>{$l10n_subs_adm_priv2}.</li>
 	</ul>
 
 	{if !empty($subscriber_admins)}
 	<table>
 	<tr>
 	<td style="width: 30px"></td>
-	<td style="width: 30px"></td><td style="width: 15em"><b>Principal identifier</b></td>
-	<td style="width: 15em"><b>Admin name</b></td>
+	<td style="width: 30px"></td><td style="width: 15em"><b>{$l10n_label_eppn}</b></td>
+	<td style="width: 15em"><b>{$l10n_label_adm_name}</b></td>
 	</tr>
 		<tr>
 		<td style="height: 1em"></td>
@@ -34,13 +33,13 @@
 			<input type="hidden" name="subs_operation" value="downgrade_subs_admin" />
 			<input type="hidden" name="subs_admin" value="{$subscriber_admin.eppn}" />
 			{if ($subscriber_admin.eppn == $self)}
-			<input type="image" src="graphics/arrow_down.png" alt="Downgrade"
-			title="Downgrade admin"
-			name="Downgrade" onclick="return confirm('Downgrade YOURSELF to subscriber sub-admin status? Are you sure?')" />
+			<input type="image" src="graphics/arrow_down.png" alt="{$l10n_title_downgrade_adm}"
+			title="{$l10n_title_downgrade_adm}"
+			name="Downgrade" onclick="return confirm('{$l10n_confirm_downgrsss1}')" />
 			{else}
-			<input type="image" src="graphics/arrow_down.png" alt="Downgrade"
-			title="Downgrade admin"
-			name="Downgrade" onclick="return confirm('Downgrade admin {$subscriber_admin.eppn|escape} to subscriber sub-admin status?')" />
+			<input type="image" src="graphics/arrow_down.png" alt="{$l10n_title_downgrade_adm}"
+			title="{$l10n_title_downgrade_adm}"
+			name="Downgrade" onclick="return confirm('{$l10n_title_downgrade_adm} {$subscriber_admin.eppn|escape} {$l10n_confirm_downgrsss2}')" />
 			{/if}
 			</div>
 		</form>
@@ -51,27 +50,27 @@
 				<input type="hidden" name="subs_operation" value="delete_subs_admin" />
 				<input type="hidden" name="subs_admin" value="{$subscriber_admin.eppn}" />
 		{if ($subscriber_admin.eppn == $self)}
-			<input type="image" src="graphics/delete.png" alt="Delete entry"
-				title="Delete admin"
-				name="delete" onclick="return confirm('You are about to delete YOURSELF!\nAre you sure?')" />
+			<input type="image" src="graphics/delete.png" alt="{$l10n_title_delete_adm}"
+				title="{$l10n_title_delete_adm}"
+				name="delete" onclick="return confirm('{$l10n_confirm_delete_self}')" />
 			</div>
 			</form>
 			</td>
-			<td>{$subscriber_admin.eppn|escape} <span style="cursor:help" title="That's you!">(*)</span></td>
-			<td>{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}</td>
+			<td>{$subscriber_admin.eppn|escape} <span style="cursor:help" title="{$l10n_title_thatsu}">(*)</span></td>
+			<td>{$subscriber_admin.name|escape|default:"<i>$l10n_info_notassign</i>"}</td>
 		{else}
-			<input type="image" src="graphics/delete.png" alt="Delete entry"
-				title="Delete admin"
-				name="delete" onclick="return confirm('Delete entry {$subscriber_admin.eppn|escape}?')" />
+			<input type="image" src="graphics/delete.png" alt="{$l10n_title_delete_adm}"
+				title="{$l10n_title_delete_adm}"
+				name="delete" onclick="return confirm('{$l10n_title_delete_adm} {$subscriber_admin.eppn|escape}?')" />
 			</div>
 			</form>
 			</td>
 			<td>{$subscriber_admin.eppn|escape}</td>
 			<td>
 			{if isset($subscriber_admin.email)}
-				<a href="mailto:{$subscriber_admin.email}">{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}</a>
+				<a href="mailto:{$subscriber_admin.email}">{$subscriber_admin.name|escape|default:"<i>$l10n_info_notassign</i>"}</a>
 			{else}
-				{$subscriber_admin.name|escape|default:"<i>not assigned yet</i>"}
+				{$subscriber_admin.name|escape|default:"<i>$l10n_info_notassign</i>"}
 			{/if}
 			</td>
 		{/if}
@@ -98,10 +97,10 @@
 		<input type="text" name="subs_admin" />
 	</td>
 	<td style="width: 15em">
-		<input type="text" disabled="disabled" value="Assigned at first login" />
+		<input type="text" disabled="disabled" value="{$l10n_info_ass_flogin}" />
 	</td>
 	<td>
-		<input type="submit" name="add" value="Add new" />
+		<input type="submit" name="add" value="{$l10n_button_addnew}" />
 	</td>
 	</tr>
 	</table>
@@ -116,15 +115,15 @@
 {* *********************************************************************** *}
 <fieldset>
 <legend>
-	Subscriber sub-admins
+	{$l10n_legend_subss_admins} {$subscriber|escape}
 </legend>
 
 <p class="info">
-Add/delete subscriber-subadmins for your institution '{$subscriber|escape}'.
-Subscriber sub-admins have the following privileges:
+{$l10n_infotext_subss_adm1} '{$subscriber|escape}'.
+{$l10n_infotext_subss_adm2}
 </p>
 	<ul class="info">
-	<li>Revoke certificates of users of their own institution</li>
+	<li>{$l10n_subs_adm_priv1}.</li>
 	</ul>
 
 {if !empty($subscriber_sub_admins)}
@@ -132,8 +131,8 @@ Subscriber sub-admins have the following privileges:
 <tr>
 <td style="width: 30px"></td>
 <td style="width: 30px"></td>
-<td style="width: 15em"><b>Principal identifier</b></td>
-<td style="width: 15em"><b>Admin name</b></td>
+<td style="width: 15em"><b>{$l10n_label_eppn}</b></td>
+<td style="width: 15em"><b>{$l10n_label_adm_name}</b></td>
 </tr>
 <tr>
 <td style="height: 1em"></td>
@@ -145,9 +144,9 @@ Subscriber sub-admins have the following privileges:
 			<div>
 				<input type="hidden" name="subs_operation" value="upgrade_subs_sub_admin" />
 				<input type="hidden" name="subs_sub_admin" value="{$admin.eppn}" />
-				<input type="image" src="graphics/arrow_up.png" alt="Upgrade admin"
-				title="Upgrade admin" name="upgrade"
-				onclick="return confirm('Upgrade admin {$admin.eppn|escape} to subscriber-admin of subscriber {$subscriber|escape}?')" />
+				<input type="image" src="graphics/arrow_up.png" alt="{$l10n_title_upgrade_adm}"
+				title="{$l10n_title_upgrade_adm}" name="upgrade"
+				onclick="return confirm('{$l10n_title_upgrade_adm} {$admin.eppn|escape} {$l10n_confirm_upgrsss1} {$subscriber|escape}?')" />
 			</div>
 			</form>
 		</td>
@@ -156,18 +155,18 @@ Subscriber sub-admins have the following privileges:
 			<div>
 			<input type="hidden" name="subs_operation" value="delete_subs_sub_admin" />
 			<input type="hidden" name="subs_sub_admin" value="{$admin.eppn}" />
-			<input type="image" src="graphics/delete.png" alt="Delete entry"
-			title="Delete admin"
-			name="delete" onclick="return confirm('Delete entry {$admin.eppn|escape}?')" />
+			<input type="image" src="graphics/delete.png" alt="{$l10n_title_delete_adm}"
+			title="{$l10n_title_delete_adm}"
+			name="delete" onclick="return confirm('{$l10n_title_delete_adm} {$admin.eppn|escape}?')" />
 			</div>
 		</form>
 		</td>
 		<td>{$admin.eppn|escape}</td>
 		<td>
 			{if isset($admin.email)}
-				<a href="mailto:{$admin.email}">{$admin.name|escape|default:"<i>not assigned yet</i>"}</a>
+				<a href="mailto:{$admin.email}">{$admin.name|escape|default:"<i>$l10n_info_notassign</i>"}</a>
 			{else}
-				{$admin.name|escape|default:"<i>not assigned yet</i>"}
+				{$admin.name|escape|default:"<i>$l10n_info_notassign</i>"}
 			{/if}
 		</td>
 	</tr>
@@ -192,10 +191,10 @@ Subscriber sub-admins have the following privileges:
 		<input type="text" name="subs_sub_admin" />
 	</td>
 	<td style="width: 15em">
-		<input type="text" disabled="disabled" value="Assigned at first login" />
+		<input type="text" disabled="disabled" value="{$l10n_info_ass_flogin}" />
 	</td>
 	<td>
-		<input type="submit" name="add" value="Add new" />
+		<input type="submit" name="add" value="{$l10n_button_addnew}" />
 	</td>
 </tr>
 </table>
@@ -207,20 +206,17 @@ Subscriber sub-admins have the following privileges:
 {* ************************************************************************* *}
 {* ************** Subscriber-admin/NREN-admin view ***************           *}
 {* ************************************************************************* *}
-<h3><a href="javascript:void(0)" class="exphead" onclick="toggleExpand(this)"><span class="expchar">+</span> Your super administrators</a></h3>
+<h3><a href="javascript:void(0)" class="exphead" onclick="toggleExpand(this)"><span class="expchar">+</span> {$l10n_legend_bigboss}</a></h3>
 <div class="expcont">
 	<div class="spacer"></div>
 	<fieldset class="infoblock">
-		<legend>Admins for your NREN {$nren|escape}</legend>
+		<legend>{$l10n_legend_nren_admins} {$nren|escape}</legend>
 		<p class="info">
-		NREN-admins are administrating the whole NREN admin domain, i.e. your institution
-		along with other institutions. They can also define, which institutions are
-		hooked up to Confusa and which credentials should be used for communicating
-		with the Online-CA. Below you can find a list of them along with their e-mail addresses your NREN {$nren|escape}:
+		{$l10n_infotext_nren_adm4} {$nren|escape}:
 		</p>
 		<ul>
 		{foreach from=$nren_admins item=nren_admin}
-			<li>{$nren_admin.eppn|escape} ({$nren_admin.email|escape|default:"<i>not assigned yet</i>"})</li>
+			<li>{$nren_admin.eppn|escape} ({$nren_admin.email|escape|default:"<i>$l10n_info_notassign</i>"})</li>
 		{/foreach}
 		</ul>
 	</fieldset>

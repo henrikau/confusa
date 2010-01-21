@@ -1,0 +1,164 @@
+{
+	"l10n_legend_nren_admins": {
+		"en": "Admins for your NREN"
+	},
+	"l10n_infotext_nren_adm1": {
+		"en": "Add and delete NREN admins for your NREN"
+	},
+	"l10n_infotext_selfmarker": {
+		"en": "You yourself are marked with an asterisk (*)."
+	},
+	"l10n_infotext_nren_adm2": {
+		"en":  "NREN admins have many privileges:"
+	},
+	"l10n_nren_adm_priv1": {
+		"en": "Add/delete other NREN admins"
+	},
+	"l10n_nren_adm_priv2": {
+		"en": "Add/delete subscriber admins"
+	},
+	"l10n_nren_adm_priv3": {
+		"en": "Give institutions within the NREN's domain access to Confusa"
+	},
+	"l10n_nren_adm_priv4": {
+		"en": "Change the NREN's CA account"
+	},
+	"l10n_nren_adm_priv5": {
+		"en": "Change the branding of the portal"
+	},
+	"l10n_infotext_nren_adm3": {
+		"en": "This role has a large impact on the available power. Thus, you should not grant this level to everybody, but only to persons who you trust implicitly."
+	},
+	"l10n_label_eppn": {
+		"en": "Principal identifier"
+	},
+	"l10n_label_adm_name": {
+		"en": "Admin name"
+	},
+	"l10n_title_downgrade_adm": {
+		"en": "Downgrade admin"
+	},
+	"l10n_confirm_downgrade_selfn": {
+		"en": "Do you want to downgrade YOURSELF to a subscriber admin?"
+	},
+	"l10n_title_delete_adm": {
+		"en": "Remove admin"
+	},
+	"l10n_confirm_delete_self": {
+		"en": "You are about to remove YOURSELF!\nAre you sure?"
+	},
+	"l10n_title_thatsu": {
+		"en": "That's you!"
+	},
+	"l10n_info_notassign": {
+		"en": "not assigned yet"
+	},
+	"l10n_info_ass_flogin": {
+		"en": "assigned at first login"
+	},
+	"l10n_button_addnew": {
+		"en": "Add new"
+	},
+	"l10n_legend_subs_admins": {
+		"en": "Admins for subscriber"
+	},
+	"l10n_infotext_subs_adm1": {
+		"en": "Allows you to add/delete subscriber admins."
+	},
+	"l10n_infotext_subs_adm2": {
+		"en": "Subscriber admins have the following privileges:"
+	},
+	"l10n_subs_adm_priv1": {
+		"en": "Revoke certificates of users of their own institution"
+	},
+	"l10n_subs_adm_priv2": {
+		"en": "Appoint other subscriber admins"
+	},
+	"l10n_infotext_subs_adm3": {
+		"en": "Their scope is limited to an institution, in this case"
+	},
+	"l10n_title_upgrade_adm": {
+		"en": "Upgrade admin"
+	},
+	"l10n_confirm_upgrade_sadm1": {
+		"en": "Upgrade"
+	},
+	"l10n_confirm_upgrade_sadm2": {
+		"en": "to a NREN-admin of NREN"
+	},
+	"l10n_label_select_subs": {
+		"en": "Select subscriber"
+	},
+	"l10n_button_change": {
+		"en": "Change"
+	},
+	"l10n_legend_subs_admins2": {
+		"en": "Admins for your institution"
+	},
+	"l10n_msg_getadms1": {
+		"en": "Cannot retrieve (nren) admins from database!<br />Probably wrong syntax for query, ask an admin to investigate. Server said: "
+	},
+	"l10n_msg_admunique": {
+		"en": "Cannot add a subscriber(sub)-admin since an administrator with that name is already present in the database. Note that an administrator may only exist once, with exactly one admin-level!"
+	},
+	"l10n_suc_downgrnren": {
+		"en": "Downgraded you to subscriber admin of subscriber with ID"
+	},
+	"l10n_suc_downgrsubs1": {
+		"en": "Downgraded"
+	},
+	"l10n_suc_downgrsubs2": {
+		"en": "from subscriber admin to subscriber-sub-admin"
+	},
+	"l10n_suc_upgrsubs1": {
+		"en": "Upgraded subscriber-admin"
+	},
+	"l10n_suc_upgrsubs2": {
+		"en": "to NREN level."
+	},
+	"l10n_suc_upgrsubss1": {
+		"en": "Upgraded subscriber-sub-admin"
+	},
+	"l10n_suc_upgrsubss2": {
+		"en": "to a subscriber-admin."
+	},
+	"l10n_suc_deleteadm1": {
+		"en": "Deleted admin"
+	},
+	"l10n_infotext_subs_adm4": {
+		"en": "Add/delete administrators for your institution"
+	},
+	"l10n_confirm_downgrsss1": {
+		"en": "Downgrade YOURSELF to subscriber sub-admin status? Are you sure?"
+	},
+	"l10n_confirm_downgrsss2": {
+		"en": "to subscriber sub-admin status?"
+	},
+	"l10n_legend_subss_admins": {
+		"en": "Sub-admins for your institution"
+	},
+	"l10n_infotext_subss_adm1": {
+		"en": "Add/delete subscriber-subadmins for your institution"
+	},
+	"l10n_infotext_subss_adm2": {
+		"en": "Subscriber sub-admins have the following privileges:"
+	},
+	"l10n_confirm_upgrsss1": {
+		"en": "to subscriber-admin of subscriber"
+	},
+	"l10n_legend_bigboss": {
+		"en": "Your super administrators"
+	},
+	"l10n_infotext_nren_adm4": {
+		"en": "NREN-admins are administrating the whole NREN admin domain, i.e. your institution along with other institutions. They can also define, which institutions are hooked up to Confusa and which credentials should be used for communicating with the Online-CA. Below you can find a list of them along with their e-mail addresses your NREN"
+	},
+	"l10n_infotext_subs_adm5": {
+		"en": "The following are the subscriber admins that are administrating your institution (and their names/emails)"
+	},
+	"l10n_legend_peers": {
+		"en": "Your fellow administrators"
+	},
+	"l10n_infotext_subss_adm3": {
+		"en": "The following are sub-admins for your insitutions, who, like you, may revoke certificates (and their names/emails):"
+	}
+}

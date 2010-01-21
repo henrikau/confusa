@@ -18,7 +18,7 @@ class CP_Admin extends Content_Page
 
 	function __construct()
 	{
-		parent::__construct("Admin", true);
+		parent::__construct("Admin", true, "admin");
 	}
 
 	public function pre_process($person)
@@ -155,9 +155,8 @@ class CP_Admin extends Content_Page
 										array('text'),
 										array($nrenID));
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Cannot retrieve (nren)admins from database!<BR /> " .
-				"Probably wrong syntax for query, ask an admin to investigate. Server said: " .
-				htmlentities($dbse->getMessage()));
+			Framework::error_output($this->translateTag('l10n_msg_getadms1', 'admin') .
+			                        htmlentities($dbse->getMessage()));
 			return null;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Query failed. This probably means that the values " .
@@ -446,9 +445,7 @@ class CP_Admin extends Content_Page
 			return;
 		}
 		if (count($res) != 0) {
-			Framework::error_output("Cannot add subscriber(sub) admin as an administrator with " .
-			                        "that name is already present in the database. Note that an " .
-			                        "administrator may only exist once, with exactly one admin-level!");
+			Framework::error_output($this->translateTag('l10n_msg_admunique', 'admin'));
 			return;
 		}
 
@@ -512,7 +509,7 @@ class CP_Admin extends Content_Page
 
 		Logger::log_event(LOG_NOTICE, "Admin: NREN admin $admin downgraded his/her status to subscriber admin of " .
 						"subscriber with ID $subscriberID");
-		Framework::message_output("Downgraded you to subscriber admin of subscriber with ID " .
+		Framework::success_output($this->translateTag('l10n_suc_downgrnren', 'admin') .
 		                          htmlentities($subscriberID));
 	}
 
@@ -553,8 +550,8 @@ class CP_Admin extends Content_Page
 
 		Logger::log_event(LOG_NOTICE, "ADMIN: Downgraded admin $admin from subscriber-admin to subscriber-" .
 						"sub-admin in subscriber with ID $subscriberID.");
-		Framework::success_output("Downgraded " . htmlentities($admin) .
-		                          " from subscriber admin to subscriber-sub-admin");
+		Framework::success_output($this->translateTag('l10n_suc_downgrsubs1', 'admin') . htmlentities($admin) .
+		                          " " . $this->translateTag('l10n_suc_downgrsubs2', 'admin'));
 	}
 
 	/**
@@ -590,7 +587,8 @@ class CP_Admin extends Content_Page
 		}
 
 		Logger::log_event(LOG_NOTICE, "ADMIN: Subscriber admin $admin upgraded to NREN level (NREN-ID $nren_id)");
-		Framework::success_output("Upgraded subscriber-admin " . htmlentities($admin) . " to NREN level.");
+		Framework::success_output($this->translateTag('l10n_suc_upgrsubs1', 'admin') . " " . htmlentities($admin)
+		                          . " " . $this->translateTag('l10n_suc_upgrsubs2', 'admin'));
 	}
 
 	/*
@@ -627,8 +625,9 @@ class CP_Admin extends Content_Page
 
 		Logger::log_event(LOG_NOTICE, "[sadm] Upgraded subscriber-sub-admin $admin to a subscriber-admin " .
 						"within subscriber with ID $subscriberID");
-		Framework::success_output("Upgraded subscriber-sub-admin " . htmlentities($admin) .
-		                          " to a subscriber-admin");
+		Framework::success_output($this->translateTag('l10n_suc_upgrsubss1', 'admin') . " "
+		                          . htmlentities($admin) . " " .
+		                          $this->translateTag('l10n_suc_upgrsubss2', 'admin'));
 	}
 
 	/*
@@ -727,7 +726,8 @@ class CP_Admin extends Content_Page
 					  "admin $admin with level $level: " . $dbqe->getMessage());
 		}
 
-		Framework::success_output("Deleted admin " . htmlentities($admin));
+		Framework::success_output($this->translateTag('l10n_suc_deleteadm1', 'admin') . " " .
+		                          htmlentities($admin));
 	}
 }
 
