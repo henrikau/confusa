@@ -112,6 +112,7 @@ class Subscriber
 		$res['subscr_help_url'] = $this->help_url;
 		$res['subscr_help_email'] = $this->help_email;
 		$res['subscr_comment'] = $this->getComment();
+		$res['lang'] = $this->preferredLanguage;
 		return $res;
 	}
 
@@ -465,9 +466,10 @@ class Subscriber
 		}
 		return $this->state;
 	}
-	public function setLanguage($lang)
+	public function setLanguage($lang, $external=true)
 	{
 		$this->preferredLanguage = $lang;
+		$this->pendingChanges = $external;
 	}
 	public function getLanguage()
 	{

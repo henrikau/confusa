@@ -43,7 +43,8 @@ class CP_NREN_Subs_Settings extends Content_Page
 						Input::sanitizePersonName($_POST['resp_name']),
 						Input::sanitizeEmail($_POST['resp_email']),
 						Input::sanitizeURL($_POST['helpdesk_url']),
-						Input::sanitizeEmail($_POST['helpdesk_email']));
+						Input::sanitizeEmail($_POST['helpdesk_email']),
+						Input::sanitizeLangCode($_POST['language']));
 				}
 				break;
 			default:
@@ -88,6 +89,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 		} else {
 			$info = $this->person->getSubscriber()->getInfo();
 			$this->tpl->assign('subscriberInfo', $info);
+			$current_language = $info['lang'];
 		}
 
 		if (empty($current_language)) {
@@ -109,13 +111,16 @@ class CP_NREN_Subs_Settings extends Content_Page
 	 * @param $resp_email string e-mail address of a responsible person
 	 * @param $help_url string URL of the subscriber's helpdesk
 	 * @param $help_email string e-mail address of the subscriber's helpdesk
+	 * @param $language string the language code for the subscriber's preferred
+	 *                         language
 	 */
 	private function updateSubscriberContact($contact_email,
 	                                         $contact_phone,
 	                                         $resp_name,
 	                                         $resp_email,
 	                                         $help_url,
-	                                         $help_email)
+	                                         $help_email,
+	                                         $language)
 	{
 		$subscriber = $this->person->getSubscriber();
 		$subscriber->setEmail($contact_email);
@@ -124,6 +129,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 		$subscriber->setRespEmail($resp_email);
 		$subscriber->setHelpURL($help_url);
 		$subscriber->setHelpEmail($help_email);
+		$subscriber->setLanguage($language);
 
 		try {
 			$subscriber->save();

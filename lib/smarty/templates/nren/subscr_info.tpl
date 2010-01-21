@@ -51,6 +51,13 @@
 	<td><input type="text" name="helpdesk_email" value="{$subscriberInfo.subscr_help_email}" /></td>
 	</tr>
 
+	<tr>
+    <td align="right">Default language:</td>
+    <td></td>
+    <td>{html_options name="language" selected=$current_language
+    output=$languages values=$language_codes}</td>
+  </tr>
+
       <tr>
 	<td align="right">
 	  <input type="reset" value="reset" />
