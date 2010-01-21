@@ -154,6 +154,10 @@ class ConfusaConstants {
 	                                              'bc',  /* bottom center */
 	                                              'br'); /* bottom-right */
 
+	/* use the same name as the PHP-SESSION to avoid crashing simpleSAMLphp */
+	public static $SESSION_NAME = "PHPSESSID";
+
+
 }
 
 ?>

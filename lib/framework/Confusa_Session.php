@@ -1,5 +1,5 @@
 <?php
-
+require_once "confusa_constants.php";
   /**
    * CS : Confusa_Session
    *
@@ -9,27 +9,21 @@
    */
 class CS
 {
-	private static $cs_started = false;
-	private static $name = "CS_Name";
 
 	/**
-	 * testSession() test and set the session to CS_Name
+	 * testSession() test and set the session to the correct name.
 	 *
-	 * This function is used to make sure that the session is indeed the
-	 * CS_Name, the associated session.
+	 * This function is used to make sure that the session is set. For
+	 * compatibility with SimpleSAMLphp and to avoid strange session-errors,
+	 * we have set the default name to PHPSESSID in lib/confusa_constants.php
 	 *
 	 * @param  : void
 	 * @return : void
 	 */
 	private static function testSession()
 	{
-		if (session_name() != self::$name) {
-			self::$cs_started = false;
-		}
-
-		if (!self::$cs_started) {
-			self::$cs_started = true;
-			session_name(self::$name);
+		if (session_name() != ConfusaConstants::$SESSION_NAME) {
+			session_name(ConfusaConstants::$SESSION_NAME);
 			session_start();
 		}
 	}
