@@ -18,13 +18,10 @@
 {/literal}
 
 <p class="info">
-  This is where you can search for certificates belonging to your
-  organization ({$subscriber->getOrgName()}). After a search, you will
-  be given a number of hits, where each hit represent a <i>set</i> of
-  certificates.
+  {$l10n_infotext_revsubsa1} ({$subscriber->getOrgName()}). {$l10n_infotext_revsubsa2}
 </p>
 <p class="info">
-  It is <b>your</b> responsibility to pick the correct set to revoke.
+  {$l10n_infotext_revsubsa3}
 </p>
 
 {* The search part *}
@@ -35,13 +32,11 @@ immediately see a result entry *}
     <div class="spacer"></div>
     <form action="" method="post">
     <fieldset>
-    <legend>CN-search</legend>
+    <legend>{$l10n_legend_searchcert}</legend>
 
-    <p class="info">Search for a commonName or a eduPersonPrincipalName of a
-    person within your institution whose certificates you want to revoke. Use
-    '%' as a wildcard.
+    <p class="info">{$l10n_infotext_searchinfo3} {$l10n_infotext_searchinfo2}
     </p>
-	<p class="info">Example: "John Doe jdoe@example.org" or "%jdoe@example.org".</p>
+	<p class="info">{$l10n_infotext_searchexmpl}</p>
     <input type="hidden" name="revoke_operation" value="search_by_cn" />
     <input onblur="hideHint();"
 	   onfocus="showHint();"
@@ -51,16 +46,16 @@ immediately see a result entry *}
 	   value="{$search_string}"
 	   {/if}
 	   />
-    <input type="submit" name="Search" value="Search" />
+    <input type="submit" name="Search" value="{$l10n_button_search}" />
 	<br />
 	<noscript>
 	  <p>
 	    <span style="font-size: 0.8em; font-style: italic">
-	      input is case sensitive
+	      {$l10n_warn_input_cs}
 	    </span>
 	  </p>
 	</noscript>
-	<span id="hint" style="display: none; font-size: 0.8em; font-style: italic">input is case sensitive</span>
+	<span id="hint" style="display: none; font-size: 0.8em; font-style: italic">{$l10n_warn_input_cs}</span>
     <br />
     </fieldset>
     </form>
@@ -68,20 +63,17 @@ immediately see a result entry *}
 <br />
 
     <fieldset>
-    <legend>List upload</legend>
+    <legend>{$l10n_legend_listupload}</legend>
 
     <p class="info">
-      Upload a comma separated list of eduPersonPrincipalNames whose
-      certificates should be revoked. You will be asked for confirmation
-      before the certificates will actually be revoked. Separate the
-      ePPNs in the list with a ',' comma.
+      {$l10n_infotext_listupload1}
     </p>
 
     <form enctype="multipart/form-data" action="" method="post">
       <input type="hidden" name="revoke_operation" value="search_by_list" />
       <input type="hidden" name="max_file_size" value="10000000" />
       <input name="{$file_name}" type="file" />
-      <input type="submit" value="Upload list" />
+      <input type="submit" value="{$l10n_button_uploadlist}" />
     </form>
     <br />
     </fieldset>
@@ -98,7 +90,7 @@ immediately see a result entry *}
 
     {* Revoke the certificates from a list of cert-owners *}
     {elseif $revoke_list}
-        <b>The following DNs are going to be revoked:</b><br />
+        <b>{$l10n_info_listrevoke1}</b><br />
         <div class="spacer"></div>
         <table class="small">
 
@@ -113,10 +105,10 @@ immediately see a result entry *}
         <div class="spacer"></div>
         <div style="text-align: right">
             <form action="" method="post">
-            Revocation reason:
+            {$l10n_listrevoke_reas1}
             {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
             <input type="hidden" name="revoke_operation" value="revoke_by_list" />
-            <input type="Submit" value="Revoke all" onclick="return confirm('Are you sure?')" />
+            <input type="Submit" value="Revoke all" onclick="return confirm('{$l10n_confirm_listrevoke}')" />
             </form>
         </div>
 

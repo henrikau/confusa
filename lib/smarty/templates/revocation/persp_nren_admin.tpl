@@ -18,14 +18,10 @@
 {/literal}
 
 <p class="info">
-  You have the access-level of NREN-administrator. This means that you
-  can revoke <b>all</b> certificates for <b>all</b> users within
-  your <b>entire</b> constituency.
+ {$l10n_infotext_revnrena1}
 </p>
 <p class="info">
-  You should therefore take care by
-  making sure the search-string is spelled correctly, and that the
-  returned results make sense.
+ {$l10n_infotext_revnrena2}
 </p>
 <br />
 
@@ -34,15 +30,13 @@
 
 {* The search part *}
 <fieldset id="inputField">
-  <legend>Search for certificates</legend>
+  <legend>{$l10n_legend_searchcert}</legend>
   <p class="info">
-    Search for a commonName or a eduPersonPrincipalName of a person within
-    the institution {$active_subscriber|escape} whose certificates you want
-    to revoke. Use '%' as a wildcard.
+  {$l10n_infotext_searchinfo1} {$active_subscriber|escape} {$l10n_infotext_searchinfo2}
   </p>
 
   <p class="info">
-    Example: "John Doe jdoe@example.org" or "%jdoe@example.org".
+    {$l10n_infotext_searchexmpl}
   </p>
 
   <form action="" method="post">
@@ -72,20 +66,20 @@
       {/if}
       {/foreach}
     </select>
-    <input type="submit" name="Search" value="Search" />
+    <input type="submit" name="Search" value="{$l10n_button_search}" />
     </p>
 
     <noscript>
       <p>
 	<span style="font-size: 0.8em; font-style: italic">
-	  input is case sensitive
+	  {$l10n_warn_input_cs}
 	</span>
       </p>
     </noscript>
       <p>
 	<span id="hint"
 	      style="display: none; font-size: 0.8em; font-style: italic">
-	  input is case sensitive
+	  {$l10n_warn_input_cs}
 	</span>
       </p>
 
@@ -98,7 +92,7 @@
 {if isset($owners)}
     {if $revoke_cert}
 	<br />
-	<h4>Found results for search:"<i>{$search_string}</i>"</h4>
+	<h4>{$l10n_info_resultsfound}"<i>{$search_string}</i>"</h4>
 	{foreach from=$owners item=owner}
 	{include file='revocation/revoke_cert_set.tpl'}
 	{/foreach}
@@ -106,6 +100,5 @@
 {/if}
 
 {else} {* subscriber is null *}
-	No subscriber is currently available. You can therefore not revoke any
-	certificates (since you have none available).
+	{$l10n_msg_nosubscribers}
 {/if}

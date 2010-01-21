@@ -21,7 +21,7 @@
 	<input type="submit"
 	       name="submit"
 	       value="{$l10n_button_revokeall|escape}"
-	       onclick="return confirm('{$l10n_confirm_revokeall1} stats[$owner]} {$l10n_confirm_revokeall2}')" />
+	       onclick="return confirm('{$l10n_confirm_revokeall1} {$stats[$owner]} {$l10n_confirm_revokeall2}')" />
       </td>
     </tr>
   </table>

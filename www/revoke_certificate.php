@@ -69,8 +69,7 @@ class CP_RevokeCertificate extends Content_Page
 
 						if (Config::get_config('ca_mode') === CA_COMODO &&
 						    Config::get_config('capi_test') === true) {
-								Framework::message_output("Note that the revocation has only been simulated, " .
-									"because Confusa is in API-Test mode.");
+								Framework::message_output($this->translateTag('l10n_msg_revsim1', 'revocation'));
 						}
 					}
 				} catch (ConfusaGenException $cge) {
@@ -93,7 +92,7 @@ class CP_RevokeCertificate extends Content_Page
 			switch($_POST['revoke_operation']) {
 			case 'revoke_by_cn':
 				if (is_null($reason)) {
-					Framework::error_output("Trying to revoke certificate(s) by CN without supplying a reason. Cannot continue.");
+					Framework::error_output($this->translateTag('l10n_msg_revneedreas1', 'revocation'));
 					return;
 
 				}
@@ -104,23 +103,22 @@ class CP_RevokeCertificate extends Content_Page
 					 */
 					$this->revoke_certs(Input::sanitizeCommonName($_POST['common_name']), $reason);
 				} catch (ConfusaGenException $cge) {
-					Framework::error_output("Could not revoke certificates because of the " .
-								"following problem: " .
-								htmlentities($cge->getMessage()));
+					Framework::error_output($this->translateTag('l10n_msg_revprob1', 'revocation') .
+					                         " " . htmlentities($cge->getMessage()));
 				}
 				break;
 
 			case 'revoke_by_list':
 				if (is_null($reason)) {
-					Framework::error_output("Trying to revoke list of certificates without a reason. Cannot continue.");
+					Framework::error_output($this->translateTag('l10n_msg_revneedreas2', 'revocation'));
 					return;
 
 				}
 				try {
 					$this->revoke_list($reason);
 				} catch (ConfusaGenException $cge) {
-					Framework::error_output("Could not revoke certificates because of the " .
-											"following problem: " . htmlentities($cge->getMessage()));
+					Framework::error_output($this->translateTag('l10n_msg_revprob1', 'revocation') .
+					                         " " . htmlentities($cge->getMessage()));
 				}
 				break;
 
@@ -360,8 +358,7 @@ class CP_RevokeCertificate extends Content_Page
 	{
 		if (Config::get_config('ca_mode') === CA_COMODO &&
 		    Config::get_config('capi_test') === true) {
-			Framework::message_output("Please note that you are in Confusa's API " .
-			           "test mode. Revocation is only simulated!");
+			Framework::message_output($this->translateTag('l10n_msg_revsim1', 'revocation'));
 		}
 		$auth_keys = array();
 
@@ -406,7 +403,10 @@ class CP_RevokeCertificate extends Content_Page
 									  "Administrator contacted us from " .
 									  $_SERVER['REMOTE_ADDR']
 		);
-		Framework::success_output("Successfully revoked $num_certs_revoked out of $num_certs certificates!");
+		Framework::message_output($this->translateTag('l10n_suc_revoke1', 'revocation') . " " .
+		                          $num_certs_revoked . " " .
+		                          $this->translateTag('l10n_suc_revoke2', 'revocation') . " " .
+		                          $num_certs);
 	}
 
 	/**
@@ -422,8 +422,7 @@ class CP_RevokeCertificate extends Content_Page
 
 		if (Config::get_config('ca_mode') === CA_COMODO &&
 		    Config::get_config('capi_test') === true) {
-			Framework::message_output("Please note that you are in Confusa's API " .
-			           "test mode. Revocation is only simulated!");
+			Framework::message_output($this->translateTag('l10n_msg_revsim1', 'revocation'));
 		}
 
 		$auth_keys = array();
@@ -462,7 +461,10 @@ class CP_RevokeCertificate extends Content_Page
 									$_SERVER['REMOTE_ADDR'] .
 									" in a bulk (list) revocation request."
 		);
-		Framework::message_output("Successfully revoked $num_certs_revoked certificates out of $num_certs!");
+		Framework::message_output($this->translateTag('l10n_suc_revoke1', 'revocation') . " " .
+		                          $num_certs_revoked . " " .
+		                          $this->translateTag('l10n_suc_revoke2', 'revocation') . " " .
+		                          $num_certs);
 	}
 
 	/**
