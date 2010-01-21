@@ -307,6 +307,18 @@ class NREN
 		}
 	}
 
+	public function setEnableEmail($enable_email)
+	{
+		if (!is_null($enable_email)) {
+			if (!array_key_exists('enable_email', $this->data) ||
+			    ($this->data['enable_email'] != $enable_email)) {
+				$this->data['enable_email'] = $enable_email;
+				$this->pendingChanges = true;
+				return;
+			}
+		}
+	}
+
 	/**
 	 * saveNREN() Save the current NREN to the database.
 	 *
@@ -320,15 +332,16 @@ class NREN
 	{
 		if ($this->pendingChanges) {
 			$query  = "UPDATE nrens SET contact_email=?, contact_phone=?, ";
-			$query .= " cert_phone=?, cert_email=?, url=?, lang=? ";
+			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=? ";
 			$query .= "WHERE nren_id=?";
-			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text');
+			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text', 'text');
 			$data	= array($this->data['contact_email'],
 					$this->data['contact_phone'],
 					$this->data['cert_phone'],
 					$this->data['cert_email'],
 					$this->data['url'],
 					$this->data['lang'],
+					$this->data['enable_email'],
 					$this->getID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);
