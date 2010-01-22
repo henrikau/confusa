@@ -70,9 +70,13 @@
 				</a>
 			  </div>
 			    <div id="logo_header_right">
+			{if isset($logo_tr)}
 			 <img src="{$logo_tr}"
 			       alt="NREN logo" />&nbsp;
 		      </div>
+			{else}
+				{* empty *}&nbsp;
+			{/if}
 		</div>
 		    <div id="language_bar" style="clear: both">
 		    {* only display language options if there actually *are* such *}
