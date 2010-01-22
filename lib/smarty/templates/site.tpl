@@ -62,7 +62,7 @@
 			  <div id="logo_header_center">
 				<a href="index.php" class="url">
 				{if is_null($logo_tc)}
-					{* empty *}&nbsp;{$system_title}
+					<img src="graphics/logo-sigma.png" alt="UNINETT Sigma Logo" /> {$system_title}
 				{else}
 				<img src="{$logo_tc}"
 				     alt="NREN logo" />{$system_title}
