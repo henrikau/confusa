@@ -94,5 +94,8 @@
 	},
 	"abt_err_dbquery": {
 		"en":	"Error fetching the NREN about-page. Looks like a problem with the supplied data. Queried NREN was"
+	},
+	"err_servsaid": {
+		"en":	"Server said:"
 	}
 }

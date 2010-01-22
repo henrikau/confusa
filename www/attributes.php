@@ -12,7 +12,7 @@ class CP_Attributes extends Content_Page
 {
 	function __construct()
 	{
-		parent::__construct("Attribute mapping", true);
+		parent::__construct("Attribute mapping", true, "attributes");
 	}
 
 	public function pre_process($person)
@@ -33,18 +33,20 @@ class CP_Attributes extends Content_Page
 				if ($this->person->isNRENAdmin()) {
 					$epodn		= Input::sanitizeText($_POST['epodn']);
 					if ($this->person->getNREN()->saveMap($this->person->getEPPNKey(), $epodn, $cn, $mail, $entitlement)) {
-						Framework::success_output("Updated map successfully. You will have to logout and login again " .
-						                          "to see the the effects of the changed map!");
+						Framework::success_output($this->translateTag('l10n_suc_updmap', 'attributes'));
 					}
 				} else if ($this->person->isSubscriberAdmin()) {
 					try {
 						$result = $this->person->getSubscriber()->saveMap($cn, $mail, $entitlement);
 					} catch (DBQueryException $dbqe) {
-						Framework::error_output("Could not update the subscriber-mapping, probably due to a " .
-						                        "problem with the map keys. You sent:<br />CN: " . htmlentitities($cn) .
-						                        "<br />Mail: " . htmlentities($mail) .
-						                        "<br />Entitlement: " . htmlentities($entitlement) .
-						                        "<br />Server said: " . htmlentities($dbqe->getMessage()));
+						Framework::error_output($this->translateTag('l10n_err_updmap1', 'attributes') . "<br />" .
+						                        $this->translateTag('l10n_label_cn', 'attributes'). htmlentitities($cn) .
+						                        "<br />" . $this->translateTag('l10n_label_mail', 'attributes') .
+						                        htmlentities($mail) . "<br />" .
+						                        $this->translateTag('l10n_label_entitlement', 'attributes') .
+						                        htmlentities($entitlement) . "<br />" .
+						                        $this->translateMessageTag('err_servsaid') . " " .
+						                        htmlentities($dbqe->getMessage()));
 						Logger::log_event(LOG_NOTICE, __FILE__ . ", " . __LINE__ . ": " . $dbqe->getMessage());
 					} catch (DBStatementException $dbse) {
 						Framework::error_output("Could not update the subscriber-mapping, probably due to a " .
@@ -53,8 +55,7 @@ class CP_Attributes extends Content_Page
 						Logger::log_event(LOG_NOTICE, __FILE__ . ", " . __LINE__ . ": " . $dbse->getMessage());
 					}
 					if ($result === true) {
-						Framework::success_output("Updated map successfully. You will have to logout and login again " .
-						                          "to see the the effects of the changed map!");
+						Framework::success_output($this->translateTag('l10n_suc_updmap', 'attributes'));
 					}
 				}
 				break;
