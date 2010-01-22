@@ -153,7 +153,8 @@
       <tr>
 	<td align="right">{$l10n_label_entitlement}<br /></td>
 	<td align="right">
-	  <select name="entitlement" onchange="fetchAttributeValue(this, 'entitlementField', '{$l10n_err_attvalna}')">
+	  {* activate the entitlement field only for NREN-admins *}
+	  <select {if ! $person->isNRENAdmin()} disabled="disabled"{/if} name="entitlement" onchange="fetchAttributeValue(this, 'entitlementField', '{$l10n_err_attvalna}')">
 	    <option value="">&nbsp; </option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $map.entitlement}selected="selected"{/if} value="{$element}">
