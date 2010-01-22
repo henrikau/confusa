@@ -118,7 +118,7 @@
 	<td align="right">{$l10n_label_cn}<br /></td>
 	<td align="right">
 	  <select name="cn" onchange="fetchAttributeValue(this, 'cnField', '{$l10n_err_attvalna}');">
-	    <option value="&nbsp;">&nbsp; </option>
+	    <option value="">&nbsp; </option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $map.cn}selected="selected"{/if} value="{$element}">
 	      {$element}
@@ -136,7 +136,7 @@
 	<td align="right">{$l10n_label_mail}<br /></td>
 	<td align="right">
 	  <select name="mail" onchange="fetchAttributeValue(this, 'emailField', '{$l10n_err_attvalna}');">
-	    <option value="&nbsp;">&nbsp; </option>
+	    <option value="">&nbsp; </option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $map.mail}selected="selected"{/if} value="{$element}">
 	      {$element}
@@ -154,7 +154,7 @@
 	<td align="right">{$l10n_label_entitlement}<br /></td>
 	<td align="right">
 	  <select name="entitlement" onchange="fetchAttributeValue(this, 'entitlementField', '{$l10n_err_attvalna}')">
-	    <option value="&nbsp;">&nbsp; </option>
+	    <option value="">&nbsp; </option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $map.entitlement}selected="selected"{/if} value="{$element}">
 	      {$element|escape}
