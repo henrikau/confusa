@@ -633,6 +633,7 @@ class Subscriber
 				$data = array($cn, $mail, $entitlement, $nrenID, $this->db_id);
 			}
 		} else {
+			$doUpdate = true;
 			$statement = "INSERT INTO attribute_mapping";
 			$statement .= "(nren_id, subscriber_id, eppn, epodn, cn, mail, entitlement) ";
 			$statement .= "VALUES(?,?,?,?,?,?,?)";
