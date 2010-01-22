@@ -615,7 +615,7 @@ class Subscriber
 	 * @throws DBStatementException If something goes wrong in contacting the DB,
 	 *                              probably due to a configuration error
 	 */
-	public function saveMap($cn, $mail, $entitlement)
+	public function saveMap($cn, $mail)
 	{
 		$doUpdate = false;
 		$nrenMap = $this->nren->getMap();
@@ -623,14 +623,13 @@ class Subscriber
 
 		if ($this->hasMap) {
 			if (($cn != $this->map['cn']) ||
-			     ($mail != $this->map['mail']) ||
-			     ($entitlement != $this->map['entitlement'])) {
+			     ($mail != $this->map['mail'])) {
 				$doUpdate = true;
 				$statement = "UPDATE attribute_mapping " .
-				          "SET cn = ?, mail = ?, entitlement = ? " .
+				          "SET cn = ?, mail = ? " .
 				          "WHERE nren_id = ? AND subscriber_id = ?";
 				$types = array('text', 'text', 'text', 'text', 'text', 'text');
-				$data = array($cn, $mail, $entitlement, $nrenID, $this->db_id);
+				$data = array($cn, $mail, $nrenID, $this->db_id);
 			}
 		} else {
 			$doUpdate = true;
@@ -639,7 +638,7 @@ class Subscriber
 			$statement .= "VALUES(?,?,?,?,?,?,?)";
 			$types = array('text', 'text', 'text', 'text', 'text', 'text');
 			$data = array($nrenID, $this->db_id, $nrenMap['eppn'],
-			              $nrenMap['epodn'], $cn, $mail, $entitlement);
+			              $nrenMap['epodn'], $cn, $mail, $nrenMap['entitlement']);
 		}
 
 		if ($doUpdate) {

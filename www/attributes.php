@@ -28,23 +28,21 @@ class CP_Attributes extends Content_Page
 			case 'update_map':
 				$cn		= Input::sanitizeText($_POST['cn']);
 				$mail		= Input::sanitizeText($_POST['mail']);
-				$entitlement	= Input::sanitizeText($_POST['entitlement']);
 
 				if ($this->person->isNRENAdmin()) {
 					$epodn		= Input::sanitizeText($_POST['epodn']);
+					$entitlement	= Input::sanitizeText($_POST['entitlement']);
 					if ($this->person->getNREN()->saveMap($this->person->getEPPNKey(), $epodn, $cn, $mail, $entitlement)) {
 						Framework::success_output($this->translateTag('l10n_suc_updmap', 'attributes'));
 					}
 				} else if ($this->person->isSubscriberAdmin()) {
 					try {
-						$result = $this->person->getSubscriber()->saveMap($cn, $mail, $entitlement);
+						$result = $this->person->getSubscriber()->saveMap($cn, $mail);
 					} catch (DBQueryException $dbqe) {
 						Framework::error_output($this->translateTag('l10n_err_updmap1', 'attributes') . "<br />" .
-						                        $this->translateTag('l10n_label_cn', 'attributes'). htmlentitities($cn) .
+						                        $this->translateTag('l10n_label_cn', 'attributes') .  htmlentities($cn) .
 						                        "<br />" . $this->translateTag('l10n_label_mail', 'attributes') .
 						                        htmlentities($mail) . "<br />" .
-						                        $this->translateTag('l10n_label_entitlement', 'attributes') .
-						                        htmlentities($entitlement) . "<br />" .
 						                        $this->translateMessageTag('err_servsaid') . " " .
 						                        htmlentities($dbqe->getMessage()));
 						Logger::log_event(LOG_NOTICE, __FILE__ . ", " . __LINE__ . ": " . $dbqe->getMessage());
