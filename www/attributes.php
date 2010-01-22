@@ -40,9 +40,10 @@ class CP_Attributes extends Content_Page
 						$result = $this->person->getSubscriber()->saveMap($cn, $mail);
 					} catch (DBQueryException $dbqe) {
 						Framework::error_output($this->translateTag('l10n_err_updmap1', 'attributes') . "<br />" .
-						                        $this->translateTag('l10n_label_cn', 'attributes') .  htmlentities($cn) .
-						                        "<br />" . $this->translateTag('l10n_label_mail', 'attributes') .
-						                        htmlentities($mail) . "<br />" .
+						                        $this->translateTag('l10n_label_cn', 'attributes')
+						                        .  ": " . htmlentities($cn) . "<br />" .
+						                        $this->translateTag('l10n_label_mail', 'attributes')
+						                        . ": " . htmlentities($mail) . "<br />" .
 						                        $this->translateMessageTag('err_servsaid') . " " .
 						                        htmlentities($dbqe->getMessage()));
 						Logger::log_event(LOG_NOTICE, __FILE__ . ", " . __LINE__ . ": " . $dbqe->getMessage());
