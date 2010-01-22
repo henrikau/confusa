@@ -1,0 +1,77 @@
+{
+	"l10n_legend_nren_attributes": {
+		"en": "Create or modify NREN attribute-map"
+	},
+	"l10n_legend_subs_attributes": {
+		"en": "Create or modify subscriber attribute-map"
+	},
+	"l10n_infotext_nren_attr1": {
+		"en": "Add or update the attribute map for your NREN"
+	},
+	"l10n_infotext_nren_attr2": {
+		"en": "This part is crucial for the operation of Confusa, and if the mapping is not working properly, the users may not be able to use Confusa the way they are supposed to."
+	},
+	"l10n_infotext_nren_attr3": {
+		"en": "It is also possible to add subscriber-specific maps. If a subscriber has this set, this map will be used before any NREN-specific map. Note that the subscriber-map is added as a way of helping subscribers with severe limitations to what they can (or will) export to Confusa and should only be used as an absolute last resort."
+	},
+	"l10n_infotext_subs_attr1": {
+		"en": "Add or update the attribute map for your subscriber"
+	},
+	"l10n_infotext_subs_attr2": {
+		"en": "Usually this map should have already been defined by a NREN admin and the NREN-wide settings for your NREN"
+	},
+	"l10n_infotext_subs_attr3": {
+		"en": "should also apply for your subscriber."
+	},
+	"l10n_infotext_subs_attr4": {
+		"en": "So it is advised to change this map only if your IdP really requires to send different attributes than the NREN-wide setting defines."
+	},
+	"l10n_th_category": {
+		"en": "Category"
+	},
+	"l10n_th_curkey": {
+		"en": "Current Key"
+	},
+	"l10n_th_value": {
+		"en": "Value"
+	},
+	"l10n_label_country": {
+		"en": "Country"
+	},
+	"l10n_label_eppn": {
+		"en": "Unique identifier"
+	},
+	"l10n_label_epodn": {
+		"en": "Organization"
+	},
+	"l10n_value_undefined": {
+		"en": "undefined"
+	},
+	"l10n_label_cn": {
+		"en": "Full Name"
+	},
+	"l10n_label_mail": {
+		"en": "E-Mail"
+	},
+	"l10n_label_entitlement": {
+		"en": "Entitlement"
+	},
+	"l10n_confirm_attreset": {
+		"en": "Are you sure?\\n\\nThis will potentially affect all users affiliated with"
+},
+	"l10n_label_nren": {
+		"en": "NREN"
+	},
+	"l10n_label_subscriber": {
+		"en": "Subscriber"
+	},
+	"l10n_err_attvalna": {
+		"en": "Attribute value can not be retrieved"
+	},
+	"l10n_suc_updmap": {
+		"en": "Updated map successfully. You will have to logout and login again to see the the effects of the changed map!"
+	},
+	"l10n_err_updmap1": {
+		"en": "Could not update the subscriber-mapping, probably due to a problem with the map keys. You sent:"
+	}
+}
