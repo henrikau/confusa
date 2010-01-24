@@ -37,7 +37,9 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 			$this->attributes = array(
 				'cn2'				=> array('Jane Doe'),
 				'eduPersonPrincipalName'	=> array('janedoe@example.org'),
-				'mail2'				=> array('jane.doe@example.org'),
+				'mail2'				=> array('jane.doe@example.org',
+									 'jane@example.org',
+									 'janed@example.org'),
 				'country'			=> array('NN'),
 				'organization'			=> array('o=Hogwarts, dc=hsww, dc=wiz'),
 				'nren'				=> array('testnren'),
@@ -48,7 +50,9 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 		default:
 			$this->attributes = array(
 				'cn2'				=> array('Ola Nordmann'),
-				'eduPersonPrincipalName'	=> array('onordmann@example.org'),
+				'eduPersonPrincipalName'	=> array('onordmann@example.org',
+									 'olamann@example.org',
+									 'ola@example.org'),
 				'mail2'				=> array('ola.nordmann@example.org'),
 				'country'			=> array('NO'),
 				'organization'			=> array('o=Hogwarts, dc=hsww, dc=wiz'),
