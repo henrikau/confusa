@@ -93,6 +93,33 @@ notify you of mass-revocation of certificates.
 	<div class="spacer"></div>
       </td>
     </tr>
+
+    <tr>
+      <td>Enable cert. email</td>
+      <td></td>
+      <td>
+	{html_radios
+	name      = "enable_email"
+	options   = $enable_options
+	selected  = $nren->getEnableEmail()
+	separator = "<br />"}
+      </td>
+    </tr>
+      <tr><td colspan="3">
+      <span style="font-size: 0.8em; font-style: italic">
+	The number of certificates the user can place in the
+	certificate's subject alternative name.
+      </span>
+      </td>
+      </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td>
+	<div class="spacer"></div>
+      </td>
+    </tr>
+
   <tr>
     <td align="right"><input type="reset" value="reset" /></td>
     <td></td>
