@@ -1,12 +1,8 @@
 <fieldset>
-<legend>NREN contact information</legend>
+<legend>{$l10n_legend_updatenren|escape}</legend>
 <br />
 <p class="info">
-Here you can define contact information and language settings for your
-NREN. Define an e-mail address that is tied to one or more persons that
-will react if they receive notifications from Confusa. For instance,
-Confusa might contact this address in case of critical errors or to
-notify you of mass-revocation of certificates.
+{$l10n_infotext_nrencont1|escape}
 </p>
 
 <form method="post" action="">
@@ -21,7 +17,7 @@ notify you of mass-revocation of certificates.
     </tr>
 
   <tr>
-    <td align="right">Contact-email:</td>
+    <td align="right">{$l10n_label_contactemail}</td>
     <td></td>
 	{if isset($nrenInfo.contact_email)}
 		<td><input type="text" name="contact_email" value="{$nrenInfo.contact_email}" /></td>
@@ -30,7 +26,7 @@ notify you of mass-revocation of certificates.
 	{/if}
   </tr>
     <tr>
-      <td>NREN Phone</td>
+      <td>{$l10n_label_nrenphone|escape}</td>
       <td></td>
       <td>
 	  {if isset($nrenInfo.contact_phone)}
@@ -42,7 +38,7 @@ notify you of mass-revocation of certificates.
       </td>
     </tr>
     <tr>
-      <td>CERT (email)</td>
+      <td>{$l10n_label_certmail|escape}</td>
       <td></td>
       <td>
 	  {if isset($nrenInfo.cert_email)}
@@ -55,7 +51,7 @@ notify you of mass-revocation of certificates.
       </td>
     </tr>
     <tr>
-      <td>CERT (phone)</td>
+      <td>{$l10n_label_certphone|escape}</td>
       <td></td>
       <td>
 	  {if isset($nrenInfo.cert_phone)}
@@ -68,7 +64,7 @@ notify you of mass-revocation of certificates.
       </td>
     </tr>
     <tr>
-      <td>url</td>
+      <td>{$l10n_label_nrenurl|escape}</td>
       <td></td>
       <td>
 	  {if isset($nrenInfo.url)}
@@ -80,7 +76,7 @@ notify you of mass-revocation of certificates.
     </tr>
     
   <tr>
-    <td>Language</td>
+    <td>{$l10n_label_deflang|escape}</td>
     <td></td>
     <td>{html_options name="language" selected=$current_language
     output=$languages values=$language_codes}</td>
@@ -121,9 +117,9 @@ notify you of mass-revocation of certificates.
     </tr>
 
   <tr>
-    <td align="right"><input type="reset" value="reset" /></td>
+    <td align="right"><input type="reset" value="{$l10n_button_reset|escape}" /></td>
     <td></td>
-    <td><input type="submit" value="Update" /></td>
+    <td><input type="submit" value="{$l10n_button_update|escape}" /></td>
     </tr>
   </table>
 </form>
