@@ -15,21 +15,21 @@
   is most likely <b>not</b> what you want.
 </p>
 <table style="width: 75%;">
-  {* hack for not displaying the initial value. If we do not comment
-   * this out, a '-1' will be displayed in the code. *}
-  <!--{counter start=-1 skip=1}-->
+  {* we could use html_checkboxes, but getting all the boxes ticked
+   required more code than writing the loop manually *}
   {foreach from=$person->getAllEmails() item=addr}
   <tr>
     <td style="width: 30px;"></td>
     <td>
       <input type="checkbox"
-	     name="subAltName_email_{counter}"
+	     name="subjAltName_email[]"
 	     value="{$addr}"
 	     checked="checked" />
     </td>
     <td>{$addr}</td>
   </tr>
   {/foreach}
+
 </table>
 
 {elseif $email_status == "1"}
@@ -43,9 +43,10 @@
     <td style="width: 30px;"></td>
     <td>
       {html_radios
-      name="subAltName_email_0"
-      options=$person->getAllEmails(true)
-      selected=0
+      name="subjAltName_email[]"
+      values=$person->getAllEmails()
+      output=$person->getAllEmails(true)
+      selected=$person->getEmail(0)
       separator=" <br /> "}
     </td>
     <td></td>
