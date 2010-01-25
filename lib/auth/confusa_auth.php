@@ -112,7 +112,7 @@ abstract class Confusa_Auth
 			}
 			if (!is_null($map['mail'])) {
 				if (array_key_exists($map['mail'], $attributes)) {
-					$mail = Input::sanitizeEmail($attributes[$map['mail']][0]);
+					$mail = Input::sanitizeEmail($attributes[$map['mail']]);
 					$this->person->setEmail($mail);
 				}
 			}
