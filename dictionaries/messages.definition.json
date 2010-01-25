@@ -97,5 +97,11 @@
 	},
 	"err_servsaid": {
 		"en":	"Server said:"
+	},
+	"fw_err_nonrenmap1": {
+		"en":	"No map for your NREN ("
+	},
+	"fw_err_nonrenmap2": {
+		"en":	") is set.<br />You need to do this <b>now</b> so the normal users can utilize Confusa's functionality.<br /><br /><center>Go <a href=\"attributes.php?mode=admin\">here</a> to update the map.</center><br />"
 	}
 }
