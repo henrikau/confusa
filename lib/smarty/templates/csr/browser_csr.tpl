@@ -1,6 +1,7 @@
 <form id="startForm" method="post" action="process_csr.php">
 <fieldset>
 <legend>Apply for a certificate in browser</legend>
+<div class="spacer"></div>
 <div id="info_view">
 	<p class="info">Press the start button <b>once</b> to generate a certificate request in your browser.<br /><br />
 	Sometimes it will take a little while until you can see a browser reaction and there

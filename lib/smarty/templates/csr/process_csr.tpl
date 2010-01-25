@@ -19,6 +19,7 @@
     <li><a href="?show=paste_csr">Paste CSR</a></li>
 </ul>
 </div>
+<div class="spacer"></div>
 
 {*
  * Approve CSR.

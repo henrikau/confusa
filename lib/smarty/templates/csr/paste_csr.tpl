@@ -2,6 +2,7 @@
   <div class="csr">
     <fieldset>
       <legend><i>Paste new CSR</i></legend>
+      <div class="spacer"></div>
       <p class="info">
 	Paste an already created CSR here and press "Upload CSR" to send the
 	CSR to the portal.
