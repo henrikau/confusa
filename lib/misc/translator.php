@@ -13,6 +13,7 @@ require_once 'Confusa_Session.php';
 class Translator {
 	private $language;
 	private $defaultLanguage;
+	private $languageOverriden;
 
 	private static $code_language_map = array(
 								'bg' => 'Български език (Bulgarian)',
@@ -62,15 +63,19 @@ class Translator {
 	public function __construct()
 	{
 		$this->defaultLanguage = Config::get_config('language.default');
-		$sesslang = CS::getSessionKey('language');
 
-		/* if a lanuage is set in the session already, use this one */
-		if (isset($sesslang)) {
-			$this->language = $sesslang;
-		} else {
-			$this->language = $this->defaultLanguage;
+		/* if a lanuage is set in the cookie already, use this one */
+		if (!isset($this->language)) {
+			if (isset($_COOKIE['language'])) {
+				$cookielang = Input::sanitizeLangCode($_COOKIE['language']);
+				$this->language = $cookielang;
+			} else {
+				$this->language = $this->defaultLanguage;
+			}
 		}
-	}
+
+		$this->languageOverriden = false;
+	} /* end constructor */
 
 	/**
 	 * Return the currently set language
@@ -213,6 +218,7 @@ class Translator {
 	public function setLanguage($lang)
 	{
 		$this->language = $lang;
+		$this->languageOverriden = true;
 	}
 
 	/**
@@ -220,15 +226,18 @@ class Translator {
 	 * decorated person object is availabe.
 	 * The "best" language is determined by the following order of steps:
 	 *
-	 * 1.) The language stored in the session of the user dominates over everything else
-	 *		Thus, manually changing the language only means setting a session variable.
-	 * 2.) Try to take the language set by the subscriber, if the user is logged in
-	 * 3.) If the subscriber-language is NULL, take the language set by the NREN,
-	 *		if the user is logged in
-	 * 4.) If the user is not logged in and no session variable is set, take the
-	 *		first available language from the user's language accept-headers
-	 * 5.) If none of the languages in the user's accept header is available,
-	 *		take the default language of the Confusa instance (usually but not necessarily English)
+	 * 1.) If there is already a language set (this->language) take that one.
+	 *     Thus the language settings can be functionaly overriden, e.g. in
+	 *     the framework.
+	 * 2.) The language stored in the cookie of the user dominates over everything else
+	 *     Thus, manually changing the language only means setting a cookie.
+	 * 3.) Try to take the language set by the subscriber, if the user is logged in
+	 * 4.) If the subscriber-language is NULL, take the language set by the NREN,
+	 *     if the user is logged in
+	 * 5.) If the user is not logged in and no session variable is set, take the
+	 *     first available language from the user's language accept-headers
+	 * 6.) If none of the languages in the user's accept header is available,
+	 *     take the default language of the Confusa instance (usually but not necessarily English)
 	 *
 	 * @param $person Person-oject (Decorated) Person, from the subscriber or
 	 *                             NREN of which translator can deduce the
@@ -237,9 +246,14 @@ class Translator {
 	 */
 	public function guessBestLanguage($person)
 	{
-		$session_language = CS::getSessionKey('language');
-		if (!is_null($session_language)) {
-			$this->language = $session_language;
+
+		if ($this->languageOverriden) {
+			return;
+		}
+
+		if (isset($_COOKIE['language'])) {
+			$cookielang = Input::sanitizeLangCode($_COOKIE['language']);
+			$this->language = $cookielang;
 			return;
 		}
 
@@ -252,8 +266,8 @@ class Translator {
 									array($person->getSubscriber()->getIdPName()));
 
 					if (isset($res[0]['lang'])) {
-						CS::setSessionKey('language', $res[0]['lang']);
-						$this->language = CS::getSessionKey('language');
+						setCookie('language', $res[0]['lang']);
+						$this->language = $res[0]['lang'];
 						return;
 					}
 
@@ -263,8 +277,8 @@ class Translator {
 												array($person->getNREN()));
 
 					if (isset($res[0]['lang'])) {
-						CS::setSessionKey('language', $res[0]['lang']);
-						$this->language = CS::getSessionKey('language');
+						setCookie('language', $res[0]['lang']);
+						$this->language = $res[0]['lang'];
 						return;
 					}
 				} catch (DBQueryException $dbqe) {
