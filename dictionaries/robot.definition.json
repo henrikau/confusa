@@ -1,0 +1,117 @@
+{
+	"l10n_heading_roboti": {
+		"en":	"Robot Interface"
+	},
+	"l10n_tab_rlist": {
+		"en":	"List"
+	},
+	"l10n_tab_upload": {
+		"en":	"Upload"
+	},
+	"l10n_tab_info": {
+		"en":	"Info"
+	},
+	"l10n_legend_managecerts": {
+		"en":	"Manage certificates"
+	},
+	"l10n_infotext_managecerts1": {
+		"en":	"In this section you will find information about already uploaded certificates for your organization. You can modify ownership if the certificate is listed as an orphan, or you can remove it all together."
+	},
+	"l10n_infotext_managecerts2": {
+		"en":	" If you so choose, you may inspect the certificate in greater detail here."
+	},
+	"l10n_title_deleterc": {
+		"en":	"Delete Robot Certificate"
+	},
+	"l10n_label_deleterc": {
+		"en":	"Delete"
+	},
+	"l10n_title_inforc": {
+		"en":	"Get more information about certificate"
+	},
+	"l10n_label_inforc": {
+		"en":	"Information"
+	},
+	"l10n_label_serialnumber": {
+		"en":	"Serial number:"
+	},
+	"l10n_label_uploadedby": {
+		"en":	"Uploaded by:"
+	},
+	"l10n_label_uploadeddate": {
+		"en":	"Uploaded:"
+	},
+	"l10n_label_validuntil": {
+		"en":	"Valid until:"
+	},
+	"l10n_label_extendedinfo": {
+		"en":	"Extended Info:"
+	},
+	"l10n_label_fingerprint": {
+		"en":	"Fingerprint:"
+	},
+	"l10n_label_comment": {
+		"en":	"Comment:"
+	},
+	"l10n_label_warnsent": {
+		"en":	"Warning sent:"
+	},
+	"l10n_infotext_nocertavail": {
+		"en":	"No available certificates in Database."
+	},
+	"l10n_legend_pastenew": {
+		"en":	"Paste new certificate for"
+	},
+	"l10n_label_pastehere": {
+		"en":	"Paste your certificate here:"
+	},
+	"l10n_label_addcomment": {
+		"en":	"Add an additional comment:"
+	},
+	"l10n_button_reset": {
+		"en":	"Reset form"
+	},
+	"l10n_button_upload": {
+		"en":	"Upload Certificate"
+	},
+	"l10n_legend_uploadnew": {
+		"en":	"Upload new certificate for"
+	},
+	"l10n_infotext_xmlclient1": {
+		"en":	"To use the Robotic Interface (RI), you must upload a certificate to the portal. Once this is done, you can use this to communicate with the RI."
+	},
+	"l10n_infotext_xmlclient2": {
+		"en":	"XML_Client is a library tool for connecting to the Robotic interface. Specific information can be found in the <a href=\"robot.php?robot_view=info\">RI Section</a>"
+	},
+	"l10n_infotext_xmlclient3": {
+		"en":	"You will have to write the wrapper and your local logic for this, but the library will handle SSL and X.509 authentication for you. Download the zip-archive and follow the instructions in the README."
+	},
+	"l10n_infotext_xmlclient4": {
+		"en":	"To use the library, add the following lines to your python-script."
+	},
+	"l10n_infotext_xmlclient5": {
+		"en":	"You should also look in the README-file for a short code-example."
+	},
+	"l10n_infotext_xmlclient6": {
+		"en":	"When configuring the script, point the url to"
+	},
+	"l10n_button_downloadfile": {
+		"en":	"Download file"
+	},
+	"l10n_suc_deletecert1": {
+		"en":	"Certificate ("
+	},
+	"l10n_suc_deletecert2": {
+		"en":	") removed from database."
+	},
+	"l10n_suc_insertcert1": {
+		"en":	"Certificate ("
+	},
+	"l10n_suc_insertcert2": {
+		"en":	") uploaded to keystore."
+	},
+	"l10n_err_certalrthere": {
+		"en":	"Certificate already present in Database. Cannot upload."
+	}
+	
+}
