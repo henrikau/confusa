@@ -26,7 +26,7 @@
 	{/if}
   </tr>
     <tr>
-      <td>{$l10n_label_nrenphone|escape}</td>
+      <td align="right">{$l10n_label_nrenphone|escape}</td>
       <td></td>
       <td>
 	  {if isset($nrenInfo.contact_phone)}
@@ -38,7 +38,7 @@
       </td>
     </tr>
     <tr>
-      <td>{$l10n_label_certmail|escape}</td>
+      <td align="right">{$l10n_label_certmail|escape}</td>
       <td></td>
       <td>
 	  {if isset($nrenInfo.cert_email)}
@@ -51,7 +51,7 @@
       </td>
     </tr>
     <tr>
-      <td>{$l10n_label_certphone|escape}</td>
+      <td align="right">{$l10n_label_certphone|escape}</td>
       <td></td>
       <td>
 	  {if isset($nrenInfo.cert_phone)}
@@ -64,7 +64,7 @@
       </td>
     </tr>
     <tr>
-      <td>{$l10n_label_nrenurl|escape}</td>
+      <td align="right">{$l10n_label_nrenurl|escape}</td>
       <td></td>
       <td>
 	  {if isset($nrenInfo.url)}
@@ -76,7 +76,7 @@
     </tr>
     
   <tr>
-    <td>{$l10n_label_deflang|escape}</td>
+    <td align="right">{$l10n_label_deflang|escape}</td>
     <td></td>
     <td>{html_options name="language" selected=$current_language
     output=$languages values=$language_codes}</td>
