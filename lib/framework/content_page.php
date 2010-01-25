@@ -122,12 +122,8 @@ abstract class Content_Page
 		$this->tpl->assign('available_languages',
 							Translator::getFullNamesForISOCodes($available_languages));
 
-		if (isset($_GET['lang'])) {
-			$lang = Input::sanitize($_GET['lang']);
-			CS::setSessionKey('language', $lang);
-		}
-
 		$this->translator->guessBestLanguage($person);
+
 		$this->tpl = $this->translator->decorateTemplate($this->tpl, 'menu');
 		$this->tpl = $this->translator->decorateTemplate($this->tpl, $this->dictionary);
 		$this->tpl->assign('selected_language', $this->translator->getLanguage());
