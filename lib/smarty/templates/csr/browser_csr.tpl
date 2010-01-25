@@ -6,6 +6,9 @@
 	Sometimes it will take a little while until you can see a browser reaction and there
 	can be delays between browser actions.</p>
 </div>
+<div class="spacer"></div>
+{include file="csr/email.tpl"}
+<div class="spacer"></div>
 	  <p>
 	    <input type="hidden"
 		   name="browserSigning"

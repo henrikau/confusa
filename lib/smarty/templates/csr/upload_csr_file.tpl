@@ -7,6 +7,9 @@
 	this with any globus-specific tools, you should look for
 	the folder ".globus" in your home directory.
       </p>
+      <div class="spacer"></div>
+      {include file="csr/email.tpl"}
+      <div class="spacer"></div>
       <table>
 	<tr>
 	  <td>

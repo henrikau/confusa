@@ -6,6 +6,9 @@
 	Paste an already created CSR here and press "Upload CSR" to send the
 	CSR to the portal.
       </p>
+      <div class="spacer"></div>
+      {include file="csr/email.tpl"}
+      <div class="spacer"></div>
       <p>
 	<input type="hidden" name="pastedCSR" value="pastedCSR" />
       </p>
