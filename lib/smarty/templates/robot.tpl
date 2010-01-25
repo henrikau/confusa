@@ -1,8 +1,8 @@
-<h3>Robot Interface</h3>
+<h3>{$l10n_heading_roboti|escape}</h3>
 {* show menu *}
-[ <a href="?robot_view=list">List</a> ]
-[ <a href="?robot_view=upload">Upload</a>]
-[ <a href="?robot_view=info">Info</a>]
+[ <a href="?robot_view=list">{$l10n_tab_rlist}</a> ]
+[ <a href="?robot_view=upload">{$l10n_tab_upload}</a>]
+[ <a href="?robot_view=info">{$l10n_tab_info}</a>]
 <br />
 <br />
 

@@ -1,5 +1,5 @@
 <fieldset>
-  <legend>Paste new certificate for <i>{$subscriber->getOrgName()|escape}</i></legend>
+  <legend>{$l10n_legend_pastenew} <i>{$subscriber->getOrgName()|escape}</i></legend>
   <br />
   <form action="?robot_view=list" method="post">
     <p>
@@ -8,8 +8,8 @@
     <table>
       <tr>
 	<td colspan="2">
-	  Paste your certificate here:
-	  <textarea name="cert" rows="20" cols="70"></textarea><br />
+	  {$l10n_label_pastehere}
+	  <textarea name="cert" value="" rows="20" cols="70"></textarea><br />
 	</td>
       </tr>
       <tr>
@@ -18,13 +18,13 @@
       </tr>
       <tr>
 	<td colspan="2">
-	  Add an additional comment:
-	  <textarea name="comment" rows="10" cols="70"></textarea><br />
+	  {$l10n_label_addcomment}
+	  <textarea name="comment" value="" rows="10" cols="70"></textarea><br />
 	</td>
       </tr>
       <tr>
-	<td><input type="reset" class="button" value="Reset form" /></td>
-	<td><input type="submit" class="button" value="Upload Certificate"/><br /></td>
+	<td><input type="reset" class="button" value="{$l10n_button_reset}" /></td>
+	<td><input type="submit" class="button" value="{$l10n_button_upload}"/><br /></td>
       </tr>
     </table>
   </form>
@@ -32,7 +32,7 @@
 
 <br />
 <fieldset>
-  <legend>Upload new certificate for <i>{$subscriber->getOrgName()|escape}</i></legend>
+  <legend>{$l10n_legend_uploadnew} <i>{$subscriber->getOrgName()|escape}</i></legend>
   <br />
   <form enctype="multipart/form-data" action="" method="post">
     <p>
@@ -54,13 +54,13 @@
 
       <tr>
 	<td colspan="2">
-	  Add an additional comment:
-	  <textarea name="comment" rows="10" cols="70"></textarea>
+	  {$l10n_label_addcomment}
+	  <textarea name="comment" value="" rows="10" cols="70"></textarea>
 	</td>
       </tr>
       <tr>
-	<td><input type="reset" class="button" value="Reset form" /></td>
-	<td><input type="submit" value="Upload Certificate" /></td>
+	<td><input type="reset" class="button" value="{$l10n_button_reset}" /></td>
+	<td><input type="submit" value="{$l10n_button_upload}" /></td>
       </tr>
   </table>
   </form>

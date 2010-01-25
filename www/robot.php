@@ -14,7 +14,7 @@ class CP_Robot_Interface extends Content_Page
 {
 	function __construct()
 	{
-		parent::__construct("Robot Interface", true);
+		parent::__construct("Robot Interface", true, 'robot');
 		Framework::sensitive_action();
 	}
 	function pre_process($person)
@@ -199,7 +199,7 @@ class CP_Robot_Interface extends Content_Page
 						    array('text', 'text'),
 						    array($cert->fingerprint(), $cert->serial()));
 			if (count($res) > 0) {
-				Framework::error_output("Certificate already present in Database. Cannot upload.");
+				Framework::error_output($this->translateTag('l10n_err_certalrthere', 'robot'));
 				return false;
 			}
 		} catch (Exception $e) {
@@ -300,7 +300,9 @@ class CP_Robot_Interface extends Content_Page
 			                        htmlentities($e->getMessage()));
 			return false;
 		}
-		Framework::success_output("Certificate (". $cert->serial() .") uploaded to keystore.");
+		Framework::success_output($this->translateTag('l10n_suc_insertcert1', 'robot') . " " .
+		                          $cert->serial() .
+		                          $this->translateTag('l10n_suc_insertcert2', 'robot'));
 		return true;
 	}
 
@@ -320,8 +322,9 @@ class CP_Robot_Interface extends Content_Page
 				MDB2Wrapper::update("DELETE FROM robot_certs WHERE id=?",
 						    array('text'),
 						    array($cert['id']));
-				Framework::success_output("Certificate (" . htmlentities($serial) .
-				                          ") removed from database.");
+				Framework::success_output($this->translateTag('l10n_suc_deletecert1', 'robot') .
+				                          htmlentities($serial) .
+				                          $this->translateTag('l10n_suc_deletecert2', 'robot'));
 				return true;
 			} catch (Exception $e) {
 				Framework::error_output(htmlentities($e->getMessage()));
