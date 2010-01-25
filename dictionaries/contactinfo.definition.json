@@ -1,0 +1,62 @@
+{
+	"l10n_legend_contsubsr": {
+		"en":	"Subscriber contact information"
+	},
+	"l10n_infotext_subscrcont1": {
+		"en":	"Here you can define contact information for your subscriber as well as language settings. The e-mail address should point to more than one person so that the chance of an immediate response is high in case of emergency. For instance, Confusa might contact this address in case of critical errors or to notify you of mass-revocation of certificates."
+	},
+	"l10n_label_contactemail": {
+		"en":	"Contact-email:"
+	},
+	"l10n_label_nrenphone": {
+		"en": "NREN-phone:"
+	},
+	"l10n_label_contactphone": {
+		"en":	"Contact-phone:"
+	},
+	"l10n_label_respname": {
+		"en":	"Responsible Name:"
+	},
+	"l10n_label_respemail": {
+		"en":	"Responsible's email:"
+	},
+	"l10n_label_helpdeskurl": {
+		"en":	"Helpdesk URL:"
+	},
+	"l10n_label_helpemail": {
+		"en":	"Helpdesk e-mail:"
+	},
+	"l10n_label_deflang": {
+		"en":	"Default language:"
+	},
+	"l10n_label_certmail": {
+		"en":	"CERT (email):"
+	},
+	"l10n_label_certphone": {
+		"en":	"CERT (phone):"
+	},
+	"l10n_label_nrenurl": {
+		"en":	"URL:"
+	},
+	"l10n_button_reset": {
+		"en":	"Reset"
+	},
+	"l10n_button_update": {
+		"en":	"Update"
+	},
+	"l10n_suc_updatesubscr": {
+		"en":	"Updated contact information for your subscriber"
+	},
+	"l10n_suc_updatenren": {
+		"en":	"Updated contact information for your NREN"
+	},
+	"l10n_err_updatesubscr": {
+		"en":	"Could not change the subscriber contact!"
+	},
+	"l10n_legend_updatenren": {
+		"en":	"NREN contact information"
+	},
+	"l10n_infotext_nrencont1": {
+		"en":	"Here you can define contact information and language settings for your NREN. Define an e-mail address that is tied to one or more persons that will react if they receive notifications from Confusa. For instance, Confusa might contact this address in case of critical errors or to notify you of mass-revocation of certificates."
+	}
+}

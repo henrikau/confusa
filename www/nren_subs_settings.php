@@ -9,7 +9,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 {
 	function __construct()
 	{
-		parent::__construct("NREN/subscriber settings", true);
+		parent::__construct("NREN/subscriber settings", true, "contactinfo");
 		$available_languages = Config::get_config('language.available');
 		$this->full_names = Translator::getFullNamesForISOCodes($available_languages);
 	}
@@ -111,14 +111,14 @@ class CP_NREN_Subs_Settings extends Content_Page
 		try {
 			$subscriber->save();
 		} catch (ConfusaGenException $cge) {
-			Framework::error_output("Could not change the subscriber contact! " .
+			Framework::error_output($this->translateTag('l10n_err_updatesubscr', 'contactinfo') . " " .
 									htmlentities($cge->getMessage()));
 			Logger::log_event(LOG_INFO, "[sadm] Could not update " .
 							"contact of subscriber $subscriber: " .
 							$cge->getMessage());
 		}
 
-		Framework::success_output("Updated contact information for your subscriber " .
+		Framework::success_output($this->translateTag('l10n_suc_updatesubscr', 'contactinfo') . " " .
 		                          htmlentities($subscriber->getIdPName()) . ".");
 		Logger::log_event(LOG_DEBUG, "[sadm] Updated contact for subscriber $subscriber.");
 	} /* end updateSubscriberContact */
