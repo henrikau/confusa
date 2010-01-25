@@ -298,7 +298,7 @@ class NREN
 	 * This must be done after new values has been set.
 	 *
 	 * @param	String	$nren_name The name of the NREN
-	 * @return	void
+	 * @return	boolean false, if saving failed, true if saving suceeded
 	 * @access	public
 	 */
 	public function saveNREN()
@@ -324,6 +324,7 @@ class NREN
 				Logger::log_event(LOG_INFO, "[nadm] Could not update " .
 						  "contact of NREN $nren: " .
 						  $dqe->getMessage());
+				return false;
 			} catch (DBStatementException $dse) {
 				Framework::error_output("Could not change the NREN contact! Confusa " .
 							"seems to be misconfigured. Server said: " .
@@ -332,11 +333,12 @@ class NREN
 						  "contact of $nren: " .
 						  $dse->getMessage());
 				echo $query . "<br />\n";
+				return false;
 			}
 
-			Framework::success_output("Updated contact information for your NREN " . $this->getName());
 			Logger::log_event(LOG_DEBUG, "[nadm] Updated contact for NREN " . $this->getName());
 			$this->pendingChanges = false;
+			return true;
 		}
 	} /* end saveNREN() */
 	/**

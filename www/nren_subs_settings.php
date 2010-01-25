@@ -32,7 +32,13 @@ class CP_NREN_Subs_Settings extends Content_Page
 					$this->person->getNREN()->set_cert_email(   Input::sanitizeEmail($_POST['cert_email']));
 					$this->person->getNREN()->set_url(          Input::sanitizeURL($_POST['url']));
 					$this->person->getNREN()->set_lang(         Input::sanitizeLangCode($_POST['language']));
-					$this->person->getNREN()->saveNREN();
+
+					$nren = $this->person->getNREN();
+
+					if ($nren->saveNREN()) {
+						Framework::success_output($this->translateTag('l10n_suc_updatenren', 'contactinfo') . " " .
+						                          $nren->getName());
+					}
 				}
 				break;
 			case 'subscriber_contact':
