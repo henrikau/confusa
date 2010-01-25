@@ -57,6 +57,10 @@ abstract class Confusa_Auth
 	 * @author Henrik Austad <henrik.austad@uninett.no>
 	 * @author Thomas Zangerl <tzangerl@pdc.kth.se>
 	 *
+	 * @throws CriticalAttributeException If an attribute without which Confusa
+	 *                                    really can not work is not found
+	 * @throws MapNotFoundException       If the NREN-map is not found
+	 *
 	 * @param array	$attributes
 	 * @param String $idp
 	 * @throws MapNotFoundException
@@ -162,9 +166,8 @@ abstract class Confusa_Auth
 
 			/* is ePPN registred as NREN admin (from bootstrap) */
 			if ($this->person->isNRENAdmin()) {
-				$msg  = "No map for your NREN (".$this->person->getNREN()->getName().") is set <br />\n";
-				$msg .= "You need to do this <b>now</b> so the normal users can utilize Confusa's functionality.<br />\n";
-				$msg .= "<br /><center>Go <a href=\"attributes.php?mode=admin\">here</a> to update the map.</center><br />\n";
+				$msg = "No NREN map found!";
+
 				if (Config::get_config('debug')) {
 					$msg .= "Raw-dump of supplied attributes:<br />\n";
 					$msg .= "<br /><pre>\n";
@@ -178,7 +181,8 @@ abstract class Confusa_Auth
 					}
 					$msg .= "</pre><br />\n";
 				}
-				Framework::error_output($msg);
+
+				throw new MapNotFoundException($msg);
 			}
 		}
 	} /* end decoratePerson() */
