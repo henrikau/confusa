@@ -118,24 +118,18 @@ class Framework {
 		}
 	}
 
+	/**
+	 * @throws CriticalAttributeException If an attribute needed for the operation of Confusa is not found
+	 * @throws MapNotFoundException If the NREN-map for the attributes is not found
+	 */
 	public function authenticate() {
 		/* if login, trigger SAML-redirect first */
 		$auth = AuthHandler::getAuthManager($this->person);
 
-		try {
-			if (!$auth->checkAuthentication()) {
-				if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-					$auth->authenticateUser();
-				}
+		if (!$auth->checkAuthentication()) {
+			if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
+				$auth->authenticateUser();
 			}
-		} catch (CriticalAttributeException $cae) {
-			Framework::error_output(htmlentities($cae->getMessage()));
-			$this->renderError = true;
-			return;
-		} catch (ConfusaGenException $cge) {
-			Framework::error_output(htmlentities($cge->getMessage()));
-			$this->renderError = true;
-			return;
 		}
 
 		/* show a warning if the person does not have Confusa
