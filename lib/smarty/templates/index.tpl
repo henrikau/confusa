@@ -56,7 +56,14 @@
    <tr {$bg2}>
      <td><b>{$attribute_email|escape}</b></td>
      <td></td>
-     <td>{$person->getEmail()|escape}</td>
+     <td>
+       <ul style="list-style-image: url(graphics/email.png)" >
+        {foreach from=$person->getAllEmails() item=addr}
+        <li><a href="mailto:{$addr}">{$addr}</a></li>
+       {/foreach}
+       </ul>
+     </td>
+
    </tr>
 
    <tr {$bg1}>
