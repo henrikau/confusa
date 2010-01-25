@@ -141,13 +141,34 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('legendTitle', 'Uploaded CSR');
 			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
 			return;
-		/* showing the normal UI */
-		} else {
-			$user_cert_enabled = $this->person->testEntitlementAttribute(Config::get_config('entitlement_user'));
-			$this->tpl->assign('user_cert_enabled', $user_cert_enabled);
-			$this->tpl->assign('upload_csr_file', $this->tpl->fetch('csr/upload_csr_file.tpl'));
-			$this->tpl->assign('content',		$this->tpl->fetch('csr/process_csr.tpl'));
 		}
+
+		/* showing the normal UI */
+		$user_cert_enabled = $this->person->testEntitlementAttribute(Config::get_config('entitlement_user'));
+		$this->tpl->assign('user_cert_enabled', $user_cert_enabled);
+		/* decide which page to view */
+		if (array_key_exists('show', $_GET) &&  !is_null($_GET['show'])) {
+			switch (htmlentities($_GET['show'])) {
+			case 'browser_csr':
+				$this->tpl->assign('browser_csr', true);
+				break;
+			case 'upload_csr':
+				$this->tpl->assign('upload_csr', true);
+				break;
+			case 'paste_csr':
+				$this->tpl->assign('paste_csr', true);
+				break;
+			default:
+				$this->tpl->assign('browser_csr', true);
+				break;
+			}
+		} else {
+			$this->tpl->assign('browser_csr', true);
+		}
+		$this->tpl->assign('email_status',
+				   $this->person->getNREN()->getEnableEmail());
+
+		$this->tpl->assign('content',	$this->tpl->fetch('csr/process_csr.tpl'));
 	}
 
 	/**
