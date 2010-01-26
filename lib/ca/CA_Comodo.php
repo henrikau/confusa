@@ -919,6 +919,7 @@ class CA_Comodo extends CA
         $ca_cert_id = ConfusaConstants::$CAPI_ESCIENCE_ID;
 
         $postfields_sign_req=array();
+	$pf_counter = 1;
 
         /* clutter TEST all over it and reduce validity period
          * if the certs are part of a testing process
@@ -937,19 +938,52 @@ class CA_Comodo extends CA
         $postfields_sign_req["successURL"] = "none";
         $postfields_sign_req["errorURL"] = "none";
         $postfields_sign_req["caCertificateId"] = $ca_cert_id;
+
+	$cert_email_option = $this->person->getNREN()->getEnableEmail();
+	$rce = $this->person->getRegCertEmails();
+	switch($cert_email_option) {
+	case '0':
+		break;
+	case '1':
+		if (!is_null($rce)) {
+			$email = $rce[0];
+			/* set the field */
+			$postfields_sign_req["subject_rfc822name_".$pf_counter++] = $email;
+		} else {
+			throw new ConfusaGenException("No email for certificate available. ".
+						      "Need one, cannot continue before this has been selected:");
+		}
+		break;
+	case 'n':
+		/* set all, if none set, that is configured by user. */
+		if (!is_null($rce)) {
+			/* set the fields */
+			foreach ($rce as $email) {
+				$postfields_sign_req["subject_rfc822name_".$pf_counter++] = $email;
+			}
+		}
+		break;
+	default:
+		Logger::log_event(LOG_ALERT, "Error in stored value for enable_email. ".
+				  "DB-value outside enum-scope. Corrupted table possible.");
+		break;
+	}
+
         /* manually compose the subject. Necessary, because we want to have
          * Terena domainComponents */
-        $postfields_sign_req["subject_commonName_1"] =
+        $postfields_sign_req["subject_commonName_$pf_counter"] =
             $this->person->getX509ValidCN();
+	$pf_counter++;
 
-        $postfields_sign_req["subject_organizationName_2"] =
+        $postfields_sign_req["subject_organizationName_".$pf_counter++] =
 		$this->person->getSubscriber()->getOrgName();
-        $postfields_sign_req["subject_countryName_3"] = $this->person->getNREN()->getCountry();
-        $postfields_sign_req["subject_domainComponent_4"] = "tcs";
-        $postfields_sign_req["subject_domainComponent_5"] = "terena";
-        $postfields_sign_req["subject_domainComponent_6"] = "org";
+        $postfields_sign_req["subject_countryName_".$pf_counter++] =
+		$this->person->getNREN()->getCountry();
+        $postfields_sign_req["subject_domainComponent_".$pf_counter++] = "tcs";
+        $postfields_sign_req["subject_domainComponent_".$pf_counter++] = "terena";
+        $postfields_sign_req["subject_domainComponent_".$pf_counter++] = "org";
 
-		$data = CurlWrapper::curlContact($sign_endpoint, "post", $postfields_sign_req);
+	$data = CurlWrapper::curlContact($sign_endpoint, "post", $postfields_sign_req);
 
         $params=array();
         parse_str($data, $params);
@@ -995,8 +1029,8 @@ class CA_Comodo extends CA
                             array('text', 'text', 'text'),
                             array($auth_key, $this->person->getX509ValidCN(),
                             $this->order_number));
-        } /* end capiUploadCSR */
-    }
+        }
+    } /* end capiUploadCSR */
 
 	/**
 	 * Return a textual and user-understandable message for common remote-API
