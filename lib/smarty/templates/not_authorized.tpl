@@ -15,9 +15,9 @@
 <p class="unauthz">
   <table>
     <tr>
-      <td width="20px"></td>
+      <td style="width: 20px;"></td>
       <td>Web:</td>
-      <td width="30px"></td>
+      <td style="width: 30px;"></td>
       <td><a href="{$subscriber->getHelpURL()}">{$subscriber->getHelpURL()}</a></td>
     </tr>
     <tr>

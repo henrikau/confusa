@@ -70,10 +70,12 @@ immediately see a result entry *}
     </p>
 
     <form enctype="multipart/form-data" action="" method="post">
-      <input type="hidden" name="revoke_operation" value="search_by_list" />
-      <input type="hidden" name="max_file_size" value="10000000" />
-      <input name="{$file_name}" type="file" />
-      <input type="submit" value="{$l10n_button_uploadlist}" />
+      <p>
+	<input type="hidden" name="revoke_operation" value="search_by_list" />
+	<input type="hidden" name="max_file_size" value="10000000" />
+	<input name="{$file_name}" type="file" />
+	<input type="submit" value="{$l10n_button_uploadlist}" />
+      </p>
     </form>
     <br />
     </fieldset>

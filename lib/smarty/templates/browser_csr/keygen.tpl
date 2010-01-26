@@ -25,7 +25,7 @@
 	<form method="post" action="process_csr.php">
 	<table>
 	<tr>
-	<td width="20%">
+	<td style="width: 20%;">
 	<keygen name="browserRequest" keytype="RSA" />
 	</td>
 	<td>

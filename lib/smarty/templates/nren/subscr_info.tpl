@@ -10,11 +10,13 @@
   </p>
 
   <form method="post" action="">
+  <p>
     <input type="hidden" name="setting" value="subscriber_contact" />
+  </p>
     <table>
       <tr>
 	<td></td>
-	<td width="25px"><div class="spacer"></div></td>
+	<td style="width: 25px;"><div class="spacer"></div></td>
 	<td></td>
       </tr>
       <tr>

@@ -12,7 +12,7 @@
   If you so choose, you may inspect the certificate in greater detail
   here.
 </p>
-<hr width="90%"/>
+<hr style="width: 90%;"/>
 {if $robotCerts}
 <table>
 {foreach from=$robotCerts item=element}
@@ -42,9 +42,9 @@
     </td>
   </tr>
   <tr>
-    <td width="20px"></td>
+    <td style="width: 20px;"></td>
     <td>Serial number:</td>
-    <td width="30px"></td>
+    <td style="width: 30px;"></td>
     <td>{$element->serial()|escape}</td>
   </tr>
   <tr>
