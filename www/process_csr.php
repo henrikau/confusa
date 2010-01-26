@@ -101,6 +101,17 @@ final class CP_ProcessCsr extends Content_Page
 			return;
 		}
 
+		/* if email is set, add to person to get only the required emails. */
+		if (array_key_exists('subjAltName_email', $_POST)	&&
+		    isset($_POST['subjAltName_email'])			&&
+		    is_array($_POST['subjAltName_email'])		&&
+		    $this->person->getNREN()->getEnableEmail() != '0')	{
+			foreach($_POST['subjAltName_email'] as $key => $value) {
+				$this->person->regCertEmail(Input::sanitizeText($value));
+			}
+			$this->person->storeRegCertEmails();
+		}
+
 		/* set the browser signing variables only if browser signing is enabled */
 		/* browser-signing */
 		if (isset($_POST['browserSigning']) || isset($_GET['status_poll'])) {
