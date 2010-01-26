@@ -13,7 +13,7 @@ class CP_NREN_Admin extends Content_Page
 	private $grid_mode = false;
 	function __construct()
 	{
-		parent::__construct("Admin", true);
+		parent::__construct("Admin", true, "nrenadmin");
 	}
 
 
@@ -109,7 +109,7 @@ class CP_NREN_Admin extends Content_Page
 						if (!$subscriber->save(true)) {
 							Framework::error_output("Could not update Subscriber, even with changed information.");
 						} else {
-							Framework::success_output("Subscriber successfully saved to persistent storage.");
+							Framework::success_output($this->translateTag('l10n_suc_editsubs1', 'nrenadmin'));
 						}
 					}
 					/* show info-list for subscriber */
@@ -157,7 +157,9 @@ class CP_NREN_Admin extends Content_Page
 				$subscriber->setHelpURL($subscr_help_url);
 				$subscriber->setHelpEmail($subscr_help_email);
 				if ($subscriber->create()) {
-					Framework::success_output("Added new subscriber " . htmlentities($dn_name) . " to database.");
+					Framework::success_output($this->translateTag('l10n_suc_addsubs1', 'nrenadmin') .
+					                          " " . htmlentities($dn_name) . " " .
+					                          $this->translateTag('l10n_suc_addsubs2', 'nrenadmin'));
 				}
 				break;
 			case 'delete':
@@ -342,9 +344,13 @@ class CP_NREN_Admin extends Content_Page
 				     array($id, $nren_id));
 
 		Logger::log_event(LOG_INFO, "Deleted subscriber with ID $id.\n");
-		Framework::message_output("Successfully deleted subscriber (" . htmlentities($subscriberName) . ") with ID " .
-		                          htmlentities($id) . ". " .
-		                          "A total of $count certificates were also revoked.");
+		$msg = $this->translateTag('l10n_suc_deletesubs1', 'nrenadmin') .
+		       htmlentities($subscriberName) .
+		       $this->translateTag('l10n_suc_deletesubs2', 'nrenadmin') . " " .
+		       htmlentities($id) . ". " .
+			   $this->translateTag('l10n_suc_deletesubs3', 'nrenadmin') . " " .
+			   $count . " " . $this->translateTag('l10n_suc_deletesubs4', 'nrenadmin');
+		Framework::message_output($msg);
 	} /* end delSubscriber */
 
 	/**

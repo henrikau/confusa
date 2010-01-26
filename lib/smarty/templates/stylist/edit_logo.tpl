@@ -1,7 +1,7 @@
 {* Beware, here be big fat clot of JavaScript. Started out very small. Really. *}
 {literal}
 <script type="text/javascript">
-	function uploadLogo(pos)
+	function uploadLogo(pos, infoMessage)
 	{
 		var logoForm = document.getElementById('logoUpForm');
 		var posParam = document.getElementById('posParam');
@@ -12,10 +12,10 @@
 		/* show the upload form */
 		logoForm.style.display='block';
 		infoDiv.style.display='block';
+		infoDiv.innerHTML = "<span>" + infoMessage + "<\/span><br />" + infoDiv.innerHTML;
 
 		switch(pos) {
 		case 'tl':
-			infoDiv.innerHTML = "<span>Use the form above to upload a new left-header logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="tl";
 
 			var logo=document.getElementById('logo_tl');
@@ -32,7 +32,6 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'tc':
-			infoDiv.innerHTML= "<span>Use the form above to upload a new central-header logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="tc";
 
 			var logo=document.getElementById('logo_tc');
@@ -49,7 +48,6 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'tr':
-			infoDiv.innerHTML="<span>Use the form above to upload a new right-header-logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="tr";
 
 			var logo=document.getElementById('logo_tr');
@@ -66,7 +64,6 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'bg':
-			infoDiv.innerHTML="<span>Use the form above to upload a new background image.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="bg";
 
 			var logo=document.getElementById('logo_bg');
@@ -83,7 +80,6 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'bl':
-			infoDiv.innerHTML="<span>Use the form above to upload a new left-footer logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="bl";
 
 			var logo=document.getElementById('logo_bl');
@@ -100,7 +96,6 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'bc':
-			infoDiv.innerHTML="<span>Use the form above to upload a new central-footer logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="bc";
 
 			var logo=document.getElementById('logo_bc');
@@ -116,7 +111,6 @@
 			document.getElementById('logo_br').style.display='none';
 			break;
 		case 'br':
-			infoDiv.innerHTML="<span>Use the form above to upload a new right-footer logo.<\/span><br />" + infoDiv.innerHTML;
 			posParam.value="br";
 
 			var logo=document.getElementById('logo_br');
@@ -178,34 +172,30 @@
 
 <div class="tabheader">
 <ul class="tabs">
-<li><a href="?show=text">Texts</a></li>
-<li><a href="?show=css">CSS</a></li>
-<li><span>Logo</span></li>
-<li><a href="?show=mail">Not. Mail</a></li>
+<li><a href="?show=text">{$l10n_tab_texts}</a></li>
+<li><a href="?show=css">{$l10n_tab_css}</a></li>
+<li><span>{$l10n_tab_logo}</span></li>
+<li><a href="?show=mail">{$l10n_tab_notificationmail}</a></li>
 </ul>
 </div>
 
 <fieldset>
-  <legend>Custom NREN logo</legend>
+  <legend>{$l10n_legend_nrenlogo}</legend>
   <p class="info">
-    Upload custom logos here. These logos will be displayed on your users' landing
-    page, i.e. when the user has logged in to Confusa.
+    {$l10n_infotext_nrenlogo1}
   </p>
   <p class="info">
-    Note: Supported file-extensions are {$extensions|escape}
+    {$l10n_infotext_nrenlogo2} {$extensions|escape}
   </p>
   <div id="explanation">
   <p class="info">
 	<noscript>
-		<strong style="color: #ff0000">Really need JavaScript for the stylist, sorry.</strong>
+		<strong style="color: #ff0000">{$l10n_notification_javascript}</strong>
 	</noscript>
-	The logos' presentation on the page may not be proportional to their actual size.
-	But the current dimensioning of the various logos is shown in the line above them. You can
-	change the dimensions yourself in the CSS. Look for #logo_header_left, #logo_header_center
-	and so on. The CSS-attributes you probably want to change are min-width and max-width.
+	{$l10n_infotext_nrenlogo3}
   </p>
   <p class="info">
-  Click any existing logo preview to view it in full size, change or delete it.
+	{$l10n_infotext_nrenlogo4}
   </p>
   </div>
 
@@ -226,15 +216,15 @@
 		<form action="" method="post">
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="tl" />
-			<input type="submit" name="delete" value="Delete logo" />
+			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
 		</form>
 		</div>
-		<a href="#" onclick="uploadLogo('tl')">
+		<a href="#" onclick="uploadLogo('tl', '{$l10n_js_mlogotl}')">
 			{if isset($logo_tl)}
 				<img class="logos" src="{$logo_tl}"
-				alt="Edit logo top left" title="Edit logo top left" />
+				alt="{$l10n_title_editlogotl}" title="{$l10n_title_editlogotl}" />
 			{else}
-				Upload logo left header
+				{$l10n_label_uploadlogotl}
 			{/if}
 		</a>
 	</div>
@@ -252,16 +242,16 @@
 		<form action="" method="post">
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="tc" />
-			<input type="submit" name="delete" value="Delete logo" />
+			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
 		</form>
 		</div>
-		<a class="logos" href="#" onclick="uploadLogo('tc')">
+		<a class="logos" href="#" onclick="uploadLogo('tc', '{$l10n_js_mlogotc}')">
 		{if isset($logo_tc)}
 
 			<img class="logos" src="{$logo_tc}"
-			alt="Edit logo top center" title="Edit logo top center" />
+			alt="{$l10n_title_editlogotc}" title="{$l10n_title_editlogotc}" />
 		{else}
-			Upload logo central header
+			{$l10n_label_uploadlogotc}
 		{/if}
 		</a>
 	</div>
@@ -278,15 +268,15 @@
 		<form action="" method="post">
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="tr" />
-			<input type="submit" name="delete" value="Delete logo" />
+			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
 		</form>
 		</div>
-		<a href="#" onclick="uploadLogo('tr')">
+		<a href="#" onclick="uploadLogo('tr', '{$l10n_js_mlogotr}')">
 		{if isset($logo_tr)}
 			<img class="logos" src="{$logo_tr}"
-			alt="Edit logo top right" title="Edit logo top right" />
+			alt="{$l10n_title_editlogotr}" title="{$l10n_title_editlogotr}" />
 		{else}
-			Upload logo right header
+			{$l10n_label_uploadlogotr}
 		{/if}
 		</a>
 	</div>
@@ -299,19 +289,19 @@
 			900 px
 		</p>
 
-		<a href="#" onclick="uploadLogo('bg')">
+		<a href="#" onclick="uploadLogo('bg', '{$l10n_js_mlogobg}')">
 		{if isset($logo_bg)}
 			<img class="logos" src="{$logo_bg}"
-			alt="Background image" title="Change background image" />
+			alt="{$l10n_title_changelogobg}" title="{$l10n_title_changelogobg}" />
 		{else}
-			Upload background image
+			{$l10n_label_uploadlogobg}
 		{/if}
 		</a>
 		<div id="delete_bg" style="display: none; margin-top: 0.5em">
 		<form action="" method="post">
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="bg" />
-			<input type="submit" name="delete" value="Delete logo" />
+			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
 		</form>
 		</div>
 	</div>
@@ -330,15 +320,15 @@
 		<form action="" method="post">
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="bl" />
-			<input type="submit" name="delete" value="Delete logo" />
+			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
 		</form>
 		</div>
-		<a href="#" onclick="uploadLogo('bl')">
+		<a href="#" onclick="uploadLogo('bl', '{$l10n_js_mlogobl}')">
 		{if isset($logo_bl)}
-			<img class="logos" src="{$logo_bl}" alt="Edit logo bottom left"
-			     title="Edit logo bottom left" />
+			<img class="logos" src="{$logo_bl}" alt="{$l10n_title_editlogobl}"
+			     title="{$l10n_title_editlogobl}" />
 		{else}
-			Upload logo left footer
+			{$l10n_label_uploadlogobl}
 		{/if}
 		</a>
 	</div>
@@ -355,15 +345,15 @@
 		<form action="" method="post">
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="bc" />
-			<input type="submit" name="delete" value="Delete logo" />
+			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
 		</form>
 		</div>
-		<a href="#" onclick="uploadLogo('bc')">
+		<a href="#" onclick="uploadLogo('bc', '{$l10n_js_mlogobc}')">
 		{if isset($logo_bc)}
-			<img class="logos" src="{$logo_bc}" alt="Edit logo bottom center"
-			     title="Edit logo bottom center" />
+			<img class="logos" src="{$logo_bc}" alt="{$l10n_title_editlogobc}"
+			     title="{$l10n_title_editlogobc}" />
 		{else}
-			Upload logo central footer
+			{$l10n_label_uploadlogobc}
 		{/if}
 		</a>
 	</div>
@@ -380,15 +370,15 @@
 		<form action="" method="post">
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="br" />
-			<input type="submit" name="delete" value="Delete logo" />
+			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
 		</form>
 		</div>
-		<a href="#" onclick="uploadLogo('br')">
+		<a href="#" onclick="uploadLogo('br', '{$l10n_js_mlogobr}')">
 		{if isset($logo_br)}
 			<img class="logos" src="{$logo_br}"
-			     alt="Edit logo bottom right" title="Edit logo bottom right" />
+			     alt="{$l10n_title_editlogobr}" title="{$l10n_title_editlogobr}" />
 		{else}
-			Upload logo right footer
+			{$l10n_label_uploadlogobr}
 		{/if}
 		</a>
 	</div>
@@ -402,11 +392,11 @@
 		<input id="posParam" type="hidden" name="position" value="" />
 		<input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
 		<input type="file" name="nren_logo" />
-		<input type="submit" value="Upload image" />
+		<input type="submit" value="{$l10n_button_uploadimg}" />
 	</div>
   </form>
   <div class="spacer"></div>
   <div id="infoDiv" style="margin-bottom: 1em; display: none">
-  <a href="stylist.php?show=logo" style="margin-bottom: 1em">Go back.</a>
+  <a href="stylist.php?show=logo" style="margin-bottom: 1em">{$l10n_link_goback}</a>
   </div>
 </fieldset>

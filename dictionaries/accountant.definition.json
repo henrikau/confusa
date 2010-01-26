@@ -1,0 +1,65 @@
+{
+	"l10n_legend_caaccount": {
+		"en": "Change CA NREN-account"
+	},
+	"l10n_infotext_caaccount1": {
+		"en": "Change/enter the account with which your NREN connects to the Comodo-API. You should have received account information either from TERENA or any other contract partner via which you signed up to Confusa."
+	},
+	"l10n_infotext_caaccount2": {
+		"en": "Note: The account password will be encrypted using 256-Bit AES in CFB blockmode before being stored in the DB."
+	},
+	"l10n_heading_curaccount": {
+		"en": "Current account"
+	},
+	"l10n_label_loginname": {
+		"en": "Login-name:"
+	},
+	"l10n_label_password": {
+		"en": "Password:"
+	},
+	"l10n_title_apname": {
+		"en": "The AP-name is used by the remote-CA for identifying the reseller. You should have received this from TERENA."
+	},
+	"l10n_label_apname": {
+		"en": "AP-Name:"
+	},
+	"l10n_label_passwhidden": {
+		"en": "hidden"
+	},
+	"l10n_fieldval_undefined": {
+		"en": "undefined"
+	},
+	"l10n_button_revert": {
+		"en": "Revert to default"
+	},
+	"l10n_button_update": {
+		"en": "Update"
+	},
+	"l10n_heading_addnew": {
+		"en": "Add new"
+	},
+	"l10n_button_clear": {
+		"en": "Clear"
+	},
+	"l10n_button_addnew": {
+		"en": "Add account"
+	},
+	"l10n_err_noaccfound": {
+		"en": "Cannot get NREN-account info. Please add at least one account before changing the account information!"
+	},
+	"l10n_suc_changedacc1": {
+		"en": "Changed account for NREN"
+	},
+	"l10n_suc_changedacc2": {
+		"en": "to"
+	},
+	"l10n_err_fieldsmissing": {
+		"en": "Cannot add new account when fields are missing!"
+	},
+	"l10n_suc_addednew1": {
+		"en": "Added new account"
+	},
+	"l10n_suc_addednew2": {
+		"en": "to NREN"
+	}
+}

@@ -1,0 +1,239 @@
+{
+	"l10n_heading_managesubs": {
+		"en": "Manage subscribers"
+	},
+	"l10n_tab_listsubs": {
+		"en": "List subscribers"
+	},
+	"l10n_tab_addsubs": {
+		"en": "Add new"
+	},
+	"l10n_legend_listsubs": {
+		"en": "Current account"
+	},
+	"l10n_infotext_listsubs1": {
+		"en": "This is where you manage subscriber accounts. A subscriber in this context is typically one of your customers that has subscribed to your TCS service."
+	},
+	"l10n_infotext_listsubs2": {
+		"en": "You can <b>modify</b> and <b>delete</b> subscribers here. If you want to add new subscriber, you can do this under:"
+	},
+	"l10n_infotext_listsubs3": {
+		"en": "A subscriber can be in one of three states:"
+	},
+	"l10n_expl_subscribed": {
+		"en": "Users can get certificates from the portal"
+	},
+	"l10n_expl_unsubscribed": {
+		"en": "Not yet ready to issue certificates to the users."
+	},
+	"l10n_expl_suspended": {
+		"en": "Users may not issue new certificates."
+	},
+	"l10n_label_id": {
+		"en": "ID"
+	},
+	"l10n_label_name": {
+		"en": "Name"
+	},
+	"l10n_label_state": {
+		"en": "State"
+	},
+	"l10n_title_deletesubs": {
+		"en": "Delete"
+	},
+	"l10n_confirm_deleteownsubs1": {
+		"en": "You are about to delete your OWN INSTITUTION"
+	},
+	"l10n_confirm_deleteownsubs2": {
+		"en": "Are you sure about that?"
+	},
+	"l10n_title_subsinfo": {
+		"en": "Information about"
+	},
+	"l10n_title_owninst": {
+		"en": "Your own institution"
+	},
+	"l10n_button_updstate": {
+		"en":	"Update state"
+	},
+	"l10n_legend_subsdetails": {
+		"en":	"Details for"
+	},
+	"l10n_heading_certinfo": {
+		"en":	"Certificate Information:"
+	},
+	"l10n_infotext_dn": {
+		"en":	"The name that goes into the certificate <b>must</b> be a stable value. If this needs to change, the subscriber must be <b>removed</b> and created anew with the new name."
+	},
+	"l10n_label_dn": {
+		"en":	"DN:"
+	},
+	"l10n_heading_contactinfo": {
+		"en":	"Contact information"
+	},
+	"l10n_infotext_contactinfo": {
+		"en":	"Official contact. This is where the policy-makers reside. Whenever a contract needs signing etc."
+	},
+	"l10n_label_phone": {
+		"en":	"Phone"
+	},
+	"l10n_label_email": {
+		"en":	"E-mail"
+	},
+	"l10n_heading_resppers": {
+		"en":	"Responsible person"
+	},
+	"l10n_infotext_resppers": {
+		"en":	"Technical contact - not enduser support. Whenever there are issues with attributes etc."
+	},
+	"l10n_label_name": {
+		"en":	"Name"
+	},
+	"l10n_heading_helpdesk": {
+		"en":	"Help desk information"
+	},
+	"l10n_infotext_helpdesk": {
+		"en":	"End-user support. Where you want the portal to send general inquiries (support questions)."
+	},
+	"l10n_label_url": {
+		"en":	"URL"
+	},
+	"l10n_heading_comments": {
+		"en":	"Comments"
+	},
+	"l10n_infotext_comments": {
+		"en":	"Comments regarding the subscriber that cannot fit into the pre-defined fields. Note that this field will never be exposed to the subscriber, so you cannot use this to send in-portal messages to the Subscriber's administrators."
+	},
+	"l10n_title_comments": {
+		"en":	"Arbitrary comment about the subscriber"
+	},
+	"l10n_button_reset": {
+		"en":	"Reset form"
+	},
+	"l10n_button_update": {
+		"en":	"Update"
+	},
+	"l10n_legend_addnew": {
+		"en":	"Add new Subscriber"
+	},
+	"l10n_infotext_addnew1": {
+		"en":	"This is where you add new subscribers. Every element is given a thorough explanation. If in doubt, consult other NREN-administrators near you or operational support."
+	},
+	"l10n_heading_attnm": {
+		"en":	"Attribute Name"
+	},
+	"l10n_infotext_attnm1": {
+		"en":	"The attribute-name of the subscriber, is the name the way it is exported from the IdP."
+	},
+	"l10n_infotext_attnm2": {
+		"en":	"Normally, this one one of the following attributes:"
+	},
+	"l10n_infotext_attnm3": {
+		"en":	"The important element to remember is that this must be the <b>unique</b> identifier for the subscriber organization exported by the IdP."
+	},
+	"l10n_label_attnm": {
+		"en":	"Attribute-name:"
+	},
+	"l10n_label_forinstance": {
+		"en":	"e.g.:"
+	},
+	"l10n_heading_dnoname": {
+		"en":	"DN Organization-Name"
+	},
+	"l10n_infotext_dnoname1": {
+		"en":	"The Organization-Name is the name that will appear in the certificate for the end entities (the users). I.e. it is the string appearing in the /O=... section of the certificate. This name is subject to certain restrictions pertaining length, encoding etc."
+	},
+	"l10n_infotext_gridmode": {
+		"en":	"Currently, Confusa is placed in \"Grid-mode\". This means that the name for the subscriber is limited to ASCII and a maximum of 62 characters."
+	},
+	"l10n_heading_contactinfo2": {
+		"en":	"Contact Information for subscriber"
+	},
+	"l10n_infotext_contactinfo2": {
+		"en":	"This information is used by both the NREN-staff to contact the subscribers in case of an emergency, but also by confusa itself when revoking certificates, adding robot-certificates etc."
+	},
+	"l10n_infotext_contactinfo3": {
+		"en":	"It is important that the contact-information is as up-to-date as possible."
+	},
+	"l10n_label_contactemail": {
+		"en":	"Contact e-mail:"
+	},
+	"l10n_expl_contactemail": {
+		"en":	"The \"official\" contact e-mail."
+	},
+	"l10n_label_contactphone": {
+		"en":	"Contact phone:"
+	},
+	"l10n_expl_contactphone": {
+		"en":	"The \"official\" subscriber phone."
+	},
+	"l10n_expl_resppers": {
+		"en":	"Technical contact - not end user support"
+	},
+	"l10n_label_respemail": {
+		"en":	"Responsible's e-mail"
+	},
+	"l10n_expl_respemail": {
+		"en":	"Technical contact mail"
+	},
+	"l10n_heading_helpdeskcont": {
+		"en":	"HelpDesk contact information"
+	},
+	"l10n_infotext_helpdeskcont": {
+		"en":	"Whenever an end-user needs help, the user should be directed to the helpdesk run by the subscriber. Operational support or NREN-support should <b>not</b> be required to handle large number of issues that can (and should) be resolved by local IT-support staff."
+	},
+	"l10n_label_helpdeskurl": {
+		"en":	"HelpDesk URL:"
+	},
+	"l10n_label_helpdeskemail": {
+		"en":	"HelpDesk e-mail:"
+	},
+	"l10n_heading_arbcomm": {
+		"en":	"Arbitrary comment"
+	},
+	"l10n_infotext_arbcomm1": {
+		"en":	"In case a general comment concerning the subscriber is needed, you can add this here. This comment will only be available through this page, so what you write here, will neither be exposed to subscribers, nor to end entities."
+	},
+	"l10n_heading_subscrstate": {
+		"en":	"Subscriber state"
+	},
+	"l10n_infotext_subscrstate": {
+		"en":	"The state describes how a subscriber is treated. At the moment you have 3 different states in Confusa."
+	},
+	"l10n_infotext_subscribed": {
+		"en":	"When a subscriber is in this state, the contract between the NREN and subscriber is signed, the subscriber has agreed to follow the requirements placed upon it in the CP/CPS document etc. This state indicates that the subscriber is ready to use Confusa."
+	},
+	"l10n_infotext_unsubscribed": {
+		"en":	"The subscriber has been added to the register of Subscriber, but has not yet signed the contractual agreements and can therefore not be elevated to state \"Subscribed\"."
+	},
+	"l10n_infotext_suspended": {
+		"en":	"Due to violations of the terms in the contracts, all activity for the subscriber has been ceased. No certificates will be removed, but new ones will not be issued to the users. Once the issues have been resolved, the state can be changed back to \"Subscribed\"."
+	},
+	"l10n_infotext_revise": {
+		"en":	"Before you continue, you should read through the values set to make sure they are correct. If you are satisifed, you can continue to add the subscriber."
+	},
+	"l10n_button_addsubs": {
+		"en":	"Add the subscriber"
+	},
+	"l10n_suc_addsubs1": {
+		"en":	"Added new subscriber"
+	},
+	"l10n_suc_addsubs2": {
+		"en":	"to database."
+	},
+	"l10n_suc_editsubs1": {
+		"en":	"Subscriber successfully saved to persistent storage."
+	},
+	"l10n_suc_deletesubs1": {
+		"en":	"Successfully deleted subscriber ("
+	},
+	"l10n_suc_deletesubs2": {
+		"en":	") with ID"
+	},
+	"l10n_suc_deletesubs3": {
+		"en":	"A total of"
+	},
+	"l10n_suc_deletesubs4": {
+		"en":	"certificates were also revoked."
+	}
+}

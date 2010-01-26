@@ -15,7 +15,7 @@ class CP_Accountant extends Content_Page
 {
 	function __construct()
 	{
-		parent::__construct("Admin", true);
+		parent::__construct("Admin", true, "accountant");
 	}
 
 	public function pre_process($person)
@@ -85,15 +85,15 @@ class CP_Accountant extends Content_Page
 		if (isset($res[0]['login_name'])) {
 			$this->tpl->assign('login_name', $res[0]['login_name']);
 		} else {
-			$this->tpl->assign('login_name', 'undefined');
+			$this->tpl->assign('login_name',
+			                   $this->translateTag('l10n_fieldval_undefined', 'accountant'));
 		}
-
-		$this->tpl->assign('password_label', '<i>hidden</i>');
 
 		if (isset($res[0]['ap_name'])) {
 			$this->tpl->assign('ap_name', $res[0]['ap_name']);
 		} else {
-			$this->tpl->assign('ap_name', 'undefined');
+			$this->tpl->assign('ap_name',
+			                   $this->translateTag('l10n_fieldval_undefined', 'accountant'));
 		}
 
 		$this->tpl->assign('content',			$this->tpl->fetch('accountant.tpl'));
@@ -158,8 +158,7 @@ class CP_Accountant extends Content_Page
 		 */
 		$accountInfo = $this->getNRENAccounts($this->person->getNREN());
 		if (is_null($accountInfo)) {
-			Framework::error_output("Cannot get NREN-account info. Please add at least " .
-				"one account before changing the account information!");
+			Framework::error_output($this->translateTag('l10n_err_noaccfound', 'accountant'));
 			return false;
 		}
 		$nren_id	= $accountInfo[0]['nren_id'];
@@ -321,8 +320,10 @@ class CP_Accountant extends Content_Page
 			MDB2Wrapper::update("UPDATE nrens SET login_account=$subselect WHERE name=?",
 					    array('text', 'text'),
 					    array($login_name, $nren));
-			Framework::message_output("Changed account for NREN " . htmlentities($nren) .
-			                          " to " . htmlentities($login_name));
+			Framework::message_output($this->translateTag('l10n_suc_changedacc1', 'accountant') .
+			                          " " . htmlentities($nren) . " " .
+			                          $this->translateTag('l10n_suc_changedacc2', 'accountant') .
+			                          " " . htmlentities($login_name));
 			Logger::log_event(LOG_INFO, "Changed account for $nren to $login_name. " .
 					  "Admin contacted us from " . $_SERVER['REMOTE_ADDR']);
 		} catch (DBStatementException $dbqe) {
@@ -357,7 +358,7 @@ class CP_Accountant extends Content_Page
 	private function addNRENAccount($loginName, $password, $apName)
 	{
 		if (empty($loginName) || empty($password) || empty($apName)) {
-			Framework::error_output("Cannot add new account when fields are missing!");
+			Framework::error_output($this->translateTag('l10n_err_fieldsmissing', 'accountant'));
 			return false;
 		}
 
@@ -400,8 +401,10 @@ class CP_Accountant extends Content_Page
 					    array('text','text','text', 'text', 'text'),
 					    array($loginName, $cryptpw, base64_encode($iv), $apName, $nrenID));
 
-			Framework::message_output("Added new account " . htmlentities($loginName) .
-			                          " to NREN " . htmlentities($this->person->getNREN()));
+			Framework::message_output($this->translateTag('l10n_suc_addednew1', 'accountant') .
+			                          " " . htmlentities($loginName) . " " .
+			                          $this->translateTag('l10n_suc_addednew2', 'accountant') .
+			                          " " . htmlentities($this->person->getNREN()));
 			Logger::log_event(LOG_INFO, "Added new account $loginName to NREN " . $this->person->getNREN());
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Error adding new account, does the account exist?<br />".

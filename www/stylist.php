@@ -25,7 +25,7 @@ class CP_Stylist extends Content_Page
 	                                        'nren');
 
 	function __construct() {
-		parent::__construct("Stylist", true);
+		parent::__construct("Stylist", true, 'stylist');
 	}
 
 	/*
@@ -296,7 +296,7 @@ class CP_Stylist extends Content_Page
 
 		Logger::log_event(LOG_INFO, "Help-text for NREN $nren was changed. " .
 				  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
-		Framework::success_output("Help-text successfully updated");
+		Framework::success_output($this->translateTag('l10n_suc_updhelptext', 'stylist'));
 	}
 
 	/*
@@ -326,7 +326,7 @@ class CP_Stylist extends Content_Page
 
 		Logger::log_event(LOG_INFO, "About-text for NREN $nren was changed. " .
 						  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
-		Framework::success_output("About-text successfully updated!");
+		Framework::success_output($this->translateTag('l10n_suc_updabouttext', 'stylist'));
 	}
 
 	/**
@@ -427,7 +427,7 @@ class CP_Stylist extends Content_Page
 		Logger::log_event(LOG_INFO, "The custom CSS for NREN " . $nren .
 									" was changed. User contacted us from " .
 									$_SERVER['REMOTE_ADDR']);
-		Framework::success_output("Custom CSS for your NREN successfully updated!");
+		Framework::success_output($this->translateTag('l10n_suc_updcss', 'stylist'));
 	}
 
 	/**
@@ -472,8 +472,7 @@ class CP_Stylist extends Content_Page
 		                            $nren .
 		                            " was changed. User contacted us from " .
 		                            $_SERVER['REMOTE_ADDR']);
-		Framework::success_output("Notification mail template for your NREN " .
-		                          "successfully updated!");
+		Framework::success_output($this->translateTag('l10n_suc_updnotmail', 'stylist'));
 	}
 
 	/**
@@ -500,7 +499,8 @@ class CP_Stylist extends Content_Page
 					 $template);
 
 		$email = $recipient->getEmail();
-		Framework::success_output("Test mail sent to $email.");
+		Framework::success_output($this->translateTag('l10n_suc_testmailsent', 'stylist') .
+		                          " " . $email);
 	} /* end sendNRENTestMail */
 
 	/**
@@ -532,7 +532,7 @@ class CP_Stylist extends Content_Page
 			}
 		}
 
-		Framework::message_output("CSS-file reset to Confusa settings");
+		Framework::message_output($this->translateTag('l10n_suc_cssreset', 'stylist'));
 	}
 
 	private function resetNRENMailTpl($nren)
@@ -548,7 +548,7 @@ class CP_Stylist extends Content_Page
 			}
 		}
 
-		Framework::message_output("Notification mail template reset to Confusa settings.");
+		Framework::message_output($this->translateTag('l10n_suc_mailreset', 'stylist'));
 	}
 
 	/*
@@ -571,7 +571,7 @@ class CP_Stylist extends Content_Page
 			$suffix = $file_tokens[count($file_tokens) - 1];
 
 			if (array_search($suffix, ConfusaConstants::$ALLOWED_IMG_SUFFIXES) === FALSE) {
-				Framework::error_output("Your file has an illegal ending! Make sure the ending is one of: "
+				Framework::error_output($this->translateTag('l10n_err_illegalending', 'stylist') . " "
 									. implode(" ", ConfusaConstants::$ALLOWED_IMG_SUFFIXES));
 				return;
 			}
@@ -579,7 +579,7 @@ class CP_Stylist extends Content_Page
 			list($width, $height, $type) = getimagesize($_FILES[$filename]['tmp_name']);
 
 			if (is_null($type) || $type < 0) {
-				Framework::error_output("What you have provided doesn't seem to be an image!");
+				Framework::error_output($this->translateTag('l10n_err_notanimage', 'stylist'));
 				return;
 			}
 
@@ -614,7 +614,7 @@ class CP_Stylist extends Content_Page
 			Logger::log_event(LOG_INFO, "Logo for NREN $nren was changed to new " .
 							  "logo custom.$suffix User contacted us from " .
 							  $_SERVER['REMOTE_ADDR']);
-			Framework::success_output("Logo successfully updated!");
+			Framework::success_output($this->translateTag('l10n_suc_updatelogo', 'stylist'));
 		}
 	}
 
