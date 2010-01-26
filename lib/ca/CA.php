@@ -246,13 +246,41 @@ abstract class CA
 	$subject = "Your new $productName certificate is ready.  Order number " .
 	           "$orderNumber, subject " . $recipient->getX509SubjectDN();
 
-	$mm = new MailManager($recipient,
-	                      Config::get_config('sys_from_address'),
-	                      Config::get_config('system_name'),
-	                      Config::get_config('sys_header_from_address'));
-	$mm->setSubject($subject);
-	$mm->setBody($msg);
-	$mm->sendMail();
+	/* send notification, test to see if it is *one* address, or multiple */
+	$rce = $recipient->getRegCertEmails();
+	switch ($recipient->getNREN()->getEnableEmail()) {
+	case '1':
+		$mm = new MailManager($recipient,
+				      Config::get_config('sys_from_address'),
+				      Config::get_config('system_name'),
+				      Config::get_config('sys_header_from_address'),
+				      $rce[0]);
+		$mm->setSubject($subject);
+		$mm->setBody($msg);
+		$mm->sendMail();
+		break;
+	case 'n':
+		foreach ($rce as $email) {
+			$mm = new MailManager($recipient,
+					      Config::get_config('sys_from_address'),
+					      Config::get_config('system_name'),
+					      Config::get_config('sys_header_from_address'),
+					      $email);
+			$mm->setSubject($subject);
+			$mm->setBody($msg);
+			$mm->sendMail();
+		}
+		break;
+	default:
+		$mm = new MailManager($recipient,
+				      Config::get_config('sys_from_address'),
+				      Config::get_config('system_name'),
+				      Config::get_config('sys_header_from_address'));
+		$mm->setSubject($subject);
+		$mm->setBody($msg);
+		$mm->sendMail();
+	break;
+	}
   } /* end sendMailNotification */
 } /* end class CA */
 
