@@ -77,10 +77,10 @@
 			  {if isset($logo_tr)}
 			  <img src="{$logo_tr}"
 			       alt="NREN logo" />&nbsp;
-			</div> <!-- logo_header_right -->
 			{else}
 			{* empty *}&nbsp;
 			{/if}
+			</div> <!-- logo_header_right -->
 		      </div> <!-- logo_area -->
 
 		      <div id="language_bar" style="clear: both">
@@ -183,7 +183,6 @@
 	  </div>
 	</div>
       </div>
-    </div>
   </div> <!-- end rounded border -->
 </div> <!-- site -->
 {if $db_debug}
