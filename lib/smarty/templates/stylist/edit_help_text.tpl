@@ -1,24 +1,19 @@
 <div class="tabheader">
 <ul class="tabs">
-<li><span>Texts</span></li>
-<li><a href="?show=css">CSS</a></li>
-<li><a href="?show=logo">Logo</a></li>
-<li><a href="?show=mail">Not. Mail</a></li>
+<li><span>{$l10n_tab_texts}</span></li>
+<li><a href="?show=css">{$l10n_tab_css}</a></li>
+<li><a href="?show=logo">{$l10n_tab_logo}</a></li>
+<li><a href="?show=mail">{$l10n_tab_notificationmail}</a></li>
 </ul>
 </div>
 
   <fieldset>
-  <legend>Change the help-text</legend>
+  <legend>{$l10n_legend_changehelptext}</legend>
 	<p class="info">
-	This text will be shown when your users open Confusa's help page, possibly
-	together with a generic help message shown by Confusa. If there is anything
-	specific that users within the domain of your NREN should know, define it
-	here.
+		{$l10n_infotext_help1}
 	</p>
 	<p class="info">
-	Note: The field accepts UTF-8 characters. A subset of
-	<a href="http://www.textism.com/tools/textile/">Textile</a> syntax is
-	supported. No external images, no HTML, sorry.
+		{$l10n_infotext_fieldinput}
 	</p>
 	<form action="" method="post">
 
@@ -28,7 +23,7 @@
 	</div>
 	<div class="spacer"></div>
 	<div style="width: 90%; text-align: right">
-		<input type="submit" name="change" value="Change" />
+		<input type="submit" name="change" value="{$l10n_button_change}" />
 	</div>
 	</form>
   </fieldset>
@@ -37,14 +32,10 @@
   <fieldset>
   <legend>Change the "about"-text</legend>
   <p class="info">
-  This text will be shown, along with your logo, when a user, who comes from
-  an institution that belongs to your NREN, clicks the 'About'-link. Time to
-  present yourself!
+  {$l10n_infotext_abouttext1}
   </p>
   <p class="info">
-	Note: The field accepts UTF-8 characters. A subset of
-	<a href="http://www.textism.com/tools/textile/">Textile</a> syntax is
-	supported. No external images, no HTML, sorry.
+	{$l10n_infotext_fieldinput}
   </p>
   <form action="" method="post">
 	<div style="width: 90%">
@@ -53,7 +44,7 @@
 	</div>
 	<div class="spacer"></div>
 	<div style="width: 90%; text-align: right">
-		<input type="submit" name="change" value="Change" />
+		<input type="submit" name="change" value="{$l10n_button_change}" />
 	</div>
   </form>
   </fieldset>

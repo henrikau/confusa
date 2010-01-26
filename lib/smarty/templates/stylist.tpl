@@ -1,5 +1,5 @@
 {if $person->inAdminMode() && $person->isNRENAdmin()}
-<h3>NREN customization</h3>
+<h3>{$l10n_heading_stylist}</h3>
 
 { * ------------------------------------------------------------------ *
   * Page header link section

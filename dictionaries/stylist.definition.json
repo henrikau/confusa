@@ -1,0 +1,200 @@
+{
+	"l10n_heading_stylist": {
+		"en":	"NREN customization"
+	},
+	"l10n_tab_texts": {
+		"en":	"Texts"
+	},
+	"l10n_tab_css": {
+		"en":	"CSS"
+	},
+	"l10n_tab_logo": {
+		"en":	"Logo"
+	},
+	"l10n_tab_notificationmail": {
+		"en":	"Not. Mail"
+	},
+	"l10n_legend_changehelptext": {
+		"en":	"Change the help-text"
+	},
+	"l10n_infotext_help1": {
+		"en":	"This text will be shown when your users open Confusa's help page, possibly together with a generic help message shown by Confusa. If there is anything specific that users within the domain of your NREN should know, define it here."
+	},
+	"l10n_infotext_fieldinput": {
+		"en":	"Note: The field accepts UTF-8 characters. A subset of <a href=\"http://www.textism.com/tools/textile/\">Textile</a> syntax is supported. No external images, no HTML, sorry."
+	},
+	"l10n_button_change": {
+		"en":	"Change"
+	},
+	"l10n_legend_abouttext": {
+		"en":	"Change the \"about\"-text"
+	},
+	"l10n_infotext_abouttext1": {
+		"en":	"This text will be shown, along with your logo, when a user, who comes from an institution that belongs to your NREN, clicks the 'About'-link. Time to present yourself!"
+	},
+	"l10n_legend_customcss": {
+		"en":	"Custom NREN-CSS"
+	},
+	"l10n_infotext_customcss1": {
+		"en":	"Edit your NREN's custom-CSS. This will affect how your users will see the page once they are logged in. Initially, Confusa's main CSS is shown in this field, which you may adapt to fit your needs."
+	},
+	"l10n_infotext_cssinput": {
+		"en":	"Note: All CSS properties are supported, as long as they don't include ()-brackets. This also means that url() is not supported."
+	},
+	"l10n_button_download": {
+		"en":	"Download"
+	},
+	"l10n_button_reset": {
+		"en":	"Reset"
+	},
+	"l10n_button_update": {
+		"en":	"Update"
+	},
+	"l10n_confirm_resetcss": {
+		"en":	"Reset CSS to Confusa\\'s shipped CSS?"
+	},
+	"l10n_legend_nrenlogo": {
+		"en":	"Custom NREN logo"
+	},
+	"l10n_infotext_nrenlogo1": {
+		"en":	"Upload custom logos here. These logos will be displayed on your users' landing page, i.e. when the user has logged in to Confusa."
+	},
+	"l10n_infotext_nrenlogo2": {
+		"en":	"Note: Supported file-extensions are"
+	},
+	"l10n_notification_javascript": {
+		"en":	"Really need JavaScript for the stylist, sorry."
+	},
+	"l10n_infotext_nrenlogo3": {
+		"en":	"The logos' presentation on the page may not be proportional to their actual size. But the current dimensioning of the various logos is shown in the line above them. You can change the dimensions yourself in the CSS. Look for #logo_header_left, #logo_header_center and so on. The CSS-attributes you probably want to change are min-width and max-width."
+	},
+	"l10n_infotext_nrenlogo4": {
+		"en":	"Click any existing logo preview to view it in full size, change or delete it."
+	},
+	"l10n_title_editlogotl": {
+		"en":	"Edit logo top left"
+	},
+	"l10n_label_uploadlogotl": {
+		"en":	"Upload logo top left"
+	},
+	"l10n_button_deletelogo": {
+		"en":	"Delete logo"
+	},
+	"l10n_title_editlogotc": {
+		"en":	"Edit logo top center"
+	},
+	"l10n_label_uploadlogotc": {
+		"en":	"Upload logo top center"
+	},
+	"l10n_title_editlogotr": {
+		"en":	"Edit logo top right"
+	},
+	"l10n_label_uploadlogotr": {
+		"en":	"Upload logo top right"
+	},
+	"l10n_title_changelogobg": {
+		"en":	"Change background image"
+	},
+	"l10n_label_uploadlogobg": {
+		"en":	"Upload background image"
+	},
+	"l10n_title_editlogobl": {
+		"en":	"Edit logo bottom left"
+	},
+	"l10n_label_uploadlogobl": {
+		"en":	"Upload logo left footer"
+	},
+	"l10n_title_editlogobc": {
+		"en":	"Edit logo central footer"
+	},
+	"l10n_label_uploadlogobc": {
+		"en":	"Upload logo central footer"
+	},
+	"l10n_title_editlogobr": {
+		"en":	"Edit logo right footer"
+	},
+	"l10n_label_uploadlogobr": {
+		"en":	"Upload logo right footer"
+	},
+	"l10n_button_uploadimg": {
+		"en":	"Upload image"
+	},
+	"l10n_link_goback": {
+		"en":	"Go back."
+	},
+	"l10n_js_mlogotl": {
+		"en":	"Use the form above to upload a new left-header logo."
+	},
+	"l10n_js_mlogotc": {
+		"en":	"Use the form above to upload a new central-header logo."
+	},
+	"l10n_js_mlogotr": {
+		"en":	"Use the form above to upload a new right-header-logo."
+	},
+	"l10n_js_mlogobg": {
+		"en":	"Use the form above to upload a new background image."
+	},
+	"l10n_js_mlogobl": {
+		"en":	"Use the form above to upload a new left-footer logo."
+	},
+	"l10n_js_mlogobc": {
+		"en":	"Use the form above to upload a new central-footer logo."
+	},
+	"l10n_js_mlogobr": {
+		"en":	"Use the form above to upload a new right-footer logo."
+	},
+	"l10n_legend_notmail": {
+		"en":	"Custom notification template"
+	},
+	"l10n_infotext_notmail1": {
+		"en":	"Edit your NREN's notification mail. This is the message that your users will receive when a certificate is issued for them by the portal. By default it includes information considered useful such as a download-link to the certificate."
+	},
+	"l10n_infotext_notmail2": {
+		"en":	"Note: HTML tags will be stripped."
+	},
+	"l10n_infotext_notmail3": {
+		"en":	"are variables. You can try out how your e-mail will look like by using the \"Send to"
+	},
+	"l10n_infotext_notmail4": {
+		"en":	"button."
+	},
+	"l10n_link_mailvars": {
+		"en":	"Which variables can I use?"
+	},
+	"l10n_button_sendto": {
+		"en":	"Send to"
+	},
+	"l10n_confirm_mailreset": {
+		"en":	"Reset notification mail template to Confusa\\'s shipped template?"
+	},
+	"l10n_suc_updatelogo": {
+		"en":	"Logo successfully updated!"
+	},
+	"l10n_err_notanimage": {
+		"en":	"What you have provided doesn't seem to be an image!"
+	},
+	"l10n_err_illegalending": {
+		"en":	"Your file has an illegal ending! Make sure the ending is one of:"
+	},
+	"l10n_suc_mailreset": {
+		"en":	"Notification mail template reset to Confusa settings."
+	},
+	"l10n_suc_cssreset": {
+		"en":	"CSS-file reset to Confusa settings"
+	},
+	"l10n_suc_testmailsent": {
+		"en":	"Test mail sent to"
+	},
+	"l10n_suc_updnotmail": {
+		"en":	"Notification mail template for your NREN successfully updated!"
+	},
+	"l10n_suc_updcss": {
+		"en":	"Custom CSS for your NREN successfully updated!"
+	},
+	"l10n_suc_updabouttext": {
+		"en":	"About-text successfully updated!"
+	},
+	"l10n_suc_updhelptext": {
+		"en":	"Help-text successfully updated!"
+	}
+}
