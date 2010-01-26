@@ -147,7 +147,11 @@ abstract class Confusa_Auth
 						/* only set the part *after*
 						 * entitlement-namespace */
 						$entitlement = Input::sanitizeEntitlement($val[count($val)-1]);
-						$this->person->setEntitlement($entitlement);
+						/* is the entitlement a valid entitlement? */
+						if ($entitlement == Config::get_config('entitlement_user') ||
+						    $entitlement == Config::get_config('entitlement_admin')) {
+							$this->person->setEntitlement($entitlement);
+						}
 					}
 				}
 			}
