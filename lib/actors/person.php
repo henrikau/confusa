@@ -491,9 +491,12 @@ class Person{
     public function getRegCertEmails()
     {
 	    if (!isset($this->certEmails)) {
-		    return null;
+		    $this->retrieveRegCertEmails();
 	    }
 
+	    if (!isset($this->certEmails)) {
+		    return null;
+	    }
 	    $res = array();
 	    foreach ($this->certEmails as $key => $value) {
 		    $res[$key] = $value;
@@ -501,6 +504,30 @@ class Person{
 	    return $res;
     }
 
+    public function storeRegCertEmails()
+    {
+	    if (!isset($this->certEmails)) {
+		    return null;
+	    }
+	    $emails = "";
+	    foreach($this->getRegCertEmails() as $email) {
+		    $emails .= $email . ", ";
+	    }
+	    $emails = substr($emails, 0, -2);
+	    CS::setSessionKey('CertEmails', $emails);
+    }
+
+    private function retrieveRegCertEmails()
+    {
+	    $em = CS::getSessionKey('CertEmails');
+	    if (!is_null($em)) {
+		    $emails = explode(", ", $em);
+		    foreach ($emails as $email) {
+			    $this->regCertEmail($email);
+
+		    }
+	    }
+    }
     /**
      * getSubscriberOrgName() The name of the person's subscriber organization name.
      *
