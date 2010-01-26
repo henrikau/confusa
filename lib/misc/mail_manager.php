@@ -30,7 +30,11 @@ class MailManager
 	 * @param $sendHeader string The sender, as to be defined in the mail's
 	 *                           header
 	 */
-	public function __construct($pers, $sender, $senderName, $sendHeader)
+	public function __construct($pers,
+				    $sender,
+				    $senderName,
+				    $sendHeader,
+				    $alternateAddress=null)
 	{
 
 		if (! $pers instanceof Person) {
@@ -55,8 +59,13 @@ class MailManager
 		$this->mailer->FromName = $senderName;
 		$this->mailer->WordWrap = 80;
 
-		$this->mailer->AddAddress($pers->getEmail(),
-		                          $pers->getName());
+		$this->toAddr = $pers->getEmail();
+		if (!is_null($alternateAddress)) {
+			$this->toAddr = $alternateAddress;
+		}
+		$this->mailer->AddAddress($this->toAddr,
+					  $pers->getName());
+
 
 		$help_desk = $pers->getSubscriber()->getHelpEmail();
 		/* add a reply-to to the helpdesk, if a helpdesk is defined */
