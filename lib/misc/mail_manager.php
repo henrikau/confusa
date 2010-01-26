@@ -132,7 +132,10 @@ class MailManager
 	 */
 	public function sendMail()
 	{
-		return $this->mailer->Send();
+		if (!Config::get_config('auth_bypass')) {
+			return $this->mailer->Send();
+		}
+		return false;
 	} /* end sendMail */
 
 } /* end MailManager */
