@@ -98,6 +98,12 @@ CREATE TABLE IF NOT EXISTS nrens (
     help TEXT,
     -- a customized about-message that the NREN may display to its constituency
     about TEXT,
+
+    -- A customized privacy-notice that the NREN may display to its
+    -- constituency.
+    -- If this is not set, Confusa will take the default privacy-notice.
+    privacy_notice TEXT,
+
     -- the preferred language for the users within the NREN's domain.
     -- Code according to ISO 639-1, with possible annotation like in de-AT, en-US
     lang VARCHAR(5),
