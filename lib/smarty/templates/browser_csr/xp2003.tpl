@@ -33,20 +33,20 @@ function createIEXPRequest(dn, keysize)
 {/literal}
 
 <fieldset>
-<legend>Apply for a certificate in browser</legend>
+<legend>{$l10n_legend_browsercsr}</legend>
 <div id="info_view">
 		{* Provide the Windows XP/Server 2003 class factory *}
 		<object id="XEnroll" classid="clsid:127698e4-e730-4e5c-a2b1-21490a70c8a1" codebase="xenroll.dll"></object>
 		<noscript>
 			<br />
-			<b>Please activate JavaScript to enable browser key generation!</b>
+			<b>{$l10n_infotext_reqjs}</b>
 		</noscript>
 </div>
 
 	<form id="reqForm" name="reqForm" method="post" action="process_csr.php" onsubmit="return createIEXPRequest('{$dn}', {$keysize});">
 		<input type="hidden" id="reqField" name="browserRequest" value="" />
 		<input type="hidden" name="browserSigning" value="xp2003" />
-		<input type="submit" id="chooseButton" style="display: none" value="choose" />
+		<input type="submit" id="chooseButton" style="display: none" value="{$l10n_button_choose}" />
 	</form>
 <br />
 </fieldset>
@@ -60,13 +60,16 @@ function createIEXPRequest(dn, keysize)
 	chooseButton.style.cssText = "display: none";
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
-	pollStatus('Processing order number {$order_number|escape}.');
+	pollStatus('{$l10n_infotext_processing} {$order_number|escape}.');
 
 	{if isset($done) && $done === TRUE}
 		clearTimeout(timer1);
 		statusDone({$order_number|escape});
 	{/if}
 {else}
+	var cryptProvText = '{$l10n_infotext_cryptprov} \"Microsoft Enhanced Cryptographic Provider\"!)';
+	var cspErrorText = '{$l10n_infotext_csperror}';
+
 	{literal}
 	/* let the user choose the CSP (Cryptographic service provider) */
 	var infoView = document.getElementById("info_view");
@@ -88,8 +91,7 @@ function createIEXPRequest(dn, keysize)
 		if (e.number == -2147024637) {
 			/* no-op, done with iterating the CSPs */
 		} else {
-			alert("Hit the following error while trying to find the available CSPs:\n" +
-				e.description);
+			alert(cspErrorText + e.description);
 		}
 	}
 
@@ -102,7 +104,7 @@ function createIEXPRequest(dn, keysize)
 	var spacer = document.createElement("div");
 	spacer.setAttribute("class", "spacer");
 	infoView.appendChild(spacer);
-	infoView.innerHTML += "<p class=\"info\">Please pick a cryptographic service provider (For standard requirements, pick the \"Microsoft Enhanced Cryptographic Provider\"!)</p>";
+	infoView.innerHTML += "<p class=\"info\">" + cryptProvText + "</p>";
 	{/literal}
 {/if}
 </script>

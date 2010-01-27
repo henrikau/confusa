@@ -2,16 +2,14 @@
   <fieldset class="inpsect_csr">
     <legend>{$legendTitle}</legend>
     <p class="info">
-       You provided a certificate signing request consisting of the following
-       fields. Press "Sign certificate" to get your request signed and
-       "Delete" to cancel the signing operation.
+       {$l10n_infotext_signcert1}
     </p>
 
     <table>
       <tr><td></td></tr>
       {* Auth Token *}
       <tr>
-	<td>Auth token</td>
+	<td>{$l10n_label_authtoken}</td>
 	<td></td>
 	<td>{$csrInspect.auth_token|escape}</td>
       </tr>
@@ -20,7 +18,7 @@
       {* Country *}
       {if !empty($csrInspect.countryName)}
       <tr>
-	<td>Country:</td>
+	<td>{$l10n_label_country}</td>
 	<td></td>
 	<td>{$csrInspect.countryName|escape}</td>
       </tr>
@@ -30,7 +28,7 @@
       {* Organization name *}
       {if !empty($csrInspect.organizationName)}
       <tr>
-	<td>Organization Name:</td>
+	<td>{$l10n_label_orgname}</td>
 	<td></td>
 	<td>{$csrInspect.organizationName|escape}</td>
       </tr>
@@ -40,7 +38,7 @@
       {* Common-Name *}
       {if !empty($csrInspect.commonName)}
       <tr>
-	<td>Common-Name:</td>
+	<td>{$l10n_label_cn}</td>
 	<td></td>
 	<td>{$csrInspect.commonName|escape}</td>
       </tr>
@@ -50,7 +48,7 @@
       {* Length of key *}
       {if !empty($csrInspect.length)}
       <tr>
-	<td>Key length:</td>
+	<td>{$l10n_label_keyl}</td>
 	<td></td>
 	<td>{$csrInspect.length|escape}</td>
       </tr>
@@ -60,7 +58,7 @@
       {* Uploaded *}
       {if !empty($csrInspect.length)}
       <tr>
-	<td>Was uploaded:</td>
+	<td>{$l10n_label_uploadedwhen}</td>
 	<td></td>
 	<td>{$csrInspect.uploaded|escape}</td>
       </tr>
@@ -70,7 +68,7 @@
       {* Remote IP *}
       {if !empty($csrInspect.length)}
       <tr>
-	<td>IP:</td>
+	<td>{$l10n_label_ip}</td>
 	<td></td>
 	<td>{$csrInspect.from_ip}</td>
       </tr>
@@ -80,12 +78,12 @@
       <tr>
 	<td>
 	  <a href="?delete_csr={$csrInspect.auth_token}"><img src="graphics/delete.png"
-	  alt="Delete" title="Delete CSR from database" class="url"/> Delete</a>
+	  alt="{$l10n_title_deletecsr}" title="{$l10n_title_deletecsr}" class="url"/> {$l10n_link_delete}</a>
 	</td>
 	<td></td>
 	<td>
 	  <a href="?sign_csr={$csrInspect.auth_token}"><img src="graphics/accept.png"
-	  alt="Approve" title="Approve CSR for signing" class="url"/> Sign certificate</a>
+	  alt="{$l10n_title_approvecsr}" title="{$l10n_title_approvecsr}" class="url"/> {$l10n_link_approvecsr}</a>
 	</td>
       </tr>
       <tr><td></td></tr>

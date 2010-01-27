@@ -2,17 +2,12 @@
 <hr style="width: 90%;" />
 <div class="spacer"></div>
 <p class="info">
-  Each certificate can contain zero, one or more of your email-addresses
-  depending on how the portal has been configured. We have registred
-  that you have {$person->getNumEmails()|escape} registred addresses.
+  {$l10n_infotext_email1} {$person->getNumEmails()|escape} {$l10n_infotext_email2}
 </p>
 
 {if $email_status == "n"}
 <p class="info">
-  With the current settings, you can choose freely how many of your
-  registred addressed you want in the certificate. Note, if you
-  uncheck <b>all</b>, no address will be added to the certificate. This
-  is most likely <b>not</b> what you want.
+  {$l10n_infotext_email3}
 </p>
 <table style="width: 75%;">
   {* we could use html_checkboxes, but getting all the boxes ticked
@@ -34,9 +29,7 @@
 
 {elseif $email_status == "1"}
 <p class="info">
-  With the current settings, you can choose <b>one</b> of your registred
-  addressed you want in the certificate. Please select which of the
-  available addresses to include in the certificate.
+  {$l10n_infotext_email4}
 </p>
 <table style="width: 75%;">
   <tr>
