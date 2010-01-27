@@ -29,8 +29,10 @@ class ConfusaConstants {
 	public static $CAPI_ESCIENCE_ID = '285';
 	/* if we ever want to issue e-mail certificates */
 	public static $CAPI_PERSONAL_ID = '284';
-	/* certificate validity period */
-	public static $CAPI_VALID_DAYS = '395';
+	/* eScience certificate validity period */
+	public static $CAPI_VALID_ESCIENCE = '395';
+	/* personal certificate validity period */
+	public static $CAPI_VALID_PERSONAL = '365';
 	/* constants for the test-mode. These will go into the certificate when
 	 * using the Comodo CA */
 	public static $CAPI_TEST_DC_PREFIX = 'TEST CERTIFICATE';

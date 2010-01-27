@@ -316,7 +316,11 @@ class CA_Comodo extends CA
 			if (Config::get_config('capi_test') == true) {
 				$days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
 			} else {
-				$days = ConfusaConstants::$CAPI_VALID_DAYS;
+				if (Config::get_config('cert_product') == PRD_PERSONAL) {
+					$days = ConfusaConstants::$CAPI_VALID_PERSONAL;
+				} else {
+					$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
+				}
 			}
 		} else {
 			$days = Config::get_config('capi_default_cert_poll_days');
@@ -447,7 +451,11 @@ class CA_Comodo extends CA
 		if (Config::get_config('capi_test') === true) {
 			$days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
 		} else {
-			$days = ConfusaConstants::$CAPI_VALID_DAYS;
+			if (Config::get_config('cert_product') == PRD_PERSONAL) {
+				$days = ConfusaConstants::$CAPI_VALID_PERSONAL;
+			} else {
+				$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
+			}
 		}
 
 		/* don't want to do work twice - if one of these is set, don't match
@@ -886,7 +894,17 @@ class CA_Comodo extends CA
     private function capiUploadCSR($auth_key, $csr, $csr_format = "csr")
     {
         $sign_endpoint = ConfusaConstants::$CAPI_APPLY_ENDPOINT;
-        $ca_cert_id = ConfusaConstants::$CAPI_ESCIENCE_ID;
+
+		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+			$ca_cert_id = ConfusaConstants::$CAPI_ESCIENCE_ID;
+			$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
+		} else if (Config::get_config('cert_product') == PRD_PERSONAL) {
+			$ca_cert_id = ConfusaConstants::$CAPI_PERSONAL_ID;
+			$days = ConfusaConstants::$CAPI_VALID_PERSONAL;
+		} else { /* fallback to escience */
+			$ca_cert_id = ConfusaConstants::$CAPI_ESCIENCE_ID;
+			$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
+		}
 
         $postfields_sign_req=array();
 	$pf_counter = 1;
@@ -897,8 +915,6 @@ class CA_Comodo extends CA
         if (Config::get_config('capi_test')) {
           $postfields_sign_req["subject_domainComponent_7"] = ConfusaConstants::$CAPI_TEST_DC_PREFIX;
           $days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
-        } else {
-          $days = ConfusaConstants::$CAPI_VALID_DAYS;
         }
 
         /* set all the required post parameters for upload */
