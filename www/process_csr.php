@@ -157,6 +157,16 @@ final class CP_ProcessCsr extends Content_Page
 		/* showing the normal UI */
 		$user_cert_enabled = $this->person->testEntitlementAttribute(Config::get_config('entitlement_user'));
 		$this->tpl->assign('user_cert_enabled', $user_cert_enabled);
+		/* get the UAP-tags */
+		$this->tpl->assign('csr_aup_title',
+				   $this->translateMessageTag('csr_aup_title'));
+		$this->tpl->assign('csr_aup_agreement',
+				   $this->translateMessageTag('csr_aup_agreement'));
+		$this->tpl->assign('csr_aup_info_short',
+				   $this->translateMessageTag('csr_aup_info_short'));
+		$this->tpl->assign('csr_aup_info_long',
+				   $this->translateMessageTag('csr_aup_info_long'));
+
 		/* decide which page to view */
 		if (array_key_exists('show', $_GET) &&  !is_null($_GET['show'])) {
 			switch (htmlentities($_GET['show'])) {
