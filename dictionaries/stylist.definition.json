@@ -21,7 +21,7 @@
 		"en":	"This text will be shown when your users open Confusa's help page, possibly together with a generic help message shown by Confusa. If there is anything specific that users within the domain of your NREN should know, define it here."
 	},
 	"l10n_infotext_fieldinput": {
-		"en":	"Note: The field accepts UTF-8 characters. A subset of <a href=\"http://www.textism.com/tools/textile/\">Textile</a> syntax is supported. No external images, no HTML, sorry."
+		"en":	"Note: A subset of <a href=\"http://www.textism.com/tools/textile/\">Textile</a> syntax is supported, plus the variables in curly brackets. No external images, no HTML, sorry."
 	},
 	"l10n_button_change": {
 		"en":	"Change"

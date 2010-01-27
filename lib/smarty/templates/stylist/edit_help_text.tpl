@@ -15,6 +15,20 @@
 	<p class="info">
 		{$l10n_infotext_fieldinput}
 	</p>
+	<div style="padding-top: 1em; padding-bottom: 2em">
+		<span style="font-style: italic">
+		<a href="javascript:void(0)" class="exphead" onclick="toggleExpand(this)"><span class="expchar">+</span>{$l10n_link_mailvars}</a>
+		</span>
+		<div class="expcont">
+		{if count($tags) > 0}
+			<ul style="margin-left: 5%; margin-top: 1em; font-style: italic">
+				{foreach from=$tags item=tag}
+					<li>{literal}{${/literal}{$tag}{literal}}{/literal}</li>
+				{/foreach}
+			</ul>
+		{/if}
+		</div>
+	</div>
 	<form action="" method="post">
 
 	<div style="width: 90%">
@@ -37,6 +51,20 @@
   <p class="info">
 	{$l10n_infotext_fieldinput}
   </p>
+  <div style="padding-top: 1em; padding-bottom: 2em">
+		<span style="font-style: italic">
+		<a href="javascript:void(0)" class="exphead" onclick="toggleExpand(this)"><span class="expchar">+</span>{$l10n_link_mailvars}</a>
+		</span>
+		<div class="expcont">
+		{if count($tags) > 0}
+			<ul style="margin-left: 5%; margin-top: 1em; font-style: italic">
+				{foreach from=$tags item=tag}
+					<li>{literal}{${/literal}{$tag}{literal}}{/literal}</li>
+				{/foreach}
+			</ul>
+		{/if}
+		</div>
+	</div>
   <form action="" method="post">
 	<div style="width: 90%">
 		<input type="hidden" name="stylist_operation" value="change_about_text" />

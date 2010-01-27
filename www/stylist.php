@@ -23,6 +23,12 @@ class CP_Stylist extends Content_Page
 	                                        'issue_date',
 	                                        'ip_address',
 	                                        'nren');
+	/* allowed smarty tags for the NREN about and help texts */
+	private $NREN_TEXTS_TAGS = array('subscriber',
+	                                 'product_name',
+	                                 'confusa_url',
+	                                 'subscriber_support_email',
+	                                 'subscriber_support_url');
 
 	function __construct() {
 		parent::__construct("Stylist", true, 'stylist');
@@ -139,6 +145,8 @@ class CP_Stylist extends Content_Page
 					$this->tpl->assign('about_text', $texts[1]);
 					$this->tpl->assign('privnotice_text', $texts[2]);
 				}
+
+				$this->tpl->assign('tags', $this->NREN_TEXTS_TAGS);
 				$this->tpl->assign('edit_help_text', true);
 				break;
 			case 'css':

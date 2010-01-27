@@ -134,6 +134,8 @@ class ConfusaConstants {
 
 	/* name of the eScience product */
 	public static $ESCIENCE_PRODUCT = 'TCS eScience Personal';
+	/* name of the personal certificate product */
+	public static $PERSONAL_PRODUCT = 'TCS Personal';
 
 	/* logging headers */
 	public static $LOG_HEADER_DEBUG = 'debug:';
