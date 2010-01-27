@@ -45,7 +45,7 @@ class CS
 	public static function setSessionKey($key, $value)
 	{
 		self::testSession();
-		$_SESSION[htmlspecialchars($key)] = htmlspecialchars($value);
+		$_SESSION[htmlspecialchars($key)] = $value;
 	} /* end setSessionKey() */
 
 	public static function getSessionKey($key)
@@ -53,11 +53,23 @@ class CS
 		self::testSession();
 		if (isset($_SESSION) && array_key_exists(htmlspecialchars($key), $_SESSION)) {
 			if (isset($_SESSION[htmlspecialchars($key)])) {
-				return htmlspecialchars($_SESSION[htmlspecialchars($key)]);
+				return $_SESSION[htmlspecialchars($key)];
 			}
 		}
 		return null;
 	} /* end getSessionKey() */
+
+	public static function deleteSessionKey($key)
+	{
+		$key = htmlspecialchars($key);
+
+		self::testSession();
+		if (isset($_SESSION) && array_key_exists($key, $_SESSION)) {
+			if (isset($_SESSION[$key])) {
+				unset($_SESSION[$key]);
+			}
+		}
+	}
 
 	/**
 	 * dumpSession() dump the content of the session to stdout.
