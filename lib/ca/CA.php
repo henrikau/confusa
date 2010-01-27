@@ -260,17 +260,21 @@ abstract class CA
 		$mm->sendMail();
 		break;
 	case 'n':
-		foreach ($rce as $email) {
-			$mm = new MailManager($recipient,
-					      Config::get_config('sys_from_address'),
-					      Config::get_config('system_name'),
-					      Config::get_config('sys_header_from_address'),
-					      $email);
-			$mm->setSubject($subject);
-			$mm->setBody($msg);
-			$mm->sendMail();
+		if (isset($rce) && count($rce) > 0) {
+			foreach ($rce as $email) {
+				$mm = new MailManager($recipient,
+						      Config::get_config('sys_from_address'),
+						      Config::get_config('system_name'),
+						      Config::get_config('sys_header_from_address'),
+						      $email);
+				$mm->setSubject($subject);
+				$mm->setBody($msg);
+				$mm->sendMail();
+			}
+			return;
 		}
-		break;
+		/* if we don't have an email set, fall-through to standard,
+		 * i.e. send notification to default address. */
 	default:
 		$mm = new MailManager($recipient,
 				      Config::get_config('sys_from_address'),
