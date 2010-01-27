@@ -17,6 +17,10 @@ define("ADMIN_MODE", 1);
 define("CA_STANDALONE", 0);
 define("CA_COMODO", 1);
 
+/* Confusa certificate product enums */
+define("PRD_ESCIENCE", 0);
+define("PRD_PERSONAL", 1);
+
 define('WEB_DIR', dirname(__FILE__));
 $path .= PATH_SEPARATOR . "/usr/share/php/libphp-phpmailer/";
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/';
