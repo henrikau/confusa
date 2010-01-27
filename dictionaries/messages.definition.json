@@ -1,7 +1,20 @@
 {
-	"fw_error_entitlement_unset": {
-		"en": 	"'Confusa' Entitlement not set. You do not qualify to request certificates at this time. Please ask an IT-administrator at your  institution to resolve this issue."
+	"fw_error_entitlement_unset_1": {
+		"en": 	"Requried entitlement is not set:"
 	},
+	"fw_error_entitlement_unset_2": {
+		"en":	"You do not qualify to request certificates at this time. Please ask an IT-administrator at your institution to resolve this issue. <br />"
+	},
+	"fw_error_entitlement_unset_3": {
+		"en":  "You can contact them via: "
+	},
+	"fw_error_entitlement_unset_4": {
+		"en":  "Help-desk e-mail: "
+	},
+	"fw_error_entitlement_unset_5": {
+		"en":  "Help-desk URL: "
+	},
+
 	"fw_error_map_notfound": {
 		"en":	"<b>Error(s) with attributes</b><br /><br />No map has been configured for your subscriber. Please contact your local IT-departement and ask them to forward the request to the registred NREN administrator for your domain."
 	},

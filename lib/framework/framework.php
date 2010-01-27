@@ -148,7 +148,25 @@ class Framework {
 		if ($this->person->isAuth()) {
 			if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_user')) == false) {
 				if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_admin')) == false) {
-					Framework::message_output($this->contentPage->translateMessageTag('fw_error_entitlement_unset'));
+					$entitlement  = Config::get_config('entitlement_namespace') . ":";
+					$entitlement .= Config::get_config('entitlement_user');
+					$msg  = $this->contentPage->translateMessageTag('fw_error_entitlement_unset_1');
+					$msg .= "<br /><i>$entitlement</i><br /><br />";
+					$msg .= $this->contentPage->translateMessageTag('fw_error_entitlement_unset_2');
+					if (!is_null($this->person->getSubscriber())) {
+						$url  = $this->person->getSubscriber()->getHelpURL();
+						$email = $this->person->getSubscriber()->getHelpEmail();
+
+						$msg .= "<br />\n";
+						$msg .= $this->contentPage->translateMessageTag('fw_error_entitlement_unset_3');
+						$msg .= "<br /><ul>\n<li>";
+
+						$msg .= $this->contentPage->translateMessageTag('fw_error_entitlement_unset_4');
+						$msg .= "<a href=\"mailto:$email\">$email</a></li>\n<li>";
+						$msg .= $this->contentPage->translateMessageTag('fw_error_entitlement_unset_5');
+						$msg .= "<a href=\"$url\">$url</a></li>\n</ul><br />\n";
+					}
+					Framework::error_output($msg);
 				}
 			}
 		}
