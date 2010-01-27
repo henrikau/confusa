@@ -28,7 +28,12 @@
 	</tr>
 	<tr>
 	  <td align="right" style="padding-right: 10px" ><input type="reset" class="button" value="Reset form" /></td>
-	  <td align="left"><input type="submit" class="button" value="Upload CSR"/><br /></td>
+	  <td align="left">
+	    <input type="submit"
+		   class="button"
+		   value="Upload CSR"
+		   onclick="return isBoxChecked(aup_box);" />
+	    <br /></td>
 	</tr>
       </table>
     </fieldset>

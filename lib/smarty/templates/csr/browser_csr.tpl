@@ -22,7 +22,8 @@
 	    <input type="submit"
 		   name="Send"
 		   id="startButton"
-		   value="Apply" />
+		   value="Apply"
+		   onclick="return isBoxChecked(aup_box);" />
 	    {* Disable the element if the user does not have the right entitlement *}
 	    {else}
 	    <input disabled

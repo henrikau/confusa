@@ -21,7 +21,9 @@
 	      <input type="hidden" name="uploadedCSR" value="uploadedCSR" />
 	      <input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
 	      <input type="file" name="user_csr" />
-	      <input type="submit" value="Upload CSR" />
+	      <input type="submit"
+		     value="Upload CSR"
+		     onclick="return isBoxChecked(aup_box);" />
 	    </div>
 	  </td>
 	</tr>

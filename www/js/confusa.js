@@ -77,3 +77,17 @@ function installIEXPCertificate()
 		" this browser?");
     }
 }
+
+/**
+ * Test to see if a box is checked.
+ *
+ * Used for forms where a given box *must* be checked before it can be
+ * validated.
+ */
+function isBoxChecked(box)
+{
+	if (box.checked == false) {
+		alert("You must check the box stating that you will adhere to the AUP!");
+		return false;
+	}
+}
