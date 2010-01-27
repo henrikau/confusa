@@ -1,22 +1,18 @@
 <p class="info">
-  Please choose one of the options available below to create your
-  certificate.
+  {$l10n_infotext_csroverview1}
 </p>
 <p class="info">
-  You have several different ways of creating the certificate, ranging
-  from a complete in-browser experience to different ways of uploading
-  an existing CSR.
+ {$l10n_infotext_csroverview2}
 </p>
 <p class="info">
-  If you are unsure about what an CSR is, you probably want the
-  in-browser approach.
+  {$l10n_infotext_csroverview3}
 </p>
 
 <div class="tabheader">
   <ul class="tabs">
-    <li><a href="?show=browser_csr">Browser generation</a></li>
-    <li><a href="?show=upload_csr">Upload CSR</a></li>
-    <li><a href="?show=paste_csr">Paste CSR</a></li>
+    <li><a href="?show=browser_csr">{$l10n_tab_browsergen}</a></li>
+    <li><a href="?show=upload_csr">{$l10n_tab_uploadcsr}</a></li>
+    <li><a href="?show=paste_csr">{$l10n_tab_pastecsr}</a></li>
 </ul>
 </div>
 <div class="spacer"></div>
@@ -26,7 +22,7 @@
  * After a successful upload or paste, the CSR should be inspected.
  *}
 {if $approve_csr}
-{include file='csr/approvce_csr.tpl'}
+{include file='csr/approve_csr.tpl'}
 {/if}
 
 {*

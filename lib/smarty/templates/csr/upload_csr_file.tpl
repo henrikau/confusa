@@ -4,12 +4,10 @@
   <div class="spacer"></div>
   <div class="csr">
     <fieldset>
-      <legend>Upload new CSR</legend>
+      <legend>{$l10n_legend_uploadnewcsr}</legend>
       <div class="spacer"></div>
       <p class="info">
-	Upload a local CSR for signing by the CA. If you created
-	this with any globus-specific tools, you should look for
-	the folder ".globus" in your home directory.
+		{$l10n_infotext_uploadnewcsr1}
       </p>
       <div class="spacer"></div>
       {include file="csr/email.tpl"}
@@ -22,6 +20,7 @@
 	      <input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
 	      <input type="file" name="user_csr" />
 	      <input type="submit"
+		     value="{$l10n_button_uploadcsr}"
 		     value="Upload CSR"
 		     onclick="return isBoxChecked(aup_box);" />
 	    </div>

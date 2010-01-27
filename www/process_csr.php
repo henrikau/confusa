@@ -23,7 +23,7 @@ final class CP_ProcessCsr extends Content_Page
 
 	function __construct()
 	{
-		parent::__construct("Process CSR", true);
+		parent::__construct("Process CSR", true, "processcsr");
 		Framework::sensitive_action();
 
 		$this->signing_ok = false;
@@ -133,35 +133,43 @@ final class CP_ProcessCsr extends Content_Page
 			$browserTemplate = $this->dispatchBrowserTemplate();
 			$extraScript = array('js/cert_request.js');
 			$this->tpl->assign('extraScripts', $extraScript);
-			Framework::message_output("Generating certificate signing request in " .
-			                          "the browser. <a href=\"process_csr.php\">Change</a>.");
+			Framework::message_output($this->translateTag('l10n_msg_browsergen', 'processcsr') .
+			                          " <a href=\"process_csr.php\">" .
+			                          $this->translateTag('l10n_link_change', 'processcsr') .
+			                          "</a>.");
 			$this->tpl->assign('content',	$this->tpl->fetch($browserTemplate));
 			return;
 		/* signing of a copied/pasted CSR */
 		} else if (isset($_POST['pastedCSR']) && $aup_set) {
 			/* show upload-form. If it returns false, no uploaded CSRs were processed */
 			$authkey = $this->processUploadedCSR($this->person);
-			Framework::message_output("Received CSR through the copy/paste form. " .
-			                          "<a href=\"process_csr.php\">Change</a>.");
+			Framework::message_output($this->translateTag('l10n_msg_pastecert', 'processcsr') .
+			                          "<a href=\"process_csr.php\">" .
+			                          $this->translateTag('l10n_link_change', 'processcsr') .
+			                          "</a>.");
 			$this->tpl->assign('post', 'pastedCSR');
 
 			$this->tpl->assign('csrInspect', get_csr_details($this->person,
 			                                 $authkey));
 
-			$this->tpl->assign('legendTitle', 'Pasted CSR');
+			$this->tpl->assign('legendTitle',
+			                   $this->translateTag('l10n_legend_pastedcsr', 'processcsr'));
 			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
 			return;
 		/* signing of a CSR that was uploaded from a file */
 		} else if (isset($_POST['uploadedCSR']) && $aup_set) {
 			/* show upload-form. If it returns false, no uploaded CSRs were processed */
 			$authkey = $this->processUploadedCSR($this->person);
-			Framework::message_output("Received CSR through file upload. ".
-			                          "<a href=\"process_csr.php\">Change</a>.");
+			Framework::message_output($this->translateTag('l10n_msg_uploadcsr', 'processcsr') .
+			                          " <a href=\"process_csr.php\">" .
+									  $this->translateTag('l10n_link_change', 'processcsr') .
+									  "</a>.");
 			$this->tpl->assign('post', 'uploadedCSR');
 
 			$this->tpl->assign('csrInspect', get_csr_details($this->person,
 			                                 $authkey));
-			$this->tpl->assign('legendTitle', 'Uploaded CSR');
+			$this->tpl->assign('legendTitle',
+			                   $this->translateTag('l10n_legend_uploadedcsr', 'processcsr'));
 			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
 			return;
 		}
@@ -221,8 +229,7 @@ final class CP_ProcessCsr extends Content_Page
 				$csr = $fu->get_content();
 			} else {
 				/* File NOT OK */
-				$msg  = "There were errors encountered when processing the file.<br />";
-				$msg .= "Please create a new keypair and upload a new CSR to the server.";
+				$msg  = $this->translateTag('l10n_err_csrproc', 'processcsr');
 				Framework::error_output($msg);
 			}
 		} else if (isset($_POST['user_csr'])) {
@@ -241,12 +248,7 @@ final class CP_ProcessCsr extends Content_Page
 						    array('text'),
 						    array($authvar));
 			if (count($res)>0) {
-				Framework::warning_output("CSR with matching public-key already in the database. ".
-				                        "Cannot upload this CSR. Your options: " .
-				                        "<ul style=\"padding-top: 1em; padding-bottom: 1em; margin-left: 5em\">" .
-				                        "<li>Approve your old CSR (displayed below)</li>" .
-				                        "<li>Delete your old CSR and try again</li>" .
-				                        "<li>Go <a href=\"process_csr.php\">back</a> and provide a different CSR</li></ul>");
+				Framework::warning_output($this->translateTag('l10n_warn_keypresent', 'processcsr'));
 				$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
 				$this->tpl->assign('list_all_csr',	true);
 				/* match the DN only when using standalone CA, no need to do it for Comodo */
@@ -283,7 +285,8 @@ final class CP_ProcessCsr extends Content_Page
 		if (isset($_GET['delete_csr'])) {
 			$res = delete_csr_from_db($this->person, Input::sanitizeCertKey($_GET['delete_csr']));
 			if ($res) {
-				Framework::message_output("Successfully deleted CSR for user " . htmlentities($this->person->getEPPN()) . ".");
+				Framework::message_output($this->translateTag('l10n_suc_delcsr', 'processcsr') .
+				                          htmlentities($this->person->getEPPN()) . ".");
 			} else {
 				Framework::error_output("Could not delete CSR.");
 			}
@@ -314,9 +317,10 @@ final class CP_ProcessCsr extends Content_Page
 		$permission = $this->person->mayRequestCertificate();
 
 		if ($permission->isPermissionGranted() === false) {
-			Framework::error_output("You may not request a new certificate, because:<br /><br />" .
-							$permission->getFormattedReasons() .
-							"<br />Please contact an IT-administrator about that!");
+			Framework::error_output($this->translateTag('l10n_err_noperm1', 'processcsr') .
+			                        "<br /><br />" .
+			                        $permission->getFormattedReasons() . "<br />" .
+			                        $this->translateTag('l10n_err_noperm2', 'processcsr'));
 			return;
 		}
 
@@ -366,9 +370,10 @@ final class CP_ProcessCsr extends Content_Page
 			$permission = $this->person->mayRequestCertificate();
 
 			if ($permission->isPermissionGranted() === false) {
-				Framework::error_output("You may not request a new certificate, because:<br /><br />" .
-							$permission->getFormattedReasons() .
-							"<br />Please contact an IT-administrator about that!");
+				Framework::error_output($this->translateTag('l10n_err_noperm1', 'processcsr') .
+				                        "<br /><br />" .
+				                        $permission->getFormattedReasons() . "<br />" .
+				                        $this->translateTag('l10n_err_noperm2', 'processcsr'));
 				return;
 			}
 

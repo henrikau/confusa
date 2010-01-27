@@ -1,20 +1,19 @@
 <div style="padding-top: 3em">
 <fieldset>
-<legend>Apply for a certificate in browser</legend>
+<legend>{$l10n_legend_browsercsr}</legend>
 <div id="info_view">
 {if isset($order_number)}
 	<noscript>
 		<p class="info">
-		(You are viewing the JavaScript-less version of the page. Enabling JavaScript will give
-		you extra comfort, such as visual progress feedback.)<br /><br />
-		Please wait some time (around <b>2 minutes</b>) and then try to install the certificate with order-number
-		{$order_number} by <a href="process_csr.php?install_cert={$order_number}">clicking here</a>. Thanks!
+		{$l10n_infotext_kgprocessing1} {$l10n_infotext_kgprocessing2}
+		{$order_number} <a href="process_csr.php?install_cert={$order_number}">
+		{$l10n_link_kgclickhere}</a> {$l10n_infotext_kgprocessing3}
 		</p>
 	</noscript>
 	<script type="text/javascript">
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
-	pollStatus('Processing order number {$order_number|escape}.');
+	pollStatus('{$l10n_infotext_processing} {$order_number|escape}.');
 
 	{if isset($done) && $done === TRUE}
 		clearTimeout(timer1);
@@ -29,13 +28,15 @@
 	<keygen name="browserRequest" keytype="RSA" />
 	</td>
 	<td>
-	<p class="info">We strongly recommend to choose a key with keysize
-	<b> {$keysize|escape} </b> bits. Please check which keysizes correspond to which "grades" in your browser!</p>
+	<p class="info">{$l10n_infotext_kgkeysize1}
+	<b> {$keysize|escape} </b> {$l10n_infotext_kgkeysize2}</p>
 	</td>
 	</tr><tr><td>
 	<input type="hidden" name="browserSigning" value="keygen" />
-	<input type="submit" value="Send" />
-	</td><td><br /><p class="info">Please press the send button only <b>once</b>.</p></td>
+	<input type="submit" value="{$l10n_button_send}" />
+	</td><td><br /><p class="info">
+		{$l10n_infotext_sendonce}
+	</p></td>
 	</tr></table></form>
 {/if}
 </div>

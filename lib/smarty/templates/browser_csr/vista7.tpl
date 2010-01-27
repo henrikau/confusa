@@ -55,20 +55,20 @@ function createIEVistaRequest(dn, keysize)
 {/literal}
 
 <fieldset>
-<legend>Apply for a certificate in browser</legend>
+<legend>{$l10n_legend_browsercsr}</legend>
 <div id="info_view">
 		{* Provide the Windows Vista/7 class factory *}
 		<object classid="clsid:884e2049-217d-11da-b2a4-000e7bbb2b09" id="classFactory" height="0" width="0" ></object>
 		<noscript>
 			<br />
-			<b>Please activate JavaScript to enable browser key generation!</b>
+			<b>{$l10n_infotext_reqjs}</b>
 		</noscript>
 </div>
 
 	<form id="reqForm" name="reqForm" method="post" action="process_csr.php" onsubmit="return createIEVistaRequest('{$dn}', {$keysize});">
 		<input type="hidden" id="reqField" name="browserRequest" value="" />
 		<input type="hidden" name="browserSigning" value="vista7" />
-		<input type="submit" id="chooseButton" style="display: none" value="choose" />
+		<input type="submit" id="chooseButton" style="display: none" value="{$l10n_button_choose}" />
 	</form>
 <br />
 </fieldset>
@@ -82,7 +82,7 @@ function createIEVistaRequest(dn, keysize)
 	chooseButton.style.cssText = "display: none";
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
-	pollStatus('Processing order number {$order_number|escape}.');
+	pollStatus('{$l10n_infotext_processing} {$order_number|escape}.');
 
 	{if isset($done) && $done === TRUE}
 		clearTimeout(timer1);
@@ -90,6 +90,9 @@ function createIEVistaRequest(dn, keysize)
 	{/if}
 {else}
 	{* let the user choose the CSP (Cryptographic service provider) *}
+	var cryptProvText = '{$l10n_infotext_cryptprov} \"Microsoft Software Key Storage Provider\"!)';
+	var cspErrorText = '{$l10n_infotext_csperror}';
+
 	{literal}
 	var infoView = document.getElementById("info_view");
 	var requestForm = document.getElementById("reqForm");
@@ -122,7 +125,7 @@ function createIEVistaRequest(dn, keysize)
 	var spacer = document.createElement("div");
 	spacer.setAttribute("class", "spacer");
 	infoView.appendChild(spacer);
-	infoView.innerHTML += "<p class=\"info\">Please pick a cryptographic service provider (For standard requirements, pick the \"Microsoft Software Key Storage Provider\"!)</p>";
+	infoView.innerHTML += "<p class=\"info\">" + cryptProvText + "</p>";
 	{/literal}
 {/if}
 </script>

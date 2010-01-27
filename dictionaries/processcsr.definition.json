@@ -1,0 +1,185 @@
+{
+	"l10n_infotext_certproc1": {
+		"en":	"The certificate is now being processed by the CA (Certificate Authority)<br />Depending on the load, this takes approximately 2 minutes.<br /><br />You will now be redirected to the certificate-download area found"
+	},
+	"l10n_link_here": {
+		"en":	"here"
+	},
+	"l10n_legend_pastedcsr": {
+		"en":	"Pasted CSR"
+	},
+	"l10n_legend_uploadedcsr": {
+		"en":	"Uploaded CSR"
+	},
+	"l10n_infotext_signcert1": {
+		"en":	"You provided a certificate signing request consisting of the following fields. Press \"Sign certificate\" to get your request signed and \"Delete\" to cancel the signing operation."
+	},
+	"l10n_label_authtoken": {
+		"en":	"Auth token:"
+	},
+	"l10n_label_country": {
+		"en":	"Country:"
+	},
+	"l10n_label_orgname": {
+		"en":	"Organization Name:"
+	},
+	"l10n_label_cn": {
+		"en":	"Common-Name:"
+	},
+	"l10n_label_keyl": {
+		"en":	"Key length:"
+	},
+	"l10n_label_uploadedwhen": {
+		"en":	"Was uploaded:"
+	},
+	"l10n_label_ip": {
+		"en":	"IP:"
+	},
+	"l10n_title_deletecsr": {
+		"en":	"Delete CSR from database"
+	},
+	"l10n_link_delete": {
+		"en":	"Delete"
+	},
+	"l10n_title_approvecsr": {
+		"en":	"Approve CSR for signing"
+	},
+	"l10n_link_approvecsr": {
+		"en":	"Sign certificate"
+	},
+	"l10n_legend_pastenewcsr": {
+		"en":	"Paste new CSR"
+	},
+	"l10n_infotext_pastenewcsr1": {
+		"en":	"Paste an already created CSR here and press \"Upload CSR\" to send the CSR to the portal."
+	},
+	"l10n_button_reset": {
+		"en":	"Reset form"
+	},
+	"l10n_button_uploadcsr": {
+		"en":	"Upload CSR"
+	},
+	"l10n_infotext_email1": {
+		"en":	"Each certificate can contain zero, one or more of your email-addresses depending on how the portal has been configured. We have registred that you have"
+	},
+	"l10n_infotext_email2": {
+		"en":	"registered addresses."
+	},
+	"l10n_infotext_email3": {
+		"en":	"With the current settings, you can choose freely how many of your registered addressed you want in the certificate. Note, if you uncheck <b>all</b>, no address will be added to the certificate. This is most likely <b>not</b> what you want."
+	},
+	"l10n_infotext_email4": {
+		"en":	"With the current settings, you can choose <b>one</b> of your registered addresses you want in the certificate. Please select which of the available addresses to include in the certificate."
+	},
+	"l10n_legend_uploadnewcsr": {
+		"en":	"Upload new CSR"
+	},
+	"l10n_infotext_uploadnewcsr1": {
+		"en":	"Upload a local CSR for signing by the CA. If you created this with any globus-specific tools, you should look for the folder \".globus\" in your home directory."
+	},
+	"l10n_infotext_csroverview1": {
+		"en":	"Please choose one of the options available below to create your certificate."
+	},
+	"l10n_infotext_csroverview2": {
+		"en":	"You have several different ways of creating the certificate, ranging from a complete in-browser experience to different ways of uploading an existing CSR."
+	},
+	"l10n_infotext_csroverview3": {
+		"en":	"If you are unsure about what an CSR is, you probably want the in-browser approach."
+	},
+	"l10n_tab_browsergen": {
+		"en":	"Browser generation"
+	},
+	"l10n_tab_uploadcsr": {
+		"en":	"Upload CSR"
+	},
+	"l10n_tab_pastecsr": {
+		"en":	"Paste CSR"
+	},
+	"l10n_link_change": {
+		"en":	"Change"
+	},
+	"l10n_msg_browsergen": {
+		"en":	"Generating certificate signing request in the browser."
+	},
+	"l10n_msg_pastecert": {
+		"en":	"Received CSR through the copy/paste form."
+	},
+	"l10n_msg_uploadcsr": {
+		"en":	"Received CSR through file upload."
+	},
+	"l10n_warn_keypresent": {
+		"en":	"CSR with matching public-key already in the database. Cannot upload this CSR. Your options:<ul style=\"padding-top: 1em; padding-bottom: 1em; margin-left: 5em\"><li>Approve your old CSR (displayed below)</li><li>Delete your old CSR and try again</li><li>Go <a href=\"process_csr.php\">back</a> and provide a different CSR</li></ul>"
+	},
+	"l10n_err_csrproc": {
+		"en":	"There were errors encountered when processing the file.<br />Please create a new keypair and upload a new CSR to the server."
+	},
+	"l10n_suc_delcsr": {
+		"en":	"Successfully deleted CSR for user"
+	},
+	"l10n_err_noperm1": {
+		"en":	"You may not request a new certificate, because:"
+	},
+	"l10n_err_noperm2": {
+		"en":	"Please contact an IT-administrator about that!"
+	},
+	"l10n_legend_browsercsr": {
+		"en":	"Apply for a certificate in browser"
+	},
+	"l10n_infotext_browsercsr1": {
+		"en":	"Press the start button <b>once</b> to generate a certificate request in your browser.<br /><br />Sometimes it will take a little while until you can see a browser reaction and there can be delays between browser actions."
+	},
+	"l10n_button_applybrowsercsr": {
+		"en":	"Apply"
+	},
+	"l10n_infotext_reqjs": {
+		"en":	"Please activate JavaScript to enable browser key generation!"
+	},
+	"l10n_button_choose": {
+		"en":	"Choose"
+	},
+	"l10n_infotext_cryptprov": {
+		"en":	"Please pick a cryptographic service provider. (For standard requirements, pick the"
+	},
+	"l10n_infotext_csperror": {
+		"en":	"Hit the following error while trying to find the available CSPs:\\n"
+	},
+	"l10n_infotext_processing": {
+		"en":	"Processing order number"
+	},
+	"l10n_infotext_browsernsup": {
+		"en":	"Unfortunately your browser is currently not supported in Confusa for in-browser certificate requests. The following browsers should work:"
+	},
+	"l10n_infotext_browserwinv": {
+		"en":	"(on Windows XP, Vista and newer)"
+	},
+	"l10n_infotext_gecko": {
+		"en":	"(and probably many other Gecko-based browsers)"
+	},
+	"l10n_infotext_upgrbrowser": {
+		"en":	"If a supported browser does not work, try upgrading to the latest version."
+	},
+	"l10n_infotext_kgprocessing1": {
+		"en":	"(You are viewing the JavaScript-less version of the page. Enabling JavaScript will give you extra comfort, such as visual progress feedback.)<br /><br />Please wait some time (around <b>2 minutes</b>) and then try to install the certificate with order-number"
+	},
+	"l10n_infotext_kgprocessing2": {
+		"en":	"by"
+	},
+	"l10n_link_kgclickhere": {
+		"en":	"Clicking here!"
+	},
+	"l10n_infotext_kgprocessing3": {
+		"en":	"Thanks!"
+	},
+	"l10n_infotext_kgkeysize1": {
+		"en":	"We strongly recommend to choose a key with keysize"
+	},
+	"l10n_infotext_kgkeysize2": {
+		"en":	"bits. Please check which keysizes correspond to which \"grades\" in your browser!"
+	},
+	"l10n_button_send": {
+		"en":	"Send"
+	},
+	"l10n_infotext_sendonce": {
+		"en":	"Please press the send button only <b>once</b>."
+	}
+}

@@ -9,6 +9,7 @@ require_once 'CGE_ComodoAPIException.php';
 require_once 'confusa_constants.php';
 require_once 'CGE_ComodoCredentialException.php';
 require_once 'curlwrapper.php';
+require_once 'Confusa_Session.php';
 
 /**
  * CA_Comodo. Comodo signing extension for CA.
@@ -113,14 +114,7 @@ class CA_Comodo extends CA
      */
     private function cacheLookupList()
     {
-        $session = $this->person->getSession();
-
-        if (isset($session)) {
-            $raw_list = $session->getData('array', 'rawCertList');
-            return $raw_list;
-        } else {
-            return NULL;
-        }
+		return CS::getSessionKey('rawCertList');
     }
 
     /**
@@ -133,15 +127,8 @@ class CA_Comodo extends CA
      */
     private function cacheInsertList($raw_list, $days)
     {
-        $session = $this->person->getSession();
-        /* session can be null, e.g. when in auth_bypass mode */
-        if (isset($session)) {
-            $session->setData('array',
-                              'rawCertList',
-                              $raw_list,
-                              SimpleSAML_Session::DATA_TIMEOUT_LOGOUT);
-            $session->setData('integer', 'confusaCachedDays', $days);
-        }
+		CS::setSessionKey('rawCertList', $raw_list);
+		CS::setSessionKey('confusaCachedDays', $days);
     } /* end cacheInsertList */
 
 	/**
@@ -164,22 +151,17 @@ class CA_Comodo extends CA
 	private function cacheSetExpiryDate($timeSinceCertificateOrder)
 	{
 		$timeSinceCertificateOrder = floor($timeSinceCertificateOrder / 60);
-		$session = $this->person->getSession();
-
-		if (!isset($session)) {
-			return;
-		}
 
 		switch($timeSinceCertificateOrder) {
 		case 0:
 		case 1:
-			$session->setData('integer', 'confusaCacheTimeout', time() + 30);
+			CS::setSessionKey('confusaCacheTimeout', time() + 30);
 			break;
 		case 2:
 		case 3:
 		case 4:
 		case 5:
-			$session->setData('integer', 'confusaCacheTimeout', time() + 60);
+			CS::setSessionKey('confusaCacheTimeout', time() + 60);
 			break;
 		case 6:
 		case 7:
@@ -191,7 +173,7 @@ class CA_Comodo extends CA
 		case 13:
 		case 14:
 		case 15:
-			$session->setData('integer', 'confusaCacheTimeout', time() + 120);
+			CS::setSessionKey('confusaCacheTimeout', time() + 120);
 			break;
 		case 16:
 		case 17:
@@ -208,10 +190,10 @@ class CA_Comodo extends CA
 		case 28:
 		case 29:
 		case 30:
-			$session->setData('integer', 'confusaCacheTimeout', time() + 300);
+			CS::setSessionKey('confusaCacheTimeout', time() + 300);
 			break;
 		default:
-			$session->setData('integer', 'confusaCacheTimeout', time() + 600);
+			CS::setSessionKey('confusaCacheTimeout', time() + 600);
 			break;
 		}
 	}
@@ -229,23 +211,17 @@ class CA_Comodo extends CA
 	 */
 	private function cacheHasCertHistory($days)
 	{
-		$session = $this->person->getSession();
+		$cacheTimeout = CS::getSessionKey('confusaCacheTimeout');
+		$cachedDays   = CS::getSessionKey('confusaCachedDays');
 
-		if (isset($session)) {
-			$cacheTimeout = $session->getData('integer', 'confusaCacheTimeout');
-			$cachedDays   = $session->getData('integer', 'confusaCachedDays');
-
-			if (empty($cacheTimeout)) {
-				return false;
-			} else if (empty($cachedDays)) {
-				return false;
-			/* do we have the full history? */
-			} else if ($cachedDays >= $days) {
-				/* is the cache not expired? */
-				return $cacheTimeout > time();
-			} else {
-				return false;
-			}
+		if (empty($cacheTimeout)) {
+			return false;
+		} else if (empty($cachedDays)) {
+			return false;
+		/* do we have the full history? */
+		} else if ($cachedDays >= $days) {
+			/* is the cache not expired? */
+			return $cacheTimeout > time();
 		} else {
 			return false;
 		}
@@ -257,11 +233,7 @@ class CA_Comodo extends CA
      */
     private function cacheInvalidate()
     {
-        $session = $this->person->getSession();
-
-        if (isset($session)) {
-            $session->deleteData('array', 'rawCertList');
-        }
+		CS::deleteSessionKey('rawCertList');
     }
 
 	/**
