@@ -1,0 +1,32 @@
+{
+	"l10n_reas_malfeppn": {
+		"en":	"Need a properly formatted eduPersonPrincipal name!"
+	},
+	"l10n_reas_nogivenname": {
+		"en":	"Need a given-name to place in the certificate!"
+	},
+	"l10n_reas_noemailaddr": {
+		"en":	"Need an email-address to send notifications to!"
+	},
+	"l10n_reas_nocountryname": {
+		"en":	"Need a country name for the certificates!"
+	},
+	"l10n_reas_malfsubsname": {
+		"en":	"Need a properly formatted Subscriber name!"
+	},
+	"l10n_reas_noentitlement": {
+		"en":	"entitlement must be set but is not set!"
+	},
+	"l10n_reas_instunkn1": {
+		"en":	"Your institution"
+	},
+	"l10n_reas_instunkn2": {
+		"en":	"was not found in the database!"
+	},
+	"l10n_reas_instnsubscr1": {
+		"en":	"Your institution"
+	},
+	"l10n_reas_instnsubscr2": {
+		"en":	"is currently not subscribed to the portal!"
+	}
+}

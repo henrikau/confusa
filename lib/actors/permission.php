@@ -19,6 +19,8 @@ class Permission
 
 	public function __construct()
 	{
+		/* default the permission to false */
+		$this->permissionGranted = false;
 		$reasons = array();
 	}
 

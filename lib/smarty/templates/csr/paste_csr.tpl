@@ -1,11 +1,10 @@
 <form action="" method="post">
   <div class="csr">
     <fieldset>
-      <legend><i>Paste new CSR</i></legend>
+      <legend><i>{$l10n_legend_pastenewcsr}</i></legend>
       <div class="spacer"></div>
       <p class="info">
-	Paste an already created CSR here and press "Upload CSR" to send the
-	CSR to the portal.
+		{$l10n_infotext_pastenewcsr1}
       </p>
       <div class="spacer"></div>
       {include file="csr/email.tpl"}
@@ -24,8 +23,8 @@
 	  <td></td>
 	</tr>
 	<tr>
-	  <td align="right" style="padding-right: 10px" ><input type="reset" class="button" value="Reset form" /></td>
-	  <td align="left"><input type="submit" class="button" value="Upload CSR"/><br /></td>
+	  <td align="right" style="padding-right: 10px" ><input type="reset" class="button" value="{$l10n_button_reset}" /></td>
+	  <td align="left"><input type="submit" class="button" value="{$l10n_button_uploadcsr}"/><br /></td>
 	</tr>
       </table>
     </fieldset>

@@ -991,44 +991,47 @@ class Person{
 		$permission = new Permission();
 		$permission->setPermissionGranted(true);
 
+		$translator = new Translator();
+		$translator->guessBestLanguage($this);
+
 		if (empty($this->eppn)) {
 			$permission->setPermissionGranted(false);
-			$permission->addReason("Need a properly formatted eduPersonPrincipal name!");
+			$permission->addReason($this->translateTag('l10n_reas_malfeppn', 'reasons'));
 		}
 
 		if (empty($this->given_name)) {
 			$permission->setPermissionGranted(false);
-			$permission->addReason("Need a given-name to place in the certificate!");
+			$permission->addReason($this->translateTag('l10n_reas_nogivenname', 'reasons'));
 		}
 
 		if (empty($this->email)) {
 			$permission->setPermissionGranted(false);
-			$permission->addReason("Need an email-address to send notifications to!");
+			$permission->addReason($this->translateTag('l10n_reas_noemailaddr', 'reasons'));
 		}
 
 		if (is_null($this->getNREN()->getCountry()) || $this->getNREN()->getCountry() == "") {
 			$permission->setPermissionGranted(false);
-			$permission->addReason("Need a country name for the certificates!");
+			$permission->addReason($this->translateTag('l10n_reas_nocountryname', 'reasons'));
 		}
 
 		$subscriberOrgName = $this->subscriber->getOrgName();
 		if (empty($subscriberOrgName)) {
 			$permission->setPermissionGranted(false);
-			$permission->addReason("Need a properly formatted Subscriber name!");
+			$permission->addReason($this->translateTag('l10n_reas_malfsubsname', 'reasons'));
 		}
 
 		if (Config::get_config('capi_test') &&
 		    Config::get_config('ca_mode') === CA_COMODO &&
 		    $subscriberOrgName == ConfusaConstants::$CAPI_TEST_O_PREFIX) {
 			$permission->setPermissionGranted(false);
-			$permission->addReason("Need a properly formatted Subscriber name!");
+			$permission->addReason($this->translateTag('l10n_reas_malfsubsname', 'reasons'));
 		}
 
 		if (empty($this->entitlement)
 				|| !$this->testEntitlementAttribute(Config::get_config('entitlement_user'))) {
 			$permission->setPermissionGranted(false);
-			$permission->addReason(Config::get_config('entitlement_user') .
-								" entitlement must be set but is not set!");
+			$permission->addReason(Config::get_config('entitlement_user') . " " .
+			                       $this->translateTag('l10n_reas_noentitlement', 'reasons'));
 		}
 
 		$query = "SELECT org_state FROM subscribers WHERE name=?";
@@ -1040,8 +1043,9 @@ class Person{
 
 		if (count($res) == 0) {
 			$permission->setPermissionGranted(false);
-			$permission->addReason("Your institution " . $this->subscriber->getIdPName() .
-					" was not found in the database!");
+			$permission->addReason($this->translateTag('l10n_instunkn1', 'reasons') . " " .
+			                       $this->subscriber->getIdPName() . " " .
+			                       $this->translateTag('l10n_instunkn2', 'reasons'));
 			return $permission;
 		} else if (count($res) > 1) {
 			throw new AuthException("More than one DB-entry with same subscriberOrgName " .
@@ -1050,8 +1054,9 @@ class Person{
 
 		if ($res[0]['org_state'] !== 'subscribed') {
 			$permission->setPermissionGranted(false);
-			$permission->addReason("Your institution " . $this->subscriber->getIdPName() .
-					" is currently not subscribed to the portal!");
+			$permission->addReason($this->translateTag('l10n_instnsubscr1', 'reasons') . " " .
+			                       $this->subscriber->getIdPName() . " " .
+			                       $this->translateTag('l10n_instnsubscr2', 'reasons'));
 		}
 
 		return $permission;
