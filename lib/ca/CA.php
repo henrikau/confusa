@@ -205,13 +205,19 @@ abstract class CA
 	public static function sendMailNotification($orderNumber,
 	                                            $timestamp,
 	                                            $ip,
-	                                            $productName,
 	                                            $recipient,
 						    $custom_content = null)
 	{
 	/* if a notification e-mail is not a *template*, then what is? */
 	$tpl	= new Smarty();
 	$nren = $recipient->getNREN();
+
+	if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+		$productName = ConfusaConstants::$ESCIENCE_PRODUCT;
+	} else {
+		$productName = ConfusaConstants::$PERSONAL_PRODUCT;
+	}
+
 	$custom_template = Config::get_config('custom_mail_tpl') . $nren . '/custom.tpl';
 	$tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
 	$tpl->config_dir	= Config::get_config('install_path') .
