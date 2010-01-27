@@ -102,7 +102,20 @@ $confusa_config = array(
 	 * it will be signed using the NREN's credentials and once it is processed,
 	 * downloaded again using the HTTP POST API.
 	 * */
-	'ca_mode'		=> CA_STANDALONE,
+	'ca_mode'		=> CA_COMODO,
+	/*
+	 * Which kind of certificates should this portal instance issue?
+	 * Legal configurations are:
+	 *
+	 * PRD_ESCIENCE: eScience certificates should be issued by the portal.
+	 *               e-mail addresses in the SAN of the certificate will be
+	 *               optional.
+	 * PRD_PERSONAL: personal certificates are issued by the portal. The
+	 *               signing sub-CA is different, the SAN is in the subject
+	 *               and it is recommended to configure Confusa without the
+	 *               Grid restrictions
+	 */
+	'cert_product'	=> PRD_ESCIENCE,
 
 		/* ========= Config flags applying only for COMODO-CA ==========
 		 * ===============================================================
