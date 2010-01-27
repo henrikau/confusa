@@ -68,6 +68,10 @@ final class CP_ProcessCsr extends Content_Page
 			}
 		}
 
+		/* when the key has been generated in the browser and the
+		 * resulting CSR has been uploaded to the server, we end up
+		 * here.
+		 */
 		if (isset($_POST['browserRequest'])) {
 			$request = Input::sanitizeBase64($_POST['browserRequest']);
 			$request = trim($request);
@@ -124,7 +128,12 @@ final class CP_ProcessCsr extends Content_Page
 		}
 
 		/* set the browser signing variables only if browser signing is enabled */
-		/* browser-signing */
+		/* browser-signing.
+		 *
+		 * This is where the user ends up after pressing 'Apply' in the
+		 * browser-gen section. The user will now have to decide upon
+		 * keylength and then generate the private key and return the CSR
+		 */
 		if ((isset($_POST['browserSigning']) || isset($_GET['status_poll'])) &&
 		    $aup_set) {
 			$browser_adapted_dn = $this->person->getBrowserFriendlyDN();
