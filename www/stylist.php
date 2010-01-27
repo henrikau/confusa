@@ -542,13 +542,11 @@ class CP_Stylist extends Content_Page
 		$timestamp			= date('Y-m-d H:i T');
 		$ip					= $_SERVER['REMOTE_ADDR'];
 		$order_number		= '1234567890 (invalid example)';
-		$product_name		= ConfusaConstants::$ESCIENCE_PRODUCT;
 		CA::sendMailNotification($order_number,
 		                         $timestamp,
 		                         $ip,
-		                         $product_name,
 		                         $recipient,
-					 $template);
+		                         $template);
 
 		$email = $recipient->getEmail();
 		Framework::success_output($this->translateTag('l10n_suc_testmailsent', 'stylist') .
