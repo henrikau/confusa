@@ -1,4 +1,7 @@
 <form action="process_csr.php?show=upload_csr" method="post" enctype="multipart/form-data">
+  <div class="spacer"></div>
+  {include file="csr/uap.tpl"}
+  <div class="spacer"></div>
   <div class="csr">
     <fieldset>
       <legend>Upload new CSR</legend>

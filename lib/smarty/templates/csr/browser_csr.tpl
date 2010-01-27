@@ -1,6 +1,10 @@
 <form id="startForm" method="post" action="process_csr.php">
+<div class="spacer"></div>
+{include file="csr/uap.tpl"}
+<div class="spacer"></div>
 <fieldset>
 <legend>Apply for a certificate in browser</legend>
+
 <div class="spacer"></div>
 <div id="info_view">
 	<p class="info">Press the start button <b>once</b> to generate a certificate request in your browser.<br /><br />

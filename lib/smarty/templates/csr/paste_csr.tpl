@@ -1,4 +1,7 @@
 <form action="" method="post">
+  <div class="spacer"></div>
+  {include file="csr/uap.tpl"}
+  <div class="spacer"></div>
   <div class="csr">
     <fieldset>
       <legend><i>Paste new CSR</i></legend>

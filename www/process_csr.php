@@ -10,6 +10,7 @@ require_once 'send_element.php';
 require_once 'input.php';
 require_once 'output.php';
 require_once 'permission.php';
+require_once 'Confusa_Session.php';
 
 /**
  * ProcessCsr - the web frontend for handling of CSRs
@@ -101,11 +102,21 @@ final class CP_ProcessCsr extends Content_Page
 			return;
 		}
 
+		/* has user accepted the AUP? */
+		$aup_set = false;
+		if (array_key_exists('aup_box', $_POST) &&
+		    isset($_POST['aup_box']) &&
+		    Input::sanitize($_POST['aup_box']) == "user_agreed") {
+			$aup_set = true;
+			CS::setSessionKey('aup_box', 'yes');
+		}
+
 		/* if email is set, add to person to get only the required emails. */
 		if (array_key_exists('subjAltName_email', $_POST)	&&
 		    isset($_POST['subjAltName_email'])			&&
 		    is_array($_POST['subjAltName_email'])		&&
-		    $this->person->getNREN()->getEnableEmail() != '0')	{
+		    $this->person->getNREN()->getEnableEmail() != '0'	&&
+		    $aup_set)	{
 			foreach($_POST['subjAltName_email'] as $key => $value) {
 				$this->person->regCertEmail(Input::sanitizeText($value));
 			}
@@ -114,7 +125,8 @@ final class CP_ProcessCsr extends Content_Page
 
 		/* set the browser signing variables only if browser signing is enabled */
 		/* browser-signing */
-		if (isset($_POST['browserSigning']) || isset($_GET['status_poll'])) {
+		if ((isset($_POST['browserSigning']) || isset($_GET['status_poll'])) &&
+		    $aup_set) {
 			$browser_adapted_dn = $this->person->getBrowserFriendlyDN();
 			$this->tpl->assign('dn',				$browser_adapted_dn);
 			$this->tpl->assign('keysize',			Config::get_config('key_length'));
@@ -126,7 +138,7 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('content',	$this->tpl->fetch($browserTemplate));
 			return;
 		/* signing of a copied/pasted CSR */
-		} else if (isset($_POST['pastedCSR'])) {
+		} else if (isset($_POST['pastedCSR']) && $aup_set) {
 			/* show upload-form. If it returns false, no uploaded CSRs were processed */
 			$authkey = $this->processUploadedCSR($this->person);
 			Framework::message_output("Received CSR through the copy/paste form. " .
@@ -140,7 +152,7 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
 			return;
 		/* signing of a CSR that was uploaded from a file */
-		} else if (isset($_POST['uploadedCSR'])) {
+		} else if (isset($_POST['uploadedCSR']) && $aup_set) {
 			/* show upload-form. If it returns false, no uploaded CSRs were processed */
 			$authkey = $this->processUploadedCSR($this->person);
 			Framework::message_output("Received CSR through file upload. ".
