@@ -12,6 +12,7 @@
 <ul>
   <li><a href="about_nren.php">{$item_about|escape}</a></li>
   <li><a href="help.php">{$item_help|escape}</a></li>
+  <li><a href="privacy_notice.php">{$item_privacy_notice|escape}</a></li>
 </ul>
 
 <h3>{$heading_extras|escape}</h3>

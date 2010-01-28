@@ -88,5 +88,8 @@
 	},
 	"l10n_link_start": {
 		"en": "start"
+	},
+	"l10n_heading_privnotice": {
+		"en":	"Privacy notice"
 	}
 }
