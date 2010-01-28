@@ -51,7 +51,7 @@ function confusaErrorHandler($errno, $errstr, $errfile, $errline)
 	}
 
 	/* if logging is turned on, log the errors to the respective PHP log */
-	if (ini_get('log_errors')) {
+	if (ini_get('log_errors') && (error_reporting() & $errno) ) {
 		error_log($msg);
 	}
 
