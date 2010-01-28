@@ -196,5 +196,18 @@
 	},
 	"l10n_suc_updhelptext": {
 		"en":	"Help-text successfully updated!"
+	},
+
+	"l10n_legend_change_privnotice": {
+		"en":	"Change privacy-notice"
+	},
+	"l10n_privnotice_1": {
+		"en":	"This text is the privacy-notice you want your users to read. As a minimum, it should contain information about what kind of information we collect, as well as why we do this and to whome we share it with."
+	},
+	"l10n_privnotice_2": {
+		"en":	"Note: The field accepts UTF-8 characters. A subset of <a href=\"http://www.textism.com/tools/textile/\">Textile</a> syntax is supported. No external images, no HTML, sorry."
+	},
+	"l10n_suc_privnoticetext": {
+		"en":	"Privacy-notice successfully updated!"
 	}
 }

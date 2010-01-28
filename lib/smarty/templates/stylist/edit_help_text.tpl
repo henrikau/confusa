@@ -48,3 +48,32 @@
 	</div>
   </form>
   </fieldset>
+
+
+  <div class="spacer"></div>
+
+  <fieldset>
+  <legend>{$l10n_legend_change_privnotice}</legend>
+  <p class="info">
+    {$l10n_privnotice_1}
+  </p>
+  <p class="info">
+    {$l10n_privnotice_2}
+  </p>
+  <form action="" method="post">
+    <div style="width: 90%">
+      <input type="hidden"
+	     name="stylist_operation"
+	     value="change_privnotice_text" />
+
+      <textarea name="privnotice_text"
+		style="width: 100%"
+		rows="10"
+		cols="80">{$privnotice_text}</textarea>
+    </div>
+    <div class="spacer"></div>
+    <div style="width: 90%; text-align: right">
+      <input type="submit" name="change" value="{$l10n_button_change}" />
+    </div>
+  </form>
+  </fieldset>

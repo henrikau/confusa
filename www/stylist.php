@@ -133,6 +133,7 @@ class CP_Stylist extends Content_Page
 				if ($texts != NULL) {
 					$this->tpl->assign('help_text', $texts[0]);
 					$this->tpl->assign('about_text', $texts[1]);
+					$this->tpl->assign('privnotice_text', $texts[2]);
 				}
 				$this->tpl->assign('edit_help_text', true);
 				break;
