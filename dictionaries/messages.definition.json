@@ -128,5 +128,15 @@
 	},
 	"csr_aup_info_long": {
 		"en" :	"The AUP is a segment of the CPS which imposes a set of requirements upon the user. These include: "
+	},
+	"l10n_not_sub_header": {
+		"en" :	"Not Subscribed"
+	},
+	"l10n_not_sub_1": {
+		"en" :	"Your organization is not subscribed to the service and you cannot use the service."
+
+	},
+	"l10n_not_sub_2": {
+		"en" :	"If you think you should have access to this service, please contact local user-support."
 	}
 }
