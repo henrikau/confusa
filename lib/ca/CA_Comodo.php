@@ -928,6 +928,15 @@ class CA_Comodo extends CA
 			throw new ConfusaGenException($no_cert_error);
 		}
 		break;
+	case 'm':
+		if (is_null($rce)) {
+			throw new ConfusaGenException($no_cert_error);
+		}
+		/*
+		 *		---	FALLTHROUGH	---
+		 *
+		 * to 'n' as we want to add all addresses now that
+		 * we know that at least one has been provided by the user. */
 	case 'n':
 		/* set all, if none set, that is configured by user. */
 		if (!is_null($rce)) {
