@@ -117,18 +117,25 @@ final class CP_ProcessCsr extends Content_Page
 			$aup_set = CS::getSessionKey('aup_box') == 'yes';
 		}
 
-		/* if email is set, add to person to get only the required emails. */
-		if (array_key_exists('subjAltName_email', $_POST)	&&
-		    isset($_POST['subjAltName_email'])			&&
-		    is_array($_POST['subjAltName_email'])		&&
-		    $this->person->getNREN()->getEnableEmail() != '0'	&&
-		    $aup_set)	{
-			foreach($_POST['subjAltName_email'] as $key => $value) {
-				$this->person->regCertEmail(Input::sanitizeText($value));
+		/* if email is set, add to person to get only the required
+		 * emails. Since the only setting that won't allow anything to
+		 * be stored is '0', we mask this out.
+		 *
+		 * The database will only allow valid entiries into the
+		 * enum-field, so only '1', 'n' and 'm' can get through.
+		 */
+		$ece = $this->person->getNREN()->getEnableEmail();
+		if ($ece != '0') {
+			if (array_key_exists('subjAltName_email', $_POST)	&&
+			    isset($_POST['subjAltName_email'])			&&
+			    is_array($_POST['subjAltName_email'])		&&
+			    $aup_set)	{
+				foreach($_POST['subjAltName_email'] as $key => $value) {
+					$this->person->regCertEmail(Input::sanitizeText($value));
+				}
+				$this->person->storeRegCertEmails();
 			}
-			$this->person->storeRegCertEmails();
 		}
-
 		/* set the browser signing variables only if browser signing is enabled */
 		/* browser-signing.
 		 *
