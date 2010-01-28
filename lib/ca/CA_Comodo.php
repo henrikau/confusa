@@ -913,6 +913,9 @@ class CA_Comodo extends CA
 
 	$cert_email_option = $this->person->getNREN()->getEnableEmail();
 	$rce = $this->person->getRegCertEmails();
+	$no_cert_error  = "No email for certificate available. " .
+		"Need one, cannot continue before this has been selected.";
+
 	switch($cert_email_option) {
 	case '0':
 		break;
@@ -922,8 +925,7 @@ class CA_Comodo extends CA
 			/* set the field */
 			$postfields_sign_req["subject_rfc822name_".$pf_counter++] = $email;
 		} else {
-			throw new ConfusaGenException("No email for certificate available. ".
-						      "Need one, cannot continue before this has been selected:");
+			throw new ConfusaGenException($no_cert_error);
 		}
 		break;
 	case 'n':
