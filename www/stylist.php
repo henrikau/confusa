@@ -51,6 +51,10 @@ class CP_Stylist extends Content_Page
 				$new_text = Input::sanitizeText($_POST['about_text']);
 				$this->updateNRENAboutText($this->person->getNREN(), $new_text);
 				break;
+			case 'change_privnotice_text':
+				$new_text = Input::sanitizeText($_POST['privnotice_text']);
+				$this->updateNRENPrivacyNotice($this->person->getNREN(), $new_text);
+				break;
 			case 'change_css':
 				if (isset($_POST['reset'])) {
 					$this->resetNRENCSS($this->person->getNREN());
