@@ -102,7 +102,7 @@
 		 separator	=  "<br />"}
 		 </td>
 		</tr>
-			 <tr><td colspan="3">
+			 <tr><td style="padding-top: 1em" colspan="3">
 		  <span style="font-size: 0.8em; font-style: italic">
 			{$l10n_infotext_certvalidity}
 		  </span>
@@ -111,14 +111,13 @@
 		<tr>
 		  <td></td>
 		  <td></td>
-		  <td>
-		<div class="spacer"></div>
+		  <td style="margin-bottom: 2em">&nbsp;
 		  </td>
 		</tr>
 {/if}
 
     <tr>
-      <td>{$l10n_label_encertmail}</td>
+      <td align="right">{$l10n_label_encertmail}</td>
       <td></td>
       <td>
 	{html_radios
@@ -128,7 +127,7 @@
 	separator = "<br />"}
       </td>
     </tr>
-      <tr><td colspan="3">
+      <tr><td style="padding-top: 1em" colspan="3">
       <span style="font-size: 0.8em; font-style: italic">
 		{$l10n_infotext_encertmail}
       </span>
