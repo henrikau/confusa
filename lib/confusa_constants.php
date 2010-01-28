@@ -32,7 +32,7 @@ class ConfusaConstants {
 	/* eScience certificate validity period */
 	public static $CAPI_VALID_ESCIENCE = '395';
 	/* personal certificate validity period */
-	public static $CAPI_VALID_PERSONAL = '365';
+	public static $CAPI_VALID_PERSONAL = array('365', '730', '1095');
 	/* constants for the test-mode. These will go into the certificate when
 	 * using the Comodo CA */
 	public static $CAPI_TEST_DC_PREFIX = 'TEST CERTIFICATE';
@@ -160,8 +160,6 @@ class ConfusaConstants {
 
 	/* use the same name as the PHP-SESSION to avoid crashing simpleSAMLphp */
 	public static $SESSION_NAME = "PHPSESSID";
-
-
 }
 
 ?>

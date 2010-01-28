@@ -39,7 +39,8 @@ class CA_Standalone extends CA
 				throw new KeySignException("sign_key.sh does not exist!");
 			}
 
-			$cmd = "$path $auth_key $cert_file_name " . ConfusaConstants::$OPENSSL_SERIAL_FILE;
+			$cmd = "$path $auth_key $cert_file_name " . ConfusaConstants::$OPENSSL_SERIAL_FILE . " " .
+			       $this->validityDays;
 			$res = shell_exec($cmd);
 			$val = explode("\n", $res);
 

@@ -90,6 +90,33 @@
       </td>
     </tr>
 
+{if $personal == TRUE}
+	<tr>
+		<td align="right">{$l10n_label_certvalidity}</td>
+		<td></td>
+		<td>
+		{html_radios
+		 name		= "cert_validity"
+		 options	=  $validity_options
+		 selected	=  $nren->getCertValidity()
+		 separator	=  "<br />"}
+		 </td>
+		</tr>
+			 <tr><td colspan="3">
+		  <span style="font-size: 0.8em; font-style: italic">
+			{$l10n_infotext_certvalidity}
+		  </span>
+		  </td>
+		  </tr>
+		<tr>
+		  <td></td>
+		  <td></td>
+		  <td>
+		<div class="spacer"></div>
+		  </td>
+		</tr>
+{/if}
+
     <tr>
       <td>{$l10n_label_encertmail}</td>
       <td></td>

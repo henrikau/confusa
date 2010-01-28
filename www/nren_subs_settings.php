@@ -32,7 +32,14 @@ class CP_NREN_Subs_Settings extends Content_Page
 					$this->person->getNREN()->set_cert_email(   Input::sanitizeEmail($_POST['cert_email']));
 					$this->person->getNREN()->set_url(          Input::sanitizeURL($_POST['url']));
 					$this->person->getNREN()->set_lang(         Input::sanitizeLangCode($_POST['language']));
-					$this->person->getNREN()->setEnableEmail(   Input::sanitizeLangCode($_POST['enable_email']));
+					if (isset($_POST['enable_email'])) {
+						$this->person->getNREN()->setEnableEmail(   Input::sanitizeLangCode($_POST['enable_email']));
+					}
+
+					if (isset($_POST['cert_validity']) &&
+					    array_search($_POST['cert_validity'], ConfusaConstants::$CAPI_VALID_PERSONAL) !== FALSE) {
+						$this->person->getNREN()->setCertValidity($_POST['cert_validity']);
+					}
 
 					$nren = $this->person->getNREN();
 
@@ -84,6 +91,10 @@ class CP_NREN_Subs_Settings extends Content_Page
 		$this->tpl->assign('enable_options', array('0' => ' None',
 							   '1' => ' Single',
 							   'n' => ' Multiple'));
+		$this->tpl->assign('validity_options', array('365' => ' 365 days',
+		                                             '730' => ' 730 days',
+		                                            '1095' => ' 1095 days'));
+		$this->tpl->assign('personal', Config::get_config('cert_product') === PRD_PERSONAL);
 
 		$this->tpl->assign('languages', $this->full_names);
 		$this->tpl->assign('current_language', $current_language);

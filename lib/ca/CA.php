@@ -14,6 +14,8 @@ require_once 'mail_manager.php';
 abstract class CA
 {
   protected $person;
+  /* the number of days that the certificate issued by the CA will be valid */
+  protected $validityDays;
 
   /*
    * Should register all values so that when a sign_key request is issued,
@@ -21,13 +23,14 @@ abstract class CA
    *
    * @param pers: object describing the person and his/hers attributes.
    */
-  function __construct($pers)
+  function __construct($pers, $validity)
     {
 	    if (!isset($pers) || !($pers instanceof Person)) {
 		    echo __FILE__ . " Cannot function without a person!<BR>\n";
 		    exit(0);
 	    }
 	    $this->person = $pers;
+		$this->validityDays = $validity;
     } /* end __construct */
 
   /* this function is quite critical, as it must remove residual information
@@ -295,17 +298,33 @@ class CAHandler
 	private static $ca;
 	public static function getCA($person)
 	{
+		if (Config::get_config('cert_product') == PRD_PERSONAL) {
+			$days = $person->getNREN()->getCertValidity();
+		} else if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+			$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
+		} else {
+			throw new ConfusaGenException("Confusa's configured product-mode is " .
+			                              "illegal! Must be one of: PRD_ESCIENCE, " .
+			                              "PRD_PERSONAL. Please contact an IT " .
+			                              "administrator about that!");
+		}
+
 		if (!isset(CAHandler::$ca)) {
 			switch((int)Config::get_config('ca_mode')) {
 
 			case CA_STANDALONE:
 				require_once 'CA_Standalone.php';
-				CAHandler::$ca = new CA_Standalone($person);
+				CAHandler::$ca = new CA_Standalone($person, $days);
 				break;
 
 			case CA_COMODO:
 				require_once 'CA_Comodo.php';
-				CAHandler::$ca = new CA_Comodo($person);
+
+				if (Config::get_config('capi_test') == TRUE) {
+					$days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
+				}
+
+				CAHandler::$ca = new CA_Comodo($person, $days);
 				break;
 
 			default:

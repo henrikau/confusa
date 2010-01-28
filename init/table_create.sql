@@ -118,6 +118,11 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- subject altname. However, this should be configurable for the
     -- NREN admins.
     enable_email ENUM('0', '1', 'n'),
+    -- The certificate validity. In test-mode this is always 14 days. For
+    -- personal certificates it will be one of 365, 730 or 1095 days, for
+    -- productive e-Science certs always 395 days
+	-- This will be filled by the bootstrap_nren script
+    cert_validity ENUM('365', '395', '730', '1095'),
 
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) engine=InnoDB;

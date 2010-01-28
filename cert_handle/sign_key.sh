@@ -20,7 +20,7 @@ function include_file ()
     fi
 }
 
-if [ ! $# -eq 3 ]; then
+if [ ! $# -eq 4 ]; then
     echo "1"
     echo "need more arguments (auth_key of CSR to sign and path to ready certificate)" >&2
     exit 1
@@ -70,7 +70,7 @@ if [ ! -w "$2" ]; then
     error_exit "128" "Target certificate-file is not writable for webserver user!"
 fi
 
-openssl x509 -req -days 395 -in $tmpfile -CA $cacert -CAkey $cakey -CAcreateserial -CAserial $3 -sha512 -out $2
+openssl x509 -req -days $4 -in $tmpfile -CA $cacert -CAkey $cakey -CAcreateserial -CAserial $3 -sha512 -out $2
 
 # Remove the tmp-file and return to original dir (just to be sure)
 rm -f $tmpfile
