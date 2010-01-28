@@ -30,17 +30,6 @@ class CS
 	}
 
 	/**
-	 * start() start the CS_Name session
-	 *
-	 * @param  : void
-	 * @return : void
-	 */
-	public static function start()
-	{
-		self::testSession();
-	}
-
-	/**
 	 * setSessionKey() take the value and store it in the session under $key
 	 */
 	public static function setSessionKey($key, $value)
