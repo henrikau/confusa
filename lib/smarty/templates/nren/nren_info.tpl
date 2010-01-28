@@ -1,5 +1,5 @@
 <fieldset>
-<legend>{$l10n_legend_updatenren|escape}</legend>
+<legend>{$l10n_legend_nren_settings|escape}</legend>
 <br />
 <p class="info">
 {$l10n_infotext_nrencont1|escape}
@@ -91,7 +91,7 @@
     </tr>
 
     <tr>
-      <td>{$l10n_label_encertmail}</td>
+      <td align="right">{$l10n_label_encertmail|escape}</td>
       <td></td>
       <td>
 	{html_radios
@@ -101,11 +101,14 @@
 	separator = "<br />"}
       </td>
     </tr>
-      <tr><td colspan="3">
-      <span style="font-size: 0.8em; font-style: italic">
-		{$l10n_infotext_encertmail}
-      </span>
-      </td>
+      <tr>
+      <td></td>
+      <td></td>
+	<td>
+	  <span style="font-size: 0.8em; font-style: italic">
+	    {$l10n_infotext_encertmail}
+	  </span>
+	</td>
       </tr>
     <tr>
       <td></td>
