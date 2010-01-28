@@ -242,6 +242,9 @@ class CA_Comodo extends CA
 	*/
 	public function signKey($auth_key, $csr)
 	{
+		if (!$this->person->getSubscriber()->isSubscribed()) {
+			throw new KeySignException("Subscriber not subscribed, cannot create certificate!");
+		}
 		$this->capiUploadCSR($auth_key, $csr);
 		$this->capiAuthorizeCSR();
 
@@ -270,6 +273,9 @@ class CA_Comodo extends CA
      */
     public function signBrowserCSR($csr, $browser)
     {
+	    if (!$this->person->getSubscriber()->isSubscribed()) {
+		    throw new KeySignException("Subscriber not subscribed, cannot create certificate!");
+	    }
         /* use the last 64-characters of the CRMF as an auth_key */
 		$auth_key = substr($csr, strlen($csr)-65, strlen($csr)-1);
 

@@ -41,6 +41,12 @@ final class CP_ProcessCsr extends Content_Page
 	{
 		parent::pre_process($person);
 		$res = false;
+
+		/* Test subscriber-status: */
+		if (!$this->person->getSubscriber()->isSubscribed()) {
+			return false;
+		}
+
 		if (isset($_GET['sign_csr'])) {
 			try {
 				$res = $this->approveCsr(Input::sanitizeBase64($_GET['sign_csr']));
@@ -101,7 +107,16 @@ final class CP_ProcessCsr extends Content_Page
 
 	public function process()
 	{
-
+		if (!$this->person->getSubscriber()->isSubscribed()) {
+			$this->tpl->assign('not_subscribed_header',
+					   $this->translateTag('l10n_not_sub_header', 'messages'));
+			$this->tpl->assign('not_subscribed_1',
+					   $this->translateTag('l10n_not_sub_1', 'messages'));
+			$this->tpl->assign('not_subscribed_2',
+					   $this->translateTag('l10n_not_sub_2', 'messages'));
+			$this->tpl->assign('content', $this->tpl->fetch('errors/unsubscribed.tpl'));
+			return;
+		}
 		$this->processDBCsr();
 		/* Set default-values to false to avoid warnings */
 		$this->tpl->assign('approve_csr', false);

@@ -29,6 +29,10 @@ class CA_Standalone extends CA
 	 */
 	public function signKey($auth_key, $csr)
 	{
+		if (!$this->person->getSubscriber()->isSubscribed()) {
+			throw new KeySignException("Subscriber not subscribed, cannot create certificate!");
+		}
+
 		if ($this->verifyCSR($csr)) {
 			$cert_file_name	= tempnam("/tmp/", "REV_CERT_");
 			$cert_file = fopen($cert_file_name, "w");
