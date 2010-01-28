@@ -329,6 +329,38 @@ class CP_Stylist extends Content_Page
 		Framework::success_output($this->translateTag('l10n_suc_updabouttext', 'stylist'));
 	}
 
+	/*
+	 * Update the privacy_notice of a NREN
+	 *
+	 * @param $nren The NREN whose about-text is going to be updated
+	 * @param $new_text The updated privacy-notice
+	 */
+	private function updateNRENPrivacyNotice($nren, $new_text)
+	{
+		$query = "UPDATE nrens SET privacy_notice=? WHERE nren_id=?";
+
+		try {
+			$res = MDB2Wrapper::update($query,
+						   array('text', 'text'),
+						   array($new_text, $nren->getID()));
+		} catch (DBStatementException $dbse) {
+			Framework::error_output("Problem updating the privacy-notice of your NREN! ".
+						"Please contact an administrator to resolve this! ".
+						"Server said " . htmlentities($dbse->getMessage()));
+			return;
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output("Problem updating the about text of your NREN, " .
+						"probably related to the supplied data. ".
+						"Please verify the data to be inserted! " .
+						"Server said " . htmlentities($dbqe->getMessage()));
+			return;
+		}
+
+		Logger::log_event(LOG_INFO, "Privacy-notice for NREN $nren was changed by ".
+				  $this->person->getEPPN() . " from " . $_SERVER['REMOTE_ADDR']);
+		Framework::success_output($this->translateTag('l10n_suc_privnoticetext', 'stylist'));
+	}
+
 	/**
 	 * Fetch the CSS file content for a certain NREN. If no CSS file for the
 	 * NREN has been defined so far, display the standard site-wide CSS
