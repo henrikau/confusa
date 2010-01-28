@@ -22,7 +22,8 @@ class CS
 	 */
 	private static function testSession()
 	{
-		if (session_name() != ConfusaConstants::$SESSION_NAME) {
+		if (!isset($_SESSION) ||
+		    session_name() != ConfusaConstants::$SESSION_NAME) {
 			session_name(ConfusaConstants::$SESSION_NAME);
 			session_start();
 		}
