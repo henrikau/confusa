@@ -113,6 +113,8 @@ final class CP_ProcessCsr extends Content_Page
 		    Input::sanitize($_POST['aup_box']) == "user_agreed") {
 			$aup_set = true;
 			CS::setSessionKey('aup_box', 'yes');
+		} else {
+			$aup_set = CS::getSessionKey('aup_box') == 'yes';
 		}
 
 		/* if email is set, add to person to get only the required emails. */
