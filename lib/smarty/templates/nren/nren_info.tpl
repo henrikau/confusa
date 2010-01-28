@@ -91,7 +91,7 @@
     </tr>
 
     <tr>
-      <td>Enable cert. email</td>
+      <td>{$l10n_label_encertmail}</td>
       <td></td>
       <td>
 	{html_radios
@@ -103,8 +103,7 @@
     </tr>
       <tr><td colspan="3">
       <span style="font-size: 0.8em; font-style: italic">
-	The number of certificates the user can place in the
-	certificate's subject alternative name.
+		{$l10n_infotext_encertmail}
       </span>
       </td>
       </tr>

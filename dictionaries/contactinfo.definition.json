@@ -58,5 +58,11 @@
 	},
 	"l10n_infotext_nrencont1": {
 		"en":	"Here you can define contact information and language settings for your NREN. Define an e-mail address that is tied to one or more persons that will react if they receive notifications from Confusa. For instance, Confusa might contact this address in case of critical errors or to notify you of mass-revocation of certificates."
+	},
+	"l10n_label_encertmail": {
+		"en":	"Enable cert. email"
+	},
+	"l10n_infotext_encertmail": {
+		"en":	"The number of certificates the user can place in the certificate's subject alternative name."
 	}
 }
