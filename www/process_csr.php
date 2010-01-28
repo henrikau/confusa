@@ -42,7 +42,12 @@ final class CP_ProcessCsr extends Content_Page
 		parent::pre_process($person);
 		$res = false;
 		if (isset($_GET['sign_csr'])) {
-			$res = $this->approveCsr(Input::sanitizeBase64($_GET['sign_csr']));
+			try {
+				$res = $this->approveCsr(Input::sanitizeBase64($_GET['sign_csr']));
+			} catch (KeySignException $kse) {
+				Framework::error_output($this->translateTag('l10n_sign_error', 'processcsr')
+							."<br /><br />".$kse->getMessage());
+			}
 
 		} else if (isset($_GET['status_poll'])) {
 			$order_number = Input::sanitizeCertKey($_GET['status_poll']);
@@ -76,8 +81,14 @@ final class CP_ProcessCsr extends Content_Page
 			$request = Input::sanitizeBase64($_POST['browserRequest']);
 			$request = trim($request);
 			if (!empty($request)) {
-				$order_number = $this->approveBrowserGenerated($request, getUserAgent());
-				$this->tpl->assign('order_number', $order_number);
+				try {
+					$order_number = $this->approveBrowserGenerated($request, getUserAgent());
+					$this->tpl->assign('order_number', $order_number);
+				} catch (KeySignException $kse) {
+					Framework::error_output($this->translateTag('l10n_sign_error', 'processcsr')
+								."<br /><br />".$kse->getMessage());
+					unset($_POST['browserSigning']);
+				}
 			}
 		}
 

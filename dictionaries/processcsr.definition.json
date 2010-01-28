@@ -181,5 +181,9 @@
 	},
 	"l10n_infotext_sendonce": {
 		"en":	"Please press the send button only <b>once</b>."
+	},
+	"l10n_sign_error": {
+		"en":	"Could not sign certificate, backend said:"
 	}
+
 }
