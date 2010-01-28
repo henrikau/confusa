@@ -466,6 +466,12 @@ class Subscriber
 		}
 		return $this->state;
 	}
+
+	public function isSubscribed()
+	{
+		return $this->getState() == "subscribed";
+	}
+
 	public function setLanguage($lang, $external=true)
 	{
 		$this->preferredLanguage = $lang;
