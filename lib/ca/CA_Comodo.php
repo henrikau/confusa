@@ -925,12 +925,12 @@ class CA_Comodo extends CA
 			/* set the field */
 			$postfields_sign_req["subject_rfc822name_".$pf_counter++] = $email;
 		} else {
-			throw new ConfusaGenException($no_cert_error);
+			throw new KeySignException($no_cert_error);
 		}
 		break;
 	case 'm':
 		if (is_null($rce)) {
-			throw new ConfusaGenException($no_cert_error);
+			throw new KeySignException($no_cert_error);
 		}
 		/*
 		 *		---	FALLTHROUGH	---
