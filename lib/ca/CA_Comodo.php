@@ -896,6 +896,8 @@ class CA_Comodo extends CA
 
 		if (Config::get_config('cert_product') == PRD_PERSONAL) {
 			$ca_cert_id = ConfusaConstants::$CAPI_PERSONAL_ID;
+			/* personal certificates should only have the name of the person
+			 * in the CN */
 		} else if (Config::get_config('cert_product') == PRD_ESCIENCE) {
 			$ca_cert_id = ConfusaConstants::$CAPI_ESCIENCE_ID;
 		} else {
@@ -955,8 +957,7 @@ class CA_Comodo extends CA
 
         /* manually compose the subject. Necessary, because we want to have
          * Terena domainComponents */
-        $postfields_sign_req["subject_commonName_$pf_counter"] =
-            $this->person->getX509ValidCN();
+        $postfields_sign_req["subject_commonName_$pf_counter"] = $this->person->getX509ValidCN();
 	$pf_counter++;
 
         $postfields_sign_req["subject_organizationName_".$pf_counter++] =
