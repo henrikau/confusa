@@ -86,7 +86,7 @@ class CA_Comodo extends CA
         if (count($res) != 1) {
             Logger::log_event(LOG_NOTICE, "Could not extract the suitable remote CA credentials for NREN $nren!");
             throw new CGE_ComodoCredentialException("Could not extract the suitable " .
-                           "remote CA credentials for NREN " . $this->person->getNREN() . "!<br />\n");
+                           "remote CA credentials for NREN " . $this->person->getNREN() . "!\n");
         }
 
         $this->login_name = $res[0]['account_login_name'];
