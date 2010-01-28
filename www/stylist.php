@@ -225,7 +225,7 @@ class CP_Stylist extends Content_Page
 		$sample_text .= "fn1. Roddenberry, G.: Where no man has gone before\n";
 
 
-		$query = "SELECT help, about FROM nrens WHERE name=?";
+		$query = "SELECT help, about, privacy_notice FROM nrens WHERE name=?";
 
 		$res = NULL;
 
@@ -234,14 +234,16 @@ class CP_Stylist extends Content_Page
 										array('text'),
 										array($nren));
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Problem looking up the NREN about- and help-texts in the DB. " .
-									"Looks like a server problem, contact an administrator. " .
-									"Server said " .  htmlentities($dbse->getMessage()));
+			Framework::error_output("Problem looking up the NREN about-, help- and ".
+						"privacy-notice-texts in the DB. " .
+						"Looks like a server problem, contact an administrator. " .
+						"Server said " .  htmlentities($dbse->getMessage()));
 			return NULL;
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Problem looking up the NREN about- and help-texts in the DB. " .
-									"Looks like a problem with the supplied data. " .
-									"Server said " . htmlentities($dbqe->getMessage()));
+			Framework::error_output("Problem looking up the NREN about-, help- and ".
+						"privacy-notice-texts in the DB. " .
+						"Looks like a problem with the supplied data. " .
+						"Server said " . htmlentities($dbqe->getMessage()));
 			return NULL;
 		}
 
@@ -260,6 +262,11 @@ class CP_Stylist extends Content_Page
 				$result[1] = Input::br2nl(stripslashes($res[0]['about']));
 			}
 
+			if (is_null($res[0]['privacy_notice']) || empty($res[0]['privacy_notice'])) {
+				$result[2] = $sample_text;
+			} else {
+				$result[2] = Input::br2nl(stripslashes($res[0]['privacy_notice']));
+			}
 			return $result;
 		} else if (count($res) > 1) { /* conflict!! */
 			Framework::error_output("More than one pair of about and help texts in the DB." .
