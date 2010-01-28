@@ -81,9 +81,10 @@ class CP_NREN_Subs_Settings extends Content_Page
 		}
 
 		/* export the different subjectAltName email-settings */
-		$this->tpl->assign('enable_options', array('0' => ' None',
-							   '1' => ' Single',
-							   'n' => ' Multiple'));
+		$this->tpl->assign('enable_options', array('0' => ' None.',
+							   '1' => ' Single.',
+							   'n' => ' Multiple, including 0.',
+							   'm' => ' Multiple, at least one.'));
 
 		$this->tpl->assign('languages', $this->full_names);
 		$this->tpl->assign('current_language', $current_language);

@@ -1,11 +1,10 @@
-{if $email_status == "n" || $email_status == "1"}
+{if $email_status == "n" || $email_status == "m"}
 <hr style="width: 90%;" />
 <div class="spacer"></div>
 <p class="info">
   {$l10n_infotext_email1} {$person->getNumEmails()|escape} {$l10n_infotext_email2}
 </p>
-
-{if $email_status == "n"}
+{if $email_status == "n" || $email_status == "m"}
 <p class="info">
   {$l10n_infotext_email3}
 </p>
@@ -19,7 +18,7 @@
       <input type="checkbox"
 	     name="subjAltName_email[]"
 	     value="{$addr}"
-	     checked="checked" />
+	     checked="checked"/>
     </td>
     <td>{$addr}</td>
   </tr>
