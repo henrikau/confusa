@@ -1,4 +1,7 @@
 {
+	"l10n_legend_nren_settings": {
+		"en": "NREN Settings"
+	},
 	"l10n_legend_contsubsr": {
 		"en":	"Subscriber contact information"
 	},
@@ -53,11 +56,8 @@
 	"l10n_err_updatesubscr": {
 		"en":	"Could not change the subscriber contact!"
 	},
-	"l10n_legend_updatenren": {
-		"en":	"NREN contact information"
-	},
 	"l10n_infotext_nrencont1": {
-		"en":	"Here you can define contact information and language settings for your NREN. Define an e-mail address that is tied to one or more persons that will react if they receive notifications from Confusa. For instance, Confusa might contact this address in case of critical errors or to notify you of mass-revocation of certificates."
+		"en":	"Here you can define contact information and configure settings for your NREN. Define an e-mail address that is tied to one or more persons that will react if they receive notifications from the portal. This address may be used in case of critical errors or to notify you of mass-revocation of certificates."
 	},
 	"l10n_label_encertmail": {
 		"en":	"Enable cert. email"

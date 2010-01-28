@@ -19,7 +19,7 @@
       {$prot_l}{$item_ca_account|escape}{$prot_r}</a></li>
   {/if}{* online *}
   <li><a href="nren_subs_settings.php"{$prot_title}>
-      {$prot_l}{$item_contact_info|escape}{$prot_r}</a></li>
+      {$prot_l}{$item_nren_settings|escape}{$prot_r}</a></li>
   <li><a href="nren_admin.php"{$prot_title}>
       {$prot_l}{$item_subscribers|escape}{$prot_r}</a></li>
 </ul>
