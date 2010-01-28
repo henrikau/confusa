@@ -117,7 +117,15 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- The certificates are capable of storing one or more emails in the
     -- subject altname. However, this should be configurable for the
     -- NREN admins.
-    enable_email ENUM('0', '1', 'n'),
+    --
+    -- All t hese emails must be masked to the exported values to stop
+    -- users to include random addresses in the cert.
+    --
+    -- 0 : no certificate at all
+    -- 1 : one, and only one.
+    -- n : multiple, or none, total user freedom.
+    -- m : multiple, but at least one.
+    enable_email ENUM('0', '1', 'n', 'm'),
 
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) engine=InnoDB;
