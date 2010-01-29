@@ -218,7 +218,7 @@ function configure_confusa_settings
 	# Guess the installation path of Confusa to use it as default (assuming bash)
 	#############################################################################
 	script_dir=`pwd`
-	install_path=`echo | awk -v sdir=$script_dir '{sub("init", "", sdir); print sdir}'`
+	install_path=`echo | awk -v sdir=$script_dir '{sub("bin", "", sdir); print sdir}'`
 
 	echo -n "Confusa install path: [$install_path]: "
 	read custom_install_path
@@ -802,7 +802,7 @@ function perform_postinstallation_steps
 	echo ""
 	read -n1 -t10 any_key
 
-	cd ../init/
+	cd ../bin/
 
 	# only populate the database if that has not already been done by dbconfig
 	if [ ! -f $dbconfig_template ]; then
