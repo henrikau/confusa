@@ -11,7 +11,7 @@
 	<li><a href="attributes.php"{$prot_title}>
     {$prot_l}{$item_attributes|escape}{$prot_r}</a></li>
 	<li><a href="nren_subs_settings.php"{$prot_title}>
-      {$prot_l}{$item_contact_info|escape}{$prot_r}</a></li>
+      {$prot_l}{$item_nren_settings|escape}{$prot_r}</a></li>
 </ul>
 
 <h3>{$heading_certificates|escape}</h3>
