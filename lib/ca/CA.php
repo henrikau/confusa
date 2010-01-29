@@ -273,6 +273,14 @@ abstract class CA
 
 	/* send notification, test to see if it is *one* address, or multiple */
 	$rce = $recipient->getRegCertEmails();
+
+	if (empty($rce)) {
+		/* fallback to standard mail address to be used in any case
+		 * (in case that session is not set) */
+		$rce = array();
+		$rce[] = $recipient->getEmail();
+	}
+
 	switch ($recipient->getNREN()->getEnableEmail()) {
 	case '1':
 		$mm = new MailManager($recipient,
