@@ -55,7 +55,17 @@ final class CP_ProcessCsr extends Content_Page
 			$this->aup_set = true;
 			CS::setSessionKey('aup_box', 'yes');
 		} else {
-			$this->aup_set = CS::getSessionKey('aup_box') == 'yes';
+			/* should the session aup_box be unset for some reason? */
+			/* browser signing, paste and upload require the box to
+			 * be ticked. If those present and box not set, reset agreement */
+			if (isset($_POST['browserSigning']) ||
+			    isset($_POST['pastedCSR']) ||
+			    isset($_POST['uploadedCSR'])) {
+				CS::deleteSessionKey('aup_box');
+				$this->aup_set = false;
+			} else {
+				$this->aup_set = CS::getSessionKey('aup_box') == 'yes';
+			}
 		}
 
 		if (isset($_GET['sign_csr']) && $this->aup_set) {
@@ -134,6 +144,7 @@ final class CP_ProcessCsr extends Content_Page
 		$this->tpl->assign('browser_csr', false);
 		$this->tpl->assign('upload_csr',  false);
 		$this->tpl->assign('paste_csr',   false);
+		$this->tpl->assign('aup_box_checked', $this->aup_set);
 
 		/* signing finished, redirect to download */
 		if($this->signing_ok) {

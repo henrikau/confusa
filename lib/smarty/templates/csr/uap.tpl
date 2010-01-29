@@ -4,7 +4,13 @@
 <div class="spacer"></div>
 
 <p style="text-align: center; font-style: italic; font-weight: bold">
-  <input type="checkbox" name="aup_box" value="user_agreed" />
+  <input type="checkbox"
+	 name="aup_box"
+	 value="user_agreed"
+	 {if $aup_box_checked}
+	 checked="checked"
+	 {/if}
+	 />
   {$csr_aup_agreement}
 </p>
 
