@@ -47,7 +47,18 @@ final class CP_ProcessCsr extends Content_Page
 			return false;
 		}
 
-		if (isset($_GET['sign_csr'])) {
+		/* has user accepted the AUP? */
+		$this->aup_set = false;
+		if (array_key_exists('aup_box', $_POST) &&
+		    isset($_POST['aup_box']) &&
+		    Input::sanitize($_POST['aup_box']) == "user_agreed") {
+			$this->aup_set = true;
+			CS::setSessionKey('aup_box', 'yes');
+		} else {
+			$this->aup_set = CS::getSessionKey('aup_box') == 'yes';
+		}
+
+		if (isset($_GET['sign_csr']) && $this->aup_set) {
 			try {
 				$res = $this->approveCsr(Input::sanitizeBase64($_GET['sign_csr']));
 			} catch (KeySignException $kse) {
@@ -132,17 +143,6 @@ final class CP_ProcessCsr extends Content_Page
 			return;
 		}
 
-		/* has user accepted the AUP? */
-		$aup_set = false;
-		if (array_key_exists('aup_box', $_POST) &&
-		    isset($_POST['aup_box']) &&
-		    Input::sanitize($_POST['aup_box']) == "user_agreed") {
-			$aup_set = true;
-			CS::setSessionKey('aup_box', 'yes');
-		} else {
-			$aup_set = CS::getSessionKey('aup_box') == 'yes';
-		}
-
 		/* if email is set, add to person to get only the required
 		 * emails. Since the only setting that won't allow anything to
 		 * be stored is '0', we mask this out.
@@ -155,7 +155,7 @@ final class CP_ProcessCsr extends Content_Page
 			if (array_key_exists('subjAltName_email', $_POST)	&&
 			    isset($_POST['subjAltName_email'])			&&
 			    is_array($_POST['subjAltName_email'])		&&
-			    $aup_set)	{
+			    $this->aup_set)	{
 				foreach($_POST['subjAltName_email'] as $key => $value) {
 					$this->person->regCertEmail(Input::sanitizeText($value));
 				}
@@ -170,7 +170,7 @@ final class CP_ProcessCsr extends Content_Page
 		 * keylength and then generate the private key and return the CSR
 		 */
 		if ((isset($_POST['browserSigning']) || isset($_GET['status_poll'])) &&
-		    $aup_set) {
+		    $this->aup_set) {
 			$browser_adapted_dn = $this->person->getBrowserFriendlyDN();
 			$this->tpl->assign('dn',				$browser_adapted_dn);
 			$this->tpl->assign('keysize',			Config::get_config('key_length'));
@@ -184,7 +184,7 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('content',	$this->tpl->fetch($browserTemplate));
 			return;
 		/* signing of a copied/pasted CSR */
-		} else if (isset($_POST['pastedCSR']) && $aup_set) {
+		} else if (isset($_POST['pastedCSR']) && $this->aup_set) {
 			/* show upload-form. If it returns false, no uploaded CSRs were processed */
 			$authkey = $this->processUploadedCSR($this->person);
 			Framework::message_output($this->translateTag('l10n_msg_pastecert', 'processcsr') .
@@ -201,7 +201,7 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
 			return;
 		/* signing of a CSR that was uploaded from a file */
-		} else if (isset($_POST['uploadedCSR']) && $aup_set) {
+		} else if (isset($_POST['uploadedCSR']) && $this->aup_set) {
 			/* show upload-form. If it returns false, no uploaded CSRs were processed */
 			$authkey = $this->processUploadedCSR($this->person);
 			Framework::message_output($this->translateTag('l10n_msg_uploadcsr', 'processcsr') .
