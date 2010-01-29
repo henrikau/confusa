@@ -23,14 +23,19 @@ class CP_Help extends Content_Page
 			$productName = ConfusaConstants::$PERSONAL_PRODUCT;
 		}
 
-		$help_text = str_ireplace('{$subscriber}',
-		                          $this->person->getSubscriber()->getOrgName(), $help_text);
+		$subscriber = $this->person->getSubscriber();
+
+		if (isset($subscriber)) {
+			$help_text = str_ireplace('{$subscriber}',
+			                          $subscriber->getOrgName(), $help_text);
+			$help_text = str_ireplace('{$subscriber_support_email}',
+		                              $subscriber->getHelpEmail(), $help_text);
+			$help_text = str_ireplace('{$subscriber_support_url}',
+		                              $subscriber->getHelpURL(), $help_text);
+		}
+
 		$help_text = str_ireplace('{$product_name}', $productName, $help_text);
 		$help_text = str_ireplace('{$confusa_url}', Config::get_config('server_url'), $help_text);
-		$help_text = str_ireplace('{$subscriber_support_email}',
-		              $this->person->getSubscriber()->getHelpEmail(), $help_text);
-		$help_text = str_ireplace('{$subscriber_support_url}',
-		              $this->person->getSubscriber()->getHelpURL(), $help_text);
 		$this->tpl->assign('nren', $nren);
 		$this->tpl->assign('nren_help_text', $help_text);
 		$this->tpl->assign('help_file', file_get_contents('../include/help.html'));
