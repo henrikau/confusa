@@ -226,24 +226,40 @@ abstract class CA
 	$tpl->config_dir	= Config::get_config('install_path') .
 	                          'lib/smarty/configs';
 	$tpl->cache_dir	= ConfusaConstants::$SMARTY_CACHE;
-	$tpl->assign('subscriber', $recipient->getSubscriber()->getOrgName());
-	$tpl->assign('subscriber_support_email',
-	             $recipient->getSubscriber()->getHelpEmail());
-	$tpl->assign('subscriber_support_url',
-	             $recipient->getSubscriber()->getHelpURL());
-	$tpl->assign('confusa_url', Config::get_config('server_url'));
-	$tpl->assign('dn', $recipient->getX509SubjectDN());
-	$tpl->assign('download_url', Config::get_config('server_url') .
-	                             '/download_certificate.php');
-	$tpl->assign('issue_date', $timestamp);
-	$tpl->assign('ip_address', $ip);
-	$tpl->assign('order_number', $orderNumber);
-	$tpl->assign('nren', $nren);
-	$tpl->assign('product_name', $productName);
+	$subscriber = $recipient->getSubscriber()->getOrgName();
+	$support_mail = $recipient->getSubscriber()->getHelpEmail();
+	$help_url = $recipient->getSubscriber()->getHelpURL();
+	$dn = $recipient->getX509SubjectDN();
+	$download_url = Config::get_config('server_url') .
+	                '/download_certificate.php';
 
-	if (!is_null($custom_content)) {
+	if (isset($custom_content)) {
 		$msg = $custom_content;
+		$msg = str_ireplace('{$subscriber}', $subscriber, $msg);
+		$msg = str_ireplace('{$subscriber_support_email}', $support_mail, $msg);
+		$msg = str_ireplace('{$subscriber_support_url}', $help_url, $msg);
+		$msg = str_ireplace('{$confusa_url}', Config::get_config('server_url'),
+		                    $msg);
+		$msg = str_ireplace('{$dn}', $dn, $msg);
+		$msg = str_ireplace('{$download_url}', $download_url, $msg);
+		$msg = str_ireplace('{$issue_date}', $timestamp, $msg);
+		$msg = str_ireplace('{$ip_address}', $ip, $msg);
+		$msg = str_ireplace('{$order_number}', $orderNumber, $msg);
+		$msg = str_ireplace('{$product_name}', $productName, $msg);
+		$msg = str_ireplace('{$nren}', $nren, $msg);
 	} else {
+		$tpl->assign('subscriber', $subscriber);
+		$tpl->assign('subscriber_support_email', $support_mail);
+		$tpl->assign('subscriber_support_url', $help_url);
+		$tpl->assign('confusa_url', Config::get_config('server_url'));
+		$tpl->assign('dn', $dn);
+		$tpl->assign('download_url', $download_url);
+		$tpl->assign('issue_date', $timestamp);
+		$tpl->assign('ip_address', $ip);
+		$tpl->assign('order_number', $orderNumber);
+		$tpl->assign('nren', $nren);
+		$tpl->assign('product_name', $productName);
+
 		if (file_exists($custom_template)) {
 			$msg = $tpl->fetch($custom_template);
 		} else {
