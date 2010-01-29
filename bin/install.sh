@@ -156,7 +156,7 @@ function configure_confusa_settings
 	echo ""
 
 	# Autoconfigure:
-	# Set some config flags to feasible values
+	# set some config flags to feasible values
 	###############################################################################
 	if [ $mode = "comodo" ]; then
 		sed s\|"'capi_test'[ \t]*=>.*"\|"'capi_test'    => false,"\| < $working_template > $config
@@ -167,6 +167,39 @@ function configure_confusa_settings
 		replace_config_entry "ca_cert_name" "servercert.pem"
 		replace_config_entry "ca_key_name"  "serverkey.pem"
 	fi
+
+	# eScience or personal mode
+	############################################################################
+	echo ""
+	echo ""
+	echo "Confusa can issue eScience (Grid) and personal certificates."
+	echo "Personal certificates are different from eScience certificates in "
+	echo "that they have another signing-CA, a configurable validity period "
+	echo "between 365 and 1095 days and usually also allow UTF-8 characters in "
+	echo "their subject-DN. In which of these modes should Confusa operate?"
+	echo ""
+	select mode in escience personal; do
+		case $mode in
+			"escience") product="PRD_ESCIENCE" ;;
+			"personal") product="PRD_PERSONAL" ;;
+			*) continue ;;
+		esac
+
+		# need the mode without exclamation marks, because it is an enumeration
+		sed s\|"'cert_product'[ \t]*=>.*"\|"'cert_product'    => $product,"\| < $working_template > $config
+		cp $config $working_template
+		break
+	done
+
+	# obey the grid restrictions if the mode is escience.
+	# if it isn't, allow UTF-8 characters in the subject DN and long DNs
+	if [ $product = "PRD_ESCIENCE" ]; then
+		sed s\|"'obey_grid_restrictions'[ \t]*=>.*"\|"'obey_grid_restrictions'    => true,"\| < $working_template > $config
+	else
+		sed s\|"'obey_grid_restrictions'[ \t]*=>.*"\|"'obey_grid_restrictions'    => false,"\| < $working_template > $config
+	fi
+
+	cp $config $working_template
 
 	sed s\|"'debug'[ \t]*=>.*"\|"'debug'    => false,"\| < $working_template > $config
 	cp $config $working_template
