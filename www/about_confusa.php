@@ -23,7 +23,6 @@ class CP_About_Confusa extends Content_Page
 			return;
 		}
 		$this->assignVersionVariables();
-		$this->assignDBVariables();
 
 		if (Config::get_config('debug') === true) {
 			$this->tpl->assign('debug', true);
@@ -64,48 +63,6 @@ class CP_About_Confusa extends Content_Page
 		$versionCodename = substr($version_file, $cdn_line_start,
 		                          ($cdn_line_end - $cdn_line_start));
 		$this->tpl->assign('cCodename', $versionCodename);
-
-		$db_v_line_start = strpos($version_file, "DB_SCHEMA_VERSION=");
-		$db_v_line_end = strpos($version_file, "\n", $db_v_line_start);
-
-		if ($db_v_line_start === false || $db_v_line_end === false) {
-			Framework::error_output("Could not determine the expected DB-schema version " .
-			                        "of Confusa! Please contact an administrator about " .
-			                        "that!");
-		}
-
-		$db_v_line_start += 18;
-		$dbVersion = substr($version_file, $db_v_line_start,
-		                    ($db_v_line_end - $db_v_line_start));
-
-		$this->tpl->assign('cExpSchema', $dbVersion);
-	}
-
-	/**
-	 * Assign Confusa status variables that can be retrieved from the database
-	 * to the about_confusa template.
-	 * One example of this is the DB schema version
-	 */
-	private function assignDBVariables()
-	{
-		$query = "SELECT version FROM schema_version";
-
-		try {
-			$res = MDB2Wrapper::execute($query,
-			                            null,
-			                            null);
-		} catch (ConfusaGenException $cge) {
-			Framework::error_output("Could not get the actual DB-schema version " .
-			                        "of Confusa. Please contact an administrator " .
-			                        "that!");
-			return;
-		}
-
-		if (isset($res[0]['version'])) {
-			$this->tpl->assign('cFoundSchema', $res[0]['version']);
-		} else {
-			$this->tpl->assign('cFoundSchema', "none found!");
-		}
 	}
 
 	/**

@@ -397,20 +397,6 @@ CREATE TABLE IF NOT EXISTS robot_certs (
 ) engine=InnoDB;
 
 -- -----------------------------------------------------------------------------
--- schema_version
---
--- The current DB schema version. Start at 0, increment if something changes in
--- the DB schema in a new release of Confusa.
--- This table can be used to automatically update the schema of a running Confusa
--- instance when a new version with a changed DB-schema is to be installed.
---
--- -----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS schema_version (
-        version INT PRIMARY KEY DEFAULT 0
-) engine=InnoDB;
-
-
--- -----------------------------------------------------------------------------
 -- critical_error
 --
 -- Store the errors regarded as critical in this table for making error-reporting
