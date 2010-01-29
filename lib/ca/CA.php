@@ -298,6 +298,11 @@ class CAHandler
 	private static $ca;
 	public static function getCA($person)
 	{
+		/* no need to continue if the object is not decorated */
+		if (!is_object($person->getNREN())) {
+			return null;
+		}
+
 		if (Config::get_config('cert_product') == PRD_PERSONAL) {
 			$days = $person->getNREN()->getCertValidity();
 		} else if (Config::get_config('cert_product') == PRD_ESCIENCE) {
