@@ -916,13 +916,6 @@ class CA_Comodo extends CA
         $postfields_sign_req=array();
 	$pf_counter = 1;
 
-        /* clutter TEST all over it and reduce validity period
-         * if the certs are part of a testing process
-         */
-        if (Config::get_config('capi_test')) {
-          $postfields_sign_req["subject_domainComponent_7"] = ConfusaConstants::$CAPI_TEST_DC_PREFIX;
-        }
-
         /* set all the required post parameters for upload */
         $postfields_sign_req["ap"] = $this->ap_name;
         $postfields_sign_req[$csr_format] = $csr;
@@ -984,6 +977,14 @@ class CA_Comodo extends CA
         $postfields_sign_req["subject_domainComponent_".$pf_counter++] = "tcs";
         $postfields_sign_req["subject_domainComponent_".$pf_counter++] = "terena";
         $postfields_sign_req["subject_domainComponent_".$pf_counter++] = "org";
+
+		/* clutter TEST all over it and reduce validity period
+         * if the certs are part of a testing process
+         */
+        if (Config::get_config('capi_test')) {
+          $postfields_sign_req["subject_domainComponent_".$pf_counter++] =
+		                      ConfusaConstants::$CAPI_TEST_DC_PREFIX;
+        }
 
 	$data = CurlWrapper::curlContact($sign_endpoint, "post", $postfields_sign_req);
 
