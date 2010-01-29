@@ -49,6 +49,7 @@ final class CP_ProcessCsr extends Content_Page
 
 		/* has user accepted the AUP? */
 		$this->aup_set = false;
+
 		if (array_key_exists('aup_box', $_POST) &&
 		    isset($_POST['aup_box']) &&
 		    Input::sanitize($_POST['aup_box']) == "user_agreed") {
@@ -58,7 +59,9 @@ final class CP_ProcessCsr extends Content_Page
 			/* should the session aup_box be unset for some reason? */
 			/* browser signing, paste and upload require the box to
 			 * be ticked. If those present and box not set, reset agreement */
-			if (isset($_POST['browserSigning']) ||
+			$browserSigningMask = isset($_POST['browserSigning']) &&
+			                      ($_POST['browserSigning'] == 'start');
+			if ($browserSigningMask ||
 			    isset($_POST['pastedCSR']) ||
 			    isset($_POST['uploadedCSR'])) {
 				CS::deleteSessionKey('aup_box');
