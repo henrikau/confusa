@@ -1,4 +1,4 @@
-{if $person->inAdminMode() && $person->isNRENAdmin()}
+{if $person->isNRENAdmin()}
 <h3>{$l10n_heading_stylist}</h3>
 
 { * ------------------------------------------------------------------ *

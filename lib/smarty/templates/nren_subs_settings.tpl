@@ -1,4 +1,4 @@
-{if $person->inAdminMode() && ($person->isNRENAdmin() || $person->isSubscriberAdmin())}
+{if ($person->isNRENAdmin() || $person->isSubscriberAdmin())}
 
 <div class="spacer"></div>
 

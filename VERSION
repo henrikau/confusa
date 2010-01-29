@@ -25,9 +25,6 @@ MAJOR_VERSION=0
 MINOR_VERSION=4
 EXTRA_VERSION=0
 
-# Used for possible DB updates
-DB_SCHEMA_VERSION=0
-
 # Codename for current release
 NAME="Anachronox"
 

@@ -32,9 +32,9 @@ class CA_Comodo extends CA
     private $ap_name;
 
 
-    function __construct($pers)
+    function __construct($pers, $validityPeriod)
     {
-        parent::__construct($pers);
+        parent::__construct($pers, $validityPeriod);
         $this->getAccountInformation();
     }
 
@@ -277,7 +277,6 @@ class CA_Comodo extends CA
 	    }
         /* use the last 64-characters of the CRMF as an auth_key */
 		$auth_key = substr($csr, strlen($csr)-65, strlen($csr)-1);
-
         switch($browser) {
         case "msie_post_vista":
             $this->capiUploadCSR($auth_key, $csr, 'csr');
@@ -323,7 +322,7 @@ class CA_Comodo extends CA
 				$days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
 			} else {
 				if (Config::get_config('cert_product') == PRD_PERSONAL) {
-					$days = ConfusaConstants::$CAPI_VALID_PERSONAL;
+					$days = max(ConfusaConstants::$CAPI_VALID_PERSONAL);
 				} else {
 					$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
 				}
@@ -458,7 +457,7 @@ class CA_Comodo extends CA
 			$days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
 		} else {
 			if (Config::get_config('cert_product') == PRD_PERSONAL) {
-				$days = ConfusaConstants::$CAPI_VALID_PERSONAL;
+				$days = max(ConfusaConstants::$CAPI_VALID_PERSONAL);
 			} else {
 				$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
 			}
@@ -901,15 +900,17 @@ class CA_Comodo extends CA
     {
         $sign_endpoint = ConfusaConstants::$CAPI_APPLY_ENDPOINT;
 
-		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
-			$ca_cert_id = ConfusaConstants::$CAPI_ESCIENCE_ID;
-			$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
-		} else if (Config::get_config('cert_product') == PRD_PERSONAL) {
+		if (Config::get_config('cert_product') == PRD_PERSONAL) {
 			$ca_cert_id = ConfusaConstants::$CAPI_PERSONAL_ID;
-			$days = ConfusaConstants::$CAPI_VALID_PERSONAL;
-		} else { /* fallback to escience */
+			/* personal certificates should only have the name of the person
+			 * in the CN */
+		} else if (Config::get_config('cert_product') == PRD_ESCIENCE) {
 			$ca_cert_id = ConfusaConstants::$CAPI_ESCIENCE_ID;
-			$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
+		} else {
+			throw new KeySignException("Confusa's configured product-mode is " .
+			                           "illegal! Must be one of: PRD_ESCIENCE, " .
+			                           "PRD_PERSONAL. Please contact an IT " .
+			                           "administrator about that!");
 		}
 
         $postfields_sign_req=array();
@@ -920,13 +921,12 @@ class CA_Comodo extends CA
          */
         if (Config::get_config('capi_test')) {
           $postfields_sign_req["subject_domainComponent_7"] = ConfusaConstants::$CAPI_TEST_DC_PREFIX;
-          $days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
         }
 
         /* set all the required post parameters for upload */
         $postfields_sign_req["ap"] = $this->ap_name;
         $postfields_sign_req[$csr_format] = $csr;
-        $postfields_sign_req["days"] = $days;
+        $postfields_sign_req["days"] = $this->validityDays;
         $postfields_sign_req["successURL"] = "none";
         $postfields_sign_req["errorURL"] = "none";
         $postfields_sign_req["caCertificateId"] = $ca_cert_id;
@@ -974,8 +974,7 @@ class CA_Comodo extends CA
 
         /* manually compose the subject. Necessary, because we want to have
          * Terena domainComponents */
-        $postfields_sign_req["subject_commonName_$pf_counter"] =
-            $this->person->getX509ValidCN();
+        $postfields_sign_req["subject_commonName_$pf_counter"] = $this->person->getX509ValidCN();
 	$pf_counter++;
 
         $postfields_sign_req["subject_organizationName_".$pf_counter++] =

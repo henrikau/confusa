@@ -14,6 +14,8 @@ require_once 'mail_manager.php';
 abstract class CA
 {
   protected $person;
+  /* the number of days that the certificate issued by the CA will be valid */
+  protected $validityDays;
 
   /*
    * Should register all values so that when a sign_key request is issued,
@@ -21,13 +23,14 @@ abstract class CA
    *
    * @param pers: object describing the person and his/hers attributes.
    */
-  function __construct($pers)
+  function __construct($pers, $validity)
     {
 	    if (!isset($pers) || !($pers instanceof Person)) {
 		    echo __FILE__ . " Cannot function without a person!<BR>\n";
 		    exit(0);
 	    }
 	    $this->person = $pers;
+		$this->validityDays = $validity;
     } /* end __construct */
 
   /* this function is quite critical, as it must remove residual information
@@ -223,24 +226,40 @@ abstract class CA
 	$tpl->config_dir	= Config::get_config('install_path') .
 	                          'lib/smarty/configs';
 	$tpl->cache_dir	= ConfusaConstants::$SMARTY_CACHE;
-	$tpl->assign('subscriber', $recipient->getSubscriber()->getOrgName());
-	$tpl->assign('subscriber_support_email',
-	             $recipient->getSubscriber()->getHelpEmail());
-	$tpl->assign('subscriber_support_url',
-	             $recipient->getSubscriber()->getHelpURL());
-	$tpl->assign('confusa_url', Config::get_config('server_url'));
-	$tpl->assign('dn', $recipient->getX509SubjectDN());
-	$tpl->assign('download_url', Config::get_config('server_url') .
-	                             '/download_certificate.php');
-	$tpl->assign('issue_date', $timestamp);
-	$tpl->assign('ip_address', $ip);
-	$tpl->assign('order_number', $orderNumber);
-	$tpl->assign('nren', $nren);
-	$tpl->assign('product_name', $productName);
+	$subscriber = $recipient->getSubscriber()->getOrgName();
+	$support_mail = $recipient->getSubscriber()->getHelpEmail();
+	$help_url = $recipient->getSubscriber()->getHelpURL();
+	$dn = $recipient->getX509SubjectDN();
+	$download_url = Config::get_config('server_url') .
+	                '/download_certificate.php';
 
-	if (!is_null($custom_content)) {
+	if (isset($custom_content)) {
 		$msg = $custom_content;
+		$msg = str_ireplace('{$subscriber}', $subscriber, $msg);
+		$msg = str_ireplace('{$subscriber_support_email}', $support_mail, $msg);
+		$msg = str_ireplace('{$subscriber_support_url}', $help_url, $msg);
+		$msg = str_ireplace('{$confusa_url}', Config::get_config('server_url'),
+		                    $msg);
+		$msg = str_ireplace('{$dn}', $dn, $msg);
+		$msg = str_ireplace('{$download_url}', $download_url, $msg);
+		$msg = str_ireplace('{$issue_date}', $timestamp, $msg);
+		$msg = str_ireplace('{$ip_address}', $ip, $msg);
+		$msg = str_ireplace('{$order_number}', $orderNumber, $msg);
+		$msg = str_ireplace('{$product_name}', $productName, $msg);
+		$msg = str_ireplace('{$nren}', $nren, $msg);
 	} else {
+		$tpl->assign('subscriber', $subscriber);
+		$tpl->assign('subscriber_support_email', $support_mail);
+		$tpl->assign('subscriber_support_url', $help_url);
+		$tpl->assign('confusa_url', Config::get_config('server_url'));
+		$tpl->assign('dn', $dn);
+		$tpl->assign('download_url', $download_url);
+		$tpl->assign('issue_date', $timestamp);
+		$tpl->assign('ip_address', $ip);
+		$tpl->assign('order_number', $orderNumber);
+		$tpl->assign('nren', $nren);
+		$tpl->assign('product_name', $productName);
+
 		if (file_exists($custom_template)) {
 			$msg = $tpl->fetch($custom_template);
 		} else {
@@ -254,6 +273,14 @@ abstract class CA
 
 	/* send notification, test to see if it is *one* address, or multiple */
 	$rce = $recipient->getRegCertEmails();
+
+	if (empty($rce)) {
+		/* fallback to standard mail address to be used in any case
+		 * (in case that session is not set) */
+		$rce = array();
+		$rce[] = $recipient->getEmail();
+	}
+
 	switch ($recipient->getNREN()->getEnableEmail()) {
 	case '1':
 		$mm = new MailManager($recipient,
@@ -299,17 +326,38 @@ class CAHandler
 	private static $ca;
 	public static function getCA($person)
 	{
+		/* no need to continue if the object is not decorated */
+		if (!is_object($person->getNREN())) {
+			return null;
+		}
+
+		if (Config::get_config('cert_product') == PRD_PERSONAL) {
+			$days = $person->getNREN()->getCertValidity();
+		} else if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+			$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
+		} else {
+			throw new ConfusaGenException("Confusa's configured product-mode is " .
+			                              "illegal! Must be one of: PRD_ESCIENCE, " .
+			                              "PRD_PERSONAL. Please contact an IT " .
+			                              "administrator about that!");
+		}
+
 		if (!isset(CAHandler::$ca)) {
 			switch((int)Config::get_config('ca_mode')) {
 
 			case CA_STANDALONE:
 				require_once 'CA_Standalone.php';
-				CAHandler::$ca = new CA_Standalone($person);
+				CAHandler::$ca = new CA_Standalone($person, $days);
 				break;
 
 			case CA_COMODO:
 				require_once 'CA_Comodo.php';
-				CAHandler::$ca = new CA_Comodo($person);
+
+				if (Config::get_config('capi_test') == TRUE) {
+					$days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
+				}
+
+				CAHandler::$ca = new CA_Comodo($person, $days);
 				break;
 
 			default:

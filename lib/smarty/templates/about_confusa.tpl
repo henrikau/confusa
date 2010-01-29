@@ -16,14 +16,6 @@
 <td>Release codename:</td>
 <td>{$cCodename|escape}</td>
 </tr>
-<tr style="background-color: #eeeeee">
-<td>DB schema (expected):</td>
-<td>{$cExpSchema|escape}</td>
-</tr>
-<tr>
-<td>DB schema (found):</td>
-<td>{$cFoundSchema|escape}</td>
-</tr>
 </tbody>
 </table>
 

@@ -138,6 +138,30 @@ class NREN
 		return null;
 	}
 
+	/**
+	 * getCertValidity() return the stored value about the validity period
+	 * of the certificates. If Confusa operates in eScience mode, the value is
+	 * always 395.
+	 * If Confusa operates in personal certificates mode, the value is NREN-
+	 * setting dependant and one of 365, 730 or 1065. In that case there also
+	 * is a default value which is the lowest validity period, usually 365.
+	 *
+	 * @param  : void
+	 * @return : String 14, 365, 395, 730 or 1065
+	 */
+	public function getCertValidity()
+	{
+		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+			return ConfusaConstants::$CAPI_VALID_ESCIENCE;
+		} else {
+			if ($this->data && isset($this->data['cert_validity'])) {
+				return $this->data['cert_validity'];
+			}
+
+			return min(ConfusaConstants::$CAPI_VALID_PERSONAL);
+		}
+	}
+
 	public function saveMap($eppnkey, $epodn, $cn, $mail, $entitlement)
 	{
 		$doUpdate = false;
@@ -191,38 +215,7 @@ class NREN
 	 */
 	public function getNRENInfo()
 	{
-		$res = array();
-		if (array_key_exists('name', $this->data) && !is_null($this->data['name'])) {
-			$res['name']	= Input::sanitizeText($this->data['name']);
-		}
-		if (array_key_exists('help', $this->data) && !is_null($this->data['help'])) {
-			$res['help']	= Input::sanitizeText($this->data['help']);
-		}
-		if (array_key_exists('about', $this->data) && !is_null($this->data['about'])) {
-			$res['about']	= Input::sanitizeText($this->data['about']);
-		}
-		if (array_key_exists('lang', $this->data) && !is_null($this->data['lang'])) {
-			$res['lang']	= Input::sanitizeText($this->data['lang']);
-		}
-		if (array_key_exists('contact_email', $this->data) && !is_null($this->data['contact_email'])) {
-			$res['contact_email'] = Input::sanitizeText($this->data['contact_email']);
-		}
-		if (array_key_exists('contact_phone', $this->data) && !is_null($this->data['contact_phone'])) {
-			$res['contact_phone'] = Input::sanitizeText($this->data['contact_phone']);
-		}
-		if (array_key_exists('cert_email', $this->data) && !is_null($this->data['cert_email'])) {
-			$res['cert_email'] = Input::sanitizeText($this->data['cert_email']);
-		}
-		if (array_key_exists('cert_phone', $this->data) && !is_null($this->data['cert_phone'])) {
-			$res['cert_phone'] = Input::sanitizeText($this->data['cert_phone']);
-		}
-		if (array_key_exists('url', $this->data) && !is_null($this->data['url'])) {
-			$res['url']	= Input::sanitizeText($this->data['url']);
-		}
-
-		if (array_key_exists('enable_email', $this->data) && !is_null($this->data['enable_email'])) {
-			$res['enable_email']	= Input::sanitizeText($this->data['enable_email']);
-		}
+		$res = $this->data;
 		return $res;
 	}
 
@@ -322,6 +315,19 @@ class NREN
 		}
 	}
 
+	public function setCertValidity($validity)
+	{
+		if (isset($validity)) {
+			if (!array_key_exists('cert_validity', $this->data) ||
+			    ($this->data['cert_validity'] != $validity)) {
+
+				$this->data['cert_validity'] = $validity;
+				$this->pendingChanges = true;
+				return;
+			}
+		}
+	}
+
 	/**
 	 * saveNREN() Save the current NREN to the database.
 	 *
@@ -335,9 +341,9 @@ class NREN
 	{
 		if ($this->pendingChanges) {
 			$query  = "UPDATE nrens SET contact_email=?, contact_phone=?, ";
-			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=? ";
+			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=?, cert_validity=? ";
 			$query .= "WHERE nren_id=?";
-			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text', 'text');
+			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
 			$data	= array($this->data['contact_email'],
 					$this->data['contact_phone'],
 					$this->data['cert_phone'],
@@ -345,6 +351,7 @@ class NREN
 					$this->data['url'],
 					$this->data['lang'],
 					$this->data['enable_email'],
+					$this->data['cert_validity'],
 					$this->getID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);
@@ -416,7 +423,7 @@ class NREN
 		$query .= "		n.contact_email,	n.contact_phone,n.cert_email, ";
 		$query .= "		n.cert_phone,		n.lang,		n.url, ";
 		$query .= "		n.country,		idp.idp_url as idp_url, ";
-		$query .= "		n.enable_email ";
+		$query .= "		n.enable_email,	n.cert_validity ";
 		$query .= "FROM idp_map idp LEFT JOIN ";
 		$query .= "nrens n on idp.nren_id = n.nren_id WHERE idp.idp_url=?";
 		try {
@@ -444,6 +451,7 @@ class NREN
 			Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ . " error with db-connect. " . $cge->getMessage());
 			return false;
 		}
+
 		return true;
 	} /* end decorateNREN() */
 

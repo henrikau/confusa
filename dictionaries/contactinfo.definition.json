@@ -60,9 +60,15 @@
 		"en":	"Here you can define contact information and configure settings for your NREN. Define an e-mail address that is tied to one or more persons that will react if they receive notifications from the portal. This address may be used in case of critical errors or to notify you of mass-revocation of certificates."
 	},
 	"l10n_label_encertmail": {
-		"en":	"Enable cert. email"
+		"en":	"Enable cert. email:"
 	},
 	"l10n_infotext_encertmail": {
-		"en":	"The number of certificates the user can place in the certificate's subject alternative name."
+		"en":	"The number of e-mail addresses the user can place in the certificate's subject alternative name."
+	},
+	"l10n_label_certvalidity": {
+		"en":	"Certificate validity:"
+	},
+	"l10n_infotext_certvalidity": {
+		"en":	"The number of days that personal certificates ordered by your users will be valid."
 	}
 }

@@ -132,6 +132,11 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- n : multiple, or none, total user freedom.
     -- m : multiple, but at least one.
     enable_email ENUM('0', '1', 'n', 'm'),
+    -- The certificate validity. In test-mode this is always 14 days. For
+    -- personal certificates it will be one of 365, 730 or 1095 days, for
+    -- productive e-Science certs always 395 days
+	-- This will be filled by the bootstrap_nren script
+    cert_validity ENUM('365', '730', '1095'),
 
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) engine=InnoDB;
@@ -404,20 +409,6 @@ CREATE TABLE IF NOT EXISTS robot_certs (
        FOREIGN KEY(subscriber_id) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
        FOREIGN KEY(uploaded_by) REFERENCES admins(admin_id) ON DELETE CASCADE
 ) engine=InnoDB;
-
--- -----------------------------------------------------------------------------
--- schema_version
---
--- The current DB schema version. Start at 0, increment if something changes in
--- the DB schema in a new release of Confusa.
--- This table can be used to automatically update the schema of a running Confusa
--- instance when a new version with a changed DB-schema is to be installed.
---
--- -----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS schema_version (
-        version INT PRIMARY KEY DEFAULT 0
-) engine=InnoDB;
-
 
 -- -----------------------------------------------------------------------------
 -- critical_error

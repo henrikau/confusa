@@ -7,6 +7,14 @@ require_once 'mdb2_wrapper.php';
 
 class CP_NREN_Subs_Settings extends Content_Page
 {
+
+	private $ESCIENCE_MAILOPTIONS = array('0' => ' None',
+	                                      '1' => ' Single',
+	                                      'n' => ' Multiple, including 0.',
+	                                      'm' => ' Multiple, at least one.');
+	private $PERSONAL_MAILOPTIONS = array('1' => ' Single',
+	                                      'm' => ' Multiple, at least one.');
+
 	function __construct()
 	{
 		parent::__construct("NREN/subscriber settings", true, "contactinfo");
@@ -32,9 +40,25 @@ class CP_NREN_Subs_Settings extends Content_Page
 					$this->person->getNREN()->set_cert_email(   Input::sanitizeEmail($_POST['cert_email']));
 					$this->person->getNREN()->set_url(          Input::sanitizeURL($_POST['url']));
 					$this->person->getNREN()->set_lang(         Input::sanitizeLangCode($_POST['language']));
-					$this->person->getNREN()->setEnableEmail(   Input::sanitizeLangCode($_POST['enable_email']));
 
 					$nren = $this->person->getNREN();
+
+					if (isset($_POST['enable_email'])) {
+						if (Config::get_config('cert_product') == PRD_PERSONAL) {
+							if (array_key_exists($_POST['enable_email'], $this->PERSONAL_MAILOPTIONS)) {
+								$nren->setEnableEmail($_POST['enable_email']);
+							}
+						} else {
+							if (array_key_exists($_POST['enable_email'], $this->ESCIENCE_MAILOPTIONS)) {
+								$nren->setEnableEmail($_POST['enable_email']);
+							}
+						}
+					}
+
+					if (isset($_POST['cert_validity']) &&
+					    array_search($_POST['cert_validity'], ConfusaConstants::$CAPI_VALID_PERSONAL) !== FALSE) {
+						$this->person->getNREN()->setCertValidity($_POST['cert_validity']);
+					}
 
 					if ($nren->saveNREN()) {
 						Framework::success_output($this->translateTag('l10n_suc_updatenren', 'contactinfo') . " " .
@@ -81,10 +105,16 @@ class CP_NREN_Subs_Settings extends Content_Page
 		}
 
 		/* export the different subjectAltName email-settings */
-		$this->tpl->assign('enable_options', array('0' => ' None.',
-							   '1' => ' Single.',
-							   'n' => ' Multiple, including 0.',
-							   'm' => ' Multiple, at least one.'));
+		if (Config::get_config('cert_product') === PRD_PERSONAL) {
+			$this->tpl->assign('enable_options', $this->PERSONAL_MAILOPTIONS);
+			$this->tpl->assign('validity_options', array('365' => ' 365 days',
+		                                             '730' => ' 730 days',
+		                                            '1095' => ' 1095 days'));
+			$this->tpl->assign('personal', true);
+		} else {
+			$this->tpl->assign('enable_options', $this->ESCIENCE_MAILOPTIONS);
+			$this->tpl->assign('personal', false);
+		}
 
 		$this->tpl->assign('languages', $this->full_names);
 		$this->tpl->assign('current_language', $current_language);

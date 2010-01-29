@@ -1,5 +1,5 @@
 
-{if $person->inAdminMode() && $person->isNRENAdmin()}
+{if $person->isNRENAdmin()}
 <h3>{$l10n_heading_managesubs}</h3>
 
 {if isset($add_subscriber)}
