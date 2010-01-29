@@ -32,12 +32,28 @@
 	<b> {$keysize|escape} </b> {$l10n_infotext_kgkeysize2}</p>
 	</td>
 	</tr><tr><td>
-	<input type="hidden" name="browserSigning" value="keygen" />
-	<input type="submit" value="{$l10n_button_send}" />
-	</td><td><br /><p class="info">
+	</td>
+	<td style="border-style: inset; border-width: 1px; padding: 0.5em">
+	<p class="info" >
+		<strong>{$l10n_label_finalCertDN}</strong>
+	</p>
+	<p style="font-size: 1em; font-family: monospace; margin-bottom: 1em">
+		{$finalDN}
+	</p>
+	</td>
+	</tr>
+	<tr>
+	<td>
+		<input type="hidden" name="browserSigning" value="keygen" />
+		<input type="submit" value="{$l10n_button_send}" />
+	</td>
+	<td>
+	<p class="info" style="padding-top: 1em">
 		{$l10n_infotext_sendonce}
 	</p></td>
-	</tr></table></form>
+	</tr>
+	</table>
+	</form>
 {/if}
 </div>
 </fieldset>

@@ -41,13 +41,24 @@ function createIEXPRequest(dn, keysize)
 			<br />
 			<b>{$l10n_infotext_reqjs}</b>
 		</noscript>
+
+<div style="border-style: inset; border-width: 1px; padding: 0.5em">
+	<p class="info" >
+		<strong>{$l10n_label_finalCertDN}</strong>
+	</p>
+	<p style="font-size: 1em; font-family: monospace; margin-bottom: 1em">
+		{$finalDN}
+	</p>
+</div>
 </div>
 
+<div style="margin-top: 2em">
 	<form id="reqForm" name="reqForm" method="post" action="process_csr.php" onsubmit="return createIEXPRequest('{$dn}', {$keysize});">
 		<input type="hidden" id="reqField" name="browserRequest" value="" />
 		<input type="hidden" name="browserSigning" value="xp2003" />
 		<input type="submit" id="chooseButton" style="display: none" value="{$l10n_button_choose}" />
 	</form>
+</div>
 <br />
 </fieldset>
 

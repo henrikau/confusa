@@ -16,6 +16,8 @@ abstract class CA
   protected $person;
   /* the number of days that the certificate issued by the CA will be valid */
   protected $validityDays;
+  /* domain components that will be added to the certificate subjects */
+  protected $dcs;
 
   /*
    * Should register all values so that when a sign_key request is issued,
@@ -31,6 +33,8 @@ abstract class CA
 	    }
 	    $this->person = $pers;
 		$this->validityDays = $validity;
+		$this->dcs = array();
+
     } /* end __construct */
 
   /* this function is quite critical, as it must remove residual information
@@ -319,6 +323,28 @@ abstract class CA
 	break;
 	}
   } /* end sendMailNotification */
+
+  /**
+   * get the final DN for the person associated to this CA.
+   * The DCs are dependant on the actual instance of the CA, while all other
+   * fields can be decorated through the person object associated with this
+   * CA.
+   *
+   * @return string the full DN as it will look like in the certificate DN
+   */
+  public function getFullDN()
+  {
+		$dn = "";
+		foreach ($this->dcs as $dc) {
+			$dn .= "/DC=$dc";
+		}
+
+		$dn .= "/C=" . $this->person->getCountry();
+		$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
+		$dn .= "/CN=" . $this->person->getX509ValidCN();
+
+		return $dn;
+  }
 } /* end class CA */
 
 class CAHandler

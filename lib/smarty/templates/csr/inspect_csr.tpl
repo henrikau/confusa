@@ -4,8 +4,16 @@
     <p class="info">
        {$l10n_infotext_signcert1}
     </p>
+	<div style="border-style: inset; border-width: 1px; padding: 0.5em">
+	<p class="info" >
+		<strong>{$l10n_label_finalCertDN}</strong>
+	</p>
+	<p style="font-size: 1em; font-family: monospace; margin-bottom: 1em">
+		{$finalDN}
+	</p>
+	</div>
 
-    <table>
+    <table style="margin-top: 2em">
       <tr><td></td></tr>
       {* Auth Token *}
       <tr>

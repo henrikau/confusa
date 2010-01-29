@@ -13,6 +13,7 @@
       {include file="csr/email.tpl"}
       <div class="spacer"></div>
       <table>
+	</p>
 	<tr>
 	  <td>
 	    <div><!-- XHTML strict won't allow inputs just within forms -->

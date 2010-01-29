@@ -36,6 +36,14 @@ class CA_Comodo extends CA
     {
         parent::__construct($pers, $validityPeriod);
         $this->getAccountInformation();
+
+		if (Config::get_config('capi_test') == true) {
+			$this->dcs[] = ConfusaConstants::$CAPI_TEST_DC_PREFIX;
+		}
+
+		$this->dcs[] = "tcs";
+		$this->dcs[] = "terena";
+		$this->dcs[] = "org";
     }
 
     /**
@@ -974,17 +982,10 @@ class CA_Comodo extends CA
 		$this->person->getSubscriber()->getOrgName();
         $postfields_sign_req["subject_countryName_".$pf_counter++] =
 		$this->person->getNREN()->getCountry();
-        $postfields_sign_req["subject_domainComponent_".$pf_counter++] = "tcs";
-        $postfields_sign_req["subject_domainComponent_".$pf_counter++] = "terena";
-        $postfields_sign_req["subject_domainComponent_".$pf_counter++] = "org";
 
-		/* clutter TEST all over it and reduce validity period
-         * if the certs are part of a testing process
-         */
-        if (Config::get_config('capi_test')) {
-          $postfields_sign_req["subject_domainComponent_".$pf_counter++] =
-		                      ConfusaConstants::$CAPI_TEST_DC_PREFIX;
-        }
+		foreach($this->dcs as $dc) {
+			$postfields_sign_req["subject_domainComponent_".$pf_counter++] = $dc;
+		}
 
 	$data = CurlWrapper::curlContact($sign_endpoint, "post", $postfields_sign_req);
 
