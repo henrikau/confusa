@@ -102,7 +102,8 @@ class CA_Standalone extends CA
 			CA::sendMailNotification($auth_key,
 			                         date('Y-m-d H:i T'),
 			                         $_SERVER['REMOTE_ADDR'],
-			                         $this->person);
+			                         $this->person,
+			                         $this->getFullDN());
 			Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
 					  $this->person->getX509ValidCN() .
 					  " Contacting us from ".

@@ -213,6 +213,7 @@ abstract class CA
 	                                            $timestamp,
 	                                            $ip,
 	                                            $recipient,
+												$distName,
 						    $custom_content = null)
 	{
 	/* if a notification e-mail is not a *template*, then what is? */
@@ -233,7 +234,7 @@ abstract class CA
 	$subscriber = $recipient->getSubscriber()->getOrgName();
 	$support_mail = $recipient->getSubscriber()->getHelpEmail();
 	$help_url = $recipient->getSubscriber()->getHelpURL();
-	$dn = $recipient->getX509SubjectDN();
+	$dn = $distName;
 	$download_url = Config::get_config('server_url') .
 	                '/download_certificate.php';
 

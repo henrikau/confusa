@@ -546,6 +546,7 @@ class CP_Stylist extends Content_Page
 		                         $timestamp,
 		                         $ip,
 		                         $recipient,
+		                         $this->ca->getFullDN(),
 		                         $template);
 
 		$email = $recipient->getEmail();

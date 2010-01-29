@@ -260,7 +260,8 @@ class CA_Comodo extends CA
 		CA::sendMailNotification($this->order_number,
 		                         date('Y-m-d H:i T'),
 		                         $_SERVER['REMOTE_ADDR'],
-		                         $this->person);
+		                         $this->person,
+		                         $this->getFullDN());
 	/* FIXME: conflict, not sure how to resolve, do we need both? */
         Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
 	/* FIXME: <END> */
@@ -308,7 +309,8 @@ class CA_Comodo extends CA
 		CA::sendMailNotification($this->order_number,
 		                         date('Y-m-d H:i T'),
 		                         $_SERVER['REMOTE_ADDR'],
-		                         $this->person);
+		                         $this->person,
+								 $this->getFullDN());
 
 		Logger::log_event(LOG_INFO, "Signed CSR for user with order_number " .
 		                            $this->order_number);
