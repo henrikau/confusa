@@ -104,7 +104,7 @@ final class CP_ProcessCsr extends Content_Page
 		 * resulting CSR has been uploaded to the server, we end up
 		 * here.
 		 */
-		if (isset($_POST['browserRequest'])) {
+		if (isset($_POST['browserRequest']) && $this->aup_set) {
 			$request = Input::sanitizeBase64($_POST['browserRequest']);
 			$request = trim($request);
 			if (!empty($request)) {
