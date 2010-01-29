@@ -184,6 +184,9 @@
 	},
 	"l10n_sign_error": {
 		"en":	"Could not sign certificate, backend said:"
+	},
+	"l10n_pcsr_email_table_summary": {
+		"en":	"List of emails to place in the subject alternative name in the certificate."
 	}
 
 }

@@ -145,6 +145,8 @@ final class CP_ProcessCsr extends Content_Page
 		$this->tpl->assign('upload_csr',  false);
 		$this->tpl->assign('paste_csr',   false);
 		$this->tpl->assign('aup_box_checked', $this->aup_set);
+		$this->tpl->assign('l10n_pcsr_email_table_summary',
+				   $this->translateTag('l10n_pcsr_email_table_summary', 'processcsr'));
 
 		/* signing finished, redirect to download */
 		if($this->signing_ok) {

@@ -8,7 +8,8 @@
 <p class="info">
   {$l10n_infotext_email3}
 </p>
-<table style="width: 75%;">
+<table style="width: 75%;"
+       summary="{$l10n_pcsr_email_table_summary}">
   {* we could use html_checkboxes, but getting all the boxes ticked
    required more code than writing the loop manually *}
   {foreach from=$person->getAllEmails() item=addr}
@@ -30,7 +31,8 @@
 <p class="info">
   {$l10n_infotext_email4}
 </p>
-<table style="width: 75%;">
+<table style="width: 75%;"
+       summary="{$l10n_pcsr_email_table_summary}">
   <tr>
     <td style="width: 30px;"></td>
     <td>
