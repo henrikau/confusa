@@ -62,6 +62,29 @@
 	"l10n_label_encertmail": {
 		"en":	"Enable cert. email:"
 	},
+
+	"l10n_infotext_nren_settings_summary": {
+		"en":	"Table of NREN-settings."
+	},
+	"l10n_infotext_nren_contact_email": {
+		"en":	"Contact address for the NREN. This is an administrative contact point."
+	},
+	"l10n_infotext_nren_contact_phone": {
+		"en":	"Contact phone for NREN. This is an administrative contact point."
+	},
+	"l10n_infotext_nren_cert_email": {
+		"en":	"Email-address to the NREN CERT."
+	},
+	"l10n_infotext_nren_cert_phone": {
+		"en":	"Phone-number to the NREN CERT."
+	},
+	"l10n_infotext_nren_portal_url": {
+		"en":	"NREN-specific URL. Not yet implemented, but will allow the portal to guess the branding based on incoming URL. Probably available from v0.6."
+	},
+	"l10n_infotext_nren_portal_language": {
+		"en":	"Pre-defined language. When the portal is able to detect the NREN, it will pick this language and translate the text into the defined language."
+	},
+
 	"l10n_infotext_encertmail": {
 		"en":	"The number of e-mail addresses the user can place in the certificate's subject alternative name."
 	},
