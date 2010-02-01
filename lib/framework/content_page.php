@@ -43,6 +43,10 @@ abstract class Content_Page
 			return;
 		}
 		$this->ca = CAHandler::getCA($this->person);
+		if (!$this->ca) {
+			throw new ConfusaGenException("Could not instantiate CA-object. ".
+						      "Notify operational support and check the logs.");
+		}
 	}
 
 	public function getCA()

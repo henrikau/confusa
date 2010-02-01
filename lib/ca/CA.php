@@ -388,7 +388,13 @@ class CAHandler
 				break;
 
 			default:
-
+				/* This is going to produce a *lot* of errors,
+				 * but it should also catch the attention of
+				 * the operators. */
+				Logger::log_event(LOG_ALERT, "Tried to instantiate CA " .
+						  Config::get_config('ca_mode') .
+						  " but this is unknow. Config-file has errors. Check the ca_mode.");
+				return null;
 			}
 		}
 	        return CAHandler::$ca;
