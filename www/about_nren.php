@@ -34,11 +34,11 @@ class CP_About_NREN extends Content_Page
 		                               $subscriber->getHelpEmail(), $about_text);
 			$about_text = str_ireplace('{$subscriber_support_url}',
 		                               $subscriber->getHelpURL(), $about_text);
+			$this->tpl->assign('subscriber', htmlentities($this->person->getSubscriber()->getOrgName()));
 		}
 
 		$about_text = str_ireplace('{$product_name}', $productName, $about_text);
 		$about_text = str_ireplace('{$confusa_url}', Config::get_config('server_url'), $about_text);
-		$this->tpl->assign('subscriber', htmlentities($this->person->getSubscriber()->getOrgName()));
 		$this->tpl->assign('text_info', $about_text);
 		$this->tpl->assign('content', $this->tpl->fetch('about_nren.tpl'));
 	}
