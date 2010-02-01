@@ -193,7 +193,7 @@ final class CP_DownloadCertificate extends Content_Page
 			                        . " " . htmlentities($e->getMessage()));
 			return false;
 		}
-		Framework::success_output('downl_suc_mail');
+		Framework::success_output($this->translateMessageTag('downl_suc_mail'));
 	} /* end send_cert */
 
 	/**
