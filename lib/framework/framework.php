@@ -86,16 +86,6 @@ class Framework {
 			}
 		}
 
-		/*
-		 * language change requested, refresh the page to also localize the
-		 * error-messages coming from Framework
-		 */
-		if (isset($_GET['lang'])) {
-			$langCode = Input::sanitizeLangCode($_GET['lang']);
-			setcookie("language", $langCode);
-			$contentPage->getTranslator()->setLanguage($langCode);
-		}
-
 		$this->contentPage = $contentPage;
 
 		$this->person	= new Person();

@@ -83,18 +83,6 @@
 			</div> <!-- logo_header_right -->
 		      </div> <!-- logo_area -->
 
-		      <div id="language_bar" style="clear: both">
-			{* only display language options if there actually *are* such *}
-			{if $available_languages|@count > 1}
-			{foreach from=$available_languages key=code item=lang}
-			{if $code == $selected_language}
-			| {$lang}
-			{else}
-			| <a href="?lang={$code}">{$lang}</a>
-			{/if}
-			{/foreach}
-			{/if}
-		      </div> <!-- language_bar -->
 		      <div id="menu">
 			{$menu}
 		      </div> <!-- menu -->
