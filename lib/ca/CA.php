@@ -353,23 +353,23 @@ class CAHandler
 	private static $ca;
 	public static function getCA($person)
 	{
-		if (Config::get_config('cert_product') == PRD_PERSONAL) {
-			/* if no NREN object is set, we can not know anything about the days */
-			if (!is_object($person->getNREN())) {
-				$days = ConfusaConstants::$CAPI_VALID_PERSONAL[0];
-			} else {
-				$days = $person->getNREN()->getCertValidity();
-			}
-		} else if (Config::get_config('cert_product') == PRD_ESCIENCE) {
-			$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
-		} else {
-			throw new ConfusaGenException("Confusa's configured product-mode is " .
-			                              "illegal! Must be one of: PRD_ESCIENCE, " .
-			                              "PRD_PERSONAL. Please contact an IT " .
-			                              "administrator about that!");
-		}
-
 		if (!isset(CAHandler::$ca)) {
+			if (Config::get_config('cert_product') == PRD_PERSONAL) {
+				/* if no NREN object is set, we can not know anything about the days */
+				if (!is_object($person->getNREN())) {
+					$days = ConfusaConstants::$CAPI_VALID_PERSONAL[0];
+				} else {
+					$days = $person->getNREN()->getCertValidity();
+				}
+			} else if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+				$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
+			} else {
+				throw new ConfusaGenException("Confusa's configured product-mode is " .
+				                              "illegal! Must be one of: PRD_ESCIENCE, " .
+				                              "PRD_PERSONAL. Please contact an IT " .
+				                              "administrator about that!");
+			}
+
 			switch((int)Config::get_config('ca_mode')) {
 
 			case CA_STANDALONE:
