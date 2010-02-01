@@ -17,11 +17,19 @@ class CP_Root_Certificate extends Content_Page
 		parent::__construct("Root Certificate(s)", false, "rootcert");
 
 		if (Config::get_config('ca_mode') == CA_COMODO) {
-			$this->cert_path = tempnam("/tmp/", "tcs-ca.pem.");
-			$this->crl_path = tempnam("/tmp/", "tcs-crl.crl.");
+			if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+				$this->cert_path = tempnam("/tmp/", "tcs-escience-ca.pem.");
+				$this->crl_path = tempnam("/tmp/", "tcs-escience-crl.crl.");
 
-			$this->cert_url = ConfusaConstants::$CAPI_ROOT_CERT;
-			$this->crl_url = ConfusaConstants::$CAPI_CRL;
+				$this->cert_url = ConfusaConstants::$CAPI_ESCIENCE_ROOT_CERT;
+				$this->crl_url = ConfusaConstants::$CAPI_ESCIENCE_CRL;
+			} else if (Config::get_config('cert_product') == PRD_PERSONAL) {
+				$this->cert_path = tempnam("/tmp/", "tcs-personal-ca.pem.");
+				$this->crl_path = tempnam("/tmp/", "tcs-personal-crl.crl.");
+
+				$this->cert_url = ConfusaConstants::$CAPI_PERSONAL_ROOT_CERT;
+				$this->crl_url = ConfusaConstants::$CAPI_PERSONAL_CRL;
+			}
 		} else {
 			$this->cert_path = Config::get_config('install_path') .
 								Config::get_config('ca_cert_base_path') .
@@ -120,7 +128,7 @@ class CP_Root_Certificate extends Content_Page
 	private function makeCRLAvailable()
 	{
 		if(Config::get_config('ca_mode') == CA_COMODO) {
-			$ch = curl_init(ConfusaConstants::$CAPI_CRL);
+			$ch = curl_init($this->crl_url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 			$crl_content = curl_exec($ch);
 			curl_close($ch);
@@ -138,7 +146,7 @@ class CP_Root_Certificate extends Content_Page
 	private function makeCertAvailable()
 	{
 		if(Config::get_config('ca_mode') == CA_COMODO) {
-			$ch = curl_init(ConfusaConstants::$CAPI_ROOT_CERT);
+			$ch = curl_init($this->cert_url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 			$ca_file_content = curl_exec($ch);
 			curl_close($ch);
