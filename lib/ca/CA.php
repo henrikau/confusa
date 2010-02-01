@@ -273,8 +273,7 @@ abstract class CA
 			$msg = $tpl->fetch($default_template);
 		}
 	}
-	$subject = "Your new $productName certificate is ready.  Order number " .
-	           "$orderNumber, subject " . $recipient->getX509SubjectDN();
+	$subject = "Your new $productName certificate is ready.";
 
 	/* send notification, test to see if it is *one* address, or multiple */
 	$rce = $recipient->getRegCertEmails();
