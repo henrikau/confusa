@@ -6,12 +6,13 @@
 <p style="text-align: center; font-style: italic; font-weight: bold">
   <input type="checkbox"
 	 name="aup_box"
+	 id="aup_box"
 	 value="user_agreed"
 	 {if $aup_box_checked}
 	 checked="checked"
 	 {/if}
 	 />
-  {$csr_aup_agreement}
+  <label for="aup_box">{$csr_aup_agreement}</label>
 </p>
 
 <h4><a href="javascript:void(0)"

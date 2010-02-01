@@ -18,10 +18,11 @@
     <td>
       <input type="checkbox"
 	     name="subjAltName_email[]"
+		 id="subjAltName_email"
 	     value="{$addr}"
 	     checked="checked"/>
     </td>
-    <td>{$addr}</td>
+    <td><label for="subjAltName_email">{$addr}</label></td>
   </tr>
   {/foreach}
 
