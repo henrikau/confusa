@@ -340,7 +340,7 @@ abstract class CA
 			$dn .= "/DC=$dc";
 		}
 
-		$dn .= "/C=" . $this->person->getCountry();
+		$dn .= "/C=" . $this->person->getNREN()->getCountry();
 		$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
 		$dn .= "/CN=" . $this->person->getX509ValidCN();
 
