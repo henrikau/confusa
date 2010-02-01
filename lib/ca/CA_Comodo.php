@@ -41,9 +41,11 @@ class CA_Comodo extends CA
 			$this->dcs[] = ConfusaConstants::$CAPI_TEST_DC_PREFIX;
 		}
 
-		$this->dcs[] = "tcs";
-		$this->dcs[] = "terena";
-		$this->dcs[] = "org";
+		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+			$this->dcs[] = "tcs";
+			$this->dcs[] = "terena";
+			$this->dcs[] = "org";
+		}
     }
 
     /**
