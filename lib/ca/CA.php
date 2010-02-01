@@ -353,13 +353,13 @@ class CAHandler
 	private static $ca;
 	public static function getCA($person)
 	{
-		/* no need to continue if the object is not decorated */
-		if (!is_object($person->getNREN())) {
-			return null;
-		}
-
 		if (Config::get_config('cert_product') == PRD_PERSONAL) {
-			$days = $person->getNREN()->getCertValidity();
+			/* if no NREN object is set, we can not know anything about the days */
+			if (!is_object($person->getNREN())) {
+				$days = ConfusaConstants::$CAPI_VALID_PERSONAL[0];
+			} else {
+				$days = $person->getNREN()->getCertValidity();
+			}
 		} else if (Config::get_config('cert_product') == PRD_ESCIENCE) {
 			$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
 		} else {
