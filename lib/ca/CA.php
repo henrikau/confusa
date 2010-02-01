@@ -357,7 +357,7 @@ class CAHandler
 			if (Config::get_config('cert_product') == PRD_PERSONAL) {
 				/* if no NREN object is set, we can not know anything about the days */
 				if (!is_object($person->getNREN())) {
-					$days = ConfusaConstants::$CAPI_VALID_PERSONAL[0];
+					$days = min(ConfusaConstants::$CAPI_VALID_PERSONAL);
 				} else {
 					$days = $person->getNREN()->getCertValidity();
 				}
