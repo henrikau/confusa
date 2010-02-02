@@ -116,6 +116,20 @@ class CP_Stylist extends Content_Page
 
 				$this->deleteLogo($position, $this->person->getNREN());
 				break;
+			case 'change_title':
+				if (isset($_POST['portalTitle'])) {
+					$titleValue = Input::sanitize($_POST['portalTitle']);
+				} else {
+					$titleValue = "";
+				}
+
+				if (isset($_POST['changeButton'])) {
+					$showTitle = isset($_POST['showPortalTitle']);
+					$this->updateNRENTitle($this->person->getNREN(),
+					                       $titleValue,
+					                       $showTitle);
+				}
+				break;
 			default:
 				Framework::error_output("Unknown operation chosen in the stylist!");
 				break;
@@ -204,7 +218,12 @@ class CP_Stylist extends Content_Page
 					}
 				}
 				break;
-
+			case 'title':
+				$nren = $this->person->getNREN();
+				$this->tpl->assign('edit_title', true);
+				$this->tpl->assign('portalTitle', $nren->getCustomPortalTitle());
+				$this->tpl->assign('showPortalTitle', $nren->getShowPortalTitle());
+				break;
 			default:
 				Framework::error_output("Unsupported operation chosen!");
 				break;
@@ -382,6 +401,27 @@ class CP_Stylist extends Content_Page
 	}
 
 	/**
+	 * Change the portal title for the given NREN to the new title, or disable
+	 * the display of a portal title.
+	 *
+	 * @param $nren NREN The NREN for which the custom portal title is set
+	 * @param $portalTitle string The custom portal-title for the NREN
+	 * @param $showPortalTitle boolean Whether a portal-title should be shown
+	 *                                 for the NREN
+	 * @return void
+	 */
+	private function updateNRENTitle($nren, $portalTitle, $showPortalTitle)
+	{
+		$nren->setCustomPortalTitle($portalTitle);
+		$nren->setShowPortalTitle($showPortalTitle);
+
+		if ($nren->saveNREN()) {
+			Framework::success_output($this->translateTag('l10n_suc_portaltitle', 'stylist') .
+			                          " $portalTitle");
+		}
+	}
+
+	/**
 	 * Fetch the CSS file content for a certain NREN. If no CSS file for the
 	 * NREN has been defined so far, display the standard site-wide CSS
 	 *
@@ -452,7 +492,7 @@ class CP_Stylist extends Content_Page
 			                            "notification mail template! Server said " .
 			                            $fexp->getMessage());
 		}
-	}
+	} /* end fetchNRENMailTpl */
 
 	/*
 	 * Update the customized CSS file of a certain NREN. Write the CSS file to
@@ -758,7 +798,7 @@ class CP_Stylist extends Content_Page
 			Logger::log_event(LOG_INFO, "[nadm] Error when trying to delete " .
 			                  "NREN logo $logoName, for NREN $nren.");
 		}
-	}
+	} /* end function deleteLogo */
 }
 $fw = new Framework(new CP_Stylist());
 $fw->start();

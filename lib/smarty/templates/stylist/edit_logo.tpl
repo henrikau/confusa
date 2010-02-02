@@ -175,6 +175,7 @@
 <li><a href="?show=text">{$l10n_tab_texts}</a></li>
 <li><a href="?show=css">{$l10n_tab_css}</a></li>
 <li><span>{$l10n_tab_logo}</span></li>
+<li><a href="?show=title">{$l10n_tab_portaltitle}</a></li>
 <li><a href="?show=mail">{$l10n_tab_notificationmail}</a></li>
 </ul>
 </div>

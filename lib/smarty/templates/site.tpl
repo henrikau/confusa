@@ -20,6 +20,14 @@
     {/foreach}
     {/if}
 
+	{if is_object($nren)}
+		{if $nren->getShowPortalTitle()}
+			{assign var='system_title' value=$nren->getCustomPortalTitle()}
+		{else}
+			{assign var='system_title' value='&nbsp;'}
+		{/if}
+	{/if}
+
     {if !is_null($css)}
     <link rel="stylesheet" href="{$css}" type ="text/css" />
     {/if}
@@ -69,7 +77,7 @@
 			    <img src="graphics/logo-sigma.png" alt="UNINETT Sigma Logo" /> {$system_title}
 			    {else}
 			    <img src="{$logo_tc}"
-				 alt="NREN logo" />{$system_title}
+				 alt="NREN logo" /> {$system_title}
 			    {/if}
 			  </a>
 			</div><!-- logo_header_center -->
