@@ -41,10 +41,13 @@
 	"l10n_title_deletesubs": {
 		"en": "Delete"
 	},
-	"l10n_confirm_deleteownsubs1": {
+	"l10n_confirm_deleteownsubs": {
 		"en": "You are about to delete your OWN INSTITUTION"
 	},
-	"l10n_confirm_deleteownsubs2": {
+	"l10n_confirm_delete_subscriber": {
+		"en": "You are about to delete subscriber "
+	},
+	"l10n_confirm_delete_confirm": {
 		"en": "Are you sure about that?"
 	},
 	"l10n_title_subsinfo": {
