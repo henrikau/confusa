@@ -339,7 +339,7 @@ class CP_NREN_Admin extends Content_Page
 					  "for subscriber $subscriberName.");
 		}
 
-		MDB2Wrapper::execute("DELETE FROM subscribers WHERE subscriber_id = ? AND nren_id = ?",
+		MDB2Wrapper::update("DELETE FROM subscribers WHERE subscriber_id = ? AND nren_id = ?",
 				     array('text', 'text'),
 				     array($id, $nren_id));
 
