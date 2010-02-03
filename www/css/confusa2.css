@@ -298,6 +298,15 @@ p.info {
     width: 80%;
 	padding-bottom: 1em;
 }
+
+p.important {
+              font-weight: bold;
+              padding: 10px 24px 10px 10px;
+              margin: 0px 10% 8px 0px;
+              width: 80%;
+              border: 3px dashed #cf5448
+}
+
 ul.info {
     font-style: italic;
     width: 80%;
