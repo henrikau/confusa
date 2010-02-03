@@ -289,6 +289,10 @@ div.csr {
 	margin-bottom: 5%;
 }
 
+p {
+    padding-bottom: 1em;
+    }
+
 p.info {
     font-style: italic;
     width: 80%;
