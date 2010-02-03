@@ -147,7 +147,7 @@ class CP_NREN_Admin extends Content_Page
 					Framework::error_output("Cannot create new, already existing.");
 					break;
 				}
-				$subscriber->setOrgname($dn_name);
+				$subscriber->setOrgName($dn_name);
 				$subscriber->setState($state);
 				$subscriber->setEmail($subscr_email);
 				$subscriber->setPhone($subscr_phone);
