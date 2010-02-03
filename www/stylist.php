@@ -297,20 +297,21 @@ class CP_Stylist extends Content_Page
 	 */
 	private function updateNRENHelpText($nren, $new_text)
 	{
-		$query = "UPDATE nrens SET help=? WHERE name=?";
+		$query = "UPDATE nrens SET help=? WHERE nren_id=?";
 
 		try {
 			$res = MDB2Wrapper::update($query,
-										array('text', 'text'),
-										array($new_text, $nren));
+						   array('text', 'text'),
+						   array($new_text, $nren->getID()));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem updating the help text of your NREN! " .
-									"Please contact an administrator to resolve this! Server said " . htmlentities($dbse->getMessage()));
+						"Please contact an administrator to resolve this! Server said " .
+						htmlentities($dbse->getMessage()));
 			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating the help text of your NREN, " .
-									"probably related to the supplied data. Please verify the data to be inserted! " .
-									"Server said " . htmlentities($dbqe->getMessage()));
+						"probably related to the supplied data. Please verify the data to be inserted! " .
+						"Server said " . htmlentities($dbqe->getMessage()));
 			return;
 		}
 
@@ -327,25 +328,26 @@ class CP_Stylist extends Content_Page
 	 */
 	private function updateNRENAboutText($nren, $new_text)
 	{
-		$query = "UPDATE nrens SET about=? WHERE name=?";
+		$query = "UPDATE nrens SET about=? WHERE nren_id=?";
 
 		try {
 			$res = MDB2Wrapper::update($query,
-									   array('text', 'text'),
-									   array($new_text, $nren));
+						   array('text', 'text'),
+						   array($new_text, $nren->getID()));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem updating the about text of your NREN! " .
-									"Please contact an administrator to resolve this! Server said " . htmlentities($dbse->getMessage()));
+						"Please contact an administrator to resolve this! Server said " .
+						htmlentities($dbse->getMessage()));
 			return;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating the about text of your NREN, " .
-									"probably related to the supplied data. Please verify the data to be inserted! " .
-									"Server said " . htmlentities($dbqe->getMessage()));
+						"probably related to the supplied data. Please verify the data to be inserted! " .
+						"Server said " . htmlentities($dbqe->getMessage()));
 			return;
 		}
 
 		Logger::log_event(LOG_INFO, "About-text for NREN $nren was changed. " .
-						  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
+				  "User contacted us from " . $_SERVER['REMOTE_ADDR']);
 		Framework::success_output($this->translateTag('l10n_suc_updabouttext', 'stylist'));
 	}
 
