@@ -15,71 +15,13 @@ class CP_Help extends Content_Page
 	public function process()
 	{
 		$nren = $this->person->getNREN();
-		$help_text = $this->getNRENHelpText($nren);
-
-		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
-			$productName = ConfusaConstants::$ESCIENCE_PRODUCT;
-		} else {
-			$productName = ConfusaConstants::$PERSONAL_PRODUCT;
-		}
-
-		$subscriber = $this->person->getSubscriber();
-
-		if (isset($subscriber)) {
-			$help_text = str_ireplace('{$subscriber}',
-			                          $subscriber->getOrgName(), $help_text);
-			$help_text = str_ireplace('{$subscriber_support_email}',
-		                              $subscriber->getHelpEmail(), $help_text);
-			$help_text = str_ireplace('{$subscriber_support_url}',
-		                              $subscriber->getHelpURL(), $help_text);
-		}
-
-		$help_text = str_ireplace('{$product_name}', $productName, $help_text);
-		$help_text = str_ireplace('{$confusa_url}', Config::get_config('server_url'), $help_text);
+		$help_text = $this->person->getNREN()->getHelpText($this->person);
 		$this->tpl->assign('nren', $nren);
 		$this->tpl->assign('nren_help_text', $help_text);
 		$this->tpl->assign('help_file', file_get_contents('../include/help.html'));
 		$this->tpl->assign('content', $this->tpl->fetch('help.tpl'));
-
 	}
-
-	/*
-	 * Get the custom help text entered for/by a certain NREN
-	 *
-	 * @param $nren The NREN for which the help-text should be retrieved
-	 */
-	private function getNRENHelpText($nren)
-	{
-		$query = "SELECT help FROM nrens WHERE name = ?";
-
-		$res = array();
-
-		try {
-			$res = MDB2Wrapper::execute($query,
-										array('text'),
-										array($nren));
-		} catch (DBStatementException $dbse) {
-			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the help " .
-			                  "text of NREN $nren due to an error with the " .
-			                  "statement. Server said " . $dbse->getMessage());
-			return "";
-		} catch (DBQueryException $dbqe) {
-			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the help " .
-			                  "text of NREN $nren due to an error in the " .
-			                  "query. Server said " . $dbqe->getMessage());
-			return "";
-		}
-
-		if (count($res) > 0) {
-			$help_text=$res[0]['help'];
-
-			$help_text=stripslashes($help_text);
-			$help_text=Input::br2nl($help_text);
-			$textile = new Textile();
-			return $textile->TextileRestricted($help_text,0);
-		}
-	}
-}
+} /* end CP_Help */
 
 $fw = new Framework(new CP_Help());
 $fw->start();

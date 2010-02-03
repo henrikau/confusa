@@ -604,6 +604,45 @@ class NREN
 	}
 
 
+	/**
+	 * getHelpText()
+	 *
+	 * Get the custom help text entered for/by a certain NREN
+	 *
+	 * @param Person $person the current person (for tag-replacement)
+	 * @return String $help_text the parsed, replaced and textile-replaced text
+	 */
+	public function getHelpText($person)
+	{
+		$query = "SELECT help FROM nrens WHERE nren_id = ?";
+		$res = array();
+		try {
+			$res = MDB2Wrapper::execute($query,
+						    array('text'),
+						    array($this->getID()));
+		} catch (DBStatementException $dbse) {
+			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the help " .
+			                  "text of NREN $nren due to an error with the " .
+			                  "statement. Server said " . $dbse->getMessage());
+			return "";
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the help " .
+			                  "text of NREN $nren due to an error in the " .
+			                  "query. Server said " . $dbqe->getMessage());
+			return "";
+		}
+
+		if (count($res) > 0) {
+			$help_text=$res[0]['help'];
+
+			$help_text=stripslashes($help_text);
+			$help_text=Input::br2nl($help_text);
+			$textile = new Textile();
+			return $this->replaceTags($textile->TextileRestricted($help_text,0), $person);
+		}
+	} /* end getHelpText() */
+
+
 	private function replaceTags($text, $person)
 	{
 		/*
