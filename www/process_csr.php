@@ -151,6 +151,9 @@ final class CP_ProcessCsr extends Content_Page
 		$this->tpl->assign('l10n_pcsr_email_table_summary',
 				   $this->translateTag('l10n_pcsr_email_table_summary', 'processcsr'));
 
+		$this->tpl->assign('l10n_privacy_notice_header',
+				   $this->translateTag('l10n_privacy_notice_header', 'messages'));
+		$this->tpl->assign('privacy_notice_text', $this->person->getNREN()->getPrivacyNotice());
 		$this->tpl->assign('finalDN',   $this->ca->getFullDN());
 
 		/* signing finished, redirect to download */

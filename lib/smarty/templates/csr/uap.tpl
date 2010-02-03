@@ -1,6 +1,18 @@
 <fieldset>
 <legend>{$csr_aup_title}</legend>
-
+<div class="spacer"></div>
+<h4><a href="javascript:void(0)"
+       class="exphead"
+       onclick="toggleExpand(this)">
+    <span class="expchar">+</span>
+    {$l10n_privacy_notice_header}
+  </a>
+</h4>
+<div class="expcont">
+  <p class="info">
+    {$privacy_notice_text}
+  </p>
+</div>
 <div class="spacer"></div>
 
 <p style="text-align: center; font-style: italic; font-weight: bold">
