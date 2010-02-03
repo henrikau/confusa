@@ -526,7 +526,12 @@ class NREN
 		return $subscribers;
 	}
 
-	public function getPrivacyNotice()
+	/**
+	 * getPrivacyNotice() - return the privacy-notice for the NREN
+	 *
+	 * @param Person $person the current person (for translating the tags)
+	 */
+	public function getPrivacyNotice($person)
 	{
 		$query = "SELECT privacy_notice FROM nrens WHERE nren_id = ?";
 		$res = array();
@@ -552,10 +557,48 @@ class NREN
 			$pn=stripslashes($pn);
 			$pn=Input::br2nl($pn);
 			$textile = new Textile();
-			return $textile->TextileRestricted($pn,0);
+
+			/* replalce tags */
+			return $this->replaceTags($textile->TextileRestricted($pn,0), $person);
+
 		}
-		return "No privacy-notice has yet been set for your NREN ($nren)<br />";
+		return "No privacy-notice has yet been set for your NREN (".
+			$this->getName().")<br />";
 
 	}
+
+	private function replaceTags($text, $person)
+	{
+		/*
+		 * {$subscriber}
+		 * {$product_name}
+		 * {$confusa_url}
+		 * {$subscriber_support_email}
+		 * {$subscriber_support_url}
+		 */
+		$subscriber = $person->getSubscriber();
+		if (!is_null($subscriber)) {
+			$text = str_ireplace('{$subscriber}',
+					     $subscriber->getOrgname(),
+					     $text);
+			$text = str_ireplace('{$subscriber_support_email}',
+					     $subscriber->getHelpEmail(),
+					     $text);
+			$text = str_ireplace('{$subscriber_support_url}',
+					     $subscriber->getHelpURL(),
+					     $text);
+		}
+		$productName = ConfusaConstants::$PERSONAL_PRODUCT;
+		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+			$productName = ConfusaConstants::$ESCIENCE_PRODUCT;
+		}
+		$text = str_ireplace('{$product_name}', $productName, $text);
+		$text = str_ireplace('{$confusa_url}',
+				     Config::get_config('server_url'),
+				     $text);
+
+		return $text;
+	}
+
 } /* end class NREN */
 ?>
