@@ -70,27 +70,10 @@ class StatusPoll
 	 * equivalent to pre_process in the Framework-parts of Confusa.
 	 *
 	 * The variables are 'logLevelReached' - boolean indicating if the log level
-	 * was reached, 'logLevel' - the level itself and 'logErrors' - a
-	 * comprehensive list of the logged errors.
+	 * was reached and 'logErrors' - a comprehensive list of the logged errors.
 	 */
 	public function assignVars()
 	{
-		$failureLevel = Config::get_config('loglevel_fail');
-		$failureLevelStrings = array(LOG_EMERG   => 'LOG_EMERG',
-		                             LOG_ALERT   => 'LOG_ALERT',
-		                             LOG_CRIT    => 'LOG_CRIT',
-		                             LOG_ERR     => 'LOG_ERR',
-		                             LOG_WARNING => 'LOG_WARNING',
-		                             LOG_NOTICE  => 'LOG_NOTICE',
-		                             LOG_INFO    => 'LOG_INFO',
-		                             LOG_DEBUG   => 'LOG_DEBUG');
-
-		if (array_key_exists($failureLevel, $failureLevelStrings)) {
-			$this->tpl->assign('logLevel', $failureLevelStrings[$failureLevel]);
-		} else {
-			$this->tpl->assign('logLevel', 'unknown');
-		}
-
 		if (count($this->logErrors) > 0) {
 			$this->tpl->assign('logErrors', $this->logErrors);
 			$this->tpl->assign('logLevelReached', true);
