@@ -2,6 +2,7 @@
 require_once 'confusa_include.php';
 require_once 'mdb2_wrapper.php';
 require_once 'CriticalAttributeException.php';
+require_once 'classTextile.php';
 
 /**
  * Placeholder for an NREN
@@ -523,6 +524,38 @@ class NREN
 		}
 
 		return $subscribers;
+	}
+
+	public function getPrivacyNotice()
+	{
+		$query = "SELECT privacy_notice FROM nrens WHERE nren_id = ?";
+		$res = array();
+		try {
+			$res = MDB2Wrapper::execute($query,
+						    array('text'),
+						    array($this->getID()));
+		} catch (DBStatementException $dbse) {
+			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the privnotice " .
+			                  "text of NREN $nren due to an error with the " .
+			                  "statement. Server said " . $dbse->getMessage());
+			return "";
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the privnotice " .
+			                  "text of NREN $nren due to an error in the " .
+			                  "query. Server said " . $dbqe->getMessage());
+			return "";
+		}
+
+		if (count($res) > 0) {
+			$pn=$res[0]['privacy_notice'];
+
+			$pn=stripslashes($pn);
+			$pn=Input::br2nl($pn);
+			$textile = new Textile();
+			return $textile->TextileRestricted($pn,0);
+		}
+		return "No privacy-notice has yet been set for your NREN ($nren)<br />";
+
 	}
 } /* end class NREN */
 ?>
