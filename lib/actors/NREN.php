@@ -567,6 +567,43 @@ class NREN
 
 	}
 
+	/**
+	 * getAboutText
+	 * Get the about-text for a certain NREN, so it can be displayed in Confusa's
+	 * about-section
+	 *
+	 * @param Person $person the current person for tag-replacement
+	 */
+	public function getAboutText($person)
+	{
+		$query = "SELECT about FROM nrens WHERE nren_id = ?";
+
+		try {
+			$res = MDB2Wrapper::execute($query,
+						    array('text'),
+						    array($this->getID()));
+		} catch (DBStatementException $dbse) {
+			Framework::error_output($this->translateMessageTag('abt_err_dbstat') . " " .
+			                        htmlentities($dbse->getMessage()));
+			return "";
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output($this->translateMessageTag('abt_err_dbquery') .  " " .
+			                        htmlentities($nren));
+			return "";
+		}
+
+		if (count($res) > 0) {
+			$at = stripslashes($res[0]['about']);
+			$at = Input::br2nl($at, 0);
+			$textile = new Textile();
+			return $this->replaceTags($textile->TextileRestricted($at), $person);
+		} else {
+			return "No about-NREN text has been defined for your NREN (" .
+				$this->getName(). ")";
+		}
+	}
+
+
 	private function replaceTags($text, $person)
 	{
 		/*
