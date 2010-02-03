@@ -57,7 +57,7 @@
 		"en":	"Showing all valid certificates."
 	},
 	"l10n_text_hideold": {
-		"en":	"Hide old"
+		"en":	"Hide"
 	},
 	"l10n_title_email": {
 		"en":	"Send certificate via email"
