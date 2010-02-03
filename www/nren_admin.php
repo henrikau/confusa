@@ -350,7 +350,7 @@ class CP_NREN_Admin extends Content_Page
 		       htmlentities($id) . ". " .
 			   $this->translateTag('l10n_suc_deletesubs3', 'nrenadmin') . " " .
 			   $count . " " . $this->translateTag('l10n_suc_deletesubs4', 'nrenadmin');
-		Framework::message_output($msg);
+		Framework::success_output($msg);
 	} /* end delSubscriber */
 
 	/**
