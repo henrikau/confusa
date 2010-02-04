@@ -1,3 +1,21 @@
+{if isset($ca_certificate)}
+<div id="caNotification" style="float: right; border-style: solid; border-width: 1px; border-color: red; padding: 0.5em; margin-right: 1em">
+	{$l10n_infotext_instcacert1} <a href="{$ca_certificate}">{$l10n_infotext_instcacert2}</a>!
+</div>
+
+{literal}
+<script type="text/javascript">
+	var caNot = document.getElementById("caNotification");
+	caNot.style.display="none";
+
+	function showCANotification()
+	{
+		caNot.style.display="block";
+	}
+</script>
+{/literal}
+{/if}
+
 <table style="width: 100%; table-layout: fixed; padding: 1em 0em 1em
 		1em; margin: 0em 0em 0em 0em" >
 		{foreach from=$certList item=cert}
@@ -62,7 +80,8 @@
 		  {/if}
 
 		  <!-- install into keystore in browser -->
-		  <a href="download_certificate.php?install_cert={$cert.order_number}">
+		  <a href="download_certificate.php?install_cert={$cert.order_number}"
+		  {if isset($ca_certificate)}onclick="showCANotification()"{/if}>
 		    <img src="graphics/database_add.png"
 		    alt="{$l10n_title_install_ks|escape}"
 		    title="{$l10n_title_install_ks|escape}"
