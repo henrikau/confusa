@@ -8,10 +8,9 @@
     {$l10n_privacy_notice_header}
   </a>
 </h4>
+
 <div class="expcont">
-  <p class="info">
     {$privacy_notice_text}
-  </p>
 </div>
 <div class="spacer"></div>
 
