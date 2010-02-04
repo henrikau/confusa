@@ -91,3 +91,24 @@ function isBoxChecked(box)
 		return false;
 	}
 }
+
+/**
+ * This is mostly about visual feedback while the certificate is still
+ * processed
+ */
+function showSmallishDots(counter) {
+	var dots = document.getElementById("dots");
+	var dotString = ".";
+
+	counter = counter % 6;
+
+	for (var i=0; i < counter; i++)
+	{
+		dotString += ".";
+	}
+
+	dots.innerHTML = dotString;
+	counter++;
+
+	var timer = window.setTimeout("showSmallishDots(" + counter + ")", 2000);
+}

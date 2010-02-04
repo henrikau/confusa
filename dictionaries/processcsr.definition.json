@@ -190,6 +190,21 @@
 	},
 	"l10n_label_finalCertDN": {
 		"en":	"The subject-DN of your certificate will be:"
+	},
+	"l10n_info_installcert1": {
+		"en":	"<b>Done</b> processing! Please"
+	},
+	"l10n_link_installcert": {
+		"en":	"install your certificate"
+	},
+	"l10n_link_cacert": {
+		"en":	"CA-certificate"
+	},
+	"l10n_info_installcert2": {
+		"en":	"and the"
+	},
+	"l10n_infotext_brows_csr_ong": {
+		"en":	"<br /><br />Please don\\'t close the window and wait until processing is finished. That will take, depending on load about <b>2 minutes</b>. Then, install the certificate.<br /><br />If something goes wrong, you can install the certificate later from the download area!"
 	}
 
 }

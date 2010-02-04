@@ -196,12 +196,11 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('dn',				$browser_adapted_dn);
 			$this->tpl->assign('keysize',			Config::get_config('key_length'));
 			$browserTemplate = $this->dispatchBrowserTemplate();
-			$extraScript = array('js/cert_request.js');
-			$this->tpl->assign('extraScripts', $extraScript);
 			Framework::message_output($this->translateTag('l10n_msg_browsergen', 'processcsr') .
 			                          " <a href=\"process_csr.php\">" .
 			                          $this->translateTag('l10n_link_change', 'processcsr') .
 			                          "</a>.");
+
 			$this->tpl->assign('content',	$this->tpl->fetch($browserTemplate));
 			return;
 		/* signing of a copied/pasted CSR */
