@@ -62,6 +62,13 @@ class CP_Robot_Interface extends Content_Page
 				$this->tpl->assign('cert_info', true);
 				$this->tpl->assign('cert_info_serial', $serial);
 				break;
+			case 'download_archive':
+				if ($this->person->isAdmin()) {
+					if($this->downloadArchive()) {
+						exit(0);
+					}
+				}
+				break;
 			default:
 				Framework::error_output("Unknown action");
 				$res = false;
@@ -356,6 +363,51 @@ class CP_Robot_Interface extends Content_Page
 		}
 		return null;
 	} /* end getRobotCert */
+
+	/**
+	 * downloadArchive() pack the RI-library in a zip-file and present it as
+	 * a file to download.
+	 *
+	 * @param  : void
+	 * @return : Boolean True if no errors were encountered.
+	 */
+	private function downloadArchive()
+	{
+		require_once 'file_download.php';
+		$confusa_client = file_get_contents(Config::get_config('install_path')
+						    . "/extlibs/XML_Client/Confusa_Client.py");
+		$confusa_parser = file_get_contents(Config::get_config('install_path')
+						    . "/extlibs/XML_Client/Confusa_Parser.py");
+		$https_client	= file_get_contents(Config::get_config('install_path')
+						    . "/extlibs/XML_Client/HTTPSClient.py");
+		$timeout	= file_get_contents(Config::get_config('install_path')
+						    . "/extlibs/XML_Client/Timeout.py");
+		$readme		= file_get_contents(Config::get_config('install_path')
+						    . "/extlibs/XML_Client/README");
+		$init = file_get_contents(Config::get_config('install_path') . "/extlibs/XML_Client/__init__.py");
+
+		$zip = new ZipArchive();
+		$name = tempnam($ZIP_CACHE, "XML_Cli_");
+		$zip->open($name, ZipArchive::OVERWRITE);
+		$zip->addFromString("XML_Client/Confusa_Client.py",	$confusa_client);
+		$zip->addFromString("XML_Client/Confusa_Parser.py",	$confusa_parser);
+		$zip->addFromString("XML_Client/HTTPSClient.py",	$https_client);
+		$zip->addFromString("XML_Client/Timeout.py",	$timeout);
+		$zip->addFromString("XML_Client/README",		$readme);
+		$zip->addFromString("XML_Client/__init__.py",		$init);
+		if ($zip->numFiles != 6) {
+			Logger::log_event(LOG_NOTICE,  " Could not add all RI-library files to ZIP-archive.");
+			Framework::error_output("Error creating archive. Cannot send");
+			return False;
+		}
+		if ($zip->close()) {
+			$contents = file_get_contents($name);
+			download_zip($contents, "XML_Client.zip");
+		}
+		unlink($name);
+		Logger::log_event(LOG_NOTICE, "Sending XML_Client.zip to " . $this->person->getEPPN());
+		return True;
+	}
 }
 
 $fw = new Framework(new CP_Robot_Interface());
