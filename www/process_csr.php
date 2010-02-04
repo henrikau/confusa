@@ -201,6 +201,11 @@ final class CP_ProcessCsr extends Content_Page
 			                          $this->translateTag('l10n_link_change', 'processcsr') .
 			                          "</a>.");
 
+			if (Config::get_config('cert_product') == PRD_PERSONAL) {
+				$this->tpl->assign('ca_certificate',
+				                   ConfusaConstants::$CAPI_PERSONAL_ROOT_CERT);
+			}
+
 			$this->tpl->assign('content',	$this->tpl->fetch($browserTemplate));
 			return;
 		/* signing of a copied/pasted CSR */

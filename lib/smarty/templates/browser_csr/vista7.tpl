@@ -106,6 +106,7 @@ function createIEVistaRequest(dn, keysize)
 
 		<div style="margin-top: 1em">
 			{$l10n_info_installcert1} <a href="process_csr.php?install_cert={$order_number|escape}">{$l10n_link_installcert}</a>
+			{if isset($ca_certificate)}{$l10n_info_installcert2} <a href="{$ca_certificate}">{$l10n_link_cacert}</a>{/if}!
 		</div>
 	{/if}
 
