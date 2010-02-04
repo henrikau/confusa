@@ -384,6 +384,10 @@ class CP_Robot_Interface extends Content_Page
 						    . "/extlibs/XML_Client/Timeout.py");
 		$readme		= file_get_contents(Config::get_config('install_path')
 						    . "/extlibs/XML_Client/README");
+		$license	= file_get_contents(Config::get_config('install_path')
+						    . "/extlibs/XML_Client/LICENSE");
+		$gplv3		= file_get_contents(Config::get_config('install_path')
+						    . "/COPYING");
 		$init = file_get_contents(Config::get_config('install_path') . "/extlibs/XML_Client/__init__.py");
 
 		$zip = new ZipArchive();
@@ -394,8 +398,10 @@ class CP_Robot_Interface extends Content_Page
 		$zip->addFromString("XML_Client/HTTPSClient.py",	$https_client);
 		$zip->addFromString("XML_Client/Timeout.py",	$timeout);
 		$zip->addFromString("XML_Client/README",		$readme);
+		$zip->addFromString("XML_Client/LICENSE",		$license);
+		$zip->addFromString("XML_Client/COPYING",		$gplv3);
 		$zip->addFromString("XML_Client/__init__.py",		$init);
-		if ($zip->numFiles != 6) {
+		if ($zip->numFiles != 8) {
 			Logger::log_event(LOG_NOTICE,  " Could not add all RI-library files to ZIP-archive.");
 			Framework::error_output("Error creating archive. Cannot send");
 			return False;
