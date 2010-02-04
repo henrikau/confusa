@@ -42,8 +42,10 @@ class CP_Admin extends Content_Page
 					$this->deleteAdmin($admin, NREN_ADMIN);
 					break;
 				case 'downgrade_self':
-					$this->downgradeNRENAdmin($this->person->getEPPN(),
-								  $this->person->getSubscriber()->getDBID());
+					if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_admin'))) {
+						$this->downgradeNRENAdmin($this->person->getEPPN(),
+									  $this->person->getSubscriber()->getDBID());
+					}
 					break;
 				case 'upgrade_subs_admin':
 					$admin = Input::sanitizeEPPN($_POST['subs_admin']);
@@ -314,6 +316,13 @@ class CP_Admin extends Content_Page
 				$subscriber_admins = $this->getSubscriberAdmins($current_subscriber->getDBID(), SUBSCRIBER_ADMIN);
 				$this->tpl->assign('subscriber', $current_subscriber);
 				$this->tpl->assign('subscriber_admins', $subscriber_admins);
+			}
+
+			/* does the NREN-admin have the admin-entitlement (for downgrading)? */
+			if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_admin'))) {
+				$this->tpl->assign('has_adm_entl',true);
+			} else {
+				$this->tpl->assign('has_adm_entl',false);
 			}
 
 			$this->tpl->assign('nren_admins', $admins);

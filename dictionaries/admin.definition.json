@@ -160,5 +160,8 @@
 	},
 	"l10n_infotext_subss_adm3": {
 		"en": "The following are sub-admins for your insitutions, who, like you, may revoke certificates (and their names/emails):"
+	},
+	"l10n_nren_cannot_downgrade": {
+		"en":	"You cannot downgrade to Subscriber-admin because you do not have the required entitlements set. If you do this, you will lock yourself out of the admin-interface!"
 	}
 }
