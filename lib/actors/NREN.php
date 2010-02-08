@@ -2,6 +2,7 @@
 require_once 'confusa_include.php';
 require_once 'mdb2_wrapper.php';
 require_once 'CriticalAttributeException.php';
+require_once 'classTextile.php';
 
 /**
  * Placeholder for an NREN
@@ -586,5 +587,156 @@ class NREN
 
 		return $subscribers;
 	}
+
+	/**
+	 * getPrivacyNotice() - return the privacy-notice for the NREN
+	 *
+	 * @param Person $person the current person (for translating the tags)
+	 */
+	public function getPrivacyNotice($person)
+	{
+		$query = "SELECT privacy_notice FROM nrens WHERE nren_id = ?";
+		$res = array();
+		try {
+			$res = MDB2Wrapper::execute($query,
+						    array('text'),
+						    array($this->getID()));
+		} catch (DBStatementException $dbse) {
+			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the privnotice " .
+			                  "text of NREN $nren due to an error with the " .
+			                  "statement. Server said " . $dbse->getMessage());
+			return "";
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the privnotice " .
+			                  "text of NREN $nren due to an error in the " .
+			                  "query. Server said " . $dbqe->getMessage());
+			return "";
+		}
+
+		if (count($res) > 0) {
+			$pn=$res[0]['privacy_notice'];
+
+			$pn=stripslashes($pn);
+			$pn=Input::br2nl($pn);
+			$textile = new Textile();
+
+			/* replalce tags */
+			return $this->replaceTags($textile->TextileRestricted($pn,0), $person);
+
+		}
+		return "No privacy-notice has yet been set for your NREN (".
+			$this->getName().")<br />";
+
+	}
+
+	/**
+	 * getAboutText
+	 * Get the about-text for a certain NREN, so it can be displayed in Confusa's
+	 * about-section
+	 *
+	 * @param Person $person the current person for tag-replacement
+	 */
+	public function getAboutText($person)
+	{
+		$query = "SELECT about FROM nrens WHERE nren_id = ?";
+
+		try {
+			$res = MDB2Wrapper::execute($query,
+						    array('text'),
+						    array($this->getID()));
+		} catch (DBStatementException $dbse) {
+			Framework::error_output($this->translateMessageTag('abt_err_dbstat') . " " .
+			                        htmlentities($dbse->getMessage()));
+			return "";
+		} catch (DBQueryException $dbqe) {
+			Framework::error_output($this->translateMessageTag('abt_err_dbquery') .  " " .
+			                        htmlentities($nren));
+			return "";
+		}
+
+		if (count($res) > 0) {
+			$at = stripslashes($res[0]['about']);
+			$at = Input::br2nl($at, 0);
+			$textile = new Textile();
+			return $this->replaceTags($textile->TextileRestricted($at), $person);
+		} else {
+			return "No about-NREN text has been defined for your NREN (" .
+				$this->getName(). ")";
+		}
+	}
+
+
+	/**
+	 * getHelpText()
+	 *
+	 * Get the custom help text entered for/by a certain NREN
+	 *
+	 * @param Person $person the current person (for tag-replacement)
+	 * @return String $help_text the parsed, replaced and textile-replaced text
+	 */
+	public function getHelpText($person)
+	{
+		$query = "SELECT help FROM nrens WHERE nren_id = ?";
+		$res = array();
+		try {
+			$res = MDB2Wrapper::execute($query,
+						    array('text'),
+						    array($this->getID()));
+		} catch (DBStatementException $dbse) {
+			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the help " .
+			                  "text of NREN $nren due to an error with the " .
+			                  "statement. Server said " . $dbse->getMessage());
+			return "";
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_INFO, "[norm] Could not retrieve the help " .
+			                  "text of NREN $nren due to an error in the " .
+			                  "query. Server said " . $dbqe->getMessage());
+			return "";
+		}
+
+		if (count($res) > 0) {
+			$help_text=$res[0]['help'];
+
+			$help_text=stripslashes($help_text);
+			$help_text=Input::br2nl($help_text);
+			$textile = new Textile();
+			return $this->replaceTags($textile->TextileRestricted($help_text,0), $person);
+		}
+	} /* end getHelpText() */
+
+
+	private function replaceTags($text, $person)
+	{
+		/*
+		 * {$subscriber}
+		 * {$product_name}
+		 * {$confusa_url}
+		 * {$subscriber_support_email}
+		 * {$subscriber_support_url}
+		 */
+		$subscriber = $person->getSubscriber();
+		if (!is_null($subscriber)) {
+			$text = str_ireplace('{$subscriber}',
+					     $subscriber->getOrgname(),
+					     $text);
+			$text = str_ireplace('{$subscriber_support_email}',
+					     $subscriber->getHelpEmail(),
+					     $text);
+			$text = str_ireplace('{$subscriber_support_url}',
+					     $subscriber->getHelpURL(),
+					     $text);
+		}
+		$productName = ConfusaConstants::$PERSONAL_PRODUCT;
+		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+			$productName = ConfusaConstants::$ESCIENCE_PRODUCT;
+		}
+		$text = str_ireplace('{$product_name}', $productName, $text);
+		$text = str_ireplace('{$confusa_url}',
+				     Config::get_config('server_url'),
+				     $text);
+
+		return $text;
+	}
+
 } /* end class NREN */
 ?>

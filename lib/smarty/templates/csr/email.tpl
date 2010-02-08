@@ -12,17 +12,19 @@
        summary="{$l10n_pcsr_email_table_summary}">
   {* we could use html_checkboxes, but getting all the boxes ticked
    required more code than writing the loop manually *}
+
+  {* initialize the count *}
   {foreach from=$person->getAllEmails() item=addr}
   <tr>
     <td style="width: 30px;"></td>
     <td>
       <input type="checkbox"
 	     name="subjAltName_email[]"
-		 id="subjAltName_email"
+		 id="SAN_{$addr|regex_replace:"/@/":"_at_"}"
 	     value="{$addr}"
 	     checked="checked"/>
     </td>
-    <td><label for="subjAltName_email">{$addr}</label></td>
+    <td><label for="SAN_{$addr|regex_replace:"/@/":"_at_"}">{$addr}</label></td>
   </tr>
   {/foreach}
 

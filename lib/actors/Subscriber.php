@@ -655,31 +655,59 @@ class Subscriber
 		return true;
 	}
 
+	/**
+	 * create() add a new subscriber to the database.
+	 *
+	 * This function will create a new entry in the subscribers-table and
+	 * add the uploaded values to it.
+	 *
+	 * If the subscriber is valid, it means it has a db-entry, and thus we
+	 * cannot create a new one.
+	 *
+	 * The function is a skeleton, it will create a skeleton subscriber and
+	 * then call save() to decorate it. This is so we can handle arbitrary
+	 * number of arguments. Requried attributes (such as idp_name) must be
+	 * set as we sue this in order to create the entry.
+	 *
+	 * @param: void
+	 * @return Boolean true|false indication success or failure.
+	 */
 	public function create()
 	{
 		if ($this->isValid()) {
 			return false;
 		}
-		$query  = "INSERT INTO subscribers (name, dn_name, nren_id, ";
-		$query .= "org_state, subscr_email, subscr_phone, subscr_resp_email, ";
-		$query .= "subscr_resp_name, lang, subscr_comment, subscr_help_url, subscr_help_email) ";
-		$query .= "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		$params = array('text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
+
+		if (is_null($this->getIdPName()) ||$this->getIdPName() == "") {
+			throw new ConfusaGenException("Cannot add subscriber without an IdP-name ".
+						      "(Attribute Name). ".
+						      "This is requried for all subscribers.");
+		}
+		if (is_null($this->org_name) || $this->org_name == "") {
+			throw new ConfusaGenException("Cannot add subscriber without an org-name".
+						      "(DN Organization Name) .".
+						      "This value cannot be changed after the subscriber has been added ".
+						      "and must be provided at creation.");
+
+		}
+		$query  = "INSERT INTO subscribers (name, dn_name, nren_id) VALUES(?, ?, ?)";
+		$params = array('text', 'text', 'text');
 
 		$data = array($this->getIdPName(),
 			      $this->org_name,
-			      $this->nren->getID(),
-			      $this->getState(),
-			      $this->getEmail(),
-			      $this->getPhone(),
-			      $this->getRespEmail(),
-			      $this->getRespName(),
-			      $this->getlanguage(),
-			      $this->getComment(),
-			      $this->getHelpURL(),
-			      $this->getHelpEmail());
+			      $this->nren->getID());
 		try {
 			MDB2Wrapper::update($query, $params, $data);
+			$id_res = MDB2Wrapper::execute("SELECT subscriber_id FROM subscribers where name=? AND nren_id=?",
+						       array('text', 'text'),
+						       array($this->getIdPName(), $this->nren->getID()));
+			if (count($id_res) == 1) {
+				$this->setDBID($id_res[0]['subscriber_id']);
+				$this->valid = true;
+				$this->save();
+			} else {
+				throw new ConfusaGenException("Could not add subscriber to database for unknown reason.");
+			}
 			return true;
 		} catch (DBStatementException $dbse) {
 			$msg  = __CLASS__ . "::" . __FUNCTION__ . "(" . __LINE__ . ") ";

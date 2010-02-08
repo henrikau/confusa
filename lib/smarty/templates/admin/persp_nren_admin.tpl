@@ -32,14 +32,24 @@
 	{foreach from=$nren_admins item=admin}
 		<tr>
 		<td style="width: 30px">
-			{if ($admin.eppn == $self)}
-				<form action ="" method="post">
-					<input type="hidden" name="nren_operation" value="downgrade_self" />
-					<input type="image" src="graphics/arrow_down.png" alt="Downgrade admin"
-					name="Downgrade" title="{$l10n_title_downgrade_adm}"
-					onclick="return confirm('{$l10n_confirm_downgrade_selfn}')" />
-				</form>
-			{/if}
+		  {if ($admin.eppn == $self)}
+		  {if $has_adm_entl}
+		  <form action ="" method="post">
+		    <input type="hidden" name="nren_operation" value="downgrade_self" />
+		    <input type="image"
+			   src="graphics/arrow_down.png"
+			   alt="Downgrade admin"
+			   name="Downgrade"
+			   title="{$l10n_title_downgrade_adm}"
+			   onclick="return confirm('{$l10n_confirm_downgrade_selfn}')" />
+		  </form>
+		  {else}
+		  <img src="graphics/flag_orange.png"
+		       alt="{$l10n_nren_cannot_downgrade}"
+		       title="{$l10n_nren_cannot_downgrade}"
+		       />
+		  {/if} {* has admin-entitlement *}
+		  {/if} {* admin.eppn == self *}
 		</td>
 		<td style="width: 30px">
 			<form action="" method="post">

@@ -151,6 +151,9 @@ final class CP_ProcessCsr extends Content_Page
 		$this->tpl->assign('l10n_pcsr_email_table_summary',
 				   $this->translateTag('l10n_pcsr_email_table_summary', 'processcsr'));
 
+		$this->tpl->assign('l10n_privacy_notice_header',
+				   $this->translateTag('l10n_privacy_notice_header', 'messages'));
+		$this->tpl->assign('privacy_notice_text', $this->person->getNREN()->getPrivacyNotice($this->person));
 		$this->tpl->assign('finalDN',   $this->ca->getFullDN());
 
 		/* signing finished, redirect to download */
@@ -193,12 +196,16 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('dn',				$browser_adapted_dn);
 			$this->tpl->assign('keysize',			Config::get_config('key_length'));
 			$browserTemplate = $this->dispatchBrowserTemplate();
-			$extraScript = array('js/cert_request.js');
-			$this->tpl->assign('extraScripts', $extraScript);
 			Framework::message_output($this->translateTag('l10n_msg_browsergen', 'processcsr') .
 			                          " <a href=\"process_csr.php\">" .
 			                          $this->translateTag('l10n_link_change', 'processcsr') .
 			                          "</a>.");
+
+			if (Config::get_config('cert_product') == PRD_PERSONAL) {
+				$this->tpl->assign('ca_certificate',
+				                   ConfusaConstants::$CAPI_PERSONAL_ROOT_CERT);
+			}
+
 			$this->tpl->assign('content',	$this->tpl->fetch($browserTemplate));
 			return;
 		/* signing of a copied/pasted CSR */

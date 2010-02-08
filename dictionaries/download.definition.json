@@ -57,7 +57,7 @@
 		"en":	"Showing all valid certificates."
 	},
 	"l10n_text_hideold": {
-		"en":	"Hide old"
+		"en":	"Hide"
 	},
 	"l10n_title_email": {
 		"en":	"Send certificate via email"
@@ -94,5 +94,11 @@
 	},
 	"l10n_legend_availcerts": {
 		"en":	"Available Certificates"
+	},
+	"l10n_infotext_instcacert1": {
+		"en":	"Please also install the"
+	},
+	"l10n_infotext_instcacert2": {
+		"en":	"CA-certificate!"
 	}
 }

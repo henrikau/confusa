@@ -6,6 +6,7 @@
       {$prot_l}{$item_my_certificates|escape}{$prot_r}</a></li>
   <li><a href="revoke_certificate.php"{$prot_title}>
       {$prot_l}{$item_revoke_certificates|escape}{$prot_r}</a></li>
+  <li><a href="root_cert.php">{$item_cacert|escape}</a></li>
 </ul>
 
 <h3>{$heading_help|escape}</h3>
@@ -13,13 +14,6 @@
   <li><a href="about_nren.php">{$item_about|escape}</a></li>
   <li><a href="help.php">{$item_help|escape}</a></li>
   <li><a href="privacy_notice.php">{$item_privacy_notice|escape}</a></li>
-</ul>
-
-<h3>{$heading_extras|escape}</h3>
-<ul>
-  <li><a href="tools.php"{$prot_title}>
-      {$prot_l}{$item_tools|escape}{$prot_r}</a></li>
-  <li><a href="root_cert.php">{$item_cacert|escape}</a></li>
 </ul>
 
 {if $person->isAdmin()}

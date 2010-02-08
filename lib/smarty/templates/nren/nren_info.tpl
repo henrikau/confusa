@@ -135,7 +135,7 @@
 
       {if $personal == TRUE}
       <tr>
-	<td align="right">{$l10n_label_certvalidity}</td>
+	<td align="right" valign="top">{$l10n_label_certvalidity}</td>
 	<td></td>
 	<td>
 	  {html_radios
@@ -164,7 +164,7 @@
       {* The number of valid email-addresses to allow in the
       SAN *}
       <tr>
-	<td align="right">{$l10n_label_encertmail|escape}</td>
+	<td align="right" valign="top">{$l10n_label_encertmail|escape}</td>
 	<td></td>
 	<td>
 	  {html_radios

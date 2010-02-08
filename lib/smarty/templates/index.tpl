@@ -32,6 +32,10 @@
 <p class="info">
 {$auth_welcome_1|escape}
 </p>
+
+<p class="important">
+  {$auth_warning_1}
+</p>
 <br />
 <hr style="width 90%" />
 <br />

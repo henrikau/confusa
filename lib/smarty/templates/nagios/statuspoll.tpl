@@ -33,7 +33,7 @@
 	There was <span style="color: green"><strong>no error</strong></span> logged with a severity equal or greater Confusa's critical log-level.
 	</p>
 	<p>
-	(The currently configured log-level for critical errors is <strong>{$logLevel|escape}</strong>.)
+	The log-level for critical errors can be configured in the Confusa-configuration, entry 'loglevel_fail'.
 	</p>
 
 	<div style="display: none">
@@ -43,7 +43,10 @@
 	{else}
 
 	<p style="color: red">
-	Errors with severity greater or equal than Confusa's configured critical log-level <strong>'{$logLevel|escape}'</strong> found!
+	Errors with severity greater or equal than Confusa's configured critical log-level found!
+	</p>
+	<p>
+	The log-level for critical errors can be configured in the Confusa-configuration, entry 'loglevel_fail'.
 	</p>
 
 	<div style="display: none">

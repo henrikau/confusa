@@ -32,9 +32,9 @@
 
 <br />
 
-<form method="get" action="tools.php">
+<form method="get" action="">
   <p>
-    <input type="hidden" name="xml_client_file" />
+    <input type="hidden" name="robot_action" value="download_archive" />
     <input type="submit" value="{$l10n_button_downloadfile}" />
   </p>
 </form>

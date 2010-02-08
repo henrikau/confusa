@@ -66,6 +66,15 @@ final class CP_DownloadCertificate extends Content_Page
 			Framework::error_output($this->translateMessageTag('downl_err_db') .
 			                        htmlentities($e->getMessage()));
 		}
+
+		/* animate the user to install the root certificate in personal mode,
+		 * so Thunderbird will fully trust the certs when using them in S/MIME
+		 */
+		if (Config::get_config('cert_product') == PRD_PERSONAL) {
+			$this->tpl->assign('ca_certificate',
+			                   ConfusaConstants::$CAPI_PERSONAL_ROOT_CERT);
+		}
+
 		$this->tpl->assign('standalone', (Config::get_config('ca_mode') === CA_STANDALONE));
 		$this->tpl->assign('content', $this->tpl->fetch('download_certificate.tpl'));
 	}

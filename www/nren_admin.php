@@ -147,7 +147,7 @@ class CP_NREN_Admin extends Content_Page
 					Framework::error_output("Cannot create new, already existing.");
 					break;
 				}
-				$subscriber->setOrgname($dn_name);
+				$subscriber->setOrgName($dn_name);
 				$subscriber->setState($state);
 				$subscriber->setEmail($subscr_email);
 				$subscriber->setPhone($subscr_phone);
@@ -339,7 +339,7 @@ class CP_NREN_Admin extends Content_Page
 					  "for subscriber $subscriberName.");
 		}
 
-		MDB2Wrapper::execute("DELETE FROM subscribers WHERE subscriber_id = ? AND nren_id = ?",
+		MDB2Wrapper::update("DELETE FROM subscribers WHERE subscriber_id = ? AND nren_id = ?",
 				     array('text', 'text'),
 				     array($id, $nren_id));
 
@@ -350,7 +350,7 @@ class CP_NREN_Admin extends Content_Page
 		       htmlentities($id) . ". " .
 			   $this->translateTag('l10n_suc_deletesubs3', 'nrenadmin') . " " .
 			   $count . " " . $this->translateTag('l10n_suc_deletesubs4', 'nrenadmin');
-		Framework::message_output($msg);
+		Framework::success_output($msg);
 	} /* end delSubscriber */
 
 	/**

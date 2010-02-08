@@ -70,11 +70,13 @@
 
 			{if $subscriber->getIdPName() == $self_subscriber}
 				<input type="image" name="delete" title="{$l10n_title_deletesubs}"
-				       onclick="return confirm('{$l10n_confirm_deleteownsubs1} ({$subscriber->getOrgName()})!\n          {$l10n_confirm_deleteownsubs2}')"
+				       onclick="return confirm('{$l10n_confirm_deleteownsubs} ({$subscriber->getOrgName()})!\n          {$l10n_confirm_delete_confirm}')"
 				       value="delete" src="graphics/delete.png"
 				       alt="{$l10n_title_deletesubs}" />
 			{else}
-				<input type="image" name="delete" title="{$l10n_title_deletesubs}"
+				<input type="image" name="delete"
+				title="{$l10n_title_deletesubs}"
+				       onclick="return confirm('{$l10n_confirm_delete_subscriber} {$subscriber->getOrgName()|escape}\n {$l10n_confirm_delete_confirm}')"
 				       value="delete" src="graphics/delete.png"
 				       alt="{$l10n_title_deletesubs}" />
 			{/if}

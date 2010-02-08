@@ -74,32 +74,44 @@ function createIEVistaRequest(dn, keysize)
 </div>
 </div>
 
-<div style="margin-top: 2em">
+<div id="reqDiv" style="margin-top: 2em">
 	<form id="reqForm" name="reqForm" method="post" action="process_csr.php" onsubmit="return createIEVistaRequest('{$dn}', {$keysize});">
 		<input type="hidden" id="reqField" name="browserRequest" value="" />
 		<input type="hidden" name="browserSigning" value="vista7" />
 		<input type="submit" id="chooseButton" style="display: none" value="{$l10n_button_choose}" />
 	</form>
 </div>
-<br />
-</fieldset>
 
 {* TODO: build the form with JavaScript, thus a user not having it enabled will not even see it - more user friendly *}
-<script type="text/javascript">
 {if isset($order_number)}
-	{* No need to press "Start" once the order number is set *}
-	var chooseButton = document.getElementById("chooseButton");
-	{* IE workaround *}
-	chooseButton.style.cssText = "display: none";
+
+<div id="pendingArea">
+	<script type="text/javascript">
+	document.getElementById('info_view').style.display = 'none';
+	document.getElementById("reqDiv").style.display = "none";
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
-	pollStatus('{$l10n_infotext_processing} {$order_number|escape}.');
+	document.write('{$l10n_infotext_processing} {$order_number|escape}');
+	document.writeln('<span id="dots"></span>');
+	document.writeln('{$l10n_infotext_brows_csr_ong}');
+	showSmallishDots(0);
+	</script>
+</div>
 
 	{if isset($done) && $done === TRUE}
-		clearTimeout(timer1);
-		statusDone({$order_number|escape});
+		<script type="text/javascript">
+			clearTimeout(timer1);
+			document.getElementById("pendingArea").style.display = "none";
+		</script>
+
+		<div style="margin-top: 1em">
+			{$l10n_info_installcert1} <a href="process_csr.php?install_cert={$order_number|escape}">{$l10n_link_installcert}</a>
+			{if isset($ca_certificate)}{$l10n_info_installcert2} <a href="{$ca_certificate}">{$l10n_link_cacert}</a>{/if}!
+		</div>
 	{/if}
+
 {else}
+<script type="text/javascript">
 	{* let the user choose the CSP (Cryptographic service provider) *}
 	var cryptProvText = '{$l10n_infotext_cryptprov} \"Microsoft Software Key Storage Provider\"!)';
 	var cspErrorText = '{$l10n_infotext_csperror}';
@@ -138,5 +150,7 @@ function createIEVistaRequest(dn, keysize)
 	infoView.appendChild(spacer);
 	infoView.innerHTML += "<p class=\"info\">" + cryptProvText + "</p>";
 	{/literal}
-{/if}
 </script>
+{/if}
+</fieldset>
+
