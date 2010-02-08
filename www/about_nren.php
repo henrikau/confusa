@@ -14,10 +14,13 @@ class CP_About_NREN extends Content_Page
 
 	public function process()
 	{
-		$logo = "view_logo.php?nren=" . $this->person->getNREN();
-		$this->tpl->assign('logo', $logo);
-		$about_text = $this->person->getNREN()->getAboutText($this->person);
-		$this->tpl->assign('text_info', $about_text);
+		if ($this->person->isAuth()) {
+			$logo = "view_logo.php?nren=" . $this->person->getNREN();
+			$this->tpl->assign('logo', $logo);
+			$about_text = $this->person->getNREN()->getAboutText($this->person);
+			$this->tpl->assign('text_info', $about_text);
+		}
+
 		$this->tpl->assign('content', $this->tpl->fetch('about_nren.tpl'));
 	}
 
