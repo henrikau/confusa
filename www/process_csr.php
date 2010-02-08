@@ -322,7 +322,7 @@ final class CP_ProcessCsr extends Content_Page
 				$this->tpl->assign('list_all_csr',	true);
 				/* match the DN only when using standalone CA, no need to do it for Comodo */
 			} else if (Config::get_config('ca_mode') == CA_COMODO ||
-				   match_dn($subject, $this->person)) {
+				   match_dn($subject, $this->ca->getFullDN())) {
 				$ip	= $_SERVER['REMOTE_ADDR'];
 				$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
 				$query .= " common_name, auth_key)";

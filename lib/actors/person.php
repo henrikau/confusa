@@ -179,31 +179,6 @@ class Person{
 	    return $start - $this->getTimeLeft();
     }
 
-    /**
-     * getX509SubjectDN()  Complete /DN for a certificate/CSR
-     *
-     * @return: String The DN in an X.509 certificate
-     */
-    function getX509SubjectDN()
-    {
-	    if (is_null($this->getSubscriber())) {
-		    return null;
-	    }
-	    $dn = "";
-	    $country	= $this->nren->getCountry();
-	    $son	= Output::mapUTF8ToASCII($this->getSubscriber()->getOrgName());
-
-	    if (isset($country)) {
-		    $dn .= "/C=$country";
-	    }
-	    if (isset($son)) {
-		    $dn .= "/O=$son";
-	    }
-	    $dn .= "/CN=" . $this->getX509ValidCN();
-
-	    return $dn;
-    }
-
 	/**
 	 * Return the DN of the person, but in a more "browser-friendly" format,
 	 * i.e. separated by commas in the form of C=SE, O=EvilMasterminds, CN= Dr. Evil

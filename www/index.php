@@ -25,6 +25,10 @@ final class CP_Index extends Content_Page
 	 */
 	function process()
 	{
+		if ($this->person->isAuth()) {
+			$this->tpl->assign('subjectDN', $this->ca->getFullDN());
+		}
+
 		$this->tpl->assign('content',
 				   $this->tpl->fetch('index.tpl'));
 	} /* end process() */
