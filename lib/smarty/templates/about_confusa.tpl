@@ -1,5 +1,6 @@
 <h3>about::confusa</h3>
 <div class="spacer"></div>
+{if $person->inAdminMode()}
 <div>
 <table style="border-style: dashed; border-width: 0.1em">
 <thead>
@@ -50,3 +51,23 @@
 </table>
 {/if}
 </div>
+{else}
+
+	<p>Confusa </p>
+
+	<h4>Authentication</h4>
+
+	<p>The portal development team would like to thank the creators of
+	<a href="http://rnd.feide.no/simplesamlphp" target="_blank">simplesamlphp</a>
+	which is the authentication backend of Confusa.</p>
+
+	<h4>Icons</h4>
+	 
+	<h4>Server components</h4>
+	<div>
+		<ul style="margin-left: 3em">
+			<li>PHP</li>
+			<li>MySQL</li>
+		</ul>
+	</div>
+{/if}
