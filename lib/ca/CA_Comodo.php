@@ -977,10 +977,16 @@ class CA_Comodo extends CA
 		break;
 	}
 
-        /* manually compose the subject. Necessary, because we want to have
+		/* need an unstructured name for personal certificates */
+		if (Config::get_config('cert_product') == PRD_PERSONAL) {
+			$postfields_sign_req["subject_unstructuredName_".$pf_counter++] =
+				$this->person->getEPPN();
+		}
+
+		/* manually compose the subject. Necessary, because we want to have
          * Terena domainComponents */
         $postfields_sign_req["subject_commonName_$pf_counter"] = $this->person->getX509ValidCN();
-	$pf_counter++;
+		$pf_counter++;
 
         $postfields_sign_req["subject_organizationName_".$pf_counter++] =
 		$this->person->getSubscriber()->getOrgName();
