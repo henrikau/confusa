@@ -10,7 +10,7 @@ class CP_About_Confusa extends Content_Page
 	function __construct()
 	{
 		/* Only show to authenticated users */
-		parent::__construct("About Confusa", true);
+		parent::__construct("About Confusa", true, "credits");
 	}
 
 	function process()
@@ -27,6 +27,13 @@ class CP_About_Confusa extends Content_Page
 		if (Config::get_config('debug') === true) {
 			$this->tpl->assign('debug', true);
 			$this->assignDebugVariables();
+		}
+
+		$operator_logo = Config::get_config('operator_logo');
+		if (file_exists($operator_logo)) {
+			$operator_url = Config::get_config('operator_url');
+			$op_creds = "<a href=\"$operator_url\" target=\"_blank\"><img src=\"view_logo.php?op=yes\" alt=\"Operator logo\" /></a>";
+			$this->tpl->assign("op_creds", $op_creds);
 		}
 
 		$this->tpl->assign('content', $this->tpl->fetch('about_confusa.tpl'));
