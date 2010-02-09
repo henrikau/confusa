@@ -117,7 +117,7 @@
    <tr {$bg1}>
      <td><b>{$attribute_fulldn|escape}</b></td>
      <td></td>
-     <td><pre class="certificate">{$person->getX509SubjectDN()|escape}</pre></td>
+     <td><pre class="certificate">{$subjectDN|escape}</pre></td>
    </tr>
 
  </table>

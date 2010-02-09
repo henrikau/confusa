@@ -340,11 +340,48 @@ abstract class CA
 		}
 
 		$dn .= "/C=" . $this->person->getNREN()->getCountry();
-		$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
-		$dn .= "/CN=" . $this->person->getX509ValidCN();
+
+		if (Config::get_config('cert_product') == PRD_PERSONAL) {
+			$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
+			$dn .= "/CN=" . $this->person->getX509ValidCN();
+			$dn .= "/unstructuredName=" . $this->person->getEPPN();
+		} else { /* eScience */
+			$dn .= "/O=" . Output::mapUTF8ToASCII($this->person->getSubscriber()->getOrgName());
+			$dn .= "/CN=" . $this->person->getX509ValidCN();
+		}
 
 		return $dn;
   }
+
+	/**
+	 * Return the DN of the person, but in a more "browser-friendly" format,
+	 * i.e. separated by commas in the form of C=SE, O=EvilMasterminds, CN= Dr. Evil
+	 * instead of /C=SE/O=EvilMastermindes/CN=Dr. Evil
+	 *
+	 * This is needed for in-browser request signing
+	 * @return string the DN in comma-separated format
+	 */
+  public function getBrowserFriendlyDN()
+  {
+		$dn = "";
+		foreach ($this->dcs as $dc) {
+			$dn .= "DC=$dc, ";
+		}
+
+		$dn .= "C=" . $this->person->getNREN()->getCountry() . ", ";
+
+		if (Config::get_config('cert_product') == PRD_PERSONAL) {
+			$dn .= "O=" . $this->person->getSubscriber()->getOrgName() . ", ";
+			$dn .= "CN=" . $this->person->getX509ValidCN();
+			$dn .= "/unstructuredName=" . $this->person->getEPPN();
+		} else { /* eScience */
+			$dn .= "O=" . Output::mapUTF8ToASCII($this->person->getSubscriber()->getOrgName()) . ", ";
+			$dn .= "CN=" . $this->person->getX509ValidCN();
+		}
+
+		return $dn;
+	}
+
 } /* end class CA */
 
 class CAHandler

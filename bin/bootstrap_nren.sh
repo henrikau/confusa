@@ -107,7 +107,7 @@ echo $res
 exit 0
 fi
 
-echo "Adding new administrator to NREN ${nren}, internal ID ${nren_id}"
+echo "Adding new administrator to NREN ${nren_name}, internal ID ${nren_id}"
 res=`run_query "INSERT INTO admins(admin, admin_level, nren) VALUES('$eppn', '2', $nren_id)"`
 result=$?
 

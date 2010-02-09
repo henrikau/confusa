@@ -191,16 +191,6 @@ function configure_confusa_settings
 		break
 	done
 
-	# obey the grid restrictions if the mode is escience.
-	# if it isn't, allow UTF-8 characters in the subject DN and long DNs
-	if [ $product = "PRD_ESCIENCE" ]; then
-		sed s\|"'obey_grid_restrictions'[ \t]*=>.*"\|"'obey_grid_restrictions'    => true,"\| < $working_template > $config
-	else
-		sed s\|"'obey_grid_restrictions'[ \t]*=>.*"\|"'obey_grid_restrictions'    => false,"\| < $working_template > $config
-	fi
-
-	cp $config $working_template
-
 	sed s\|"'debug'[ \t]*=>.*"\|"'debug'    => false,"\| < $working_template > $config
 	cp $config $working_template
 	sed s\|"'maint'[ \t]*=>.*"\|"'maint'    => false,"\| < $working_template > $config

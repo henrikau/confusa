@@ -312,7 +312,6 @@ if (false && Config::get_config('debug')) {
 	echo "<tr><td><b>OrganizationalName:</b></td><td>".htmlentities($admin->getSubscriber()->getOrgName())."</td></tr>";
 	echo "<tr><td><b>Entitlement:</b></td><td>".htmlentities($admin->getEntitlement())."</td></tr>";
 	echo "<tr><td><b>NREN:</b></td><td>".htmlentities($admin->getNREN())."</td></tr>";
-	echo "<tr><td><b>Complete /DN:</b></td><td>".htmlentities($admin->getX509SubjectDN())."</td></tr>";
 	echo "	<tr><td></td><td></td></tr>";
 	echo "	<tr><td><b>Time left</b></td><td>".htmlentities($timeLeft)."</td></tr>";
 	echo "<tr><td><b>Time since AuthN</b></td><td>".htmlentities($timeSinceStart)."</td></tr>";
