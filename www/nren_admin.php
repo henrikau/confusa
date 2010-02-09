@@ -10,7 +10,6 @@ require_once 'input.php';
 class CP_NREN_Admin extends Content_Page
 {
 	private $state;
-	private $grid_mode = false;
 	function __construct()
 	{
 		parent::__construct("Admin", true, "nrenadmin");
@@ -27,8 +26,7 @@ class CP_NREN_Admin extends Content_Page
 
 		/* are we running in grid-mode? We must check this before we do
 		 * any other processing */
-		if (Config::get_config('obey_grid_restrictions')) {
-			$this->grid_mode = true;
+		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
 			$this->tpl->assign('confusa_grid_restrictions', true);
 		}
 

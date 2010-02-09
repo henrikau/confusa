@@ -304,16 +304,12 @@ class Person{
 		    return null;
 	    }
 
-		if (Config::get_config('obey_grid_restrictions') === TRUE) {
+		if (Config::get_config('cert_product') === PRD_ESCIENCE) {
 			/* note that mapping to ASCII will also sanitize */
 			$cn = Output::mapUTF8ToASCII($name);
+			$cn = $cn . " " . $this->getEPPN(false);
 		} else {
 			$cn = Input::sanitizePersonName($name);
-		}
-
-		/* add the eppn in eScience mode */
-		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
-			$cn = $cn . " " . $this->getEPPN(false);
 		}
 
 		return $cn;

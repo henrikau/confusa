@@ -40,19 +40,6 @@ $confusa_config = array(
          */
 	'server_url'		=> null,
 
-
-	/* when Confusa is operating in "grid-mode", we must add some extra
-	 * restrictions on how certain names can be constructed.
-	 *
-	 * For instance, grid-certificates cannot contain UTF-8, and they cannot
-	 * be longer than 64 characters.
-	 *
-	 * This switch will toggle this. When set to false, Confusa will accept
-	 * CSRs with DN-names longer than 64 characters, and also accept UTF-8
-	 * encoded fields in the \DN.
-	 */
-	'obey_grid_restrictions'	=> true,
-
         /* Pr. default, confusa uses simpleSAMLphp for authentication
          * You can use something else, but you must edit quite a few files to
          * make this possible.
@@ -109,11 +96,15 @@ $confusa_config = array(
 	 *
 	 * PRD_ESCIENCE: eScience certificates should be issued by the portal.
 	 *               e-mail addresses in the SAN of the certificate will be
-	 *               optional.
+	 *               optional. The DN will contain only ASCII characters and
+	 *               the DN length is restricted to 64 characters. The cert
+	 *               validity is 395 days.
 	 * PRD_PERSONAL: personal certificates are issued by the portal. The
-	 *               signing sub-CA is different, the SAN is in the subject
-	 *               and it is recommended to configure Confusa without the
-	 *               Grid restrictions
+	 *               signing sub-CA is different, one or more e-mails will
+	 *               be stored in the SAN of the certificate.
+	 *               The subject-DN may contain UTF-8 and may be longer than
+	 *               64 characters. The cert validity is 365, 730 or 1095 days
+	 *               dependant on NREN setting.
 	 */
 	'cert_product'	=> PRD_ESCIENCE,
 
