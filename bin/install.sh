@@ -121,7 +121,6 @@ function configure_confusa_settings
 	# ca_key_path
 	# ca_key_name
 	# ca_conf_name
-	# script_check_ssl		- should be set to true in the template
 	# loglevel_min
 	# syslog_min			- when you dig into logfiles, you can also change config files
 	# auth_bypass			- not supposed to change, set false in template
@@ -194,8 +193,6 @@ function configure_confusa_settings
 	sed s\|"'debug'[ \t]*=>.*"\|"'debug'    => false,"\| < $working_template > $config
 	cp $config $working_template
 	sed s\|"'maint'[ \t]*=>.*"\|"'maint'    => false,"\| < $working_template > $config
-	cp $config $working_template
-	sed s\|"'script_check_ssl'[ \t]*=>.*"\|"'script_check_ssl'    => true,"\| < $working_template > $config
 	cp $config $working_template
 	sed s\|"'auth_bypass'[ \t]*=>.*"\|"'auth_bypass'    => false,"\| < $working_template > $config
 	cp $config $working_template
@@ -404,22 +401,6 @@ function configure_confusa_settings
 	done
 
 	replace_config_entry "key_length" $custom_key_length
-	echo ""
-
-	# Configure where to report errors
-	###############################################################################
-	if [ $mode = "standalone" ]; then
-		while [ -z $error_addr ]; do
-			echo -n "Where should the users report error in the script to: "
-			read error_addr
-
-			# Sloppily check if that thingie remotely ressembles a mail address
-			error_addr=`echo $error_addr |  egrep "[a-zA-Z0-9-]+([._a-zA-Z0-9.-]+)*@[a-zA-Z0-9.-]+\.([a-zA-Z]{2,4})$"`
-		done
-
-		replace_config_entry "error_addr" $error_addr
-	fi
-
 	echo ""
 
 	# Skip the DB-name, host, username and password configuration, if a config
