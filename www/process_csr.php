@@ -192,7 +192,7 @@ final class CP_ProcessCsr extends Content_Page
 		 */
 		if ((isset($_POST['browserSigning']) || isset($_GET['status_poll'])) &&
 		    $this->aup_set) {
-			$browser_adapted_dn = $this->person->getBrowserFriendlyDN();
+			$browser_adapted_dn = $this->ca->getBrowserFriendlyDN();
 			$this->tpl->assign('dn',				$browser_adapted_dn);
 			$this->tpl->assign('keysize',			Config::get_config('key_length'));
 			$browserTemplate = $this->dispatchBrowserTemplate();
