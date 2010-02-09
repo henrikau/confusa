@@ -120,23 +120,18 @@
 </script>
 {/literal}
 
+<div class="csr">
+<fieldset>
+<legend>{$l10n_legend_availcerts|escape}</legend>
 
-{if empty($certList)}
-<h3>{$l10n_heading_nocerts|escape}</h3>
+{if $standalone}
+	{include file='certificates/persp_standalone.tpl'}
 {else}
-	<div class="csr">
-	<fieldset>
-	<legend>{$l10n_legend_availcerts|escape}</legend>
+	{include file='certificates/persp_comodo.tpl'}
+{/if}
 
-	{if $standalone}
-		{include file='certificates/persp_standalone.tpl'}
-	{else}
-		{include file='certificates/persp_comodo.tpl'}
-	{/if}
-
-	</fieldset>
-	</div>
-{/if} {* empty(certList) *}
+</fieldset>
+</div>
 
 {if isset($processingResult)}
 	{$processingResult|escape}
