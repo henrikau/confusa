@@ -65,9 +65,6 @@ $confusa_config = array(
 	 */
 	'smarty_path'		=> '/usr/share/php/smarty/',
 
-	/* the page of Confusa that should be shown after the user signed in */
-	'post_login_page'	=> '/about_nren.php',
-
 	/* for NREN landing page customization
 	 *
 	 * define where custom CSS files and logos are kept - please specify
@@ -142,24 +139,10 @@ $confusa_config = array(
 	'ca_key_path'		=> '/priv',
 	'ca_key_name'		=> '',
 	'ca_conf_name'		=> '/conf/confusa_openssl.conf',
-	/*
-	 * Where to report errors in the standalone CSR-generation script
-	 * for users. This is the script that can be downloaded in the "Tools"
-	 * section of Confusa, which will create a request/key pair for upload to
-	 * confusa for the user.
-	 *
-	 * This should be an e-mail address belonging to a person who can actually
-	 * respond to possible errors.
-	 */
-	'error_addr'		=> 'your@error.addr',
 
-		/* ======== General flags ========
-		 * ===============================
-         * this *should* be true, as you really* want wget to detect a
-         * SSL-man-in-the-middle attack! However, as a workaround for testsystems
-         * (which normally do not have properly signed SSL-certificate),
-         * force user-script to disregard invalid/self-signed certs. */
-	'script_check_ssl'	=> False,
+	/* ======== General flags ===========================================
+	 * ==================================================================
+	 */
 
         /* default length of client key. This is minimum keylength, a user can
          * upload a longer key, if he/she wants that */
@@ -198,14 +181,6 @@ $confusa_config = array(
 	'sys_from_address'		=> 'your@system.contact.addr',
 	/* the from-addr to show up in the header of emails from the system */
 	'sys_header_from_address' => 'your@system.contact.addr',
-
-	/* the number of CSRs a user can upload before he/she must log
-	 * in and clean up.  */
-	'remote_retries'		=> 10,
-	/* how many different CSRs can exist in the database at any given time,
-	 * uploaded from the SAME ip-address. If this number is high, it can
-	 * indicate someone trying to spam down the database. */
-	'remote_ips'			=> 5,
 
         /* how long should a certificate be valid in the cert_cache before being
          * doomed expired (to avoid that it's available for a long time for the
