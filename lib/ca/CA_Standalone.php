@@ -312,11 +312,11 @@ class CA_Standalone extends CA
 	    }
 	    if ((int)$return != 0) {
 		    Logger::log_event(LOG_NOTICE, "Problems revoking certificate for " .
-				      $this->person->getX509SubjectDN() . "($key)");
+				      $this->getFullDN() . "($key)");
 		    throw new CGE_KeyRevokeException($msg);
 	    }
 	    Logger::log_event(LOG_NOTICE, "Revoked certificate $key for user " .
-			      $this->person->getX509SubjectDN());
+			      $this->getFullDN());
 
 	    if (!$this->deleteCertFromDB($key)) {
 		    Logger::log_event(LOG_NOTICE, "Could not delete certificate ($key) from database, revocation only partially completed.");
@@ -358,7 +358,7 @@ class CA_Standalone extends CA
 		       Framework::error_output("will not accept email in DN of certificate. Download latest version of script.");
 		    return false;
                }
-	       else if (!match_dn($subject, $this->person)) {
+	       else if (!match_dn($subject, $this->getFullDN())) {
 		       $msg = "";
 		       $msg .= "Error in subject! <BR/>\n";
 		       $msg .= "The fields in your CSR was not set properly.<BR>\n";

@@ -180,57 +180,6 @@ class Person{
     }
 
     /**
-     * getX509SubjectDN()  Complete /DN for a certificate/CSR
-     *
-     * @return: String The DN in an X.509 certificate
-     */
-    function getX509SubjectDN()
-    {
-	    if (is_null($this->getSubscriber())) {
-		    return null;
-	    }
-	    $dn = "";
-	    $country	= $this->nren->getCountry();
-	    $son	= Output::mapUTF8ToASCII($this->getSubscriber()->getOrgName());
-
-	    if (isset($country)) {
-		    $dn .= "/C=$country";
-	    }
-	    if (isset($son)) {
-		    $dn .= "/O=$son";
-	    }
-	    $dn .= "/CN=" . $this->getX509ValidCN();
-
-	    return $dn;
-    }
-
-	/**
-	 * Return the DN of the person, but in a more "browser-friendly" format,
-	 * i.e. separated by commas in the form of C=SE, O=EvilMasterminds, CN= Dr. Evil
-	 * instead of /C=SE/O=EvilMastermindes/CN=Dr. Evil
-	 *
-	 * This is needed for in-browser request signing
-	 * @return string the DN in comma-separated format
-	 */
-    function getBrowserFriendlyDN()
-    {
-	$dn = "";
-	$country	= $this->nren->getCountry();
-	$son		= Output::mapUTF8ToASCII($this->getSubscriber()->getOrgName());
-
-	if (isset($country)) {
-	    $dn .= "C=$country, ";
-	}
-
-	if (isset($son)) {
-	    $dn .= "O=$son, ";
-	}
-
-	$dn .= "CN=" . $this->getX509ValidCN();
-	return $dn;
-
-    }
-    /**
      * isAuth() Indicating if the person is AuthN
      *
      * @param void
@@ -355,16 +304,12 @@ class Person{
 		    return null;
 	    }
 
-		if (Config::get_config('obey_grid_restrictions') === TRUE) {
+		if (Config::get_config('cert_product') === PRD_ESCIENCE) {
 			/* note that mapping to ASCII will also sanitize */
 			$cn = Output::mapUTF8ToASCII($name);
+			$cn = $cn . " " . $this->getEPPN(false);
 		} else {
 			$cn = Input::sanitizePersonName($name);
-		}
-
-		/* add the eppn in eScience mode */
-		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
-			$cn = $cn . " " . $this->getEPPN(false);
 		}
 
 		return $cn;

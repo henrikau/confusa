@@ -911,13 +911,16 @@ class CA_Comodo extends CA
     private function capiUploadCSR($auth_key, $csr, $csr_format = "csr")
     {
         $sign_endpoint = ConfusaConstants::$CAPI_APPLY_ENDPOINT;
+		$orgName = "";
 
 		if (Config::get_config('cert_product') == PRD_PERSONAL) {
 			$ca_cert_id = ConfusaConstants::$CAPI_PERSONAL_ID;
+			$orgName = $this->person->getSubscriber()->getOrgName();
 			/* personal certificates should only have the name of the person
 			 * in the CN */
 		} else if (Config::get_config('cert_product') == PRD_ESCIENCE) {
 			$ca_cert_id = ConfusaConstants::$CAPI_ESCIENCE_ID;
+			$orgName = Output::mapUTF8ToASCII($this->person->getSubscriber()->getOrgName());
 		} else {
 			throw new KeySignException("Confusa's configured product-mode is " .
 			                           "illegal! Must be one of: PRD_ESCIENCE, " .
@@ -988,8 +991,7 @@ class CA_Comodo extends CA
         $postfields_sign_req["subject_commonName_$pf_counter"] = $this->person->getX509ValidCN();
 		$pf_counter++;
 
-        $postfields_sign_req["subject_organizationName_".$pf_counter++] =
-		$this->person->getSubscriber()->getOrgName();
+        $postfields_sign_req["subject_organizationName_".$pf_counter++] = $orgName;
         $postfields_sign_req["subject_countryName_".$pf_counter++] =
 		$this->person->getNREN()->getCountry();
 

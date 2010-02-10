@@ -14,9 +14,12 @@ class CP_Priv_Notice extends Content_Page
 
 	public function process()
 	{
-		$this->tpl->assign('nren', $this->person->getNREN());
-		$this->tpl->assign('nren_pt_text',
-				   $this->person->getNREN()->getPrivacyNotice($this->person));
+		if ($this->person->isAuth()) {
+			$this->tpl->assign('nren', $this->person->getNREN());
+			$this->tpl->assign('nren_pt_text',
+			                   $this->person->getNREN()->getPrivacyNotice($this->person));
+		}
+
 		$this->tpl->assign('content', $this->tpl->fetch('privacy_notice.tpl'));
 	}
 }

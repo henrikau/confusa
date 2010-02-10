@@ -247,7 +247,7 @@ function get_csr_details($person, $auth_key)
  * Eventually, we have to add severeal extra fields to handle all different
  * cases, but for now, this will do.
  */
-function match_dn($subject, $person)
+function match_dn($subject, $expectedSubj)
 {
 	/* Compose the DN in the 'correct' order, only use the fields set in
 	 * the subject */
@@ -260,11 +260,11 @@ function match_dn($subject, $person)
 		$composed_dn .= "/OU=".$subject['OU'];
 	if (isset($subject['C']))
 		$composed_dn .= "/CN=".$subject['CN'];
-	$res = $person->getX509SubjectDN() === $composed_dn;
+	$res = $expectedSubj === $composed_dn;
 	if (!$res) {
 		Framework::error_output("Supplied (". htmlentities($composed_dn) .
 		                        ") and required subject (".
-		                        htmlentities($person->getX509SubjectDN()) .
+		                        htmlentities($expectedSubj) .
 		                        ") differs!");
 	}
 	return $res;
