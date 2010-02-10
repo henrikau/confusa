@@ -9,8 +9,7 @@ class CP_About_Confusa extends Content_Page
 {
 	function __construct()
 	{
-		/* Only show to authenticated users */
-		parent::__construct("About Confusa", true, "credits");
+		parent::__construct("About Confusa", false, "credits");
 	}
 
 	function process()
@@ -18,15 +17,13 @@ class CP_About_Confusa extends Content_Page
 		/*
 		 * Only show this to admins, normal users have no need for this information.
 		 */
-		if (!$this->person->isAdmin()) {
-			$this->tpl->assign('content', $this->tpl->fetch('not_authorized.tpl'));
-			return;
-		}
-		$this->assignVersionVariables();
+		if ($this->person->isAdmin()) {
+			$this->assignVersionVariables();
 
-		if (Config::get_config('debug') === true) {
-			$this->tpl->assign('debug', true);
-			$this->assignDebugVariables();
+			if (Config::get_config('debug') === true) {
+				$this->tpl->assign('debug', true);
+				$this->assignDebugVariables();
+			}
 		}
 
 		$operator_logo = Config::get_config('operator_logo');
