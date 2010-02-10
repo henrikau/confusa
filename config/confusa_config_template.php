@@ -82,8 +82,9 @@ $confusa_config = array(
 	/* if you want to show a operator logo on the about::confusa
 	 * page, define here where Confusa should look for it.
 	 */
+	'operator_show_logo' => false,
 	'operator_logo'	=> '/etc/confusa/starfl_acad.gif',
-	'operator_url'		=> 'http://www.starfleet.fed',
+	'operator_url'		=> 'http://academy.starfleet.fed',
 
 	/* For CA handling.
 	 * Legal modes are: CA_STANDALONE and CA_COMODO
