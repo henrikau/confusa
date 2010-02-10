@@ -6,6 +6,7 @@
 # The script has a few other options as well to help streamline the process.
 #
 # Author: Henrik Austad <henrik.austad@uninett.no> 2009
+# Author: Thomas Zangerl <tzangerl@pdc.kth.se> 2010
 
 # Jump to directory where file resides (simplifies the include-process etc)
 base=`dirname $0`
@@ -32,6 +33,7 @@ cat <<EOF
 Usage: $prog_name [options]
 Options:
   -a <idp.url.org>    Add a new IdP to the map
+  -m <metadata-file>  Add all IdPs from the specified metadata file
   -d <idp_url>        Delete the specified IdP-url from the database
   -i <NREN_id>        Set the NREN_ID for later usage (must be set before -a to avoid interactive input)
   -l                  List all NRENs in the database.
@@ -54,6 +56,29 @@ function add
     run_query "INSERT INTO idp_map VALUES('$url', '$id')" && \
 	echo "$url successfully connected to $id" || \
 	echo "FAILED: Could not add $url to $id"
+}
+
+function add_by_metadata
+{
+	if [ -z "$id" ]; then
+		list_db
+		echo -ne "Please enter the ID of the NREN to use: "
+		read id
+	fi
+
+	metadata_file=$1
+	idp_list=`cat $metadata_file | grep "\\$metadata" | cut -d "=" -f 1 | cut -d "'" -f 2 | cut -d "'" -f 1`
+
+	oldifs=$IFS
+	IFS=`echo -en "\n\b"`
+	for line in $idp_list; do
+		idp=$line
+
+		IFS=$oldifs
+		add "$idp"
+		IFS=`echo -en "\n\b"`
+	done
+	IFS=$oldifs
 }
 
 function list_db
@@ -85,9 +110,10 @@ function search_for_mapping
 if [ $# == "0" ]; then
     usage
 else
-    while getopts ":a:d:hi:lLs:" opt; do
+    while getopts ":a:m:d:hi:lLs:" opt; do
 	case $opt in
 	    a) add $OPTARG ;;
+	    m) add_by_metadata $OPTARG ;;
 	    d) delete $OPTARG ;;
 	    h) usage ;;
 	    i) id=$OPTARG ;;
