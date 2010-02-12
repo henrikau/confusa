@@ -163,6 +163,37 @@ class NREN
 		}
 	}
 
+	/**
+	 * getShowPortalTitle() - return whether the portal title should be shown
+	 * as a component of the NREN branding or not. It might be desirable to
+	 * not show if there are for instance large logos for the header.
+	 *
+	 * @return boolean Whether the portal title is to be shown or not
+	 */
+	public function getShowPortalTitle()
+	{
+		if (isset($this->data) && isset($this->data['show_portal_title'])) {
+			return ($this->data['show_portal_title'] == 1);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Get the custom NREN-defined portal title.
+	 *
+	 * @return string the title that is configured for the portal to show for
+	 *                the given NREN
+	 */
+	public function getCustomPortalTitle()
+	{
+		if (isset($this->data) && isset($this->data['portal_title'])) {
+			return $this->data['portal_title'];
+		} else {
+			return Config::get_config('system_name');
+		}
+	}
+
 	public function saveMap($eppnkey, $epodn, $cn, $mail, $entitlement)
 	{
 		$doUpdate = false;
@@ -329,6 +360,32 @@ class NREN
 		}
 	}
 
+	public function setShowPortalTitle($showPortalTitle)
+	{
+		if (isset($showPortalTitle)) {
+			if (!array_key_exists('show_portal_title', $this->data) ||
+			   ($this->data['show_portal_title'] != $showPortalTitle)) {
+
+				$this->data['show_portal_title'] = $showPortalTitle;
+				$this->pendingChanges = true;
+				return;
+			}
+		}
+	}
+
+	public function setCustomPortalTitle($portalTitle)
+	{
+		if (isset($portalTitle)) {
+			if (!array_key_exists('portal_title', $this->data) ||
+			($this->data['portal_title'] != $portalTitle)) {
+
+				$this->data['portal_title'] = $portalTitle;
+				$this->pendingChanges = true;
+				return;
+			}
+		}
+	}
+
 	/**
 	 * saveNREN() Save the current NREN to the database.
 	 *
@@ -342,9 +399,11 @@ class NREN
 	{
 		if ($this->pendingChanges) {
 			$query  = "UPDATE nrens SET contact_email=?, contact_phone=?, ";
-			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=?, cert_validity=? ";
+			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=?, cert_validity=?,";
+			$query .= " show_portal_title=?, portal_title=? ";
 			$query .= "WHERE nren_id=?";
-			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
+			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text',
+			                'text', 'text', 'text', 'text');
 			$data	= array($this->data['contact_email'],
 					$this->data['contact_phone'],
 					$this->data['cert_phone'],
@@ -353,6 +412,8 @@ class NREN
 					$this->data['lang'],
 					$this->data['enable_email'],
 					$this->data['cert_validity'],
+					$this->data['show_portal_title'],
+					$this->data['portal_title'],
 					$this->getID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);
@@ -361,7 +422,7 @@ class NREN
 							"wrong with the data that you supplied? Server said: " .
 							htmlentities($dqe->getMessage()));
 				Logger::log_event(LOG_INFO, "[nadm] Could not update " .
-						  "contact of NREN $nren: " .
+						  "contact of NREN " . $this->data['name'] . ": " .
 						  $dqe->getMessage());
 				return false;
 			} catch (DBStatementException $dse) {
@@ -369,7 +430,7 @@ class NREN
 							"seems to be misconfigured. Server said: " .
 							htmlentities($dse->getMessage()));
 				Logger::log_event(LOG_WARNING, "[nadm] Could not update " .
-						  "contact of $nren: " .
+						  "contact of NREN " . $this->data['name'] . ": " .
 						  $dse->getMessage());
 				echo $query . "<br />\n";
 				return false;
@@ -424,7 +485,8 @@ class NREN
 		$query .= "		n.contact_email,	n.contact_phone,n.cert_email, ";
 		$query .= "		n.cert_phone,		n.lang,		n.url, ";
 		$query .= "		n.country,		idp.idp_url as idp_url, ";
-		$query .= "		n.enable_email,	n.cert_validity ";
+		$query .= "		n.enable_email,	n.cert_validity, ";
+		$query .= "		n.show_portal_title, n.portal_title ";
 		$query .= "FROM idp_map idp LEFT JOIN ";
 		$query .= "nrens n on idp.nren_id = n.nren_id WHERE idp.idp_url=?";
 		try {

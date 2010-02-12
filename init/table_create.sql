@@ -137,7 +137,11 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- productive e-Science certs always 395 days
 	-- This will be filled by the bootstrap_nren script
     cert_validity ENUM('365', '730', '1095'),
-
+    -- The title of the portal that is shown on the NREN-specific page.
+    -- Here NRENs have the possibility to override the generic
+    -- "TCS eScience portal" for their branded Confusa view
+    show_portal_title BOOLEAN DEFAULT TRUE,
+    portal_title VARCHAR(35),
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) engine=InnoDB;
 

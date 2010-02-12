@@ -20,6 +20,14 @@
     {/foreach}
     {/if}
 
+	{if is_object($nren)}
+		{if $nren->getShowPortalTitle()}
+			{assign var='system_title' value=$nren->getCustomPortalTitle()}
+		{else}
+			{assign var='system_title' value='&nbsp;'}
+		{/if}
+	{/if}
+
     {if !is_null($css)}
     <link rel="stylesheet" href="{$css}" type ="text/css" />
     {/if}
