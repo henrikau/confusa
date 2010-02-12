@@ -15,8 +15,6 @@ class CP_About_NREN extends Content_Page
 	public function process()
 	{
 		if ($this->person->isAuth()) {
-			$logo = "view_logo.php?nren=" . $this->person->getNREN();
-			$this->tpl->assign('logo', $logo);
 			$about_text = $this->person->getNREN()->getAboutText($this->person);
 			$this->tpl->assign('text_info', $about_text);
 		}
