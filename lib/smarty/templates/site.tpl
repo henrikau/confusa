@@ -65,12 +65,12 @@
 			</div> <!-- logo_header_left -->
 			<div id="logo_header_center">
 			  <a href="index.php" class="url">
-			    {if is_null($logo_tc)}
-			    <img src="graphics/logo-sigma.png" alt="UNINETT Sigma Logo" /> {$system_title}
+			    {if isset($logo_tc)}
+			    <img src="{$logo_tc}" alt="NREN logo" />&nbsp;{$system_title}
 			    {else}
-			    <img src="{$logo_tc}"
-				 alt="NREN logo" />{$system_title}
+			    {* empty *}&nbsp;{$system_title}
 			    {/if}
+
 			  </a>
 			</div><!-- logo_header_center -->
 			<div id="logo_header_right">
