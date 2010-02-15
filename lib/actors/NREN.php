@@ -703,10 +703,12 @@ class NREN
 		if (count($res) > 0) {
 			$help_text=$res[0]['help'];
 
-			$help_text=stripslashes($help_text);
-			$help_text=Input::br2nl($help_text);
+			$help_text = Input::br2nl($help_text);
+			$help_text = stripslashes($help_text);
+
 			$textile = new Textile();
-			return $this->replaceTags($textile->TextileRestricted($help_text,0), $person);
+			$help_text = $textile->TextileRestricted($help_text,0);
+			return $this->replaceTags($help_text, $person);
 		}
 	} /* end getHelpText() */
 
