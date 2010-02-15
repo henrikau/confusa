@@ -169,6 +169,9 @@ class Framework {
 					Framework::error_output($msg);
 				}
 			}
+		} else {
+			/* maybe we can guess the NREN from the URL */
+			$this->person->setNREN(NREN::getNRENByURL($_SERVER['SERVER_NAME']));
 		}
 
 		if (Framework::$sensitive_action) {

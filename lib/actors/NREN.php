@@ -658,10 +658,13 @@ class NREN
 		}
 
 		if (count($res) > 0) {
-			$at = stripslashes($res[0]['about']);
-			$at = Input::br2nl($at, 0);
+			$at = $res[0]['about'];
+
+			$at=stripslashes($at);
+			$at=Input::br2nl($at);
 			$textile = new Textile();
-			return $this->replaceTags($textile->TextileRestricted($at), $person);
+
+			return $this->replaceTags($textile->TextileRestricted($at,0), $person);
 		} else {
 			return "No about-NREN text has been defined for your NREN (" .
 				$this->getName(). ")";
@@ -717,18 +720,29 @@ class NREN
 		 * {$subscriber_support_email}
 		 * {$subscriber_support_url}
 		 */
+
+		$orgName = '';
+		$supportMail = '';
+		$supportURL = '';
+
 		$subscriber = $person->getSubscriber();
-		if (!is_null($subscriber)) {
-			$text = str_ireplace('{$subscriber}',
-					     $subscriber->getOrgname(),
-					     $text);
-			$text = str_ireplace('{$subscriber_support_email}',
-					     $subscriber->getHelpEmail(),
-					     $text);
-			$text = str_ireplace('{$subscriber_support_url}',
-					     $subscriber->getHelpURL(),
-					     $text);
+
+		if (isset($subscriber)) {
+			$orgName = $subscriber->getOrgName();
+			$supportMail = $subscriber->getHelpEmail();
+			$supportURL = $subscriber->getHelpURL();
 		}
+
+		$text = str_ireplace('{$subscriber}',
+					 $orgName,
+					 $text);
+		$text = str_ireplace('{$subscriber_support_email}',
+					 $supportMail,
+					 $text);
+		$text = str_ireplace('{$subscriber_support_url}',
+					 $supportURL,
+					 $text);
+
 		$productName = ConfusaConstants::$PERSONAL_PRODUCT;
 		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
 			$productName = ConfusaConstants::$ESCIENCE_PRODUCT;

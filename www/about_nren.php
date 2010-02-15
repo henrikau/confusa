@@ -14,11 +14,16 @@ class CP_About_NREN extends Content_Page
 
 	public function process()
 	{
-		if ($this->person->isAuth()) {
-			$about_text = $this->person->getNREN()->getAboutText($this->person);
-			$this->tpl->assign('text_info', $about_text);
+		$nren = $this->person->getNREN();
+
+		if (isset($nren)) {
+			$aboutText = $nren->getAboutText($this->person);
+		} else {
+			$this->tpl->assign('content', $this->tpl->fetch('about_nren.tpl'));
+			return;
 		}
 
+		$this->tpl->assign('text_info', $aboutText);
 		$this->tpl->assign('content', $this->tpl->fetch('about_nren.tpl'));
 	}
 
