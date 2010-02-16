@@ -801,5 +801,38 @@ class NREN
 		}
 	} /* end getNRENByURL */
 
+	/**
+	 * Get the list of IdPs stored in the DB for this NREN.
+	 *
+	 * @return array|null an array with all IdP URLs or null if none found
+	 */
+	public function getIdPList()
+	{
+		$query = "SELECT m.idp_url FROM idp_map m " .
+		         "WHERE m.nren_id = ?";
+
+		try {
+			$res = MDB2Wrapper::execute($query,
+			                            array('text'),
+			                            array($this->getID()));
+		} catch (ConfusaGenException $cge) {
+			Logger::log_event(LOG_NOTICE, __FILE__ . " " . __LINE__ .  ": Could not " .
+			                  "get the IdP list for NREN with ID " .
+			                  $this->getID() . ". All IdP scoping will fail!");
+		}
+
+		if (count($res) > 0) {
+			$idpList = array();
+
+			foreach($res as $row) {
+				$idpList[] = $row['idp_url'];
+			}
+		} else {
+			return null;
+		}
+
+		return $idpList;
+	}
+
 } /* end class NREN */
 ?>
