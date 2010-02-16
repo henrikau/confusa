@@ -1,10 +1,9 @@
+@charset "UTF-8";
 /*
  * Thanks to Mathew James Taylor for his suggestions which helped me make this
  * work with IE:
  * http://matthewjamestaylor.com/blog/perfect-2-column-left-menu.htm
  */
-
-@CHARSET "UTF-8";
 
 * {
 	margin: 0px;
@@ -31,7 +30,6 @@ body {
 	margin: 30px auto;
 }
 #menu {
-	border: 1px solid #00000;
 	width: 21%;
 	position: relative;
 	clear: both;
@@ -65,7 +63,6 @@ img.url {
 }
 
 #content {
-	border: 1px solid #00000;
 	margin-left: 21%;
 	width: 79%;
 	/* the menu size is in em (padding and font size) thus the min-height should
@@ -183,7 +180,7 @@ h2.unauthz {
 
 div.unauthz {
               width:		80%;
-              float:		center;
+              float:		left;
 }
 
 div.message {
@@ -221,7 +218,7 @@ div.info {
 
 hr.table {
            width: 80%;
-           border: 1 solid gray;
+           border-style: none;
            }
 
 fieldset {
@@ -438,7 +435,7 @@ a.exphead {
 }
 
 a.exphead:hover {
-    text-decoration: bold;
+    font-weight: bold;
 }
 
 a.exphead span.expchar {
