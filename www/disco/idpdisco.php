@@ -55,7 +55,7 @@ class IdPDisco
 
 	public function pre_process()
 	{
-		$this->showNRENIdPs($_SERVER['SERVER_NAME']);
+		$this->showNRENIdPs(CS::getSessionKey('nren'));
 		$this->displayNRENSelection();
 	} /* end pre-process */
 
@@ -69,9 +69,9 @@ class IdPDisco
 	 *                    be shown
 	 * @return null
 	 */
-	private function showNRENIdPs($url)
+	private function showNRENIdPs($nrenName)
 	{
-		$nren = NREN::getNRENByURL($url);
+		$nren = NREN::getNRENByName($nrenName);
 
 		if (empty($nren)) {
 			return;

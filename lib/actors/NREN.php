@@ -763,22 +763,22 @@ class NREN
 	 * being available. Since NREN admins can define a custom-URL this function
 	 * tries to construct the NREN from such an URL.
 	 *
-	 * @param nrenURL string the URL that was configured for the NREN
+	 * @param nrenName string name of the NREN
 	 * @since v0.6-rc0
 	 */
-	static function getNRENByURL($nrenURL)
+	static function getNRENByName($nrenName)
 	{
 		$query  = "SELECT n.nren_id,      n.name,           n.login_account, ";
 		$query .= "       n.contact_email,n.contact_phone,  n.cert_email, ";
 		$query .= "       n.cert_phone,   n.lang,           n.url, ";
 		$query .= "       n.country,      n.enable_email,   n.cert_validity, ";
 		$query .= "       n.show_portal_title,              n.portal_title ";
-		$query .= "FROM nrens n WHERE n.url = ?";
+		$query .= "FROM nrens n WHERE n.name = ?";
 
 		try {
 			$res = MDB2Wrapper::execute($query,
 			                            array('text'),
-			                            array($nrenURL));
+			                            array($nrenName));
 		} catch (ConfusaGenException $cge) {
 			Framework::error_output("Cannot connect to DB. Server said:<br />"
 			                        . $cge->getMessage());
