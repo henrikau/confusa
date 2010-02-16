@@ -16,6 +16,11 @@
   <li><a href="privacy_notice.php">{$item_privacy_notice|escape}</a></li>
 </ul>
 
+<h3>{$heading_info|escape}</h3>
+<ul>
+	<li><a href="about_confusa.php">{$item_aboutconf|escape}</a></li>
+</ul>
+
 {if $person->isAdmin()}
 	{if $person->isNRENAdmin()}
 		<h3>{$heading_view_menu|escape}</h3>
