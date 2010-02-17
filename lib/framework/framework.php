@@ -173,6 +173,7 @@ class Framework {
 			$nren_name = CS::getSessionKey('nren');
 
 			if (isset($_GET['nren'])) {
+				CS::deleteSessionKey('nren');
 				$nren_name = Input::sanitizeURL($_GET['nren']);
 				$nren = NREN::getNRENByName($nren_name);
 
