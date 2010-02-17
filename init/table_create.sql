@@ -118,7 +118,9 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- confusa. Even if confusa is hosted at instance.confusa.org, the
     -- NREN might want the users to visit nren.example.org.
     url VARCHAR(128),
-
+    -- The WAYF-URL is the URL of the NREN's own WAYF. This will assist the
+    -- user in picking the IdP with which they want to authenticate.
+    wayf_url VARCHAR(128),
 
     -- The certificates are capable of storing one or more emails in the
     -- subject altname. However, this should be configurable for the

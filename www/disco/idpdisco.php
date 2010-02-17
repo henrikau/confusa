@@ -45,9 +45,9 @@ class IdPDisco
 		SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
 		$sspConfig = SimpleSAML_Configuration::getInstance();
 		$this->discoPath = "https://" . $_SERVER['SERVER_NAME'] . "/" .
-		             $sspConfig->getString('baseurlpath') .
-		             "module.php/saml/disco.php?" .
-		             $_SERVER['QUERY_STRING'];
+		                   $sspConfig->getString('baseurlpath') .
+		                   "module.php/saml/disco.php?" .
+		                   $_SERVER['QUERY_STRING'];
 
 		$this->translator = new Translator();
 		$this->translator->guessBestLanguage(new Person());
@@ -55,7 +55,7 @@ class IdPDisco
 
 	public function pre_process()
 	{
-		$this->showNRENIdPs(CS::getSessionKey('nren'));
+		$this->showNRENIdPs();
 		$this->displayNRENSelection();
 	} /* end pre-process */
 
@@ -63,18 +63,27 @@ class IdPDisco
 	 * Forward the user to the simplesamlphp IdPdisco showing the IdPs of the
 	 * NREN associated with the server-URL $url. Use the IdP-scoping via the
 	 * dedicated GET parameter for that to limit the number of displayed
-	 * IdPs.
+	 * IdPs, or the NREN-defined WAYF-URL if it exists. Use the session-key
+	 * for detection of the user's NREN.
 	 *
-	 * @param $url string The URL which is bound to the NREN, whose IdPs should
-	 *                    be shown
+	 *
 	 * @return null
 	 */
-	private function showNRENIdPs($nrenName)
+	private function showNRENIdPs()
 	{
+		$nrenName = CS::getSessionKey('nren');
 		$nren = NREN::getNRENByName($nrenName);
 
 		if (empty($nren)) {
 			return;
+		}
+
+		/* if the NREN has its own WAYF, use that for IdP display */
+		$wayf = $nren->getWAYFURL();
+
+		if (isset($wayf)) {
+			header("Location: " . $wayf . "?" . $_SERVER['QUERY_STRING']);
+			exit(0);
 		}
 
 		$scopedIDPList = $nren->getIdPList();

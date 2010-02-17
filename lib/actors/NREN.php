@@ -254,6 +254,15 @@ class NREN
 		return $res;
 	}
 
+	public function getWAYFURL()
+	{
+		if (isset($this->data)) {
+			if (array_key_exists('wayf_url', $this->data)) {
+				return $this->data['wayf_url'];
+			}
+		}
+	}
+
 	public function set_login_account($login_account)
 	{
 		if (!is_null($login_account)) {
@@ -489,7 +498,7 @@ class NREN
 		$query .= "		n.cert_phone,		n.lang,		n.url, ";
 		$query .= "		n.country,		idp.idp_url as idp_url, ";
 		$query .= "		n.enable_email,	n.cert_validity, ";
-		$query .= "		n.show_portal_title, n.portal_title ";
+		$query .= "		n.show_portal_title, n.portal_title, n.wayf_url ";
 		$query .= "FROM idp_map idp LEFT JOIN ";
 		$query .= "nrens n on idp.nren_id = n.nren_id WHERE idp.idp_url=?";
 		try {
@@ -772,7 +781,8 @@ class NREN
 		$query .= "       n.contact_email,n.contact_phone,  n.cert_email, ";
 		$query .= "       n.cert_phone,   n.lang,           n.url, ";
 		$query .= "       n.country,      n.enable_email,   n.cert_validity, ";
-		$query .= "       n.show_portal_title,              n.portal_title ";
+		$query .= "       n.show_portal_title,              n.portal_title, ";
+		$query .= "       n.wayf_url ";
 		$query .= "FROM nrens n WHERE n.name = ?";
 
 		try {
