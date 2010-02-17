@@ -54,7 +54,7 @@
 			{* </div> *}
 		      {/if} {* /if-else confusa_corners *}
 
-		      <div class="logo_area">
+		      <div id="header" class="logo_area">
 			<div id="logo_header_left">
 			  {if isset($logo_tl)}
 			  <img src="{$logo_tl}"
