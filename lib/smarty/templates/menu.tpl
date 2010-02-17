@@ -30,6 +30,18 @@
 	{/if}
 {/if}
 
+<h3><a href="javascript:void(0)"
+       class="exphead"
+       onclick="toggleExpand(this)"><span class="expchar">+</span>Language</a></h3>
+	   <div class="expcont">
+	   <div id="language_list">
+		<ul>
+		{foreach from=$available_languages key=lang_code item=lang}
+		<li>{if $lang_code == $selected_language}{$lang}{else}<a href="?lang={$lang_code}">{$lang}</a>{/if}</li>
+		{/foreach}
+		</ul>
+		</div>
+	   </div>
 
 {if !$person->isAuth()}
 <h3><a href="index.php?start_login=yes">{$item_login|escape}</a></h3>
