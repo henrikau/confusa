@@ -68,7 +68,7 @@
 	  <p class="info">
 	    {$l10n_infotext_dnoname1}
 	  </p>
-	  {if $confusa_grid_restrictions}
+	  {if $confusa_grid_restrictions === TRUE}
 	  <br />
 	  <p class="info">
 	    {$l10n_infotext_gridmode}
@@ -80,7 +80,7 @@
       <tr>
 	<td><font color="gray"><i>/O=</i></font></td>
 
-	{if $confusa_grid_restrictions}
+	{if $confusa_grid_restrictions === TRUE}
 	<td><input maxlength="62" type="text" name="dn_name" size="40"/></td>
 	{else}
 	<td><input type="text" name="dn_name" size="40"/></td>
