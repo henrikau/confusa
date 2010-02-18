@@ -1,0 +1,98 @@
+{
+	"l10n_item_email": {
+		"no": "E-post"
+	},
+	"l10n_item_download": {
+		"no": "Last ned"
+	},
+	"l10n_item_inspect": {
+		"no": "Inspis\u00e9r"
+	},
+	"l10n_item_install": {
+		"no": "Install\u00e9r"
+	},
+	"l10n_item_download_cert": {
+		"no": "Last ned sertifikat"
+	},
+	"l10n_item_install_ks": {
+		"no": "Installer i nettleser"
+	},
+	"l10n_button_revoke": {
+		"no": "Tilbakekall"
+	},
+	"l10n_confirm_revoke1": {
+		"no": "Vil du virkelig tilbakekalle sertifikat?"
+	},
+	"l10n_confirm_revoke2": {
+		"no": "Utl\u00f8sdato"
+	},
+	"l10n_text_ordernumber": {
+		"no": "Ordrenummer"
+	},
+	"l10n_text_authkey": {
+		"no": "auth-id"
+	},
+	"l10n_status_processing": {
+		"no": "Under behandling"
+	},
+	"l10n_status_revoked": {
+		"no": "Tilbakekallet!"
+	},
+	"l10n_status_nonew": {
+		"no": "Intet nytt sertifikat i l\u00f8pet av de forrige"
+	},
+	"l10n_status_days": {
+		"no": "dagene"
+	},
+	"l10n_status_certhist": {
+		"no": "Sertifikater fra de forrige"
+	},
+	"l10n_text_showall": {
+		"no": "Vis alle"
+	},
+	"l10n_text_novalid": {
+		"no": "Ingen gyldige sertifiker registrert til deg."
+	},
+	"l10n_text_showingall": {
+		"no": "Viser alle gyldige sertifikater"
+	},
+	"l10n_text_hideold": {
+		"no": "Gjem gamle"
+	},
+	"l10n_title_email": {
+		"no": "Send sertifikat via e-post"
+	},
+	"l10n_title_download_cert": {
+		"no": "Lagre til disk"
+	},
+	"l10n_title_inspect": {
+		"no": "Vis detaljer"
+	},
+	"l10n_title_install_ks": {
+		"no": "Installer sertifikat i nettleser"
+	},
+	"l10n_text_serial_number": {
+		"no": "Serienummer"
+	},
+	"l10n_title_delete": {
+		"no": "Slett sertifikat fra database"
+	},
+	"l10n_item_delete": {
+		"no": "Slett"
+	},
+	"l10n_noscript_notice": {
+		"no": "Vennligst aktiver JavaScript for \u00e5 installere sertifikatet i nettleseren din!"
+	},
+	"l10n_mail_subject": {
+		"no": "Signert sertifikat"
+	},
+	"l10n_mail_body": {
+		"no": "Vedlagt er ditt nye sertifikat. Husk \u00e5 lagre dette som $HOME\/.globus\/usercert.pem slik at ARC kan benytte det"
+	},
+	"l10n_heading_nocerts": {
+		"no": "Ingen sertifikater i databasen"
+	},
+	"l10n_legend_availcerts": {
+		"no": "Tilgjengelige sertifikater"
+	}
+}

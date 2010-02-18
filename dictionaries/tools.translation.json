@@ -1,0 +1,20 @@
+{
+	"l10n_heading_tools": {
+		"no": "Verkt\u00f8y"
+	},
+	"l10n_text_explanation1": {
+		"no": "Her vil du finne vertk\u00f8y for \u00e5 bruke Confusa. Disse vil ikke hjelpe deg med \u00e5 f\u00e5 fatt i sertifikater i et enkelt steg, men de vil gj\u00f8re det litt lettere."
+	},
+	"l10n_text_explanation2": {
+		"no": "Verkt\u00f8y for \u00e5 lage CSR og enkel filoverf\u00f8ring til tjeneren. Det kan lastes ned direkte via nettleseren, eller du kan f\u00e5 den tilsendt pr. epost."
+	},
+	"l10n_text_explanation3": {
+		"no": "<b>Merk:<\/b> dette er et <i>personlig<\/i> skript, og det er tilpasset din bruker. Dette betyr at du ikke kan bruke noen andre skrip, ei heller de ditt."
+	},
+	"l10n_text_explanation4": {
+		"no": "<b>Merk:<\/b> dette verkt\u00f8yet er <b>gammelt<\/b>. Du kan fortsatt bruke det til \u00e5 lage CSR manuelt, men du ikke laste opp til tjeneren. Last ned og bruke det p\u00e5 f\u00f8lgende vis:"
+	},
+	"l10n_download_certscript": {
+		"no": "Last ned skript"
+	}
+}
