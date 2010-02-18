@@ -346,6 +346,19 @@ p.example {
     background-color: #DDDDEE;
 }
 
+table.mapping {
+	width: 95%;
+	border: 1px black solid;
+}
+
+table.mapping tr td {
+	padding: 0 0.5em 0.5em 0;
+}
+
+table.mapping tr th {
+	padding-bottom: 0.5em
+}
+
 table.mapping tr td.attval {
 	width: 14em;
 	min-width: 14em;

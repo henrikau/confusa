@@ -68,9 +68,9 @@
   <br />
 
   <form action="" method="post">
-    <table class="mapping" width="95%" border="1" rules="none" cellpadding="5" cellspacing="5">
+    <table class="mapping">
       <tr>
-	<th align="left">{$l10n_th_category}</th>
+	<th align="right">{$l10n_th_category}</th>
 	<th align="center">{$l10n_th_curkey}</th>
 	<th align="left">{$l10n_th_value}</th>
       </tr>
