@@ -1,0 +1,32 @@
+{
+	"l10n_reas_malfeppn": {
+		"no": "Trenger et korrekt formatert eduPersonPrincipalName!"
+	},
+	"l10n_reas_nogivenname": {
+		"no": "Trenger fullt navn til sertifikatet"
+	},
+	"l10n_reas_noemailaddr": {
+		"no": "Trenger en epost-adresse!"
+	},
+	"l10n_reas_nocountryname": {
+		"no": "Trenger et land til sertifikatet!"
+	},
+	"l10n_reas_malfsubsname": {
+		"no": "Trenger navnet til vertsorganisasjonen (subscriber)!"
+	},
+	"l10n_reas_noentitlement": {
+		"no": "M\u00e5 ha entitlement-attributter"
+	},
+	"l10n_reas_instunkn1": {
+		"no": "Din vertsorganisasjon"
+	},
+	"l10n_reas_instunkn2": {
+		"no": "ble ikke funnet i databasen!"
+	},
+	"l10n_reas_instnsubscr1": {
+		"no": "Din vertsorganisasjon"
+	},
+	"l10n_reas_instnsubscr2": {
+		"no": "er for \u00f8yeblikket ikke en abonnent til portalen!"
+	}
+}

@@ -1,0 +1,140 @@
+{
+	"fw_error_entitlement_unset_1": {
+		"no": "P\u00e5krevet rettighet er ikke satt:"
+	},
+	"fw_error_entitlement_unset_2": {
+		"no": "Du har for \u00f8yeblikket ikke rett til \u00e5 utstede sertifikater. Vennligst kontakt IT-avdelingen ved din vertsorganisasjon for \u00e5 l\u00f8se dette."
+	},
+	"fw_error_entitlement_unset_3": {
+		"no": "Du kan kontake de via:"
+	},
+	"fw_error_entitlement_unset_4": {
+		"no": "Brukerst\u00f8tte, e-post:"
+	},
+	"fw_error_entitlement_unset_5": {
+		"no": "Brukerst\u00f8tte, url:"
+	},
+	"fw_error_map_notfound": {
+		"no": "<b>Feil ved attributter:<\/b><br \/><br \/>Fant ikke kobling mellom vertsorganisasjon og attriubtter. Vennligst kontakt lokal brukerst\u00f8tte og be de om \u00e5 videresende foresp\u00f8rselen til en NREN-admin for ditt domene."
+	},
+	"fw_error_critical_attribute1": {
+		"no": "Feil ved attributter"
+	},
+	"fw_error_critical_attribute2": {
+		"no": "<b>Kan ikke fortsette<\/b><br \/><br \/>Vennligst kontakt lokal brukerst\u00f8tte for \u00e5 f\u00e5 rettet feilen."
+	},
+	"fw_error_auth": {
+		"no": "Kunne ikke autentisere deg. Feilen var:"
+	},
+	"fw_error_remote_credential1": {
+		"no": "Brukerinformasjon for din NREN er ikke spesifisert, eller er feil. Enkelte sertifikatoperasjoner vil ikke fungere. <br \/><br \/>Feilen var:<br \/>"
+	},
+	"fw_error_remote_credential2": {
+		"no": "Vennligst oppdat\u00e9r brukerinformasjon <a href=\"accountant.php\">her<\/a>."
+	},
+	"fw_error_remote_credential3": {
+		"no": "Vennlisst ta kontakt med en IT-administrator"
+	},
+	"fw_keynotfound1": {
+		"no": "konfigurasjonsfilen innneholder feil."
+	},
+	"fw_keynotfound2": {
+		"no": "Vennligst kontakt de som drifter tjenesten for \u00e5 l\u00f8se dette problemet. Husk \u00e5 inkludere feil-koden i meldingen."
+	},
+	"fw_unhandledexp1": {
+		"no": "Uh\u00e5ndtert feil oppstod."
+	},
+	"fw_unrecoverable_nren": {
+		"no": "Uh\u00e5ndterling feil oppst\u00e5tt, og du er ikke administrator! Ditt eduPersonPrincipalName er"
+	},
+	"fw_unrecoverable_nonren": {
+		"no": "Det ser ut til at portalen ikke kan finne din NREN ut i fra din tjenestetilbyder. Dette er antakelig en feil i portalkonfigurasjonen."
+	},
+	"downl_err_nodownload": {
+		"no": "Kunne ikke laste ned sertifikat, tjeneren sa:"
+	},
+	"downl_err_db": {
+		"no": "Kunne ikke hente ned sertifikat fra databasen. Tjeneren sa:"
+	},
+	"downl_err_noemail": {
+		"no": "Ingen epost-adresse funnet. Kan ikke sende sertifikat via e-post.<br \/>Dette er en p\u00e5krevet attributt for mange operasjon, og du b\u00f8r derfor kontakte lokal brukerst\u00f8tte slik at dette kan l\u00f8ses."
+	},
+	"downl_err_misc": {
+		"no": "Kunne ikke hente sertifikatet. Tjeneren sa:"
+	},
+	"downl_err_sendmail": {
+		"no": "Kunne ikke sende e-post skikkelig!"
+	},
+	"downl_err_sendmail2": {
+		"no": "Kunne ikke sende sertifikatet via e-post, tjener sa:"
+	},
+	"downl_suc_mail": {
+		"no": "Din e-post har blitt sent."
+	},
+	"rev_err_unknreason": {
+		"no": "Ukjent grunn for tilbakekalling av sertifikat!"
+	},
+	"rev_err_singlenoreason": {
+		"no": "Du kan ikke tilbakekalle et enkelt sertifikat uten \u00e5 spesifisere en grunn"
+	},
+	"rev_err_singlenoperm": {
+		"no": "Du har ikke tilgang til \u00e5 tilbakekalle dette sertifikatet!"
+	},
+	"rev_err_notyet1": {
+		"no": "Kan ikke tilbakekalle enda ("
+	},
+	"rev_err_notyet2": {
+		"no": ") for f\u00f8lgende grunn:"
+	},
+	"rev_suc_single1": {
+		"no": "Sertifikat ("
+	},
+	"rev_suc_single2": {
+		"no": ") ble tilbakekallet."
+	},
+	"rev_err_singleunspec": {
+		"no": "Tilbakekalling feilet, f\u00f8lgende problem rapportert:"
+	},
+	"rev_err_nrensubs1": {
+		"no": "Kan ikke hente tilbyder fra database!<br \/>Antakelig feil i syntaks i sp\u00f8rring. Tjener sa:"
+	},
+	"rev_err_nrensubs2": {
+		"no": "Sp\u00f8rring feilet. Dette betyr antakelig at verdiene sendt til databasen er gale. Tjeneren sa:"
+	},
+	"abt_err_dbstat": {
+		"no": "Kunne ikke hente om-side for NREN. Antakelig et konfigurasjonsproblem. Tjener sa:"
+	},
+	"abt_err_dbquery": {
+		"no": "Kunne ikke henteom-side for NREN. Ser ut til \u00e5 v\u00e6re et problem med tilh\u00f8rende data. Spurt NREN var"
+	},
+	"err_servsaid": {
+		"no": "Tjener sa:"
+	},
+	"fw_err_nonrenmap1": {
+		"no": "Fant ikke kobling mellom NREN og tjenestetilbyder ("
+	},
+	"fw_err_nonrenmap2": {
+		"no": ").<br \/>Du m\u00e5 gj\u00f8re dette <b>n\u00e5<\/b> slik at vanlige brukere kan bruke Confusa's funksjonalitet.<br \/><br \/><center>G\u00e5 <a href0\"attributes.php?mode=admin\">hit<\/a> for \u00e5 oppdatere koblingen.<\/center><br \/>"
+	},
+	"csr_aup_title": {
+		"no": "AUP"
+	},
+	"csr_aup_agreement": {
+		"no": "Jeg bekrefter herved at jeg vil f\u00f8lge de reglene som beskrevet i CPS"
+	},
+	"csr_aup_info_short": {
+		"no": "mer"
+	},
+	"csr_aup_info_long": {
+		"no": "AUPen er et segmet av CPSen som inneholder et sett regler for sluttbrukeren. Disse inkluderer:"
+	},
+	"l10n_not_sub_header": {
+		"no": "Ikke tilsluttet"
+	},
+	"l10n_not_sub_1": {
+		"no": "Din vertsorganisasjon er ikke tilsluttet tjenesten, og du kan derfor ikke benytte denne."
+	},
+	"l10n_not_sub_2": {
+		"no": "Hvis du mener at du burde ha hatt tilgang til denne tjenesten, vennligst kontakt lokal brukerst\u00f8tte."
+	}
+}
