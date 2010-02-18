@@ -37,7 +37,7 @@
 </script>
 {/literal}
 {* avoid problems with hidden overflow and notification messages *}
-<div class="spacer"></div>
+<div>
 <fieldset>
 {if $person->isNRENAdmin()}
   <legend>{$l10n_legend_nren_attributes}</legend>
@@ -187,5 +187,5 @@
   </form>
   <br />
 </fieldset>
-<br />
+</div>
 {/if}

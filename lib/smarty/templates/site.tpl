@@ -96,8 +96,8 @@
 			    <img src="graphics/exclamation.png" alt="" />
 			  </div>
 			  <div class="message_body">{$error}</div>
-			  <div class="clear"></div>
 			</div> <!-- message_container error -->
+			<div style="margin-bottom: 0.5em"></div>
 			{/foreach}
 
 			{foreach from=$successes item=success}
@@ -106,8 +106,8 @@
 			    <img src="graphics/accept.png" alt="Information: " />
 			  </div>
 			  {$success}
-			  <div class="clear"></div>
 			</div> <!-- message_container success -->
+			<div style="margin-bottom: 0.5em"></div>
 			{/foreach}
 
 			{foreach from=$warnings item=warning}
@@ -116,8 +116,8 @@
 			    <img src="graphics/warning.png" alt="Warning: " />
 			  </div>
 			  {$warning}
-			  <div class="clear"></div>
 			</div> <!-- message_container warning -->
+			<div style="margin-bottom: 0.5em"></div>
 			{/foreach}
 
 			{foreach from=$messages item=msg}
@@ -126,8 +126,8 @@
 			    <img src="graphics/information.png" alt="Information: " />
 			  </div>
 			  {$msg}
-			  <div class="clear"></div>
 			</div> <!-- message_container message -->
+			<div style="margin-bottom: 0.5em"></div>
 			{/foreach}
 
 			{$content}
