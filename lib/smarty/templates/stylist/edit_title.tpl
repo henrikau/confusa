@@ -1,6 +1,6 @@
 <div class="tabheader">
 <ul class="tabs">
-<li><a href="?show=texts">{$l10n_tab_texts}</a></li>
+<li><a href="?show=text">{$l10n_tab_texts}</a></li>
 <li><a href="?show=css">{$l10n_tab_css}</a></li>
 <li><a href="?show=logo">{$l10n_tab_logo}</a></li>
 <li><span>{$l10n_tab_portaltitle}</span></li>
