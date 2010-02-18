@@ -153,7 +153,25 @@ div.logo_area {
 div.message_container {
 	padding: 4px 24px 4px 4px;
 	margin: 0px 10% 8px 0px;
+	position: relative;
+	height: 100%;
+	width: 90%;
+}
+
+div.message {
+	border: 2px solid black;
+}
+
+div.message_icon {
+	margin-right: 6px;
+	margin-bottom: 2px;
 	float: left;
+	/* seems like, according to standard, floats must have a width */
+	width: 16px;
+	height: 16px;
+}
+
+div.message_body {
 	width: 90%;
 }
 
@@ -181,30 +199,6 @@ h2.unauthz {
 div.unauthz {
               width:		80%;
               float:		left;
-}
-
-div.message {
-	border: 2px solid black;
-}
-
-div.message_icon {
-	margin-right: 6px;
-	margin-bottom: 2px;
-	float: left;
-	/* seems like, according to standard, floats must have a width */
-	width: 16px;
-	height: 16px;
-}
-
-div.message_body {
-	float: left;
-	width: 90%;
-}
-
-.clear {
-	clear: both;
-	height: 1px;
-	overflow: hidden;
 }
 
 div.info {
