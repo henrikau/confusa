@@ -581,11 +581,13 @@ class CP_Stylist extends Content_Page
 		require_once 'mail_manager.php';
 		require_once 'CA.php';
 
-		$timestamp			= date('Y-m-d H:i T');
+		$timezone = new DateTimeZone($this->person->getTimezone());
+		$dt = 		new DateTime("now", $timezone);
+
 		$ip					= $_SERVER['REMOTE_ADDR'];
 		$order_number		= '1234567890 (invalid example)';
 		CA::sendMailNotification($order_number,
-		                         $timestamp,
+		                         $dt->format('Y-m-d H:i T'),
 		                         $ip,
 		                         $recipient,
 		                         $this->ca->getFullDN(),
