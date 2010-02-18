@@ -153,10 +153,11 @@ class CP_Accountant extends Content_Page
 	 */
 	private function editNRENAccount($login_name, $password, $ap_name)
 	{
+		$nren = $this->person->getNREN();
 		/*
 		 * get NREN and currently configured account
 		 */
-		$accountInfo = $this->getNRENAccounts($this->person->getNREN());
+		$accountInfo = $this->getNRENAccounts($nren);
 		if (is_null($accountInfo)) {
 			Framework::error_output($this->translateTag('l10n_err_noaccfound', 'accountant'));
 			return false;
@@ -191,6 +192,11 @@ class CP_Accountant extends Content_Page
 			Framework::error_output(__FILE__ . ":" . __LINE__ . htmlentities($dbqe->getMessage()));
 			return false;
 		}
+
+		Framework::success_output($this->translateTag('l10n_suc_changedacc1', 'accountant') .
+		                          " " . htmlentities($nren) . " " .
+		                          $this->translateTag('l10n_suc_changedacc2', 'accountant') .
+		                          " " . htmlentities($login_name));
 	} /* end editNRENAccount() */
 
 	/**
