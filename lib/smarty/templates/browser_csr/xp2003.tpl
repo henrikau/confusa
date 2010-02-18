@@ -52,7 +52,7 @@ function createIEXPRequest(dn, keysize)
 </div>
 </div>
 
-<div style="margin-top: 2em">
+<div id="reqDiv" style="margin-top: 2em">
 	<form id="reqForm" name="reqForm" method="post" action="process_csr.php" onsubmit="return createIEXPRequest('{$dn}', {$keysize});">
 		<input type="hidden" id="reqField" name="browserRequest" value="" />
 		<input type="hidden" name="browserSigning" value="xp2003" />
