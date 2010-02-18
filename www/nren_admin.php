@@ -28,6 +28,8 @@ class CP_NREN_Admin extends Content_Page
 		 * any other processing */
 		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
 			$this->tpl->assign('confusa_grid_restrictions', true);
+		} else {
+			$this->tpl->assign('confusa_grid_restrictions', false);
 		}
 
 		/* handle nren-flags */
