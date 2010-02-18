@@ -30,6 +30,7 @@
 	{/if}
 {/if}
 
+{if $available_languages|@count > 1}
 <h3><a href="javascript:void(0)"
        class="exphead"
        onclick="toggleExpand(this)"><span class="expchar">+</span>Language</a></h3>
@@ -42,6 +43,7 @@
 		</ul>
 		</div>
 	   </div>
+{/if}
 
 {if !$person->isAuth()}
 <h3><a href="index.php?start_login=yes">{$item_login|escape}</a></h3>
