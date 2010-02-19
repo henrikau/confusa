@@ -6,6 +6,12 @@
 # Try to find the config directory. Depending on whether Confusa was
 # downloaded from the Git repository or installed from the Debian
 # package, that is in the Confusa directory or in /etc/confusa/config/
+
+# Determine path, move to basefolder of confusa
+if [ `basename $0` != $0 ]; then
+    cd `dirname $0`
+fi
+
 if	[ -d "../config/" ] &&
 	[ -f "../config/confusa_config_template.php" ]; then
 	prefix="../config/"
