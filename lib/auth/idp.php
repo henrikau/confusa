@@ -144,8 +144,13 @@ class Confusa_Auth_IdP extends Confusa_Auth
                  * authority is normally default-sp, but in case we/someone want
                  * to extend this, use the current authority without reverting
                  * to hard-coded values.
-		 */
-                if (is_null($session->getAuthority())) {
+				*/
+		$idp = $session->getIdP();
+
+				/* If no idp isset, then problem the user is authenticated using a non-SAML
+				 * method, e.g. as simplesamlphp admin. The user should not be auth,
+				 * if no IdP is set (as no NREN can be constructed in that case) */
+                if (is_null($session->getAuthority()) || empty($idp)) {
                         return false; /* cannot get authority for session, thus
                                        * we cannot be authenticated. */
                 }
@@ -153,8 +158,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 
 
 		if ($this->person->isAuth()) {
-			$this->decoratePerson($this->as->getAttributes(),
-					      $session->getIdP());
+			$this->decoratePerson($this->as->getAttributes(), $idp);
 			return true;
 		}
 		/* Session is invalid, thus user is not authN */
