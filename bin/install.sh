@@ -32,20 +32,36 @@ working_template=`mktemp /tmp/.confusa_wrk_template_XXXXXX`
 dbconfig_template="/etc/confusa/confusa_config.inc.php"
 config=${prefix}"confusa_config.php"
 
-# Call this function for simple yes/no questions with the questions as an argument
+# get_user_alternative
+#
+# Call this function for simple yes/no questions with the questions as
+# an argument
+#
+# Optional: Supply default value, must be yYnN
 function get_user_alternative
 {
-	answer=""
-
-	while [ -z $answer ]; do
-		echo -n $1
-		read answer
-		case $answer in
-			"y"|"n") break ;;
-		esac
-
+    default=""
+    if [ ! -z $2 ]; then
+	case $2 in "y"|"Y"|"n"|"N") default=$2 ;; esac
+    fi
+    msg=$1
+    answer=""
+    retry=""
+    while [ "$answer" == "" ]; do
+	read -p "$msg $retry: " answer
+	case $answer in
+	    "y"|"Y"|"n"|"N")
+		break ;;
+	    *)
+		if [ ! -z $default ] && [ "$answer" = "" ]; then
+		    answer=${default}
+		    break
+		fi
 		answer=""
-	done
+		retry="(retry) "
+		;;
+	esac
+    done
 }
 
 function replace_config_entry
