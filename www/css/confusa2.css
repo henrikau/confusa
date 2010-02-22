@@ -136,7 +136,7 @@ div.logo_area {
 	overflow: hidden;
 }
 
-#language_list li {
+#language_list ul li {
 	margin: 0em 1em 0.5em 1em;
 	font-size: 0.8em;
 }
