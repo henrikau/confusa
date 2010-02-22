@@ -55,7 +55,7 @@ class IdPDisco
 
 	public function pre_process()
 	{
-		$this->showNRENIdPs();
+		$this->showNRENIdPs($_SERVER['SERVER_NAME']);
 		$this->displayNRENSelection();
 	} /* end pre-process */
 
@@ -66,13 +66,13 @@ class IdPDisco
 	 * IdPs, or the NREN-defined WAYF-URL if it exists. Use the session-key
 	 * for detection of the user's NREN.
 	 *
+	 * @param $url string the URL of the NREN whose IdPs should be shown
 	 *
 	 * @return null
 	 */
-	private function showNRENIdPs()
+	private function showNRENIdPs($url)
 	{
-		$nrenName = CS::getSessionKey('nren');
-		$nren = NREN::getNRENByName($nrenName);
+		$nren = NREN::getNRENByURL($url);
 
 		if (empty($nren)) {
 			return;

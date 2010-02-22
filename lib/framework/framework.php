@@ -170,21 +170,8 @@ class Framework {
 				}
 			}
 		} else {
-			$nren_name = CS::getSessionKey('nren');
-
-			if (isset($_GET['nren'])) {
-				CS::deleteSessionKey('nren');
-				$nren_name = Input::sanitizeURL($_GET['nren']);
-				$nren = NREN::getNRENByName($nren_name);
-
-				if (isset($nren)) {
-					$this->person->setNREN($nren);
-					CS::setSessionKey('nren', $nren_name);
-				}
-			} else if (isset($nren_name)) {
-				$nren = NREN::getNRENByName($nren_name);
-				$this->person->setNREN($nren);
-			}
+			/* maybe we can guess the NREN from the URL */
+			$this->person->setNREN(NREN::getNRENByURL($_SERVER['SERVER_NAME']));
 		}
 
 		if (Framework::$sensitive_action) {
