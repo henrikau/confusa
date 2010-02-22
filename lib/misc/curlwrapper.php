@@ -23,6 +23,7 @@ class CurlWrapper
 	{
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 
 		if ($method == "post") {
