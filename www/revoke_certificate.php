@@ -281,12 +281,33 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	 private function showNonAdminRevokeTable()
 	{
-		/* be sure to only match the eppn of the person and not also
-		 * those of which it is the suffix. I.e. test@feide.no should
-		 * not match confusatest@feide.no */
-		$common_name = "% " . $this->person->getEPPN();
-		$this->searchCertsDisplay($common_name, $this->person->getSubscriber()->getOrgName());
-	}
+		if (isset($_SESSION['auth_keys'])) {
+			unset($_SESSION['auth_keys']);
+		}
+
+		$eppn = $this->person->getEPPN();
+		$certs = $this->ca->getCertListForEPPN($eppn, $this->person->getSubscriber()->getOrgName());
+
+		foreach($certs as $row) {
+			$owners[] = $row['cert_owner'];
+			$orders[Input::sanitizeCommonName($row['cert_owner'])][] = $row['auth_key'];
+		}
+
+		/* total number of occurences for every owner */
+		$stats = array_count_values($owners);
+		$_SESSION['auth_keys'] = $orders;
+		$owners = array_unique($owners);
+		$this->tpl->assign('owners', $owners);
+		$this->tpl->assign('stats', $stats);
+		$this->tpl->assign('revoke_cert', true);
+
+		$reason = array();
+		foreach (ConfusaConstants::$REVOCATION_REASONS as $key => $value) {
+			$reasons[] = " " . $value;
+		}
+		$this->tpl->assign('nren_reasons', $reasons);
+		$this->tpl->assign('selected', 'unspecified');
+	} /* end showNonAdminRevokeTable */
 
 	/**
 	 * searchListDisplay() find and display a particular certificate
