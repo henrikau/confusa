@@ -171,6 +171,14 @@ class CA_Standalone extends CA
 	    return $res;
     } /* end getCertListForPersons */
 
+	/**
+	 * @see CA::getCertListForEPPN
+	 */
+	public function getCertListForEPPN($eppn, $org)
+	{
+		return getCertListForPersons($eppn, $org);
+	}
+
     public function signBrowserCSR($csr, $browser)
     {
 	    /* FIXME */

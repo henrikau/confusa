@@ -550,6 +550,62 @@ class CA_Comodo extends CA
         return $res;
     }
 
+	/**
+	 * query the remote API for certificates matching a certain eppn
+	 *
+	 * @see CA::getCertListForEPPN
+	 */
+	public function getCertListForEPPN($eppn, $org)
+	{
+		/* org-name *must* be set */
+		if (empty($org)) {
+			return NULL;
+		}
+
+		if (Config::get_config('capi_test') === true) {
+			$days = ConfusaConstants::$CAPI_TEST_VALID_DAYS;
+		} else {
+			if (Config::get_config('cert_product') == PRD_PERSONAL) {
+				$days = max(ConfusaConstants::$CAPI_VALID_PERSONAL);
+			} else {
+				$days = ConfusaConstants::$CAPI_VALID_ESCIENCE;
+			}
+		}
+
+		$params = $this->capiGetEPPNCertList($eppn, $days);
+		$organization = "O=" . $org;
+		$res = array();
+
+		for ($i = 1; $i <= $params['noOfResults']; $i++) {
+			if (!array_key_exists($i . '_1_status', $params)) {
+				continue;
+			}
+
+			$status = $params[$i . '_1_status'];
+
+			/* don't consider expired, revoked or pending certificates */
+			if ($status != "Valid") {
+				continue;
+			}
+
+			$subject = $params[$i . '_1_subjectDN'];
+
+			if (strpos($subject, $organization) === FALSE) {
+				continue;
+			}
+
+			if (!empty($params[$i . '_1_notAfter'])) {
+				$valid_untill = $params[$i . '_1_notAfter'];
+				$valid_untill = date('Y-m-d H:i:s', $valid_untill);
+				$res[$i-1]['valid_untill'] = $valid_untill;
+			}
+
+			$res[$i-1]['auth_key'] = $params[$i . '_orderNumber'];
+			$res[$i-1]['cert_owner'] = $subject;
+		}
+		return $res;
+	} /* end getCertListForEPPN */
+
     /**
      * Return true if processing of the certificate is finished and false
      * otherwise.
@@ -823,9 +879,50 @@ class CA_Comodo extends CA
         }
     }
 
+	private function capiGetEPPNCertList($eppn, $days)
+	{
+		Logger::log_event(LOG_DEBUG, "Trying to the the list with the certificates " .
+		                             "for eppn $eppn");
+		$list_endpoint = ConfusaConstants::$CAPI_LISTING_ENDPOINT;
+		$postfields_list["loginName"]		= $this->login_name;
+		$postfields_list["loginPassword"]	= $this->login_pw;
+
+		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+			$postfields_list["commonName"] = "%" . $eppn;
+		} else if (Config::get_config('cert_product') == PRD_PERSONAL) {
+			$postfields_list["unstructuredName"] = $eppn;
+		} else {
+			throw new ConfusaGenException("Cert-Product must be one of PRD_ESCIENCE, " .
+			                              "PRD_PERSONAL!");
+		}
+
+		$postfields_list["notBefore"]		= time() - $days*24*3600;
+
+		$data = CurlWrapper::curlContact($list_endpoint, "post", $postfields_list);
+		$params=array();
+		parse_str($data, $params);
+
+		if (!isset($params['errorCode'])) {
+			$msg  = "Unexpected response from remote endpoint. ";
+			$msg .= "Perhaps some configuration-switch is not properly set.";
+			$msg .= "Server gave no error-code.";
+			throw new CGE_ComodoAPIException($msg);
+        }
+
+        if ($params['errorCode'] == "0") {
+            return $params;
+        } else {
+			$msg = $this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
+			throw new CGE_ComodoAPIException("Received error when trying to list " .
+			                                 "certificates from the remote-API: " .
+			                                 $params['errorMessage'] . $msg
+            );
+        }
+	} /* end capiGetEPPNCertList */
+
     /*
      * Query the remote API for the list of certificates belonging to
-     * common_name $common_name.
+     * common_name $common_name
      *
      * @param $common_name The common-name for which the list is retrieved
      * @param $days The number of days that search should look "back" in time
