@@ -43,7 +43,7 @@ immediately see a result entry *}
 	   type="text"
 	   name="search"
 	   {if $search_string != ""}
-	   value="{$search_string}"
+	   value="{$search_string|escape}"
 	   {/if}
 	   />
     <input type="submit" name="Search" value="{$l10n_button_search}" />

@@ -46,7 +46,7 @@
 	     type="text"
 	     name="search"
 	     {if $search_string != ""}
-	     value="{$search_string}"
+	     value="{$search_string|escape}"
 	     {/if}
 	     />
       <input type="hidden"
@@ -92,7 +92,7 @@
 {if isset($owners)}
     {if $revoke_cert}
 	<br />
-	<h4>{$l10n_info_resultsfound}"<i>{$search_string}</i>"</h4>
+	<h4>{$l10n_info_resultsfound}"<i>{$search_string|escape}</i>"</h4>
 	{foreach from=$owners item=owner}
 	{include file='revocation/revoke_cert_set.tpl'}
 	{/foreach}

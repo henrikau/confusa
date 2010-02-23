@@ -226,7 +226,7 @@ class CP_RevokeCertificate extends Content_Page
 
 		/* No need to do processing */
 		if (!isset($_POST['revoke_operation'])) {
-			$this->tpl->assign('search_string', htmlentities($common_name));
+			$this->tpl->assign('search_string', $common_name);
 			return;
 		}
 
@@ -245,7 +245,7 @@ class CP_RevokeCertificate extends Content_Page
 		default:
 			break;
 		}
-		$this->tpl->assign('search_string', htmlentities($common_name));
+		$this->tpl->assign('search_string', $common_name);
 
 	} /* end showAdminRevokeTable */
 
