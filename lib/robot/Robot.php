@@ -92,7 +92,7 @@ class Robot
 				break;
 			}
 			/* Search after matches for cn and subscriber */
-			$list = $ca->getCertListForPersons($eppn, $admin->getSubscriber()->getOrgName());
+			$list = $ca->getCertListForEPPN($eppn, $admin->getSubscriber()->getOrgName());
 			$count = 0;
 			if (count($list) > 0) {
 				foreach ($list as $key => $value) {
