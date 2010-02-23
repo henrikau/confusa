@@ -30,10 +30,10 @@
 		"en":	"CN-search"
 	},
 	"l10n_infotext_searchinfo1": {
-		"en":	"Search for a commonName or a eduPersonPrincipalName of a person within the institution"
+		"en":	"Search for the common-name of a person within the institution"
 	},
 	"l10n_infotext_searchinfo3": {
-		"en":	"Search for a commonName or a eduPersonPrincipalName of a person within your institution"
+		"en":	"Search for the common-name of a person within your institution"
 	},
 	"l10n_infotext_searchinfo2": {
 		"en":	"whose certificates you want to revoke. Use '%' as a wildcard."
