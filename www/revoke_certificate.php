@@ -506,7 +506,7 @@ class CP_RevokeCertificate extends Content_Page
 			 * permits us to send the order-numbers for each certificate owner
 			 * to the revocation method */
 			foreach($certs as $row) {
-				$owners[] = $row['cert_owner'];
+				$owners[] = str_replace(",", ", ", $row['cert_owner']);
 				$auth_keys[] = $row['auth_key'];
 			}
 
