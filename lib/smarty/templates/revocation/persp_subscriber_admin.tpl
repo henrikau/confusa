@@ -85,7 +85,7 @@ immediately see a result entry *}
 {* The display part *}
 
 {if isset($owners)}
-    {if $revoke_cert}
+    {if isset($revoke_cert) && $revoke_cert === TRUE}
         {foreach from=$owners item=owner}
 		{include file='revocation/revoke_cert_set.tpl'}
         {/foreach}
