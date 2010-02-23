@@ -888,7 +888,10 @@ class CA_Comodo extends CA
 		$postfields_list["loginPassword"]	= $this->login_pw;
 
 		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
-			$postfields_list["commonName"] = "%" . $eppn;
+			/* be sure to match the EPPN only and not also its suffix. For
+			 * instance test@feide.no should not match confusatest@feide.no
+			 */
+			$postfields_list["commonName"] = "% " . $eppn;
 		} else if (Config::get_config('cert_product') == PRD_PERSONAL) {
 			$postfields_list["unstructuredName"] = $eppn;
 		} else {
