@@ -31,10 +31,16 @@
 {/if}
 
 {if $available_languages|@count > 1}
+
+{assign var=expandElem value='<img class=\x22expand\x22 src=\x22graphics/triangle_down.png\x22 alt=\x22Expand\x22 />'}
+{assign var=collapseElem value='<img class=\x22collapse\x22 src=\x22graphics/triangle_up.png\x22 alt=\x22Collapse\x22 />'}
+
 <h3><a href="javascript:void(0)"
-       class="exphead"
-       onclick="toggleExpand(this)"><span class="expchar">+</span>Language</a></h3>
-	   <div class="expcont">
+       id="langheader"
+       onclick="toggleExpand(this,
+	   '{$expandElem}',
+	   '{$collapseElem}')">
+	   Language <span><img class="expand" src="graphics/triangle_down.png" alt="Expand" /></span></a></h3>
 	   <div id="language_list">
 		<ul>
 		{foreach from=$available_languages key=lang_code item=lang}
@@ -42,8 +48,11 @@
 		{/foreach}
 		</ul>
 		</div>
-	   </div>
 {/if}
+
+<script type="text/javascript">
+	document.getElementById('language_list').style.display = "none";
+</script>
 
 {if !$person->isAuth()}
 <h3><a href="index.php?start_login=yes">{$item_login|escape}</a></h3>
