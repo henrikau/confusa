@@ -31,6 +31,9 @@ class IdPDisco
 
 	/* GET parameter used in simplesamlphp to scope the list of IdPs */
 	private $SCOPE_PARAM = "&IDPList[]=";
+	/* GET parameter used in simplesamlphp to skip disco entirely and proceed to
+	 * the passed IdP. Good to have if there is only *one* for a country */
+	private $IDP_PARAM = "&idpentityid=";
 
 	function __construct()
 	{
@@ -112,23 +115,35 @@ class IdPDisco
 			                  "get the IdP-URLs for the different countries from " .
 			                  "the DB. Probably Confusa is misconfigured? " .
 			                  $cge->getMessage());
-			$this->tpl->assign('error_message',
-			                   $this->translator->getTextForTag('l10n_err_idpretrieval', 'disco'));
+			$this->tpl->assign('error_message', "Error while trying to retrieve the IdPs for the different NRENs");
 		}
 
 		if (count($res) > 0) {
 			$idpList = array();
 			$scopeParam = htmlentities($this->SCOPE_PARAM);
+			$idpParam = htmlentities($this->IDP_PARAM);
 
 			foreach ($res as $row) {
 				$country = strtolower($row['country']);
-				$idpList[$country] .= $row['idp_url'] . $scopeParam;
+
+				if (!isset($idpList[$country])) {
+					$idpList[$country] = "";
+				}
+
+				$idpList[$country][] = $row['idp_url'];
 			}
 		}
 
 		foreach ($idpList as $country => $nrenIdPScopes) {
-			$nrenIdPScopes = $scopeParam . substr($nrenIdPScopes, 0, strlen($nrenIdPScopes) -
-			                                                         strlen($scopeParam));
+			if (count($nrenIdPScopes) > 1) {
+				$nrenIdPScopes = $scopeParam . implode($scopeParam,
+				                                       $nrenIdPScopes);
+			} else if (count($nrenIdPScopes) == 1) {
+				$nrenIdPScopes = $idpParam . $nrenIdPScopes[0];
+			} else {
+				continue;
+			}
+
 			/* update the value in the list */
 			$idpList[$country] = $nrenIdPScopes;
 			$this->tpl->assign("scopedIdPs_$country", $nrenIdPScopes);
