@@ -287,7 +287,8 @@ class CP_RevokeCertificate extends Content_Page
 
 		$eppn = $this->person->getEPPN();
 		$certs = $this->ca->getCertListForEPPN($eppn, $this->person->getSubscriber()->getOrgName());
-
+		$owners = array();
+		$orders = array();
 		foreach($certs as $row) {
 			$owners[] = $row['cert_owner'];
 			$orders[Input::sanitizeCommonName($row['cert_owner'])][] = $row['auth_key'];
