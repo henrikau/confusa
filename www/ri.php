@@ -250,46 +250,40 @@ function printXMLRes($resArray, $type = 'userList')
 	 * proper XML headers */
 	global $admin;
 
-	header ("content-type: text/xml");
+	$xml = new SimpleXMLElement("<ConfusaRobot></ConfusaRobot>");
+	$xml->addAttribute("date", date("Y-m-d H:i:s"));
+	$xml->addAttribute("subscriber", $admin->getSubscriber()->getOrgName());
+	$xml->addAttribute("elementCount", 1);
+	$xml->addAttribute("version", "1.0");
 
-	/* Print XML header and 'master table' */
-	/* echo "<?xml standalone=\"yes\" ?>\n"; */
-	echo "<ConfusaRobot ";
-	echo "date=\"".date("Y-m-d H:i:s")."\" ";
-	echo "subscriber=\"".$admin->getSubscriber()->getOrgName()."\" ";
-	echo "elementCount=\"".count($resArray)."\" ";
-	echo "version=\"1.0\">\n";
-
-	$ending = "";
+	$element = null;
 	switch(strtolower($type)) {
 
 	case 'userlist':
-		$start  = "\t<userList>\n";
-		$ending = "\t</userList>\n";
+		$element = $xml->addChild("userList");
 		break;
 	case 'revokelist':
-		$start  =  "\t<revokedCerts>\n";
-		$ending = "\t</revokedCerts>\n";
+		$element = $xml->addChild("revokedCerts");
 		break;
 	default:
-		break;
+		return;
 
 	}
 	if (isset($resArray) && is_array($resArray) && count($resArray) > 0) {
-		echo $start;
 		foreach($resArray as $value) {
-			$line = "\t\t<listElement eppn=\"". htmlentities($value['eppn']) ."\"";
+			$le = $element->addChild('listElement');
+			$le->addAttribute('eppn', htmlentities($value['eppn']));
 			if (isset($value['count'])) {
-				$line .= " count=\"".$value['count']."\"";
+				$le->addAttribute('count', $value['count']);
 			}
 			if (isset($value['fullDN'])) {
-				$line .= " fullDN=\"". htmlentities($value['fullDN']) ."\"";
+				$le->addAttribute('fullDN', htmlentities($value['fullDN']));
 			}
-			echo $line . " />\n";
 		}
-		echo $ending;
 	}
-	echo "</ConfusaRobot>\n";
+
+	header ("content-type: text/xml");
+	echo $xml->asXML();
 }
 
 /* Safe environment? */
