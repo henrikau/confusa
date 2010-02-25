@@ -16,6 +16,48 @@ class Robot
 
 
 	/**
+	 * getEPPN() return the unique owner of the certificate.
+	 *
+	 * Ideally, this should be done via CA, as the CA has full knowledge
+	 * about the certificate and which state the current CA-handler is in
+	 * (i.e. PRD_ESCIENCE, PRD_PERSONAL etc)
+	 *
+	 * As a workaround, we encapsulate this into a dedicated function for
+	 * now.
+	 *
+	 * @param  String $cert_name the complete DN of the certificate
+	 * @return String $eppn|null the eppn (unique name) in the certificate.
+	 */
+	private static function getEPPN($cert_name)
+	{
+		/* This is *not* the best way to do it, but until we have the
+		 * required interface at Comodo, we need to adapt here.
+		 *
+		 * do we have unstructured name? if so, we're in PRD_PERSONAL
+		 */
+		$un_start = strpos($cert_name, "unstructuredName");
+		if ($un_start) {
+			$un_end		= strpos($cert_name, ',', $un_start);
+			$un_length	= $un_end-$un_start-strlen('unstructuredName=');
+			$un_substr	= substr($cert_name, $un_start+strlen('unstructuredName='), $un_length);
+			$eppn_array	= explode(" ", $un_substr);
+			$eppn		= $eppn_array[count($eppn_array) -1];
+			return $eppn;
+		} else {
+			/* Find the CN, it is on the form CN=Jane Doe
+			 * janedoe@example.org,O=...
+			 */
+			$cn_start	= strpos($cert_name, "CN=");
+			$cn_end		= strpos($cert_name, ',', $cn_start);
+			$cn_length	= $cn_end-$cn_start;
+			$cn_substr	= substr($cert_name, $cn_start, $cn_length);
+			$eppn_array	= explode(" ", $cn_substr);
+			$eppn		= $eppn_array[count($eppn_array) -1];
+			return $eppn;
+		}
+	} /* end getEPPN */
+
+	/**
 	 * Createcertlist() Create a list of all valid certificates for the given subscriber
 	 *
 	 * The function will log the number of certificates found as well, but only the
