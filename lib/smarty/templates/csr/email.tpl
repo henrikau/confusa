@@ -20,11 +20,11 @@
     <td>
       <input type="checkbox"
 	     name="subjAltName_email[]"
-		 id="SAN_{$addr|regex_replace:"/@/":"_at_"}"
+		 id="SAN_{$addr|replace:"@":"_at_"}"
 	     value="{$addr}"
 	     checked="checked"/>
     </td>
-    <td><label for="SAN_{$addr|regex_replace:"/@/":"_at_"}">{$addr}</label></td>
+    <td><label for="SAN_{$addr|replace:"@":"_at_"}">{$addr}</label></td>
   </tr>
   {/foreach}
 
