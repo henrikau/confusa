@@ -21,6 +21,7 @@ import time, xml.sax.handler, urllib, urllib2
 from Confusa_Parser import ConfusaParser
 from Timeout import Timeout, TimeoutException
 from HTTPSClient import HTTPSClientAuthHandler
+import xml.etree.ElementTree as ET
 
 class Confusa_Client:
     def __init__(self, key, cert, url):
@@ -61,10 +62,16 @@ class Confusa_Client:
 
         # Construct the XML-message
         foundElements = 0
+        root = ET.Element("ConfusaRobot")
+        root.set("date", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        root.set("subscriber", "") # not used, determined from certificate
+        root.set("version", "1.0")
+        rev = ET.SubElement(root, "revocationList")
         list = ""
         for i in eppn_list:
             if 'eppn' in i:
-                list += "\t\t<listElement eppn='%s' />\n" % i['eppn']
+                le = ET.SubElement(rev, "listElement")
+                le.set("eppn", i['eppn'])
                 foundElements += 1
 
         if foundElements ==  0:
@@ -75,16 +82,8 @@ class Confusa_Client:
             print "\nErrors with supplied data, length of list is not equal to number of valid entries"
             print "This may prove to be a minor detail, continuing\n"
 
-        listHeader = '<ConfusaRobot date="%s"' % (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-        listHeader += ' subscriber="%s"' % ("TEST UNIVERSITY hogwarts")
-        listHeader += ' elemementCount="%d"' % (foundElements)
-        listHeader += ' version="1.0">\n'
-        listHeader += "\t<revocationList>\n"
-        listFooter = "\t</revocationList>\n"
-        listFooter += "</ConfusaRobot>\n"
-
-        message = "%s%s%s" % (listHeader, list, listFooter)
-        post['list'] = message
+        root.set("elementCount", "%d" % foundElements)
+        post['list'] = ET.tostring(root)
         self.data = urllib.urlencode(post)
         return self.execute()
 
