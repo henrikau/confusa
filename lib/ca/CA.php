@@ -355,14 +355,27 @@ abstract class CA
 			$dn .= "/DC=$dc";
 		}
 
-		$dn .= "/C=" . $this->person->getNREN()->getCountry();
+		$nren = $this->person->getNREN();
+		$subscriber = $this->person->getSubscriber();
+
+		if (isset($nren)) {
+			$dn .= "/C=" . $this->person->getNREN()->getCountry();
+		}
 
 		if (Config::get_config('cert_product') == PRD_PERSONAL) {
-			$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
+
+			if (isset($subscriber)) {
+				$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
+			}
+
 			$dn .= "/CN=" . $this->person->getX509ValidCN();
 			$dn .= "/unstructuredName=" . $this->person->getEPPN();
 		} else { /* eScience */
-			$dn .= "/O=" . Output::mapUTF8ToASCII($this->person->getSubscriber()->getOrgName());
+
+			if (isset($subscriber)) {
+				$dn .= "/O=" . Output::mapUTF8ToASCII($this->person->getSubscriber()->getOrgName());
+			}
+
 			$dn .= "/CN=" . $this->person->getX509ValidCN();
 		}
 
