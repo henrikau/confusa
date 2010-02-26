@@ -22,6 +22,7 @@ To install Confusa
  - PHP5
  - PEAR with MDB2.MySQL
  - Smarty (the PHP template engine)
+ - openssl
 
 === Install process ===
 0) Using UvT's apt repository. If you choose this, move to step 4 when
