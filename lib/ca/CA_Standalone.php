@@ -99,8 +99,11 @@ class CA_Standalone extends CA
 				throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
 			}
 
+			$timezone = new DateTimeZone($this->person->getTimezone());
+			$dt = new DateTime("now", $timezone);
+
 			CA::sendMailNotification($auth_key,
-			                         date('Y-m-d H:i T'),
+			                         $dt->format('Y-m-d H:i T'),
 			                         $_SERVER['REMOTE_ADDR'],
 			                         $this->person,
 			                         $this->getFullDN());

@@ -259,8 +259,11 @@ class CA_Comodo extends CA
 		$this->capiAuthorizeCSR();
 
 		$this->cacheInvalidate();
+		$timezone = new DateTimeZone($this->person->getTimezone());
+		$dt = new DateTime("now", $timezone);
+
 		CA::sendMailNotification($this->order_number,
-		                         date('Y-m-d H:i T'),
+		                         $dt->format('Y-m-d H:i T'),
 		                         $_SERVER['REMOTE_ADDR'],
 		                         $this->person,
 		                         $this->getFullDN());
@@ -308,8 +311,12 @@ class CA_Comodo extends CA
 
 		$this->capiAuthorizeCSR();
 		$this->cacheInvalidate();
+
+		$timezone = new DateTimeZone($this->person->getTimezone());
+		$dt = new DateTime("now", $timezone);
+
 		CA::sendMailNotification($this->order_number,
-		                         date('Y-m-d H:i T'),
+		                         $dt->format('Y-m-d H:i T'),
 		                         $_SERVER['REMOTE_ADDR'],
 		                         $this->person,
 								 $this->getFullDN());
@@ -376,6 +383,7 @@ class CA_Comodo extends CA
 		 * valid very long if there are no certificates at all (ordering a
 		 * cert will invalidate it anyways) */
 		$dates[] = time();
+		$timezone = new DateTimeZone($this->person->getTimezone());
 
         /* transfer the orders from the string representation in the response
          * to the array representation we use internally */
@@ -403,7 +411,9 @@ class CA_Comodo extends CA
 			if (isset($params[$i . '_1_notAfter'])) {
 				/* for simplicity, format the time just as an SQL server would return it */
 				$valid_untill = $params[$i . '_1_notAfter'];
-				$valid_untill = date('Y-m-d H:i:s', $valid_untill);
+				$dt = new DateTime("@$valid_untill");
+				$dt->setTimezone($timezone);
+				$valid_untill = $dt->format('Y-m-d H:i:s T');
 				$res[$i-1]['valid_untill'] = $valid_untill;
 			}
 

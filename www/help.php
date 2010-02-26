@@ -14,13 +14,19 @@ class CP_Help extends Content_Page
 
 	public function process()
 	{
-		if ($this->person->isAuth()) {
+		$nren = $this->person->getNREN();
+
+		if (isset($nren)) {
 			$nren = $this->person->getNREN();
-			$help_text = $this->person->getNREN()->getHelpText($this->person);
-			$this->tpl->assign('nren', $nren);
-			$this->tpl->assign('nren_help_text', $help_text);
+			$helpText = $nren->getHelpText($this->person);
+		} else {
+			$this->tpl->assign('help_file', file_get_contents('../include/help.html'));
+			$this->tpl->assign('content', $this->tpl->fetch('help.tpl'));
+			return;
 		}
 
+		$this->tpl->assign('nren_help_text', $helpText);
+		$this->tpl->assign('nren', $nren->getName());
 		$this->tpl->assign('help_file', file_get_contents('../include/help.html'));
 		$this->tpl->assign('content', $this->tpl->fetch('help.tpl'));
 	}

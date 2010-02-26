@@ -2,7 +2,6 @@
 require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'person.php';
-require_once 'classTextile.php';
 require_once 'logger.php';
 
 class CP_Priv_Notice extends Content_Page
@@ -14,10 +13,12 @@ class CP_Priv_Notice extends Content_Page
 
 	public function process()
 	{
-		if ($this->person->isAuth()) {
+		$nren = $this->person->getNREN();
+
+		if (isset($nren)) {
 			$this->tpl->assign('nren', $this->person->getNREN());
-			$this->tpl->assign('nren_pt_text',
-			                   $this->person->getNREN()->getPrivacyNotice($this->person));
+			$privacyNotice = $this->person->getNREN()->getPrivacyNotice($this->person);
+			$this->tpl->assign('nren_pt_text', $privacyNotice);
 		}
 
 		$this->tpl->assign('content', $this->tpl->fetch('privacy_notice.tpl'));

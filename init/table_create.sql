@@ -118,7 +118,9 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- confusa. Even if confusa is hosted at instance.confusa.org, the
     -- NREN might want the users to visit nren.example.org.
     url VARCHAR(128),
-
+    -- The WAYF-URL is the URL of the NREN's own WAYF. This will assist the
+    -- user in picking the IdP with which they want to authenticate.
+    wayf_url VARCHAR(128),
 
     -- The certificates are capable of storing one or more emails in the
     -- subject altname. However, this should be configurable for the
@@ -137,7 +139,11 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- productive e-Science certs always 395 days
 	-- This will be filled by the bootstrap_nren script
     cert_validity ENUM('365', '730', '1095'),
-
+    -- The title of the portal that is shown on the NREN-specific page.
+    -- Here NRENs have the possibility to override the generic
+    -- "TCS eScience portal" for their branded Confusa view
+    show_portal_title BOOLEAN DEFAULT TRUE,
+    portal_title VARCHAR(35),
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) engine=InnoDB;
 

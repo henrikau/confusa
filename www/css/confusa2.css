@@ -136,18 +136,13 @@ div.logo_area {
 	overflow: hidden;
 }
 
-#language_bar {
-	margin-top: 10px;
-	margin-bottom: 14px;
-	font-size: 12px;
+#language_list ul li {
+	margin: 0em 1em 0.5em 1em;
+	font-size: 0.8em;
 }
 
-#language_bar a {
-	color: #888888;
-}
-
-#language_bar a:hover {
-	border-bottom: dashed 1px;
+#language_list a {
+	color: #666;
 }
 
 div.message_container {

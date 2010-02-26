@@ -17,12 +17,34 @@ if (typeof XMLHttpRequest == "undefined") {
 /**
  *  expand or collapse the current item. Requires DOM methods.
  */
-function toggleExpand(doc) {
+function toggleExpand(doc, expandElem, collapseElem) {
+
+	if (typeof collapseElem == 'undefined') {
+		collapseElem = '-';
+	}
+
+	if (typeof expandElem == 'undefined') {
+		expandElem = '+';
+	}
+
 	/* Check if the needed DOM functionality is available */
 	if (document.getElementById) {
 		var focus = doc.firstChild;
 		focus = doc.firstChild.innerHTML?doc.firstChild:doc.firstChild.nextSibling;
-		focus.innerHTML = focus.innerHTML=='+'?'-':'+';
+
+		/* comparing HTML elements is not reliable, because JavaScript can strip closing tags
+		 * like in /> to >, so they do not end up being regarded as equal any more.
+		 * As an alternative, add an "expand" and "collapse" class attribute to them,
+		 * which JavaScript can simply compare
+		 */
+		if (focus.innerHTML == expandElem ||
+		    (focus.firstChild.nodeType === 1 &&
+		    focus.firstChild.className == "expand")) {
+			focus.innerHTML = collapseElem;
+		} else {
+			focus.innerHTML = expandElem;
+		}
+
 		focus = doc.parentNode.nextSibling.style?
 			doc.parentNode.nextSibling:
 			doc.parentNode.nextSibling.nextSibling;

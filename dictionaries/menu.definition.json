@@ -18,7 +18,7 @@
 		"en": "Help"
 	},
 	"item_about": {
-		"en": "About"
+		"en": "About NREN"
 	},
 	"item_help": {
 		"en": "Help"
@@ -86,8 +86,8 @@
 	"heading_info": {
 		"en": "Info"
 	},
-	"item_version": {
-		"en": "Version"
+	"item_aboutconf": {
+		"en": "About Portal"
 	},
 	"heading_subscriber": {
 		"en": "Subscriber"

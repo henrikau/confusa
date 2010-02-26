@@ -1,0 +1,35 @@
+{
+	"l10n_heading_authentication": {
+		"en":	"Authentication"
+	},
+	"l10n_infotext_thanks1": {
+		"en":	"The authors of the portal software would like to give credit to the below mentioned components, which really helped in developing Confusa. If you happen to be personally involved in any of the below projects/activities, then thank you dear visitor."
+	},
+	"l10n_infotext_thanks2": {
+		"en":	"is the authentication backend of the portal. Confusa pretty much does not work without it."
+	},
+	"l10n_heading_icons": {
+		"en":	"Icons"
+	},
+	"l10n_infotext_thanks3": {
+		"en":	"Most of the icons used in the portal software have been picked from the <a href=\"http://www.famfamfam.com/lab/icons/silk/\" target=\"_blank\"> famfamfam Silk icon set</a>."
+	},
+	"l10n_heading_software": {
+		"en":	"Software"
+	},
+	"l10n_infotext_thanks4": {
+		"en":	"Confusa's source code would only be a collection of characters, if these components weren't turning it into a software:"
+	},
+	"l10n_heading_operations": {
+		"en":	"Operations"
+	},
+	"l10n_infotext_thanks5": {
+		"en":	"If you can see this page than it is only because the portal is operated by:"
+	},
+	"l10n_heading_admininfo": {
+		"en":	"Administrator info"
+	},
+	"l10n_heading_credits": {
+		"en":	"Credits"
+	}
+}
