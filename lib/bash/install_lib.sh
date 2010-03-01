@@ -84,6 +84,20 @@ function test_url
     echo `echo $1 | grep -E 'http[s]?://.*[\.+]'`
 }
 
+# test_email - test if the supplied string resembles an email-address
+#
+# It accepts emails on the form
+# username@example.org
+# user.name@example.org
+# user@example.sub.domain.org
+function test_email
+{
+    res=""
+    if [ ! -z $1 ]; then
+	res=`echo $1 | egrep "[a-zA-Z0-9-]+([._a-zA-Z0-9.-]+)*@[a-zA-Z0-9.-]+[\.[a-zA-Z0-9]*]*\.([a-zA-Z]{2,4})$"`
+    fi
+}
+
 # if an older version of Confusa was installed before, maybe some new
 # configuration flags (in confusa_config_template.php) were introduced
 # in the meantime.
