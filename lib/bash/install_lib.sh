@@ -55,6 +55,20 @@ function replace_config_entry
 	cp $config $working_template
 }
 
+# get_from_config_template
+#
+# This will return a valie from the config-template. If it is not found,
+# an empty string is returned
+#
+# The function assumes that $working_template is initalized to the full
+# path of the config-template.
+function get_from_config_template
+{
+    res=""
+    if [ ! -z $working_template ]; then
+	res=`grep "'$1'" $working_template | cut -d '=' -f 2 | cut -d "'" -f 2`
+    fi
+}
 
 function single_trailing_slash
 {
