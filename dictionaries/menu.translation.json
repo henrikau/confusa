@@ -1,0 +1,95 @@
+{
+	"prot_title_text1": {
+		"no": "Du vil bli videresendt for \u00e5 logge inn f\u00f8r du kan vise denne siden."
+	},
+	"heading_certificates": {
+		"no": "Sertifikater"
+	},
+	"item_request_new": {
+		"no": "Bestill ny"
+	},
+	"item_my_certificates": {
+		"no": "Mine sertifikater"
+	},
+	"item_revoke_certificates": {
+		"no": "Tilbakekall"
+	},
+	"heading_help": {
+		"no": "Hjelp"
+	},
+	"item_about": {
+		"no": "Om"
+	},
+	"item_help": {
+		"no": "Hjelp"
+	},
+	"heading_extras": {
+		"no": "Ekstra"
+	},
+	"item_tools": {
+		"no": "Verkt\u00f8y"
+	},
+	"item_cacert": {
+		"no": "CA Sertifikat"
+	},
+	"heading_view_menu": {
+		"no": "Vis meny"
+	},
+	"item_view_user": {
+		"no": "Bruker"
+	},
+	"item_view_nren_admin": {
+		"no": "NREN-Admin"
+	},
+	"item_view_subscr_admin": {
+		"no": "Abon. Admin"
+	},
+	"item_view_admin": {
+		"no": "Admin"
+	},
+	"item_logout": {
+		"no": "Logg ut"
+	},
+	"item_login": {
+		"no": "Logg inn"
+	},
+	"heading_portal": {
+		"no": "Portal"
+	},
+	"item_admins": {
+		"no": "Administratorer"
+	},
+	"item_appearance": {
+		"no": "Utseende"
+	},
+	"heading_nren": {
+		"no": "NREN"
+	},
+	"item_attributes": {
+		"no": "Attributter"
+	},
+	"item_ca_account": {
+		"no": "CA Konto"
+	},
+	"item_subscribers": {
+		"no": "Abonnementer"
+	},
+	"item_revocation": {
+		"no": "Tilbakekalling"
+	},
+	"heading_info": {
+		"no": "Informasjon"
+	},
+	"heading_subscriber": {
+		"no": "Abonnement"
+	},
+	"item_robot": {
+		"no": "Robot"
+	},
+	"item_privacy_notice": {
+		"no": "Personverninformasjon"
+	},
+	"item_nren_settings": {
+		"no": "Innstillinger"
+	}
+}

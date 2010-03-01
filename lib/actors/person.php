@@ -631,6 +631,27 @@ class Person{
 	    }
     } /* end getCountry() */
 
+	/**
+	 * Get the timezone in which the person resides. This means just consulting
+	 * a map from the person's country to timezones.
+	 *
+	 * @return string the timezone of the person
+	 */
+	public function getTimezone()
+	{
+		if (isset($this->nren)) {
+			$countryCode = strtolower($this->nren->getCountry());
+
+			if (isset(ConfusaConstants::$COUNTRY_TIMEZONE_MAP[$countryCode])) {
+				return ConfusaConstants::$COUNTRY_TIMEZONE_MAP[$countryCode];
+			} else {
+				return ConfusaConstants::$DEFAULT_TIMEZONE;
+			}
+		} else {
+			return ConfusaConstants::$DEFAULT_TIMEZONE;
+		}
+	} /* end getTimezone() */
+
 
     /**
      * setNREN() set the National Research and Education Network for the user.

@@ -226,7 +226,7 @@ class CP_RevokeCertificate extends Content_Page
 
 		/* No need to do processing */
 		if (!isset($_POST['revoke_operation'])) {
-			$this->tpl->assign('search_string', htmlentities($common_name));
+			$this->tpl->assign('search_string', $common_name);
 			return;
 		}
 
@@ -245,7 +245,7 @@ class CP_RevokeCertificate extends Content_Page
 		default:
 			break;
 		}
-		$this->tpl->assign('search_string', htmlentities($common_name));
+		$this->tpl->assign('search_string', $common_name);
 
 	} /* end showAdminRevokeTable */
 
@@ -281,12 +281,34 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	 private function showNonAdminRevokeTable()
 	{
-		/* be sure to only match the eppn of the person and not also
-		 * those of which it is the suffix. I.e. test@feide.no should
-		 * not match confusatest@feide.no */
-		$common_name = "% " . $this->person->getEPPN();
-		$this->searchCertsDisplay($common_name, $this->person->getSubscriber()->getOrgName());
-	}
+		if (isset($_SESSION['auth_keys'])) {
+			unset($_SESSION['auth_keys']);
+		}
+
+		$eppn = $this->person->getEPPN();
+		$certs = $this->ca->getCertListForEPPN($eppn, $this->person->getSubscriber()->getOrgName());
+		$owners = array();
+		$orders = array();
+		foreach($certs as $row) {
+			$owners[] = $row['cert_owner'];
+			$orders[Input::sanitizeCommonName($row['cert_owner'])][] = $row['auth_key'];
+		}
+
+		/* total number of occurences for every owner */
+		$stats = array_count_values($owners);
+		$_SESSION['auth_keys'] = $orders;
+		$owners = array_unique($owners);
+		$this->tpl->assign('owners', $owners);
+		$this->tpl->assign('stats', $stats);
+		$this->tpl->assign('revoke_cert', true);
+
+		$reason = array();
+		foreach (ConfusaConstants::$REVOCATION_REASONS as $key => $value) {
+			$reasons[] = " " . $value;
+		}
+		$this->tpl->assign('nren_reasons', $reasons);
+		$this->tpl->assign('selected', 'unspecified');
+	} /* end showNonAdminRevokeTable */
 
 	/**
 	 * searchListDisplay() find and display a particular certificate
@@ -496,8 +518,8 @@ class CP_RevokeCertificate extends Content_Page
 		$auth_keys = array();
 
 		foreach($eppn_list as $eppn) {
-			$eppn = "%" . Input::sanitizeEPPN($eppn) . "%";
-			$eppn_certs = $this->ca->getCertListForPersons($eppn, $subscriber);
+			$eppn = Input::sanitizeEPPN($eppn);
+			$eppn_certs = $this->ca->getCertListForEPPN($eppn, $subscriber);
 			$certs = array_merge($certs, $eppn_certs);
 		}
 
@@ -506,7 +528,7 @@ class CP_RevokeCertificate extends Content_Page
 			 * permits us to send the order-numbers for each certificate owner
 			 * to the revocation method */
 			foreach($certs as $row) {
-				$owners[] = $row['cert_owner'];
+				$owners[] = str_replace(",", ", ", $row['cert_owner']);
 				$auth_keys[] = $row['auth_key'];
 			}
 

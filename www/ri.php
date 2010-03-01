@@ -250,46 +250,40 @@ function printXMLRes($resArray, $type = 'userList')
 	 * proper XML headers */
 	global $admin;
 
-	header ("content-type: text/xml");
+	$xml = new SimpleXMLElement("<ConfusaRobot></ConfusaRobot>");
+	$xml->addAttribute("date", date("Y-m-d H:i:s"));
+	$xml->addAttribute("subscriber", $admin->getSubscriber()->getOrgName());
+	$xml->addAttribute("elementCount", 1);
+	$xml->addAttribute("version", "1.0");
 
-	/* Print XML header and 'master table' */
-	/* echo "<?xml standalone=\"yes\" ?>\n"; */
-	echo "<ConfusaRobot ";
-	echo "date=\"".date("Y-m-d H:i:s")."\" ";
-	echo "subscriber=\"".$admin->getSubscriber()->getOrgName()."\" ";
-	echo "elementCount=\"".count($resArray)."\" ";
-	echo "version=\"1.0\">\n";
-
-	$ending = "";
+	$element = null;
 	switch(strtolower($type)) {
 
 	case 'userlist':
-		$start  = "\t<userList>\n";
-		$ending = "\t</userList>\n";
+		$element = $xml->addChild("userList");
 		break;
 	case 'revokelist':
-		$start  =  "\t<revokedCerts>\n";
-		$ending = "\t</revokedCerts>\n";
+		$element = $xml->addChild("revokedCerts");
 		break;
 	default:
-		break;
+		return;
 
 	}
 	if (isset($resArray) && is_array($resArray) && count($resArray) > 0) {
-		echo $start;
 		foreach($resArray as $value) {
-			$line = "\t\t<listElement eppn=\"". htmlentities($value['eppn']) ."\"";
+			$le = $element->addChild('listElement');
+			$le->addAttribute('eppn', htmlentities($value['eppn']));
 			if (isset($value['count'])) {
-				$line .= " count=\"".$value['count']."\"";
+				$le->addAttribute('count', $value['count']);
 			}
 			if (isset($value['fullDN'])) {
-				$line .= " fullDN=\"". htmlentities($value['fullDN']) ."\"";
+				$le->addAttribute('fullDN', htmlentities($value['fullDN']));
 			}
-			echo $line . " />\n";
 		}
-		echo $ending;
 	}
-	echo "</ConfusaRobot>\n";
+
+	header ("content-type: text/xml");
+	echo $xml->asXML();
 }
 
 /* Safe environment? */
@@ -300,23 +294,6 @@ $admin = createAdminPerson();
 if(!isset($admin) || !$admin->isAuth()) {
 	echo "Not authenticated! Cannot continue<br />\n";
 	exit(0);
-}
-if (false && Config::get_config('debug')) {
-	echo "<hr />\n";
-	echo "<table class=\"small\">";
-	echo "<tr><td><b>Name:</b></td><td>". htmlentities($admin->getName()) ."</td></tr>";
-	echo "<tr><td><b>eduPersonPrincipalName:</b></td><td>".htmlentities($admin->getEPPN())."</td></tr>";
-	echo "<tr><td><b>CommonName in DN</b></td><td>".htmlentities($admin->getX509ValidCN())."</td></tr>";
-	echo "<tr><td><b>email:</b></td><td>".htmlentities($admin->getEmail())."</td></tr>";
-	echo "<tr><td><b>Country:</b></td><td>".htmlentities($admin->getNREN()->getCountry())."</td></tr>";
-	echo "<tr><td><b>OrganizationalName:</b></td><td>".htmlentities($admin->getSubscriber()->getOrgName())."</td></tr>";
-	echo "<tr><td><b>Entitlement:</b></td><td>".htmlentities($admin->getEntitlement())."</td></tr>";
-	echo "<tr><td><b>NREN:</b></td><td>".htmlentities($admin->getNREN())."</td></tr>";
-	echo "	<tr><td></td><td></td></tr>";
-	echo "	<tr><td><b>Time left</b></td><td>".htmlentities($timeLeft)."</td></tr>";
-	echo "<tr><td><b>Time since AuthN</b></td><td>".htmlentities($timeSinceStart)."</td></tr>";
-	echo "</table><br />";
-	echo "<hr />\n";
 }
 
 /* Get list of issued certiticates */

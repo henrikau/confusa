@@ -130,6 +130,64 @@ class ConfusaConstants {
 		'ž' => 'z'
 	);
 
+	/* a map from ISO-country codes as persons have them in Confusa to
+	 * timezones as PHP understands them. This helps in showing users dates
+	 * and times in their own timezone. */
+	public static $COUNTRY_TIMEZONE_MAP = array(
+		'ad' => 'Europe/Andorra',
+		'al' => 'Europe/Tirane',
+		'at' => 'Europe/Vienna',
+		'ba' => 'Europe/Sarajevo',
+		'be' => 'Europe/Brussels',
+		'bg' => 'Europe/Sofia',
+		'by' => 'Europe/Minsk',
+		'ch' => 'Europe/Zurich',
+		'cy' => 'Europe/Nicosia',
+		'cz' => 'Europe/Prague',
+		'de' => 'Europe/Berlin',
+		'dk' => 'Europe/Copenhagen',
+		'ee' => 'Europe/Tallinn',
+		'es' => 'Europe/Madrid',
+		'fi' => 'Europe/Helsinki',
+		'fr' => 'Europe/Paris',
+		'gb' => 'Europe/London',
+		'gg' => 'Europe/Guernsey',
+		'gi' => 'Europe/Gibraltar',
+		'gr' => 'Europe/Athens',
+		'hr' => 'Europe/Zagreb',
+		'hu' => 'Europe/Budapest',
+		'ie' => 'Europe/Dublin',
+		'im' => 'Europe/Isle_of_Man',
+		'it' => 'Europe/Rome',
+		'je' => 'Europe/Jersey',
+		'li' => 'Europe/Vaduz',
+		'lt' => 'Europe/Vilnius',
+		'lu' => 'Europe/Luxembourg',
+		'lv' => 'Europe/Riga',
+		'mc' => 'Europe/Monaco',
+		'md' => 'Europe/Chisinau',
+		'me' => 'Europe/Podgorica',
+		'mk' => 'Europe/Skopje',
+		'mt' => 'Europe/Malta',
+		'nl' => 'Europe/Amsterdam',
+		'no' => 'Europe/Oslo',
+		'pl' => 'Europe/Warsaw',
+		'pt' => 'Europe/Lisbon',
+		'ro' => 'Europe/Bucharest',
+		'rs' => 'Europe/Belgrade',
+		'ru' => 'Europe/Moscow', /* sorry, but we have country granularity */
+		'se' => 'Europe/Stockholm',
+		'si' => 'Europe/Ljubljana',
+		'sk' => 'Europe/Bratislava',
+		'sm' => 'Europe/San_Marino',
+		'tr' => 'Europe/Istanbul',
+		'ua' => 'Europe/Kiev',
+		'va' => 'Europe/Vatican'
+	);
+	/* the default timezone of the person. For the time being, most of the
+	 * users will be in UTC+1 */
+	public static $DEFAULT_TIMEZONE = 'Europe/Stockholm';
+
 	/* where the compiled smarty classes get stored. Should be writable by
 	 * webserver user, hence it should not be in the normal directory tree */
 	public static $SMARTY_TEMPLATES_C = '/var/cache/confusa/templates_c';

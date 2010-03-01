@@ -119,6 +119,22 @@ abstract class CA
    * @param $org The organization to restrict the search to
    */
   abstract function getCertListForPersons($common_name, $org);
+
+ /**
+  * getCertListForEPPN - get all valid certificates for a eppn (scoped to
+  * an organization)
+  *
+  * Search for the certificates containing a certain eppn. This will
+  * - query for wildcard-prefixed eppn in common-name field in eScience mode
+  * - query for the eppn in the unstructuredName field in personal mode
+  *
+  * @param $eppn string The EPPN of the subject which is queried fore
+  * @param $org string The name of the organization to which the query is
+  *                    constrained
+  * $return array(auth_key, subject, valid_untill) list with meta-information
+  *         about the certificates
+  */
+  abstract function getCertListForEPPN($eppn, $org);
   /*
    * If the person has been changed in the framework or elsewhere, it can be updated here
    */
@@ -339,14 +355,27 @@ abstract class CA
 			$dn .= "/DC=$dc";
 		}
 
-		$dn .= "/C=" . $this->person->getNREN()->getCountry();
+		$nren = $this->person->getNREN();
+		$subscriber = $this->person->getSubscriber();
+
+		if (isset($nren)) {
+			$dn .= "/C=" . $this->person->getNREN()->getCountry();
+		}
 
 		if (Config::get_config('cert_product') == PRD_PERSONAL) {
-			$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
+
+			if (isset($subscriber)) {
+				$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
+			}
+
 			$dn .= "/CN=" . $this->person->getX509ValidCN();
 			$dn .= "/unstructuredName=" . $this->person->getEPPN();
 		} else { /* eScience */
-			$dn .= "/O=" . Output::mapUTF8ToASCII($this->person->getSubscriber()->getOrgName());
+
+			if (isset($subscriber)) {
+				$dn .= "/O=" . Output::mapUTF8ToASCII($this->person->getSubscriber()->getOrgName());
+			}
+
 			$dn .= "/CN=" . $this->person->getX509ValidCN();
 		}
 

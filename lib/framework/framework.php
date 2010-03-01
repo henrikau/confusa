@@ -169,6 +169,9 @@ class Framework {
 					Framework::error_output($msg);
 				}
 			}
+		} else {
+			/* maybe we can guess the NREN from the URL */
+			$this->person->setNREN(NREN::getNRENByURL($_SERVER['SERVER_NAME']));
 		}
 
 		if (Framework::$sensitive_action) {
@@ -289,6 +292,7 @@ class Framework {
 		 */
 		if (!$this->renderError || $this->person->isNRENAdmin()) {
 			try {
+				$this->applyNRENBranding();
 				$this->contentPage->process($this->person);
 			} catch (KeyNotFoundException $knfe) {
 				$msg  = "[".create_pw(8)."] " .
@@ -323,7 +327,32 @@ class Framework {
 		$this->tpl->assign('successes', self::$successes);
 		$this->tpl->assign('warnings', self::$warnings);
 
+		if (Config::get_config('debug')) {
+			$res .= "<address>\n";
+			$res .= "During this session, we had ";
+			$res .= MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
+			$res .= "</address>\n";
+			$this->tpl->assign('db_debug', $res);
+		}
+		$this->tpl->display('site.tpl');
+
+		$this->contentPage->post_process($this->person);
+	} /* end start() */
+
+	/**
+	 * Assign NREN help and about texts, plus the privacy notice.
+	 * Apply NREN look and feel, like CSS, custom logos and portal title
+	 */
+	private function applyNRENBranding()
+	{
 		$nren = $this->person->getNREN();
+
+		/* can not brand the portal without an NREN */
+		if (empty($nren)) {
+			return;
+		}
+
+		/* apply the logos */
 		$logo_path = Config::get_config('custom_logo') . $nren . "/custom_";
 
 		foreach(ConfusaConstants::$ALLOWED_LOGO_POSITIONS as $pos) {
@@ -336,20 +365,24 @@ class Framework {
 				}
 			}
 		}
-		$css = "get_css.php?nren=" . $this->person->getNREN();
+
+		/* apply the CSS */
+		$css = "get_css.php?nren=" . $nren;
 		$this->tpl->assign('css',$css);
 
-		if (Config::get_config('debug')) {
-			$res .= "<address>\n";
-			$res .= "During this session, we had ";
-			$res .= MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
-			$res .= "</address>\n";
-			$this->tpl->assign('db_debug', $res);
-		}
-		$this->tpl->display('site.tpl');
+		/* apply the custom title on the portal */
+		if ($nren->getShowPortalTitle()) {
+			$customPortalTitle = $nren->getCustomPortalTitle();
 
-		$this->contentPage->post_process($this->person);
-	} /* end start() */
+			if (isset($customPortalTitle)) {
+				$this->tpl->assign('system_title', $customPortalTitle);
+			} else {
+				$this->tpl->assign('system_title', Config::get_config('system_title'));
+			}
+		} else {
+			$this->tpl->assign('system_title', '&nbsp;');
+		}
+	} /* end applyNRENBranding */
 
 	public static function error_output($message)
 	{

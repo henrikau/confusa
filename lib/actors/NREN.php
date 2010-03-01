@@ -28,17 +28,20 @@ class NREN
 	function __construct($idp_name)
 	{
 		$this->data = array();
-		$this->idp_name = Input::sanitizeText($idp_name);
-		$this->pendingChanges = false;
 
-		$this->isValid = $this->decorateNREN();
-		if (!$this->isValid) {
-			Logger::log_event(LOG_ALERT,
-					  __FILE__ .":".__LINE__." could not decorate NREN (".
-					  $this->idp_name . ")\n");
-			return;
+		if (isset($idp_name)) {
+			$this->idp_name = Input::sanitizeText($idp_name);
+			$this->pendingChanges = false;
+
+			$this->isValid = $this->decorateNREN();
+			if (!$this->isValid) {
+				Logger::log_event(LOG_ALERT,
+						  __FILE__ .":".__LINE__." could not decorate NREN (".
+						  $this->idp_name . ")\n");
+				return;
+			}
+			$this->retrieveMap();
 		}
-		$this->retrieveMap();
 	}
 
 	function __toString()
@@ -163,6 +166,37 @@ class NREN
 		}
 	}
 
+	/**
+	 * getShowPortalTitle() - return whether the portal title should be shown
+	 * as a component of the NREN branding or not. It might be desirable to
+	 * not show if there are for instance large logos for the header.
+	 *
+	 * @return boolean Whether the portal title is to be shown or not
+	 */
+	public function getShowPortalTitle()
+	{
+		if (isset($this->data) && isset($this->data['show_portal_title'])) {
+			return ($this->data['show_portal_title'] == 1);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Get the custom NREN-defined portal title.
+	 *
+	 * @return string the title that is configured for the portal to show for
+	 *                the given NREN
+	 */
+	public function getCustomPortalTitle()
+	{
+		if (isset($this->data) && isset($this->data['portal_title'])) {
+			return $this->data['portal_title'];
+		} else {
+			return Config::get_config('system_name');
+		}
+	}
+
 	public function saveMap($eppnkey, $epodn, $cn, $mail, $entitlement)
 	{
 		$doUpdate = false;
@@ -218,6 +252,15 @@ class NREN
 	{
 		$res = $this->data;
 		return $res;
+	}
+
+	public function getWAYFURL()
+	{
+		if (isset($this->data)) {
+			if (array_key_exists('wayf_url', $this->data)) {
+				return $this->data['wayf_url'];
+			}
+		}
 	}
 
 	public function set_login_account($login_account)
@@ -329,6 +372,32 @@ class NREN
 		}
 	}
 
+	public function setShowPortalTitle($showPortalTitle)
+	{
+		if (isset($showPortalTitle)) {
+			if (!array_key_exists('show_portal_title', $this->data) ||
+			   ($this->data['show_portal_title'] != $showPortalTitle)) {
+
+				$this->data['show_portal_title'] = $showPortalTitle;
+				$this->pendingChanges = true;
+				return;
+			}
+		}
+	}
+
+	public function setCustomPortalTitle($portalTitle)
+	{
+		if (isset($portalTitle)) {
+			if (!array_key_exists('portal_title', $this->data) ||
+			($this->data['portal_title'] != $portalTitle)) {
+
+				$this->data['portal_title'] = $portalTitle;
+				$this->pendingChanges = true;
+				return;
+			}
+		}
+	}
+
 	/**
 	 * saveNREN() Save the current NREN to the database.
 	 *
@@ -342,9 +411,11 @@ class NREN
 	{
 		if ($this->pendingChanges) {
 			$query  = "UPDATE nrens SET contact_email=?, contact_phone=?, ";
-			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=?, cert_validity=? ";
+			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=?, cert_validity=?,";
+			$query .= " show_portal_title=?, portal_title=? ";
 			$query .= "WHERE nren_id=?";
-			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text', 'text', 'text');
+			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text',
+			                'text', 'text', 'text', 'text');
 			$data	= array($this->data['contact_email'],
 					$this->data['contact_phone'],
 					$this->data['cert_phone'],
@@ -353,6 +424,8 @@ class NREN
 					$this->data['lang'],
 					$this->data['enable_email'],
 					$this->data['cert_validity'],
+					$this->data['show_portal_title'],
+					$this->data['portal_title'],
 					$this->getID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);
@@ -361,7 +434,7 @@ class NREN
 							"wrong with the data that you supplied? Server said: " .
 							htmlentities($dqe->getMessage()));
 				Logger::log_event(LOG_INFO, "[nadm] Could not update " .
-						  "contact of NREN $nren: " .
+						  "contact of NREN " . $this->data['name'] . ": " .
 						  $dqe->getMessage());
 				return false;
 			} catch (DBStatementException $dse) {
@@ -369,7 +442,7 @@ class NREN
 							"seems to be misconfigured. Server said: " .
 							htmlentities($dse->getMessage()));
 				Logger::log_event(LOG_WARNING, "[nadm] Could not update " .
-						  "contact of $nren: " .
+						  "contact of NREN " . $this->data['name'] . ": " .
 						  $dse->getMessage());
 				echo $query . "<br />\n";
 				return false;
@@ -424,7 +497,8 @@ class NREN
 		$query .= "		n.contact_email,	n.contact_phone,n.cert_email, ";
 		$query .= "		n.cert_phone,		n.lang,		n.url, ";
 		$query .= "		n.country,		idp.idp_url as idp_url, ";
-		$query .= "		n.enable_email,	n.cert_validity ";
+		$query .= "		n.enable_email,	n.cert_validity, ";
+		$query .= "		n.show_portal_title, n.portal_title, n.wayf_url ";
 		$query .= "FROM idp_map idp LEFT JOIN ";
 		$query .= "nrens n on idp.nren_id = n.nren_id WHERE idp.idp_url=?";
 		try {
@@ -593,10 +667,13 @@ class NREN
 		}
 
 		if (count($res) > 0) {
-			$at = stripslashes($res[0]['about']);
-			$at = Input::br2nl($at, 0);
+			$at = $res[0]['about'];
+
+			$at=stripslashes($at);
+			$at=Input::br2nl($at);
 			$textile = new Textile();
-			return $this->replaceTags($textile->TextileRestricted($at), $person);
+
+			return $this->replaceTags($textile->TextileRestricted($at,0), $person);
 		} else {
 			return "No about-NREN text has been defined for your NREN (" .
 				$this->getName(). ")";
@@ -635,10 +712,12 @@ class NREN
 		if (count($res) > 0) {
 			$help_text=$res[0]['help'];
 
-			$help_text=stripslashes($help_text);
-			$help_text=Input::br2nl($help_text);
+			$help_text = Input::br2nl($help_text);
+			$help_text = stripslashes($help_text);
+
 			$textile = new Textile();
-			return $this->replaceTags($textile->TextileRestricted($help_text,0), $person);
+			$help_text = $textile->TextileRestricted($help_text,0);
+			return $this->replaceTags($help_text, $person);
 		}
 	} /* end getHelpText() */
 
@@ -652,18 +731,29 @@ class NREN
 		 * {$subscriber_support_email}
 		 * {$subscriber_support_url}
 		 */
+
+		$orgName = '';
+		$supportMail = '';
+		$supportURL = '';
+
 		$subscriber = $person->getSubscriber();
-		if (!is_null($subscriber)) {
-			$text = str_ireplace('{$subscriber}',
-					     $subscriber->getOrgname(),
-					     $text);
-			$text = str_ireplace('{$subscriber_support_email}',
-					     $subscriber->getHelpEmail(),
-					     $text);
-			$text = str_ireplace('{$subscriber_support_url}',
-					     $subscriber->getHelpURL(),
-					     $text);
+
+		if (isset($subscriber)) {
+			$orgName = $subscriber->getOrgName();
+			$supportMail = $subscriber->getHelpEmail();
+			$supportURL = $subscriber->getHelpURL();
 		}
+
+		$text = str_ireplace('{$subscriber}',
+					 $orgName,
+					 $text);
+		$text = str_ireplace('{$subscriber_support_email}',
+					 $supportMail,
+					 $text);
+		$text = str_ireplace('{$subscriber_support_url}',
+					 $supportURL,
+					 $text);
+
 		$productName = ConfusaConstants::$PERSONAL_PRODUCT;
 		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
 			$productName = ConfusaConstants::$ESCIENCE_PRODUCT;
@@ -674,6 +764,84 @@ class NREN
 				     $text);
 
 		return $text;
+	}
+
+	/**
+	 * Construct a NREN object from an URL. Sometimes a NREN object is needed
+	 * without the user being authenticated and a decorated person object
+	 * being available. Since NREN admins can define a custom-URL this function
+	 * tries to construct the NREN from such an URL.
+	 *
+	 * @param nrenURL string the URL that was configured for the NREN
+	 * @since v0.6-rc0
+	 */
+	static function getNRENByURL($nrenURL)
+	{
+		$query  = "SELECT n.nren_id,      n.name,           n.login_account, ";
+		$query .= "       n.contact_email,n.contact_phone,  n.cert_email, ";
+		$query .= "       n.cert_phone,   n.lang,           n.url, ";
+		$query .= "       n.country,      n.enable_email,   n.cert_validity, ";
+		$query .= "       n.show_portal_title,              n.portal_title, ";
+		$query .= "       n.wayf_url ";
+		$query .= "FROM nrens n WHERE n.url = ?";
+
+		try {
+			$res = MDB2Wrapper::execute($query,
+			                            array('text'),
+			                            array($nrenURL));
+		} catch (ConfusaGenException $cge) {
+			Framework::error_output("Cannot connect to DB. Server said:<br />"
+			                        . $cge->getMessage());
+			Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ .
+			                  " error with db-connect. " . $cge->getMessage());
+			return null;
+		}
+
+		if (count($res) > 0) {
+			$nren = new NREN(null);
+
+			foreach($res[0] as $k => $value) {
+				/* no sanitation needed since the data *comes* from the DB anyways */
+				$nren->data[$k] = $value;
+			}
+
+			return $nren;
+		} else {
+			return null;
+		}
+	} /* end getNRENByURL */
+
+	/**
+	 * Get the list of IdPs stored in the DB for this NREN.
+	 *
+	 * @return array|null an array with all IdP URLs or null if none found
+	 */
+	public function getIdPList()
+	{
+		$query = "SELECT m.idp_url FROM idp_map m " .
+		         "WHERE m.nren_id = ?";
+
+		try {
+			$res = MDB2Wrapper::execute($query,
+			                            array('text'),
+			                            array($this->getID()));
+		} catch (ConfusaGenException $cge) {
+			Logger::log_event(LOG_NOTICE, __FILE__ . " " . __LINE__ .  ": Could not " .
+			                  "get the IdP list for NREN with ID " .
+			                  $this->getID() . ". All IdP scoping will fail!");
+		}
+
+		if (count($res) > 0) {
+			$idpList = array();
+
+			foreach($res as $row) {
+				$idpList[] = $row['idp_url'];
+			}
+		} else {
+			return null;
+		}
+
+		return $idpList;
 	}
 
 } /* end class NREN */

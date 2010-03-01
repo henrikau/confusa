@@ -12,8 +12,9 @@
 <h3>{$heading_help|escape}</h3>
 <ul>
   <li><a href="about_nren.php">{$item_about|escape}</a></li>
+  <li><a href="about_confusa.php">{$item_aboutconf|escape}</a></li>
+  <li style="margin-bottom: 1em"><a href="privacy_notice.php">{$item_privacy_notice|escape}</a></li>
   <li><a href="help.php">{$item_help|escape}</a></li>
-  <li><a href="privacy_notice.php">{$item_privacy_notice|escape}</a></li>
 </ul>
 
 {if $person->isAdmin()}

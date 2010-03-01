@@ -30,14 +30,14 @@
 {if strlen($privacy_notice_text) > 0}
 <strong>{$l10n_privacy_notice_header}</strong>:
 
-<span id="shortPrivacyNotice" style="display: none">
+<div id="shortPrivacyNotice" style="display: none">
 {$privacy_notice_text|truncate:50:"":true}
 <a href="#" title="Click to read full notice" onclick="togglePrivacyNotice()">...<img src="graphics/triangle_down.png" alt="Expand" /></a>
-</span>
+</div>
 
-<span id="fullPrivacyNotice">
+<div id="fullPrivacyNotice">
 	{$privacy_notice_text} <a href="#" onclick="togglePrivacyNotice();"><img src="graphics/triangle_up.png" alt="Collapse" /> Collapse.</a>
-</span>
+</div>
 {/if}
 </div>
 

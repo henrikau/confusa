@@ -1,0 +1,95 @@
+{
+	"unauth_welcome_1": {
+		"no": "Denne tjenesten lar deg lage nytt eller tilbakekalle et eksisterende sertifikat."
+	},
+	"unauth_login_notice": {
+		"no": "For \u00e5 kunne benytte denne tjenesten m\u00e5 du logge inn."
+	},
+	"auth_welcome_1": {
+		"no": "Autentiseringen var vellykket og du kan n\u00e5 benytte funksjonaliteten til portalen"
+	},
+	"index_faq_heading1": {
+		"no": "Hvordan virker det?"
+	},
+	"index_faq_heading2": {
+		"no": "Hvor lenge er et sertifikat gyldig?"
+	},
+	"index_faq_text2": {
+		"no": "Sertifikater utstedt via Confusa er gyldige i 13 m\u00e5neder."
+	},
+	"index_faq_heading3": {
+		"no": "Hvorfor m\u00e5 jeg logge inn?"
+	},
+	"index_faq_text3": {
+		"no": "F\u00f8r vi kan utstede et sertifikat til <i>deg<\/i>, m\u00e5 vi vite <i>hvem<\/i> du er. Din lokale institusjon kan gj\u00f8re dette mye bedre enn hva vi kan - de kjenner deg. Vi delegerer derfor den oppgaven til de. P\u00e5 denne m\u00e5ten kan vi fokusere all v\u00e5r eneregi p\u00e5 det vi kan best, nemlig \u00e5 utstede sertifikater s\u00e5 raskt og effektivt som mulig."
+	},
+	"index_faq_heading4": {
+		"no": "Blir det lagret privat informasjon om meg av Confusa?"
+	},
+	"index_faq_text4": {
+		"no": "Personvern har v\u00e6rt et viktig tema gjennom designet av Confusa. Confusa lagrer ingen data om deg n\u00e5r du logger inn. Kun n\u00e5r du bestiller et sertifikat gjennom Confusa vil det bli lagret informasjon om deg ved at det lagres en kopi av sertifikatet. Dette er normalt land, organisasjon, og fult navn. Dette er informasjon vi <b>m\u00e5<\/b> lagre."
+	},
+	"index_faq_heading5": {
+		"no": "Hva er denne \"Confusa\" som nevnes over alt?"
+	},
+	"index_faq_text5": {
+		"no": "\"Confusa\" er navnet p\u00e5 programvaren portalen kj\u00f8rer. Det betyr at portalen <i>er<\/i> Confusa, men likevel ikke helt. Litt slik som en skje. Hvis du vil vite mer, se p\u00e5 <a href=\"http:\/\/www.confusa.org\/\">www.confusa.org<\/a>."
+	},
+	"attribute_info1": {
+		"no": "Dette er informasjonen vi har mkottat fra din vertsorganisasjon kombinert med informasjon lagt inn for din f\u00f8derasjon."
+	},
+	"attribute_info2": {
+		"no": "og abbonnent"
+	},
+	"attribute_name": {
+		"no": "Navn:"
+	},
+	"attribute_email": {
+		"no": "E-post adresse:"
+	},
+	"attribute_entitlement": {
+		"no": "Rettighet:"
+	},
+	"attribute_eppn": {
+		"no": "Unikt navn:"
+	},
+	"attribute_orgname": {
+		"no": "Vertsorganisasjon:"
+	},
+	"attribute_country": {
+		"no": "Land:"
+	},
+	"attribute_idpname": {
+		"no": "Org ID:"
+	},
+	"attribute_nrenname": {
+		"no": "NREN-navn:"
+	},
+	"attribute_fulldn": {
+		"no": "Full DN:"
+	},
+	"index_faq_text1": {
+		"no": "Grunnlaget for dette er at de ulike tjenestene stoler p\u00e5 hverandre. Vi stoler p\u00e5 at din organisasjon autentiserer deg skikkelig, og CA'en stoler p\u00e5 at Confusa gj\u00f8r jobben sin skikkelig. Ved \u00e5 stole p\u00e5 at du blir autentisert skikkelig av vertsorganisasjonen, trenger ikke vi \u00e5 gj\u00f8re det en gang til, i beste fall kan vi bare gj\u00f8re det like godt, aldri bedre."
+	},
+	"l10n_heading_aboutnren": {
+		"no": "Om tjenestetilbyder"
+	},
+	"l10n_heading_help": {
+		"no": "Hjelp"
+	},
+	"l10n_heading_nrenadvice": {
+		"no": "s r\u00e5d:"
+	},
+	"l10n_heading_logout": {
+		"no": "Du er n\u00e5 logget ut av portalen."
+	},
+	"l10n_text_logoutreturn1": {
+		"no": "Tilbake til"
+	},
+	"l10n_link_start": {
+		"no": "start"
+	},
+	"l10n_heading_privnotice": {
+		"no": "Personverninformasjon"
+	}
+}

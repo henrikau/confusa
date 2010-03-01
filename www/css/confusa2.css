@@ -1,10 +1,9 @@
+@charset "UTF-8";
 /*
  * Thanks to Mathew James Taylor for his suggestions which helped me make this
  * work with IE:
  * http://matthewjamestaylor.com/blog/perfect-2-column-left-menu.htm
  */
-
-@CHARSET "UTF-8";
 
 * {
 	margin: 0px;
@@ -31,7 +30,6 @@ body {
 	margin: 30px auto;
 }
 #menu {
-	border: 1px solid #00000;
 	width: 21%;
 	position: relative;
 	clear: both;
@@ -65,7 +63,6 @@ img.url {
 }
 
 #content {
-	border: 1px solid #00000;
 	margin-left: 21%;
 	width: 79%;
 	/* the menu size is in em (padding and font size) thus the min-height should
@@ -139,24 +136,37 @@ div.logo_area {
 	overflow: hidden;
 }
 
-#language_bar {
-	margin-top: 10px;
-	margin-bottom: 14px;
-	font-size: 12px;
+#language_list ul li {
+	margin: 0em 1em 0.5em 1em;
+	font-size: 0.8em;
 }
 
-#language_bar a {
-	color: #888888;
-}
-
-#language_bar a:hover {
-	border-bottom: dashed 1px;
+#language_list a {
+	color: #666;
 }
 
 div.message_container {
 	padding: 4px 24px 4px 4px;
 	margin: 0px 10% 8px 0px;
+	position: relative;
+	height: 100%;
+	width: 90%;
+}
+
+div.message {
+	border: 2px solid black;
+}
+
+div.message_icon {
+	margin-right: 6px;
+	margin-bottom: 2px;
 	float: left;
+	/* seems like, according to standard, floats must have a width */
+	width: 16px;
+	height: 16px;
+}
+
+div.message_body {
 	width: 90%;
 }
 
@@ -183,31 +193,7 @@ h2.unauthz {
 
 div.unauthz {
               width:		80%;
-              float:		center;
-}
-
-div.message {
-	border: 2px solid black;
-}
-
-div.message_icon {
-	margin-right: 6px;
-	margin-bottom: 2px;
-	float: left;
-	/* seems like, according to standard, floats must have a width */
-	width: 16px;
-	height: 16px;
-}
-
-div.message_body {
-	float: left;
-	width: 90%;
-}
-
-.clear {
-	clear: both;
-	height: 1px;
-	overflow: hidden;
+              float:		left;
 }
 
 div.info {
@@ -221,7 +207,7 @@ div.info {
 
 hr.table {
            width: 80%;
-           border: 1 solid gray;
+           border-style: none;
            }
 
 fieldset {
@@ -354,6 +340,19 @@ p.example {
     background-color: #DDDDEE;
 }
 
+table.mapping {
+	width: 95%;
+	border: 1px black solid;
+}
+
+table.mapping tr td {
+	padding: 0 0.5em 0.5em 0;
+}
+
+table.mapping tr th {
+	padding-bottom: 0.5em
+}
+
 table.mapping tr td.attval {
 	width: 14em;
 	min-width: 14em;
@@ -438,7 +437,7 @@ a.exphead {
 }
 
 a.exphead:hover {
-    text-decoration: bold;
+    font-weight: bold;
 }
 
 a.exphead span.expchar {

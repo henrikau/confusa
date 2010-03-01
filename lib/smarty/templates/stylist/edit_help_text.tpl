@@ -3,6 +3,7 @@
 <li><span>{$l10n_tab_texts}</span></li>
 <li><a href="?show=css">{$l10n_tab_css}</a></li>
 <li><a href="?show=logo">{$l10n_tab_logo}</a></li>
+<li><a href="?show=title">{$l10n_tab_portaltitle}</a></li>
 <li><a href="?show=mail">{$l10n_tab_notificationmail}</a></li>
 </ul>
 </div>

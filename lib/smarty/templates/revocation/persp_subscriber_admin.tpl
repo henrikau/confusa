@@ -43,7 +43,7 @@ immediately see a result entry *}
 	   type="text"
 	   name="search"
 	   {if $search_string != ""}
-	   value="{$search_string}"
+	   value="{$search_string|escape}"
 	   {/if}
 	   />
     <input type="submit" name="Search" value="{$l10n_button_search}" />
@@ -85,7 +85,7 @@ immediately see a result entry *}
 {* The display part *}
 
 {if isset($owners)}
-    {if $revoke_cert}
+    {if isset($revoke_cert) && $revoke_cert === TRUE}
         {foreach from=$owners item=owner}
 		{include file='revocation/revoke_cert_set.tpl'}
         {/foreach}
@@ -94,15 +94,12 @@ immediately see a result entry *}
     {elseif $revoke_list}
         <b>{$l10n_info_listrevoke1}</b><br />
         <div class="spacer"></div>
-        <table class="small">
 
         {foreach from=$owners item=owner}
-            <tr style="width: 80%">
-                <td>{$owner|escape}</td>
-            </tr>
+            <div style="width: 80%;">
+                {$owner|escape}
+            </div>
         {/foreach}
-
-        </table>
 
         <div class="spacer"></div>
         <div style="text-align: right">
@@ -110,7 +107,7 @@ immediately see a result entry *}
             {$l10n_listrevoke_reas1}
             {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
             <input type="hidden" name="revoke_operation" value="revoke_by_list" />
-            <input type="Submit" value="Revoke all" onclick="return confirm('{$l10n_confirm_listrevoke}')" />
+            <input type="submit" value="Revoke all" onclick="return confirm('{$l10n_confirm_listrevoke}')" />
             </form>
         </div>
 

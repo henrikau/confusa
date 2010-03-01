@@ -20,5 +20,7 @@
 	{include file='stylist/edit_logo.tpl'}
   {elseif isset($edit_mail) && $edit_mail === TRUE}
 	{include file='stylist/edit_mail.tpl'}
+  {elseif isset($edit_title) && $edit_title === TRUE}
+	{include file='stylist/edit_title.tpl'}
   {/if}
 {/if}

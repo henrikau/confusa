@@ -54,7 +54,7 @@
 			{* </div> *}
 		      {/if} {* /if-else confusa_corners *}
 
-		      <div class="logo_area">
+		      <div id="header" class="logo_area">
 			<div id="logo_header_left">
 			  {if isset($logo_tl)}
 			  <img src="{$logo_tl}"
@@ -65,12 +65,12 @@
 			</div> <!-- logo_header_left -->
 			<div id="logo_header_center">
 			  <a href="index.php" class="url">
-			    {if is_null($logo_tc)}
-			    <img src="graphics/logo-sigma.png" alt="UNINETT Sigma Logo" /> {$system_title}
+			    {if isset($logo_tc)}
+			    <img src="{$logo_tc}" alt="NREN logo" />&nbsp;{$system_title}
 			    {else}
-			    <img src="{$logo_tc}"
-				 alt="NREN logo" />{$system_title}
+			    {* empty *}&nbsp;{$system_title}
 			    {/if}
+
 			  </a>
 			</div><!-- logo_header_center -->
 			<div id="logo_header_right">
@@ -96,8 +96,8 @@
 			    <img src="graphics/exclamation.png" alt="" />
 			  </div>
 			  <div class="message_body">{$error}</div>
-			  <div class="clear"></div>
 			</div> <!-- message_container error -->
+			<div style="margin-bottom: 0.5em"></div>
 			{/foreach}
 
 			{foreach from=$successes item=success}
@@ -106,8 +106,8 @@
 			    <img src="graphics/accept.png" alt="Information: " />
 			  </div>
 			  {$success}
-			  <div class="clear"></div>
 			</div> <!-- message_container success -->
+			<div style="margin-bottom: 0.5em"></div>
 			{/foreach}
 
 			{foreach from=$warnings item=warning}
@@ -116,8 +116,8 @@
 			    <img src="graphics/warning.png" alt="Warning: " />
 			  </div>
 			  {$warning}
-			  <div class="clear"></div>
 			</div> <!-- message_container warning -->
+			<div style="margin-bottom: 0.5em"></div>
 			{/foreach}
 
 			{foreach from=$messages item=msg}
@@ -126,8 +126,8 @@
 			    <img src="graphics/information.png" alt="Information: " />
 			  </div>
 			  {$msg}
-			  <div class="clear"></div>
 			</div> <!-- message_container message -->
+			<div style="margin-bottom: 0.5em"></div>
 			{/foreach}
 
 			{$content}
