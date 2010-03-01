@@ -32,7 +32,14 @@ function get_config_entry ()
 		echo "invoking this bootstrap script!"
 		exit 64
 	fi
+	config=${config_dir}/confusa_config.php
+	export $config
+	res=_get_config_entry $1
+	return $?
+}
 
+function _get_config_entry
+{
     # Need one and only *one* parameter
     if [ ! $# -eq 1 ]; then
 	return 127
@@ -42,11 +49,49 @@ function get_config_entry ()
     # TODO
 
     # Find the key
-    res=`grep "$1'[^]]" ${config_dir}/confusa_config.php | cut -d '=' -f 2 | cut -d "'" -f 2`
+    res=`grep "$1'[^]]" ${config} | grep ">" | cut -d '=' -f 2 | cut -d "'" -f 2`
     if [ "$res" == "" ]; then
-		echo "did not find key $1" >&2
+	echo "did not find key $1" >&2
 	return 1
     fi
     echo $res
     return 0
+}
+
+# replace_config_entry
+#
+# Take the supplied key and value and use the template to verify it's
+# existence before setting it in the config.
+#
+# The function expects the config to be set globally (done at the start
+# of the file), the same with the template.
+#
+# If you need to insert something directly, without adding quotes etc,
+# use the _raw-function
+function replace_config_entry
+{
+    # Replace entry in the configuration file with the new value
+    sed s\|"'$1'[^]][ \t]*=>.*"\|"'$1'    => '$2',"\| < $working_template > $config
+    cp $config $working_template
+}
+function replace_config_entry_raw
+{
+    # Replace entry in the configuration file with the new value
+    sed s\|"'$1'[^]][ \t]*=>.*"\|"'$1'    => $2,"\| < $working_template > $config
+    cp $config $working_template
+}
+
+# get_from_config_template
+#
+# This will return a valie from the config-template. If it is not found,
+# an empty string is returned
+#
+# The function assumes that $working_template is initalized to the full
+# path of the config-template.
+function get_from_config_template
+{
+    res=""
+    if [ ! -z $working_template ]; then
+	res=`grep "'$1'" $working_template | grep ">" | cut -d '=' -f 2 | cut -d "'" -f 2`
+    fi
 }
