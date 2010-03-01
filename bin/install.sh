@@ -12,6 +12,11 @@ if [ `basename $0` != $0 ]; then
     cd `dirname $0`
 fi
 
+# get install-lib functions
+if [ -f "../lib/bash/install_lib.sh" ]; then
+    . ../lib/bash/install_lib.sh
+fi
+
 if	[ -d "../config/" ] &&
 	[ -f "../config/confusa_config_template.php" ]; then
 	prefix="../config/"
@@ -32,45 +37,9 @@ working_template=`mktemp /tmp/.confusa_wrk_template_XXXXXX`
 dbconfig_template="/etc/confusa/confusa_config.inc.php"
 config=${prefix}"confusa_config.php"
 
-# get_user_alternative
+# replace_interval_in_config
 #
-# Call this function for simple yes/no questions with the questions as
-# an argument
-#
-# Optional: Supply default value, must be yYnN
-function get_user_alternative
-{
-    default=""
-    if [ ! -z $2 ]; then
-	case $2 in "y"|"Y"|"n"|"N") default=$2 ;; esac
-    fi
-    msg=$1
-    answer=""
-    retry=""
-    while [ "$answer" == "" ]; do
-	read -p "$msg $retry: " answer
-	case $answer in
-	    "y"|"Y"|"n"|"N")
-		break ;;
-	    *)
-		if [ ! -z $default ] && [ "$answer" = "" ]; then
-		    answer=${default}
-		    break
-		fi
-		answer=""
-		retry="(retry) "
-		;;
-	esac
-    done
-}
-
-function replace_config_entry
-{
-	# Replace entry in the configuration file with the new value
-	sed s\|"'$1'[^]][ \t]*=>.*"\|"'$1'    => '$2',"\| < $working_template > $config
-	cp $config $working_template
-}
-
+# TODO: proper description of function
 function replace_interval_in_config
 {
 	LEGAL_VALUES=("SECOND" "MINUTE" "HOUR" "DAY" "WEEK" "MONTH" "YEAR")
