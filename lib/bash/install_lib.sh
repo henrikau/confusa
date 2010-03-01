@@ -48,11 +48,20 @@ function get_user_alternative
 #
 # The function expects the config to be set globally (done at the start
 # of the file), the same with the template.
+#
+# If you need to insert something directly, without adding quotes etc,
+# use the _raw-function
 function replace_config_entry
 {
-	# Replace entry in the configuration file with the new value
-	sed s\|"'$1'[^]][ \t]*=>.*"\|"'$1'    => '$2',"\| < $working_template > $config
-	cp $config $working_template
+    # Replace entry in the configuration file with the new value
+    sed s\|"'$1'[^]][ \t]*=>.*"\|"'$1'    => '$2',"\| < $working_template > $config
+    cp $config $working_template
+}
+function replace_config_entry_raw
+{
+    # Replace entry in the configuration file with the new value
+    sed s\|"'$1'[^]][ \t]*=>.*"\|"'$1'    => $2,"\| < $working_template > $config
+    cp $config $working_template
 }
 
 # get_from_config_template
