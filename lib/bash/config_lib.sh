@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # get_config_entry
 #
 # Find an entry in the config-file and return as a string.
@@ -33,10 +32,14 @@ function get_config_entry ()
 		exit 64
 	fi
 	config=${config_dir}/confusa_config.php
-	export $config
-	res=_get_config_entry $1
-	return $?
-}
+	res=`grep "$1'[^]]" ${config} | grep ">" | cut -d '=' -f 2 | cut -d "'" -f 2`
+	if [ "$res" == "" ]; then
+	    echo "did not find key $1" >&2
+	    return 1
+	fi
+	echo $res
+	return 0
+} # get_config_entry
 
 function _get_config_entry
 {
@@ -44,9 +47,6 @@ function _get_config_entry
     if [ ! $# -eq 1 ]; then
 	return 127
     fi
-
-    # Test $1 for wildcards
-    # TODO
 
     # Find the key
     res=`grep "$1'[^]]" ${config} | grep ">" | cut -d '=' -f 2 | cut -d "'" -f 2`
