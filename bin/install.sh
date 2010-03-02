@@ -149,7 +149,7 @@ function configure_confusa_settings
 		esac
 
 		# need the mode without exclamation marks, because it is an enumeration
-		replace_config_entry 'ca_mode' $ca_mode
+		replace_config_entry_raw 'ca_mode' $ca_mode
 		break
 	done
 
@@ -161,7 +161,7 @@ function configure_confusa_settings
 	if [ $mode = "comodo" ]; then
 		# sed s\|"'capi_test'[ \t]*=>.*"\|"'capi_test'    => false,"\| < $working_template > $config
 		# cp $config $working_template
-	    replace_config_entry 'capi_test' false
+	    replace_config_entry_raw 'capi_test' false
 	elif [ $mode = "standalone" ]; then
 		# hardcode for the sake of simplicity
 		# c'mon don't be picky :)
@@ -193,13 +193,13 @@ function configure_confusa_settings
 		esac
 
 		# need the mode without exclamation marks, because it is an enumeration
-		replace_config_entry 'cert_product' $product
+		replace_config_entry_raw 'cert_product' $product
 		break
 	done
 
-	replace_config_entry 'debug' false
-	replace_config_entry 'maint' false
-	replace_config_entry 'auth_bypass' false
+	replace_config_entry_raw 'debug' false
+	replace_config_entry_raw 'maint' false
+	replace_config_entry_raw 'auth_bypass' false
 	replace_config_entry "language.default" "en"
 	replace_config_entry "default_log" "/var/log/confusa.log"
 
