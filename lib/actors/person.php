@@ -38,7 +38,6 @@ class Person{
 
     private $email;
     private $certEmails;
-    private $country;
 
     /* array storing all provided entitlements for the user. */
     private $entitlement;
