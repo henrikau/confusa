@@ -37,6 +37,8 @@ class Person{
     private $eppnKey;
 
     private $email;
+
+    /* list of emails to place in the SAN */
     private $certEmails;
 
     /* array storing all provided entitlements for the user. */
@@ -51,12 +53,6 @@ class Person{
     private $saml_config;
 
     private $adminDBError;
-
-    /* get variables for:
-     * Region (i.e. Sor Trondelag)
-     * City (i.e. Trondheim)
-     * 
-     */
 
     /* status variables (so we poll the subsystem as little as possible) */
     private $isAuthenticated;
