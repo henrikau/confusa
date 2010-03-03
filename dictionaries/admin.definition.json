@@ -150,7 +150,7 @@
 		"en": "Your super administrators"
 	},
 	"l10n_infotext_nren_adm4": {
-		"en": "NREN-admins are administrating the whole NREN admin domain, i.e. your institution along with other institutions. They can also define, which institutions are hooked up to Confusa and which credentials should be used for communicating with the Online-CA. Below you can find a list of them along with their e-mail addresses your NREN"
+		"en": "NREN-admins are administrating the whole NREN admin domain, i.e. your institution along with other institutions. They can also define, which institutions are hooked up to Confusa and which credentials should be used for communicating with the Online-CA. Below you can find a list of them along with their e-mail addresses for your NREN"
 	},
 	"l10n_infotext_subs_adm5": {
 		"en": "The following are the subscriber admins that are administrating your institution (and their names/emails)"
