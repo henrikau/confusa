@@ -44,7 +44,7 @@ class NREN
 		}
 	}
 
-	function __toString()
+	public function __toString()
 	{
 		return $this->data['name'];
 	}
@@ -73,7 +73,7 @@ class NREN
 	 *		have stumbled accross internal inconsistency.
 	 * @access	public
 	 */
-	function getName()
+	public function getName()
 	{
 		return $this->data['name'];
 	}
@@ -103,12 +103,12 @@ class NREN
 	 * @return	Integer|null the ID of the NREN
 	 * @access	public
 	 */
-	function getID()
+	public function getID()
 	{
 		return $this->data['nren_id'];
 	}
 
-	function getHelp()
+	public function getHelp()
 	{
 		if (is_null($this->data['help'])) {
 			$help = MDB2Wrapper::execute("SELECT help FROM nrens WHERE nren_id =?",
