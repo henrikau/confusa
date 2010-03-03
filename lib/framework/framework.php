@@ -100,7 +100,7 @@ class Framework {
 
 		$this->person	= new Person();
 		$this->tpl	= new Smarty();
-		$this->tpl->template_dir= Config::get_config('install_path').'lib/smarty/templates';
+		$this->tpl->template_dir= Config::get_config('install_path').'templates';
 		if (!is_dir(ConfusaConstants::$SMARTY_TEMPLATES_C) ||
 		    !is_writable(ConfusaConstants::$SMARTY_TEMPLATES_C)) {
 			Logger::log_event(LOG_NOTICE, "smarty template-compile-dir (" .
