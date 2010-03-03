@@ -322,12 +322,17 @@ class NREN
 		return null;
 	}
 
+	/**
+	 * getWAYFURL() get the URL to the NREN's WAYF
+	 *
+	 * @param	void
+	 * @return	String the URL to the NREN's Where are you from service
+	 * @access	public
+	 */
 	public function getWAYFURL()
 	{
-		if (isset($this->data)) {
-			if (array_key_exists('wayf_url', $this->data)) {
-				return $this->data['wayf_url'];
-			}
+		if (isset($this->data) && array_key_exists('wayf_url', $this->data)) {
+			return $this->data['wayf_url'];
 		}
 	}
 
