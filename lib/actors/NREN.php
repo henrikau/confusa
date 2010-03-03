@@ -140,10 +140,22 @@ class NREN
 		return $this->data['help'];
 	}
 
+	/**
+	 * getMap() Return the attribute-map associated with the NREN
+	 *
+	 * The map is used to find the relationship between the attributes and
+	 * the content we need. The map is retrieved from the database via
+	 * decorateNREN().
+	 *
+	 * @param	void
+	 * @return	Array|null the map
+	 * @access	public
+	 */
 	public function getMap()
 	{
-		if ($this->hasMap)
+		if ($this->hasMap) {
 			return $this->map;
+		}
 		return null;
 	}
 
