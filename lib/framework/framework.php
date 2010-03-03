@@ -101,6 +101,10 @@ class Framework {
 		$this->person	= new Person();
 		$this->tpl	= new Smarty();
 		$this->tpl->template_dir= Config::get_config('install_path').'templates';
+		if (!is_dir($this->tpl->template_dir)) {
+			Logger::log_event(LOG_ALERT, "Error: nonexistant templatedir: " . $this->tpl->template_dir);
+			exit(0);
+		}
 		if (!is_dir(ConfusaConstants::$SMARTY_TEMPLATES_C) ||
 		    !is_writable(ConfusaConstants::$SMARTY_TEMPLATES_C)) {
 			Logger::log_event(LOG_NOTICE, "smarty template-compile-dir (" .
