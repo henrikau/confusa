@@ -769,7 +769,6 @@ class Person{
 	    $res = MDB2Wrapper::execute("SELECT last_mode FROM admins WHERE admin=?",
 					array('text'),
 					array($this->getEPPN()));
-	    db_array_debug($res);
 	    if (count($res) != 1) {
 		    return NORMAL_MODE;
 	    }
@@ -917,7 +916,6 @@ class Person{
 
 	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND nren=?", array('text', 'text'), array($this->eppn, $this->nren->getID()));
 	    $size	= count($res);
-	    db_array_debug($res);
 	    if ($size == 1) {
 		    $adminRes = $res[0]['admin_level'];
 		    if ($this->getName(false) != $res[0]['admin_name'] ||

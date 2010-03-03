@@ -99,17 +99,6 @@ class Output
 	}
 } /* end class Output */
 
-function db_array_debug($array, $msg=null)
-{
-	if (Config::get_config('debug') && count($array) > 1) {
-		if (isset($msg))
-			echo $msg . "<br />\n";
-		echo "<pre>\n";
-		print_r($array);
-		echo "</pre>\n";
-	}
-}
-
 
 /**
  * getUserAgent - return the browser of the user
