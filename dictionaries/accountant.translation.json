@@ -1,0 +1,65 @@
+{
+	"l10n_legend_caaccount": {
+		"de": "\u00c4ndere CA NREN-Konto"
+	},
+	"l10n_infotext_caaccount1": {
+		"de": "\u00c4ndern Sie das Konto mit welchem Ihr NREN sich mit der Comodo-API verbindet oder geben Sie es neu ein. Sie sollten Ihre Kontoinformationen entweder von TERENA oder einem anderen Vertragspartner, \u00fcber den Sie sich bei Confusa angemeldet haben, erhalten haben."
+	},
+	"l10n_infotext_caaccount2": {
+		"de": "Beachten Sie: Das Kontopasswort wird mit 256-Bit AES unter Verwendung von CFB verschl\u00fcsselt, bevor es in der DB gespeichert wird."
+	},
+	"l10n_heading_curaccount": {
+		"de": "Derzeitiges Konto"
+	},
+	"l10n_label_loginname": {
+		"de": "Login-Name:"
+	},
+	"l10n_label_password": {
+		"de": "Passwort:"
+	},
+	"l10n_title_apname": {
+		"de": "Der AP-Name wird von der CA-Gegenstelle verwendet, um den Vertriebspartner zu ermitteln. Sie sollten diesen von TERENA erhalten haben."
+	},
+	"l10n_label_apname": {
+		"de": "AP-Name:"
+	},
+	"l10n_label_passwhidden": {
+		"de": "versteckt"
+	},
+	"l10n_fieldval_undefined": {
+		"de": "nicht festgelegt"
+	},
+	"l10n_button_revert": {
+		"de": "Auf Standard zur\u00fccksetzen"
+	},
+	"l10n_button_update": {
+		"de": "Aktualisieren"
+	},
+	"l10n_heading_addnew": {
+		"de": "Neu hinzuf\u00fcgen"
+	},
+	"l10n_button_clear": {
+		"de": "L\u00f6schen"
+	},
+	"l10n_button_addnew": {
+		"de": "Konto hinzuf\u00fcgen"
+	},
+	"l10n_err_noaccfound": {
+		"de": "Kann NREN-Kontoinformation nicht abrufen. Bitte f\u00fcgen Sie mindestens ein Konto hinzu, bevor Sie die Kontoinformation \u00e4ndern."
+	},
+	"l10n_suc_changedacc1": {
+		"de": "\u00c4nderte Konto f\u00fcr NREN"
+	},
+	"l10n_suc_changedacc2": {
+		"de": "zu"
+	},
+	"l10n_err_fieldsmissing": {
+		"de": "Kann neues Konto nicht hinzuf\u00fcgen, wenn Felder fehlen!"
+	},
+	"l10n_suc_addednew1": {
+		"de": "Neues Konto hinzugef\u00fcgt"
+	},
+	"l10n_suc_addednew2": {
+		"de": ", zu NREN"
+	}
+}

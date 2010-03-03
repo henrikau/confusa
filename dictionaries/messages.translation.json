@@ -1,140 +1,186 @@
 {
 	"fw_error_entitlement_unset_1": {
-		"no": "P\u00e5krevet rettighet er ikke satt:"
+		"no": "P\u00e5krevet rettighet er ikke satt:",
+		"de": "Ben\u00f6tigte Berechtigung nicht gesetzt:"
 	},
 	"fw_error_entitlement_unset_2": {
-		"no": "Du har for \u00f8yeblikket ikke rett til \u00e5 utstede sertifikater. Vennligst kontakt IT-avdelingen ved din vertsorganisasjon for \u00e5 l\u00f8se dette."
+		"no": "Du har for \u00f8yeblikket ikke rett til \u00e5 utstede sertifikater. Vennligst kontakt IT-avdelingen ved din vertsorganisasjon for \u00e5 l\u00f8se dette.",
+		"de": "Sie sind derzeit nicht berechtigt, Zertifikate zu beantragen. Bitte wenden Sie sich an den Informatikdienst an Ihrer Institution, um dieses Problem zu beheben.<br \/>"
 	},
 	"fw_error_entitlement_unset_3": {
-		"no": "Du kan kontake de via:"
+		"no": "Du kan kontake de via:",
+		"de": "Sie k\u00f6nnen dieses folgenderma\u00dfen erreichen:"
 	},
 	"fw_error_entitlement_unset_4": {
-		"no": "Brukerst\u00f8tte, e-post:"
+		"no": "Brukerst\u00f8tte, e-post:",
+		"de": "E-Mail des Helpdesks:"
 	},
 	"fw_error_entitlement_unset_5": {
-		"no": "Brukerst\u00f8tte, url:"
+		"no": "Brukerst\u00f8tte, url:",
+		"de": "URL des Helpdesks:"
 	},
 	"fw_error_map_notfound": {
-		"no": "<b>Feil ved attributter:<\/b><br \/><br \/>Fant ikke kobling mellom vertsorganisasjon og attriubtter. Vennligst kontakt lokal brukerst\u00f8tte og be de om \u00e5 videresende foresp\u00f8rselen til en NREN-admin for ditt domene."
+		"no": "<b>Feil ved attributter:<\/b><br \/><br \/>Fant ikke kobling mellom vertsorganisasjon og attriubtter. Vennligst kontakt lokal brukerst\u00f8tte og be de om \u00e5 videresende foresp\u00f8rselen til en NREN-admin for ditt domene.",
+		"de": "<b>Fehler in den Attributen<\/b><br \/><br \/>Es wurde keine Abbildung f\u00fcr Ihren Abonnenten konfiguriert. Bitte kontaktieren Sie den lokalen Informatikdienst und ersuchen Sie diesen, das Problem an den zust\u00e4ndigen NREN-Administrator weiterzuleiten."
 	},
 	"fw_error_critical_attribute1": {
-		"no": "Feil ved attributter"
+		"no": "Feil ved attributter",
+		"de": "Fehler in den Attributen"
 	},
 	"fw_error_critical_attribute2": {
-		"no": "<b>Kan ikke fortsette<\/b><br \/><br \/>Vennligst kontakt lokal brukerst\u00f8tte for \u00e5 f\u00e5 rettet feilen."
+		"no": "<b>Kan ikke fortsette<\/b><br \/><br \/>Vennligst kontakt lokal brukerst\u00f8tte for \u00e5 f\u00e5 rettet feilen.",
+		"de": "<b>Kann nicht fortfahren<\/b><br \/><br \/>Bitte wenden Sie sich an Ihren lokalen IT-support und ersuchen Sie diesen, das Problem zu beheben."
 	},
 	"fw_error_auth": {
-		"no": "Kunne ikke autentisere deg. Feilen var:"
+		"no": "Kunne ikke autentisere deg. Feilen var:",
+		"de": "Konnte Sie nicht authentifizieren! Fehler war:"
 	},
 	"fw_error_remote_credential1": {
-		"no": "Brukerinformasjon for din NREN er ikke spesifisert, eller er feil. Enkelte sertifikatoperasjoner vil ikke fungere. <br \/><br \/>Feilen var:<br \/>"
+		"no": "Brukerinformasjon for din NREN er ikke spesifisert, eller er feil. Enkelte sertifikatoperasjoner vil ikke fungere. <br \/><br \/>Feilen var:<br \/>",
+		"de": "Die Zugangsdaten von Ihrem NREN sind nicht angegeben oder inkorrekt! Einige Zertifikatsoperationen werden nicht funktionieren.<br \/><br \/>Das Backend sagte:<br \/>"
 	},
 	"fw_error_remote_credential2": {
-		"no": "Vennligst oppdat\u00e9r brukerinformasjon <a href=\"accountant.php\">her<\/a>."
+		"no": "Vennligst oppdat\u00e9r brukerinformasjon <a href=\"accountant.php\">her<\/a>.",
+		"de": "Bitte aktualisieren Sie die Zugangsdaten <a href=\"accountant.php\">hier<\/a>"
 	},
 	"fw_error_remote_credential3": {
-		"no": "Vennlisst ta kontakt med en IT-administrator"
+		"no": "Vennlisst ta kontakt med en IT-administrator",
+		"de": "Bitte wenden Sie sich an einen IT-Administrator."
 	},
 	"fw_keynotfound1": {
-		"no": "konfigurasjonsfilen innneholder feil."
+		"no": "konfigurasjonsfilen innneholder feil.",
+		"de": "Konfigurationsdatei fehlerhaft konfiguriert."
 	},
 	"fw_keynotfound2": {
-		"no": "Vennligst kontakt de som drifter tjenesten for \u00e5 l\u00f8se dette problemet. Husk \u00e5 inkludere feil-koden i meldingen."
+		"no": "Vennligst kontakt de som drifter tjenesten for \u00e5 l\u00f8se dette problemet. Husk \u00e5 inkludere feil-koden i meldingen.",
+		"de": "Bitte kontaktieren Sie den Betreibersupport, um dieses Problem zu beheben. Bitte stellen Sie sicher, dass Sie den Fehler-Code in der Nachricht beinhalten."
 	},
 	"fw_unhandledexp1": {
-		"no": "Uh\u00e5ndtert feil oppstod."
+		"no": "Uh\u00e5ndtert feil oppstod.",
+		"de": "Unbehandelte Exception in Nutzerfunktion gefunden!"
 	},
 	"fw_unrecoverable_nren": {
-		"no": "Uh\u00e5ndterling feil oppst\u00e5tt, og du er ikke administrator! Ditt eduPersonPrincipalName er"
+		"no": "Uh\u00e5ndterling feil oppst\u00e5tt, og du er ikke administrator! Ditt eduPersonPrincipalName er",
+		"de": "Unbehebbarer Fehler und Sie sind kein NREN-Admin! Ihr eduPersonPrincipalName ist"
 	},
 	"fw_unrecoverable_nonren": {
-		"no": "Det ser ut til at portalen ikke kan finne din NREN ut i fra din tjenestetilbyder. Dette er antakelig en feil i portalkonfigurasjonen."
+		"no": "Det ser ut til at portalen ikke kan finne din NREN ut i fra din tjenestetilbyder. Dette er antakelig en feil i portalkonfigurasjonen.",
+		"de": "Es deutet darauf hin, dass das Portal nicht in der Lage ist, Ihren NREN durch Ihren Identit\u00e4tsanbieter zu bestimmen. Es handelt sich vermutlich um einen Konfigurationsfehler im Portal!"
 	},
 	"downl_err_nodownload": {
-		"no": "Kunne ikke laste ned sertifikat, tjeneren sa:"
+		"no": "Kunne ikke laste ned sertifikat, tjeneren sa:",
+		"de": "Konnte Zertifikat nicht herunterladen, Server sagte:"
 	},
 	"downl_err_db": {
-		"no": "Kunne ikke hente ned sertifikat fra databasen. Tjeneren sa:"
+		"no": "Kunne ikke hente ned sertifikat fra databasen. Tjeneren sa:",
+		"de": "Konnte Zertifikate nicht aus der Datenbank abrufen. Server sagte:"
 	},
 	"downl_err_noemail": {
-		"no": "Ingen epost-adresse funnet. Kan ikke sende sertifikat via e-post.<br \/>Dette er en p\u00e5krevet attributt for mange operasjon, og du b\u00f8r derfor kontakte lokal brukerst\u00f8tte slik at dette kan l\u00f8ses."
+		"no": "Ingen epost-adresse funnet. Kan ikke sende sertifikat via e-post.<br \/>Dette er en p\u00e5krevet attributt for mange operasjon, og du b\u00f8r derfor kontakte lokal brukerst\u00f8tte slik at dette kan l\u00f8ses.",
+		"de": "Keine E-Mail-Adresse gesetzt. Kann Zertifikat nicht an Sie mailen<br \/> Dies ist ein ben\u00f6tigtes Attribut f\u00fcr viele Operationen und Sie sollten Ihren lokalen IT-support kontaktieren und diesen ersuchen, Ihre Nutzerinformationen zu \u00fcberpr\u00fcfen.<br \/>"
 	},
 	"downl_err_misc": {
-		"no": "Kunne ikke hente sertifikatet. Tjeneren sa:"
+		"no": "Kunne ikke hente sertifikatet. Tjeneren sa:",
+		"de": "Konnte Zertifkat nicht abrufen, Server sagte:"
 	},
 	"downl_err_sendmail": {
-		"no": "Kunne ikke sende e-post skikkelig!"
+		"no": "Kunne ikke sende e-post skikkelig!",
+		"de": "Konnte Mail nicht senden!"
 	},
 	"downl_err_sendmail2": {
-		"no": "Kunne ikke sende sertifikatet via e-post, tjener sa:"
+		"no": "Kunne ikke sende sertifikatet via e-post, tjener sa:",
+		"de": "Konnte Zertifikat nicht mailen, Server sagte:"
 	},
 	"downl_suc_mail": {
-		"no": "Din e-post har blitt sent."
+		"no": "Din e-post har blitt sent.",
+		"de": "Ihre E-Mail wurde verschickt."
 	},
 	"rev_err_unknreason": {
-		"no": "Ukjent grunn for tilbakekalling av sertifikat!"
+		"no": "Ukjent grunn for tilbakekalling av sertifikat!",
+		"de": "Unbekannter Grund f\u00fcr Zertifikatswiderruf!"
 	},
 	"rev_err_singlenoreason": {
-		"no": "Du kan ikke tilbakekalle et enkelt sertifikat uten \u00e5 spesifisere en grunn"
+		"no": "Du kan ikke tilbakekalle et enkelt sertifikat uten \u00e5 spesifisere en grunn",
+		"de": "Sie k\u00f6nnen nicht ein einzelnes Zertifikat widerrufen, ohne den Grund anzugeben"
 	},
 	"rev_err_singlenoperm": {
-		"no": "Du har ikke tilgang til \u00e5 tilbakekalle dette sertifikatet!"
+		"no": "Du har ikke tilgang til \u00e5 tilbakekalle dette sertifikatet!",
+		"de": "Sie haben nicht die Berechtigung, dieses Zertifikat zu widerrufen!"
 	},
 	"rev_err_notyet1": {
-		"no": "Kan ikke tilbakekalle enda ("
+		"no": "Kan ikke tilbakekalle enda (",
+		"de": "Kann noch nicht widerrufen ("
 	},
 	"rev_err_notyet2": {
-		"no": ") for f\u00f8lgende grunn:"
+		"no": ") for f\u00f8lgende grunn:",
+		"de": "), aus dem folgenden Grund:"
 	},
 	"rev_suc_single1": {
-		"no": "Sertifikat ("
+		"no": "Sertifikat (",
+		"de": "Zertifikat ("
 	},
 	"rev_suc_single2": {
-		"no": ") ble tilbakekallet."
+		"no": ") ble tilbakekallet.",
+		"de": ") erfolgreich widerrufen."
 	},
 	"rev_err_singleunspec": {
-		"no": "Tilbakekalling feilet, f\u00f8lgende problem rapportert:"
+		"no": "Tilbakekalling feilet, f\u00f8lgende problem rapportert:",
+		"de": "Widerruf fehlgeschlagen, das folgende Problem wurde gemeldet:"
 	},
 	"rev_err_nrensubs1": {
-		"no": "Kan ikke hente tilbyder fra database!<br \/>Antakelig feil i syntaks i sp\u00f8rring. Tjener sa:"
+		"no": "Kan ikke hente tilbyder fra database!<br \/>Antakelig feil i syntaks i sp\u00f8rring. Tjener sa:",
+		"de": "Kann den Abonnenten nicht aus der Datenbank abrufen!<br \/>Vermutlich ist die Syntax der Anfrage fehlerhaft, bitten Sie einen Administrator, dies zu untersuchen. Server sagte:"
 	},
 	"rev_err_nrensubs2": {
-		"no": "Sp\u00f8rring feilet. Dette betyr antakelig at verdiene sendt til databasen er gale. Tjeneren sa:"
+		"no": "Sp\u00f8rring feilet. Dette betyr antakelig at verdiene sendt til databasen er gale. Tjeneren sa:",
+		"de": "Anfrage fehlgeschlagen. Das bedeutet gew\u00f6hnlich, dass die Werte, die an die Datenbank \u00fcbergeben wurden, fehlerhaft sind. Server sagte:"
 	},
 	"abt_err_dbstat": {
-		"no": "Kunne ikke hente om-side for NREN. Antakelig et konfigurasjonsproblem. Tjener sa:"
+		"no": "Kunne ikke hente om-side for NREN. Antakelig et konfigurasjonsproblem. Tjener sa:",
+		"de": "Fehler im Abrufen der \"\u00dcber\"-Seite des NRENs. Vermutlich ein Konfigurationsproblem! Server sagte:"
 	},
 	"abt_err_dbquery": {
-		"no": "Kunne ikke henteom-side for NREN. Ser ut til \u00e5 v\u00e6re et problem med tilh\u00f8rende data. Spurt NREN var"
+		"no": "Kunne ikke henteom-side for NREN. Ser ut til \u00e5 v\u00e6re et problem med tilh\u00f8rende data. Spurt NREN var",
+		"de": "Fehler im Abrufen der \"\u00dcber\"-Seite des NRENs. Sieht wie ein Problem mit den \u00fcbergebenen Daten aus. Abgerufene NREN war"
 	},
 	"err_servsaid": {
-		"no": "Tjener sa:"
+		"no": "Tjener sa:",
+		"de": "Server sagte:"
 	},
 	"fw_err_nonrenmap1": {
-		"no": "Fant ikke kobling mellom NREN og tjenestetilbyder ("
+		"no": "Fant ikke kobling mellom NREN og tjenestetilbyder (",
+		"de": "Keine Abbildung f\u00fcr Ihr NREN ("
 	},
 	"fw_err_nonrenmap2": {
-		"no": ").<br \/>Du m\u00e5 gj\u00f8re dette <b>n\u00e5<\/b> slik at vanlige brukere kan bruke Confusa's funksjonalitet.<br \/><br \/><center>G\u00e5 <a href0\"attributes.php?mode=admin\">hit<\/a> for \u00e5 oppdatere koblingen.<\/center><br \/>"
+		"no": ").<br \/>Du m\u00e5 gj\u00f8re dette <b>n\u00e5<\/b> slik at vanlige brukere kan bruke Confusa's funksjonalitet.<br \/><br \/><center>G\u00e5 <a href0\"attributes.php?mode=admin\">hit<\/a> for \u00e5 oppdatere koblingen.<\/center><br \/>",
+		"de": ") gesetzt.<br \/>Sie m\u00fcssen dies <b>jetzt<\/b> machen, damit normale Nutzer Confusa's Funktionalit\u00e4t in Anspruch nehmen k\u00f6nnen.<br \/><br \/><center>Gehen Sie <a href=\"attributes.php?mode=admin\">hierhin<\/a>, um die Abbildung zu aktualisieren.<\/center><br \/>"
 	},
 	"csr_aup_title": {
-		"no": "AUP"
+		"no": "AUP",
+		"de": "Nutzungsregeln (AUP)"
 	},
 	"csr_aup_agreement": {
-		"no": "Jeg bekrefter herved at jeg vil f\u00f8lge de reglene som beskrevet i CPS"
+		"no": "Jeg bekrefter herved at jeg vil f\u00f8lge de reglene som beskrevet i CPS",
+		"de": "I erkl\u00e4re hiermit, dass ich den Verpflichtungen des Antragsstellers, wie Sie im CPS dargelegt sind, nachkommen werde."
 	},
 	"csr_aup_info_short": {
-		"no": "mer"
+		"no": "mer",
+		"de": "mehr"
 	},
 	"csr_aup_info_long": {
-		"no": "AUPen er et segmet av CPSen som inneholder et sett regler for sluttbrukeren. Disse inkluderer:"
+		"no": "AUPen er et segmet av CPSen som inneholder et sett regler for sluttbrukeren. Disse inkluderer:",
+		"de": "Die AUP ist ein Abschnitt des CPS, welches dem Nutzer eine Anzahl an Bedingungen auferlegt. Diese beinhalten:"
 	},
 	"l10n_not_sub_header": {
-		"no": "Ikke tilsluttet"
+		"no": "Ikke tilsluttet",
+		"de": "Kein Abonnent"
 	},
 	"l10n_not_sub_1": {
-		"no": "Din vertsorganisasjon er ikke tilsluttet tjenesten, og du kan derfor ikke benytte denne."
+		"no": "Din vertsorganisasjon er ikke tilsluttet tjenesten, og du kan derfor ikke benytte denne.",
+		"de": "Ihre Organisation ist kein Abonnent des Dienstes und deswegen k\u00f6nnen Sie den Dienst nicht nutzen."
 	},
 	"l10n_not_sub_2": {
-		"no": "Hvis du mener at du burde ha hatt tilgang til denne tjenesten, vennligst kontakt lokal brukerst\u00f8tte."
+		"no": "Hvis du mener at du burde ha hatt tilgang til denne tjenesten, vennligst kontakt lokal brukerst\u00f8tte.",
+		"de": "Falls Sie denken, dass Sie Zugang zu diesem Dienst haben sollten, kontaktieren Sie bitte den lokalen Nutzer-Support."
 	}
 }
