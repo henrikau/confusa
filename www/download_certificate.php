@@ -118,7 +118,7 @@ final class CP_DownloadCertificate extends Content_Page
 
 	private function installCert($authKey)
 	{
-		$ua = getUserAgent();
+		$ua = Output::getUserAgent();
 		$script = $this->ca->getCertDeploymentScript($authKey, $ua);
 
 		if ($ua == "keygen") {

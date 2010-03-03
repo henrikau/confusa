@@ -91,7 +91,7 @@ final class CP_ProcessCsr extends Content_Page
 
 		} else if (isset($_GET['install_cert'])) {
 			$order_number = Input::sanitizeCertKey($_GET['install_cert']);
-			$ua = getUserAgent();
+			$ua = Output::getUserAgent();
 			$script = $this->ca->getCertDeploymentScript($order_number, $ua);
 
 			if ($ua == "keygen") {
@@ -112,7 +112,7 @@ final class CP_ProcessCsr extends Content_Page
 			$request = trim($request);
 			if (!empty($request)) {
 				try {
-					$order_number = $this->approveBrowserGenerated($request, getUserAgent());
+					$order_number = $this->approveBrowserGenerated($request, Output::getUserAgent());
 					$this->tpl->assign('order_number', $order_number);
 				} catch (KeySignException $kse) {
 					Framework::error_output($this->translateTag('l10n_sign_error', 'processcsr')
@@ -498,7 +498,7 @@ final class CP_ProcessCsr extends Content_Page
 	 */
 	private function dispatchBrowserTemplate()
 	{
-		$ua = getUserAgent();
+		$ua = Output::getUserAgent();
 
 		switch($ua) {
 		case "msie_post_vista":

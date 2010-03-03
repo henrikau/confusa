@@ -97,40 +97,40 @@ class Output
 		}
 		return $ipmsg;
 	}
-} /* end class Output */
 
-
-/**
- * getUserAgent - return the browser of the user
- * certificate deployment scripts and similar javascript functionality
- * needs browser-specific treatment
- *
- * @return The name of the user-agent of the user
- */
-function getUserAgent()
-{
-	$userAgent=$_SERVER['HTTP_USER_AGENT'];
-
-	/* Chrome sends both "AppleWebKit" and "like Gecko", but does not support
-	 * keygen
+	/**
+	 * getUserAgent - return the browser of the user
+	 * certificate deployment scripts and similar javascript functionality
+	 * needs browser-specific treatment
+	 *
+	 * @return The name of the user-agent of the user
 	 */
-	if (stripos($userAgent, "chrome") !== FALSE) {
-		return "other";
-	}
+	static function getUserAgent()
+	{
+		$userAgent=$_SERVER['HTTP_USER_AGENT'];
 
-	if (stripos($userAgent, "msie") !== FALSE) {
-		if (stripos($userAgent, "windows NT 5.") !== FALSE) {
-			return "msie_pre_vista";
-		} else {
-			return "msie_post_vista";
+		/* Chrome sends both "AppleWebKit" and "like Gecko", but does not support
+		 * keygen
+		 */
+		if (stripos($userAgent, "chrome") !== FALSE) {
+			return "other";
 		}
-	} else if (stripos($userAgent, "applewebkit") !== FALSE ||
-				stripos($userAgent, "opera") !== FALSE ||
-				stripos($userAgent, "gecko") !== FALSE) {
+
+		if (stripos($userAgent, "msie") !== FALSE) {
+			if (stripos($userAgent, "windows NT 5.") !== FALSE) {
+				return "msie_pre_vista";
+			} else {
+				return "msie_post_vista";
+			}
+		} else if (stripos($userAgent, "applewebkit") !== FALSE ||
+			   stripos($userAgent, "opera") !== FALSE ||
+			   stripos($userAgent, "gecko") !== FALSE) {
 			return "keygen";
-	} else {
-		return "other";
-	}
-}
+		} else {
+			return "other";
+		}
+	} /* end getUserAgent() */
+
+} /* end class Output */
 
 ?>
