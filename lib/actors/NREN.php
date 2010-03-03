@@ -84,9 +84,9 @@ class NREN
 	 * The country is stored and returned in ISO-3166-1-A2 format
 	 * (two-letter country code).
 	 *
-	 * @param  : void
-	 * @return : String ISO-3166 country code
-	 * @access public
+	 * @param	void
+	 * @return	String ISO-3166 country code
+	 * @access	public
 	 */
 	public function getCountry()
 	{
