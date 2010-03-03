@@ -65,26 +65,6 @@ class NREN
 	}
 
 	/**
-	 * dumpDebug() Print debug-info for the class to screen
-	 *
-	 * This is a debug-function. It will print all content in the data-array
-	 * as a way of tracing information etc.
-	 *
-	 * @param void
-	 * @return void
-	 */
-	function dumpDebug()
-	{
-		if (!Config::get_config('debug')) {
-			echo "WARNING: Running dumpDebug() without debug explicitly set!<br />\n";
-		}
-		echo "<pre>\n";
-		print_r($this->data);
-		echo "</pre>\n";
-	}
-
-
-	/**
 	 * getName() Return the stored name for the NREN.
 	 *
 	 * @param	void
