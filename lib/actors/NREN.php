@@ -305,15 +305,21 @@ class NREN
 		return true;
 	}
 	/**
-	 * Get the contact information for a NREN
+	 * getNRENInfo() Get the contact information for a NREN
 	 *
-	 * @param void
-	 * @return Array The contact-details for the NREN
+	 * This returns *all* information retrieved from the database, thus it
+	 * should be used with a grain of caution.
+	 *
+	 * @param	void
+	 * @return	Array The contact-details for the NREN
+	 * @access	public
 	 */
 	public function getNRENInfo()
 	{
-		$res = $this->data;
-		return $res;
+		if ($this->data) {
+			return $this->data;
+		}
+		return null;
 	}
 
 	public function getWAYFURL()
