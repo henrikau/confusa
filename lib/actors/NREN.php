@@ -178,15 +178,22 @@ class NREN
 	}
 
 	/**
-	 * getCertValidity() return the stored value about the validity period
-	 * of the certificates. If Confusa operates in eScience mode, the value is
-	 * always 395.
-	 * If Confusa operates in personal certificates mode, the value is NREN-
-	 * setting dependant and one of 365, 730 or 1065. In that case there also
-	 * is a default value which is the lowest validity period, usually 365.
+	 * getCertValidity() stored validity period for certificates
 	 *
-	 * @param  : void
-	 * @return : String 14, 365, 395, 730 or 1065
+	 * If Confusa operates in eScience mode, the value is always 395.
+	 *
+	 * If Confusa operates in personal certificates mode, the value is NREN-
+	 * setting dependant and one of:
+	 * - 365
+	 * - 730
+	 * - 1065.
+	 *
+	 * Note: if Confusa is placed in test-mode ('capi_test'), the returned
+	 * value is ignored by the CA-manager and 14 is used instead.
+	 *
+	 * @param	void
+	 * @return	String 365, 395, 730 or 1065
+	 * @access	public
 	 */
 	public function getCertValidity()
 	{
