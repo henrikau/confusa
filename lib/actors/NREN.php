@@ -44,6 +44,13 @@ class NREN
 		}
 	}
 
+	/**
+	 * __toString() Return a string-representation (the name) of the NREN
+	 *
+	 * @param	void
+	 * @return	String the name of the NREN
+	 * @access	public
+	 */
 	public function __toString()
 	{
 		return $this->data['name'];
