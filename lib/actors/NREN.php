@@ -160,11 +160,14 @@ class NREN
 	}
 
 	/**
-	 * getEnableEmail() return the stored value about whether or not to
-	 * include emails in the certificates.
+	 * getEnableEmail() number of emails to include in certs.
 	 *
-	 * @param  : void
-	 * @return : String|null 0,1 or multiple addresses to store in the certs.
+	 * The NREN can be configured to allow 0, 1, multiple (at least 1) and
+	 * multiple (including none) emails in the certificate.
+	 *
+	 * @param	void
+	 * @return	String|null 0,1 or multiple addresses to store in the certs.
+	 * @access	public
 	 */
 	public function getEnableEmail()
 	{
