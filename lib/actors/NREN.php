@@ -56,8 +56,9 @@ class NREN
 	 * The flag is based on how decorateNREN() fares, i.e. whether or not
 	 * the NREN was properly decorated from the database.
 	 *
-	 * @param  : void
-	 * @return : boolean flag indicating if the NREN is properly populated from the DB
+	 * @param	void
+	 * @return	Boolean flag indicating if the NREN is properly populated from the DB
+	 * @access	public
 	 */
 	public function isValid()
 	{
