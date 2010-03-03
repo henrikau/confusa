@@ -109,6 +109,17 @@ class NREN
 		return $this->data['nren_id'];
 	}
 
+	/**
+	 * getHelp() get the help-text from the database and return.
+	 *
+	 * The help-text is a large chunk of text, and we do not want to
+	 * retrieve this every time we create an NREN-object. Only when we
+	 * *need* it should we query the database.
+	 *
+	 * @param	void
+	 * @return	String|null the help-text stored in the database for the NREN
+	 * @access	public
+	 */
 	public function getHelp()
 	{
 		if (is_null($this->data['help'])) {
