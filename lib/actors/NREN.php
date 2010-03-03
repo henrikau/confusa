@@ -49,6 +49,16 @@ class NREN
 		return $this->data['name'];
 	}
 
+	/**
+	 * isValid() returns a flag indicating whether or not the current NREN
+	 * is valid.
+	 *
+	 * The flag is based on how decorateNREN() fares, i.e. whether or not
+	 * the NREN was properly decorated from the database.
+	 *
+	 * @param  : void
+	 * @return : boolean flag indicating if the NREN is properly populated from the DB
+	 */
 	public function isValid()
 	{
 		return $this->isValid;
