@@ -336,33 +336,6 @@ class NREN
 		}
 	}
 
-	public function set_login_account($login_account)
-	{
-		if (!is_null($login_account)) {
-			if ($this->data['login_account'] != $login_account) {
-				$this->data['login_account'] = Input::sanitizeText($login_account);
-				$this->pendingChanges = true;
-			}
-		}
-	}
-	public function set_about($about)
-	{
-		if (!is_null($about)) {
-			if ($this->data['about'] != $about) {
-				$this->data['about'] = Input::sanitizeText($about);
-				$this->pendingChanges = true;
-			}
-		}
-	}
-	public function set_help($help)
-	{
-		if (!is_null($help)) {
-			if ($this->data['help'] != $help) {
-				$this->data['help'] = Input::sanitizeText($help);
-				$this->pendingChanges = true;
-			}
-		}
-	}
 	public function set_lang($lang)
 	{
 		if (!is_null($lang)) {
