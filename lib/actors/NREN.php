@@ -336,17 +336,23 @@ class NREN
 		}
 	}
 
-	public function set_lang($lang)
+	/**
+	 * setLang() Set the preferred language for the NREN
+	 *
+	 * @param	String @lang the language to use for the NREN
+	 * @return	void
+	 * @access	public
+	 */
+	public function setLang($lang)
 	{
 		if (!is_null($lang)) {
 			if ($this->data['lang'] != $lang) {
 				$this->data['lang'] = Input::sanitizeText($lang);
 				$this->pendingChanges = true;
 			}
-		} else {
-			echo "Language not set<br />\n";
 		}
 	}
+
 	public function set_url($url)
 	{
 		if (!is_null($url)) {
