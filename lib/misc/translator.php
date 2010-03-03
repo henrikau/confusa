@@ -13,7 +13,7 @@ require_once 'Confusa_Session.php';
 class Translator {
 	private $language;
 	private $defaultLanguage;
-	private $languageOverriden;
+	private $languageOverridden;
 
 	private static $code_language_map = array(
 								'bg' => 'Български език (Bulgarian)',
@@ -74,7 +74,7 @@ class Translator {
 			}
 		}
 
-		$this->languageOverriden = false;
+		$this->languageOverridden = false;
 	} /* end constructor */
 
 	/**
@@ -218,7 +218,7 @@ class Translator {
 	public function setLanguage($lang)
 	{
 		$this->language = $lang;
-		$this->languageOverriden = true;
+		$this->languageOverridden = true;
 	}
 
 	/**
@@ -247,7 +247,7 @@ class Translator {
 	public function guessBestLanguage($person)
 	{
 
-		if ($this->languageOverriden) {
+		if ($this->languageOverridden) {
 			return;
 		}
 
