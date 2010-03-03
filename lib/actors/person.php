@@ -959,47 +959,47 @@ class Person{
 	public function mayRequestCertificate()
 	{
 		$permission = new Permission();
-		$permission->setPermissionGranted(true);
+		$permission->setPermission(true);
 
 		$translator = new Translator();
 		$translator->guessBestLanguage($this);
 
 		if (empty($this->eppn)) {
-			$permission->setPermissionGranted(false);
+			$permission->setPermission(false);
 			$permission->addReason($this->translateTag('l10n_reas_malfeppn', 'reasons'));
 		}
 
 		if (empty($this->given_name)) {
-			$permission->setPermissionGranted(false);
+			$permission->setPermission(false);
 			$permission->addReason($this->translateTag('l10n_reas_nogivenname', 'reasons'));
 		}
 
 		if (empty($this->email)) {
-			$permission->setPermissionGranted(false);
+			$permission->setPermission(false);
 			$permission->addReason($this->translateTag('l10n_reas_noemailaddr', 'reasons'));
 		}
 
 		if (is_null($this->getNREN()->getCountry()) || $this->getNREN()->getCountry() == "") {
-			$permission->setPermissionGranted(false);
+			$permission->setPermission(false);
 			$permission->addReason($this->translateTag('l10n_reas_nocountryname', 'reasons'));
 		}
 
 		$subscriberOrgName = $this->subscriber->getOrgName();
 		if (empty($subscriberOrgName)) {
-			$permission->setPermissionGranted(false);
+			$permission->setPermission(false);
 			$permission->addReason($this->translateTag('l10n_reas_malfsubsname', 'reasons'));
 		}
 
 		if (Config::get_config('capi_test') &&
 		    Config::get_config('ca_mode') === CA_COMODO &&
 		    $subscriberOrgName == ConfusaConstants::$CAPI_TEST_O_PREFIX) {
-			$permission->setPermissionGranted(false);
+			$permission->setPermission(false);
 			$permission->addReason($this->translateTag('l10n_reas_malfsubsname', 'reasons'));
 		}
 
 		if (empty($this->entitlement)
 				|| !$this->testEntitlementAttribute(Config::get_config('entitlement_user'))) {
-			$permission->setPermissionGranted(false);
+			$permission->setPermission(false);
 			$permission->addReason(Config::get_config('entitlement_user') . " " .
 			                       $this->translateTag('l10n_reas_noentitlement', 'reasons'));
 		}
@@ -1012,7 +1012,7 @@ class Person{
 				array($this->subscriber->getIdPName()));
 
 		if (count($res) == 0) {
-			$permission->setPermissionGranted(false);
+			$permission->setPermission(false);
 			$permission->addReason($this->translateTag('l10n_instunkn1', 'reasons') . " " .
 			                       $this->subscriber->getIdPName() . " " .
 			                       $this->translateTag('l10n_instunkn2', 'reasons'));
@@ -1023,7 +1023,7 @@ class Person{
 		}
 
 		if ($res[0]['org_state'] !== 'subscribed') {
-			$permission->setPermissionGranted(false);
+			$permission->setPermission(false);
 			$permission->addReason($this->translateTag('l10n_instnsubscr1', 'reasons') . " " .
 			                       $this->subscriber->getIdPName() . " " .
 			                       $this->translateTag('l10n_instnsubscr2', 'reasons'));

@@ -24,7 +24,7 @@ class Permission
 		$reasons = array();
 	}
 
-	public function setPermissionGranted($perm)
+	public function setPermission($perm = false)
 	{
 		$this->permissionGranted = $perm;
 	}
