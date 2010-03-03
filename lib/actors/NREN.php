@@ -229,10 +229,12 @@ class NREN
 	}
 
 	/**
-	 * Get the custom NREN-defined portal title.
+	 * getCustomPortalTitle()
 	 *
-	 * @return string the title that is configured for the portal to show for
-	 *                the given NREN
+	 * @param	void
+	 * @return	String  the title that is configured for the portal to
+	 *			show for the given NREN
+	 * @access	public
 	 */
 	public function getCustomPortalTitle()
 	{
