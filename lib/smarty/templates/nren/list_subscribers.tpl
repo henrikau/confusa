@@ -11,7 +11,7 @@
     {$l10n_infotext_listsubs1}
   </p>
   <p class="info">
-    {$l10n_infotext_listsubs2} <a href="?target=add">"Add new"</a>.
+    {$l10n_infotext_listsubs2} <a href="?target=add">"{$l10n_tab_addsubs}"</a>.
   </p>
   <p class="info">
     {$l10n_infotext_listsubs3}</p>
