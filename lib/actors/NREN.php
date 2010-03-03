@@ -209,11 +209,15 @@ class NREN
 	}
 
 	/**
-	 * getShowPortalTitle() - return whether the portal title should be shown
-	 * as a component of the NREN branding or not. It might be desirable to
-	 * not show if there are for instance large logos for the header.
+	 * getShowPortalTitle() flag to show if the portal title be shown
 	 *
-	 * @return boolean Whether the portal title is to be shown or not
+	 * This returns a flag indicating whether or not the portal-title should
+	 * be part of the NREN-branding. It might be desirable not to show the
+	 * title if there are large logos in the header.
+	 *
+	 * @param	void
+	 * @return	Boolean	Whether the portal title is to be shown or not
+	 * @access	public
 	 */
 	public function getShowPortalTitle()
 	{
