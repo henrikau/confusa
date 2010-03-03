@@ -78,10 +78,21 @@ class NREN
 		return $this->data['name'];
 	}
 
-	function getCountry()
+	/**
+	 * getCountry() Return the nationality of the NREN
+	 *
+	 * The country is stored and returned in ISO-3166-1-A2 format
+	 * (two-letter country code).
+	 *
+	 * @param  : void
+	 * @return : String ISO-3166 country code
+	 * @access public
+	 */
+	public function getCountry()
 	{
 		return $this->data['country'];
 	}
+
 	/**
 	 * getID() return the database ID for the NREN
 	 *
