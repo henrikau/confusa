@@ -488,7 +488,7 @@ final class CP_ProcessCsr extends Content_Page
 					    $this->person->getX509ValidCN());
 		/* Format the IPs */
 		foreach ($res as $key => $value) {
-			$res[$key]['from_ip'] = format_ip($value['from_ip'], true);
+			$res[$key]['from_ip'] = Output::formatIP($value['from_ip'], true);
 		}
 		return $res;
 	}

@@ -68,6 +68,34 @@ class Output
 		/* remove the rest of the ACSII characters the "hard way" */
 		$asciiString = preg_replace("/[^a-z0-9_.@ \d]/i", "", $asciiString);
 		return $asciiString;
+
+	}
+	/**
+	 * formatIP() take an IP, match it to the client's and return a formatted string
+	 *
+	 * This is useful when listing an IP and you want to issue a warning if the IP
+	 * has changed. The function can also show a help-text (a box will pop up)
+	 * explaining what the problem is.
+	 *
+	 * @param $ip String :		the IP-address to format.
+	 * @param $show_help Boolean :	whether or not to display a help-box at the
+	 *				user's request
+	 *
+	 * @return $ipmsg String :	The formatted IP-address.
+	 */
+	static function formatIP($ip, $show_help=false)
+	{
+		$ipmsg = $ip;
+		if ($_SERVER['REMOTE_ADDR'] != $ip){
+			$ipmsg = "<span style=\"color: red\"><i>$ip</i></span>";
+			if ($show_help) {
+				$help  = "<a href=\"\"";
+				$help .= "onclick =\"window.open('messages/diff_ip.php', '', 'width=500,height=400');\"";
+				$help .= ">";
+				$help .=  "<img src=\"graphics/flag_red.png\" class=\"url\" title=\"IP addresses differ!\"> $ipmsg</a>";
+			}
+		}
+		return $ipmsg;
 	}
 } /* end class Output */
 
@@ -82,27 +110,6 @@ function db_array_debug($array, $msg=null)
 	}
 }
 
-function format_ip($ip, $show_help=false)
-{
-	$ipmsg = $ip;
-	if ($_SERVER['REMOTE_ADDR'] != $ip){
-		$ipmsg = "<span style=\"color: red\"><i>$ip</i></span>";
-		if ($show_help) {
-			$ipmsg = show_window("<img src=\"graphics/flag_red.png\" class=\"url\" title=\"IP addresses differ!\"> $ipmsg", "messages/diff_ip.php");
-		}
-	}
-	return $ipmsg;
-
-}
-
-function show_window($url_name, $target)
-{
-	$help  = "<a href=\"\"";
-	$help .= "onclick =\"window.open('" . $target . "', '', 'width=500,height=400');\"";
-	$help .= ">";
-	$help .=  $url_name . "</a>";
-	return $help;
-}
 
 /**
  * getUserAgent - return the browser of the user
