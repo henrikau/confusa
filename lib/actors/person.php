@@ -912,7 +912,7 @@ class Person{
 		    return NORMAL_USER;
 	    }
 	    require_once 'mdb2_wrapper.php';
-	    $errorCode = create_pw(8);
+	    $errorCode = PW::create(8);
 
 	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND nren=?", array('text', 'text'), array($this->eppn, $this->nren->getID()));
 	    $size	= count($res);

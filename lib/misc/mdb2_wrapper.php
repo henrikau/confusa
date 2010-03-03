@@ -62,7 +62,7 @@ class MDB2Wrapper
 
 	  $res = $stmnt->execute($data);
           if (PEAR::isError($res)) {
-		  $errorCode = create_pw(8);
+		  $errorCode = PW::create(8);
 		  $logMsg  = "[$errorCode] Query failed: " . $res->getMessage() . " - ". $res->getUserInfo();
 		  if (Config::get_config('debug')) {
 			  $logMsg .= "[Debug]: " . $res->getDebugInfo();

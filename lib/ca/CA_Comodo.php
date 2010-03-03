@@ -73,7 +73,7 @@ class CA_Comodo extends CA
 			);
 	}
 	try {
-		$errorCode = create_pw(8);
+		$errorCode = PW::create(8);
 		$errorMsg = "[$errorCode] " . __FILE__ . ":" . __LINE__ . " ";
 
 		$res = MDB2Wrapper::execute($login_cred_query, array('text'),

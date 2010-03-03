@@ -37,7 +37,7 @@ class Subscriber
 	function __construct($idp_name, $nren, $dn_name=null, $org_state=null, $db_id=null)
 	{
 		if (is_null($nren)) {
-			$errorCode = create_pw(8);
+			$errorCode = PW::create(8);
 			$msg  = "[$errorCode] " . __FILE__. ":" . __LINE__;
 			$msg .= "Subscriber must be given a reference to an NREN. Cannot continue.";
 			Logger::log_event(LOG_NOTICE, $msg);

@@ -58,7 +58,7 @@ class CA_Standalone extends CA
 			}
 
 			if (!file_exists($cert_file_name)) {
-				$errorCode = create_pw(8);
+				$errorCode = PW::create(8);
 				$msg     = "Cannot find temporar certificate file. Please forward the following ";
 				$msg    .= "error-code to the aministrators: [$errorCode]";
 				$logMsg	 = "Temporary certificate file vanished before it could be read. ";
@@ -88,12 +88,12 @@ class CA_Standalone extends CA
 							  $this->person->getX509ValidCN(),
 							  $this->person->getSubscriber()->getIdPName()));
 			} catch (DBStatementException $dbse) {
-				$error_key = create_pw(8);
+				$error_key = PW::create(8);
 				Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
 						  " Error in query-syntax. Make sure the query matches the db-schema. ($error_key)");
 				throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");
 			} catch (DBQueryException $dbqe) {
-				$error_key = create_pw(8);
+				$error_key = PW::create(8);
 				Logger::log_event(LOG_NOTICE, __FILE__ . ":" . __LINE__ .
 						  " Error with values passed to the query. Check for constraint-violations");
 				throw new KeySignException("Cannot insert certificate into database.<BR />error-reference: $error_key");

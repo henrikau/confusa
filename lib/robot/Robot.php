@@ -9,7 +9,7 @@ class Robot
 	private static function getError()
 	{
 		if (!isset(Robot::$log_error_code)) {
-			Robot::$log_error_code = create_pw(8);
+			Robot::$log_error_code = PW::create(8);
 		}
 		return Robot::$log_error_code;
 	}

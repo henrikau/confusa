@@ -252,7 +252,7 @@ class Framework {
 		} catch (KeyNotFoundException $knfe) {
 				$this->renderError = true;
 
-				$msg  = "[".create_pw(8)."] " .
+				$msg  = "[".PW::create(8)."] " .
 					$this->contentPage->translateMessageTag('fw_keynotfound1');
 				Logger::log_event(LOG_INFO, $msg . $knfe->getMessage());
 
@@ -295,7 +295,7 @@ class Framework {
 				$this->applyNRENBranding();
 				$this->contentPage->process($this->person);
 			} catch (KeyNotFoundException $knfe) {
-				$msg  = "[".create_pw(8)."] " .
+				$msg  = "[".PW::create(8)."] " .
 				        $this->contentPage->translateMessageTag('fw_keynotfound1');
 				Logger::log_event(LOG_INFO, $msg . $knfe->getMessage());
 				$msg .= htmlentities($knfe->getMessage());

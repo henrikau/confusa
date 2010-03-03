@@ -7,7 +7,7 @@ require_once 'logger.php';
 require_once 'person.php';
 require_once 'CA.php';
 
-$log_error_code = create_pw(8);
+$log_error_code = PW::create(8);
 
 /**
  * assertEnvironment() make sure that we are operating safely
