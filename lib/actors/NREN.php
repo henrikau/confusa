@@ -245,6 +245,20 @@ class NREN
 		}
 	}
 
+	/**
+	 * saveMap()	save the current map to database
+	 *
+	 * When the map is updated, this will handle the interaction with the
+	 * database.
+	 *
+	 * @param	String $eppnkey key to use for finding the ePPN
+	 * @param	String $epodn	key to find eduPersonOrgDN
+	 * @param	String $cn	Common Name (full name of user)
+	 * @param	String $mail	E-mail
+	 * @param	String $entitlement entitlement-key
+	 * @return	Boolean	true if map was successfully saved to database.
+	 * @access	public
+	 */
 	public function saveMap($eppnkey, $epodn, $cn, $mail, $entitlement)
 	{
 		$doUpdate = false;
