@@ -9,7 +9,7 @@
 <br />
 <br />
 <fieldset>
-  <legend>Change CA NREN-account</legend>
+  <legend>{$l10n_legend_caaccount}</legend>
   <br />
   <p class="info">
     {$l10n_infotext_caaccount1}</p>

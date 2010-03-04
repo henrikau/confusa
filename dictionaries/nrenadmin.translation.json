@@ -1,0 +1,239 @@
+{
+	"l10n_heading_managesubs": {
+		"de": "Verwalte Abonnenten"
+	},
+	"l10n_tab_listsubs": {
+		"de": "Abonnenten auflisten"
+	},
+	"l10n_tab_addsubs": {
+		"de": "Neuen hinzuf\u00fcgen"
+	},
+	"l10n_legend_listsubs": {
+		"de": "Derzeitiges Konto"
+	},
+	"l10n_infotext_listsubs1": {
+		"de": "Hier verwalten Sie Abonnenten-Kontos. Ein Abonnent in diesem Zusammenhang ist gew\u00f6hnlich einer Ihrer Kunden, der den TCS-Service abonniert hat."
+	},
+	"l10n_infotext_listsubs2": {
+		"de": "Sie k\u00f6nnen Abonnenten hier <b>ver\u00e4ndern<\/b> und <b>l\u00f6schen<\/b>. Falls Sie neue Abonnenten hinzuf\u00fcgen wollen, k\u00f6nnen Sie dies dort tun:"
+	},
+	"l10n_infotext_listsubs3": {
+		"de": "Ein Abonnent kann sich in einem von drei Zust\u00e4nden befinden:"
+	},
+	"l10n_expl_subscribed": {
+		"de": "Anwender k\u00f6nnen Zertifikate von dem Portal erlangen"
+	},
+	"l10n_expl_unsubscribed": {
+		"de": "Noch nicht bereit, Zertifikate an Anwender auszustellen."
+	},
+	"l10n_expl_suspended": {
+		"de": "Anwender k\u00f6nnen keine neuen Zertifikate ausstellen."
+	},
+	"l10n_label_id": {
+		"de": "ID"
+	},
+	"l10n_label_name": {
+		"de": "Name"
+	},
+	"l10n_label_state": {
+		"de": "Zustand"
+	},
+	"l10n_title_deletesubs": {
+		"de": "L\u00f6sche"
+	},
+	"l10n_title_subsinfo": {
+		"de": "Informationen \u00fcber"
+	},
+	"l10n_title_owninst": {
+		"de": "Ihre eigene Institution"
+	},
+	"l10n_button_updstate": {
+		"de": "Aktualisiere Zustand"
+	},
+	"l10n_legend_subsdetails": {
+		"de": "Details f\u00fcr"
+	},
+	"l10n_heading_certinfo": {
+		"de": "Zertifikats-Informationen:"
+	},
+	"l10n_infotext_dn": {
+		"de": "Der Name, der im Zertifikat enthalben sein wird, <b>muss<\/b> ein stabiler Wert sein. Falls er ge\u00e4ndert werden muss, muss der Abonnent <b>gel\u00f6scht<\/b> und mit dem neuen Namen neu erstellt werden."
+	},
+	"l10n_label_dn": {
+		"de": "DN:"
+	},
+	"l10n_heading_contactinfo": {
+		"de": "Kontaktinformationen"
+	},
+	"l10n_infotext_contactinfo": {
+		"de": "Offizieller Kontakt. Hier sitzen die Entscheidungstr\u00e4ger. Wenn Vertr\u00e4ge unterschrieben werden m\u00fcssen etc."
+	},
+	"l10n_label_phone": {
+		"de": "Telefon"
+	},
+	"l10n_label_email": {
+		"de": "E-Mail"
+	},
+	"l10n_heading_resppers": {
+		"de": "Verantwortliche Person"
+	},
+	"l10n_infotext_resppers": {
+		"de": "Technischer Kontakt - nicht Endandwender-Support. Falls Probleme mit den Attributen etc. auftreten"
+	},
+	"l10n_heading_helpdesk": {
+		"de": "Helpdesk-Information"
+	},
+	"l10n_infotext_helpdesk": {
+		"de": "Endanwender-Support. Wohin das Portal allgemeine Anfragen schicken soll (Support-Fragen)."
+	},
+	"l10n_label_url": {
+		"de": "URL"
+	},
+	"l10n_heading_comments": {
+		"de": "Kommentare"
+	},
+	"l10n_infotext_comments": {
+		"de": "Kommentare betreffend dem Abonnenten die nicht in die vordefnierten Felder passen. Beachten Sie, dass dieses Feld dem Abonnenten niemals dargelegt wird, also k\u00f6nnen Sie dieses Feld nicht nutzen, um portalinterne Nachrichten an Abonnenten-Administratoren zu schicken."
+	},
+	"l10n_title_comments": {
+		"de": "Beliebiges Kommentar \u00fcber den Abonnenten"
+	},
+	"l10n_button_reset": {
+		"de": "Formular zur\u00fccksetzen"
+	},
+	"l10n_button_update": {
+		"de": "Aktualisieren"
+	},
+	"l10n_legend_addnew": {
+		"de": "Neuen Abonnent hinzuf\u00fcgen"
+	},
+	"l10n_infotext_addnew1": {
+		"de": "Hier f\u00fcgen Sie neue Abonnenten hinzu. Jedes Element wird gr\u00fcndlich erkl\u00e4rt. Falls Sie Zweifel haben, beratschlagen Sie sich mit anderen NREN-Administratoren in der N\u00e4he oder dem operativen Support. "
+	},
+	"l10n_heading_attnm": {
+		"de": "Attributsname"
+	},
+	"l10n_infotext_attnm1": {
+		"de": "Der Attributsname des Abonnenten ist der Name so wie er vom IdP exportiert wird."
+	},
+	"l10n_infotext_attnm2": {
+		"de": "Gew\u00f6hnlich ist dies eines der folgenden Attribute:"
+	},
+	"l10n_infotext_attnm3": {
+		"de": "Wichtig, sich zu merken, ist, dass dies ein <b>eindeutiger<\/b> Bezeichner f\u00fcr die Abonnentenorganisation sein muss, die der IdP exportiert."
+	},
+	"l10n_label_attnm": {
+		"de": "Attributsname:"
+	},
+	"l10n_label_forinstance": {
+		"de": "z.B.:"
+	},
+	"l10n_heading_dnoname": {
+		"de": "DN Organisationsname"
+	},
+	"l10n_infotext_dnoname1": {
+		"de": "Der Organisationsname ist der Name, der im Zertifikat f\u00fcr die Endsubjekte (die Anwender), aufscheinen wird. D.h. es ist die Zeichenkette, die im \/O=... Abschnitt des Zertifikats aufscheint. Dieser Name ist Beschr\u00e4nkungen bez\u00fcglich L\u00e4nge, Kodierung, etc., unterworfen."
+	},
+	"l10n_infotext_gridmode": {
+		"de": "Derzeit befindet sich Confusa im \"Grid-Modus\". Dies bedeutet, dass der Name f\u00fcr den Abonnenten auf ASCII-Kodierung und eine L\u00e4nge von 62 Zeichen beschr\u00e4nkt ist."
+	},
+	"l10n_heading_contactinfo2": {
+		"de": "Kontaktinformationen f\u00fcr den Abonnenten"
+	},
+	"l10n_infotext_contactinfo2": {
+		"de": "Diese Information wird sowohl von den NREN-Mitarbeitern verwendet, um die Abonnenten im Falle eines Notfalls zu kontaktieren, als auch von Confusa selbst, wenn Zertifikate widerrufen werden, Roboter-Zertifikate hinzugef\u00fcgt etc."
+	},
+	"l10n_infotext_contactinfo3": {
+		"de": "Es ist wichtig, dass die Kontaktinformation so aktuell wie m\u00f6glich ist."
+	},
+	"l10n_label_contactemail": {
+		"de": "Kontakt-E-Mail:"
+	},
+	"l10n_expl_contactemail": {
+		"de": "Die \"offizielle\" Kontakt-E-Mail."
+	},
+	"l10n_label_contactphone": {
+		"de": "Kontakttelefon:"
+	},
+	"l10n_expl_contactphone": {
+		"de": "Die \"offizielle\" Abonnenten-Telefonnummer."
+	},
+	"l10n_expl_resppers": {
+		"de": "Techischer Kontakt - nicht Endanwender-Support"
+	},
+	"l10n_label_respemail": {
+		"de": "E-Mail des\/der Verantwortlichen"
+	},
+	"l10n_expl_respemail": {
+		"de": "Technische Kontakt-E-Mail"
+	},
+	"l10n_heading_helpdeskcont": {
+		"de": "Kontaktinformation des Helpdesks"
+	},
+	"l10n_infotext_helpdeskcont": {
+		"de": "Wenn ein Endanwender Hilfe ben\u00f6tigt sollte diese Anwenden an den Helpdesk, der vom Abonnenten betrieben wird, verwiesen werden. Operativem Support oder NREN-Support sollte <b>nicht<\/b> abverlangt werden, eine gro\u00dfe Anzahl an Problemen zu handhaben, die vom lokalen Informatikdienst gel\u00f6st werden k\u00f6nnen (und sollten)."
+	},
+	"l10n_label_helpdeskurl": {
+		"de": "Helpdesk URL:"
+	},
+	"l10n_label_helpdeskemail": {
+		"de": "Helpdesk E-Mail:"
+	},
+	"l10n_heading_arbcomm": {
+		"de": "Beliebiges Kommentar"
+	},
+	"l10n_infotext_arbcomm1": {
+		"de": "Falls ein allgemeines Kommentar betreffend den Abonnenten ben\u00f6tigt wird, k\u00f6nnen Sie dieses hier hinzuf\u00fcgen. Dieses Kommentar wird nur \u00fcber die Seite verf\u00fcgbar sein. Was Sie hier schreiben, wird werder Abonnenten noch Endsubjekten dargelegt."
+	},
+	"l10n_heading_subscrstate": {
+		"de": "Abonnenten-Status"
+	},
+	"l10n_infotext_subscrstate": {
+		"de": "Der Status beschreibt, wie ein Abonnent behandelt wird. Im Moment gibt es daf\u00fcr 3 verschiedene Status in Confusa."
+	},
+	"l10n_infotext_subscribed": {
+		"de": "Wenn sich ein Abonnent in diesem Status befindet, ist der Vertrag zwischen dem NREN und dem Abonnenten unterschrieben, der Abonnent hat zugestimmt, den Anforderungen, die durch das CP\/CPS-Dokument an ihn gestellt werden, zu folgend etc. Dieser Status bedeutet, dass der Abonnent bereit ist, Confusa zu verwenden."
+	},
+	"l10n_infotext_unsubscribed": {
+		"de": "Der Abonnent wurde der Abonnenten-Liste hinzugef\u00fcgt, aber hat noch keine vertraglichen Vereinbarungen unterzeichnet und kann deswegen nicht auf den Status \"Subscribed\" gesetzt werden."
+	},
+	"l10n_infotext_suspended": {
+		"de": "Aufgrund von Verletzungen der Vertragsbestimmungen, wurden alle Aktivit\u00e4ten des Abonnenten eingestellt. Keine Zertifikate werden gel\u00f6scht, aber es werden auch keine neuen ausgestellt. Wenn diese Probleme gel\u00f6st wurden, kann der Status zur\u00fcck auf \"Subscribed\" ge\u00e4ndert werden."
+	},
+	"l10n_infotext_revise": {
+		"de": "Bevor Sie fortfahren sollten Sie die Werte noch einmal \u00fcberpr\u00fcft haben, um sicherzugehen, dass diese korrekt sind. Falls Sie zufrieden sind, k\u00f6nnen Sie mit dem Hinzuf\u00fcgen des Abonnenten fortfahren."
+	},
+	"l10n_button_addsubs": {
+		"de": "F\u00fcge Abonnenten hinzu"
+	},
+	"l10n_suc_addsubs1": {
+		"de": "Neuen Abonnenten hinzugef\u00fcgt"
+	},
+	"l10n_suc_addsubs2": {
+		"de": "zur Datenbank."
+	},
+	"l10n_suc_editsubs1": {
+		"de": "Abonnent erfolgreich in den Persistenzspeicher geschrieben."
+	},
+	"l10n_suc_deletesubs1": {
+		"de": "Abonnent ("
+	},
+	"l10n_suc_deletesubs2": {
+		"de": ") erfolgreich gel\u00f6scht, ID ist"
+	},
+	"l10n_suc_deletesubs3": {
+		"de": "Eine Gesamtzahl von"
+	},
+	"l10n_suc_deletesubs4": {
+		"de": "Zertifikaten wurde gleichzeitig widerrufen."
+	},
+	"l10n_confirm_deleteownsubs": {
+		"de": "Sie sind dabei, Ihre EIGENE INSTITUTION zu l\u00f6schen"
+	},
+	"l10n_confirm_delete_subscriber": {
+		"de": "Sie veranlassten die L\u00f6schung des Abonnenten"
+	},
+	"l10n_confirm_delete_confirm": {
+		"de": "Sind Sie sicher?"
+	}
+}

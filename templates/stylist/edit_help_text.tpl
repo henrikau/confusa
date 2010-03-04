@@ -45,7 +45,7 @@
   <div class="spacer"></div>
 
   <fieldset>
-  <legend>Change the "about"-text</legend>
+  <legend>{$l10n_legend_abouttext}</legend>
   <p class="info">
   {$l10n_infotext_abouttext1}
   </p>
