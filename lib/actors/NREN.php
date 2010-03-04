@@ -374,7 +374,20 @@ class NREN
 			}
 		}
 	}
-	public function set_contact_email($contact_email)
+
+	/**
+	 * setContactEmail() set the address to NREN-contact
+	 *
+	 * This email is where administrative contact to the NREN can be
+	 * placed. In some areas, users and subscriber-admins need to find this
+	 * quickly, and the NREN may want to use a dedicated address for
+	 * portal-inquiries.
+	 *
+	 * @param	String $contact_email
+	 * @return	void
+	 * @access	public
+	 */
+	public function setContactEmail($contact_email)
 	{
 		if (!is_null($contact_email)) {
 			if ($this->data['contact_email'] != $contact_email) {
@@ -383,6 +396,7 @@ class NREN
 			}
 		}
 	}
+
 	public function set_cert_email($cert_email)
 	{
 		if (!is_null($cert_email)) {

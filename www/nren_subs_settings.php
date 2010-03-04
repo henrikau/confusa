@@ -34,7 +34,7 @@ class CP_NREN_Subs_Settings extends Content_Page
 			switch($_POST['setting']) {
 			case 'nren_contact':
 				if ($this->person->isNRENAdmin()) {
-					$this->person->getNREN()->set_contact_email(Input::sanitizeEmail($_POST['contact_email']));
+					$this->person->getNREN()->setContactEmail(Input::sanitizeEmail($_POST['contact_email']));
 					$this->person->getNREN()->set_contact_phone(Input::sanitizePhone($_POST['contact_phone']));
 					$this->person->getNREN()->set_cert_phone(   Input::sanitizePhone($_POST['cert_phone']));
 					$this->person->getNREN()->set_cert_email(   Input::sanitizeEmail($_POST['cert_email']));
