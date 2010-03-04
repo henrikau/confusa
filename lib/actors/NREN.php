@@ -353,7 +353,19 @@ class NREN
 		}
 	}
 
-	public function set_url($url)
+	/**
+	 * setURL() set the NREN-portal URL
+	 *
+	 * The URL is used to "pre-brand" the portal. An NREN can define which
+	 * URL the portal be hosted under, and Confusa will then look at the
+	 * access-url of an un-AuthN user, and if a match is found in the DB,
+	 * appropriate branding is applied.
+	 *
+	 * @param	String $url the URL to use
+	 * @return	void
+	 * @access	public
+	 */
+	public function setURL($url)
 	{
 		if (!is_null($url)) {
 			if ($this->data['url'] != $url) {
