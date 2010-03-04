@@ -397,6 +397,22 @@ class NREN
 		}
 	}
 
+
+	/**
+	 * setContactPhone()
+	 *
+	 * @see setContactEmail
+	 */
+	public function setContactPhone($contact_phone)
+	{
+		if (!is_null($contact_phone)) {
+			if ($this->data['contact_phone'] != $contact_phone) {
+				$this->data['contact_phone'] = Input::sanitizeText($contact_phone);
+				$this->pendingChanges = true;
+			}
+		}
+	}
+
 	/**
 	 * setCertEmail() set the NREN's CERT-team emailaddress.
 	 *
@@ -423,15 +439,6 @@ class NREN
 		if (!is_null($cert_phone)) {
 			if ($this->data['cert_phone'] != $cert_phone) {
 				$this->data['cert_phone'] = Input::sanitizeText($cert_phone);
-				$this->pendingChanges = true;
-			}
-		}
-	}
-	public function set_contact_phone($contact_phone)
-	{
-		if (!is_null($contact_phone)) {
-			if ($this->data['contact_phone'] != $contact_phone) {
-				$this->data['contact_phone'] = Input::sanitizeText($contact_phone);
 				$this->pendingChanges = true;
 			}
 		}
