@@ -413,7 +413,12 @@ class NREN
 			}
 		}
 	}
-	public function set_cert_phone($cert_phone)
+
+	/* setCertPhone()
+	 *
+	 * @see setCertEmail
+	 */
+	public function setCertPhone($cert_phone)
 	{
 		if (!is_null($cert_phone)) {
 			if ($this->data['cert_phone'] != $cert_phone) {
