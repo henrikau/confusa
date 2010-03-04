@@ -58,6 +58,17 @@ function add
 	echo "FAILED: Could not add $url to $id"
 }
 
+# test if a certain idp is already connected to the current NREN.
+# Return 0 if it isn't and 1 if it is
+function test_idp
+{
+	url=$1
+	res=`run_query "SELECT COUNT(*) FROM idp_map WHERE nren_id=$id AND idp_url='$url'"`
+	echo $res
+}
+
+# Add all IdPs from a metadata file to the selected NREN, if they are not
+# yet connected.
 function add_by_metadata
 {
 	if [ -z "$id" ]; then
@@ -75,7 +86,14 @@ function add_by_metadata
 		idp=$line
 
 		IFS=$oldifs
-		add "$idp"
+
+		idp_exists=`test_idp "$idp"`
+		if [ $idp_exists == "0" ]; then
+			add "$idp"
+		else
+			echo "Skipping $idp"
+		fi
+
 		IFS=`echo -en "\n\b"`
 	done
 	IFS=$oldifs
