@@ -444,6 +444,24 @@ class NREN
 		}
 	}
 
+	/**
+	 * setEnableEmail() store the value to how emails shold be let into the
+	 * SAN.
+	 *
+	 * A certificate can store 0 to multiple addresses in the SAN (Subject
+	 * Alternative Name). This is configurable on an NREN-basis.
+	 *
+	 * It can have the values
+	 * '0'	: No certiticates are allowed in the SAN *at all*
+	 * '1'	: One, and only one. if multiple addresses are returned from the
+	 *	  IdP, a selection where the user must pick *one* is created.
+	 * 'n'	: Multiple addresses, or 0, the  decision is left to the user.
+	 * 'm'	: Multiple addressed, but *at least* one.
+	 *
+	 * @param	String $enable_email
+	 * @return	void
+	 * @access	public
+	 */
 	public function setEnableEmail($enable_email)
 	{
 		if (!is_null($enable_email)) {
@@ -456,9 +474,29 @@ class NREN
 		}
 	}
 
+	/**
+	 * setCertValidity() set the limit for how long a certificate should be valid.
+	 *
+	 * If in eScience, the  only value is 395 days, and the function will
+	 * not store the number in this mode.
+	 *
+	 * In personal, you can have 3 (and it is for personal this function is necessary):
+	 * - 365 days
+	 * - 730 days
+	 * - 1095 days
+	 *
+	 * Also not, if the portal is in test-mode ('capi_test'), the
+	 * certificate validity is *always* 14 days regardless of mode and
+	 * configured days.
+	 *
+	 * @param	String $validity number of days
+	 * @return	void
+	 * @access	public
+	 */
 	public function setCertValidity($validity)
 	{
-		if (isset($validity)) {
+		if (isset($validity) &&
+		    (Config::get_config('cert_product') === PRD_PERSONAL)) {
 			if (!array_key_exists('cert_validity', $this->data) ||
 			    ($this->data['cert_validity'] != $validity)) {
 
@@ -469,28 +507,41 @@ class NREN
 		}
 	}
 
+	/**
+	 * setShowPortalTitle() set the flag to indicate whether or not the
+	 * portal title should be shown.
+	 *
+	 * @param	Boolean $showPortalTitle
+	 * @return	void
+	 * @access	public
+	 */
 	public function setShowPortalTitle($showPortalTitle)
 	{
 		if (isset($showPortalTitle)) {
 			if (!array_key_exists('show_portal_title', $this->data) ||
 			   ($this->data['show_portal_title'] != $showPortalTitle)) {
-
 				$this->data['show_portal_title'] = $showPortalTitle;
 				$this->pendingChanges = true;
-				return;
 			}
 		}
 	}
 
+	/**
+	 * setCustomPortalTitle() Set a customized portal title for the NREN
+	 *
+	 * An NREN can set the title to whatever it likes.
+	 *
+	 * @param	String $portalTitle the new title
+	 * @return	void
+	 * @access	public
+	 */
 	public function setCustomPortalTitle($portalTitle)
 	{
 		if (isset($portalTitle)) {
 			if (!array_key_exists('portal_title', $this->data) ||
 			($this->data['portal_title'] != $portalTitle)) {
-
 				$this->data['portal_title'] = $portalTitle;
 				$this->pendingChanges = true;
-				return;
 			}
 		}
 	}
@@ -771,10 +822,9 @@ class NREN
 			$textile = new Textile();
 
 			return $this->replaceTags($textile->TextileRestricted($at,0), $person);
-		} else {
-			return "No about-NREN text has been defined for your NREN (" .
-				$this->getName(). ")";
 		}
+		return "No about-NREN text has been defined for your NREN (" .
+			$this->getName(). ")";
 	}
 
 
@@ -816,9 +866,58 @@ class NREN
 			$help_text = $textile->TextileRestricted($help_text,0);
 			return $this->replaceTags($help_text, $person);
 		}
+		return "No Help-text for your NREN (" .
+			$this->getName(). ") can be found in the system.";
 	} /* end getHelpText() */
 
+	/**
+	 * Get the list of IdPs stored in the DB for this NREN.
+	 *
+	 * @param	void
+	 * @return	array|null an array with all IdP URLs or null if not found
+	 * @access	public
+	 */
+	public function getIdPList()
+	{
+		$query = "SELECT m.idp_url FROM idp_map m " .
+		         "WHERE m.nren_id = ?";
 
+		try {
+			$res = MDB2Wrapper::execute($query,
+			                            array('text'),
+			                            array($this->getID()));
+		} catch (ConfusaGenException $cge) {
+			Logger::log_event(LOG_NOTICE, __FILE__ . " " . __LINE__ .  ": Could not " .
+			                  "get the IdP list for NREN with ID " .
+			                  $this->getID() . ". All IdP scoping will fail!");
+		}
+
+		if (count($res) > 0) {
+			$idpList = array();
+
+			foreach($res as $row) {
+				$idpList[] = $row['idp_url'];
+			}
+		} else {
+			return null;
+		}
+
+		return $idpList;
+	}
+
+	/**
+	 * replaceTags() take the texdt and replace known tags with
+	 * corresponding value
+	 *
+	 * We use tags in a lot of the texts to allow the admins to create
+	 * dynamic pages. When we display the page, these tags must be replaced
+	 * with updated values.
+	 *
+	 * @param	String $text the text containing the tags to replace
+	 * @param	Person $person the current person
+	 * @return	String $text the text with the tags replaced.
+	 * @access	private
+	 */
 	private function replaceTags($text, $person)
 	{
 		/*
@@ -870,6 +969,7 @@ class NREN
 	 * tries to construct the NREN from such an URL.
 	 *
 	 * @param nrenURL string the URL that was configured for the NREN
+	 * @return NREN|null
 	 * @since v0.6-rc0
 	 */
 	static function getNRENByURL($nrenURL)
@@ -907,39 +1007,6 @@ class NREN
 			return null;
 		}
 	} /* end getNRENByURL */
-
-	/**
-	 * Get the list of IdPs stored in the DB for this NREN.
-	 *
-	 * @return array|null an array with all IdP URLs or null if none found
-	 */
-	public function getIdPList()
-	{
-		$query = "SELECT m.idp_url FROM idp_map m " .
-		         "WHERE m.nren_id = ?";
-
-		try {
-			$res = MDB2Wrapper::execute($query,
-			                            array('text'),
-			                            array($this->getID()));
-		} catch (ConfusaGenException $cge) {
-			Logger::log_event(LOG_NOTICE, __FILE__ . " " . __LINE__ .  ": Could not " .
-			                  "get the IdP list for NREN with ID " .
-			                  $this->getID() . ". All IdP scoping will fail!");
-		}
-
-		if (count($res) > 0) {
-			$idpList = array();
-
-			foreach($res as $row) {
-				$idpList[] = $row['idp_url'];
-			}
-		} else {
-			return null;
-		}
-
-		return $idpList;
-	}
 
 } /* end class NREN */
 ?>
