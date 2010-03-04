@@ -7,7 +7,7 @@ require_once 'NREN.php';
 require_once 'Subscriber.php';
 require_once 'framework.php';
 
-/* Person
+/** Person
  *
  * Person is the object describing the user in the system
  *
@@ -25,7 +25,10 @@ require_once 'framework.php';
  *
  * Thus, Person is little more than a convenient storage pool of related data.
  *
- * Author: Henrik Austad <henrik.austad@uninett.no>
+ * @Author	Henrik Austad <henrik.austad@uninett.no>
+ * @license	http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
+ * @since	File available since Confusa v0.4-rc0
+ * @package	resources
  */
 class Person{
 

@@ -1,6 +1,15 @@
 <?php
 require_once 'mdb2_wrapper.php';
-
+/**
+ * Subscriber
+ *
+ * Stateful class for a subscriber.
+ *
+ * @author	Henrik Austad <henrik.austad@uninett.no>
+ * @license	http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
+ * @since	File available since Confusa v0.4-rc0
+ * @package	resources
+ */
 class Subscriber
 {
 	private $org_name;
