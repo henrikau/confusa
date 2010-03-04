@@ -36,10 +36,10 @@ class CP_NREN_Subs_Settings extends Content_Page
 				if ($this->person->isNRENAdmin()) {
 					$this->person->getNREN()->setContactEmail(Input::sanitizeEmail($_POST['contact_email']));
 					$this->person->getNREN()->setContactPhone(Input::sanitizePhone($_POST['contact_phone']));
-					$this->person->getNREN()->setCertPhone(     Input::sanitizePhone($_POST['cert_phone']));
-					$this->person->getNREN()->setCertEmail(     Input::sanitizeEmail($_POST['cert_email']));
-					$this->person->getNREN()->setURL(           Input::sanitizeURL($_POST['url']));
-					$this->person->getNREN()->setLang(          Input::sanitizeLangCode($_POST['language']));
+					$this->person->getNREN()->setCertPhone(   Input::sanitizePhone($_POST['cert_phone']));
+					$this->person->getNREN()->setCertEmail(   Input::sanitizeEmail($_POST['cert_email']));
+					$this->person->getNREN()->setURL(         Input::sanitizeURL($_POST['url']));
+					$this->person->getNREN()->setLang(        Input::sanitizeLangCode($_POST['language']));
 
 					$nren = $this->person->getNREN();
 
