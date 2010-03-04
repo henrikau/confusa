@@ -118,6 +118,24 @@
       </tr>
       <tr><td colspan="3"><div class="spacer"></div></td></tr>
 
+	  {* WAYF URL *}
+	  <tr>
+		<td align="right" valign="top">{$l10n_label_wayfurl}</td>
+		<td></td>
+		<td>
+			{if isset($nrenInfo.wayf_url)}
+				<input type="text" name="wayf_url" value="{$nrenInfo.wayf_url}" />
+			{else}
+				<input type="text" name="wayf_url" value="" />
+			{/if}
+			<br />
+			<span style="font-size: 0.8em; font-style: italic">
+				{$l10n_infotext_wayf_url}
+			</span>
+		</td>
+	  </tr>
+	  <tr><td colspan="3"><div class="spacer"></div></td></tr>
+
       {* Default language for the NREN *}
       <tr>
 	<td align="right" valign="top">{$l10n_label_deflang|escape}</td>

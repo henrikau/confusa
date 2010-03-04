@@ -338,6 +338,24 @@ class NREN
 	}
 
 	/**
+	 * set WAYFURL() Set the WAYF-service URL for the NREN
+	 *
+	 * @param String $url the address of the WAYF service
+	 * @return void
+	 * @access public
+	 * @since v0.6-rc0
+	 */
+	public function setWAYFURL($url)
+	{
+		if (!is_null($url)) {
+			if ($this->data['wayf_url'] != $url) {
+				$this->data['wayf_url'] = $url;
+				$this->pendingChanges = true;
+			}
+		}
+	} /* end setWAYFURL() */
+
+	/**
 	 * setLang() Set the preferred language for the NREN
 	 *
 	 * @param	String @lang the language to use for the NREN
@@ -561,7 +579,7 @@ class NREN
 		if ($this->pendingChanges) {
 			$query  = "UPDATE nrens SET contact_email=?, contact_phone=?, ";
 			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=?, cert_validity=?,";
-			$query .= " show_portal_title=?, portal_title=? ";
+			$query .= " show_portal_title=?, portal_title=?, wayf_url=? ";
 			$query .= "WHERE nren_id=?";
 			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text',
 			                'text', 'text', 'text', 'text');
@@ -575,6 +593,7 @@ class NREN
 					$this->data['cert_validity'],
 					$this->data['show_portal_title'],
 					$this->data['portal_title'],
+					$this->data['wayf_url'],
 					$this->getID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);

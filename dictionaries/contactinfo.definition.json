@@ -93,5 +93,11 @@
 	},
 	"l10n_infotext_certvalidity": {
 		"en":	"The number of days that personal certificates ordered by your users will be valid."
+	},
+	"l10n_label_wayfurl": {
+		"en":	"WAYF-URL:"
+	},
+	"l10n_infotext_wayf_url": {
+		"en":	"If your NREN has a WAYF service, use this URL to point to it. Then your own, branded IdP discovery will be shown to your users."
 	}
 }
