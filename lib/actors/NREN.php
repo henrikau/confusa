@@ -397,7 +397,14 @@ class NREN
 		}
 	}
 
-	public function set_cert_email($cert_email)
+	/**
+	 * setCertEmail() set the NREN's CERT-team emailaddress.
+	 *
+	 * @param	String $cert_email
+	 * @return	void
+	 * @access	public
+	 */
+	public function setCertEmail($cert_email)
 	{
 		if (!is_null($cert_email)) {
 			if ($this->data['cert_email'] != $cert_email) {
