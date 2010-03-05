@@ -8,7 +8,7 @@ require_once 'MDB2Wrapper.php';
 require_once 'CGE_ComodoAPIException.php';
 require_once 'confusa_constants.php';
 require_once 'CGE_ComodoCredentialException.php';
-require_once 'curlwrapper.php';
+require_once 'CurlWrapper.php';
 require_once 'CS.php';
 
 /**
