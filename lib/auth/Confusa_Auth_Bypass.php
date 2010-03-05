@@ -1,5 +1,5 @@
 <?php
-require_once 'confusa_auth.php';
+require_once 'Confusa_Auth.php';
 require_once 'MapNotFoundException.php';
 /**
  * Confusa_Auth_Bypass - The dummy authentication source.
@@ -66,7 +66,7 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	/**
 	 * Decorate the person object with dummy attributes
 	 */
-	public function authenticateUser()
+	public function authenticate()
 	{
 		$this->person->setAuth(true);
 		$this->decoratePerson($this->attributes, 'idp.example.org');
@@ -76,7 +76,7 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	/**
 	 * Decorate the person object with dummy attributes and return always true
 	 */
-	public function checkAuthentication()
+	public function isAuthenticated()
 	{
 		$this->person->setAuth(true);
 		$this->authenticateUser();
@@ -110,7 +110,7 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	 *
 	 * @param $logout_loc The location to which the user is redirected
 	 */
-	public function deAuthenticateUser($logout_loc = 'logout.php')
+	public function deAuthenticate($logout_loc = 'logout.php')
 	{
 		Framework::error_output("Cannot log out, you're in bypass-mode!");
 	}

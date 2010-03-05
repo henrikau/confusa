@@ -15,7 +15,6 @@ require_once 'CriticalAttributeException.php';
  * 		- checkAuthentication()
  *		- getAttributeKeys()
  * 		- deAuthenticateUser()
- *		- softLogout()
  *
  * Subclasses should also use decoratePerson() when a new user has been
  * Authenticated.
@@ -231,14 +230,14 @@ abstract class Confusa_Auth
 	 *
 	 * @return boolean $authN indicating if the user was successfully authenticated
 	 */
-	public abstract function authenticateUser();
+	public abstract function authenticate();
 
 	/**
 	 * Check (possibly by polling a subsystem), if a user is still authN.
 	 *
 	 * @return boolean $authN describing whether user is authenticated or not.
 	 */
-	public abstract function checkAuthentication();
+	public abstract function isAuthenticated();
 
 	/**
 	 * getAttributeKeys() - return the attribute-keys found in attributes
@@ -270,40 +269,10 @@ abstract class Confusa_Auth
 	 * "Logout" the user, possibly using the subsystem. To be implemented by
 	 * subclasses
 	 *
+	 * @param $logout_loc The location to which the user should be redirected
+	 *                    after logout
 	 * @return void
 	 */
-	public abstract function deAuthenticateUser($logout_loc='logout.php');
-}
-
-/**
- * AuthHandler - return the right authentication manager for the configuration
- *
- * The handler should abstract that decision away from the calling functions
- * and consult on its own on the configuration or environment
- */
-
-class AuthHandler
-{
-	private static $auth;
-	/**
-	 * Get the auth manager based on the request
-	 *
-	 * @param $person The person for which the auth_manager should be created
-	 * @return an instance of Confusa_Auth
-	 */
-	public static function getAuthManager($person)
-	{
-		if (!isset(AuthHandler::$auth)) {
-			if (Config::get_config('auth_bypass') === TRUE) {
-				require_once 'bypass.php';
-				AuthHandler::$auth = new Confusa_Auth_Bypass($person);
-			} else {
-				/* Start the IdP and create the handler */
-				require_once 'idp.php';
-				AuthHandler::$auth = new Confusa_Auth_IdP($person);
-			}
-		}
-		return AuthHandler::$auth;
-	}
-} /* end class AuthHandler */
+	public abstract function deAuthenticate($logout_loc='logout.php');
+} /* end class Confusa_Auth */
 ?>

@@ -7,7 +7,8 @@
  * This will handle all aspects regarding layout and authentication of user.
  */
 require_once 'confusa_include.php';
-require_once 'confusa_auth.php';
+require_once 'Confusa_Auth.php';
+require_once 'AuthHandler.php';
 require_once 'person.php';
 require_once 'logger.php';
 require_once 'content_page.php';
@@ -141,9 +142,9 @@ class Framework {
 		/* if login, trigger SAML-redirect first */
 		$auth = AuthHandler::getAuthManager($this->person);
 
-		if (!$auth->checkAuthentication()) {
+		if (!$auth->isAuthenticated()) {
 			if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-				$auth->authenticateUser();
+				$auth->authenticate();
 			}
 		}
 

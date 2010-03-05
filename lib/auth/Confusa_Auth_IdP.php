@@ -2,8 +2,7 @@
 require_once 'config.php';
 require_once 'logger.php';
 require_once 'person.php';
-require_once 'auth.php';
-require_once 'confusa_auth.php';
+require_once 'Confusa_Auth.php';
 
 /**
  * Confusa_Auth_IdP - authenticate user via an identity provider
@@ -55,7 +54,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	 *		- Use the subsystem to perform an IdP authN
 	 *		- Decorate the person object with attributes
 	 */
-	public function authenticateUser()
+	public function authenticate()
 	{
 		/* is the user authNed according to simplesamlphp */
 		if (!$this->person->isAuth()) {
@@ -68,7 +67,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 			throw new AuthException("Required attribute eduPersonPrincipalName not set!");
 		}
 
-		$this->person->setAuth($this->checkAuthentication());
+		$this->person->setAuth($this->isAuthenticated());
 	}
 
 	/**
@@ -84,7 +83,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	 *
 	 * This will return all the keys for the current attributes except a
 	 * few (those that we create internally in Confusa and ePPN).
-	 * 
+	 *
 	 * @param void
 	 * @return Array the list of keys used to index the attributes.
 	 */
@@ -112,9 +111,9 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	 * @param String $logout_loc the location to which the user will be redirected after logout
 	 * @return void
 	 */
-	public function deAuthenticateUser($logout_loc = 'logout.php')
+	public function deAuthenticate($logout_loc = 'logout.php')
 	{
-		if ($this->checkAuthentication()) {
+		if ($this->isAuthenticated()) {
 			$this->person->isAuth(false);
 			$this->person->clearAttributes();
 			$this->as->logout(Config::get_config('server_url') . "$logout_loc");
@@ -127,7 +126,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	 *
 	 * @return True, if person is authenticated, false if not.
 	 */
-	public function checkAuthentication()
+	public function isAuthenticated()
 	{
 		if (is_null($this->person)) {
 			return false; /* anonymous cannot be AuthN */
@@ -163,7 +162,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		}
 		/* Session is invalid, thus user is not authN */
 		return false;
-	} /* end checkAuthentication() */
+	} /* end isAuthenticated() */
 
 } /* end class IdP */
 ?>
