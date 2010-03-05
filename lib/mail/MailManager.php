@@ -1,5 +1,5 @@
 <?php
-include_once 'metainfo.php';
+include_once 'MetaInfo.php';
 /* the path to class.phpmailer.php should best be defined in php.ini's include
  * path */
 require_once 'class.phpmailer.php';
