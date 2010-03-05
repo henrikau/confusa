@@ -1,6 +1,6 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'config.php';
+require_once 'Config.php';
 require_once 'input.php';
 
 $nren = Input::sanitizeNRENName($_GET['nren']);

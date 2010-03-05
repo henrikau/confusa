@@ -1,7 +1,7 @@
 <?php
 require_once 'confusa_include.php';
 require_once 'framework.php';
-require_once 'config.php';
+require_once 'Config.php';
 include_once 'MDB2Wrapper.php';
 require_once 'metainfo.php';
 

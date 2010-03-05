@@ -20,7 +20,7 @@
  * Author: Henrik Austad <henrik.austad@uninett.no>
  *
  */
-include_once 'config.php';
+include_once 'Config.php';
 
 class FileUpload {
   private $open_file;		/* the field of $_FILES which we want to read */

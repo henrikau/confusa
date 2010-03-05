@@ -17,7 +17,7 @@ require_once 'confusa_handler.php';
 require_once 'translator.php';
 
 /* global config */
-require_once 'config.php';
+require_once 'Config.php';
 require_once 'CA_Comodo.php';
 require_once 'CA_Standalone.php';
 

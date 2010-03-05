@@ -5,7 +5,7 @@ require_once 'MDB2Wrapper.php';
 require_once 'logger.php';
 require_once 'csr_lib.php';
 require_once 'file_upload.php';
-require_once 'config.php';
+require_once 'Config.php';
 require_once 'send_element.php';
 require_once 'input.php';
 require_once 'output.php';

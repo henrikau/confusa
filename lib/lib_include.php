@@ -5,6 +5,7 @@ define('LIB_DIR', dirname(__FILE__));
 $path .= PATH_SEPARATOR . LIB_DIR . '/actors';
 $path .= PATH_SEPARATOR . LIB_DIR . '/auth';
 $path .= PATH_SEPARATOR . LIB_DIR . '/ca';
+$path .= PATH_SEPARATOR . LIB_DIR . '/config';
 $path .= PATH_SEPARATOR . LIB_DIR . '/db';
 $path .= PATH_SEPARATOR . LIB_DIR . '/exceptions';
 $path .= PATH_SEPARATOR . LIB_DIR . '/file';

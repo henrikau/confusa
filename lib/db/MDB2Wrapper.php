@@ -1,6 +1,6 @@
 <?php
 /* require_once 'logger.php'; */
-require_once 'config.php';
+require_once 'Config.php';
 require_once 'MDB2.php';
 require_once 'logger.php';
 require_once 'db_query.php';

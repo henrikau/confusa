@@ -1,6 +1,6 @@
 <?php
 require_once '../confusa_include.php';
-require_once 'config.php';
+require_once 'Config.php';
 require_once 'confusa_constants.php';
 require_once 'MDB2Wrapper.php';
 

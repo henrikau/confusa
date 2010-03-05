@@ -16,7 +16,7 @@
 
   /* get name of default log-file (in addition to syslog)
    * require_once(dirname(WEB_DIR).'/www/_include.php'); */
-require_once 'config.php';
+require_once 'Config.php';
 require_once 'confusa_constants.php';
 class Logger {
 /* log_event
