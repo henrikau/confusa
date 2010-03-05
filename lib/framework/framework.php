@@ -14,7 +14,7 @@ require_once 'Content_Page.php';
 require_once 'output.php';
 require_once 'CGE_ComodoCredentialException.php';
 require_once 'confusa_handler.php';
-require_once 'translator.php';
+require_once 'Translator.php';
 
 /* global config */
 require_once 'Config.php';

@@ -1,5 +1,5 @@
 <?php
-require_once 'Confusa_Session.php';
+require_once 'CS.php';
 
 /**
  * Translator - lookup dictionary entries for a page and decorate the template

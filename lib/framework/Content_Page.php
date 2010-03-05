@@ -1,5 +1,5 @@
 <?php
-require_once 'translator.php';
+require_once 'Translator.php';
 
 abstract class Content_Page
 {
