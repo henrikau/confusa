@@ -9,7 +9,7 @@ require_once 'MDB2Wrapper.php';
 require_once 'logger.php';
 require_once 'csr_lib.php';
 require_once 'config.php';
-require_once 'mail_manager.php';
+require_once 'MailManager.php';
 
 abstract class CA
 {

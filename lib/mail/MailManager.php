@@ -5,14 +5,15 @@ include_once 'metainfo.php';
 require_once 'class.phpmailer.php';
 
 /**
-* MailManager
-*
-* This package sends emails to the specified address using PHPMailer
-* Attachments are supported
-*
-* @author Henrik Austad <henrik.austad@uninett.no>
-* @author Thomas Zangerl <tzangerl@pdc.kth.se>
-*/
+ * MailManager
+ *
+ * This package sends emails to the specified address using PHPMailer
+ * Attachments are supported
+ *
+ * @author Henrik Austad <henrik.austad@uninett.no>
+ * @author Thomas Zangerl <tzangerl@pdc.kth.se>
+ * @package mail
+ */
 class MailManager
 {
 	/** The PHPMailer instance wrapped by the MailManager */
