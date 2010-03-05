@@ -10,7 +10,7 @@ require_once 'confusa_include.php';
 require_once 'confusa_auth.php';
 require_once 'person.php';
 require_once 'logger.php';
-require_once 'content_page.php';
+require_once 'Content_Page.php';
 require_once 'output.php';
 require_once 'CGE_ComodoCredentialException.php';
 require_once 'confusa_handler.php';

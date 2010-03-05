@@ -1,5 +1,6 @@
 <?php
 require_once 'confusa_include.php';
+require_once 'Content_Page.php';
 require_once 'framework.php';
 require_once 'person.php';
 require_once 'mail_manager.php';

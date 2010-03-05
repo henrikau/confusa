@@ -1,5 +1,6 @@
 <?php
 require_once 'confusa_include.php';
+require_once 'Content_Page.php';
 include_once 'framework.php';
 include_once 'MDB2Wrapper.php';
 include_once 'db_query.php';

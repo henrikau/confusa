@@ -1,5 +1,6 @@
 <?php
 require_once 'confusa_include.php';
+require_once 'Content_Page.php';
 include_once 'framework.php';
 class CP_Root_Certificate extends Content_Page
 {
