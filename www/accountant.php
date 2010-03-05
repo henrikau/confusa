@@ -5,7 +5,7 @@ require_once 'Framework.php';
 require_once 'MDB2Wrapper.php';
 require_once 'db_query.php';
 require_once 'logger.php';
-require_once 'output.php';
+require_once 'Output.php';
 require_once 'input.php';
 
 /**

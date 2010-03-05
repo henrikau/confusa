@@ -1,6 +1,6 @@
 <?php
 require_once 'input.php';
-require_once 'output.php';
+require_once 'Output.php';
 require_once 'CriticalAttributeException.php';
 require_once 'permission.php';
 require_once 'NREN.php';

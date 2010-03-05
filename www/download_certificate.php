@@ -5,7 +5,7 @@ require_once 'Framework.php';
 require_once 'person.php';
 require_once 'mail_manager.php';
 require_once 'confusa_gen.php';
-require_once 'output.php';
+require_once 'Output.php';
 
 final class CP_DownloadCertificate extends Content_Page
 {
