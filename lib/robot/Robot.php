@@ -2,7 +2,7 @@
 require_once 'pw.php';
 require_once 'person.php';
 require_once 'logger.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 class Robot
 {
 	private static $log_error_code;

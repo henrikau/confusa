@@ -1,5 +1,5 @@
 <?php
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 /**
  * Subscriber
  *

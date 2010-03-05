@@ -3,7 +3,7 @@ require_once '../confusa_include.php';
 require_once 'content_page.php';
 require_once 'framework.php';
 require_once 'confusa_gen.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 require_once 'input.php';
 require_once 'logger.php';
 

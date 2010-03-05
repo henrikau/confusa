@@ -6,7 +6,7 @@
    *
    * Author: Henrik Austad <henrik.austad@uninett.no>
    */
-include_once 'mdb2_wrapper.php';
+include_once 'MDB2Wrapper.php';
 include_once 'logger.php';
 require_once 'csr_not_found.php';
 

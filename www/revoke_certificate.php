@@ -5,7 +5,7 @@ require_once 'person.php';
 require_once 'send_element.php';
 require_once 'csv_lib.php';
 require_once 'input.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 
 class CP_RevokeCertificate extends Content_Page
 {

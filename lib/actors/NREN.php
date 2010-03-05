@@ -1,6 +1,6 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 require_once 'CriticalAttributeException.php';
 require_once 'classTextile.php';
 

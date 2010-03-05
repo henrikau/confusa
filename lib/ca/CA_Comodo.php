@@ -4,7 +4,7 @@ require_once 'person.php';
 require_once 'CA.php';
 require_once 'key_sign.php';
 require_once 'db_query.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 require_once 'CGE_ComodoAPIException.php';
 require_once 'confusa_constants.php';
 require_once 'CGE_ComodoCredentialException.php';

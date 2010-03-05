@@ -2,7 +2,7 @@
 require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'person.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 require_once 'cert_lib.php';
 require_once 'file_upload.php';
 require_once 'certificate.php';

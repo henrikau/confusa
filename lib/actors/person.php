@@ -914,7 +914,7 @@ class Person{
 	    if ($this->adminDBError) {
 		    return NORMAL_USER;
 	    }
-	    require_once 'mdb2_wrapper.php';
+	    require_once 'MDB2Wrapper.php';
 	    $errorCode = PW::create(8);
 
 	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND nren=?", array('text', 'text'), array($this->eppn, $this->nren->getID()));

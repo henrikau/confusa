@@ -133,7 +133,7 @@ class Logger {
 	 */
 	static function insertCriticalErrorIntoDB($log_level, $log_body)
 	{
-		include_once 'mdb2_wrapper.php';
+		include_once 'MDB2Wrapper.php';
 		include_once 'confusa_gen.php';
 
 		$query = "INSERT INTO critical_errors(error_date, error_level, log_msg) ";

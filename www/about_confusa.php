@@ -2,7 +2,7 @@
 require_once 'confusa_include.php';
 require_once 'framework.php';
 require_once 'config.php';
-include_once 'mdb2_wrapper.php';
+include_once 'MDB2Wrapper.php';
 require_once 'metainfo.php';
 
 class CP_About_Confusa extends Content_Page

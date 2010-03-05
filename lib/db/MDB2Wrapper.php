@@ -14,7 +14,8 @@ require_once 'pw.php';
  *
  * The goal is to shrink a databasequery down to a *single* line of code elsewhere.
  *
- * @author     Henrik Austad <henrik.austad@uninett.no>
+ * @author	Henrik Austad <henrik.austad@uninett.no>
+ * @package	DB
  */
 class MDB2Wrapper
 {

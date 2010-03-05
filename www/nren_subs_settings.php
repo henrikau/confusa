@@ -3,7 +3,7 @@ require_once 'confusa_include.php';
 require_once 'content_page.php';
 require_once 'framework.php';
 require_once 'translator.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 
 class CP_NREN_Subs_Settings extends Content_Page
 {
