@@ -232,14 +232,7 @@ abstract class Confusa_Auth
 	 *
 	 * @return boolean $authN indicating if the user was successfully authenticated
 	 */
-	public abstract function authenticate();
-
-	/**
-	 * Check (possibly by polling a subsystem), if a user is still authN.
-	 *
-	 * @return boolean $authN describing whether user is authenticated or not.
-	 */
-	public abstract function isAuthenticated();
+	public abstract function authenticate($isRequired);
 
 	/**
 	 * getAttributeKeys() - return the attribute-keys found in attributes

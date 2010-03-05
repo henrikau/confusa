@@ -18,10 +18,12 @@ class Confusa_Auth_IdP extends Confusa_Auth
 {
 	/* hold the Auth_Simple object from SimpleSAMLphp */
 	private $as;
-	/* holds the simplesamlphp-session */
+	/* hold the simplesamlphp-session */
 	private $session;
-	/* holds the simplesamlphp-configuration */
+	/* hold the simplesamlphp-configuration */
 	private $samlConfig;
+	/* state variable keeping the status of the backend authentication */
+	private $validAuth;
 
 	/**
 	 * Constructor
@@ -48,10 +50,25 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		$this->as = new SimpleSAML_Auth_Simple('default-sp');
 		$this->session = SimpleSAML_Session::getInstance();
 		$this->samlConfig = SimpleSAML_Configuration::getConfig();
+
+		/*
+		 * authority is normally default-sp, but in case we/someone want
+		 * to extend this, use the current authority without reverting
+		 * to hard-coded values.
+		 */
+		$idp = $this->session->getIdP();
+		/* If no idp isset, then problem the user is authenticated using a non-SAML
+		 * method, e.g. as simplesamlphp admin. The user should not be auth,
+		 * if no IdP is set (as no NREN can be constructed in that case) */
+		if (is_null($this->session->getAuthority()) || empty($idp)) {
+			$this->person->setAuth(false);
+		}
+
+		$this->validAuth = $this->session->isValid($this->session->getAuthority());
 	}
 
 	/**
-	 * authenticateUser() run the current user through authN-hoops
+	 * authenticate() run the current user through authN-hoops
 	 *
 	 * This function will make sure that the user is authenticated. Once
 	 * done, the person will be authenticated and decorated.
@@ -59,21 +76,18 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	 * Depending on state, do one of the following:
 	 *		- Use the subsystem to perform an IdP authN
 	 *		- Decorate the person object with attributes
+	 *
 	 */
-	public function authenticate()
+	public function authenticate($isRequired)
 	{
 		/* is the user authNed according to simplesamlphp */
-		if (!$this->person->isAuth()) {
+		if (!$this->validAuth && $isRequired) {
 			$this->as->requireAuth();
+		} else if ($this->validAuth) {
+			$attributes = $this->as->getAttributes();
+			$this->person->setAuth($this->validAuth);
+			$this->decoratePerson($attributes, $this->session->getIdP());
 		}
-		$attributes = $this->as->getAttributes();
-		if (!isset($attributes['eduPersonPrincipalName'])) {
-			Logger::log_event(LOG_ERROR, "IdP did not send any eduPersonPrincipalName. " .
-							 "The rest of the attributes are " . implode(" ", $attributes));
-			throw new AuthException("Required attribute eduPersonPrincipalName not set!");
-		}
-
-		$this->person->setAuth($this->isAuthenticated());
 	}
 
 	/**
@@ -113,7 +127,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 
 	public function reAuthenticate()
 	{
-		if ($this->isAuthenticated()) {
+		if ($this->validAuth) {
 			$totalTime = $this->samlConfig->getValue('session.duration');
 			$remainingTime = $this->session->remainingTime();
 			$passedTime = $totalTime - $remainingTime;
@@ -134,52 +148,12 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	 */
 	public function deAuthenticate($logout_loc = 'logout.php')
 	{
-		if ($this->isAuthenticated()) {
+		if ($this->validAuth) {
 			$this->person->isAuth(false);
 			$this->person->clearAttributes();
 			$this->as->logout(Config::get_config('server_url') . "$logout_loc");
 		}
 	} /* end deAuthenticateUser */
-
-	/**
-	 * Poll the subsystem for user authentication
-	 * Decorate the person object with the attributes received from the subsystem.
-	 *
-	 * @return True, if person is authenticated, false if not.
-	 */
-	public function isAuthenticated()
-	{
-		if (is_null($this->person)) {
-			return false; /* anonymous cannot be AuthN */
-		}
-		if (is_null($this->session)) {
-			return false; /* no session, thus, we *cannot* be authN */
-		}
-
-                /*
-                 * authority is normally default-sp, but in case we/someone want
-                 * to extend this, use the current authority without reverting
-                 * to hard-coded values.
-				*/
-		$idp = $this->session->getIdP();
-
-				/* If no idp isset, then problem the user is authenticated using a non-SAML
-				 * method, e.g. as simplesamlphp admin. The user should not be auth,
-				 * if no IdP is set (as no NREN can be constructed in that case) */
-                if (is_null($this->session->getAuthority()) || empty($idp)) {
-                        return false; /* cannot get authority for session, thus
-                                       * we cannot be authenticated. */
-                }
-		$this->person->setAuth($this->session->isValid($this->session->getAuthority()));
-
-
-		if ($this->person->isAuth()) {
-			$this->decoratePerson($this->as->getAttributes(), $idp);
-			return true;
-		}
-		/* Session is invalid, thus user is not authN */
-		return false;
-	} /* end isAuthenticated() */
 
 } /* end class IdP */
 ?>

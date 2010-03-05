@@ -141,12 +141,9 @@ class Framework {
 	public function authenticate() {
 		/* if login, trigger SAML-redirect first */
 		$auth = AuthHandler::getAuthManager($this->person);
-
-		if (!$auth->isAuthenticated()) {
-			if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-				$auth->authenticate();
-			}
-		}
+		$authRequired = $this->contentPage->is_protected() ||
+		                (isset($_GET['start_login']) && $_GET['start_login'] === 'yes');
+		$auth->authenticate($authRequired);
 
 		/* show a warning if the person does not have Confusa
 		 * entitlement and ConfusaAdmin entitlement */
