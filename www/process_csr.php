@@ -10,7 +10,7 @@ require_once 'send_element.php';
 require_once 'input.php';
 require_once 'output.php';
 require_once 'permission.php';
-require_once 'Confusa_Session.php';
+require_once 'CS.php';
 
 /**
  * ProcessCsr - the web frontend for handling of CSRs

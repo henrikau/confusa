@@ -9,7 +9,7 @@ require_once 'CGE_ComodoAPIException.php';
 require_once 'confusa_constants.php';
 require_once 'CGE_ComodoCredentialException.php';
 require_once 'curlwrapper.php';
-require_once 'Confusa_Session.php';
+require_once 'CS.php';
 
 /**
  * CA_Comodo. Comodo signing extension for CA.
