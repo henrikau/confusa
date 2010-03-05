@@ -6,7 +6,9 @@ require_once 'Confusa_Auth.php';
  * AuthHandler - return the right authentication manager for the configuration
  *
  * The handler should abstract that decision away from the calling functions
- * and consult on its own on the configuration or environment
+ * and consult on its own on the configuration or environment.
+ *
+ * @package auth
  */
 
 class AuthHandler

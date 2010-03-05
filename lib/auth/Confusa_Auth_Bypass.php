@@ -7,6 +7,8 @@ require_once 'MapNotFoundException.php';
  * Should be active only in test configurations when the respective "auth_bypass"
  * configuration flag is set.
  * Decorates the person object without asking too many questions :)
+ *
+ * @package auth
  */
 class Confusa_Auth_Bypass extends Confusa_Auth
 {
