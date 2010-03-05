@@ -3,11 +3,12 @@
 require_once 'confusa_gen.php';
 
 /**
- * AuthException
+ * CGE_AuthException
  *
  * thrown if something goes wrong in user authentication
+ * @package auth
  */
-class AuthException extends ConfusaGenException
+class CGE_AuthException extends ConfusaGenException
 {
 	public function __construct($message = NULL, $code = 0)
 	{
@@ -18,5 +19,5 @@ class AuthException extends ConfusaGenException
 	{
 		return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
 	}
-} /* end class AuthException */
+} /* end class CGE_AuthException */
 ?>

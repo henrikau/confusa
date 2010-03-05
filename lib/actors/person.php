@@ -2,6 +2,7 @@
 require_once 'input.php';
 require_once 'output.php';
 require_once 'CriticalAttributeException.php';
+require_once 'CGE_AuthException.php';
 require_once 'permission.php';
 require_once 'NREN.php';
 require_once 'Subscriber.php';
@@ -912,7 +913,7 @@ class Person{
 			                       $this->translateTag('l10n_instunkn2', 'reasons'));
 			return $permission;
 		} else if (count($res) > 1) {
-			throw new AuthException("More than one DB-entry with same subscriberOrgName " .
+			throw new CGE_AuthException("More than one DB-entry with same subscriberOrgName " .
 					$this->subscriber->getOrgName());
 		}
 
