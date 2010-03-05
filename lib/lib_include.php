@@ -10,7 +10,6 @@ $path .= PATH_SEPARATOR . LIB_DIR . '/db';
 $path .= PATH_SEPARATOR . LIB_DIR . '/exceptions';
 $path .= PATH_SEPARATOR . LIB_DIR . '/file';
 $path .= PATH_SEPARATOR . LIB_DIR . '/framework';
-$path .= PATH_SEPARATOR . LIB_DIR . '/input';
 $path .= PATH_SEPARATOR . LIB_DIR . '/io';
 $path .= PATH_SEPARATOR . LIB_DIR . '/misc';
 $path .= PATH_SEPARATOR . LIB_DIR . '/mail';
