@@ -18,6 +18,8 @@ require_once 'CriticalAttributeException.php';
  *
  * Subclasses should also use decoratePerson() when a new user has been
  * Authenticated.
+ *
+ * @package auth
  */
 abstract class Confusa_Auth
 {
@@ -274,5 +276,13 @@ abstract class Confusa_Auth
 	 * @return void
 	 */
 	public abstract function deAuthenticate($logout_loc='logout.php');
+
+	/**
+	 * Authenticate the identity of the user again, even though that might
+	 * have already been done. Can be used to force reauthentication upon
+	 * an already authN session. To be implemented by subclasses depending
+	 * on their own reAuthentication needs.
+	 */
+	public abstract function reAuthenticate();
 } /* end class Confusa_Auth */
 ?>

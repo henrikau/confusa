@@ -179,21 +179,11 @@ class Framework {
 			$this->person->setNREN(NREN::getNRENByURL($_SERVER['SERVER_NAME']));
 		}
 
+		/*
+		 * Force reauthentication based on the settings if the session is too
+		 * old */
 		if (Framework::$sensitive_action) {
-			$delta = Config::get_config('protected_session_timeout')*60 - $this->person->getTimeSinceStart();
-			if ($delta < 0) {
-				$path = $_SERVER['SCRIPT_NAME'];
-				$parts = explode('/', $path);
-				$file = $parts[count($parts) - 1];
-				$auth->deAuthenticateUser($file);
-
-				require_once 'refresh.html';
-				$msg =  __FILE__ . ":" . __LINE__ . " Sensitive action, and your session is too old (";
-				$msg .= ((int)$delta*-1)." seconds passed the limit) ";
-				$msg .= "--- the re-auth has not been implemented yet.";
-				Logger::log_event(LOG_NOTICE,$msg);
-				exit(0);
-			}
+			$auth->reAuthenticate();
 		}
 	}
 

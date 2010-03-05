@@ -11,11 +11,17 @@ require_once 'Confusa_Auth.php';
  * Confusa. The user logs in with an IdP and the authN status and the attributes
  * are consumed from a SAML response. The authN status of the user is
  * tagged to a session.
+ *
+ * @package auth
  */
 class Confusa_Auth_IdP extends Confusa_Auth
 {
 	/* hold the Auth_Simple object from SimpleSAMLphp */
 	private $as;
+	/* holds the simplesamlphp-session */
+	private $session;
+	/* holds the simplesamlphp-configuration */
+	private $samlConfig;
 
 	/**
 	 * Constructor
@@ -40,8 +46,8 @@ class Confusa_Auth_IdP extends Confusa_Auth
 
 		/* start a session needed for the IdP-based AuthN approach */
 		$this->as = new SimpleSAML_Auth_Simple('default-sp');
-		$session = SimpleSAML_Session::getInstance();
-		$this->person->setSession($session);
+		$this->session = SimpleSAML_Session::getInstance();
+		$this->samlConfig = SimpleSAML_Configuration::getConfig();
 	}
 
 	/**
@@ -105,6 +111,21 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		return $res;
 	}
 
+	public function reAuthenticate()
+	{
+		if ($this->isAuthenticated()) {
+			$totalTime = $this->samlConfig->getValue('session.duration');
+			$remainingTime = $this->session->remainingTime();
+			$passedTime = $totalTime - $remainingTime;
+			$timeout = Config::get_config('protected_session_timeout')*60;
+
+			if ($passedTime > $timeout) {
+				/* logout redirects to the current page by default */
+				$this->as->logout();
+			}
+		}
+	}
+
 	/**
 	 * deAuthentcateUser() - Use the subsystem to logout
 	 *
@@ -131,29 +152,25 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		if (is_null($this->person)) {
 			return false; /* anonymous cannot be AuthN */
 		}
-		if (is_null($this->person->getSession())) {
+		if (is_null($this->session)) {
 			return false; /* no session, thus, we *cannot* be authN */
 		}
-
-		$session = $this->person->getSession();
-		$this->person->setSession($session);
-		$this->person->setSAMLConfiguration(SimpleSAML_Configuration::getInstance());
 
                 /*
                  * authority is normally default-sp, but in case we/someone want
                  * to extend this, use the current authority without reverting
                  * to hard-coded values.
 				*/
-		$idp = $session->getIdP();
+		$idp = $this->session->getIdP();
 
 				/* If no idp isset, then problem the user is authenticated using a non-SAML
 				 * method, e.g. as simplesamlphp admin. The user should not be auth,
 				 * if no IdP is set (as no NREN can be constructed in that case) */
-                if (is_null($session->getAuthority()) || empty($idp)) {
+                if (is_null($this->session->getAuthority()) || empty($idp)) {
                         return false; /* cannot get authority for session, thus
                                        * we cannot be authenticated. */
                 }
-		$this->person->setAuth($session->isValid($session->getAuthority()));
+		$this->person->setAuth($this->session->isValid($this->session->getAuthority()));
 
 
 		if ($this->person->isAuth()) {
