@@ -5,6 +5,7 @@ require_once 'config.php';
 require_once 'CriticalAttributeException.php';
 require_once 'MapNotFoundException.php';
 require_once 'CriticalAttributeException.php';
+require_once 'confusa_constants.php';
 
 /**
  * Confusa_Auth - base class for all authentication managers
@@ -211,18 +212,17 @@ abstract class Confusa_Auth
 			return null;
 		$result = array();
 		/* Feide */
-		if (isset($attributes['eduPersonPrincipalName'][0])) {
-			$result['key'] = 'eduPersonPrincipalName';
-		} else if (isset($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0])) {
-			/* EduGAIN, Surfnet */
-			$result['key'] = 'urn:mace:dir:attribute-def:eduPersonPrincipalName';
-		} else if (isset($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'][0])) {
-			/* HAKA */
-			$result['key'] = 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6';
-		} else {
-			/* nothing found */
+		foreach (ConfusaConstants::$EPPN_ATTRS as $eppn_attr) {
+			if (isset($attributes[$eppn_attr][0])) {
+				$result['key'] = $eppn_attr;
+				break;
+			}
+		}
+
+		if (empty($result['key'])) {
 			return null;
 		}
+
 		$result['value']	= $attributes[$result['key']][0];
 		return $result;
 	}
