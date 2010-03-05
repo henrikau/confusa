@@ -1,5 +1,5 @@
 <?php
-include_once 'framework.php';
+include_once 'Framework.php';
 include_once 'logger.php';
 include_once 'confusa_config.php';
 

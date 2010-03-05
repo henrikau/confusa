@@ -1,7 +1,7 @@
 <?php
 require_once 'confusa_include.php';
 require_once 'Content_Page.php';
-require_once 'framework.php';
+require_once 'Framework.php';
 require_once 'confusa_auth.php';
 
 class Logout extends Content_Page

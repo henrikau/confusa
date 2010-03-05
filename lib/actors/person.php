@@ -5,7 +5,7 @@ require_once 'CriticalAttributeException.php';
 require_once 'permission.php';
 require_once 'NREN.php';
 require_once 'Subscriber.php';
-require_once 'framework.php';
+require_once 'Framework.php';
 
 /** Person
  *
