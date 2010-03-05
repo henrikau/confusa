@@ -1,5 +1,5 @@
 <?php
-require_once 'input.php';
+require_once 'Input.php';
 require_once 'Output.php';
 require_once 'CriticalAttributeException.php';
 require_once 'permission.php';

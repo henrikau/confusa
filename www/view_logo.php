@@ -1,7 +1,7 @@
 <?php
 require_once 'confusa_include.php';
 require_once 'Config.php';
-require_once 'input.php';
+require_once 'Input.php';
 require_once 'confusa_constants.php';
 
 /*

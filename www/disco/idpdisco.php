@@ -4,7 +4,7 @@ require_once 'Content_Page.php';
 require_once 'Framework.php';
 require_once 'confusa_gen.php';
 require_once 'MDB2Wrapper.php';
-require_once 'input.php';
+require_once 'Input.php';
 require_once 'logger.php';
 
 /**

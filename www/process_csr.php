@@ -8,7 +8,7 @@ require_once 'csr_lib.php';
 require_once 'file_upload.php';
 require_once 'Config.php';
 require_once 'send_element.php';
-require_once 'input.php';
+require_once 'Input.php';
 require_once 'Output.php';
 require_once 'permission.php';
 require_once 'CS.php';
