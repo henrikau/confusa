@@ -92,47 +92,17 @@ class CP_Attributes extends Content_Page
 			 * otherwise it will return the NREN-map. */
 			$map = $this->person->getMap();
 		}
-		$session = $this->person->getSession();
-		if (isset($session)) {
-			if (isset($map['epodn'])) {
-				$orgName = $session->getAttribute($map['epodn']);
-				$this->tpl->assign('epodn', implode(', ', $orgName));
-			} else {
-				$this->tpl->assign('epodn', '');
-			}
 
-			if (isset($map['cn'])) {
-				$cn = $session->getAttribute($map['cn']);
-				$this->tpl->assign('cn', implode(', ', $cn));
-			} else {
-				$this->tpl->assign('cn', '');
-			}
-
-			if (isset($map['mail'])) {
-				$mail = $session->getAttribute($map['mail']);
-				$this->tpl->assign('mail', implode(', ', $mail));
-			} else {
-				$this->tpl->assign('mail', '');
-			}
-
-			if (isset($map['entitlement'])) {
-				$entitlement = $session->getAttribute($map['entitlement']);
-				$this->tpl->assign('entitlement', implode(', ', $entitlement));
-			} else {
-				$this->tpl->assign('entitlement', '');
-			}
-		} else { /* session is not set */
-			if (!is_null($this->person->getSubscriber())) {
-				$this->tpl->assign('epodn', $this->person->getSubscriber()->getIdPName());
-			} else {
-				$this->tpl->assign('epodn', "");
-			}
-			$this->tpl->assign('cn', $this->person->getName());
-			$this->tpl->assign('mail', $this->person->getEmail());
-			$this->tpl->assign('entitlement', $this->person->getEntitlement());
+		if (!is_null($this->person->getSubscriber())) {
+			$this->tpl->assign('epodn', $this->person->getSubscriber()->getIdPName());
+		} else {
+			$this->tpl->assign('epodn', "");
 		}
-		$this->tpl->assign('map',		$map);
-		$this->tpl->assign('keys',		AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
+		$this->tpl->assign('cn',	$this->person->getName());
+		$this->tpl->assign('mail',	$this->person->getEmail());
+		$this->tpl->assign('entitlement', $this->person->getEntitlement());
+		$this->tpl->assign('map',	$map);
+		$this->tpl->assign('keys',	AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
 		$this->tpl->assign('content', 	$this->tpl->fetch('attributes.tpl'));
 	}
 
@@ -146,14 +116,6 @@ class CP_Attributes extends Content_Page
 	{
 		if (empty($attr_key)) {
 			exit(0);
-		}
-
-		$session = $this->person->getSession();
-		if (isset($session)) {
-			$attr_value = @implode(", ", $session->getAttribute($attr_key));
-			echo htmlentities($attr_value, ENT_COMPAT, "UTF-8");
-		} else {
-			exit(0); /* don't print any AJAX key-value hints if the session is not set */
 		}
 		exit(0);
 	}
