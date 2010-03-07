@@ -2,7 +2,7 @@
 require_once 'Input.php';
 require_once 'Output.php';
 require_once 'CriticalAttributeException.php';
-require_once 'permission.php';
+require_once 'Permission.php';
 require_once 'NREN.php';
 require_once 'Subscriber.php';
 require_once 'Framework.php';

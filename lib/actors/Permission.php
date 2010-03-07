@@ -9,6 +9,11 @@
  *
  * The goal is to get a more reliable method for that than to return a notification
  * string in the negative case and test whether that is null.
+ *
+ * @Author	Thomas Zangerl <tzangerl@pdc.kth.se>
+ * @license	http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
+ * @since	File available since Confusa v0.3.1
+ * @package	resources
  */
 class Permission
 {
