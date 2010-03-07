@@ -2,7 +2,7 @@
 require_once 'Config.php';
 require_once 'logger.php';
 require_once 'Person.php';
-require_once 'person.php';
+require_once 'Person.php';
 require_once 'Confusa_Auth.php';
 
 /**

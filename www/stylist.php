@@ -579,7 +579,7 @@ class CP_Stylist extends Content_Page
 	private function sendNRENTestMail($recipient, $template)
 
 	{
-		require_once 'mail_manager.php';
+		require_once 'MailManager.php';
 		require_once 'CA.php';
 
 		$timezone = new DateTimeZone($this->person->getTimezone());
