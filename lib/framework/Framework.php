@@ -8,7 +8,7 @@
  */
 require_once 'confusa_include.php';
 require_once 'confusa_auth.php';
-require_once 'person.php';
+require_once 'Person.php';
 require_once 'logger.php';
 require_once 'Content_Page.php';
 require_once 'Output.php';
