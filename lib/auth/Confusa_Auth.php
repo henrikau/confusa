@@ -5,6 +5,7 @@ require_once 'Config.php';
 require_once 'CriticalAttributeException.php';
 require_once 'MapNotFoundException.php';
 require_once 'CriticalAttributeException.php';
+require_once 'confusa_constants.php';
 
 /**
  * Confusa_Auth - base class for all authentication managers
@@ -15,10 +16,11 @@ require_once 'CriticalAttributeException.php';
  * 		- checkAuthentication()
  *		- getAttributeKeys()
  * 		- deAuthenticateUser()
- *		- softLogout()
  *
  * Subclasses should also use decoratePerson() when a new user has been
  * Authenticated.
+ *
+ * @package auth
  */
 abstract class Confusa_Auth
 {
@@ -210,18 +212,17 @@ abstract class Confusa_Auth
 			return null;
 		$result = array();
 		/* Feide */
-		if (isset($attributes['eduPersonPrincipalName'][0])) {
-			$result['key'] = 'eduPersonPrincipalName';
-		} else if (isset($attributes['urn:mace:dir:attribute-def:eduPersonPrincipalName'][0])) {
-			/* EduGAIN, Surfnet */
-			$result['key'] = 'urn:mace:dir:attribute-def:eduPersonPrincipalName';
-		} else if (isset($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'][0])) {
-			/* HAKA */
-			$result['key'] = 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6';
-		} else {
-			/* nothing found */
+		foreach (ConfusaConstants::$EPPN_ATTRS as $eppn_attr) {
+			if (isset($attributes[$eppn_attr][0])) {
+				$result['key'] = $eppn_attr;
+				break;
+			}
+		}
+
+		if (empty($result['key'])) {
 			return null;
 		}
+
 		$result['value']	= $attributes[$result['key']][0];
 		return $result;
 	}
@@ -231,14 +232,7 @@ abstract class Confusa_Auth
 	 *
 	 * @return boolean $authN indicating if the user was successfully authenticated
 	 */
-	public abstract function authenticateUser();
-
-	/**
-	 * Check (possibly by polling a subsystem), if a user is still authN.
-	 *
-	 * @return boolean $authN describing whether user is authenticated or not.
-	 */
-	public abstract function checkAuthentication();
+	public abstract function authenticate($isRequired);
 
 	/**
 	 * getAttributeKeys() - return the attribute-keys found in attributes
@@ -270,40 +264,18 @@ abstract class Confusa_Auth
 	 * "Logout" the user, possibly using the subsystem. To be implemented by
 	 * subclasses
 	 *
+	 * @param $logout_loc The location to which the user should be redirected
+	 *                    after logout
 	 * @return void
 	 */
-	public abstract function deAuthenticateUser($logout_loc='logout.php');
-}
+	public abstract function deAuthenticate($logout_loc='logout.php');
 
-/**
- * AuthHandler - return the right authentication manager for the configuration
- *
- * The handler should abstract that decision away from the calling functions
- * and consult on its own on the configuration or environment
- */
-
-class AuthHandler
-{
-	private static $auth;
 	/**
-	 * Get the auth manager based on the request
-	 *
-	 * @param $person The person for which the auth_manager should be created
-	 * @return an instance of Confusa_Auth
+	 * Authenticate the identity of the user again, even though that might
+	 * have already been done. Can be used to force reauthentication upon
+	 * an already authN session. To be implemented by subclasses depending
+	 * on their own reAuthentication needs.
 	 */
-	public static function getAuthManager($person)
-	{
-		if (!isset(AuthHandler::$auth)) {
-			if (Config::get_config('auth_bypass') === TRUE) {
-				require_once 'bypass.php';
-				AuthHandler::$auth = new Confusa_Auth_Bypass($person);
-			} else {
-				/* Start the IdP and create the handler */
-				require_once 'idp.php';
-				AuthHandler::$auth = new Confusa_Auth_IdP($person);
-			}
-		}
-		return AuthHandler::$auth;
-	}
-} /* end class AuthHandler */
+	public abstract function reAuthenticate();
+} /* end class Confusa_Auth */
 ?>

@@ -3,6 +3,7 @@ require_once 'Input.php';
 require_once 'Output.php';
 require_once 'CriticalAttributeException.php';
 require_once 'Permission.php';
+require_once 'CGE_AuthException.php';
 require_once 'NREN.php';
 require_once 'Subscriber.php';
 require_once 'Framework.php';
@@ -52,9 +53,6 @@ class Person{
 
     private $nren;
 
-    private $session;
-    private $saml_config;
-
     private $adminDBError;
 
     /* status variables (so we poll the subsystem as little as possible) */
@@ -87,94 +85,8 @@ class Person{
 
 	    $this->entitlement = null;
 
-
-	    $this->session = null;
-	    unset($this->session);
-
-	    $this->saml_config = null;
-	    unset($this->saml_config);
-
 	    $this->isAuthenticated = false;
 	    $this->adminDBError = false;
-    }
-
-    /**
-     * setSession() sets a reference to the current sessionn
-     *
-     * @param array The current session for this (authN) user
-     */
-    function setSession($session)
-    {
-	    if (!isset($session)) {
-		    return;
-	    }
-	    $this->session = $session;
-    }
-
-    /*
-     * setSAMLConfiguration() adds a reference to the config
-     *
-     * The configuration contains a lot of useful information, some of which is
-     * directly related to the lifespan of the session.
-     *
-     * @param array The configuration object/array for this session/instance.
-     * @return void
-     */
-    function setSAMLConfiguration($config)
-    {
-	    if (!isset($config)) {
-		    return;
-	    }
-	    $this->saml_config = $config;
-    }
-
-    /*
-     * getSAMLConfiguration find the configuration for this session
-     *
-     * @param void
-     * @return array the configuration items for the currently active session.
-     */
-    public function getSAMLConfiguration()
-    {
-	    return $this->saml_config;
-    }
-
-   /**
-     * getTimeLeft() Time in seconds until the session expires.
-     *
-     * Each session has a pre-determined lifespan. Confusa (and in return,
-     * SimpleSAMLphp) can ask for a particular timeframe, but it is the IdP that
-     * decides this.
-     *
-     * This function returns the time in seconds until the session expires and
-     * the user must re-AuthN.
-     *
-     * @param void
-     * @return void
-     */
-    function getTimeLeft()
-    {
-	    if (!isset($this->session))
-		    return null;
-	    return $this->session->remainingTime();
-    }
-
-    /**
-     * getTimeSinceStart() The seconds since the session started.
-     *
-     * @param void
-     * @return Integer|null Number of seconds since the session started
-     */
-    function getTimeSinceStart()
-    {
-	    if (!isset($this->saml_config))
-		    return null;
-	    $start = $this->saml_config->getValue('session.duration');
-	    if (!isset($start)) {
-		    echo __FILE__  . ":" . __LINE__ . " Cannot find time of start.<BR />\n";
-		    return null;
-	    }
-	    return $start - $this->getTimeLeft();
     }
 
     /**
@@ -311,26 +223,6 @@ class Person{
 		}
 
 		return $cn;
-    }
-
-    /**
-     * getSession() the session of a person
-     *
-     * @param void
-     * @return array The session that is associated with the person
-     */
-    public function getSession()
-    {
-	    if (Config::get_config('auth_bypass')) {
-		    if (Config::get_config('debug')) {
-			    Framework::error_output("Calling " . __CLASS__ . "::" . __FUNCTION__ . " in bypass-mode!");
-		    }
-		    Logger::log_event(LOG_NOTICE, "Calling " . __CLASS__ . "::" . __FUNCTION__ . " in bypass-mode!");
-	    }
-	    if (!isset($this->session)) {
-		    return null;
-	    }
-	    return $this->session;
     }
 
     /**
@@ -1021,7 +913,7 @@ class Person{
 			                       $this->translateTag('l10n_instunkn2', 'reasons'));
 			return $permission;
 		} else if (count($res) > 1) {
-			throw new AuthException("More than one DB-entry with same subscriberOrgName " .
+			throw new CGE_AuthException("More than one DB-entry with same subscriberOrgName " .
 					$this->subscriber->getOrgName());
 		}
 

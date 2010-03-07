@@ -220,6 +220,12 @@ class ConfusaConstants {
 
 	/* use the same name as the PHP-SESSION to avoid crashing simpleSAMLphp */
 	public static $SESSION_NAME = "PHPSESSID";
+
+	/* the possible representations of eduPersonPrincipalName that Confusa will
+	 * attempt to find in the attribute list */
+	public static $EPPN_ATTRS = array('eduPersonPrincipalName',
+	                                  'urn:mace:dir:attribute-def:eduPersonPrincipalName',
+	                                  'urn:oid:1.3.6.1.4.1.5923.1.1.1.6');
 }
 
 ?>

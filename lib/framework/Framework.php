@@ -7,7 +7,8 @@
  * This will handle all aspects regarding layout and authentication of user.
  */
 require_once 'confusa_include.php';
-require_once 'confusa_auth.php';
+require_once 'Confusa_Auth.php';
+require_once 'AuthHandler.php';
 require_once 'Person.php';
 require_once 'logger.php';
 require_once 'Content_Page.php';
@@ -140,12 +141,9 @@ class Framework {
 	public function authenticate() {
 		/* if login, trigger SAML-redirect first */
 		$auth = AuthHandler::getAuthManager($this->person);
-
-		if (!$auth->checkAuthentication()) {
-			if ($this->contentPage->is_protected() || (isset($_GET['start_login']) && $_GET['start_login'] === 'yes')) {
-				$auth->authenticateUser();
-			}
-		}
+		$authRequired = $this->contentPage->is_protected() ||
+		                (isset($_GET['start_login']) && $_GET['start_login'] === 'yes');
+		$auth->authenticate($authRequired);
 
 		/* show a warning if the person does not have Confusa
 		 * entitlement and ConfusaAdmin entitlement */
@@ -178,21 +176,11 @@ class Framework {
 			$this->person->setNREN(NREN::getNRENByURL($_SERVER['SERVER_NAME']));
 		}
 
+		/*
+		 * Force reauthentication based on the settings if the session is too
+		 * old */
 		if (Framework::$sensitive_action) {
-			$delta = Config::get_config('protected_session_timeout')*60 - $this->person->getTimeSinceStart();
-			if ($delta < 0) {
-				$path = $_SERVER['SCRIPT_NAME'];
-				$parts = explode('/', $path);
-				$file = $parts[count($parts) - 1];
-				$auth->deAuthenticateUser($file);
-
-				require_once 'refresh.html';
-				$msg =  __FILE__ . ":" . __LINE__ . " Sensitive action, and your session is too old (";
-				$msg .= ((int)$delta*-1)." seconds passed the limit) ";
-				$msg .= "--- the re-auth has not been implemented yet.";
-				Logger::log_event(LOG_NOTICE,$msg);
-				exit(0);
-			}
+			$auth->reAuthenticate();
 		}
 	}
 
