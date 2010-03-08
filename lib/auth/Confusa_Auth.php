@@ -67,7 +67,7 @@ abstract class Confusa_Auth
 	 * @param String $idp
 	 * @throws MapNotFoundException
 	 */
-	public function decoratePerson($attributes, $idp)
+	protected function decoratePerson($attributes, $idp)
 	{
 		$cnPrefix = "";
 		$oPrefix  = "";
