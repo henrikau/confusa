@@ -105,6 +105,18 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	}
 
 	/**
+	 * @see Confusa_Auth::getAttributeValue()
+	 */
+	public function getAttributeValue($key)
+	{
+		if (isset($this->attributes[$key])) {
+			return $this->attributes[$key];
+		} else {
+			return "";
+		}
+	}
+
+	/**
 	 * no operation
 	 *
 	 * @param $logout_loc The location to which the user is redirected

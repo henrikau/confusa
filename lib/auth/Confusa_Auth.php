@@ -250,6 +250,20 @@ abstract class Confusa_Auth
 	public abstract function getAttributeKeys();
 
 	/**
+	 * getAttributeValue() - return the attribute value for a certain key
+	 * in the current attributes.
+	 *
+	 * This can be helpful when mapping attributes or when only wanting the
+	 * attribute for a certain key in some part of the code.
+	 *
+	 * @param $key string The key for which the attribute value should be
+	 *                    returned
+	 * @return string the attribute value or an empty string, if it was not
+	 *                found
+	 */
+	public abstract function getAttributeValue($key);
+
+	/**
 	 * Get the currently assigned attributes from the authentication class.
 	 *
 	 * This can be practical whenever a more raw form of the attributes is

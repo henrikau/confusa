@@ -97,7 +97,21 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	public function getAttributes()
 	{
 		return $this->as->getAttributes();
-	}
+	} /* getAttributes */
+
+	/**
+	 * @see Confusa_Auth::getAttributeValue()
+	 */
+	public function getAttributeValue($key)
+	{
+		$attributes = $this->as->getAttributes();
+
+		if (isset($attributes[$key])) {
+			return $attributes[$key];
+		} else {
+			return "";
+		}
+	} /* end getAttributeForKey */
 
 	/**
 	 * getAttributeKeys() get the keys used to index the attributes
