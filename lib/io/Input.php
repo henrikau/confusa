@@ -232,6 +232,19 @@ class Input
 		return $output;
 	}
 
+	/**
+	 * Sanitize a string which should contain only numeric (0-9) content.
+	 * Everything else will be stripped.
+	 *
+	 * @param $input string the unsanitized numeric-string
+	 * @return string the sanitized numeric string
+	 */
+	static function sanitizeNumeric($input)
+	{
+		$output = preg_replace('/[^0-9]/', '', $input);
+		return $output;
+	}
+
 	/*
 	 * For text e.g. defined by the NREN admin to view on the help/about page
 	 * we can not make too many assumptions about how the input will look like
