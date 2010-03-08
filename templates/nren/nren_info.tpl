@@ -214,7 +214,6 @@
 		<td><span style="font-size: 0.8em; font-style: italic">{$l10n_infotext_reauthtimeout}</span></td>
 	</tr>
 	<tr><td colspan="3"><div class="spacer"></div></td></tr>
-	</tr>
       <tr>
 	<td align="right">
 	  <input type="reset"
