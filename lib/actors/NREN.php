@@ -230,6 +230,22 @@ class NREN
 	}
 
 	/**
+	 * getReauthTimeout()
+	 *
+	 * @param  void
+	 * @return integer the timeout before the portal will force reauth
+	 *                 upon sensitive actions
+	 */
+	public function getReauthTimeout()
+	{
+		if (isset($this->data) && isset($this->data['reauth_timeout'])) {
+			return $this->data['reauth_timeout'];
+		} else {
+			ConfusaConstants::$DEFAULT_REAUTH_TIMEOUT;
+		}
+	} /* end getReauthTimeout() */
+
+	/**
 	 * getCustomPortalTitle()
 	 *
 	 * @param	void
@@ -449,6 +465,23 @@ class NREN
 		}
 	}
 
+	/**
+	 * setReauthTimeout() set the NREN's reauth-timeout for sensitive actions
+	 *
+	 * @param	integer $reauth_timeout
+	 * @return	void
+	 * @access	public
+	 */
+	public function setReauthTimeout($reauth_timeout)
+	{
+		if (isset($reauth_timeout)) {
+			if ($this->data['reauth_timeout'] != $reauth_timeout) {
+				$this->data['reauth_timeout'] = $reauth_timeout;
+				$this->pendingChanges = true;
+			}
+		}
+	} /* end setReauthTimeout() */
+
 	/* setCertPhone()
 	 *
 	 * @see setCertEmail
@@ -579,10 +612,10 @@ class NREN
 		if ($this->pendingChanges) {
 			$query  = "UPDATE nrens SET contact_email=?, contact_phone=?, ";
 			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=?, cert_validity=?,";
-			$query .= " show_portal_title=?, portal_title=?, wayf_url=? ";
+			$query .= " show_portal_title=?, portal_title=?, wayf_url=?, reauth_timeout=? ";
 			$query .= "WHERE nren_id=?";
 			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text',
-			                'text', 'text', 'text', 'text');
+			                'text', 'text', 'text', 'text', 'text');
 			$data	= array($this->data['contact_email'],
 					$this->data['contact_phone'],
 					$this->data['cert_phone'],
@@ -594,6 +627,7 @@ class NREN
 					$this->data['show_portal_title'],
 					$this->data['portal_title'],
 					$this->data['wayf_url'],
+					$this->data['reauth_timeout'],
 					$this->getID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);
@@ -666,7 +700,7 @@ class NREN
 		$query .= "		n.cert_phone,		n.lang,		n.url, ";
 		$query .= "		n.country,		idp.idp_url as idp_url, ";
 		$query .= "		n.enable_email,	n.cert_validity, ";
-		$query .= "		n.show_portal_title, n.portal_title, n.wayf_url ";
+		$query .= "		n.show_portal_title, n.portal_title, n.wayf_url, n.reauth_timeout ";
 		$query .= "FROM idp_map idp LEFT JOIN ";
 		$query .= "nrens n on idp.nren_id = n.nren_id WHERE idp.idp_url=?";
 		try {

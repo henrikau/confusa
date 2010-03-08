@@ -144,6 +144,9 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- "TCS eScience portal" for their branded Confusa view
     show_portal_title BOOLEAN DEFAULT TRUE,
     portal_title VARCHAR(35),
+    -- The timeout in minutes, after which Confusa will ask for reauthentication
+    -- upon sensitive actions.
+    reauth_timeout INT DEFAULT 10,
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) engine=InnoDB;
 

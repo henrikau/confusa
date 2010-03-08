@@ -226,6 +226,10 @@ class ConfusaConstants {
 	public static $EPPN_ATTRS = array('eduPersonPrincipalName',
 	                                  'urn:mace:dir:attribute-def:eduPersonPrincipalName',
 	                                  'urn:oid:1.3.6.1.4.1.5923.1.1.1.6');
-}
 
+	/* the default timeout in minutes upon which a user will be asked to reauth
+	 * for performing sensitive actions
+	 */
+	public static $DEFAULT_REAUTH_TIMEOUT = 10;
+}
 ?>
