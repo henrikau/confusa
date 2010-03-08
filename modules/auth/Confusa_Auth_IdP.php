@@ -146,7 +146,16 @@ class Confusa_Auth_IdP extends Confusa_Auth
 			$totalTime = $this->samlConfig->getValue('session.duration');
 			$remainingTime = $this->session->remainingTime();
 			$passedTime = $totalTime - $remainingTime;
-			$timeout = Config::get_config('protected_session_timeout')*60;
+
+			$nren = $this->person->getNREN();
+
+			if (isset($nren)) {
+				$timeout = $nren->getReauthTimeout();
+			} else {
+				$timeout = ConfusaConstants::$DEFAULT_REAUTH_TIMEOUT;
+			}
+
+			$timeout = $timeout*60;
 
 			if ($passedTime > $timeout) {
 				/* logout redirects to the current page by default */
