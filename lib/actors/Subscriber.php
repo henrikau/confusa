@@ -1,6 +1,15 @@
 <?php
-require_once 'mdb2_wrapper.php';
-
+require_once 'MDB2Wrapper.php';
+/**
+ * Subscriber
+ *
+ * Stateful class for a subscriber.
+ *
+ * @author	Henrik Austad <henrik.austad@uninett.no>
+ * @license	http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
+ * @since	File available since Confusa v0.4-rc0
+ * @package	resources
+ */
 class Subscriber
 {
 	private $org_name;
@@ -37,7 +46,7 @@ class Subscriber
 	function __construct($idp_name, $nren, $dn_name=null, $org_state=null, $db_id=null)
 	{
 		if (is_null($nren)) {
-			$errorCode = create_pw(8);
+			$errorCode = PW::create(8);
 			$msg  = "[$errorCode] " . __FILE__. ":" . __LINE__;
 			$msg .= "Subscriber must be given a reference to an NREN. Cannot continue.";
 			Logger::log_event(LOG_NOTICE, $msg);
@@ -238,6 +247,7 @@ class Subscriber
 	 *
 	 * @param	Integer $id the guessed ID
 	 * @return	Boolean correctness of guess.
+	 * @access	public
 	 */
 	public function hasDBID($id)
 	{
@@ -245,12 +255,25 @@ class Subscriber
 			return false;
 		return $id === $this->db_id;
 	}
-
+	/**
+	 * getDBID() return the database-id
+	 *
+	 * @param	void
+	 * @return	Int $db_id the database-id
+	 * @access	public
+	 */
 	public function getDBID()
 	{
 		return $this->db_id;
 	}
 
+	/**
+	 * setDBID() Set the database-id to use for the subscriber.
+	 *
+	 * @param	Int $dbID the ID to use
+	 * @return	boolean flag indicating if the operation was successful
+	 * @access	private
+	 */
 	private function setDBID($dbID)
 	{
 		if(!is_null($dbID)) {
@@ -258,6 +281,16 @@ class Subscriber
 		}
 	}
 
+	/**
+	 * setEMail() update the subscriber-email address
+	 *
+	 * @param	String $email new subscriber-email address
+	 * @param	Boolean $external if set to false, the change will not
+	 *		be written to the database (unless other changes  made
+	 *		to the Subscriber requires a database-update).
+	 * @return	Boolean flag indicating if the email was successfully updated.
+	 * @access	public
+	 */
 	public function setEmail($email, $external = true)
 	{
 		if(!is_null($email)) {
@@ -272,6 +305,13 @@ class Subscriber
 		}
 	}
 
+	/**
+	 * getEmail() return the subscriber-email address
+	 *
+	 * @param	void
+	 * @return	String $email the subscriber contact email
+	 * @access	public
+	 */
 	public function getEmail()
 	{
 		if (!is_null($this->email)) {
@@ -280,6 +320,14 @@ class Subscriber
 		return null;
 	}
 
+	/**
+	 * setPhone() Set the subscriber contact phone
+	 *
+	 * @param	String $phone contact-phone for the subscriber
+	 * @param	Boolean $external flag to avoid immediate database-update
+	 * @return	Boolean flag indicating if the number was updated
+	 * @access	public
+	 */
 	public function setPhone($phone, $external = true)
 	{
 		if(!is_null($phone)) {
@@ -294,6 +342,13 @@ class Subscriber
 		}
 	}
 
+	/**
+	 * getPhone() return the subscriber (contact) phone
+	 *
+	 * @param	void
+	 * @return	String the phonenumber
+	 * @access	public
+	 */
 	public function getPhone()
 	{
 		if (!is_null($this->phone)) {
@@ -302,6 +357,18 @@ class Subscriber
 		return null;
 	}
 
+	/**
+	 * seRespName() Set the name of the responsible person.
+	 *
+	 * The responsible person is typically an administrative person
+	 * responsible for he service agreement.
+	 *
+	 * @param	String $resPname the name of the person
+	 * @param	Boolean $external flag to indicate if the change should
+	 *		trigger a database-update upon next save()
+	 * @return	Boolean flag indicating if the name was updated
+	 * @access	public
+	 */
 	public function setRespName($respName, $external = true)
 	{
 		if(!is_null($respName)) {
@@ -316,6 +383,13 @@ class Subscriber
 		}
 	}
 
+	/**
+	 * getRespName() return the name of the responsible person
+	 *
+	 * @param	void
+	 * @return	String name of the responsible person
+	 * @access	public
+	 */
 	public function getRespName()
 	{
 		if (!is_null($this->responsible_name)) {
@@ -324,7 +398,14 @@ class Subscriber
 		return null;
 	}
 
-
+	/**
+	 * setRespEmail() Set the email-address to the responsible person
+	 *
+	 * @param	String $resEmail
+	 * @param	Boolean $external wheter or not to let save() trigger
+	 * @return	Boolean
+	 * @access	public
+	 */
 	public function setRespEmail($respEmail, $external = true)
 	{
 		if(!is_null($respEmail)) {
@@ -339,6 +420,13 @@ class Subscriber
 		}
 	} /* end setRespEmail() */
 
+	/**
+	 * getRespEmail() Return the responsible person's email
+	 *
+	 * @param	void
+	 * @return	Sring the email-address
+	 * @access	public
+	 */
 	public function getRespEmail()
 	{
 		if (!is_null($this->responsible_email)) {
@@ -347,6 +435,16 @@ class Subscriber
 		return null;
 	}
 
+	/**
+	 * setComment() Set the comment for the subscriber.
+	 *
+	 * This will not append the comment to any exising comment. If you want
+	 * to append, this must be done prior to calling this function.
+	 *
+	 * @param	String $comment
+	 * @param	Boolean external
+	 * @return	Boolean flag indicating if the operation succeeded.
+	 */
 	public function setComment($comment, $external = true)
 	{
 		if (!is_null($comment)) {
@@ -363,7 +461,11 @@ class Subscriber
 	} /* end setComment() */
 
 	/**
-	 * getComment()
+	 * getComment() return the Subscriber's comment
+	 *
+	 * @param	void
+	 * @return	String|null
+	 * @access	public
 	 */
 	public function getComment()
 	{
@@ -400,6 +502,14 @@ class Subscriber
 		}
 		return true;
 	}
+
+	/**
+	 * getHelpURL() Return the help-url for the subscriber
+	 *
+	 * @param	void
+	 * @return	String|null
+	 * @access	public
+	 */
 	public function getHelpURL()
 	{
 		if (!is_null($this->help_url)) {
@@ -409,7 +519,12 @@ class Subscriber
 	}
 
 	/**
-	 * setHelpEmail() set the email for the HelpDesk at the subscriber's
+	 * setHelpEmail() set the email for the Subscriber's  HelpDesk
+	 *
+	 * @param	String $email the helpdesk URL
+	 * @param	Boolean $external
+	 * @return	Boolean
+	 * @access	public
 	 */
 	public function setHelpEmail($email, $external=true)
 	{
@@ -426,6 +541,14 @@ class Subscriber
 		}
 		return true;
 	}
+
+	/**
+	 * getHelpEmail() return the helpdesk's email-address
+	 *
+	 * @param	void
+	 * @return	String the address
+	 * @access	void
+	 */
 	public function getHelpEmail()
 	{
 		if (!is_null($this->help_email)) {
@@ -436,10 +559,12 @@ class Subscriber
 	/**
 	 * setState() Set new state for the subscriber
 	 *
-	 * @param String $s the new state
-	 * @param boolean $external if it is an external update and not a call
-	 * that just decorates the subscriber with values from the database.
-	 * @access public
+	 * @param	String $s the new state
+	 * @param	Boolean $external if it is an external update and not a
+	 *		call that just decorates the subscriber with values from
+	 *		the database.
+	 * @return	Boolean
+	 * @access	public
 	 */
 	public function setState($s, $external = true)
 	{
@@ -459,6 +584,13 @@ class Subscriber
 		return true;
 	}
 
+	/**
+	 * getState() return the current state for the Subscriber
+	 *
+	 * @param	void
+	 * @return	String|null the Subscriber's state
+	 * @access	public
+	 */
 	public function getState()
 	{
 		if (is_null($this->state)) {
@@ -467,21 +599,51 @@ class Subscriber
 		return $this->state;
 	}
 
+	/**
+	 * isSubscribed() test if the subscriber has state 'subscribed'
+	 *
+	 * @param	void
+	 * @return	Boolean
+	 * @access	public
+	 */
 	public function isSubscribed()
 	{
 		return $this->getState() == "subscribed";
 	}
 
+	/**
+	 * setLanguage() set the default language to use for the subscriber's users
+	 *
+	 * @param	String $lang the language
+	 * @param	Boolean $external
+	 * @return	void
+	 * @access	public
+	 */
 	public function setLanguage($lang, $external=true)
 	{
 		$this->preferredLanguage = $lang;
 		$this->pendingChanges = $external;
 	}
+
+	/**
+	 * getLanguage() return the registred language for the Subscriber
+	 *
+	 * @param	void
+	 * @return	String the preffered language
+	 * @access	public
+	 */
 	public function getLanguage()
 	{
 		return $this->preferredLanguage;
 	}
 
+	/**
+	 * retrieveMap() return the map for the subscriber
+	 *
+	 * @param	void
+	 * @return	Array|null the array for the subscriber or null if not set
+	 * @access	private
+	 */
 	private function retrieveMap()
 	{
 		if (is_null($this->nren->getID())) {
@@ -528,6 +690,7 @@ class Subscriber
 	 *                             is not explicitly marked as having changed
 	 * @throws ConfusaGenException INSERT/UPDATE of the subscriber failed for
 	 *                             some reason
+	 * @access	public
 	 */
 	public function save($forcedSynch = false)
 	{
@@ -723,6 +886,15 @@ class Subscriber
 		return false;
 	}
 
+	/**
+	 * getSubscriberByIO() find a subscriber in the database and decoraate a
+	 *		Subscriber-object
+	 *
+	 * @param	int $id the db-id for the subscriber
+	 * @param	NREN $nren
+	 * @return	Subscriber|null
+	 * @access	public
+	 */
 	static function getSubscriberByID($id, $nren)
 	{
 		if (is_null($nren)) {

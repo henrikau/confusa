@@ -1,44 +1,95 @@
 {
+	"l10n_legend_nren_settings": {
+		"de": "NREN Einstellungen"
+	},
 	"l10n_legend_contsubsr": {
-		"en":	"Subscriber contact information"
+		"de": "Kontaktinformationen des Abonnenten"
 	},
 	"l10n_infotext_subscrcont1": {
-		"en":	"Here you can define contact information for your subscriber as well as language settings. The e-mail address should point to more than one person so that the chance of an immediate response is high in case of emergency. For instance, Confusa might contact this address in case of critical errors or to notify you of mass-revocation of certificates."
+		"de": "Hier k\u00f6nnen Sie sowohl Kontaktinformationen f\u00fcr Ihren Abonnenten als auch Spracheinstellungen festlegen. Die E-Mail-Adresse sollte zu einer oder mehreren Personen verweisen, um die Wahrscheinlichkeit einer sofortigen Reaktion im Falle eines Notfalls zu steigern. Confusa k\u00f6nnte diese Adresse zum Beispiel kontaktieren, wenn kritische Fehler auftreten oder um Sie \u00fcber den Massen-Widerruf von Zertifikaten in Kenntnis zu setzen."
 	},
 	"l10n_label_contactemail": {
-		"en":	"Contact-email:"
+		"de": "Kontakt-E-Mail:"
+	},
+	"l10n_label_nrenphone": {
+		"de": "NREN-Telefon:"
 	},
 	"l10n_label_contactphone": {
-		"en":	"Contact-phone:"
+		"de": "Kontakt-Telefon:"
 	},
 	"l10n_label_respname": {
-		"en":	"Responsible Name:"
+		"de": "Name des\/der Verantwortlichen:"
 	},
 	"l10n_label_respemail": {
-		"en":	"Responsible's email:"
+		"de": "E-Mail des\/der Verantwortlichen:"
 	},
 	"l10n_label_helpdeskurl": {
-		"en":	"Helpdesk URL:"
+		"de": "URL des Helpdesks:"
 	},
 	"l10n_label_helpemail": {
-		"en":	"Helpdesk e-mail:"
+		"de": "E-Mail des Helpdesks:"
 	},
 	"l10n_label_deflang": {
-		"en":	"Default language:"
+		"de": "Standardsprache:"
+	},
+	"l10n_label_certmail": {
+		"de": "CERT (E-Mail):"
+	},
+	"l10n_label_certphone": {
+		"de": "CERT (Telefon):"
+	},
+	"l10n_label_nrenurl": {
+		"de": "URL:"
 	},
 	"l10n_button_reset": {
-		"en":	"Reset"
+		"de": "Zur\u00fccksetzen"
 	},
 	"l10n_button_update": {
-		"en":	"Update"
+		"de": "Aktualisieren"
 	},
 	"l10n_suc_updatesubscr": {
-		"de":	"Kontaktinformatiönchen aktualisiert für "
-	},
-	"l10n_err_updatesubscr": {
-		"de":	"Konnte Kontaktinformatiönchen nicht aktualisieren!"
+		"de": "Aktualisierte Kontaktinformationen f\u00fcr Ihren Abonnenten"
 	},
 	"l10n_suc_updatenren": {
-		"de":	"Hun die NREN aktualisieren kennen!"
+		"de": "Aktualisierte Kontaktinformationen f\u00fcr Ihr NREN"
+	},
+	"l10n_err_updatesubscr": {
+		"de": "Konnte den Abonnenten-Kontakt nicht \u00e4ndern!"
+	},
+	"l10n_infotext_nrencont1": {
+		"de": "Hier k\u00f6nnen Sie Kontakinformationen festlegen und Einstellungen f\u00fcr Ihr NREN konfigurieren. Legen Sie eine E-Mail-Adresse fest, die an eine oder mehrere Personen gebunden ist, welche reagieren werden, wenn sie Benachrichtungen vom Portal erhalten. Diese Adresse kann im Fall von kritischen Fehlern verwenden werden oder um Sie \u00fcber den Massen-Widerruf von Zertifikaten in Kenntnis zu setzen. "
+	},
+	"l10n_label_encertmail": {
+		"de": "Aktiviere E-Mail-Addresse im Zert.:"
+	},
+	"l10n_infotext_nren_settings_summary": {
+		"de": "Tabelle der NREN-Einstellungen."
+	},
+	"l10n_infotext_nren_contact_email": {
+		"de": "Kontaktadresse f\u00fcr das NREN. Dies ist ein administrativer Kontaktpunkt."
+	},
+	"l10n_infotext_nren_contact_phone": {
+		"de": "Kontakttelefon f\u00fcr das NREN. Dies ist ein administrativer Kontaktpunkt."
+	},
+	"l10n_infotext_nren_cert_email": {
+		"de": "E-Mail-Adresse des NREN-CERTs."
+	},
+	"l10n_infotext_nren_cert_phone": {
+		"de": "Telefonnummer des NREN-CERTs."
+	},
+	"l10n_infotext_nren_portal_url": {
+		"de": "NREN-spezifische URL. Noch nicht implementiert, wird dem Portal aber erlauben, das Branding basierend auf der aufgerufenen URL zu kennen. Vermutlich verf\u00fcgbar von v0.6."
+	},
+	"l10n_infotext_nren_portal_language": {
+		"de": "Vordefinierte Sprache. Wenn das Portal in der Lage ist, das NREN zu erkennen, wird es diese Sprache w\u00e4hlen und die Texte in die festgelegte Sprache \u00fcbersetzen."
+	},
+	"l10n_infotext_encertmail": {
+		"de": "Die Anzahl von E-Mail-Adressen, die der Anwender im SubjAltName des Zertifikats speichern kann."
+	},
+	"l10n_label_certvalidity": {
+		"de": "G\u00fcltigkeit des Zertifikats:"
+	},
+	"l10n_infotext_certvalidity": {
+		"de": "Die Anzahl an Tagen, die Zertifikate, die von Ihren Anwendern beantragt werden, g\u00fcltig sein werden."
 	}
 }

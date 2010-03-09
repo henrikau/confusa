@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram height="560" made_with_version="1.5" name="Default" width="740">
+<entity id="0" is_weak="false" name="account_map" x="10" y="7">
+<attributes>
+<attribute is_hidden="false" is_key="true" name="account_map_id" type=""/>
+<attribute is_hidden="false" is_key="false" name="login_name" type=""/>
+<attribute is_hidden="false" is_key="false" name="password" type=""/>
+<attribute is_hidden="false" is_key="false" name="ivector" type=""/>
+<attribute is_hidden="false" is_key="false" name="ap_name" type=""/>
+<attribute is_hidden="false" is_key="false" name="nren_id" type=""/>
+</attributes>
+</entity>
+<entity id="1" is_weak="false" name="nrens" x="180" y="84">
+<attributes>
+<attribute is_hidden="false" is_key="true" name="nren_id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="name" type="String"/>
+<attribute is_hidden="false" is_key="false" name="country" type="String"/>
+<attribute is_hidden="false" is_key="false" name="login_account" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="help" type="Text"/>
+<attribute is_hidden="false" is_key="false" name="about" type="Text"/>
+<attribute is_hidden="false" is_key="false" name="privacy_notice" type="Text"/>
+<attribute is_hidden="false" is_key="false" name="lang" type="String"/>
+<attribute is_hidden="false" is_key="false" name="contact_email" type="String"/>
+<attribute is_hidden="false" is_key="false" name="contact_phone" type="String"/>
+<attribute is_hidden="false" is_key="false" name="cert_email" type="String"/>
+<attribute is_hidden="false" is_key="false" name="cert_phone" type="String"/>
+<attribute is_hidden="false" is_key="false" name="url" type="String"/>
+<attribute is_hidden="false" is_key="false" name="enable_email" type="String"/>
+<attribute is_hidden="false" is_key="false" name="cert_validity" type="String"/>
+</attributes>
+</entity>
+<entity id="3" is_weak="false" name="idp_map" x="13" y="194">
+<attributes>
+<attribute is_hidden="false" is_key="true" name="idp_url" type="String"/>
+<attribute is_hidden="false" is_key="false" name="nren_id" type="Integer"/>
+</attributes>
+</entity>
+<entity id="5" is_weak="false" name="subscribers" x="317" y="194">
+<attributes>
+<attribute is_hidden="false" is_key="true" name="subscriber_id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="name" type="String"/>
+<attribute is_hidden="false" is_key="false" name="dn_name" type="String"/>
+<attribute is_hidden="false" is_key="false" name="nren_id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="org_state" type="String"/>
+<attribute is_hidden="false" is_key="false" name="lang" type="String"/>
+<attribute is_hidden="false" is_key="false" name="subscr_email" type="String"/>
+<attribute is_hidden="false" is_key="false" name="subscr_phone" type="String"/>
+<attribute is_hidden="false" is_key="false" name="subscr_resp_name" type="String"/>
+<attribute is_hidden="false" is_key="false" name="subscr_resp_email" type="String"/>
+<attribute is_hidden="false" is_key="false" name="subscr_comment" type="Text"/>
+<attribute is_hidden="false" is_key="false" name="subscr_help_url" type="String"/>
+<attribute is_hidden="false" is_key="false" name="subscr_help_email" type="String"/>
+</attributes>
+</entity>
+<entity id="7" is_weak="false" name="order_store" x="628" y="414">
+<attributes>
+<attribute is_hidden="false" is_key="true" name="order_number" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="auth_key" type="String"/>
+<attribute is_hidden="false" is_key="false" name="owner" type="String"/>
+<attribute is_hidden="false" is_key="false" name="order_date" type="Date"/>
+<attribute is_hidden="false" is_key="false" name="authorized" type="String"/>
+<attribute is_hidden="false" is_key="false" name="expires" type="Date"/>
+</attributes>
+</entity>
+<entity id="10" is_weak="false" name="csr_cache" x="623" y="214">
+<attributes>
+<attribute is_hidden="false" is_key="true" name="csr_id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="csr" type="Text"/>
+<attribute is_hidden="false" is_key="false" name="uploaded_date" type="Date"/>
+<attribute is_hidden="false" is_key="false" name="common_name" type="String"/>
+<attribute is_hidden="false" is_key="false" name="auth_key" type="String"/>
+</attributes>
+</entity>
+<entity id="11" is_weak="false" name="cert_cache" x="470" y="396">
+<attributes>
+<attribute is_hidden="false" is_key="true" name="cert_id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="cert" type="Text"/>
+<attribute is_hidden="false" is_key="false" name="fingerprint" type="String"/>
+<attribute is_hidden="false" is_key="false" name="auth_key" type="String"/>
+<attribute is_hidden="false" is_key="false" name="cert_owner" type="String"/>
+<attribute is_hidden="false" is_key="false" name="organization" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="valid_until" type="Date"/>
+</attributes>
+</entity>
+<entity id="13" is_weak="false" name="admins" x="351" y="8">
+<attributes>
+<attribute is_hidden="false" is_key="true" name="admin_id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="admin" type="String"/>
+<attribute is_hidden="false" is_key="false" name="admin_name" type="String"/>
+<attribute is_hidden="false" is_key="false" name="admin_email" type="String"/>
+<attribute is_hidden="false" is_key="false" name="admin_level" type="Char"/>
+<attribute is_hidden="false" is_key="false" name="last_mode" type="Char"/>
+<attribute is_hidden="false" is_key="false" name="subscriber" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="nren" type="Integer"/>
+</attributes>
+</entity>
+<entity id="16" is_weak="false" name="user_crls" x="643" y="102">
+<attributes>
+<attribute is_hidden="false" is_key="true" name="crl_id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="owner" type="String"/>
+<attribute is_hidden="false" is_key="false" name="cert_sn" type="String"/>
+<attribute is_hidden="false" is_key="false" name="valid_until" type="String"/>
+</attributes>
+</entity>
+<entity id="17" is_weak="false" name="attribute_mapping" x="8" y="377">
+<attributes>
+<attribute is_hidden="false" is_key="true" name="id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="nren_id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="subscriber_id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="eppn" type="String"/>
+<attribute is_hidden="false" is_key="false" name="epodn" type="String"/>
+<attribute is_hidden="false" is_key="false" name="cn" type="String"/>
+<attribute is_hidden="false" is_key="false" name="mail" type="String"/>
+<attribute is_hidden="false" is_key="false" name="entitlement" type="String"/>
+</attributes>
+</entity>
+<entity id="20" is_weak="false" name="robot_certs" x="470" y="125">
+<attributes>
+<attribute is_hidden="false" is_key="true" name="id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="subscriber_id" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="uploaded_by" type="Integer"/>
+<attribute is_hidden="false" is_key="false" name="uploaded_date" type="Date"/>
+<attribute is_hidden="false" is_key="false" name="valid_until" type="Date"/>
+<attribute is_hidden="false" is_key="false" name="last_warning_sent" type="Date"/>
+<attribute is_hidden="false" is_key="false" name="cert" type="Text"/>
+<attribute is_hidden="false" is_key="false" name="serial" type="String"/>
+<attribute is_hidden="false" is_key="false" name="fingerprint" type="String"/>
+<attribute is_hidden="false" is_key="false" name="comment" type="Text"/>
+</attributes>
+</entity>
+<line cardinality_string="" has_u="false" id="2" is_weak="false" role="login_account::account_map_id" style="0" turned="false">
+<connection connection_side="2" direction="0" object_id="0" relation_point_x="112" relation_point_y="67"/>
+<connection connection_side="1" direction="1" object_id="1" relation_point_x="225" relation_point_y="84"/>
+</line>
+<line cardinality_string="" has_u="false" id="4" is_weak="false" role="nren_id" style="0" turned="false">
+<connection connection_side="0" direction="0" object_id="1" relation_point_x="180" relation_point_y="212"/>
+<connection connection_side="2" direction="0" object_id="3" relation_point_x="81" relation_point_y="224"/>
+</line>
+<line cardinality_string="" has_u="false" id="8" is_weak="false" role="nren_id" style="0" turned="false">
+<connection connection_side="0" direction="0" object_id="1" relation_point_x="180" relation_point_y="148"/>
+<connection connection_side="3" direction="1" object_id="0" relation_point_x="61" relation_point_y="127"/>
+</line>
+<line cardinality_string="" has_u="false" id="9" is_weak="false" role="nren_id" style="0" turned="false">
+<connection connection_side="2" direction="0" object_id="1" relation_point_x="270" relation_point_y="254"/>
+<connection connection_side="0" direction="0" object_id="5" relation_point_x="317" relation_point_y="307"/>
+</line>
+<line cardinality_string="" has_u="false" id="12" is_weak="false" role="organization::subscriber_id" style="0" turned="false">
+<connection connection_side="2" direction="0" object_id="5" relation_point_x="435" relation_point_y="344"/>
+<connection connection_side="1" direction="1" object_id="11" relation_point_x="514" relation_point_y="396"/>
+</line>
+<line cardinality_string="" has_u="false" id="14" is_weak="false" role="" style="0" turned="false">
+<connection connection_side="3" direction="1" object_id="13" relation_point_x="379" relation_point_y="158"/>
+<connection connection_side="2" direction="0" object_id="1" relation_point_x="270" relation_point_y="169"/>
+</line>
+<line cardinality_string="" has_u="false" id="15" is_weak="false" role="" style="0" turned="false">
+<connection connection_side="1" direction="1" object_id="5" relation_point_x="376" relation_point_y="194"/>
+<connection connection_side="3" direction="1" object_id="13" relation_point_x="407" relation_point_y="158"/>
+</line>
+<line cardinality_string="" has_u="false" id="18" is_weak="false" role="" style="0" turned="false">
+<connection connection_side="1" direction="1" object_id="17" relation_point_x="77" relation_point_y="377"/>
+<connection connection_side="0" direction="0" object_id="1" relation_point_x="180" relation_point_y="276"/>
+</line>
+<line cardinality_string="" has_u="false" id="19" is_weak="false" role="" style="0" turned="false">
+<connection connection_side="3" direction="1" object_id="5" relation_point_x="376" relation_point_y="419"/>
+<connection connection_side="2" direction="0" object_id="17" relation_point_x="145" relation_point_y="452"/>
+</line>
+<line cardinality_string="" has_u="false" id="21" is_weak="false" role="" style="0" turned="false">
+<connection connection_side="2" direction="0" object_id="5" relation_point_x="435" relation_point_y="269"/>
+<connection connection_side="0" direction="0" object_id="20" relation_point_x="470" relation_point_y="215"/>
+</line>
+<line cardinality_string="" has_u="false" id="22" is_weak="false" role="uploaded_by::admin_id" style="0" turned="false">
+<connection connection_side="2" direction="0" object_id="13" relation_point_x="434" relation_point_y="83"/>
+<connection connection_side="1" direction="1" object_id="20" relation_point_x="526" relation_point_y="125"/>
+</line>
+</diagram>

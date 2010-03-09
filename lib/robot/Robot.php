@@ -1,15 +1,15 @@
 <?php
 require_once 'pw.php';
-require_once 'person.php';
+require_once 'Person.php';
 require_once 'logger.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 class Robot
 {
 	private static $log_error_code;
 	private static function getError()
 	{
 		if (!isset(Robot::$log_error_code)) {
-			Robot::$log_error_code = create_pw(8);
+			Robot::$log_error_code = PW::create(8);
 		}
 		return Robot::$log_error_code;
 	}

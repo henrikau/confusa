@@ -1,7 +1,7 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'config.php';
-require_once 'input.php';
+require_once 'Config.php';
+require_once 'Input.php';
 
 $nren = Input::sanitizeNRENName($_GET['nren']);
 $css_path = Config::get_config('custom_css') . $nren . '/custom.css';

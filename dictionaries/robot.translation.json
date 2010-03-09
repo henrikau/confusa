@@ -1,0 +1,116 @@
+{
+	"l10n_heading_roboti": {
+		"de": "Roboter-Oberfl\u00e4che"
+	},
+	"l10n_tab_rlist": {
+		"de": "Liste"
+	},
+	"l10n_tab_upload": {
+		"de": "Upload"
+	},
+	"l10n_tab_info": {
+		"de": "Info"
+	},
+	"l10n_legend_managecerts": {
+		"de": "Verwalte Zertifikate"
+	},
+	"l10n_infotext_managecerts1": {
+		"de": "In diesem Abschnitt finden Sie Informationen \u00fcber bereits hochgeladene Zertifikate f\u00fcr Ihre Organisation. Sie k\u00f6nnen den Eigent\u00fcmer ver\u00e4ndern, falls das Zertifikat als verwaist gekennzeichnet ist, oder Sie k\u00f6nnen es ganz entfernen."
+	},
+	"l10n_infotext_managecerts2": {
+		"de": "Falls Sie dies w\u00e4hlen, k\u00f6nnen Sie das Zertifikat ausf\u00fchrlicher hier betrachten."
+	},
+	"l10n_title_deleterc": {
+		"de": "L\u00f6sche Roboter-Zertifikat"
+	},
+	"l10n_label_deleterc": {
+		"de": "L\u00f6sche"
+	},
+	"l10n_title_inforc": {
+		"de": "Erhalte mehr Informationen \u00fcber das Zertifikat"
+	},
+	"l10n_label_inforc": {
+		"de": "Informationen"
+	},
+	"l10n_label_serialnumber": {
+		"de": "Seriennummer:"
+	},
+	"l10n_label_uploadedby": {
+		"de": "Hochgeladen von:"
+	},
+	"l10n_label_uploadeddate": {
+		"de": "Hochgeladen:"
+	},
+	"l10n_label_validuntil": {
+		"de": "G\u00fcltig bis:"
+	},
+	"l10n_label_extendedinfo": {
+		"de": "Ausf\u00fchrlichere Information:"
+	},
+	"l10n_label_fingerprint": {
+		"de": "Fingerabdruck:"
+	},
+	"l10n_label_comment": {
+		"de": "Kommentar:"
+	},
+	"l10n_label_warnsent": {
+		"de": "Warnung geschickt:"
+	},
+	"l10n_infotext_nocertavail": {
+		"de": "Keine verf\u00fcgbaren Zertifikate in der Datenbank."
+	},
+	"l10n_legend_pastenew": {
+		"de": "F\u00fcge neues Zertifikat ein f\u00fcr"
+	},
+	"l10n_label_pastehere": {
+		"de": "F\u00fcgen Sie Ihr Zertifikat hier ein:"
+	},
+	"l10n_label_addcomment": {
+		"de": "F\u00fcge ein zus\u00e4tzliches Kommentar hinzu:"
+	},
+	"l10n_button_reset": {
+		"de": "Formular zur\u00fccksetzen"
+	},
+	"l10n_button_upload": {
+		"de": "Zertifikat hochladen"
+	},
+	"l10n_legend_uploadnew": {
+		"de": "Neues Zertifikat hochladen f\u00fcr"
+	},
+	"l10n_infotext_xmlclient1": {
+		"de": "Um die Roboter-Oberfl\u00e4che (RI) zu verwenden, m\u00fcssen Sie zuerst ein Zertifikat auf das Portal hochladen. Wenn dies gemacht wurde, k\u00f6nnen Sie dieses f\u00fcr die Kommunikation mit der RI verwenden."
+	},
+	"l10n_infotext_xmlclient2": {
+		"de": "XML_Client ist ein Bibliothekswerkzeug f\u00fcr die Verbindung mit der Roboter-Obefl\u00e4che. Genauere Information finden Sie im <a href=\"robot.php?robot_view=info\">RI Abschnitt<\/a>"
+	},
+	"l10n_infotext_xmlclient3": {
+		"de": "Sie werden einen Wrapper und Ihre lokale Logik f\u00fcr dies schreiben m\u00fcssen, doch die Bibliothek k\u00fcmmert sich um SSL und X.509 Authentifizierung f\u00fcr Sie. Laden Sie das ZIP-Archiv herunten und folgen Sie den Anweisungen im README."
+	},
+	"l10n_infotext_xmlclient4": {
+		"de": "Um die Bibliothek zu verwenden, f\u00fcgen Sie die folgenden Zeilen Ihrem Python-Skript hinzu."
+	},
+	"l10n_infotext_xmlclient5": {
+		"de": "F\u00fcr ein kurzes Codebeispiel sollten Sie auch in der README-Datei nachschauen."
+	},
+	"l10n_infotext_xmlclient6": {
+		"de": "Wenn Sie das Script konfigurieren, lassen Sie die URL verweisen auf"
+	},
+	"l10n_button_downloadfile": {
+		"de": "Lade Datei herunter"
+	},
+	"l10n_suc_deletecert1": {
+		"de": "Zertifikat ("
+	},
+	"l10n_suc_deletecert2": {
+		"de": ") aus der Datenbank entfernt."
+	},
+	"l10n_suc_insertcert1": {
+		"de": "Zertifikat ("
+	},
+	"l10n_suc_insertcert2": {
+		"de": ") in den Keystore hochgeladen."
+	},
+	"l10n_err_certalrthere": {
+		"de": "Zertifikat befindet sich bereits in der Datenbank. Kann nicht hochladen."
+	}
+}

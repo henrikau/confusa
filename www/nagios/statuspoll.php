@@ -1,8 +1,8 @@
 <?php
 require_once '../confusa_include.php';
-require_once 'config.php';
+require_once 'Config.php';
 require_once 'confusa_constants.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 
 try {
 	require_once Config::get_config('smarty_path') . 'Smarty.class.php';

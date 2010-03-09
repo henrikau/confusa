@@ -33,7 +33,7 @@
 		"en":	"Change the \"about\"-text"
 	},
 	"l10n_infotext_abouttext1": {
-		"en":	"This text will be shown, along with your logo, when a user, who comes from an institution that belongs to your NREN, clicks the 'About'-link. Time to present yourself!"
+		"en":	"This text will be shown when a user, who comes from an institution that belongs to your NREN, clicks the 'About'-link. Time to present yourself!"
 	},
 	"l10n_legend_customcss": {
 		"en":	"Custom NREN-CSS"

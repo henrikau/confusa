@@ -6,6 +6,20 @@
 # Try to find the config directory. Depending on whether Confusa was
 # downloaded from the Git repository or installed from the Debian
 # package, that is in the Confusa directory or in /etc/confusa/config/
+
+# Determine path, move to basefolder of confusa
+if [ `basename $0` != $0 ]; then
+    cd `dirname $0`
+fi
+
+# get install-lib functions
+if [ -f "../lib/bash/install_lib.sh" ]; then
+    . ../lib/bash/install_lib.sh
+fi
+if [ -f "../lib/bash/config_lib.sh" ]; then
+    . ../lib/bash/config_lib.sh
+fi
+
 if	[ -d "../config/" ] &&
 	[ -f "../config/confusa_config_template.php" ]; then
 	prefix="../config/"
@@ -26,81 +40,70 @@ working_template=`mktemp /tmp/.confusa_wrk_template_XXXXXX`
 dbconfig_template="/etc/confusa/confusa_config.inc.php"
 config=${prefix}"confusa_config.php"
 
-# Call this function for simple yes/no questions with the questions as an argument
-function get_user_alternative
-{
-	answer=""
-
-	while [ -z $answer ]; do
-		echo -n $1
-		read answer
-		case $answer in
-			"y"|"n") break ;;
-		esac
-
-		answer=""
-	done
-}
-
-function replace_config_entry
-{
-	# Replace entry in the configuration file with the new value
-	sed s\|"'$1'[^]][ \t]*=>.*"\|"'$1'    => '$2',"\| < $working_template > $config
-	cp $config $working_template
-}
-
+# replace_interval_in_config
+#
+# TODO: proper description of function
 function replace_interval_in_config
 {
-	LEGAL_VALUES=("SECOND" "MINUTE" "HOUR" "DAY" "WEEK" "MONTH" "YEAR")
+    LEGAL_VALUES=("SECOND" "MINUTE" "HOUR" "DAY" "WEEK" "MONTH" "YEAR")
 
-	while [ -z $unit ] || [ -z $value ]; do
-		echo "Please specify the format in the notation \$time \$unit, where unit can be one of"
-		echo -n "(SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR) [$2 $3]: "
-		read tmp_timeout
+    while [[ -z $unit  || -z $value ]]; do
+	msg="Please specify the format for \"$1\" in the notation \$time \$unit"
+	msg="$msg where unit can be one of (SECOND, MINUTE, HOUR, DAY, WEEK, "
+	msg="$msg MONTH, YEAR) [$2 $3]: "
+	read -p "$msg" tmp_value, tmp_unit
 
-		if [ -z "$tmp_timeout" ]; then
-			tmp_timeout=`echo "$2 $3"`
-		fi
+	# values not set, use default values.
+	if [ -z "$tmp_value" ]; then
+	    tmp_value=${2}
+	fi
+	if [ -z "$tmp_unit" ]; then
+	    tmp_unit=${3}
+	fi
 
-		# TODO: proper error handling (is value numeric etc.)
-		tmp_value=`echo $tmp_timeout | cut -d " " -f 1`
-		tmp_unit=`echo $tmp_timeout | cut -d " " -f 2`
+	# Check if the value is a number
+	if [ $tmp_value -eq $tmp_value 2> /dev/null ]; then
+	    value=${tmp_value}
+	else
+	    echo "Not a valid number ($tmp_value). Please try again."
+	    continue;
+	fi
 
-		# Check if the value is a number
-		if [ $tmp_value -eq $tmp_value 2> /dev/null ]; then
-			value=$tmp_value
-		else
-			continue;
-		fi
-
-		for (( i=0;i<${#LEGAL_VALUES[@]};i++ )); do
-			if [ $tmp_unit = ${LEGAL_VALUES[${i}]} ]; then
-				unit=$tmp_unit
-				break
+	# is the supplied unit in the range of legal values?
+	for (( i=0;i<${#LEGAL_VALUES[@]};i++ )); do
+	    if [ $tmp_unit = ${LEGAL_VALUES[${i}]} ]; then
+		unit=${tmp_unit}
+		break
 			fi
-		done
 	done
+    done # while either unit or value are zero
 
-	sed s\|"'$1'[ \t]*=>.*"\|"'$1'		=> array($value,'$unit'),"\| < $working_template > $config
-	cp $config $working_template
-	unit=""
-	value=""
+    # FIXME: use replace_config_entry at this point?
+    sed s\|"'$1'[ \t]*=>.*"\|"'$1'		=> array($value,'$unit'),"\| < $working_template > $config
+    cp $config $working_template
+    unit=""
+    value=""
 }
 
+# configure_confusa_settings
+#
+# Main control loop. This is where the main part of the configuration happens.
 function configure_confusa_settings
 {
 	cp $config_template $working_template
+	msg="
+	==================================================================
 
-	echo ""
-	echo "*********************************************************************"
-	echo " We will walk you through the configuration of the most important    "
-	echo " Confusa settings. The idea is to get a working basic Confusa        "
-	echo " instance. You can configure Confusa in a more fine-grained way by   "
-	echo " editing confusa_config.php in Confusa's config directory.           "
-	echo "*********************************************************************"
-	echo ""
-	echo "Press any key to continue to continue or wait 20 seconds            "
-	read -n1 -t20 any_key
+	We will walk you through the configuration of the most important
+	Confusa settings. The idea is to get a working basic Confusa
+	instance. You can configure Confusa in a more fine-grained way by
+	editing confusa_config.php in Confusa's config directory.
+
+	Press any key to continue to continue or wait 20 seconds
+
+	==================================================================
+	"
+	read -p "$msg" -n1 -t20 any_key
 
 	###############################################################################
 	# Config flags deliberately not included in the installer script
@@ -131,14 +134,13 @@ function configure_confusa_settings
 
 	# Confusa's operation mode
 	###############################################################################
-	echo ""
-	echo ""
-	echo "Confusa can operate in two modes. The first one is standalone, "
-	echo "in which Confusa will use its own installed CA to sign certificates for "
-	echo "the user, the other one is online, in which a hooked up remote CA will "
-	echo "be used for signing certificate request, revocation etc. Currently this "
-	echo "Online-CA is Comodo. In which mode do you wish to operate Confusa?"
-	echo ""
+	echo "
+
+	Confusa can operate in two modes. The first one is standalone,
+	in which Confusa will use its own installed CA to sign certificates for
+	the user, the other one is online, in which a hooked up remote CA will
+	be used for signing certificate request, revocation etc. Currently this
+	Online-CA is Comodo. In which mode do you wish to operate Confusa?"
 	select mode in comodo standalone; do
 		case $mode in
 			"standalone") ca_mode="CA_STANDALONE" ;;
@@ -147,8 +149,7 @@ function configure_confusa_settings
 		esac
 
 		# need the mode without exclamation marks, because it is an enumeration
-		sed s\|"'ca_mode'[ \t]*=>.*"\|"'ca_mode'    => $ca_mode,"\| < $working_template > $config
-		cp $config $working_template
+		replace_config_entry_raw 'ca_mode' $ca_mode
 		break
 	done
 
@@ -158,25 +159,32 @@ function configure_confusa_settings
 	# set some config flags to feasible values
 	###############################################################################
 	if [ $mode = "comodo" ]; then
-		sed s\|"'capi_test'[ \t]*=>.*"\|"'capi_test'    => false,"\| < $working_template > $config
-		cp $config $working_template
+		# sed s\|"'capi_test'[ \t]*=>.*"\|"'capi_test'    => false,"\| < $working_template > $config
+		# cp $config $working_template
+	    replace_config_entry_raw 'capi_test' false
 	elif [ $mode = "standalone" ]; then
 		# hardcode for the sake of simplicity
 		# c'mon don't be picky :)
-		replace_config_entry "ca_cert_name" "servercert.pem"
-		replace_config_entry "ca_key_name"  "serverkey.pem"
+	    echo "
+	    You have chosen standalone.
+	    For simplicity, the key and certificate has been set to:
+		'ca_cert_name'\t=> 'servercert.pem'
+		'ca_key_name'\t=> 'serverkey.pem'
+	    This means that the key and certificate will be found under in these names cert_handle/.
+	    If this is wrong, change the configuration."
+	    replace_config_entry "ca_cert_name" "servercert.pem"
+	    replace_config_entry "ca_key_name"  "serverkey.pem"
 	fi
 
 	# eScience or personal mode
 	############################################################################
-	echo ""
-	echo ""
-	echo "Confusa can issue eScience (Grid) and personal certificates."
-	echo "Personal certificates are different from eScience certificates in "
-	echo "that they have another signing-CA, a configurable validity period "
-	echo "between 365 and 1095 days and usually also allow UTF-8 characters in "
-	echo "their subject-DN. In which of these modes should Confusa operate?"
-	echo ""
+	echo "
+
+	Confusa can issue eScience (Grid) and personal certificates.
+	Personal certificates are different from eScience certificates in
+	that they have another signing-CA, a configurable validity period
+	between 365 and 1095 days and usually also allow UTF-8 characters in
+	their subject-DN. In which of these modes should Confusa operate?"
 	select mode in escience personal; do
 		case $mode in
 			"escience") product="PRD_ESCIENCE" ;;
@@ -185,94 +193,78 @@ function configure_confusa_settings
 		esac
 
 		# need the mode without exclamation marks, because it is an enumeration
-		sed s\|"'cert_product'[ \t]*=>.*"\|"'cert_product'    => $product,"\| < $working_template > $config
-		cp $config $working_template
+		replace_config_entry_raw 'cert_product' $product
 		break
 	done
 
-	sed s\|"'debug'[ \t]*=>.*"\|"'debug'    => false,"\| < $working_template > $config
-	cp $config $working_template
-	sed s\|"'maint'[ \t]*=>.*"\|"'maint'    => false,"\| < $working_template > $config
-	cp $config $working_template
-	sed s\|"'auth_bypass'[ \t]*=>.*"\|"'auth_bypass'    => false,"\| < $working_template > $config
-	cp $config $working_template
+	replace_config_entry_raw 'debug' false
+	replace_config_entry_raw 'maint' false
+	replace_config_entry_raw 'auth_bypass' false
 	replace_config_entry "language.default" "en"
 	replace_config_entry "default_log" "/var/log/confusa.log"
-
-	cp $config $working_template
-
 
 	# Guess the installation path of Confusa to use it as default (assuming bash)
 	#############################################################################
 	script_dir=`pwd`
 	install_path=`echo | awk -v sdir=$script_dir '{sub("bin", "", sdir); print sdir}'`
 
-	echo -n "Confusa install path: [$install_path]: "
-	read custom_install_path
-
+	read -p "Confusa install path: [$install_path]: " custom_install_path
 	# don't be tricked by erroneous input
 	while [ ! -d "$custom_install_path" ]; do
 		if [ -z $custom_install_path ]; then
 			custom_install_path=$install_path
 		else
-			echo -n "Confusa install path must be a directory [$install_path]: "
-			read custom_install_path
+			read -p "Confusa install path must be a directory [$install_path]: " \
+			    custom_install_path
 		fi
 	done
-
-	has_trailing_slash=`echo $custom_install_path | grep "/$"`
-	if [ "$has_trailing_slash" = "" ]; then
-		custom_install_path=${custom_install_path}/
-	fi
-
+	single_trailing_slash $custom_install_path
+	custom_install_path=$res
 	# The path to the program for the key generation script
 	replace_config_entry "install_path" $custom_install_path
 	echo ""
 
 	# Configure the server url
 	###############################################################################
+	burl="https://www.example.org"
+	bpath="/confusa/"
 	while [ 1 == 1 ]; do
-		while [ -z $server_url ]; do
-			echo "Please enter the URL of the server with Confusa installed: "
-			echo -n "[e.g. https://beta.confusa.org]: "
-			read server_url
+	    read -p "Please enter the URL of the server with Confusa installed: (e.g. $burl ): " \
+		server_url
+	    # sloppily check if that thingie looks remotely like a URL
+	    server_url=`test_url $server_url`
+	    if [ -z $server_url ]; then
+		server_url=$burl
+	    fi
 
-			# sloppily check if that thingie looks remotely like a URL
-			server_url=`echo $server_url | grep https://.*[\.+]`
-		done
+	    # Remove any trailing slash
+	    server_url=${server_url%/}
 
-		# Remove any trailing slash
-		server_url=${server_url%/}
+	    echo ""
 
-		echo ""
-		while [ -z $server_path ]; do
-			echo -n "Please enter the path to Confusa on your server [e.g. /confusa/]: "
-			read server_path
+	    # get folder-path
+	    read -p "Please enter the path to Confusa on your server (e.g. $bpath): " \
+		server_path
+	    if [ -z $server_path ]; then
+		server_path=$bpath
+	    fi
+	    has_leading_slash=`echo $server_path | grep "^/"`
+	    if [ -z $has_leading_slash ]; then
+		server_path=/${server_path}
+	    fi
 
-			# check if the thingie has a leading slash
-			has_leading_slash=`echo $server_path | grep "^/"`
-			if [ -z $has_leading_slash ]; then
-				server_path=/${server_path}
-			fi
+	    server_path=`single_trailing_slash $server_path`
+	    echo ""
 
-			has_trailing_slash=`echo $server_path | grep "/$"`
-			if [ -z $has_trailing_slash ]; then
-				server_path=${server_path}/
-			fi
-		done
+	    get_user_alternative "The full path to Confusa is ${server_url}${server_path}? [Y/n]" "Y"
 
-		echo ""
-		get_user_alternative "The full path to Confusa is ${server_url}${server_path}? (y/n)"
-
-		if [ $answer = "y" ]; then
-			break
-		else
-			server_url=""
-			server_path=""
-			echo ""
-			echo ""
-			continue
-		fi
+	    # user is happy, terminate
+	    if [[ $answer = "y" || $answer = "Y" ]] && [[ ! -z $server_url && ! -z $server_path ]]; then
+		break
+	    else
+		burl=$server_url
+		bpath=$server_path
+	    fi
 	done
 
 	replace_config_entry "server_url" ${server_url}${server_path}
@@ -295,59 +287,56 @@ function configure_confusa_settings
 		simplesaml_path=`grep "'simplesaml_path'" $working_template | cut -d '=' -f 2 \
 			| cut -d "'" -f 2`
 	fi
-	echo -n "Please enter the path to simplesamlphp [$simplesaml_path]: "
-	read custom_simplesaml_path
 
+	# Get the path, continue to batter the user until a valid path is given.
+	read -p "Please enter the path to simplesamlphp [$simplesaml_path]: " \
+	    custom_simplesaml_path
 	while [ ! -d "$custom_simplesaml_path" ]; do
 		if [ -z $custom_simplesaml_path ]; then
 			custom_simplesaml_path=$simplesaml_path
 		else
-			echo -n "Need a directory for the simplesaml path [$simplesaml_path]: "
-			read custom_simplesaml_path
+			read -p "Need a directory for the simplesaml path [$simplesaml_path]: " \
+			    custom_simplesaml_path
 		fi
 	done
-
-	has_trailing_slash=`echo $custom_simplesaml_path | grep "/$"`
-	if [ "$has_trailing_slash" = "" ]; then
-		custom_simplesaml_path=${custom_simplesaml_path}/
-	fi
-
-	replace_config_entry "simplesaml_path" $custom_simplesaml_path
+	# make sure the path as a single trailing slash. The function
+	# saves the result in $res
+	single_trailing_slash $custom_simplesaml_path
+	replace_config_entry "simplesaml_path" $res
 	echo ""
 
-	## Configure the path to smarty
-	################################################################################
+	# Configure the path to smarty
+	# Use the two know locations (debian and ubuntu) to start with.
+	###############################################################################
 	SMARTY_GUESS=("/usr/share/php/smarty/" "/usr/share/php/smarty/lib/")
-
 	for (( i=0;i<${#SMARTY_GUESS[@]};i++ )); do
 		if [ -f ${SMARTY_GUESS[${i}]}/Smarty.class.php ]; then
 			smarty_path=${SMARTY_GUESS[${i}]}
+			echo "Found smarty-path at $smarty_path"
 			break
 		fi
 	done
 
+	# If we cant find the path, use / (the default in the template
+	# is the ubuntu-flavour, which has been covered by the
+	# auto-detect routine
 	if [ -z $smarty_path ]; then
-		smarty_path=`grep "'smarty_path'" $working_template | cut -d '=' -f 2 \
-			| cut -d "'" -f 2`
+	    smarty_path="/"
 	fi
-	echo -n "Please enter the path to the PHP template engine smarty [$smarty_path]: "
-	read custom_smarty_path
+	read -p "Please enter the path to the PHP template engine smarty [$smarty_path]: "\
+	    custom_smarty_path
 
 	while [ ! -d "$custom_smarty_path" ]; do
 		if [ -z $custom_smarty_path ]; then
 			custom_smarty_path=$smarty_path
 		else
-			echo -n "Need a directory for the smarty path! [$smarty_path]: "
-			read custom_smarty_path
+			read -p "Need a directory for the smarty path! [$smarty_path]: " \
+			    custom_smarty_path
 		fi
 	done
-
-	has_trailing_slash=`echo $custom_smarty_path | grep "/$"`
-	if [ "$has_trailing_slash" = "" ]; then
-		custom_smarty_path=${custom_smarty_path}/
-	fi
-
-	replace_config_entry "smarty_path" $custom_smarty_path
+	# Make sure only a single slash remains (function saves result in $res)
+	single_trailing_slash $custom_smarty_path
+	replace_config_entry "smarty_path" $res
 	echo ""
 
 	# COMODO: generate a password with which the login password will be protected
@@ -372,18 +361,26 @@ function configure_confusa_settings
 
 		replace_config_entry "capi_enc_pw" $capi_enc_pw
 	fi
-
 	echo ""
 
 
 	# Specify the minimum keylength for Confusa
+	# If nothing is found in the template, use a hardcoded value of 1024.
 	###############################################################################
-	key_length=`grep "'key_length'" $working_template | cut -d '=' -f 2 \
-			| cut -d "'" -f 2`
+	get_from_config_template "key_length"
+	if [ -z $res ]; then
+	    key_length=$res
+	    else
+	    key_length="1024"
+	fi
+	echo "
+Specify the minimum key length in bits for Confusa-issued certificates.
 
-	echo "Specify the minimum key length in bits for Confusa-issued certificates "
-	echo -n "(It is recommended to have a key length >= 1024) [$key_length]: "
-	read custom_key_length
+This is important as it determins how strong the keys *must* be. Note
+that this will not stop users from creating keys that are even longer."
+
+	read -p "(It is recommended to have a key length >= 1024) [$key_length]: " \
+	    custom_key_length
 
 	# basic check on the key length
 	while [ 1 -eq 1 ]; do
@@ -394,96 +391,86 @@ function configure_confusa_settings
 			case $custom_key_length in
 				512|1024|2048|4096) break ;;
 			esac
-
-			echo -n "Key length must be one of 512, 1024, 2048 and 4096 [$key_length]: "
-			read custom_key_length
+			read -p "Key length must be one of 512, 1024, 2048 and 4096 [$key_length]: " \
+			    custom_key_length
 		fi
 	done
-
 	replace_config_entry "key_length" $custom_key_length
 	echo ""
 
 	# Skip the DB-name, host, username and password configuration, if a config
 	# file has been written by dbconfig-common
+	###############################################################################
 	if [ ! -f $dbconfig_template ]; then
-		# Configure the mysql username
-		##############################################################################
-		mysql_username=`grep "'mysql_username'[^]]" $working_template | cut -d '=' -f 2 \
-				| cut -d "'" -f 2`
+	    # Configure the mysql username
+	    get_from_config_template "mysql_username"
+	    mysql_username=$res
 
-		echo -n "The user-name for accessing the MySQL-DB [$mysql_username]: "
-		read custom_mysql_username
+	    read -p "The user-name for accessing the MySQL-DB [$mysql_username]: " \
+		custom_mysql_username
 
-		if [ -z $custom_mysql_username ]; then
-			custom_mysql_username=$mysql_username
-		fi
+	    if [ -z $custom_mysql_username ]; then
+		custom_mysql_username=$mysql_username
+	    fi
+	    replace_config_entry "mysql_username" $custom_mysql_username
+	    echo ""
 
-			replace_config_entry "mysql_username" $custom_mysql_username
-			echo ""
-
-		# Configure the mysql password
-		###############################################################################
-		have_pwgen=`which pwgen`
-
-		if [ "$?" -eq "0"  ]; then
+	    # Configure the mysql password
+	    if [ which pwgen > /dev/null ]; then
 			echo "Generating mysql password with pwgen..."
 			mysql_password=`pwgen -1 -n 12 -s`
-		fi
+	    fi
+	    if [ -z $mysql_password ] || [ ! $? -eq 0 ]; then
+		while [ -z $mysql_password ]; do
+		    echo "Please specify a password for the user $custom_mysql_username "
+		    echo -n "for MySQL:"
+		    stty -echo
+		    read mysql_password
+		    stty echo
+		    echo ""
+		done
+	    fi
+	    replace_config_entry "mysql_password" $mysql_password
+	    echo ""
 
-		if [ -z $have_pwgen ] || [ ! $? -eq 0 ]; then
-			while [ -z $mysql_password ]; do
-				echo "Please specify a password for the user $custom_mysql_username "
-				echo -n "for MySQL:"
-				stty -echo
-				read mysql_password
-				stty echo
-				echo ""
-			done
-		fi
+	    # Configure the mysql-host
+	    get_from_config_template 'mysql_host'
+	    mysql_host=$res
 
-		replace_config_entry "mysql_password" $mysql_password
-		echo ""
+	    read -p "The host on which mysql is to run [$mysql_host]: " \
+		custom_mysql_host
 
-		# Configure the mysql-host
-		################################################################################
-		mysql_host=`grep "'mysql_host'[^]]" $working_template | cut -d '=' -f 2 \
-				| cut -d "'" -f 2`
+	    if [ -z $custom_mysql_host ]; then
+		custom_mysql_host=$mysql_host
+	    fi
 
-		echo -n "The host on which mysql is to run [$mysql_host]: "
-		read custom_mysql_host
+	    replace_config_entry "mysql_host" $custom_mysql_host
+	    echo ""
 
-		if [ -z $custom_mysql_host ]; then
-			custom_mysql_host=$mysql_host
-		fi
+	    # Configure the mysql-DB-name
+	    get_from_config_template 'mysql_db'
+	    mysql_db=$res
 
-		replace_config_entry "mysql_host" $custom_mysql_host
-		echo ""
+	    read -p "Enter DB (name) which should be used for Confusa [$mysql_db]: " \
+		custom_mysql_db
 
-		# Configure the mysql-DB-name
-		###############################################################################
-		mysql_db=`grep "'mysql_db'[^]]" $working_template | cut -d '=' -f 2 \
-				| cut -d "'" -f 2`
+	    if [ -z $custom_mysql_db ]; then
+		custom_mysql_db=$mysql_db
+	    fi
 
-		echo -n "Enter DB (name) which should be used for Confusa [$mysql_db]: "
-		read custom_mysql_db
-
-		if [ -z $custom_mysql_db ]; then
-			custom_mysql_db=$mysql_db
-		fi
-
-		replace_config_entry "mysql_db" $custom_mysql_db
-		echo ""
+	    replace_config_entry "mysql_db" $custom_mysql_db
+	    echo ""
 	else
-		echo "Using database settings written by dbconfig-common..."
+	    echo "Using database settings written by dbconfig-common..."
 	fi # dbconfig-template exists
 
 	# Configure the mysql-backup dir
 	###############################################################################
-	mysql_backup_dir=`grep "'mysql_backup_dir'" $working_template | cut -d '=' -f 2 \
-			| cut -d "'" -f 2`
+	get_from_config_template 'mysql_backup_dir'
+	mysql_backup_dir=$res
 
-	echo -n "Specify the directory in which backups of the MySQL-DB are stored [$mysql_backup_dir]: "
-	read custom_mysql_backup_dir
+	read -p "Specify the directory in which backups of the MySQL-DB are stored [$mysql_backup_dir]: " \
+	    custom_mysql_backup_dir
 
 	while [ ! -d "$custom_mysql_backup_dir" ]; do
 		if [ -z $custom_mysql_backup_dir ]; then
@@ -499,12 +486,12 @@ function configure_confusa_settings
 
 	# Configure the system name
 	###############################################################################
-	system_name=`grep "'system_name'" $working_template | cut -d '=' -f 2 \
-			| cut -d "'" -f 2`
+	get_from_config_template 'system_name'
+	system_name=$res
 
-	echo "Enter the name of the system. This name will appear in titles in "
-	echo -n "the browser [$system_name]: "
-	read custom_system_name
+	echo "Enter the name of the system. "
+	read -p "This name will appear in titles in the browser [$system_name]: " \
+	    custom_system_name
 
 	if [ -z "$custom_system_name" ]; then
 		custom_system_name="$system_name"
@@ -517,11 +504,12 @@ function configure_confusa_settings
 	###############################################################################
 
 	while [ -z $custom_sys_from_address ]; do
-		echo -n "Configure the address that shows up in mails from the system: "
-		read custom_sys_from_address
+		read -p "Configure the address that shows up in mails from the system: " \
+		    custom_sys_from_address
 
 		# Sloppily check if that thingie remotely ressembles a mail address
-		custom_sys_from_address=`echo $custom_sys_from_address | egrep "[a-zA-Z0-9-]+([._a-zA-Z0-9.-]+)*@[a-zA-Z0-9.-]+\.([a-zA-Z]{2,4})$"`
+		test_email $custom_sys_from_address
+		custom_sys_from_address=$res
 	done
 
 	# Set both sys_from_address and sys_header_from_address to the same value.
@@ -534,44 +522,52 @@ function configure_confusa_settings
 	# Configure the cert-default-timeout
 	##############################################################################
 	if [ $mode = "standalone" ]; then
-		cert_default_timeout_value=`grep "'cert_default_timeout'" $working_template | cut -d '=' -f 2 \
-				| cut -d '(' -f 2 | cut -d ',' -f 1`
-		cert_default_timeout_unit=`grep "'cert_default_timeout'" $working_template | cut -d '=' -f 2 \
-				| cut -d '(' -f 2 | cut -d ',' -f 2 | cut -d ')' -f 1 | cut -d "'" -f 2`
+	    # cannot use the get_from_config_template here, as the
+	    # result is stored in an array
+	    cert_default_timeout_value=`grep "'cert_default_timeout'" $working_template | cut -d '=' -f 2 \
+		| cut -d '(' -f 2 | cut -d ',' -f 1`
+	    get_from_config_template 'cert_default_timeout'
+	    cert_default_timeout_unit=res
 
-		echo "Specify the timeout for certificates, i.e. the interval within which "
-		echo "they will be kept available for download to the user. "
-		echo ""
-		replace_interval_in_config "cert_default_timeout" $cert_default_timeout_value $cert_default_timeout_unit
-		echo ""
+	    echo "Specify the timeout for certificates, i.e. the interval within which"
+	    echo "they will be kept available for download to the user."
+	    echo ""
+	    replace_interval_in_config "cert_default_timeout" \
+		$cert_default_timeout_value \
+		$cert_default_timeout_unit
+	    echo ""
 	fi
 
 	# Configure the CSR-default-timeout
-	################################################################################
+	###############################################################################
 	csr_default_timeout_value=`grep "'csr_default_timeout'" $working_template | cut -d '=' -f 2 \
 				| cut -d '(' -f 2 | cut -d ',' -f 1`
-	csr_default_timeout_unit=`grep "'csr_default_timeout'" $working_template | cut -d '=' -f 2 \
-			| cut -d '(' -f 2 | cut -d ',' -f 2 | cut -d ')' -f 1 | cut -d "'" -f 2`
+	get_from_config_template 'csr_default_timeout'
+	csr_default_timeout_unit=$res
 
 	echo "Specify the timeout for CSRs, i.e. the interval within which the user "
 	echo "will be able to authorize and view them. "
 	echo ""
-	replace_interval_in_config "csr_default_timeout" $csr_default_timeout_value $csr_default_timeout_unit
+	replace_interval_in_config "csr_default_timeout" \
+	    $csr_default_timeout_value \
+	    $csr_default_timeout_unit
 	echo ""
 
 	# Configure the protected session timeout
-	################################################################################
-	protected_session_timeout=`grep "'protected_session_timeout'" $working_template | cut -d '=' -f 2 \
-			| cut -d "'" -f 2`
+	###############################################################################
+	get_from_config_template 'protected_session_timeout'
+	protected_session_timeout=$res
 
-	echo "The protected session timeout default value is: $custom_protected_session_timeout"
+	echo "The protected session timeout default value is: \
+	    $custom_protected_session_timeout"
 
 	custom_protected_session_timeout=""
 
 	while [ 1 == 1 ]; do
-		echo "How long should the session allow the user to perform \"sensitive\" actions "
-		echo -n "(in minutes) [$protected_session_timeout]: "
-		read custom_protected_session_timeout
+		echo "How long should the session allow the user to \
+		    perform \"sensitive\" actions "
+		read -p "(in minutes) [$protected_session_timeout]: " \
+		    custom_protected_session_timeout
 
 		if [ -z $custom_protected_session_timeout ]; then
 			custom_protected_session_timeout=$protected_session_timeout
@@ -589,191 +585,121 @@ function configure_confusa_settings
 	replace_config_entry "protected_session_timeout" $custom_protected_session_timeout
 	echo ""
 
-	# Set valid install to true
-	################################################################################
-	sed s\|"'valid_install'[ \t]*=>.*"\|"'valid_install'    => true,"\| < $working_template > $config
+	# Set valid install to true and remove the working copy of the template.
+	###############################################################################
+	replace_config_entry_raw "valid_install" true
 	rm $working_template
 
-	################################################################################
-	## Configuration section done ##################################################
-	################################################################################
-}
+} # end configure_confusa_settings
 
-# if an older version of Confusa was installed before, maybe some new configuration
-# flags (in confusa_config_template.php) were introduced in the meantime.
-# This function checks for the presence of flags in the config-template that
-# are not in the config file and copies them while preserving the existing
-# configuration values.
+
+# postinstall_standalone()
 #
-# Do the following:
-#	1 Copy config template to working template
-# 	2 Get all the configuration flags in the config template
-#	3 For each flag:
-#		- lookup if flag is in the config file, if it is assign value from config
-#		  file to working template
-#	4 Copy working template to config file
+# This only applies for systems that are placed in standalone-mode
 #
-function copy_new_config_flags
-{
-	echo "Copying new config flags from the template, removing deprecated ones"
-	cp $config_template $working_template
-	tmp_file="${prefix}/.flags_only"
-	working_template_2="${prefix}/.template2"
-	# first remove comment lines, then find the configuration flags
-	cat $config_template | egrep -v "^[[:space:]]*(/)?(\\*)" | egrep "=>" | cut -d '=' -f 1 > $tmp_file
-
-	while read line
-	do
-		flag=`echo $line`
-		# Remove trailing whitespace characters (otherwise grep will be confused later)
-		flag="${flag%"${flag##*[![:space:]]}"}"
-		# Lookup the value of the config flag in the regular config file
-		config_line=`cat $config | egrep -v "^[[:space:]]*(/)?(\\*)" | egrep "${flag}[[:space:]]*=>.*"`
-
-		if [ -n "$config_line" ]; then
-			value=`echo $config_line | cut -d '=' -f 2 | cut -d ">" -f 2`
-			# now remove the trailing ","
-			value="${value%","}"
-			sed s\|"$flag[ \t]*=>.*"\|"$flag    => $value,"\| < $working_template > $working_template_2
-			mv $working_template_2 $working_template
-		fi
-	done < $tmp_file
-
-	rm $tmp_file
-	sed s\|"'$1'[ \t]*=>.*"\|"'valid_install'    => true,"\| < $working_template > $config
-}
-
-function write_cron_jobs
-{
-	install_path=$1
-	cron_file="/etc/cron.d/confusa.cron"
-
-	# Get absolute path to the config file
-	conf_dir=`dirname $config`
-	cnf_file=`cd $conf_dir; pwd`/`basename $config`
-
-	if [ ! -d "/etc/cron.d" ]; then
-		echo "Cron execution directory not found. Please make sure to have cron"
-		echo "installed!"
-		return
-	fi
-
-	cronline1="*/10  *    *    *  *       ${install_path}/programs/clean_db.sh ${cnf_file}"
-	cronline2="0     */2  *    *  *   ${install_path}/programs/db_backup.sh ${cnf_file}"
-
-	if [ -f $cron_file ]; then
-		get_user_alternative "Cron file ${cron_file} already exists. Overwrite (y/n)?"
-
-		if [ $answer == "n" ]; then
-			return
-		fi
-	fi
-
-	echo "$cronline1" > $cron_file
-	res=$?
-	echo "$cronline2" >> $cron_file
-	res=`expr $res + $?`
-
-	if [ $res -ne 0 ]; then
-		echo -n "Writing Confusa's crontab to /etc/cron.d failed. Please make sure "
-		echo -n "yourself that important scripts for cleaning and backing up the DB "
-		echo "get executed regularly (e.g. by defining cronjobs using crontab -e)"
-	fi
-
-	echo -n "Wrote crontab to ${cron_file}. If you want to fine-tune the execution "
-	echo "dates please edit the file."
-}
-
 # configure the directories and permissions for the installed CA
 # Offer the possibility to copy a cert/private key to these locations
 function postinstall_standalone
 {
-		custom_apache_user=$1
-		install_path=$2
+    custom_apache_user=$1
+    install_path=$2
+    if ! ca_cert_base_path=`_get_config_entry 'ca_cert_base_path'`; then
+	echo "did not find ca_cert_base_path in config $config"
+    fi
+    if ! ca_cert_path=`_get_config_entry 'ca_cert_path'`; then
+	echo "did not find ca_cert_path in config $config"
+    fi
+    if ! ca_cert_name=`_get_config_entry 'ca_cert_name'`; then
+	echo "did not find ca_cert_name in config $config"
+    fi
+    if ! ca_key_path=`_get_config_entry 'ca_key_path'`; then
+	echo "did not find ca_key_path in config $config"
+    fi
+    if ! ca_key_name=`_get_config_entry 'ca_key_name'`; then
+	echo "did not find ca_key_name in config $config"
+    fi
 
-		ca_cert_base_path=`grep "'ca_cert_base_path'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
-		ca_cert_path=`grep "'ca_cert_path'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
-		ca_cert_name=`grep "'ca_cert_name'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
-		ca_key_path=`grep "'ca_key_path'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
-		ca_key_name=`grep "'ca_key_name'" $config | cut -d '=' -f 2 | cut -d "'" -f 2`
-		crl_path=`grep "OPENSSL_CRL_FILE" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
-		ca_write_dir=`dirname $crl_path`
+    # CRL_info (from the constants)
+    crl_path=`grep "OPENSSL_CRL_FILE" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
+    ca_write_dir=`dirname $crl_path`
 
-		mkdir -p ${install_path}${ca_cert_base_path}/${ca_cert_path}
-		mkdir -p ${install_path}${ca_cert_base_path}/${ca_key_path}
-		mkdir -p $ca_write_dir
+    # Create directories for the CA-parts
+    mkdir -p ${install_path}${ca_cert_base_path}/${ca_cert_path} &&\
+    mkdir -p ${install_path}${ca_cert_base_path}/${ca_key_path}  && \
+    mkdir -p $ca_write_dir
 
-		if [ ! $? -eq 0 ]; then
-			echo "Error creating the directories for private and public CA key and CRL"
-			echo "(Tried ${ca_write_dir})"
-		fi
+    if [ ! $? -eq 0 ]; then
+	echo "Error creating the directories for the CA"
+	echo "Directories:"
+	echo "CA certificate: " ${install_path}${ca_cert_base_path}/${ca_cert_path}
+	echo "CA key: " ${install_path}${ca_cert_base_path}/${ca_key_path}
+	echo "CA write-dir: ${ca_write_dir})"
+    fi
 
-		get_user_alternative "Do you want to copy a certificate/key pair for signing from your filesystem to Confusa (y/n)?"
+    get_user_alternative "Do you want to copy a certificate/key pair for signing from your filesystem to Confusa (Y/n)?" "Y"
 
-		if [[ $answer = "y" && -n $ca_key_name && -n $ca_cert_name ]]; then
-			while [ -z $custom_cert_pos ]; do
-				echo -n "Full path to a CA-cert on your computer (e.g. /etc/apache2/ca/ca.crt): "
-				read custom_cert_pos
+    if [[ $answer = "y" || $answer = "Y" ]] && \
+	[[ -n $ca_key_name && -n $ca_cert_name ]]; then
+	# get and copy the certificate into Confusa's cert-directory
+	while [ -z $custom_cert_pos ]; do
+	    read -p "Full path to a CA-cert on your computer (e.g. /etc/apache2/ca/ca.crt): " \
+		custom_cert_pos
 
-				if [ ! -f $custom_cert_pos ]; then
-					custom_cert_pos=""
-				fi
-			done
+	    if [ ! -f $custom_cert_pos ]; then
+		custom_cert_pos=""
+	    fi
+	done
+	cp $custom_cert_pos ${install_path}${ca_cert_base_path}/${ca_cert_path}/${ca_cert_name}
 
-			cp $custom_cert_pos ${install_path}${ca_cert_base_path}/${ca_cert_path}/${ca_cert_name}
+	# get and copy the CA's private key into Confusa's cert/key directory
+	while [ -z $custom_key_pos ]; do
+	    read -p "Full path to a CA-private key on your computer (e.g. /etc/apache2/ca/ca.key): " \
+		custom_key_pos
+	    if [ ! -f $custom_key_pos ]; then
+		custom_key_pos=""
+	    fi
+	done
+	cp $custom_key_pos ${install_path}${ca_cert_base_path}/${ca_key_path}/${ca_key_name}
 
-			while [ -z $custom_key_pos ]; do
-				echo -n "Full path to a CA-private key on your computer (e.g. /etc/apache2/ca/ca.key): "
-				read custom_key_pos
+    elif [ -z $ca_key_name ]; then
+	echo "Error: The name of CA-key is not set in the configuration!"
+    elif [ -z $ca_cert_name ]; then
+	echo "Error: The name of the CA-cert is not set in the configuration!"
+    fi
 
-				if [ ! -f $custom_key_pos ]; then
-					custom_key_pos=""
-				fi
-			done
+    echo ""
+    echo "Trying to set the right permissions for the ca execution directory"
+    res=0
+    chown -R $custom_apache_user $ca_write_dir
+    res=`expr $res + $?`
+    touch ${ca_write_dir}/ca.db.index
+    res=`expr $res + $?`
+    touch ${ca_write_dir}/ca.db.index.attr
+    res=`expr $res + $?`
+    # Give apache read permissions on the private key
+    chown -R $custom_apache_user ${install_path}${ca_cert_base_path}/${ca_key_path}/${ca_key_name}
+    res=`expr $res + $?`
+    chmod 400 ${install_path}${ca_cert_base_path}/${ca_key_path}/${ca_key_name}
+    res=`expr $res + $?`
 
-			cp $custom_key_pos ${install_path}${ca_cert_base_path}/${ca_key_path}/${ca_key_name}
-		elif [ -z $ca_key_name ]; then
-			echo "Error: The name of CA-key is not set in the configuration!"
-		elif [ -z $ca_cert_name ]; then
-			echo "Error: The name of the CA-cert is not set in the configuration!"
-		fi
-
-		echo ""
-		echo "Trying to set the right permissions for the ca execution directory"
-
-		chown -R $custom_apache_user $ca_write_dir
-		res=`expr $res + $?`
-		touch ${ca_write_dir}/ca.db.index
-		res=`expr $res + $?`
-		touch ${ca_write_dir}/ca.db.index.attr
-		res=`expr $res + $?`
-		# Give apache read permissions on the private key
-		chown -R $custom_apache_user ${install_path}${ca_cert_base_path}/${ca_key_path}/${ca_key_name}
-		res=`expr $res + $?`
-		chmod 400 ${install_path}${ca_cert_base_path}/${ca_key_path}/${ca_key_name}
-		res=`expr $res + $?`
-
-		if [ ! $res -eq 0 ]; then
-			echo "Something went wrong when trying to assign the right permissions to the CA keys/files"
-			echo "Please make yourself sure that the files in ${ca_write_dir} and"
-			echo "${install_path}${ca_cert_base_path} have the right permissions!"
-		fi
+    if [ ! $res -eq 0 ]; then
+	echo "Something went wrong when trying to assign the right permissions to the CA keys/files"
+	echo "Please make yourself sure that the files in ${ca_write_dir} and"
+	echo "${install_path}${ca_cert_base_path} have the right permissions!"
+    fi
 }
 
 function perform_postinstallation_steps
 {
-	echo ""
-	echo "*********************************************************************"
-	echo "Configuration done, performing postinstall..."
-	echo "(NB: You can always change the configuration by editing "
-	echo "${custom_install_path}config/confusa_config.php"
-	echo ""
-	echo "Press any key to continue or wait 20 seconds                         "
-	echo "*********************************************************************"
-	echo ""
-	read -n1 -t10 any_key
+	echo "
+	*********************************************************************
+	Configuration done, performing postinstall...
+	(NB: You can always change the configuration by editing
+	${custom_install_path}config/confusa_config.php
 
-	cd ../bin/
+	Press any key to continue or wait 10 seconds
+	*********************************************************************"
+	read -n1 -t10 any_key
 
 	# only populate the database if that has not already been done by dbconfig
 	if [ ! -f $dbconfig_template ]; then
@@ -801,13 +727,13 @@ function perform_postinstallation_steps
 		fi
 
 		echo "Wrote mysql_root password temporarily to /root/mysql_root.pw. "
-		echo "If mysql-execution fails, please delete that file manually."
+		echo "If mysql-execution fails, please delete this file manually."
 		sh create_database.sh --delete_user
 		res=$?
 		rm -f $TMPFILE
 
 		if [ ! $res -eq 0 ]; then
-			echo "Failed populating the DB!"
+			echo "Failed when populating the DB!"
 			perror $res
 			exit $res
 		fi
@@ -815,65 +741,79 @@ function perform_postinstallation_steps
 		echo "DB has already been populated by dbconfig-common, skipping..."
 	fi
 
-	echo ""
-	echo ""
-	cd `dirname $0`
-
-	install_path=`grep "'install_path'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
-	simplesaml_path=`grep "'simplesaml_path'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
-	ca_mode=`grep "'ca_mode'" $config | cut -d "=" -f 2 | cut -d "_" -f 2 | cut -d "," -f 1`
-	confusa_log=`grep "'default_log'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
-	custom_css_path=`grep "'custom_css'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
-	custom_graphics_path=`grep "'custom_logo'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
-	custom_template_path=`grep "'custom_mail_tpl'" $config | cut -d "=" -f 2 | cut -d "'" -f 2`
-	# bootstrap smarty directories
-	smarty_templates_c=`grep "SMARTY_TEMPLATES_C" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
-	smarty_cache=`grep "SMARTY_CACHE" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
-
-	get_user_alternative "Do you want setup to install a crontab for cleaning and backing up the DB? (y/n)"
-
-	if [ $answer == "y" ]; then
-		write_cron_jobs ${install_path}
-	fi
-
-	# Get the permissions right
 	# Guess the name of the apache/httpd user
+	# We search for:
+	# - apache
+	# - http
+	# If none is found, use www-data
 	# Note that the [ ] is used to make ps aux NOT include the grep command itself
 	apache_user=`ps aux | grep [a]pache | cut -d " " -f 1 | tail -n 1`
-
 	if [ -z $apache_user ]; then
 		apache_user=`ps aux | grep [h]ttpd | cut -d " " -f 1 | tail -n 1`
 	fi
-
 	if [ -z $apache_user ]; then
 		apache_user="www-data"
 	fi
-
-	echo -n "Name of the apache user [$apache_user]: "
-	read custom_apache_user
+	read -p "Name of the apache user [$apache_user]: " custom_apache_user
 
 	if [ -z $custom_apache_user ]; then
 		custom_apache_user=$apache_user
 	fi
 
-	mkdir -p ${custom_css_path}
-	chown -R $custom_apache_user ${custom_css_path}
-	res=$?
-	mkdir -p ${custom_graphics_path}
-	chown -R $custom_apache_user ${custom_graphics_path}
-	res=`expr $res + $?`
-	mkdir -p ${custom_template_path}
-	chown -R $custom_apache_user ${custom_template_path}
-	res=`expr $res + $?`
-	chmod 0755 ${custom_css_path}
-	res=`expr $res + $?`
-	chmod 0755 ${custom_graphics_path}
-	res=`expr $res + $?`
-	chmod 0755 ${custom_template_path}
-	res=`expr $res + $?`
+
+	# Find various paths from config, create requried directories
+	# and set the access-rights so we can use them
+	res=0
+	if ! install_path=`_get_config_entry 'install_path'`; then
+	    echo "could not find install_path in config $config!"
+	fi
+
+	if ! simplesaml_path=`_get_config_entry 'simplesaml_path'`; then
+	    echo "could not find simplesaml_path in config $config!"
+	fi
+	if ! ca_mode=`_get_config_entry 'ca_mode'`; then
+	    echo "could not find ca_mode in config $config!"
+	fi
+	if ! confusa_log=`_get_config_entry 'default_log'`; then
+	    echo "could not find default_log in config $config!"
+	fi
+	if ! custom_css_path=`_get_config_entry 'custom_css'`; then
+	    mkdir -p ${custom_css_path}
+	    chown -R $custom_apache_user ${custom_css_path}
+	    res=`expr $res + $?`
+	    chmod 0755 ${custom_css_path}
+	    res=`expr $res + $?`
+	else
+	    echo "could not find custom_css in config $config!"
+	fi
+
+	if ! custom_graphics_path=`_get_config_entry 'custom_logo'`; then
+	    mkdir -p ${custom_graphics_path}
+	    chown -R $custom_apache_user ${custom_graphics_path}
+	    res=`expr $res + $?`
+	    chmod 0755 ${custom_graphics_path}
+	    res=`expr $res + $?`
+	else
+	    echo "could not find custom_logo in config $config!"
+	fi
+
+	if ! custom_template_path=`_get_config_entry 'custom_mail_tpl'`; then
+	    mkdir -p ${custom_template_path}
+	    chown -R $custom_apache_user ${custom_template_path}
+	    res=`expr $res + $?`
+	    chmod 0755 ${custom_template_path}
+	    res=`expr $res + $?`
+	else
+	    echo "could not find custom_mail_tpl in config $config!"
+	fi
+
+	# bootstrap smarty directories
+	smarty_templates_c=`grep "SMARTY_TEMPLATES_C" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
 	mkdir -p ${smarty_templates_c}
 	chown -R $custom_apache_user ${smarty_templates_c}
 	res=`expr $res + $?`
+
+	smarty_cache=`grep "SMARTY_CACHE" $constants | cut -d '=' -f 2 | cut -d "'" -f 2 | cut -d "'" -f 1`
 	mkdir -p ${smarty_cache}
 	chown -R $custom_apache_user ${smarty_cache}
 	res=`expr $res + $?`
@@ -886,6 +826,14 @@ function perform_postinstallation_steps
 		echo "${smarty_templates_c}"
 		echo "${smarty_cache}"
 		exit $res
+	fi
+
+
+	# Manage database-crontab
+	get_user_alternative "Do you want setup to install a crontab for cleaning and backing up the DB? (Y/n)" "Y"
+
+	if [ $answer == "y" ] || [ $answer == "Y"; then
+		write_cron_jobs ${install_path}
 	fi
 
 	# Set the right permissions on the Confusa log
@@ -905,29 +853,24 @@ function perform_postinstallation_steps
 	# Setup the permissions for the cert-handling stuff
 	if [ $ca_mode = "STANDALONE" ]; then
 		postinstall_standalone $custom_apache_user $install_path
-	fi # standalone handling
+	fi
 
-	# TODO: add in that order, once NREN bootstrapping exists:
-	#		bootstrap_nren.sh
-	#		bootstrap_idp.sh
-	#
+	echo "
 
-	echo ""
-	echo ""
-	echo "*********************************************************************"
-	echo "Thanks for using the Confusa installer. Please find further notes on "
-	echo "Confusa's configuration in ${install_path}INSTALL"
-	echo ""
-	echo "Scripts you might want to run:"
-	echo "bootstrap_nren : Connect a new NREN to Confusa"
-	echo "bootstrap_idp  : Connect an identity provider to that NREN"
-	echo "*********************************************************************"
-	echo ""
-	echo ""
-}
+	*********************************************************************
+	Thanks for using the Confusa installer.
+
+	Scripts you might want to run:
+	bootstrap_nren : Connect a new NREN to Confusa
+	bootstrap_idp  : Connect an identity provider to that NREN
+	*********************************************************************"
+} # end perform_postinstallation_steps
+
 
 ################################################################################
-##### Script entry point
+#
+#				Script entry point
+#
 ################################################################################
 
 if [ ! `whoami` == "root" ]; then
@@ -935,37 +878,44 @@ if [ ! `whoami` == "root" ]; then
 	exit
 fi
 
-# execute the script from it's base directory. This makes handling of paths
-# etc. much easier
-cd `dirname $0`
+echo "
+	*********************************************************************
 
-echo ""
-echo "*********************************************************************"
-echo "Welcome to the Confusa setup. I will ask you a few questions and"
-echo "        setup Confusa according to your answers!             "
-echo "********************************************************************"
-echo ""
+			Welcome to the Confusa-setup
 
+	This will guide you through the configuration. It would be wise to keep the
+	INSTALL-documentation handy if this is the first time you perform the
+	installation.
+
+	Remember, you can always direct questions to confusa-dev@confusa.org and at
+	our IRC-channel #confusa@freenode.
+
+	********************************************************************
+"
 # Check if the config contains "valid_install" and ask the user if the
 # configuration block should be skipped in that case
 if [ -f $config ]; then
-	valid_install=`grep "valid_install" $config | cut -d ">" -f 2 | cut -d "," -f 1 | tr -d [:blank:]`
+    # FIXME: this should be done a bit cleaner
+    valid_install=`grep "valid_install" $config | cut -d ">" -f 2 | cut -d "," -f 1 | tr -d [:blank:]`
 
-	if [ "$valid_install" = "true" ]; then
-		get_user_alternative "Updated configuration found. Skip configuration section? (y/n) :"
+    if [ "$valid_install" = "true" ]; then
+	get_user_alternative "Updated configuration found. Skip configuration section? (Y/n) :" "Y"
 
-		if [ $answer = "n" ]; then
-			configure_confusa_settings
-		else
-			copy_new_config_flags
-		fi
-
-		perform_postinstallation_steps
+	# do not skip configuration, go ahead with full-blown config-edit
+	if [[ $answer == "n" || $answer == "N" ]]; then
+	    configure_confusa_settings
 	else
-		configure_confusa_settings
-		perform_postinstallation_steps
+	    copy_new_config_flags
 	fi
-# Config template does not yet exist, copy it and walk the user through configuration
+
+	perform_postinstallation_steps
+	else
+	configure_confusa_settings
+	perform_postinstallation_steps
+    fi #end if valid_install
+
+# Config template does not yet exist, copy it and walk the user through
+# configuration
 else
 	cp $config_template $config
 	configure_confusa_settings

@@ -1,8 +1,9 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'framework.php';
-require_once 'mdb2_wrapper.php';
-require_once 'input.php';
+require_once 'Content_Page.php';
+require_once 'Framework.php';
+require_once 'MDB2Wrapper.php';
+require_once 'Input.php';
 require_once 'file_io.php';
 require_once 'file_upload.php';
 require_once 'logger.php';
@@ -578,7 +579,7 @@ class CP_Stylist extends Content_Page
 	private function sendNRENTestMail($recipient, $template)
 
 	{
-		require_once 'mail_manager.php';
+		require_once 'MailManager.php';
 		require_once 'CA.php';
 
 		$timezone = new DateTimeZone($this->person->getTimezone());

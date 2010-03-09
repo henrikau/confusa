@@ -79,7 +79,7 @@
 		"en":	"Phone-number to the NREN CERT."
 	},
 	"l10n_infotext_nren_portal_url": {
-		"en":	"NREN-specific URL. Not yet implemented, but will allow the portal to guess the branding based on incoming URL. Probably available from v0.6."
+		"en":	"NREN-specific URL. Not yet implemented, but will allow the portal to guess the branding based on incoming URL."
 	},
 	"l10n_infotext_nren_portal_language": {
 		"en":	"Pre-defined language. When the portal is able to detect the NREN, it will pick this language and translate the text into the defined language."
@@ -93,5 +93,11 @@
 	},
 	"l10n_infotext_certvalidity": {
 		"en":	"The number of days that personal certificates ordered by your users will be valid."
+	},
+	"l10n_label_wayfurl": {
+		"en":	"WAYF-URL:"
+	},
+	"l10n_infotext_wayf_url": {
+		"en":	"If your NREN has a WAYF service, use this URL to point to it. Then your own, branded IdP discovery will be shown to your users."
 	}
 }

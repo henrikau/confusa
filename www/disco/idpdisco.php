@@ -1,10 +1,10 @@
 <?php
 require_once '../confusa_include.php';
-require_once 'content_page.php';
-require_once 'framework.php';
+require_once 'Content_Page.php';
+require_once 'Framework.php';
 require_once 'confusa_gen.php';
-require_once 'mdb2_wrapper.php';
-require_once 'input.php';
+require_once 'MDB2Wrapper.php';
+require_once 'Input.php';
 require_once 'logger.php';
 
 /**
@@ -38,9 +38,8 @@ class IdPDisco
 	function __construct()
 	{
 		$this->tpl	= new Smarty();
-		$this->tpl->template_dir= Config::get_config('install_path').'lib/smarty/templates';
+		$this->tpl->template_dir= Config::get_config('install_path').'templates';
 		$this->tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
-		$this->tpl->config_dir	= Config::get_config('install_path').'lib/smarty/configs';
 		$this->tpl->cache_dir	= ConfusaConstants::$SMARTY_CACHE;
 
 		$sspdir = Config::get_config('simplesaml_path');

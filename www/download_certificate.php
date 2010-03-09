@@ -1,10 +1,11 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'framework.php';
-require_once 'person.php';
-require_once 'mail_manager.php';
+require_once 'Content_Page.php';
+require_once 'Framework.php';
+require_once 'Person.php';
+require_once 'MailManager.php';
 require_once 'confusa_gen.php';
-require_once 'output.php';
+require_once 'Output.php';
 
 final class CP_DownloadCertificate extends Content_Page
 {
@@ -118,7 +119,7 @@ final class CP_DownloadCertificate extends Content_Page
 
 	private function installCert($authKey)
 	{
-		$ua = getUserAgent();
+		$ua = Output::getUserAgent();
 		$script = $this->ca->getCertDeploymentScript($authKey, $ua);
 
 		if ($ua == "keygen") {

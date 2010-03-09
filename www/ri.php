@@ -1,13 +1,13 @@
 <?php
 require_once 'confusa_include.php';
 require_once 'Robot.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 require_once 'cert_lib.php';
 require_once 'logger.php';
-require_once 'person.php';
+require_once 'Person.php';
 require_once 'CA.php';
 
-$log_error_code = create_pw(8);
+$log_error_code = PW::create(8);
 
 /**
  * assertEnvironment() make sure that we are operating safely

@@ -1,8 +1,9 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'framework.php';
-require_once 'person.php';
-require_once 'mdb2_wrapper.php';
+require_once 'Content_Page.php';
+require_once 'Framework.php';
+require_once 'Person.php';
+require_once 'MDB2Wrapper.php';
 require_once 'cert_lib.php';
 require_once 'file_upload.php';
 require_once 'certificate.php';
@@ -234,7 +235,7 @@ class CP_Robot_Interface extends Content_Page
 				 * Fixme: better error-reporting here, even
 				 * though we cannot do much about it.
 				 */
-				$error_code = strtoupper(create_pw(8));
+				$error_code = strtoupper(PW::create(8));
 				$error_msg  = "[error_code: $error_code]<br /><br />\n";
 				$log_msg  = "[$error_code] ";
 
@@ -274,7 +275,7 @@ class CP_Robot_Interface extends Content_Page
 				break;
 			default:
 				/* FIXME: DB-inconsistency */
-				$error_code = strtoupper(create_pw(8));
+				$error_code = strtoupper(PW::create(8));
 				$error_msg  = "[error_code: $error_code] multiple instances of admin (";
 				$error_msg .= $this->person->getEPPN() . ") found in the database.";
 

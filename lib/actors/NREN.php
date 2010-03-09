@@ -1,6 +1,6 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 require_once 'CriticalAttributeException.php';
 require_once 'classTextile.php';
 
@@ -14,6 +14,7 @@ require_once 'classTextile.php';
  * @author	Henrik Austad <henrik.austad@uninett.no>
  * @license	http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
  * @since	File available since Confusa v0.4-rc0
+ * @package	resources
  */
 class NREN
 {
@@ -44,35 +45,33 @@ class NREN
 		}
 	}
 
-	function __toString()
+	/**
+	 * __toString() Return a string-representation (the name) of the NREN
+	 *
+	 * @param	void
+	 * @return	String the name of the NREN
+	 * @access	public
+	 */
+	public function __toString()
 	{
 		return $this->data['name'];
 	}
 
+	/**
+	 * isValid() returns a flag indicating whether or not the current NREN
+	 * is valid.
+	 *
+	 * The flag is based on how decorateNREN() fares, i.e. whether or not
+	 * the NREN was properly decorated from the database.
+	 *
+	 * @param	void
+	 * @return	Boolean flag indicating if the NREN is properly populated from the DB
+	 * @access	public
+	 */
 	public function isValid()
 	{
 		return $this->isValid;
 	}
-
-	/**
-	 * dumpDebug() Print debug-info for the class to screen
-	 *
-	 * This is a debug-function. It will print all content in the data-array
-	 * as a way of tracing information etc.
-	 *
-	 * @param void
-	 * @return void
-	 */
-	function dumpDebug()
-	{
-		if (!Config::get_config('debug')) {
-			echo "WARNING: Running dumpDebug() without debug explicitly set!<br />\n";
-		}
-		echo "<pre>\n";
-		print_r($this->data);
-		echo "</pre>\n";
-	}
-
 
 	/**
 	 * getName() Return the stored name for the NREN.
@@ -83,15 +82,26 @@ class NREN
 	 *		have stumbled accross internal inconsistency.
 	 * @access	public
 	 */
-	function getName()
+	public function getName()
 	{
 		return $this->data['name'];
 	}
 
-	function getCountry()
+	/**
+	 * getCountry() Return the nationality of the NREN
+	 *
+	 * The country is stored and returned in ISO-3166-1-A2 format
+	 * (two-letter country code).
+	 *
+	 * @param	void
+	 * @return	String ISO-3166 country code
+	 * @access	public
+	 */
+	public function getCountry()
 	{
 		return $this->data['country'];
 	}
+
 	/**
 	 * getID() return the database ID for the NREN
 	 *
@@ -102,12 +112,23 @@ class NREN
 	 * @return	Integer|null the ID of the NREN
 	 * @access	public
 	 */
-	function getID()
+	public function getID()
 	{
 		return $this->data['nren_id'];
 	}
 
-	function getHelp()
+	/**
+	 * getHelp() get the help-text from the database and return.
+	 *
+	 * The help-text is a large chunk of text, and we do not want to
+	 * retrieve this every time we create an NREN-object. Only when we
+	 * *need* it should we query the database.
+	 *
+	 * @param	void
+	 * @return	String|null the help-text stored in the database for the NREN
+	 * @access	public
+	 */
+	public function getHelp()
 	{
 		if (is_null($this->data['help'])) {
 			$help = MDB2Wrapper::execute("SELECT help FROM nrens WHERE nren_id =?",
@@ -120,19 +141,34 @@ class NREN
 		return $this->data['help'];
 	}
 
+	/**
+	 * getMap() Return the attribute-map associated with the NREN
+	 *
+	 * The map is used to find the relationship between the attributes and
+	 * the content we need. The map is retrieved from the database via
+	 * decorateNREN().
+	 *
+	 * @param	void
+	 * @return	Array|null the map
+	 * @access	public
+	 */
 	public function getMap()
 	{
-		if ($this->hasMap)
+		if ($this->hasMap) {
 			return $this->map;
+		}
 		return null;
 	}
 
 	/**
-	 * getEnableEmail() return the stored value about whether or not to
-	 * include emails in the certificates.
+	 * getEnableEmail() number of emails to include in certs.
 	 *
-	 * @param  : void
-	 * @return : String|null 0,1 or multiple addresses to store in the certs.
+	 * The NREN can be configured to allow 0, 1, multiple (at least 1) and
+	 * multiple (including none) emails in the certificate.
+	 *
+	 * @param	void
+	 * @return	String|null 0,1 or multiple addresses to store in the certs.
+	 * @access	public
 	 */
 	public function getEnableEmail()
 	{
@@ -143,15 +179,22 @@ class NREN
 	}
 
 	/**
-	 * getCertValidity() return the stored value about the validity period
-	 * of the certificates. If Confusa operates in eScience mode, the value is
-	 * always 395.
-	 * If Confusa operates in personal certificates mode, the value is NREN-
-	 * setting dependant and one of 365, 730 or 1065. In that case there also
-	 * is a default value which is the lowest validity period, usually 365.
+	 * getCertValidity() stored validity period for certificates
 	 *
-	 * @param  : void
-	 * @return : String 14, 365, 395, 730 or 1065
+	 * If Confusa operates in eScience mode, the value is always 395.
+	 *
+	 * If Confusa operates in personal certificates mode, the value is NREN-
+	 * setting dependant and one of:
+	 * - 365
+	 * - 730
+	 * - 1065.
+	 *
+	 * Note: if Confusa is placed in test-mode ('capi_test'), the returned
+	 * value is ignored by the CA-manager and 14 is used instead.
+	 *
+	 * @param	void
+	 * @return	String 365, 395, 730 or 1065
+	 * @access	public
 	 */
 	public function getCertValidity()
 	{
@@ -167,11 +210,15 @@ class NREN
 	}
 
 	/**
-	 * getShowPortalTitle() - return whether the portal title should be shown
-	 * as a component of the NREN branding or not. It might be desirable to
-	 * not show if there are for instance large logos for the header.
+	 * getShowPortalTitle() flag to show if the portal title be shown
 	 *
-	 * @return boolean Whether the portal title is to be shown or not
+	 * This returns a flag indicating whether or not the portal-title should
+	 * be part of the NREN-branding. It might be desirable not to show the
+	 * title if there are large logos in the header.
+	 *
+	 * @param	void
+	 * @return	Boolean	Whether the portal title is to be shown or not
+	 * @access	public
 	 */
 	public function getShowPortalTitle()
 	{
@@ -183,10 +230,12 @@ class NREN
 	}
 
 	/**
-	 * Get the custom NREN-defined portal title.
+	 * getCustomPortalTitle()
 	 *
-	 * @return string the title that is configured for the portal to show for
-	 *                the given NREN
+	 * @param	void
+	 * @return	String  the title that is configured for the portal to
+	 *			show for the given NREN
+	 * @access	public
 	 */
 	public function getCustomPortalTitle()
 	{
@@ -197,6 +246,20 @@ class NREN
 		}
 	}
 
+	/**
+	 * saveMap()	save the current map to database
+	 *
+	 * When the map is updated, this will handle the interaction with the
+	 * database.
+	 *
+	 * @param	String $eppnkey key to use for finding the ePPN
+	 * @param	String $epodn	key to find eduPersonOrgDN
+	 * @param	String $cn	Common Name (full name of user)
+	 * @param	String $mail	E-mail
+	 * @param	String $entitlement entitlement-key
+	 * @return	Boolean	true if map was successfully saved to database.
+	 * @access	public
+	 */
 	public function saveMap($eppnkey, $epodn, $cn, $mail, $entitlement)
 	{
 		$doUpdate = false;
@@ -243,110 +306,181 @@ class NREN
 		return true;
 	}
 	/**
-	 * Get the contact information for a NREN
+	 * getNRENInfo() Get the contact information for a NREN
 	 *
-	 * @param void
-	 * @return Array The contact-details for the NREN
+	 * This returns *all* information retrieved from the database, thus it
+	 * should be used with a grain of caution.
+	 *
+	 * @param	void
+	 * @return	Array The contact-details for the NREN
+	 * @access	public
 	 */
 	public function getNRENInfo()
 	{
-		$res = $this->data;
-		return $res;
+		if ($this->data) {
+			return $this->data;
+		}
+		return null;
 	}
 
+	/**
+	 * getWAYFURL() get the URL to the NREN's WAYF
+	 *
+	 * @param	void
+	 * @return	String the URL to the NREN's Where are you from service
+	 * @access	public
+	 */
 	public function getWAYFURL()
 	{
-		if (isset($this->data)) {
-			if (array_key_exists('wayf_url', $this->data)) {
-				return $this->data['wayf_url'];
-			}
+		if (isset($this->data) && array_key_exists('wayf_url', $this->data)) {
+			return $this->data['wayf_url'];
 		}
 	}
 
-	public function set_login_account($login_account)
+	/**
+	 * set WAYFURL() Set the WAYF-service URL for the NREN
+	 *
+	 * @param String $url the address of the WAYF service
+	 * @return void
+	 * @access public
+	 * @since v0.6-rc0
+	 */
+	public function setWAYFURL($url)
 	{
-		if (!is_null($login_account)) {
-			if ($this->data['login_account'] != $login_account) {
-				$this->data['login_account'] = Input::sanitizeText($login_account);
+		if (!is_null($url)) {
+			if ($this->data['wayf_url'] != $url) {
+				$this->data['wayf_url'] = $url;
 				$this->pendingChanges = true;
 			}
 		}
-	}
-	public function set_about($about)
-	{
-		if (!is_null($about)) {
-			if ($this->data['about'] != $about) {
-				$this->data['about'] = Input::sanitizeText($about);
-				$this->pendingChanges = true;
-			}
-		}
-	}
-	public function set_help($help)
-	{
-		if (!is_null($help)) {
-			if ($this->data['help'] != $help) {
-				$this->data['help'] = Input::sanitizeText($help);
-				$this->pendingChanges = true;
-			}
-		}
-	}
-	public function set_lang($lang)
+	} /* end setWAYFURL() */
+
+	/**
+	 * setLang() Set the preferred language for the NREN
+	 *
+	 * @param	String @lang the language to use for the NREN
+	 * @return	void
+	 * @access	public
+	 */
+	public function setLang($lang)
 	{
 		if (!is_null($lang)) {
 			if ($this->data['lang'] != $lang) {
 				$this->data['lang'] = Input::sanitizeText($lang);
 				$this->pendingChanges = true;
 			}
-		} else {
-			echo "Language not set<br />\n";
 		}
 	}
-	public function set_url($url)
+
+	/**
+	 * setURL() set the NREN-portal URL
+	 *
+	 * The URL is used to "pre-brand" the portal. An NREN can define which
+	 * URL the portal be hosted under, and Confusa will then look at the
+	 * access-url of an un-AuthN user, and if a match is found in the DB,
+	 * appropriate branding is applied.
+	 *
+	 * @param	String $url the URL to use
+	 * @return	void
+	 * @access	public
+	 */
+	public function setURL($url)
 	{
 		if (!is_null($url)) {
 			if ($this->data['url'] != $url) {
-				$this->data['url'] = Input::sanitizeText($url);
-				$this->pendingChanges = true;
-			}
-		}
-	}
-	public function set_contact_email($contact_email)
-	{
-		if (!is_null($contact_email)) {
-			if ($this->data['contact_email'] != $contact_email) {
-				$this->data['contact_email'] = Input::sanitizeText($contact_email);
-				$this->pendingChanges = true;
-			}
-		}
-	}
-	public function set_cert_email($cert_email)
-	{
-		if (!is_null($cert_email)) {
-			if ($this->data['cert_email'] != $cert_email) {
-				$this->data['cert_email'] = Input::sanitizeText($cert_email);
-				$this->pendingChanges = true;
-			}
-		}
-	}
-	public function set_cert_phone($cert_phone)
-	{
-		if (!is_null($cert_phone)) {
-			if ($this->data['cert_phone'] != $cert_phone) {
-				$this->data['cert_phone'] = Input::sanitizeText($cert_phone);
-				$this->pendingChanges = true;
-			}
-		}
-	}
-	public function set_contact_phone($contact_phone)
-	{
-		if (!is_null($contact_phone)) {
-			if ($this->data['contact_phone'] != $contact_phone) {
-				$this->data['contact_phone'] = Input::sanitizeText($contact_phone);
+				$this->data['url'] = $url;
 				$this->pendingChanges = true;
 			}
 		}
 	}
 
+	/**
+	 * setContactEmail() set the address to NREN-contact
+	 *
+	 * This email is where administrative contact to the NREN can be
+	 * placed. In some areas, users and subscriber-admins need to find this
+	 * quickly, and the NREN may want to use a dedicated address for
+	 * portal-inquiries.
+	 *
+	 * @param	String $contact_email
+	 * @return	void
+	 * @access	public
+	 */
+	public function setContactEmail($contact_email)
+	{
+		if (!is_null($contact_email)) {
+			if ($this->data['contact_email'] != $contact_email) {
+				$this->data['contact_email'] = $contact_email;
+				$this->pendingChanges = true;
+			}
+		}
+	}
+
+
+	/**
+	 * setContactPhone()
+	 *
+	 * @see setContactEmail
+	 */
+	public function setContactPhone($contact_phone)
+	{
+		if (!is_null($contact_phone)) {
+			if ($this->data['contact_phone'] != $contact_phone) {
+				$this->data['contact_phone'] = $contact_phone;
+				$this->pendingChanges = true;
+			}
+		}
+	}
+
+	/**
+	 * setCertEmail() set the NREN's CERT-team emailaddress.
+	 *
+	 * @param	String $cert_email
+	 * @return	void
+	 * @access	public
+	 */
+	public function setCertEmail($cert_email)
+	{
+		if (!is_null($cert_email)) {
+			if ($this->data['cert_email'] != $cert_email) {
+				$this->data['cert_email'] = $cert_email;
+				$this->pendingChanges = true;
+			}
+		}
+	}
+
+	/* setCertPhone()
+	 *
+	 * @see setCertEmail
+	 */
+	public function setCertPhone($cert_phone)
+	{
+		if (!is_null($cert_phone)) {
+			if ($this->data['cert_phone'] != $cert_phone) {
+				$this->data['cert_phone'] = $cert_phone;
+				$this->pendingChanges = true;
+			}
+		}
+	}
+
+	/**
+	 * setEnableEmail() store the value to how emails shold be let into the
+	 * SAN.
+	 *
+	 * A certificate can store 0 to multiple addresses in the SAN (Subject
+	 * Alternative Name). This is configurable on an NREN-basis.
+	 *
+	 * It can have the values
+	 * '0'	: No certiticates are allowed in the SAN *at all*
+	 * '1'	: One, and only one. if multiple addresses are returned from the
+	 *	  IdP, a selection where the user must pick *one* is created.
+	 * 'n'	: Multiple addresses, or 0, the  decision is left to the user.
+	 * 'm'	: Multiple addressed, but *at least* one.
+	 *
+	 * @param	String $enable_email
+	 * @return	void
+	 * @access	public
+	 */
 	public function setEnableEmail($enable_email)
 	{
 		if (!is_null($enable_email)) {
@@ -359,9 +493,29 @@ class NREN
 		}
 	}
 
+	/**
+	 * setCertValidity() set the limit for how long a certificate should be valid.
+	 *
+	 * If in eScience, the  only value is 395 days, and the function will
+	 * not store the number in this mode.
+	 *
+	 * In personal, you can have 3 (and it is for personal this function is necessary):
+	 * - 365 days
+	 * - 730 days
+	 * - 1095 days
+	 *
+	 * Also not, if the portal is in test-mode ('capi_test'), the
+	 * certificate validity is *always* 14 days regardless of mode and
+	 * configured days.
+	 *
+	 * @param	String $validity number of days
+	 * @return	void
+	 * @access	public
+	 */
 	public function setCertValidity($validity)
 	{
-		if (isset($validity)) {
+		if (isset($validity) &&
+		    (Config::get_config('cert_product') === PRD_PERSONAL)) {
 			if (!array_key_exists('cert_validity', $this->data) ||
 			    ($this->data['cert_validity'] != $validity)) {
 
@@ -372,28 +526,41 @@ class NREN
 		}
 	}
 
+	/**
+	 * setShowPortalTitle() set the flag to indicate whether or not the
+	 * portal title should be shown.
+	 *
+	 * @param	Boolean $showPortalTitle
+	 * @return	void
+	 * @access	public
+	 */
 	public function setShowPortalTitle($showPortalTitle)
 	{
 		if (isset($showPortalTitle)) {
 			if (!array_key_exists('show_portal_title', $this->data) ||
 			   ($this->data['show_portal_title'] != $showPortalTitle)) {
-
 				$this->data['show_portal_title'] = $showPortalTitle;
 				$this->pendingChanges = true;
-				return;
 			}
 		}
 	}
 
+	/**
+	 * setCustomPortalTitle() Set a customized portal title for the NREN
+	 *
+	 * An NREN can set the title to whatever it likes.
+	 *
+	 * @param	String $portalTitle the new title
+	 * @return	void
+	 * @access	public
+	 */
 	public function setCustomPortalTitle($portalTitle)
 	{
 		if (isset($portalTitle)) {
 			if (!array_key_exists('portal_title', $this->data) ||
 			($this->data['portal_title'] != $portalTitle)) {
-
 				$this->data['portal_title'] = $portalTitle;
 				$this->pendingChanges = true;
-				return;
 			}
 		}
 	}
@@ -412,7 +579,7 @@ class NREN
 		if ($this->pendingChanges) {
 			$query  = "UPDATE nrens SET contact_email=?, contact_phone=?, ";
 			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=?, cert_validity=?,";
-			$query .= " show_portal_title=?, portal_title=? ";
+			$query .= " show_portal_title=?, portal_title=?, wayf_url=? ";
 			$query .= "WHERE nren_id=?";
 			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text',
 			                'text', 'text', 'text', 'text');
@@ -426,6 +593,7 @@ class NREN
 					$this->data['cert_validity'],
 					$this->data['show_portal_title'],
 					$this->data['portal_title'],
+					$this->data['wayf_url'],
 					$this->getID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);
@@ -674,10 +842,9 @@ class NREN
 			$textile = new Textile();
 
 			return $this->replaceTags($textile->TextileRestricted($at,0), $person);
-		} else {
-			return "No about-NREN text has been defined for your NREN (" .
-				$this->getName(). ")";
 		}
+		return "No about-NREN text has been defined for your NREN (" .
+			$this->getName(). ")";
 	}
 
 
@@ -719,9 +886,58 @@ class NREN
 			$help_text = $textile->TextileRestricted($help_text,0);
 			return $this->replaceTags($help_text, $person);
 		}
+		return "No Help-text for your NREN (" .
+			$this->getName(). ") can be found in the system.";
 	} /* end getHelpText() */
 
+	/**
+	 * Get the list of IdPs stored in the DB for this NREN.
+	 *
+	 * @param	void
+	 * @return	array|null an array with all IdP URLs or null if not found
+	 * @access	public
+	 */
+	public function getIdPList()
+	{
+		$query = "SELECT m.idp_url FROM idp_map m " .
+		         "WHERE m.nren_id = ?";
 
+		try {
+			$res = MDB2Wrapper::execute($query,
+			                            array('text'),
+			                            array($this->getID()));
+		} catch (ConfusaGenException $cge) {
+			Logger::log_event(LOG_NOTICE, __FILE__ . " " . __LINE__ .  ": Could not " .
+			                  "get the IdP list for NREN with ID " .
+			                  $this->getID() . ". All IdP scoping will fail!");
+		}
+
+		if (count($res) > 0) {
+			$idpList = array();
+
+			foreach($res as $row) {
+				$idpList[] = $row['idp_url'];
+			}
+		} else {
+			return null;
+		}
+
+		return $idpList;
+	}
+
+	/**
+	 * replaceTags() take the texdt and replace known tags with
+	 * corresponding value
+	 *
+	 * We use tags in a lot of the texts to allow the admins to create
+	 * dynamic pages. When we display the page, these tags must be replaced
+	 * with updated values.
+	 *
+	 * @param	String $text the text containing the tags to replace
+	 * @param	Person $person the current person
+	 * @return	String $text the text with the tags replaced.
+	 * @access	private
+	 */
 	private function replaceTags($text, $person)
 	{
 		/*
@@ -773,6 +989,7 @@ class NREN
 	 * tries to construct the NREN from such an URL.
 	 *
 	 * @param nrenURL string the URL that was configured for the NREN
+	 * @return NREN|null
 	 * @since v0.6-rc0
 	 */
 	static function getNRENByURL($nrenURL)
@@ -810,39 +1027,6 @@ class NREN
 			return null;
 		}
 	} /* end getNRENByURL */
-
-	/**
-	 * Get the list of IdPs stored in the DB for this NREN.
-	 *
-	 * @return array|null an array with all IdP URLs or null if none found
-	 */
-	public function getIdPList()
-	{
-		$query = "SELECT m.idp_url FROM idp_map m " .
-		         "WHERE m.nren_id = ?";
-
-		try {
-			$res = MDB2Wrapper::execute($query,
-			                            array('text'),
-			                            array($this->getID()));
-		} catch (ConfusaGenException $cge) {
-			Logger::log_event(LOG_NOTICE, __FILE__ . " " . __LINE__ .  ": Could not " .
-			                  "get the IdP list for NREN with ID " .
-			                  $this->getID() . ". All IdP scoping will fail!");
-		}
-
-		if (count($res) > 0) {
-			$idpList = array();
-
-			foreach($res as $row) {
-				$idpList[] = $row['idp_url'];
-			}
-		} else {
-			return null;
-		}
-
-		return $idpList;
-	}
 
 } /* end class NREN */
 ?>

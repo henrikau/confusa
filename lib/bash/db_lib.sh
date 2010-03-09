@@ -15,22 +15,31 @@ if [ -f "/etc/confusa/confusa_config.inc.php" ]; then
 	db=`grep "\\$dbname=" $db_config_file | cut -d '=' -f 2 \
 		| cut -d "'" -f 2`
 else
-	username=`get_config_entry "mysql_username"`
-	pw=`get_config_entry "mysql_password"`
-	host=`get_config_entry "mysql_host"`
-	db=`get_config_entry "mysql_db"`
-fi
+    if [ -z ../lib/bash/config_lib.sh ]; then
+	echo "Cannot find config-library. Aborting."
+	exit 5
+    fi
+    if ! username=`get_config_entry "mysql_username"`; then
+	echo "Could not retrieve database-username from config. Aborting" >&2
+    fi
 
-if [ "$pw" == "" ]; then
-    pw=""
-else
-    pw="-p$pw"
-fi
+    if ! pw=`get_config_entry "mysql_password"`; then
+	echo "Could not retrieve database-password from config. Assuming no password" >&2
+	pw=""
+    else
+	pw="-p$pw"
+    fi
 
-if [ "$host" == "" ]; then
-    host=""
-else
+    if ! host=`get_config_entry "mysql_host"`; then
+	echo "Could not find database-hoset in config. Using localhost as default" >&2
+	host="localhost"
+    fi
     host="-h$host"
+
+    if ! db=`get_config_entry "mysql_db"`; then
+	echo "Could not find database-name in config. Aborting" >&2
+	exit 127
+    fi
 fi
 
 MYSQL="/usr/bin/mysql --skip-column-names ${host} -u'${username}' -D$db ${pw} -B"

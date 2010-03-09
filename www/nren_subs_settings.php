@@ -1,9 +1,9 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'content_page.php';
-require_once 'framework.php';
-require_once 'translator.php';
-require_once 'mdb2_wrapper.php';
+require_once 'Content_Page.php';
+require_once 'Framework.php';
+require_once 'Translator.php';
+require_once 'MDB2Wrapper.php';
 
 class CP_NREN_Subs_Settings extends Content_Page
 {
@@ -34,12 +34,13 @@ class CP_NREN_Subs_Settings extends Content_Page
 			switch($_POST['setting']) {
 			case 'nren_contact':
 				if ($this->person->isNRENAdmin()) {
-					$this->person->getNREN()->set_contact_email(Input::sanitizeEmail($_POST['contact_email']));
-					$this->person->getNREN()->set_contact_phone(Input::sanitizePhone($_POST['contact_phone']));
-					$this->person->getNREN()->set_cert_phone(   Input::sanitizePhone($_POST['cert_phone']));
-					$this->person->getNREN()->set_cert_email(   Input::sanitizeEmail($_POST['cert_email']));
-					$this->person->getNREN()->set_url(          Input::sanitizeURL($_POST['url']));
-					$this->person->getNREN()->set_lang(         Input::sanitizeLangCode($_POST['language']));
+					$this->person->getNREN()->setContactEmail(Input::sanitizeEmail($_POST['contact_email']));
+					$this->person->getNREN()->setContactPhone(Input::sanitizePhone($_POST['contact_phone']));
+					$this->person->getNREN()->setCertPhone(   Input::sanitizePhone($_POST['cert_phone']));
+					$this->person->getNREN()->setCertEmail(   Input::sanitizeEmail($_POST['cert_email']));
+					$this->person->getNREN()->setURL(         Input::sanitizeURL($_POST['url']));
+					$this->person->getNREN()->setLang(        Input::sanitizeLangCode($_POST['language']));
+					$this->person->getNREN()->setWAYFURL(     Input::sanitizeURL($_POST['wayf_url']));
 
 					$nren = $this->person->getNREN();
 

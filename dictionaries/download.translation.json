@@ -1,98 +1,130 @@
 {
 	"l10n_item_email": {
-		"no": "E-post"
+		"no": "E-post",
+		"de": "E-Mail"
 	},
 	"l10n_item_download": {
-		"no": "Last ned"
+		"no": "Last ned",
+		"de": "Download"
 	},
 	"l10n_item_inspect": {
-		"no": "Inspis\u00e9r"
+		"no": "Inspis\u00e9r",
+		"de": "\u00dcberpr\u00fcfen"
 	},
 	"l10n_item_install": {
-		"no": "Install\u00e9r"
+		"no": "Install\u00e9r",
+		"de": "Installieren"
 	},
 	"l10n_item_download_cert": {
-		"no": "Last ned sertifikat"
+		"no": "Last ned sertifikat",
+		"de": "Zertifikat herunterladen"
 	},
 	"l10n_item_install_ks": {
-		"no": "Installer i nettleser"
+		"no": "Installer i nettleser",
+		"de": "In den Keystore installieren"
 	},
 	"l10n_button_revoke": {
-		"no": "Tilbakekall"
+		"no": "Tilbakekall",
+		"de": "Widerrufen"
 	},
 	"l10n_confirm_revoke1": {
-		"no": "Vil du virkelig tilbakekalle sertifikat?"
+		"no": "Vil du virkelig tilbakekalle sertifikat?",
+		"de": "Zertifikate wirklich widerrufen?"
 	},
 	"l10n_confirm_revoke2": {
-		"no": "Utl\u00f8sdato"
+		"no": "Utl\u00f8sdato",
+		"de": "Erl\u00f6schdatum:"
 	},
 	"l10n_text_ordernumber": {
-		"no": "Ordrenummer"
+		"no": "Ordrenummer",
+		"de": "Bestellnummer:"
 	},
 	"l10n_text_authkey": {
-		"no": "auth-id"
+		"no": "auth-id",
+		"de": "Auth-Schl\u00fcssel:"
 	},
 	"l10n_status_processing": {
-		"no": "Under behandling"
+		"no": "Under behandling",
+		"de": "Wird bearbeitet"
 	},
 	"l10n_status_revoked": {
-		"no": "Tilbakekallet!"
+		"no": "Tilbakekallet!",
+		"de": "Widerrufen!!"
 	},
 	"l10n_status_nonew": {
-		"no": "Intet nytt sertifikat i l\u00f8pet av de forrige"
+		"no": "Intet nytt sertifikat i l\u00f8pet av de forrige",
+		"de": "Keine neuen Zertifikate in den letzten"
 	},
 	"l10n_status_days": {
-		"no": "dagene"
+		"no": "dagene",
+		"de": "Tagen"
 	},
 	"l10n_status_certhist": {
-		"no": "Sertifikater fra de forrige"
+		"no": "Sertifikater fra de forrige",
+		"de": "Zertifikate der letzten"
 	},
 	"l10n_text_showall": {
-		"no": "Vis alle"
+		"no": "Vis alle",
+		"de": "Alle zeigen"
 	},
 	"l10n_text_novalid": {
-		"no": "Ingen gyldige sertifiker registrert til deg."
+		"no": "Ingen gyldige sertifiker registrert til deg.",
+		"de": "Es wurden keine g\u00fcltigen Zertifikate f\u00fcr Sie ausgestellt."
 	},
 	"l10n_text_showingall": {
-		"no": "Viser alle gyldige sertifikater"
+		"no": "Viser alle gyldige sertifikater",
+		"de": "Zeige alle g\u00fcltigen Zertifikate."
 	},
 	"l10n_text_hideold": {
-		"no": "Gjem gamle"
+		"no": "Gjem gamle",
+		"de": "Alte verstecken"
 	},
 	"l10n_title_email": {
-		"no": "Send sertifikat via e-post"
+		"no": "Send sertifikat via e-post",
+		"de": "Schicke Zertifikat via E-Mail"
 	},
 	"l10n_title_download_cert": {
-		"no": "Lagre til disk"
+		"no": "Lagre til disk",
+		"de": "Speichere Zertifikat direkt auf die Festplatte"
 	},
 	"l10n_title_inspect": {
-		"no": "Vis detaljer"
+		"no": "Vis detaljer",
+		"de": "\u00dcberpr\u00fcfe Zertifikatsdetails"
 	},
 	"l10n_title_install_ks": {
-		"no": "Installer sertifikat i nettleser"
+		"no": "Installer sertifikat i nettleser",
+		"de": "Installiere Zertifikat in den Keystore"
 	},
 	"l10n_text_serial_number": {
-		"no": "Serienummer"
+		"no": "Serienummer",
+		"de": "Seriennummer"
 	},
 	"l10n_title_delete": {
-		"no": "Slett sertifikat fra database"
+		"no": "Slett sertifikat fra database",
+		"de": "L\u00f6sche Zertifikat aus der Datenbank"
 	},
 	"l10n_item_delete": {
-		"no": "Slett"
+		"no": "Slett",
+		"de": "L\u00f6schen"
 	},
 	"l10n_noscript_notice": {
-		"no": "Vennligst aktiver JavaScript for \u00e5 installere sertifikatet i nettleseren din!"
+		"no": "Vennligst aktiver JavaScript for \u00e5 installere sertifikatet i nettleseren din!",
+		"de": "Bitte aktivieren Sie JavaScript um Zertifikate in den Keystore Ihres Browsers installieren zu k\u00f6nnen!"
 	},
 	"l10n_mail_subject": {
-		"no": "Signert sertifikat"
+		"no": "Signert sertifikat",
+		"de": "Unterzeichnete Zertifikat"
 	},
 	"l10n_mail_body": {
-		"no": "Vedlagt er ditt nye sertifikat. Husk \u00e5 lagre dette som $HOME\/.globus\/usercert.pem slik at ARC kan benytte det"
+		"no": "Vedlagt er ditt nye sertifikat. Husk \u00e5 lagre dette som $HOME\/.globus\/usercert.pem slik at ARC kan benytte det",
+		"de": "Ihr neues Zertifikat ist angeh\u00e4ngt. Denken Sie daran, dieses in $HOME\/.globus\/usercert.pem zu speichern, damit ARC es ben\u00fctzen kann"
 	},
 	"l10n_heading_nocerts": {
-		"no": "Ingen sertifikater i databasen"
+		"no": "Ingen sertifikater i databasen",
+		"de": "Keine Zertifikate in der Datenbank"
 	},
 	"l10n_legend_availcerts": {
-		"no": "Tilgjengelige sertifikater"
+		"no": "Tilgjengelige sertifikater",
+		"de": "Verf\u00fcgbare Zertifikate"
 	}
 }

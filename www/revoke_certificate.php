@@ -1,11 +1,12 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'framework.php';
-require_once 'person.php';
+require_once 'Content_Page.php';
+require_once 'Framework.php';
+require_once 'Person.php';
 require_once 'send_element.php';
 require_once 'csv_lib.php';
-require_once 'input.php';
-require_once 'mdb2_wrapper.php';
+require_once 'Input.php';
+require_once 'MDB2Wrapper.php';
 
 class CP_RevokeCertificate extends Content_Page
 {

@@ -1,6 +1,7 @@
 <?php
 require_once 'confusa_include.php';
-include_once 'framework.php';
+require_once 'Content_Page.php';
+include_once 'Framework.php';
 class CP_Root_Certificate extends Content_Page
 {
 	/* The local (filesystem) path to the CA-certificate*/

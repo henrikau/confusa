@@ -1,15 +1,15 @@
 <?php
 declare(encoding = 'utf-8');
-require_once 'person.php';
+require_once 'Person.php';
 require_once 'CA.php';
 require_once 'key_sign.php';
 require_once 'db_query.php';
-require_once 'mdb2_wrapper.php';
+require_once 'MDB2Wrapper.php';
 require_once 'CGE_ComodoAPIException.php';
 require_once 'confusa_constants.php';
 require_once 'CGE_ComodoCredentialException.php';
-require_once 'curlwrapper.php';
-require_once 'Confusa_Session.php';
+require_once 'CurlWrapper.php';
+require_once 'CS.php';
 
 /**
  * CA_Comodo. Comodo signing extension for CA.
@@ -73,7 +73,7 @@ class CA_Comodo extends CA
 			);
 	}
 	try {
-		$errorCode = create_pw(8);
+		$errorCode = PW::create(8);
 		$errorMsg = "[$errorCode] " . __FILE__ . ":" . __LINE__ . " ";
 
 		$res = MDB2Wrapper::execute($login_cred_query, array('text'),

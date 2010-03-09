@@ -1,7 +1,10 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'framework.php';
-require_once 'content_page.php';
+require_once 'Content_Page.php';
+require_once 'Framework.php';
+require_once 'Content_Page.php';
+require_once 'Confusa_Auth.php';
+require_once 'AuthHandler.php';
 
 /**
  * Manage the mapping from the attributes that the IdPs sent to the keys
@@ -91,47 +94,39 @@ class CP_Attributes extends Content_Page
 			 * otherwise it will return the NREN-map. */
 			$map = $this->person->getMap();
 		}
-		$session = $this->person->getSession();
-		if (isset($session)) {
-			if (isset($map['epodn'])) {
-				$orgName = $session->getAttribute($map['epodn']);
-				$this->tpl->assign('epodn', implode(', ', $orgName));
-			} else {
-				$this->tpl->assign('epodn', '');
-			}
 
-			if (isset($map['cn'])) {
-				$cn = $session->getAttribute($map['cn']);
-				$this->tpl->assign('cn', implode(', ', $cn));
-			} else {
-				$this->tpl->assign('cn', '');
-			}
+		$auth = AuthHandler::getAuthManager($this->person);
 
-			if (isset($map['mail'])) {
-				$mail = $session->getAttribute($map['mail']);
-				$this->tpl->assign('mail', implode(', ', $mail));
-			} else {
-				$this->tpl->assign('mail', '');
-			}
-
-			if (isset($map['entitlement'])) {
-				$entitlement = $session->getAttribute($map['entitlement']);
-				$this->tpl->assign('entitlement', implode(', ', $entitlement));
-			} else {
-				$this->tpl->assign('entitlement', '');
-			}
-		} else { /* session is not set */
-			if (!is_null($this->person->getSubscriber())) {
-				$this->tpl->assign('epodn', $this->person->getSubscriber()->getIdPName());
-			} else {
-				$this->tpl->assign('epodn', "");
-			}
-			$this->tpl->assign('cn', $this->person->getName());
-			$this->tpl->assign('mail', $this->person->getEmail());
-			$this->tpl->assign('entitlement', $this->person->getEntitlement());
+		if (isset($map['epodn'])) {
+			$epodn = implode(', ', $auth->getAttributeValue($map['epodn']));
+			$this->tpl->assign('epodn', $epodn);
+		} else {
+			$this->tpl->assign('epodn', '');
 		}
-		$this->tpl->assign('map',		$map);
-		$this->tpl->assign('keys',		AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
+
+		if (isset($map['cn'])) {
+			$cn = implode(', ', $auth->getAttributeValue($map['cn']));
+			$this->tpl->assign('cn', $cn);
+		} else {
+			$this->tpl->assign('cn', '');
+		}
+
+		if (isset($map['mail'])) {
+			$mail = implode(', ', $auth->getAttributeValue($map['mail']));
+			$this->tpl->assign('mail', $mail);
+		} else {
+			$this->tpl->assign('mail', '');
+		}
+
+		if (isset($map['entitlement'])) {
+			$entitlement = implode(', ', $auth->getAttributeValue($map['entitlement']));
+			$this->tpl->assign('entitlement', $entitlement);
+		} else {
+			$this->tpl->assign('entitlement', '');
+		}
+
+		$this->tpl->assign('map',	$map);
+		$this->tpl->assign('keys',	AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
 		$this->tpl->assign('content', 	$this->tpl->fetch('attributes.tpl'));
 	}
 
@@ -147,13 +142,9 @@ class CP_Attributes extends Content_Page
 			exit(0);
 		}
 
-		$session = $this->person->getSession();
-		if (isset($session)) {
-			$attr_value = @implode(", ", $session->getAttribute($attr_key));
-			echo htmlentities($attr_value, ENT_COMPAT, "UTF-8");
-		} else {
-			exit(0); /* don't print any AJAX key-value hints if the session is not set */
-		}
+		$auth = AuthHandler::getAuthManager($this->person);
+		$attr_value = @implode(", ", $auth->getAttributeValue($attr_key));
+		echo htmlentities($attr_value, ENT_COMPAT, "UTF-8");
 		exit(0);
 	}
 }

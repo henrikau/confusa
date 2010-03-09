@@ -1,9 +1,10 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'framework.php';
-require_once 'config.php';
-include_once 'mdb2_wrapper.php';
-require_once 'metainfo.php';
+require_once 'Content_Page.php';
+require_once 'Framework.php';
+require_once 'Config.php';
+include_once 'MDB2Wrapper.php';
+require_once 'MetaInfo.php';
 
 class CP_About_Confusa extends Content_Page
 {

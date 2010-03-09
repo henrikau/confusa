@@ -1,16 +1,17 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'framework.php';
-require_once 'mdb2_wrapper.php';
+require_once 'Content_Page.php';
+require_once 'Framework.php';
+require_once 'MDB2Wrapper.php';
 require_once 'logger.php';
 require_once 'csr_lib.php';
 require_once 'file_upload.php';
-require_once 'config.php';
+require_once 'Config.php';
 require_once 'send_element.php';
-require_once 'input.php';
-require_once 'output.php';
-require_once 'permission.php';
-require_once 'Confusa_Session.php';
+require_once 'Input.php';
+require_once 'Output.php';
+require_once 'Permission.php';
+require_once 'CS.php';
 
 /**
  * ProcessCsr - the web frontend for handling of CSRs
@@ -91,7 +92,7 @@ final class CP_ProcessCsr extends Content_Page
 
 		} else if (isset($_GET['install_cert'])) {
 			$order_number = Input::sanitizeCertKey($_GET['install_cert']);
-			$ua = getUserAgent();
+			$ua = Output::getUserAgent();
 			$script = $this->ca->getCertDeploymentScript($order_number, $ua);
 
 			if ($ua == "keygen") {
@@ -112,7 +113,7 @@ final class CP_ProcessCsr extends Content_Page
 			$request = trim($request);
 			if (!empty($request)) {
 				try {
-					$order_number = $this->approveBrowserGenerated($request, getUserAgent());
+					$order_number = $this->approveBrowserGenerated($request, Output::getUserAgent());
 					$this->tpl->assign('order_number', $order_number);
 				} catch (KeySignException $kse) {
 					Framework::error_output($this->translateTag('l10n_sign_error', 'processcsr')
@@ -488,7 +489,7 @@ final class CP_ProcessCsr extends Content_Page
 					    $this->person->getX509ValidCN());
 		/* Format the IPs */
 		foreach ($res as $key => $value) {
-			$res[$key]['from_ip'] = format_ip($value['from_ip'], true);
+			$res[$key]['from_ip'] = Output::formatIP($value['from_ip'], true);
 		}
 		return $res;
 	}
@@ -498,7 +499,7 @@ final class CP_ProcessCsr extends Content_Page
 	 */
 	private function dispatchBrowserTemplate()
 	{
-		$ua = getUserAgent();
+		$ua = Output::getUserAgent();
 
 		switch($ua) {
 		case "msie_post_vista":

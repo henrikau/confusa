@@ -1,11 +1,12 @@
 <?php
 require_once 'confusa_include.php';
-require_once 'framework.php';
-require_once 'mdb2_wrapper.php';
+require_once 'Content_Page.php';
+require_once 'Framework.php';
+require_once 'MDB2Wrapper.php';
 require_once 'db_query.php';
 require_once 'logger.php';
-require_once 'output.php';
-require_once 'input.php';
+require_once 'Output.php';
+require_once 'Input.php';
 
 class CP_NREN_Admin extends Content_Page
 {
