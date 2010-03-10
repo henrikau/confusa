@@ -117,24 +117,11 @@
 	"fw_err_nonrenmap2": {
 		"en":	") is set.<br />You need to do this <b>now</b> so the normal users can utilize Confusa's functionality.<br /><br /><center>Go <a href=\"attributes.php?mode=admin\">here</a> to update the map.</center><br />"
 	},
-	"csr_aup_title": {
-		"en" :	"Acceptable User Policy (AUP)"
-	},
-	"csr_aup_agreement": {
-		"en" :	"I hereby state that I will adhere to the Requester's obligations as stated in the CPS."
-	},
-	"csr_aup_info_short": {
-		"en" :	"more"
-	},
-	"csr_aup_info_long": {
-		"en" :	"The AUP is a segment of the CPS which imposes a set of requirements upon the user. These include: "
-	},
 	"l10n_not_sub_header": {
 		"en" :	"Not Subscribed"
 	},
 	"l10n_not_sub_1": {
 		"en" :	"Your organization is not subscribed to the service and you cannot use the service."
-
 	},
 	"l10n_not_sub_2": {
 		"en" :	"If you think you should have access to this service, please contact local user-support."

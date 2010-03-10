@@ -1,5 +1,5 @@
 <fieldset>
-<legend>{$csr_aup_title}</legend>
+<legend>{$l10n_aup_title}</legend>
 
 <div class="spacer"></div>
 
@@ -12,18 +12,18 @@
 	 checked="checked"
 	 {/if}
 	 />
-  <label for="aup_box">{$csr_aup_agreement}</label>
+  <label for="aup_box">{$l10n_aup_agreement}</label>
 </p>
 
 <h4><a href="javascript:void(0)"
        class="exphead"
        onclick="toggleExpand(this)">
     <span class="expchar">+</span>
-    {$csr_aup_info_short}
+    {$l10n_aup_info_short}
   </a>
 </h4>
 <div class="expcont">
-  <p>{$csr_aup_info_long}</p>
+  <p>{$l10n_aup_info_long}</p>
 </div>
 
 <div>
