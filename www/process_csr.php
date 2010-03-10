@@ -149,11 +149,6 @@ final class CP_ProcessCsr extends Content_Page
 		$this->tpl->assign('upload_csr',  false);
 		$this->tpl->assign('paste_csr',   false);
 		$this->tpl->assign('aup_box_checked', $this->aup_set);
-		$this->tpl->assign('l10n_pcsr_email_table_summary',
-				   $this->translateTag('l10n_pcsr_email_table_summary', 'processcsr'));
-
-		$this->tpl->assign('l10n_privacy_notice_header',
-				   $this->translateTag('l10n_privacy_notice_header', 'messages'));
 		$this->tpl->assign('privacy_notice_text', $this->person->getNREN()->getPrivacyNotice($this->person));
 		$this->tpl->assign('finalDN',   $this->ca->getFullDN());
 
@@ -247,15 +242,6 @@ final class CP_ProcessCsr extends Content_Page
 		/* showing the normal UI */
 		$user_cert_enabled = $this->person->testEntitlementAttribute(Config::get_config('entitlement_user'));
 		$this->tpl->assign('user_cert_enabled', $user_cert_enabled);
-		/* get the UAP-tags */
-		$this->tpl->assign('csr_aup_title',
-				   $this->translateMessageTag('csr_aup_title'));
-		$this->tpl->assign('csr_aup_agreement',
-				   $this->translateMessageTag('csr_aup_agreement'));
-		$this->tpl->assign('csr_aup_info_short',
-				   $this->translateMessageTag('csr_aup_info_short'));
-		$this->tpl->assign('csr_aup_info_long',
-				   $this->translateMessageTag('csr_aup_info_long'));
 
 		/* decide which page to view */
 		if (array_key_exists('show', $_GET) &&  !is_null($_GET['show'])) {
