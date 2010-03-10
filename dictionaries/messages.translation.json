@@ -155,22 +155,6 @@
 		"no": ").<br \/>Du m\u00e5 gj\u00f8re dette <b>n\u00e5<\/b> slik at vanlige brukere kan bruke Confusa's funksjonalitet.<br \/><br \/><center>G\u00e5 <a href0\"attributes.php?mode=admin\">hit<\/a> for \u00e5 oppdatere koblingen.<\/center><br \/>",
 		"de": ") gesetzt.<br \/>Sie m\u00fcssen dies <b>jetzt<\/b> machen, damit normale Nutzer Confusa's Funktionalit\u00e4t in Anspruch nehmen k\u00f6nnen.<br \/><br \/><center>Gehen Sie <a href=\"attributes.php?mode=admin\">hierhin<\/a>, um die Abbildung zu aktualisieren.<\/center><br \/>"
 	},
-	"csr_aup_title": {
-		"no": "AUP",
-		"de": "Nutzungsregeln (AUP)"
-	},
-	"csr_aup_agreement": {
-		"no": "Jeg bekrefter herved at jeg vil f\u00f8lge de reglene som beskrevet i CPS",
-		"de": "I erkl\u00e4re hiermit, dass ich den Verpflichtungen des Antragsstellers, wie Sie im CPS dargelegt sind, nachkommen werde."
-	},
-	"csr_aup_info_short": {
-		"no": "mer",
-		"de": "mehr"
-	},
-	"csr_aup_info_long": {
-		"no": "AUPen er et segmet av CPSen som inneholder et sett regler for sluttbrukeren. Disse inkluderer:",
-		"de": "Die AUP ist ein Abschnitt des CPS, welches dem Nutzer eine Anzahl an Bedingungen auferlegt. Diese beinhalten:"
-	},
 	"l10n_not_sub_header": {
 		"no": "Ikke tilsluttet",
 		"de": "Kein Abonnent"

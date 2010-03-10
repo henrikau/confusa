@@ -190,5 +190,24 @@
 	},
 	"l10n_label_finalCertDN": {
 		"de": "Die Inhaber-ID Ihres Zertifikats wird sein:"
+	},
+	"l10n_aup_title": {
+		"no": "AUP",
+		"de": "Nutzungsregeln (AUP)"
+	},
+	"l10n_aup_agreement": {
+		"no": "Jeg bekrefter herved at jeg vil f\u00f8lge de reglene som beskrevet i CPS",
+		"de": "I erkl\u00e4re hiermit, dass ich den Verpflichtungen des Antragsstellers, wie Sie im CPS dargelegt sind, nachkommen werde."
+	},
+	"l10n_aup_info_short": {
+		"no": "mer",
+		"de": "mehr"
+	},
+	"l10n_aup_info_long": {
+		"no": "AUPen er et segmet av CPSen som inneholder et sett regler for sluttbrukeren. Disse inkluderer:",
+		"de": "Die AUP ist ein Abschnitt des CPS, welches dem Nutzer eine Anzahl an Bedingungen auferlegt. Diese beinhalten:"
+	},
+	"l10n_header_privacynotice": {
+		"de": "Datenschutzerklärung"
 	}
 }
