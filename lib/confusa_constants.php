@@ -43,6 +43,9 @@ class ConfusaConstants {
 	/* certificate validity period in test mode */
 	public static $CAPI_TEST_VALID_DAYS = '14';
 
+	public static $LINK_PERSONAL_CPS = 'https://www.terena.org/activities/tcs/repository/cps-personal.pdf';
+	public static $LINK_ESCIENCE_CPS = 'https://www.terena.org/activities/tcs/repository/cps-personal-escience.pdf';
+
 	/* Limit the file endings that are going to be accepted.
 	 * There can be images with embedded comments. As the comments can
 	 * contain PHP code, allowing files with suffix .php is dangerous,

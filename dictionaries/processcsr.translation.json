@@ -203,8 +203,16 @@
 		"no": "mer",
 		"de": "mehr"
 	},
-	"l10n_aup_info_long": {
-		"no": "AUPen er et segmet av CPSen som inneholder et sett regler for sluttbrukeren. Disse inkluderer:",
-		"de": "Die AUP ist ein Abschnitt des CPS, welches dem Nutzer eine Anzahl an Bedingungen auferlegt. Diese beinhalten:"
+	"l10n_aup_info_long1": {
+		"no": "AUPen er et segmet av",
+		"de": "Die AUP ist ein Abschnitt des"
+	},
+	"l10n_aup_info_long2": {
+		"no": "CPSen",
+		"de": "CPS"
+	},
+	"l10n_aup_info_long3": {
+		"no": "som inneholder et sett regler for sluttbrukeren. Disse inkluderer:",
+		"de": "welcher dem Nutzer eine Anzahl an Bedingungen auferlegt. Diese beinhalten:"
 	}
 }
