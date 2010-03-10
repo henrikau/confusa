@@ -32,10 +32,11 @@
 	  <p class="info">
 	    {$l10n_infotext_attnm2}
 	  </p>
-	  <a href="http://rnd.feide.no/attribute/edupersonorgdn">
-	    eduPersonOrgDN</a><br />
-	  <a href="http://rnd.feide.no/content/schachomeorganization">
-	    schacHomeOrganization</a><br />
+		{if isset($nrenOrgAttr)}
+			<strong>{$nrenOrgAttr|escape}</strong><br />
+		{else}
+			<span style="color: #ff0000">{$l10n_label_undefined|escape}</span>
+		{/if}
 	  <br />
 	  <p class="info">
 	    {$l10n_infotext_attnm3}

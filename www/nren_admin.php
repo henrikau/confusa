@@ -200,6 +200,7 @@ class CP_NREN_Admin extends Content_Page
 
 				if (isset($attributes[$map['epodn']])) {
 					$this->tpl->assign('foundUniqueName', $attributes[$map['epodn']][0]);
+					$this->tpl->assign('nrenOrgAttr', $map['epodn']);
 				}
 
 				$this->tpl->assign('add_subscriber', true);

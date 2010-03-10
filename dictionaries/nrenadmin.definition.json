@@ -129,13 +129,16 @@
 		"en":	"The attribute-name of the subscriber, is the name the way it is exported from the IdP."
 	},
 	"l10n_infotext_attnm2": {
-		"en":	"Normally, this one one of the following attributes:"
+		"en":	"For your NREN this is the value of the following attribute (configured <a href=\"attributes.php\">here</a>):"
 	},
 	"l10n_infotext_attnm3": {
-		"en":	"The important element to remember is that this must be the <b>unique</b> identifier for the subscriber organization exported by the IdP."
+		"en":	"Enter the value that the IdP will assign to this attribute for the subscriber you add."
+	},
+	"l10n_label_undefined": {
+		"en":	"undefined!"
 	},
 	"l10n_label_attnm": {
-		"en":	"Attribute-name:"
+		"en":	"Attribute-value:"
 	},
 	"l10n_label_forinstance": {
 		"en":	"e.g.:"
