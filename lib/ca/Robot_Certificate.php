@@ -3,7 +3,7 @@ require_once 'cert_lib.php';
 require_once 'key_not_found.php';
 require_once 'CertificateException.php';
 
-class Certificate
+class Robot_Certificate
 {
 	private $cert;
 	private $fingerprint;

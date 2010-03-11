@@ -6,7 +6,7 @@ require_once 'Person.php';
 require_once 'MDB2Wrapper.php';
 require_once 'cert_lib.php';
 require_once 'file_upload.php';
-require_once 'certificate.php';
+require_once 'Robot_Certificate.php';
 require_once 'CertificateException.php';
 /**
  * CP_Robot_Interface
@@ -138,7 +138,7 @@ class CP_Robot_Interface extends Content_Page
 		$certs = array();
 		foreach ($res as $key => $val) {
 			try {
-				$cert = new Certificate($val['cert']);
+				$cert = new Robot_Certificate($val['cert']);
 				$cert->setMadeAvailable($val['uploaded_date']);
 				$cert->setOwner($val['admin']);
 				$cert->setComment($val['comment']);
