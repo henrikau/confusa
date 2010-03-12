@@ -5,7 +5,7 @@
    *
    * @author	Henrik Austad <henrik.austad@uninett.no>
    * @license	http://www.gnu.org/licenses/gpl-3.0.txt GPLv3
-   * @since	File available since post v0.6-rc0
+   * @since	File available since pre v0.6-rc0
    * @package resources
    */
 require_once 'NREN.php';
@@ -14,63 +14,50 @@ require_once 'MDB2Wrapper.php';
 
 class NREN_Handler
 {
-	private $TYPE_DB_ID;
-	private $TYPE_URL;
-	private $TYPE_WAYF_URL;
+
 	/**
 	 * getNREN() find an NREN and return it based on provided key
+	 *
+	 * This is a 'guess all' approach. If you know the type of key, consider
+	 * calling the matching routine directly.
 	 *
 	 * The key can be:
 	 *	- the database-id of the NREN
 	 *	- the wayf-url
 	 *	- the idp_name
 	 *
-	 * typehints:
-	 *	false	: ignore, do not use
-	 *	0	: db-id
-	 *	1	: URL
-	 *	2	: WAYF-URL
-	 *
 	 * @param	mixed $key
-	 * @param	int $type_hint hint to the type of the argument
 	 * @return	NREN|null
 	 * @access	public
 	 */
-	static function getNREN($key, $type_hint=false)
+	static function getNREN($key)
 	{
-		if ($type_hint) {
-			switch($type_hint) {
-			case self::$TYPE_DB_ID:
-				return self::getByID(Input::sanitizeID($key));
-			case self::$TYPE_URL:
-				return self::getByURL(Input::sanitizeURL($key));
-			case self::$TYPE_WAYF_URL:
-				return self::getByWAYF(Input::sanitizeURL($key));
-			default:
-				/* didn't find a legal type_hint, ignore
-				 * type_hint, fall out to standard. */
-				break;
-
-			}
-		}
-		$nren = self::getByID($key);
-		if ($nren) {
-			return $nren;
-		}
-		$nren = self::getByURL($key);
-		if ($nren) {
-			return $nren;
-		}
-		$nren = self::getByWAYF($key);
+		/* try URL first, this is via the idp_map, the most common case  */
+		$nren = self::getByURL(Input::sanitizeURL($key));
 		if ($nren) {
 			return $nren;
 		}
 
-		/* throw exception? */
+		$nren = self::getByWAYF(Input::sanitizeURL($key));
+		if ($nren) {
+			return $nren;
+		}
+
+		$nren = self::getByID(Input::sanitizeID($key));
+		if ($nren) {
+			return $nren;
+		}
 		return false;
 	} /* end getNREN() */
 
-	private static function getByID($id)
+	/**
+	 * getByID() return a decorated NREN based the database-ID
+	 *
+	 * @param	Integer $id the database-id
+	 * @return	NREN|false the NREN or false if not found
+	 * @access	public
+	 */
+	static function getByID($id)
 	{
 		if (!is_numeric($id)) {
 			return false;
@@ -79,20 +66,55 @@ class NREN_Handler
 		return self::getFromQuery($query, array('text'), array($id));
 	}
 
-	static function getByURL($nren_url)
+	/**
+	 * getByURL() return a decorated NREN from the portal's URL
+	 *
+	 * The URL is used by NRENs to provide a 'familiar' URL for the portal
+	 * for the users. The URL portal.nren-a.org is then used by Confusa to
+	 * find the corresponding NREN.
+	 *
+	 * Usage: when you want NREN-branding of the portal for unAuthN-users.
+	 *
+	 * @param	String $nren_url the URL of the service
+	 * @return	NREN|false the NREN or false if not found
+	 * @access	public
+	 */
+	function getByURL($nren_url)
 	{
+		if (!is_string($nren_url)) {
+			return false;
+		}
 		$query  = "SELECT idp_url FROM idp_map idp LEFT JOIN nrens n ";
 		$query .= "ON n.nren_id = idp.nren_id WHERE url = ?";
 		return self::getFromQuery($query, array('text'), array($nren_url));
 	} /* end getByURL */
 
-	private function getByWAYF($wayf_url)
+	/**
+	 * getByWAYF() return a decorated NREN the WAYF URL
+	 *
+	 * @param	String $wayf_url
+	 * @return	NREN|false the NREN or false if not found
+	 * @access	public
+	 */
+	static function getByWAYF($wayf_url)
 	{
+		if (!is_string($wayf_url)) {
+			return false;
+		}
 		$query  = "SELECT idp_url FROM idp_map idp LEFT JOIN nrens n ";
 		$query .= "ON n.nren_id = idp.nren_id WHERE wayf_url = ?";
 		return self::getFromQuery($query, array('text'), array($wayf_url));
 	}
 
+
+	/**
+	 * getFromQuery() run the query and create a new NREN
+	 *
+	 * @param	String $query the query
+	 * @param	Array  $params
+	 * @param	Array  $data
+	 * @access	private
+	 */
 	private function getFromQuery($query, $params, $data)
 	{
 		try {
@@ -102,9 +124,14 @@ class NREN_Handler
 					return new NREN($res[0]['idp_url']);
 				}
 			}
-		} catch (ConfusaGenException $cge) {
+		} catch (DBStatementException $dbse) {
 			Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ .
-			                  " error with db-connect. " . $cge->getMessage());
+					  " problem with db-statement when finding NREN. " .
+					  $dbse->getMessage());
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ .
+			                  " Query-error when finding NREN. " .
+					  $dbqe->getMessage());
 		}
 		return false;
 	}
