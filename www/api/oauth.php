@@ -10,12 +10,17 @@
 	require_once 'Config.php';
 	$sspdir = Config::get_config('simplesaml_path');
 	require_once $sspdir . '/lib/_autoload.php';
+	require_once 'confusa_constants.php';
 
 	$path = $_SERVER['PATH_INFO'];
-	$requestToken = $_REQUEST['oauth_token'];
 
 	switch($path) {
+	case '/request':
+		require_once $sspdir . ConfusaConstants::$OAUTH_REQUEST_ENDPOINT;
+		break;
 	case '/authorize':
+		$requestToken = $_REQUEST['oauth_token'];
+
 		$store = new sspmod_oauth_OAuthStore();
 		$server = new sspmod_oauth_OAuthServer($store);
 
@@ -39,5 +44,11 @@
 
 		echo "Your request is now authorized.<br />\n";
 		break;
+	case '/access':
+		require_once $sspdir . ConfusaConstants::$OAUTH_ACCESS_ENDPOINT;
+		break;
+	default:
+		header("HTTP/1.1 400 Bad Request");
+		exit;
 	}
 ?>
