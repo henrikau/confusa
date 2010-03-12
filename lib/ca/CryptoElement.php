@@ -83,6 +83,15 @@ abstract class CryptoElement
 	public abstract function getType();
 
 	/**
+	 * getPubKeyHash() return the hash of the public-key
+	 *
+	 * @param	void
+	 * @return	String|false the sha1sum of the public-key
+	 * @access	public
+	 */
+	public abstract function getPubKeyHash();
+
+	/**
 	 * isValid() Test to see if the element is valid.
 	 *
 	 * @param	void
