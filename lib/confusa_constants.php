@@ -231,5 +231,11 @@ class ConfusaConstants {
 	 * for performing sensitive actions
 	 */
 	public static $DEFAULT_REAUTH_TIMEOUT = 10;
+
+	/* the endpoints of for requesting request tokens and requesting access
+	 * tokens in simplesamlphp. Those are included in the OAuth-API to be
+	 * able to offer a complete interface */
+	public static $OAUTH_REQUEST_ENDPOINT = 'modules/oauth/www/requestToken.php';
+	public static $OAUTH_ACCESS_ENDPOINT = 'modules/oauth/www/accessToken.php';
 }
 ?>
