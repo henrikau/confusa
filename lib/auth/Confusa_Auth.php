@@ -2,9 +2,8 @@
 require_once 'confusa_include.php';
 require_once 'Person.php';
 require_once 'Config.php';
-require_once 'CriticalAttributeException.php';
+require_once 'CGE_CriticalAttributeException.php';
 require_once 'MapNotFoundException.php';
-require_once 'CriticalAttributeException.php';
 require_once 'confusa_constants.php';
 
 /**
@@ -59,9 +58,9 @@ abstract class Confusa_Auth
 	 * @author Henrik Austad <henrik.austad@uninett.no>
 	 * @author Thomas Zangerl <tzangerl@pdc.kth.se>
 	 *
-	 * @throws CriticalAttributeException If an attribute without which Confusa
-	 *                                    really can not work is not found
-	 * @throws MapNotFoundException       If the NREN-map is not found
+	 * @throws CGE_CriticalAttributeException If an attribute without which Confusa
+	 *                                        really can not work is not found
+	 * @throws MapNotFoundException           If the NREN-map is not found
 	 *
 	 * @param array	$attributes
 	 * @param String $idp
@@ -77,11 +76,11 @@ abstract class Confusa_Auth
 		}
 
 		if (is_null($idp)){
-			throw new CriticalAttributeException("Need the URL of the IdP in order to create an NREN-object!");
+			throw new CGE_CriticalAttributeException("Need the URL of the IdP in order to create an NREN-object!");
 		}
 
 		if (is_null($attributes)) {
-			throw new CriticalAttributeException("Cannot find <b>any</b> attributes!");
+			throw new CGE_CriticalAttributeException("Cannot find <b>any</b> attributes!");
 		}
 
 		/* From the IdP, find the NREN-details */
@@ -91,7 +90,7 @@ abstract class Confusa_Auth
 			$msg  = "Could not map from the identity provider to the NREN. ";
 			$msg .= "Probably the idp_map in the database is not configured for your idp ($idp) ";
 			$msg .= "Please tell an administrator about that problem!";
-			throw new CriticalAttributeException($msg);
+			throw new CGE_CriticalAttributeException($msg);
 		}
 
 		$map = $this->person->getMap();

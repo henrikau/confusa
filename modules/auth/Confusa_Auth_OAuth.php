@@ -72,12 +72,12 @@ class Confusa_Auth_OAuth extends Confusa_Auth
 			if (isset($attributes['idp'])) {
 				$idp = $attributes['idp'][0];
 			} else {
-				throw new CriticalAttributeException("Can not authenticate via OAuth, because the " .
-				                                     "IdP attribute is missing! We have no way " .
-				                                     "of finding out the IdP. Please always use the " .
-				                                     "Confusa requestToken authorization (" .
-				                                     "confusa/api/oauth.php/authorize), because " .
-				                                     "that one exports more attributes.");
+				throw new CGE_CriticalAttributeException("Can not authenticate via OAuth, because the " .
+				                                         "IdP attribute is missing! We have no way " .
+				                                         "of finding out the IdP. Please always use the " .
+				                                         "Confusa requestToken authorization (" .
+				                                         "confusa/api/oauth.php/authorize), because " .
+				                                         "that one exports more attributes.");
 			}
 
 			$this->decoratePerson($attributes, $idp);

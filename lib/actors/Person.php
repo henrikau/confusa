@@ -1,7 +1,7 @@
 <?php
 require_once 'Input.php';
 require_once 'Output.php';
-require_once 'CriticalAttributeException.php';
+require_once 'CGE_CriticalAttributeException.php';
 require_once 'Permission.php';
 require_once 'CGE_AuthException.php';
 require_once 'NREN.php';
@@ -160,7 +160,7 @@ class Person{
 		$msg .= " This normally means that the Mapping could not";
 		$msg .= " determine the encoding of the attributes.<br /><br />";
 		$msg .= "Please make operational support aware of this issue.";
-		throw new CriticalAttributeException($msg);
+		throw new CGE_CriticalAttributeException($msg);
 	}
 	$this->eppn = $eppn;
     }

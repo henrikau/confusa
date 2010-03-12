@@ -137,7 +137,7 @@ class Framework {
 	}
 
 	/**
-	 * @throws CriticalAttributeException If an attribute needed for the operation of Confusa is not found
+	 * @throws CGE_CriticalAttributeException If an attribute needed for the operation of Confusa is not found
 	 * @throws MapNotFoundException If the NREN-map for the attributes is not found
 	 */
 	public function authenticate() {
@@ -208,7 +208,7 @@ class Framework {
 		 */
 		try {
 			$this->authenticate();
-		} catch (CriticalAttributeException $cae) {
+		} catch (CGE_CriticalAttributeException $cae) {
 			$msg .= "<b>" . $this->contentPage->translateMessageTag('fw_error_critical_attribute1') . "</b><br /><br />";
 			$msg .= htmlentities($cae->getMessage()) . "<br /><br />";
 			$msg .= $this->contentPage->translateMessageTag('fw_error_critical_attribute2');
@@ -281,7 +281,7 @@ class Framework {
 		 * self-contained wrt to exceptions.
 		 *
 		 * A NREN admin is supposed to be able to "fix stuff" such as for instance
-		 * CriticalAttributeExceptions and should hence see the pages also if
+		 * CGE_CriticalAttributeExceptions and should hence see the pages also if
 		 * renderError is set.
 		 */
 		if (!$this->renderError || $this->person->isNRENAdmin()) {

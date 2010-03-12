@@ -218,7 +218,7 @@ function createAdminPerson()
 	}
 	try {
 		$person->setEPPN($ares[0]['admin']);
-	} catch (CriticalAttributeException $cae) {
+	} catch (CGE_CriticalAttributeException $cae) {
 		echo "[$log_error_code] Problems with setting the eduPersonPrincipalName for robot-admin.<br />\n";
 		echo "Check the data in admins (admin_id: " . htmlentities($cert_res[0]['uploaded_by']) . ")<br />\n";
 		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Internal error? Suddenly provided admin-eppn is not available.");
