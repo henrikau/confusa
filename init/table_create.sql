@@ -406,7 +406,7 @@ CREATE TABLE IF NOT EXISTS robot_certs (
 
        cert TEXT NOT NULL,
        serial char(60) NOT NULL,
-       fingerprint char(60) NOT NULL,
+       fingerprint char(60) UNIQUE NOT NULL,
 
        -- Allow for a comment/description to be stored alongside the
        -- certificate.
