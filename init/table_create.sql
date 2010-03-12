@@ -380,10 +380,6 @@ CREATE TABLE IF NOT EXISTS robot_certs (
 	-- Internal id
        id INT PRIMARY KEY AUTO_INCREMENT,
 
-       -- Reference to the subscriber using this certificate to talk to
-       -- confusa
-       subscriber_id INT NOT NULL,
-
        -- ref to the person/admin that uploaded the certificate and most
        -- likely has access to the keypair
        uploaded_by INT NOT NULL,
@@ -412,7 +408,6 @@ CREATE TABLE IF NOT EXISTS robot_certs (
        -- certificate.
        comment TEXT,
 
-       FOREIGN KEY(subscriber_id) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
        FOREIGN KEY(uploaded_by) REFERENCES admins(admin_id) ON DELETE CASCADE
 ) engine=InnoDB;
 
