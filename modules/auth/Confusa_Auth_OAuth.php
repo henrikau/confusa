@@ -25,8 +25,7 @@ class Confusa_Auth_OAuth extends Confusa_Auth
 	/**
 	 * Constructor
 	 *
-	 * Note that the person is tied to a session and a simplesaml configuration
-	 * here
+	 * Note that the person is tied to a OAuth datastore here
 	 */
 	function __construct($person = NULL)
 	{
@@ -70,12 +69,15 @@ class Confusa_Auth_OAuth extends Confusa_Auth
 		if ($this->validAuth) {
 			$attributes = $this->oauthStore->getAuthorizedData($this->accessToken->key);
 
-			if (isset($attributes['entityID'])) {
-				$idp = $attributes['entityID'][0];
+			if (isset($attributes['idp'])) {
+				$idp = $attributes['idp'][0];
 			} else {
-				throw new CGE_AuthException("Can not authenticate via OAuth, because the " .
-				                            "entityID attribute is missing! We have no way " .
-				                            "of finding out the IdP.");
+				throw new CriticalAttributeException("Can not authenticate via OAuth, because the " .
+				                                     "IdP attribute is missing! We have no way " .
+				                                     "of finding out the IdP. Please always use the " .
+				                                     "Confusa requestToken authorization (" .
+				                                     "confusa/api/oauth.php/authorize), because " .
+				                                     "that one exports more attributes.");
 			}
 
 			$this->decoratePerson($attributes, $idp);
