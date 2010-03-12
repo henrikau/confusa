@@ -12,7 +12,7 @@ require_once 'classTextile.php';
  * per-NREN information¸ and also for storing this information.
  *
  * @author	Henrik Austad <henrik.austad@uninett.no>
- * @license	http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
+ * @license	http://www.gnu.org/licenses/gpl-3.0.txt GPLv3
  * @since	File available since Confusa v0.4-rc0
  * @package	resources
  */
