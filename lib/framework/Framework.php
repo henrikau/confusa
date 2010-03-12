@@ -9,6 +9,8 @@
 require_once 'confusa_include.php';
 require_once 'Confusa_Auth.php';
 require_once 'AuthHandler.php';
+require_once 'NREN_Handler.php';
+require_once 'NREN.php';
 require_once 'Person.php';
 require_once 'logger.php';
 require_once 'Content_Page.php';
@@ -173,7 +175,7 @@ class Framework {
 			}
 		} else {
 			/* maybe we can guess the NREN from the URL */
-			$this->person->setNREN(NREN::getNRENByURL($_SERVER['SERVER_NAME']));
+			$this->person->setNREN(NREN_Handler::getNREN($_SERVER['SERVER_NAME']), 1);
 		}
 
 		/*

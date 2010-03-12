@@ -1015,52 +1015,5 @@ class NREN
 
 		return $text;
 	}
-
-	/**
-	 * Construct a NREN object from an URL. Sometimes a NREN object is needed
-	 * without the user being authenticated and a decorated person object
-	 * being available. Since NREN admins can define a custom-URL this function
-	 * tries to construct the NREN from such an URL.
-	 *
-	 * @param nrenURL string the URL that was configured for the NREN
-	 * @return NREN|null
-	 * @since v0.6-rc0
-	 */
-	static function getNRENByURL($nrenURL)
-	{
-		$query  = "SELECT n.nren_id,      n.name,           n.login_account, ";
-		$query .= "       n.contact_email,n.contact_phone,  n.cert_email, ";
-		$query .= "       n.cert_phone,   n.lang,           n.url, ";
-		$query .= "       n.country,      n.enable_email,   n.cert_validity, ";
-		$query .= "       n.show_portal_title,              n.portal_title, ";
-		$query .= "       n.wayf_url ";
-		$query .= "FROM nrens n WHERE n.url = ?";
-
-		try {
-			$res = MDB2Wrapper::execute($query,
-			                            array('text'),
-			                            array($nrenURL));
-		} catch (ConfusaGenException $cge) {
-			Framework::error_output("Cannot connect to DB. Server said:<br />"
-			                        . $cge->getMessage());
-			Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ .
-			                  " error with db-connect. " . $cge->getMessage());
-			return null;
-		}
-
-		if (count($res) > 0) {
-			$nren = new NREN(null);
-
-			foreach($res[0] as $k => $value) {
-				/* no sanitation needed since the data *comes* from the DB anyways */
-				$nren->data[$k] = $value;
-			}
-
-			return $nren;
-		} else {
-			return null;
-		}
-	} /* end getNRENByURL */
-
 } /* end class NREN */
 ?>

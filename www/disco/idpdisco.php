@@ -1,5 +1,6 @@
 <?php
 require_once '../confusa_include.php';
+require_once 'NREN_Handler.php';
 require_once 'Content_Page.php';
 require_once 'Framework.php';
 require_once 'confusa_gen.php';
@@ -74,7 +75,7 @@ class IdPDisco
 	 */
 	private function showNRENIdPs($url)
 	{
-		$nren = NREN::getNRENByURL($url);
+		$nren = NREN_Handler::getNREN($url, 1);
 
 		if (empty($nren)) {
 			return;
