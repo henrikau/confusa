@@ -60,6 +60,12 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		/* is the user authNed according to simplesamlphp */
 		if (!$this->person->isAuth()) {
 			$this->as->requireAuth();
+		} else if ($this->validAuth) {
+			$idp = $this->session->getIdP();
+			$attributes = $this->as->getAttributes();
+			$this->session->setAttribute('idp', array($idp));
+			$this->person->setAuth($this->validAuth);
+			$this->decoratePerson($attributes, $idp);
 		}
 		$attributes = $this->as->getAttributes();
 		if (!isset($attributes['eduPersonPrincipalName'])) {
