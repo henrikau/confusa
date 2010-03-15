@@ -63,9 +63,10 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		 * if no IdP is set (as no NREN can be constructed in that case) */
 		if (is_null($this->session->getAuthority()) || empty($idp)) {
 			$this->person->setAuth(false);
+			$this->validAuth = false;
+		} else {
+			$this->validAuth = $this->session->isValid($this->session->getAuthority());
 		}
-
-		$this->validAuth = $this->session->isValid($this->session->getAuthority());
 	}
 
 	/**
