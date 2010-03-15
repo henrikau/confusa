@@ -215,10 +215,31 @@
 	"l10n_aup_info_short": {
 		"en" :	"more"
 	},
-	"l10n_aup_info_long": {
-		"en" :	"The AUP is a segment of the CPS which imposes a set of requirements upon the user. These include: "
+	"l10n_aup_info_long1": {
+		"en":	"The AUP is a segment of the "
+	},
+	"l10n_aup_info_long2": {
+		"en":	"CPS"
+	},
+	"l10n_aup_info_long3": {
+		"en":	" which imposes a set of requirements upon the user. These include: "
+	},
+	"l10n_aup_item1": {
+		"en":	"Protect the account credentials you have with your institution. (section 4.1.2)"
+	},
+	"l10n_aup_item2": {
+		"en":	"Protect the private key of your new certificate. (4.1.2)"
+	},
+	"l10n_aup_item3": {
+		"en":	"Revoke your certificate if your private key has been compromised. (1.4.2)"
+	},
+	"l10n_aup_item4": {
+		"en":	"Do not use the certificates on a system where failure could cause critical damage. (1.4.2)"
+	},
+	"l10n_aup_item5": {
+		"en":	"Do not use the certificates in any unlawful transaction. (1.4.2)"
 	},
 	"l10n_header_privacynotice": {
-		"en" :	"Privacy notice"
+		"en":	"Privacy notice"
 	}
 }

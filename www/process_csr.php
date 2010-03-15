@@ -142,6 +142,13 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('content', $this->tpl->fetch('errors/unsubscribed.tpl'));
 			return;
 		}
+
+		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+			$this->tpl->assign('cps', ConfusaConstants::$LINK_ESCIENCE_CPS);
+		} else {
+			$this->tpl->assign('cps', ConfusaConstants::$LINK_PERSONAL_CPS);
+		}
+
 		$this->processDBCsr();
 		/* Set default-values to false to avoid warnings */
 		$this->tpl->assign('approve_csr', false);

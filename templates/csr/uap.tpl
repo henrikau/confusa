@@ -23,7 +23,14 @@
   </a>
 </h4>
 <div class="expcont">
-  <p>{$l10n_aup_info_long}</p>
+  <p>{$l10n_aup_info_long1} <a href="{$cps}">{$l10n_aup_info_long2}</a> {$l10n_aup_info_long3} </p>
+  <ul style="margin: 1em 0 2em 2em">
+	<li>{$l10n_aup_item1}</li>
+	<li>{$l10n_aup_item2}</li>
+	<li>{$l10n_aup_item3}</li>
+	<li>{$l10n_aup_item4}</li>
+	<li>{$l10n_aup_item5}</li>
+  </ul>
 </div>
 
 <div>
