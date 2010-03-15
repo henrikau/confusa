@@ -96,8 +96,17 @@ function list_nren_idp
 }
 function delete
 {
-    idp=`run_query "SELECT * FROM idp_map WHERE idp_url='$1'"`
-    echo $idp
+	numIdPs=`run_query "SELECT COUNT(*) FROM idp_map WHERE idp_url='$1'"`
+
+	if [ $numIdPs == "1" ]; then
+		res=`run_query "DELETE FROM idp_map WHERE idp_url='$1'"`
+		echo "Deleted IdP $1"
+	elif [ $numIdPs == "0" ]; then
+		echo "IdP $1 can not be deleted: Does not exist!"
+	else
+		echo "Database inconsistency! IdP $1 exists more than once in the DB!"
+		echo "Please try to fix that manually."
+	fi
 }
 
 function search_for_mapping
