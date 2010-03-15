@@ -24,7 +24,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	/* hold the simplesamlphp-configuration */
 	private $samlConfig;
 	/* state variable keeping the status of the backend authentication */
-	private $validAuth;
+	private $isAuthenticated;
 
 	/**
 	 * Constructor
@@ -63,9 +63,9 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		 * if no IdP is set (as no NREN can be constructed in that case) */
 		if (is_null($this->session->getAuthority()) || empty($idp)) {
 			$this->person->setAuth(false);
-			$this->validAuth = false;
+			$this->isAuthenticated = false;
 		} else {
-			$this->validAuth = $this->session->isValid($this->session->getAuthority());
+			$this->isAuthenticated = $this->session->isValid($this->session->getAuthority());
 		}
 	}
 
@@ -80,17 +80,17 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	 *		- Decorate the person object with attributes
 	 *
 	 */
-	public function authenticate($isRequired)
+	public function authenticate($authRequired)
 	{
 		/* is the user authNed according to simplesamlphp */
-		if (!$this->validAuth && $isRequired) {
-			$this->as->requireAuth();
-		} else if ($this->validAuth) {
+		if ($this->isAuthenticated) {
 			$idp = $this->session->getIdP();
 			$attributes = $this->as->getAttributes();
 			$this->session->setAttribute('idp', array($idp));
 			$this->person->setAuth(TRUE);
 			$this->decoratePerson($attributes, $idp);
+		} else if (!$this->isAuthenticated && $authRequired) {
+			$this->as->requireAuth();
 		}
 	}
 
@@ -145,7 +145,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 
 	public function reAuthenticate()
 	{
-		if ($this->validAuth) {
+		if ($this->isAuthenticated) {
 			$totalTime = $this->samlConfig->getValue('session.duration');
 			$remainingTime = $this->session->remainingTime();
 			$passedTime = $totalTime - $remainingTime;
@@ -175,7 +175,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	 */
 	public function deAuthenticate($logout_loc = 'logout.php')
 	{
-		if ($this->validAuth) {
+		if ($this->isAuthenticated) {
 			$this->person->isAuth(false);
 			$this->person->clearAttributes();
 			$this->as->logout(Config::get_config('server_url') . "$logout_loc");
