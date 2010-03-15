@@ -89,7 +89,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 			$idp = $this->session->getIdP();
 			$attributes = $this->as->getAttributes();
 			$this->session->setAttribute('idp', array($idp));
-			$this->person->setAuth($this->validAuth);
+			$this->person->setAuth(TRUE);
 			$this->decoratePerson($attributes, $idp);
 		}
 	}
