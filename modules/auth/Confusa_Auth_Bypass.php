@@ -68,7 +68,7 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	/**
 	 * Decorate the person object with dummy attributes
 	 */
-	public function authenticate($isRequired)
+	public function authenticate($authRequired)
 	{
 		$this->person->setAuth(true);
 		$this->decoratePerson($this->attributes, 'idp.example.org');

@@ -21,6 +21,8 @@ class Confusa_Auth_OAuth extends Confusa_Auth
 	private $oauthServer;
 	/* the oauth access token */
 	private $accessToken;
+	/* is the end-user authenticated? */
+	private $isAuthenticated;
 
 	/**
 	 * Constructor
@@ -50,7 +52,7 @@ class Confusa_Auth_OAuth extends Confusa_Auth
 
 		$req = OAuthRequest::from_request();
 		list($consumer, $this->accessToken) = $this->oauthServer->verify_request($req);
-		$this->validAuth = isset($this->accessToken);
+		$this->isAuthenticated = isset($this->accessToken);
 	} /* end Constructor */
 
 	/**
@@ -64,9 +66,9 @@ class Confusa_Auth_OAuth extends Confusa_Auth
 	 *		- Decorate the person object with attributes
 	 *
 	 */
-	public function authenticate($isRequired)
+	public function authenticate($authRequired)
 	{
-		if ($this->validAuth) {
+		if ($this->isAuthenticated) {
 			$attributes = $this->oauthStore->getAuthorizedData($this->accessToken->key);
 
 			if (isset($attributes['idp'])) {
@@ -81,7 +83,7 @@ class Confusa_Auth_OAuth extends Confusa_Auth
 			}
 
 			$this->decoratePerson($attributes, $idp);
-			$this->person->setAuth($this->validAuth);
+			$this->person->setAuth(TRUE);
 		}
 	} /* end authenticate */
 
@@ -140,7 +142,7 @@ class Confusa_Auth_OAuth extends Confusa_Auth
 	 */
 	public function reAuthenticate()
 	{
-		if ($this->validAuth) {
+		if ($this->isAuthenticated) {
 			echo "OAuth does currently not support reAuthentication\n";
 		} else {
 			$this->authenticate(TRUE);
@@ -158,7 +160,7 @@ class Confusa_Auth_OAuth extends Confusa_Auth
 	 */
 	public function deAuthenticate($logout_loc = 'logout.php')
 	{
-		if ($this->validAuth) {
+		if ($this->isAuthenticated) {
 			$this->person->isAuth(FALSE);
 			echo "OAuth does currently not support deauthenticating users\n";
 		}
