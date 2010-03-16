@@ -16,6 +16,7 @@ $path .= PATH_SEPARATOR . LIB_DIR . '/misc';
 $path .= PATH_SEPARATOR . LIB_DIR . '/mail';
 $path .= PATH_SEPARATOR . LIB_DIR . '/robot';
 $path .= PATH_SEPARATOR . MODULES_DIR . '/auth';
+$path .= PATH_SEPARATOR . MODULES_DIR . '/auth/oauth';
 
 if (file_exists('/etc/confusa/confusa_config.php') === true) {
     $path .= PATH_SEPARATOR . '/etc/confusa';

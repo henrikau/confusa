@@ -239,6 +239,9 @@ class ConfusaConstants {
 	 * tokens in simplesamlphp. Those are included in the OAuth-API to be
 	 * able to offer a complete interface */
 	public static $OAUTH_REQUEST_ENDPOINT = 'modules/oauth/www/requestToken.php';
-	public static $OAUTH_ACCESS_ENDPOINT = 'modules/oauth/www/accessToken.php';
+	/* the attribute that is used as a helper attribute in OAuth to limit the
+	 * access token validity to the per-NREN-configured reauth-period in
+	 * Confusa */
+	public static $OAUTH_VALIDITY_ATTRIBUTE = 'conf_accTokValidity';
 }
 ?>

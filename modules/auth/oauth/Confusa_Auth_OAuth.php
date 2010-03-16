@@ -4,6 +4,7 @@ require_once 'logger.php';
 require_once 'Person.php';
 require_once 'Person.php';
 require_once 'Confusa_Auth.php';
+require_once 'OAuthDataStore_Confusa.php';
 
 /**
  * Confusa_Auth_OAuth - authenticate user via an OAuth datastore
@@ -38,13 +39,13 @@ class Confusa_Auth_OAuth extends Confusa_Auth
 			$sspdir = Config::get_config('simplesaml_path');
 		} catch (KeyNotFoundException $knfe) {
 			echo "Cannot find path to simplesaml. This install is not valid. Aborting.<br />\n";
-			Logger::log_event(LOG_ALERT, "Tryging to instansiate SimpleSAMLphp without a configured path.");
+			Logger::log_event(LOG_ALERT, "Trying to instantiate simpleSAMLphp without a configured path.");
 			exit(0);
 		}
 		require_once $sspdir . '/lib/_autoload.php';
 		SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
 
-		$this->oauthStore = new sspmod_oauth_OAuthStore();
+		$this->oauthStore = new OAuthDataStore_Confusa();
 		$this->oauthServer = new sspmod_oauth_OAuthServer($this->oauthStore);
 		$hmac_method = new OAuthSignatureMethod_HMAC_SHA1();
 
@@ -80,6 +81,14 @@ class Confusa_Auth_OAuth extends Confusa_Auth
 				                                         "Confusa requestToken authorization (" .
 				                                         "confusa/api/oauth.php/authorize), because " .
 				                                         "that one exports more attributes.");
+			}
+
+			if (!isset($attributes[ConfusaConstants::$OAUTH_VALIDITY_ATTRIBUTE])) {
+				throw new CGE_AuthException("The validity period found in the authorized data was not " .
+				                            "set by Confusa. Thus the access token validity period " .
+				                            "does not match the reauth-period of the NREN. However, " .
+				                            "we *require* that! Use Confusa's own accessToken " .
+				                            "authorization (confusa/api/oauth.php/access)!");
 			}
 
 			$this->decoratePerson($attributes, $idp);
