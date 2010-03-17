@@ -26,14 +26,16 @@ $path .= PATH_SEPARATOR . "/usr/share/php/libphp-phpmailer/";
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/www';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/lib';
+$path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/modules';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/programs';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/config';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/include';
 
-/* echo __FILE__ . ": -> path: " . $path . "<br>\n"; */
 ini_set('include_path', $path);
 
 /* include lib */
 require_once 'lib_include.php';
+
+require_once 'modules_include.php';
 
 ?>
