@@ -219,9 +219,9 @@ function createAdminPerson()
 	try {
 		$person->setEPPN($ares[0]['admin']);
 	} catch (CGE_CriticalAttributeException $cae) {
-		echo "[$log_error_code] Problems with setting the eduPersonPrincipalName for robot-admin.<br />\n";
+		echo "[$log_error_code] Problems with setting the unique identifier for robot-admin.<br />\n";
 		echo "Check the data in admins (admin_id: " . htmlentities($cert_res[0]['uploaded_by']) . ")<br />\n";
-		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Internal error? Suddenly provided admin-eppn is not available.");
+		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Internal error? Suddenly provided admin-uid is not available.");
 		return null;
 	}
 	$person->setAuth(true);
@@ -272,7 +272,7 @@ function printXMLRes($resArray, $type = 'userList')
 	if (isset($resArray) && is_array($resArray) && count($resArray) > 0) {
 		foreach($resArray as $value) {
 			$le = $element->addChild('listElement');
-			$le->addAttribute('eppn', htmlentities($value['eppn']));
+			$le->addAttribute('uid', htmlentities($value['eppn']));
 			if (isset($value['count'])) {
 				$le->addAttribute('count', $value['count']);
 			}

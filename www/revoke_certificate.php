@@ -155,8 +155,8 @@ class CP_RevokeCertificate extends Content_Page
 	 *
 	 * For NREN admins it is planned to restrict the permission to revoke to an
 	 * incident response team. Revocation can either take place
-	 * by a wildcard-search for an ePPN or by uplading a CSV with ePPNs which
-	 * will be searched wrapped into wildcards
+	 * by a wildcard-search for an ePPN or by uplading a CSV with ePPNs (or other
+	 * unique identifiers) which will be searched wrapped into wildcards
 	 */
 	private function showAdminRevokeTable()
 	{
@@ -492,11 +492,11 @@ class CP_RevokeCertificate extends Content_Page
 
 	/**
 	 * Display a list of distinguished names whose certificates will be revoked
-	 * based on an uploaded CSV with a list of eduPersonPrincipalNames. Offer the
+	 * based on an uploaded CSV with a list of UIDs (e.g. eppns). Offer the
 	 * possibility to revoke these certificates.
 	 *
 	 * @param $eppn_file string The name of the $_FILES parameter containining the
-	 *                          CSV of eduPersonPrincipalNames
+	 *                          CSV of unique identifiers
 	 * @param $subscriber string The name of the subscriber by which the search is
 	 * 							scoped
 	 *

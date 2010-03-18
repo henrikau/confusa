@@ -30,10 +30,10 @@
 		"de": "CN-Suche"
 	},
 	"l10n_infotext_searchinfo1": {
-		"de": "Suche nach einem commonName oder einem eduPersonPrincipalName einer Person innerhalb der Institution"
+		"de": "Suche nach einem commonName oder einem eindeutigen Bezeichner einer Person innerhalb der Institution"
 	},
 	"l10n_infotext_searchinfo3": {
-		"de": "Suche nach einem commonName oder einem eduPersonPrincipalName einer Person innerhalb Ihrer Institution"
+		"de": "Suche nach einem commonName oder einem eindeutigen Bezeichner einer Person innerhalb Ihrer Institution"
 	},
 	"l10n_infotext_searchinfo2": {
 		"de": "deren Zertifikate Sie widerrufen wollen. Verwenden Sie '%' als Wildcard."
@@ -66,7 +66,7 @@
 		"de": "Listen-Upload"
 	},
 	"l10n_infotext_listupload1": {
-		"de": "Laden Sie eine komma-getrennte Liste von eduPersonPrincipalNames, deren Zertifikate widerrufen werden sollten, hoch. Sie werden nach einer Best\u00e4tigung gefragt, bevor die Zertifikate tats\u00e4chlich widerrufen werden. Trennen Sie die ePPNs in der Liste mit einem ',' Beistrich (Komma)."
+		"de": "Laden Sie eine komma-getrennte Liste von eindeutigen Bezeichnern (z.B. ePPNs), deren Zertifikate widerrufen werden sollten, hoch. Sie werden nach einer Best\u00e4tigung gefragt, bevor die Zertifikate tats\u00e4chlich widerrufen werden. Trennen Sie die ePPNs in der Liste mit einem ',' Beistrich (Komma)."
 	},
 	"l10n_button_uploadlist": {
 		"de": "Lade Liste hoch"

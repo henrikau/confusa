@@ -29,7 +29,7 @@
 	  version	CDATA	#REQUIRED>
 
 <!-- General element attribute -->
-<!-- eppn:	The unique identifier used in Confusa, normally	-->
+<!-- uid:	The unique identifier used in Confusa, normally	-->
 <!--		the eduPersonPrincipalName			-->
 <!---->
 <!-- fullDN:	The DN of the certificate. This is the DN returned by -->
@@ -40,7 +40,7 @@
 <!--		particular user					-->
 <!ELEMENT listElement EMPTY>
 <!ATTLIST listElement
-	  eppn		CDATA	#REQUIRED
+	  uid		CDATA	#REQUIRED
 	  fullDN	CDATA	#IMPLIED
 	  count		CDATA	#IMPLIED>
 

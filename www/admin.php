@@ -376,7 +376,7 @@ class CP_Admin extends Content_Page
 	 * This function will take the $admin and add it as a new
 	 * subscriber-admin. Given that the user has the admin-entitlement set.
 	 *
-	 * @param String admin	The ePPN of the admin to add
+	 * @param String admin	The unique identifier (e.g. ePPN) of the admin to add
 	 * @param String level	Subscriber-admin level (either subscribera-admin
 	 *			or sub-admin).
 	 * @param subscriberID integer The ID of the subscriber as exported by
@@ -567,7 +567,7 @@ class CP_Admin extends Content_Page
 	/**
 	 * ugradeSubscriberAdmin() Upgrade an admin from subscriber to NREN
 	 *
-	 * @param String admin the ePPN of the admin to upgrade
+	 * @param String admin the unique identifier (e.g. eppn) of the admin to upgrade
 	 *
 	 * @return void
 	 */
@@ -604,7 +604,7 @@ class CP_Admin extends Content_Page
 	/*
 	 * "Upgrade" a subscriber-sub-admin to a subscriber admin
 	 *
-	 * @param $admin The ePPN of the admin
+	 * @param $admin The unique identifier (e.g. eppn) of the admin
 	 * @param $subscriberID integer The ID of the subscriber within which everything happens
 	 */
 	private function upgradeSubscriberSubAdmin($admin, $subscriberID)

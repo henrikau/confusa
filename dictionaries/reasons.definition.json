@@ -1,6 +1,6 @@
 {
 	"l10n_reas_malfeppn": {
-		"en":	"Need a properly formatted eduPersonPrincipal name!"
+		"en":	"Need a properly formatted unique identifier (e.g. ePPN)!"
 	},
 	"l10n_reas_nogivenname": {
 		"en":	"Need a given-name to place in the certificate!"
