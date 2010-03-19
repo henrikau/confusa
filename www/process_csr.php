@@ -43,8 +43,9 @@ final class CP_ProcessCsr extends Content_Page
 		parent::pre_process($person);
 		$res = false;
 
+		$subscriber = $this->person->getSubscriber();
 		/* Test subscriber-status: */
-		if (!$this->person->getSubscriber()->isSubscribed()) {
+		if (empty($subscriber) || !$subscriber->isSubscribed()) {
 			return false;
 		}
 
@@ -132,7 +133,10 @@ final class CP_ProcessCsr extends Content_Page
 
 	public function process()
 	{
-		if (!$this->person->getSubscriber()->isSubscribed()) {
+
+		$subscriber = $this->person->getSubscriber();
+
+		if (empty($subscriber) || !$subscriber->isSubscribed()) {
 			$this->tpl->assign('not_subscribed_header',
 					   $this->translateTag('l10n_not_sub_header', 'messages'));
 			$this->tpl->assign('not_subscribed_1',

@@ -131,6 +131,20 @@ class CP_RevokeCertificate extends Content_Page
 
 	public function process()
 	{
+
+		$subscriber = $this->person->getSubscriber();
+
+		if (empty($subscriber) || !$subscriber->isSubscribed()) {
+			$this->tpl->assign('not_subscribed_header',
+					   $this->translateTag('l10n_not_sub_header', 'messages'));
+			$this->tpl->assign('not_subscribed_1',
+					   $this->translateTag('l10n_not_sub_1', 'messages'));
+			$this->tpl->assign('not_subscribed_2',
+					   $this->translateTag('l10n_not_sub_2', 'messages'));
+			$this->tpl->assign('content', $this->tpl->fetch('errors/unsubscribed.tpl'));
+			return;
+		}
+
 		try {
 			if ($this->person->inAdminMode()) {
 				$this->showAdminRevokeTable();
