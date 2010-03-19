@@ -78,8 +78,8 @@ final class CP_DownloadCertificate extends Content_Page
 			$this->tpl->assign('defaultDays',
 				               Config::get_config('capi_default_cert_poll_days'));
 		} catch (ConfusaGenException $e) {
-			Framework::error_output($this->translateMessageTag('downl_err_db') .
-			                        htmlentities($e->getMessage()));
+			Framework::error_output($this->translateMessageTag('downl_err_db') . " " .
+			                        $e->getMessage());
 		}
 
 		/* animate the user to install the root certificate in personal mode,

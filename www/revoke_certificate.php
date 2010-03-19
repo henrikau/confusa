@@ -160,7 +160,7 @@ class CP_RevokeCertificate extends Content_Page
 
 		} catch (ConfusaGenException $cge) {
 			Framework::error_output("Can not display revocation options! Server " .
-									"said: " . htmlentities($cge->getMessage()));
+									"said: " . $cge->getMessage());
 		}
 	}
 
