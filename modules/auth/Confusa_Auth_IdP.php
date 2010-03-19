@@ -91,12 +91,6 @@ class Confusa_Auth_IdP extends Confusa_Auth
 			$this->decoratePerson($attributes, $idp);
 		} else if (!$this->isAuthenticated && $authRequired) {
 			$this->as->requireAuth();
-		} else if ($this->validAuth) {
-			$idp = $this->session->getIdP();
-			$attributes = $this->as->getAttributes();
-			$this->session->setAttribute('idp', array($idp));
-			$this->person->setAuth($this->validAuth);
-			$this->decoratePerson($attributes, $idp);
 		}
 	}
 
