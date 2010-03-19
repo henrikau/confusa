@@ -87,7 +87,7 @@ class ConfusaParser(xml.sax.handler.ContentHandler):
                 self.state = STATE_ERROR
                 print "Cannot handle element before type is determined"
                 return
-            eppn    = attrs.get('eppn', None)
+            eppn    = attrs.get('uid', None)
             dn      = attrs.get('fullDN', None)
             count   = attrs.get('count', None)
             res = {}

@@ -229,7 +229,7 @@ CREATE TABLE order_store (
 	-- auth_key and owner for remote download and upload
 	auth_key CHAR(64) NOT NULL,
 	-- the ePPN of the owner of the ordered certificate
-	owner VARCHAR(128) NOT NULL,
+	owner VARCHAR(256) NOT NULL,
 	-- order number and collection code for bookkeeping, revocation,
 	-- delivery
 	order_date DATETIME NOT NULL,
@@ -296,7 +296,7 @@ CREATE TABLE cert_cache (
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS admins (
        admin_id INT PRIMARY KEY AUTO_INCREMENT,
-       admin varchar(128) NOT NULL, -- ePPN of the admin,
+       admin varchar(256) NOT NULL, -- ePPN of the admin,
 
         -- the full name. Will be decoreated when the admin logs in the first time
        admin_name varchar(128) DEFAULT "",
@@ -345,7 +345,7 @@ CREATE TABLE IF NOT EXISTS admins (
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS user_crls (
        crl_id INT PRIMARY KEY AUTO_INCREMENT,
-       owner varchar(128), -- ePPN of the owner
+       owner varchar(256), -- ePPN of the owner
        cert_sn INT NOT NULL,
        valid_untill DATETIME NOT NULL
 ) engine=InnoDB;

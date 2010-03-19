@@ -60,8 +60,8 @@
 		"de": "Unbehandelte Exception in Nutzerfunktion gefunden!"
 	},
 	"fw_unrecoverable_nren": {
-		"no": "Uh\u00e5ndterling feil oppst\u00e5tt, og du er ikke administrator! Ditt eduPersonPrincipalName er",
-		"de": "Unbehebbarer Fehler und Sie sind kein NREN-Admin! Ihr eduPersonPrincipalName ist"
+		"no": "Uh\u00e5ndterling feil oppst\u00e5tt, og du er ikke administrator! Ditt unikt navn er",
+		"de": "Unbehebbarer Fehler und Sie sind kein NREN-Admin! Ihr eindeutiger Bezeichner ist"
 	},
 	"fw_unrecoverable_nonren": {
 		"no": "Det ser ut til at portalen ikke kan finne din NREN ut i fra din tjenestetilbyder. Dette er antakelig en feil i portalkonfigurasjonen.",

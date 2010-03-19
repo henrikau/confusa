@@ -45,7 +45,7 @@
 		"en":	"Unhandled exception found in user-function!"
 	},
 	"fw_unrecoverable_nren": {
-		"en":	"Unrecoverable error and you are not NREN admin! Your eduPersonPrincipalName is "
+		"en":	"Unrecoverable error and you are not NREN admin! Your unique identifier is "
 	},
 	"fw_unrecoverable_nonren": {
 		"en":	"Seems like the portal can not figure out your NREN from your identity provider. This is probably a portal configuration error!"

@@ -45,7 +45,7 @@ abstract class Confusa_Auth
 	 * fields in person
 	 *
 	 * This function is a bit fragile. The reason for this, is that it needs
-	 * to 'bootstrap' the map for person-identifier (eduPersonPrincipalName)
+	 * to 'bootstrap' the map for person-identifier (e.g. ePPN)
 	 * through various encodings.
 	 *
 	 * One way would be to add a specific mapping for all known NRENs, but

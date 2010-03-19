@@ -28,17 +28,19 @@ function usage
 {
 prog_name=`basename $0`
 cat <<EOF
-Usage $prog_name  <nren_name> <Country> <principal> <contact>
+Usage $prog_name  <nren_name> <Country> <principal> <contact> [uid-attr]
     nren_name:   The name of the NREN. Must be unique within the database.
     country:     Two-letter country-code
     principal:   eduPersonPrincipalName or another unique identifier
                  for an initial NREN-admin
     contact:     A contact information for the NREN
+    uid-attr:   (Optional) The attribute that is used for transmitting the
+                unique identifier for a user
 EOF
 }
 
 # make sure we have all required parameters
-if [ $# != 4 ]; then
+if [ $# -lt 4 ]; then
     usage
     exit 1
 fi;
@@ -97,11 +99,11 @@ nren_id=`echo $res | cut -d " " -f 2`
 res=`run_query "SELECT * FROM admins WHERE admin='${eppn}'"`
 if [ -n "$res" ]; then
     cat <<EOF
-An administrator with eppn ${eppn} already exists in the database. Since the eduPersonPrincipalName
+An administrator with UID ${eppn} already exists in the database. Since the UID
 is supposed to be an unique identifier, we cannot add this admin.
 
 If this is not what you'd expected, you should have a look at the database and make sure that you
-have provided the correct ePPN, and that the admin is not already present. The result from the database was:
+have provided the correct UID, and that the admin is not already present. The result from the database was:
 EOF
 echo $res
 exit 0
@@ -114,9 +116,23 @@ result=$?
 if [ $result -ne 0 ]; then
 	echo "Error when inserting new admin ${2}, with contact-info ${3}, into DB"
 	echo "Please check if all credentials are specified and if you supplied"
-	echo "a valid ePPN for the new admin"
+	echo "a valid unique identifier (ePPN,...) for the new admin"
 	perror $result
 	exit 3
+fi
+
+if [ $# == 5 ]; then
+	eppn_key=${5}
+	echo "Now adding unique identifier ${eppn_key} to the attribute mapping of NREN ${nren_name}"
+	res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', '$eppn_key')"`
+	result=$?
+
+	if [ $result -ne 0 ]; then
+		echo "Error when trying to add the unique identifier mapping to ${eppn_key} for NREN"
+		echo "${nren_name}. Please check if you provided a legal value for the UID!"
+		perror $result
+		exit 3
+	fi
 fi
 
 popd >/dev/null

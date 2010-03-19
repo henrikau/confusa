@@ -66,7 +66,7 @@
 		"en":	"List upload"
 	},
 	"l10n_infotext_listupload1": {
-		"en":	"Upload a comma separated list of eduPersonPrincipalNames whose certificates should be revoked. You will be asked for confirmation before the certificates will actually be revoked. Separate the ePPNs in the list with a ',' comma."
+		"en":	"Upload a comma separated list of unique identifiers whose certificates should be revoked. You will be asked for confirmation before the certificates will actually be revoked. Separate the ePPNs in the list with a ',' comma."
 	},
 	"l10n_button_uploadlist": {
 		"en":	"Upload list"

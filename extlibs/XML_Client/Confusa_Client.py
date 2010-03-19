@@ -71,7 +71,7 @@ class Confusa_Client:
         for i in eppn_list:
             if 'eppn' in i:
                 le = ET.SubElement(rev, "listElement")
-                le.set("eppn", i['eppn'])
+                le.set("uid", i['eppn'])
                 foundElements += 1
 
         if foundElements ==  0:
