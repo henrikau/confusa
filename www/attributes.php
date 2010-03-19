@@ -40,7 +40,7 @@ class CP_Attributes extends Content_Page
 					}
 				} else if ($this->person->isSubscriberAdmin()) {
 					try {
-						$result = $this->person->getSubscriber()->saveMap($cn, $mail);
+						$result = $this->person->getSubscriber()->saveMap($this->person->getEPPNKey(), $cn, $mail);
 					} catch (DBQueryException $dbqe) {
 						Framework::error_output($this->translateTag('l10n_err_updmap1', 'attributes') . "<br />" .
 						                        $this->translateTag('l10n_label_cn', 'attributes')

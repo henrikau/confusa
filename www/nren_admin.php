@@ -143,6 +143,9 @@ class CP_NREN_Admin extends Content_Page
 				break;
 			case 'add':
 				$db_name = Input::sanitizeIdPName($_POST['db_name']);
+
+				$inheritUIDAttr = isset($_POST['inherit_uid_attr']);
+
 				$subscriber = new Subscriber($db_name, $this->person->getNREN());
 				if ($subscriber->isValid()) {
 					Framework::error_output("Cannot create new, already existing.");
@@ -162,6 +165,14 @@ class CP_NREN_Admin extends Content_Page
 					                          " " . htmlentities($dn_name) . " " .
 					                          $this->translateTag('l10n_suc_addsubs2', 'nrenadmin'));
 				}
+
+				if (!$inheritUIDAttr) {
+					$nren = $this->person->getNREN();
+					$nrenMap = $nren->getMap();
+					$uidAttr = Input::sanitizeAlpha($_POST['uid_attr']);
+					$subscriber->saveMap($uidAttr, $nrenMap['cn'], $nrenMap['mail']);
+				}
+
 				break;
 			case 'delete':
 				$this->delSubscriber($id);
@@ -186,6 +197,11 @@ class CP_NREN_Admin extends Content_Page
 		if (isset($_GET['target'])) {
 			switch(Input::sanitize($_GET['target'])) {
 			case 'list':
+
+				$map = $this->person->getNREN()->getMap();
+				$nrenEPPNKey = $map['eppn'];
+
+				$this->tpl->assign('nren_eppn_key'		, $nrenEPPNKey);
 				/* get all info from database and publish to template */
 				$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
 				$this->tpl->assign('self_subscriber'	, $this->person->getSubscriber()->getIdPName());
@@ -201,6 +217,10 @@ class CP_NREN_Admin extends Content_Page
 				if (isset($attributes[$map['epodn']])) {
 					$this->tpl->assign('foundUniqueName', $attributes[$map['epodn']][0]);
 					$this->tpl->assign('nrenOrgAttr', $map['epodn']);
+				}
+
+				if (isset($attributes[$map['eppn']])) {
+					$this->tpl->assign('eppnAttr', $map['eppn']);
 				}
 
 				$this->tpl->assign('add_subscriber', true);

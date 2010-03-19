@@ -245,6 +245,19 @@ class Input
 		return $output;
 	}
 
+	/**
+	 * Sanitize a string which should contain only alphabetical characters
+	 * [a-zA-Z]. Everything else will be stripped.
+	 *
+	 * @param $input string the unsanitized alphabetical-string
+	 * @return string the sanitized alphabetical string
+	 */
+	static function sanitizeAlpha($input)
+	{
+		$output = preg_replace('/[^a-z]/i', '', $input);
+		return $output;
+	}
+
 	/*
 	 * For text e.g. defined by the NREN admin to view on the help/about page
 	 * we can not make too many assumptions about how the input will look like

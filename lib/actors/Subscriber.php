@@ -773,6 +773,8 @@ class Subscriber
 	 * should remain unaware of Framework and thus Framework::error_output and
 	 * just rethrowing a new exception does not make sense, does it).
 	 *
+	 * @param string $eppn The map-key for the unique identifiers of persons
+	 *                     that log on
 	 * @param string $cn The map-key for the common-name of persons that log on
 	 * @param string $mail The map-key for the mail address of persons that log
 	 *                     on
@@ -784,14 +786,14 @@ class Subscriber
 	 * @throws DBStatementException If something goes wrong in contacting the DB,
 	 *                              probably due to a configuration error
 	 */
-	public function saveMap($cn, $mail)
+	public function saveMap($eppn, $cn, $mail)
 	{
 		$doUpdate = false;
 		$nrenMap = $this->nren->getMap();
 		$nrenID = $this->nren->getID();
 
 		if ($this->hasMap) {
-			if (($cn != $this->map['cn']) ||
+			if ( ($cn != $this->map['cn']) ||
 			     ($mail != $this->map['mail'])) {
 				$doUpdate = true;
 				$statement = "UPDATE attribute_mapping " .
@@ -806,7 +808,7 @@ class Subscriber
 			$statement .= "(nren_id, subscriber_id, eppn, epodn, cn, mail, entitlement) ";
 			$statement .= "VALUES(?,?,?,?,?,?,?)";
 			$types = array('text', 'text', 'text', 'text', 'text', 'text');
-			$data = array($nrenID, $this->db_id, $nrenMap['eppn'],
+			$data = array($nrenID, $this->db_id, $eppn,
 			              $nrenMap['epodn'], $cn, $mail, $nrenMap['entitlement']);
 		}
 
