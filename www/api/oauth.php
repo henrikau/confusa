@@ -13,6 +13,8 @@
 	require_once 'confusa_constants.php';
 	require_once 'OAuthDataStore_Confusa.php';
 	require_once 'MDB2Wrapper.php';
+	require_once 'NREN.php';
+	require_once 'NREN_Handler.php';
 
 	$path = $_SERVER['PATH_INFO'];
 
@@ -59,6 +61,29 @@
 
 		$attributes = $session->getAttributes();
 		$idp        = $session->getIdP();
+
+		/** need simplesaml-config to get current session duration */
+		SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
+		$samlConfig = SimpleSAML_Configuration::getConfig();
+		$totalTime = $samlConfig->getValue('session.duration');
+		$remainingTime = $session->remainingTime();
+		$passedTime = $totalTime - $remainingTime;
+
+		$nren = new NREN($idp);
+
+		if (isset($nren)) {
+			$timeout = $nren->getReauthTimeout();
+		} else {
+			$timeout = ConfusaConstants::$DEFAULT_REAUTH_TIMEOUT;
+		}
+
+		$timeout = $timeout*60; /* in seconds */
+
+		if ($passedTime > $timeout) {
+			SimpleSAML_Auth_Default::initLogout($_SERVER['REQUEST_URI']);
+			exit(0);
+		}
+
 		$attributes['idp'] = array($idp);
 		$accTokenValidity = getAccessTokenTimeout($idp);
 		$attributes[ConfusaConstants::$OAUTH_VALIDITY_ATTRIBUTE] = $accTokenValidity;
