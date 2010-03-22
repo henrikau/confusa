@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS idp_map (
 CREATE TABLE IF NOT EXISTS subscribers (
     subscriber_id INT PRIMARY KEY AUTO_INCREMENT,
     -- the name of the institution (e.g. KTH, CSC, Univ. of Oslo,...)
-    name VARCHAR(30) UNIQUE NOT NULL,
+    name VARCHAR(256) UNIQUE NOT NULL,
     -- the name that goes into the certificate subject DN (not that the
     -- organization name DN component may fill a maximum of 64 characters
     -- minus 'O=' that is 62 characters
