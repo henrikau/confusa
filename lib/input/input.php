@@ -57,7 +57,7 @@ class Input
 	 */
 	static function sanitizeIdPName($input)
 	{
-		$output = preg_replace('/[^a-z0-9_=,\s\.\-@]/i','', $input);
+		$output = preg_replace('/[^a-z0-9_=,:\s\.\-@]/i','', $input);
 		return $output;
 	}
 
