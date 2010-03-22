@@ -33,6 +33,12 @@ class NREN_Handler
 	static function getNREN($key)
 	{
 		/* try URL first, this is via the idp_map, the most common case  */
+		$nren = self::getByIdPURL(Input::sanitizeURL($key));
+		if ($nren) {
+			return $nren;
+		}
+
+		/* try the URL of the portal */
 		$nren = self::getByURL(Input::sanitizeURL($key));
 		if ($nren) {
 			return $nren;
@@ -88,6 +94,28 @@ class NREN_Handler
 		$query .= "ON n.nren_id = idp.nren_id WHERE url = ?";
 		return self::getFromQuery($query, array('text'), array($nren_url));
 	} /* end getByURL */
+
+	/**
+	 * getByIdPURL() return a decorated NREN from it's IDP URL
+	 *
+	 * Getting a NREN by its IdP-URL is the most common way to identify a
+	 * NREN, used throughout Confusa. This function should never be used
+	 * directly, only when "guessing" all kinds of different identifiers for
+	 * the NREN, such as different URLs.
+	 *
+	 * @param string $idp_url the URL of the idp
+	 * @return NREN|false the NREN or false if not found
+	 * @access private
+	 */
+	private static function getByIdPURL($idp_url)
+	{
+		if (!is_string($idp_url)) {
+			return false;
+		}
+
+		$query = "SELECT idp_url FROM idp_map WHERE idp_url=?";
+		return self::getFromQuery($query, array('text'), array($idp_url));
+	} /* end getByIdPURL */
 
 	/**
 	 * getByWAYF() return a decorated NREN the WAYF URL
