@@ -42,6 +42,7 @@ Options:
   -h                  This help-text
   -s <idp_url>        Search the DB for the mapping with the given IdP-url
 EOF
+   exit 1
 }
 
 
