@@ -64,7 +64,13 @@
 		$attributes[ConfusaConstants::$OAUTH_VALIDITY_ATTRIBUTE] = $accTokenValidity;
 		$store->authorize($requestToken, $attributes);
 
-		echo "Your request is now authorized.<br />\n";
+		if (isset($_GET['relayURL'])) {
+			$relayURL = $_GET['relayURL'];
+			header("Location: $relayURL");
+		} else {
+			echo "Your request is now authorized.<br />\n";
+		}
+
 		break;
 	case '/access':
 		$store = new OAuthDataStore_Confusa();
