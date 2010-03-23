@@ -15,6 +15,8 @@
 	require_once 'MDB2Wrapper.php';
 	require_once 'NREN.php';
 	require_once 'NREN_Handler.php';
+	require_once 'Person.php';
+	require_once 'Confusa_Auth_IdP.php';
 
 	$path = $_SERVER['PATH_INFO'];
 
@@ -51,40 +53,13 @@
 
 		$server->add_signature_method($hmac_method);
 		$server->add_signature_method($plaintext_method);
+		$person = new Person();
 
-		$session = SimpleSAML_Session::getInstance();
+		$auth_idp = new Confusa_Auth_IdP($person);
+		$auth_idp->authenticate(TRUE);
+		$auth_idp->reAuthenticate();
 
-		if (!$session->isValid('default-sp')) {
-			SimpleSAML_Auth_Default::initLogin('default-sp',
-			                                   SimpleSAML_Utilities::selfURL());
-		}
-
-		$attributes = $session->getAttributes();
-		$idp        = $session->getIdP();
-
-		/** need simplesaml-config to get current session duration */
-		SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
-		$samlConfig = SimpleSAML_Configuration::getConfig();
-		$totalTime = $samlConfig->getValue('session.duration');
-		$remainingTime = $session->remainingTime();
-		$passedTime = $totalTime - $remainingTime;
-
-		$nren = new NREN($idp);
-
-		if (isset($nren)) {
-			$timeout = $nren->getReauthTimeout();
-		} else {
-			$timeout = ConfusaConstants::$DEFAULT_REAUTH_TIMEOUT;
-		}
-
-		$timeout = $timeout*60; /* in seconds */
-
-		if ($passedTime > $timeout) {
-			SimpleSAML_Auth_Default::initLogout($_SERVER['REQUEST_URI']);
-			exit(0);
-		}
-
-		$attributes['idp'] = array($idp);
+		$attributes = $auth_idp->getAttributes();
 		$accTokenValidity = getAccessTokenTimeout($idp);
 		$attributes[ConfusaConstants::$OAUTH_VALIDITY_ATTRIBUTE] = $accTokenValidity;
 		$store->authorize($requestToken, $attributes);
