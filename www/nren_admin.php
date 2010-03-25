@@ -185,8 +185,11 @@ class CP_NREN_Admin extends Content_Page
 	public function process()
 	{
 		if (!$this->person->isNRENAdmin()) {
-			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " tried to access the NREN-area");
-			$this->tpl->assign('reason', 'You are not an NREN-admin');
+			$errorTag = PW::create();
+			Logger::logEvent(LOG_NOTICE, "NRENAdmin", "process()",
+			                  "User " . $this->person->getX509ValidCN() . " tried to access the NREN-area",
+			                  __LINE__, $errorTag);
+			$this->tpl->assign('reason', "[$errorTag] You are not an NREN-admin");
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
 		}
@@ -268,17 +271,24 @@ class CP_NREN_Admin extends Content_Page
 			$subscriber->setComment($comment);
 			$subscriber->save();
 
-			Logger::log_event(LOG_NOTICE, "Updated (full) information for subscriber $subscriber_id");
+			Logger::logEvent(LOG_NOTICE, "NRENAdmin", "editSubscriber()",
+			                 "Updated (full) information for subscriber $subscriber_id");
 
 		} catch (DBStatementException $dbse) {
-			Framework::error_output(__FILE__ . ":" . __LINE__ . " Error in query-syntax.<BR />Server said " .
+			$errorTag = PW::create();
+			Framework::error_output("[$errorTag] Error in query-syntax.<BR />Server said " .
 			                        htmlentities($dbse->getMessage()));
-			Logger::log_event(LOG_NOTICE, "Problem occured when editing the information of subscriber $id: " . $dbse->getMessage());
+			Logger::logEvent(LOG_NOTICE, "NRENAdmin", "editSubscriber()",
+			                  "Problem occured when editing the information of subscriber $id: " . $dbse->getMessage(),
+			                  __LINE__, $errorTag);
 			return false;
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output(__FILE__ . ":" . __LINE__ . " Problems with query.<BR />Server said " .
+			$errorTag = PW::create();
+			Framework::error_output("[$errorTag] Problems with query.<BR />Server said " .
 			                        htmlentities($dbqe->getMessage()));
-			Logger::log_event(LOG_NOTICE, "Problem occured when editing subscriber $id: " . $dbse->getMessage());
+			Logger::logEvent(LOG_NOTICE, "NRENAdmin", "editSubscriber()",
+			                  "Problem occured when editing subscriber $id: " . $dbse->getMessage(),
+			                  __LINE__, $errorTag);
 			return false;
 		}
 		return true;
@@ -310,16 +320,18 @@ class CP_NREN_Admin extends Content_Page
 						     array('text', 'text'),
 						     array($this->person->getNREN(), $id));
 		} catch (DBQueryException $dbqe) {
+			$errorTag = PW::create();
 			$msg = "Could not delete subscriber with ID $id from DB.";
-			Logger::log_event(LOG_NOTICE, $msg);
-			Framework::message_output($msg . "<br />Server said: " . htmlentities($dbqe->getMessage()));
+			Logger::logEvent(LOG_NOTICE, "NRENAdmin", "delSubscriber()", $msg, __LINE__, $errorTag);
+			Framework::message_output($msg . "<br />[$errorTag] Server said: " . htmlentities($dbqe->getMessage()));
 			return false;
 		} catch (DBStatementException $dbse) {
+			$errorTag = PW::create();
 			$msg = "Could not delete subsriber with ID $id from DB, due to problems with the " .
 				"statement. Probably this is a configuration error. Server said: " .
 				$dbse->getMessage();
-			Logger::log_event(LOG_NOTICE, "ADMIN: " . $msg);
-			Framework::message_output(htmlentities($msg));
+			Logger::logEvent(LOG_NOTICE, "NRENAdmin", "delSubscriber()", $msg, __LINE__, $errorTag);
+			Framework::message_output("[$errorTag]" . htmlentities($msg));
 			return false;
 		}
 
@@ -357,15 +369,17 @@ class CP_NREN_Admin extends Content_Page
 			}  catch (CGE_KeyRevokeException $kre) {
 						echo $kre->getMessage() . "<br />\n";
 			}
-			Logger::log_event(LOG_INFO, "Deleting subscriber, revoked $count issued certificates ".
-					  "for subscriber $subscriberName.");
+			Logger::logEvent(LOG_INFO, "NRENAdmin", "delSubscriber()",
+			                  "Deleting subscriber, revoked $count issued certificates ".
+			                  "for subscriber $subscriberName.");
 		}
 
 		MDB2Wrapper::update("DELETE FROM subscribers WHERE subscriber_id = ? AND nren_id = ?",
 				     array('text', 'text'),
 				     array($id, $nren_id));
 
-		Logger::log_event(LOG_INFO, "Deleted subscriber with ID $id.\n");
+		Logger::logEvent(LOG_INFO, "NRENAdmin", "delSubscriber()",
+		                 "Deleted subscriber with ID $id.\n");
 		$msg = $this->translateTag('l10n_suc_deletesubs1', 'nrenadmin') .
 		       htmlentities($subscriberName) .
 		       $this->translateTag('l10n_suc_deletesubs2', 'nrenadmin') . " " .
@@ -388,16 +402,18 @@ class CP_NREN_Admin extends Content_Page
 		try {
 			return $this->person->getNREN()->getSubscriberList();
 		} catch (DBStatementException $dbse) {
-			$msg = __FILE__ . ":" . __LINE__ . " Error in query-syntax. Verify that the query matches the database!";
-			Logger::log_event(LOG_NOTICE, $msg);
-			$msg .= "<BR />Server said: " . htmlentities($dbse->getMessage());
-			Framework::error_output($msg);
+			$errorTag = PW::create();
+			$msg = "Error in query-syntax. Verify that the query matches the database!";
+			Logger::logEvent(LOG_NOTICE, "NRENAdmin", "getSubscribers()", $msg, __LINE__, $errorTag);
+			$msg .= "<br />Server said: " . htmlentities($dbse->getMessage());
+			Framework::error_output("[$errorTag]" . $msg);
 			return;
 		} catch (DBQueryException $dbqe) {
-			$msg =  __FILE__ . ":" . __LINE__ . " Possible constraint-violation in query. Compare query to db-schema";
-			Logger::log_event(LOG_NOTICE, $msg);
-			$msg .= "<BR />Server said: " . htmlentities($dbse->getMessage());
-			Framework::error_output($msg);
+			$errorTag = PW::create();
+			$msg =  "Possible constraint-violation in query. Compare query to db-schema";
+			Logger::logEvent(LOG_NOTICE, "NRENAdmin", "getSubscribers()", $msg, __LINE__, $errorTag);
+			$msg .= "<br />Server said: " . htmlentities($dbse->getMessage());
+			Framework::error_output("[$errorTag]" . $msg);
 		}
 	} /* end getSubscribers */
 }
