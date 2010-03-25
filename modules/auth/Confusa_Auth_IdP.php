@@ -41,7 +41,8 @@ class Confusa_Auth_IdP extends Confusa_Auth
 			$sspdir = Config::get_config('simplesaml_path');
 		} catch (KeyNotFoundException $knfe) {
 			echo "Cannot find path to simplesaml. This install is not valid. Aborting.<br />\n";
-			Logger::log_event(LOG_ALERT, "Tryging to instansiate SimpleSAMLphp without a configured path.");
+			Logger::logEvent(LOG_ALERT, "Confusa_Auth_IdP", "__construct()",
+			                 "Trying to instantiate SimpleSAMLphp without a configured path.");
 			exit(0);
 		}
 		require_once $sspdir . '/lib/_autoload.php';
