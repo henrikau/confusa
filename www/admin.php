@@ -4,7 +4,7 @@ require_once 'Content_Page.php';
 include_once 'Framework.php';
 include_once 'MDB2Wrapper.php';
 include_once 'db_query.php';
-include_once 'logger.php';
+include_once 'Logger.php';
 include_once 'Input.php';
 
 

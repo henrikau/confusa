@@ -4,7 +4,7 @@ require_once 'Content_Page.php';
 require_once 'Framework.php';
 require_once 'Person.php';
 require_once 'classTextile.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 
 class CP_Help extends Content_Page
 {

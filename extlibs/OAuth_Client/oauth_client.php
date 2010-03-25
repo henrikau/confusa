@@ -20,13 +20,13 @@ function ssp_readline($prompt = '') {
 
 require_once 'oauth_config.php';
 
-$REQ_TOKEN_URL = $config['portal_base_address'] . '/api/oauth.php/request';
-$AUTHORIZE_URL = $config['portal_base_address'] . '/api/oauth.php/authorize';
-$ACC_TOKEN_URL = $config['portal_base_address'] . '/api/oauth.php/access';
-$CONTENT_URL = $config['portal_base_address'] . '/index.php?oauth=yes';
+$REQ_TOKEN_URL = $oauth_config['portal_base_address'] . '/api/oauth.php/request';
+$AUTHORIZE_URL = $oauth_config['portal_base_address'] . '/api/oauth.php/authorize';
+$ACC_TOKEN_URL = $oauth_config['portal_base_address'] . '/api/oauth.php/access';
+$CONTENT_URL = $oauth_config['portal_base_address'] . '/index.php?oauth=yes';
 
-$oauth = new OAuth($config['oauth_consumer_key'],
-                   $config['oauth_consumer_secret']);
+$oauth = new OAuth($oauth_config['oauth_consumer_key'],
+                   $oauth_config['oauth_consumer_secret']);
 
 /* don't use this in a production environment. PHP-curl can be a bit nasty
  * about where it is looking for root certificates, especially if you can

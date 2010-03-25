@@ -3,7 +3,7 @@ $sspdir = Config::get_config('simplesaml_path');
 require_once $sspdir . '/modules/oauth/libextinc/OAuth.php';
 require_once $sspdir . '/lib/_autoload.php';
 require_once 'confusa_constants.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 
 /**
  * Implement Confusa's own OAuth-datastore. This is mostly done to couple the

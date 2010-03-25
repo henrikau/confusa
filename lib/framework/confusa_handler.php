@@ -1,6 +1,6 @@
 <?php
 include_once 'Framework.php';
-include_once 'logger.php';
+include_once 'Logger.php';
 include_once 'confusa_config.php';
 
 function confusaErrorHandler($errno, $errstr, $errfile, $errline)
