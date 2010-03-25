@@ -1,6 +1,6 @@
 <?php
 require_once 'Config.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'Person.php';
 require_once 'Person.php';
 require_once 'Confusa_Auth.php';
@@ -85,8 +85,8 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		/* is the user authNed according to simplesamlphp */
 		if ($this->isAuthenticated) {
 			$idp = $this->session->getIdP();
-			$attributes = $this->as->getAttributes();
 			$this->session->setAttribute('idp', array($idp));
+			$attributes = $this->as->getAttributes();
 			$this->person->setAuth(TRUE);
 			$this->decoratePerson($attributes, $idp);
 		} else if (!$this->isAuthenticated && $authRequired) {

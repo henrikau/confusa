@@ -6,7 +6,7 @@ require_once 'MDB2Wrapper.php';
 require_once 'Input.php';
 require_once 'file_io.php';
 require_once 'file_upload.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'classTextile.php';
 require_once 'confusa_constants.php';
 

@@ -3,7 +3,7 @@ require_once 'confusa_include.php';
 require_once 'Content_Page.php';
 require_once 'Framework.php';
 require_once 'Person.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 
 class CP_Priv_Notice extends Content_Page
 {

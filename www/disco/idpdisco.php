@@ -6,7 +6,7 @@ require_once 'Framework.php';
 require_once 'confusa_gen.php';
 require_once 'MDB2Wrapper.php';
 require_once 'Input.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 
 /**
  * Class showing an IdP-discovery page tailored to the requirements of

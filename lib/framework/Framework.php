@@ -12,7 +12,7 @@ require_once 'AuthHandler.php';
 require_once 'NREN_Handler.php';
 require_once 'NREN.php';
 require_once 'Person.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'Content_Page.php';
 require_once 'Output.php';
 require_once 'CGE_ComodoCredentialException.php';
