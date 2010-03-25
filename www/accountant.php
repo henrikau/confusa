@@ -70,14 +70,20 @@ class CP_Accountant extends Content_Page
 	public function process()
 	{
 		if (!$this->person->isNRENAdmin()) {
-			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " tried to access the accountant.");
-			$this->tpl->assign('reason', 'You are not an NREN-admin');
+			$errorTag = PW::create();
+			Logger::logEvent(LOG_NOTICE, "Accountant", "process()",
+			                 "User " . $this->person->getX509ValidCN() . " tried to access the accountant.",
+			                __LINE__, $errorTag);
+			$this->tpl->assign('reason', "[$errorTag] You are not an NREN-admin");
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
 		} else if (Config::get_config('ca_mode') != CA_COMODO) {
-			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . "tried to access the accountant, " .
-					  "even though Confusa is not using the Comodo CA.");
-			$this->tpl->assign('reason', 'Confusa is not using Comodo CA');
+			$errorTag = PW::create();
+			Logger::logEvent(LOG_NOTICE, "Accountant", "process()",
+			                "User " . $this->person->getX509ValidCN() . "tried to access the accountant, " .
+			                "even though Confusa is not using the Comodo CA.",
+			                __LINE__, $errorTag);
+			$this->tpl->assign('reason', "[$errorTag] Confusa is not using Comodo CA");
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
 		}
@@ -131,11 +137,14 @@ class CP_Accountant extends Content_Page
 				return null;
 			}
 		} catch (DBQueryException $dqe) {
-			Logger::log_event(LOG_INFO, "[nadm] (query) Could not determine the current " .
-					  "ap_name and login_name for NREN $nren: " . $dqe->getMessage());
+			Logger::logEvent(LOG_INFO, "Accountant", "getNRENAccounts()",
+			                 "(query) Could not determine the current " .
+			                 "ap_name and login_name for NREN $nren: " . $dqe->getMessage(),
+							 __LINE__);
 		} catch (DBStatementException $dse) {
-			Logger::log_event(LOG_INFO, "[nadm] (statement) Could not determine the current " .
-					  "ap_name and login_name for NREN $nren: " . $dse->getMessage());
+			Logger::logEvent(LOG_INFO, "Accountant", "getNRENAccounts()", "(statement) Could not determine the current " .
+					  "ap_name and login_name for NREN $nren: " . $dse->getMessage(),
+					  __LINE__);
 		}
 	} /* end getNRENAccounts() */
 
@@ -223,16 +232,24 @@ class CP_Accountant extends Content_Page
 					    array('text', 'text'),
 					    array($account_map_id, $this->person->getNREN()));
 		} catch (DBQueryException $dbe) {
-			Framework::error_message("Problem deleting your old account: " . htmlentities($dbe->getMessage()) .
-						 ". Seems like a problem with the supplied data!");
-			Logger::log_event(LOG_WARN, "[nadm] Could not delete old login account of " .
-					  "NREN $nren " . $dbe->getMessage());
+			$errorTag = PW::create();
+			Framework::error_message("[$errorTag] Problem deleting your old account: " .
+			                         htmlentities($dbe->getMessage()) .
+			                         ". Seems like a problem with the supplied data!");
+			Logger::logEvent(LOG_WARN, "Accountant", "deleteAccount($account_map_id)",
+			                 "Could not delete old login account of " .
+			                 "NREN $nren " . $dbe->getMessage(),
+			                 __LINE__, $errorTag);
 			return false;
 		} catch (DBStatementException $dse) {
-			Framework::error_message("Problem deleting your old account: " . htmlentities($dbe->getMessage()) .
-						 ". Seems like a problem with the configuration. Please contact an administrator.");
-			Logger::log_event(LOG_WARN, "[nadm] Could not delete old login account of " .
-					  "NREN $nren " . $dbe->getMessage());
+			$errorTag = PW::create();
+			Framework::error_message("[$errorTag] Problem deleting your old account: " .
+			                         htmlentities($dbe->getMessage()) .
+			                         ". Seems like a problem with the configuration. Please contact an administrator.");
+			Logger::logEvent(LOG_WARN, "Accountant", "deleteAccount($account_map_id)",
+			                  "Could not delete old login account of " .
+			                  "NREN $nren " . $dbe->getMessage(),
+			                  __LINE__, $errorTag);
 			return false;
 		}
 		return true;
@@ -279,15 +296,21 @@ class CP_Accountant extends Content_Page
 								array('text', 'text', 'text', 'text', 'text'),
 								array($login_name, $cryptpw, $iv, $ap_name, $account_id));
 		} catch (DBQueryException $dqe) {
-			Logger::log_event(LOG_ERR, "[nadm] Query: Could not update the login-account with ID " .
-							  "$account_id to new value $login_name " . $dqe->getMessage());
-			Framework::error_output("Could not update your login-account. Backend said: " .
-									htmlentities($dqe->getMessage()));
+			$errorTag = PW::create();
+			Logger::logEvent(LOG_ERR, "Accountant", "updateNRENAccount($login_name,...)",
+			                 "Query: Could not update the login-account with ID " .
+			                 "$account_id to new value $login_name " . $dqe->getMessage(),
+			                 __LINE__, $errorTag);
+			Framework::error_output("[$errorTag] Could not update your login-account. Backend said: " .
+			                        htmlentities($dqe->getMessage()));
 		} catch (DBStatementException $dse) {
-			Logger::log_event(LOG_ERR, "[nadm] Statement: Could not update the login-account with ID " .
-							  "$account_id to new value $login_name " . $dse->getMessage());
-			Framework::error_output("Could not update your login-account. Backend said: " .
-									htmlentities($dse->getMessage()));
+			$errorTag = PW::create();
+			Logger::logEvent(LOG_ERR, "Accountant", "updateNRENAccount($login_name,...)",
+			                  "Statement: Could not update the login-account with ID " .
+			                  "$account_id to new value $login_name " . $dse->getMessage(),
+			                  __LINE__, $errorTag);
+			Framework::error_output("[$errorTag] Could not update your login-account. Backend said: " .
+			                        htmlentities($dse->getMessage()));
 		}
 	}
 	/**
@@ -308,8 +331,11 @@ class CP_Accountant extends Content_Page
 						    array('text'),
 						    array($nren));
 			if (count($res) > 1) {
-				Framework::error_output("Too many hits in database! " . count($res) . " Database inconsistency.");
-				Logger::log_event(LOG_WARNING, "Inconsistency detected in the database. $org has " . count($res) . " accounts");
+				$errorTag = PW::create();
+				Framework::error_output("[$errorTag] Too many hits in database! " . count($res) . " Database inconsistency.");
+				Logger::logEvent(LOG_WARNING, "Accountant", "changeAccount($login_name)",
+				                  "Inconsistency detected in the database. $org has " . count($res) . " accounts",
+								  __LINE__, $errorTag);
 				return false;
 			}
 
@@ -331,19 +357,26 @@ class CP_Accountant extends Content_Page
 			                          " " . htmlentities($nren) . " " .
 			                          $this->translateTag('l10n_suc_changedacc2', 'accountant') .
 			                          " " . htmlentities($login_name));
-			Logger::log_event(LOG_INFO, "Changed account for $nren to $login_name. " .
-					  "Admin contacted us from " . $_SERVER['REMOTE_ADDR']);
+			Logger::logEvent(LOG_INFO, "Accountant", "changeAccount($login_name)",
+			                 "Changed account for $nren to $login_name. " .
+			                 "Admin contacted us from " . $_SERVER['REMOTE_ADDR']);
 		} catch (DBStatementException $dbqe) {
-			Framework::error_output("Query syntax errors. Server said: " .
+			$errorTag = PW::create();
+			Framework::error_output("[$errorTag] Query syntax errors. Server said: " .
 			                        htmlentities($dbqe->getMessage()));
-			Logger::log_event(LOG_INFO, "Syntax error when trying to change the used account of NREN " .
-					  $this->person->getNREN() . ": " . $dbqe->getMessage());
+			Logger::logEvent(LOG_INFO, "Accountant", "changeAccount($login_name)",
+			                 "Syntax error when trying to change the used account of NREN " .
+			                 $this->person->getNREN() . ": " . $dbqe->getMessage(),
+			                 __LINE__, $errorTag);
 			return false;
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Database-server problems. Server said: " .
+			$errorTag = PW::create();
+			Framework::error_output("[$errorTag] Database-server problems. Server said: " .
 			                        htmlentities($dbqe->getMessage()));
-			Logger::log_event(LOG_NOTICE, "Database problems when trying to change the used account of NREN " .
-					  $this->person->getNREN() . ": " . $dbqe->getMessage());
+			Logger::logEvent(LOG_NOTICE, "Accountant", "changeAccount($login_name)",
+			                 "Database problems when trying to change the used account of NREN " .
+			                 $this->person->getNREN() . ": " . $dbqe->getMessage(),
+							 __LINE__, $errorTag);
 			return false;
 		}
 		return true;
@@ -412,7 +445,8 @@ class CP_Accountant extends Content_Page
 			                          " " . htmlentities($loginName) . " " .
 			                          $this->translateTag('l10n_suc_addednew2', 'accountant') .
 			                          " " . htmlentities($this->person->getNREN()));
-			Logger::log_event(LOG_INFO, "Added new account $loginName to NREN " . $this->person->getNREN());
+			Logger::logEvent(LOG_INFO, "Accountant", "addNRENAccount($loginName,...)",
+			                 "Added new account $loginName to NREN " . $this->person->getNREN());
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Error adding new account, does the account exist?<br />".
 						htmlentities($dbqe->getMessage()));
