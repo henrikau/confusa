@@ -809,7 +809,13 @@ class Person{
 	    require_once 'MDB2Wrapper.php';
 	    $errorCode = PW::create(8);
 
-	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND nren=?", array('text', 'text'), array($this->eppn, $this->nren->getID()));
+		$query = "SELECT * FROM admins WHERE admin=? AND nren=? AND ";
+		$query .= "((admin_level='2' AND (ISNULL(idp_url) OR idp_url=?)) OR";
+		$query .= "(admin_level='1' AND subscriber=?))";
+		$types = array('text', 'text', 'text', 'text');
+		$params = array($this->eppn, $this->nren->getID(), $this->nren->getIdP(), $this->subscriber->getDBID());
+
+	    $res	= MDB2Wrapper::execute($query, $types, $params);
 	    $size	= count($res);
 	    if ($size == 1) {
 		    $adminRes = $res[0]['admin_level'];
