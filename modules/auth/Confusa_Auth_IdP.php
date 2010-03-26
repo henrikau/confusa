@@ -66,7 +66,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 			$this->person->setAuth(false);
 			$this->isAuthenticated = false;
 		} else {
-			$this->isAuthenticated = $this->session->isValid($this->session->getAuthority());
+			$this->isAuthenticated = $this->as->isAuthenticated();
 		}
 	}
 
