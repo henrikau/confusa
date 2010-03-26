@@ -28,14 +28,14 @@ function usage
 {
 prog_name=`basename $0`
 cat <<EOF
-Usage $prog_name  <nren_name> <Country> <principal> <contact> [uid-attr]
+Usage $prog_name  -n <nren_name> -c <country> -u <uid-val> -e <e-mail> -a [uid-attr]
     nren_name:   The name of the NREN. Must be unique within the database.
     country:     Two-letter country-code
-    principal:   eduPersonPrincipalName or another unique identifier
+    uid-val:     eduPersonPrincipalName or another unique identifier
                  for an initial NREN-admin
-    contact:     A contact information for the NREN
-    uid-attr:   (Optional) The attribute that is used for transmitting the
-                unique identifier for a user
+    e-mail:      A contact information for the NREN
+    uid-attr:    (Optional) The attribute that is used for transmitting the
+                 unique identifier for a user
 EOF
 }
 
@@ -43,11 +43,27 @@ EOF
 if [ $# -lt 4 ]; then
     usage
     exit 1
-fi;
-nren_name=$1
-country=`echo $2 | tr '[:lower:]' '[:upper:]'`
-eppn=$3
-contact=$4
+else
+	while getopts "n:c:u:e:a:" opt; do
+	case $opt in
+		n) nren_name=$OPTARG ;;
+		c) country=`echo $OPTARG | tr '[:lower:]' '[:upper:]'` ;;
+		u) eppn=$OPTARG ;;
+		e) contact=$OPTARG ;;
+		a) eppn_key=$OPTARG ;;
+		*) usage ;;
+	esac
+	done
+fi
+
+
+if   [ -z "$nren_name" ] ||
+     [ -z "$country" ] ||
+     [ -z "$eppn" ] ||
+     [ -z "$contact" ]; then
+	usage
+	exit 1
+fi
 
 # Include libraries
 if [ -z ../lib/bash/config_lib.sh ]; then
@@ -121,8 +137,7 @@ if [ $result -ne 0 ]; then
 	exit 3
 fi
 
-if [ $# == 5 ]; then
-	eppn_key=${5}
+if [ -n $eppn_key ]; then
 	echo "Now adding unique identifier ${eppn_key} to the attribute mapping of NREN ${nren_name}"
 	res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', '$eppn_key')"`
 	result=$?
