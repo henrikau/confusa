@@ -28,7 +28,7 @@ function usage
 {
 prog_name=`basename $0`
 cat <<EOF
-Usage $prog_name  -n <nren_name> -c <country> -u <uid-val> -e <e-mail> -a [uid-attr]
+Usage $prog_name  -n <nren_name> -c <country> -u <uid-val> -e <e-mail> -a [uid-attr] -i [idp-url]
     nren_name:   The name of the NREN. Must be unique within the database.
     country:     Two-letter country-code
     uid-val:     eduPersonPrincipalName or another unique identifier
@@ -36,6 +36,9 @@ Usage $prog_name  -n <nren_name> -c <country> -u <uid-val> -e <e-mail> -a [uid-a
     e-mail:      A contact information for the NREN
     uid-attr:    (Optional) The attribute that is used for transmitting the
                  unique identifier for a user
+    idp-url:     (Optional) The IdP-url of the IdP with which the admin
+                 authenticates. Use that if the uid of the admin is not
+                 globally unique.
 EOF
 }
 
@@ -44,13 +47,14 @@ if [ $# -lt 4 ]; then
     usage
     exit 1
 else
-	while getopts "n:c:u:e:a:" opt; do
+	while getopts "n:c:u:e:a:i:" opt; do
 	case $opt in
 		n) nren_name=$OPTARG ;;
 		c) country=`echo $OPTARG | tr '[:lower:]' '[:upper:]'` ;;
 		u) eppn=$OPTARG ;;
 		e) contact=$OPTARG ;;
 		a) eppn_key=$OPTARG ;;
+		i) idp_url=$OPTARG ;;
 		*) usage ;;
 	esac
 	done
@@ -112,7 +116,13 @@ nren_id=`echo $res | cut -d " " -f 2`
 #------------------------------------------------------------------------#
 #		Can we add the admin
 #------------------------------------------------------------------------#
-res=`run_query "SELECT * FROM admins WHERE admin='${eppn}'"`
+
+if [ -n ${idp_url} ]; then
+	res=`run_query "SELECT * FROM admins where admin='${eppn}' AND idp_url='${idp_url}'`
+else
+	res=`run_query "SELECT * FROM admins WHERE admin='${eppn}'"`
+fi
+
 if [ -n "$res" ]; then
     cat <<EOF
 An administrator with UID ${eppn} already exists in the database. Since the UID
@@ -125,9 +135,18 @@ echo $res
 exit 0
 fi
 
-echo "Adding new administrator to NREN ${nren_name}, internal ID ${nren_id}"
-res=`run_query "INSERT INTO admins(admin, admin_level, nren) VALUES('$eppn', '2', $nren_id)"`
-result=$?
+if [ -n $idp_url ]; then
+	echo "NREN ${nren_name}, internal ID ${nren_id}: Adding new administrator ${eppn}, bound to IdP ${idp_url}"
+	res=`run_query "INSERT INTO admins(admin, admin_level, nren, idp_url) VALUES('$eppn', '2', $nren_id, '$idp_url')"`
+	result=$?
+
+	echo "Connecting supplied IdP ${idp_url} to NREN ${nren_name}"
+	sh bootstrap_idp -i ${nren_id} -a ${idp_url}
+else
+	echo "NREN ${nren_name}, internal ID ${nren_id}: Adding new administrator ${eppn}"
+	res=`run_query "INSERT INTO admins(admin, admin_level, nren) VALUES('$eppn', '2', $nren_id)"`
+	result=$?
+fi
 
 if [ $result -ne 0 ]; then
 	echo "Error when inserting new admin ${2}, with contact-info ${3}, into DB"
