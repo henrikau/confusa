@@ -1,3 +1,19 @@
+{literal}
+<script type="text/javascript">
+	function toggleGUIDInfoText(dropdown)
+	{
+		var selValue = dropdown.options[dropdown.selectedIndex].value;
+		var informational = document.getElementById("text_globally_unique");
+
+		if (selValue == "-") {
+			informational.style.display='inline';
+		} else {
+			informational.style.display='none';
+		}
+	}
+</script>
+{/literal}
+
 {* *********************************************************************** *}
 {* ***** NREN-admin/NREN-admin view ***** *}
 {* *********************************************************************** *}
@@ -63,7 +79,9 @@
 			</div>
 			</form>
 			</td>
-			<td >{$admin.eppn|escape} <span style="cursor:help" title="{$l10n_title_thatsu}">(*)</span></td>
+			<td >{$admin.eppn|escape} <span style="cursor:help" title="{$l10n_title_thatsu}">(*)</span><br />
+				<span style="font-size: 0.8em">IdP: {$admin.idp_url|escape|default:'-'}</span>
+			</td>
 			<td>{$admin.name|escape}</td>
 		{else}
 			<input type="image" src="graphics/delete.png" alt="Delete entry"
@@ -72,7 +90,8 @@
 			</div>
 			</form>
 			</td>
-			<td style="width: 15em">{$admin.eppn|escape}</td>
+			<td style="width: 15em">{$admin.eppn|escape}<br />
+				<span style="font-size: 0.8em">IdP: {$admin.idp_url|escape|default:'-'}</span></td>
 			<td style="width: 15em">
 				{if isset($admin.email)}
 					<a href="mailto:{$admin.email}">{$admin.name|escape|default:"<i>$l10n_info_notassign</i>"}</a>
@@ -96,10 +115,15 @@
 <form action="" method="post">
 <table>
 <tr>
-	<td style="width: 30px">
+	<td colspan="4">
+	<p style="font-style: italic; font-size: 0.8em; padding-top: 1em">
+		{$l10n_infotext_enteruid}
+	</p>
 	</td>
-	<td style="width: 30px">
-	</td>
+</tr>
+<tr style="padding-bottom: 0.5em">
+	<td style="width: 30px"></td>
+	<td style="width: 30px"></td>
 	<td style="width: 15em">
 		<input type="hidden" name="nren_operation" value="add_nren_admin" />
 		<input type="text" name="nren_admin" />
@@ -107,6 +131,35 @@
 	<td style="width: 15em">
 		<input type="text" value="{$l10n_info_ass_flogin}" disabled="disabled" />
 	</td>
+	<td>
+	</td>
+</tr>
+<tr>
+	<td colspan="4">
+	<p style="font-style: italic; font-size: 0.8em; padding-top: 1em">
+		{$l10n_infotext_idpforadmin}
+	</p>
+	</td>
+</tr>
+<tr>
+	<td style="width: 30px"></td>
+	<td style="width: 30px"><span style="text-align: right">{$l10n_label_idp}</span></td>
+	<td colspan="2" style="width: 30em; min-width: 30em">
+		<select name="idp" onChange="toggleGUIDInfoText(this)">
+		{foreach from=$idps item=idp}
+			<option value="{$idp}">{$idp}</option>
+		{/foreach}
+		</select>
+		<span id="text_globally_unique" style="margin-left: 1em; font-size: 0.8em">
+			{$l10n_label_uniqueinnren}
+		</span>
+	</td>
+</tr>
+<tr>
+	<td style="width: 30px"></td>
+	<td style="width: 30px"></td>
+	<td style="width: 15em"></td>
+	<td style="width: 15em"></td>
 	<td>
 		<input type="submit" name="add" value="{$l10n_button_addnew}" />
 	</td>

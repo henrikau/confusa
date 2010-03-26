@@ -54,7 +54,14 @@ class CP_Admin extends Content_Page
 					break;
 				case 'add_nren_admin':
 					$admin = Input::sanitizeEPPN($_POST['nren_admin']);
-					$this->addNRENAdmin($admin);
+					$idp = Input::sanitizeIdPName($_POST['idp']);
+
+					if ($idp === '-') {
+						$this->addNRENAdmin($admin, NULL);
+					} else {
+						$this->addNRENAdmin($admin, $idp);
+					}
+
 					break;
 				case 'delete_subs_admin':
 					$admin = Input::sanitizeEPPN($_POST['subs_admin']);
@@ -148,7 +155,7 @@ class CP_Admin extends Content_Page
 	private function getNRENAdmins($nren)
 	{
 
-		$query  = "SELECT admin, admin_name, admin_email ";
+		$query  = "SELECT admin, admin_name, admin_email, idp_url ";
 		$query .= "FROM admins WHERE admin_level='2' AND nren=?";
 
 		$nrenID = $nren->getID();
@@ -175,7 +182,8 @@ class CP_Admin extends Content_Page
 			foreach($res as $row) {
 				$admins[] =  array('eppn' => $row['admin'],
 				                   'name' => $row['admin_name'],
-				                   'email' => $row['admin_email']);
+				                   'email' => $row['admin_email'],
+				                   'idp_url' => $row['idp_url']);
 			}
 		}
 
@@ -236,10 +244,10 @@ class CP_Admin extends Content_Page
 	/**
 	 * addNRENAdmin() add a new NREN administrator to the admin-table.
 	 *
-	 * @param String The unique name of the new admin (typically ePPN).
-	 * @param String The name of the NREN for the new administrator.
+	 * @param $admin string The unique name of the new admin (typically ePPN).
+	 * @param $idp string The IdP that the new admin should be associatied with
 	 */
-	private function addNRENAdmin($admin) {
+	private function addNRENAdmin($admin, $idp) {
 		if (!isset($admin)) {
 			Framework::error_output("Need to have the name of the new admin in order to add a new NREN-admin!");
 			return;
@@ -262,9 +270,9 @@ class CP_Admin extends Content_Page
 				return;
 			}
 
-			MDB2Wrapper::update("INSERT INTO admins (admin, admin_level, last_mode, nren) VALUES(?,?,?,?)",
-					    array('text', 'text', 'text', 'Integer'),
-					    array($admin, '2', '0', $nrenID));
+			MDB2Wrapper::update("INSERT INTO admins (admin, admin_level, last_mode, nren, idp_url) VALUES(?,?,?,?,?)",
+					    array('text', 'text', 'text', 'Integer', 'text'),
+					    array($admin, '2', '0', $nrenID, $idp));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem with statement, probably server-issues. Server said " .
 			                        htmlentities($dbse->getMessage()));
@@ -326,8 +334,13 @@ class CP_Admin extends Content_Page
 				$this->tpl->assign('has_adm_entl',false);
 			}
 
+			$nren = $this->person->getNREN();
+			$idpList = $nren->getIdPList();
+			/* append an empty entry to the beginning */
+			$idpList = array_merge((array)'-', $idpList);
+			$this->tpl->assign('idps', $idpList);
 			$this->tpl->assign('nren_admins', $admins);
-			$this->tpl->assign('nren', $this->person->getNREN());
+			$this->tpl->assign('nren', $nren);
 			$this->tpl->assign('subscribers', $subscribers);
 	}
 
