@@ -321,6 +321,12 @@ CREATE TABLE IF NOT EXISTS admins (
        -- store the subscriber to which the admin belongs.
        -- Leave this field NULL if the admin is a NREN-admin
        subscriber INT,
+       -- store the idp with admins that are NREN admins but do not have an
+       -- unique identifier that is unique within their NREN, but only within
+       -- their IDP
+       -- One can not use the subscriber for that, due to bootstrapping issues
+       -- (the subscriber will not be bootstrapped in the beginning)
+       idp_url VARCHAR(128),
        -- another nullable field, this time pointing to the NREN.
        -- This field helps to easily determine, for which NREN a NREN-admin is
        -- responsible. It would have been possible to find this information by
@@ -329,7 +335,10 @@ CREATE TABLE IF NOT EXISTS admins (
        -- The field can be left NULL or filled in if the admin is a subscriber
        -- admin.
        nren INT NOT NULL,
-       UNIQUE(admin, nren),
+       -- a NREN-admin must have an unique identifier at least on the idp-level
+       UNIQUE(admin, nren, idp_url),
+       -- and a subscriber admin has an unique identifer at the subscriber level
+       UNIQUE(admin, subscriber),
        FOREIGN KEY(subscriber) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
        FOREIGN KEY(nren) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) engine=InnoDB;
