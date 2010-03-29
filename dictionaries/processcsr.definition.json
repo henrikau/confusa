@@ -60,7 +60,7 @@
 		"en":	"Upload CSR"
 	},
 	"l10n_infotext_email1": {
-		"en":	"Each certificate can contain zero, one or more of your email-addresses depending on how the portal has been configured. We have registred that you have"
+		"en":	"Each certificate can contain zero, one or more of your email-addresses depending on how the portal has been configured. We have registered that you have"
 	},
 	"l10n_infotext_email2": {
 		"en":	"registered addresses."
