@@ -21,10 +21,6 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	private $as;
 	/* hold the simplesamlphp-session */
 	private $session;
-	/* hold the simplesamlphp-configuration */
-	private $samlConfig;
-	/* state variable keeping the status of the backend authentication */
-	private $isAuthenticated;
 
 	/**
 	 * Constructor
@@ -51,46 +47,37 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		/* start a session needed for the IdP-based AuthN approach */
 		$this->as = new SimpleSAML_Auth_Simple('default-sp');
 		$this->session = SimpleSAML_Session::getInstance();
-		$this->samlConfig = SimpleSAML_Configuration::getConfig();
-
-		/*
-		 * authority is normally default-sp, but in case we/someone want
-		 * to extend this, use the current authority without reverting
-		 * to hard-coded values.
-		 */
-		$idp = $this->session->getIdP();
-		/* If no idp isset, then problem the user is authenticated using a non-SAML
-		 * method, e.g. as simplesamlphp admin. The user should not be auth,
-		 * if no IdP is set (as no NREN can be constructed in that case) */
-		if (is_null($this->session->getAuthority()) || empty($idp)) {
-			$this->person->setAuth(false);
-			$this->isAuthenticated = false;
-		} else {
-			$this->isAuthenticated = $this->as->isAuthenticated();
-		}
 	}
 
 	/**
 	 * authenticate() run the current user through authN-hoops
 	 *
 	 * This function will make sure that the user is authenticated. Once
-	 * done, the person will be authenticated and decorated.
+	 * done, the person will be authenticated and decorated. Only if the
+	 * authRequired parameter is set, authentication will be forced. If
+	 * authRequired is false, the person will only be decorated if the user
+	 * already has an authN session.
 	 *
 	 * Depending on state, do one of the following:
 	 *		- Use the subsystem to perform an IdP authN
 	 *		- Decorate the person object with attributes
 	 *
+	 * @param $authRequired boolean If true, requireAuth, if the person does
+	 *                              not have a valid authN state. If false, only
+	 *                              reuse existing authN state, do not require
+	 *                              auth.
+	 *
 	 */
 	public function authenticate($authRequired)
 	{
 		/* is the user authNed according to simplesamlphp */
-		if ($this->isAuthenticated) {
+		if ($this->as->isAuthenticated()) {
 			$idp = $this->session->getIdP();
 			$this->session->setAttribute('idp', array($idp));
 			$attributes = $this->as->getAttributes();
 			$this->person->setAuth(TRUE);
 			$this->decoratePerson($attributes, $idp);
-		} else if (!$this->isAuthenticated && $authRequired) {
+		} else if (!$this->as->isAuthenticated() && $authRequired) {
 			$this->as->requireAuth();
 		}
 	}
@@ -144,10 +131,19 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		return $res;
 	}
 
+	/**
+	 * If the user is authenticated, check the per NREN timeout to see if there
+	 * is need for reauntication.
+	 * If so, log the user out, which will force a reauthentication if the
+	 * user is on a protected page.
+	 *
+	 * @return void
+	 */
 	public function reAuthenticate()
 	{
-		if ($this->isAuthenticated) {
-			$totalTime = $this->samlConfig->getValue('session.duration');
+		if ($this->as->isAuthenticated()) {
+			$samlConfig = SimpleSAML_Configuration::getInstance();
+			$totalTime = $samlConfig->getValue('session.duration');
 			$remainingTime = $this->session->remainingTime();
 			$passedTime = $totalTime - $remainingTime;
 
@@ -169,14 +165,14 @@ class Confusa_Auth_IdP extends Confusa_Auth
 	}
 
 	/**
-	 * deAuthentcateUser() - Use the subsystem to logout
+	 * deAuthenticateUser() - Use the subsystem to logout
 	 *
 	 * @param String $logout_loc the location to which the user will be redirected after logout
 	 * @return void
 	 */
 	public function deAuthenticate($logout_loc = 'logout.php')
 	{
-		if ($this->isAuthenticated) {
+		if ($this->as->isAuthenticated()) {
 			$this->person->isAuth(false);
 			$this->person->clearAttributes();
 			$this->as->logout(Config::get_config('server_url') . "$logout_loc");
