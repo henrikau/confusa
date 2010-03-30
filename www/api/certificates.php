@@ -1,43 +1,24 @@
 <?php
 require_once '../confusa_include.php';
-require_once 'Confusa_Auth_OAuth.php';
 require_once 'Person.php';
 require_once 'Input.php';
+require_once 'API.php';
 
-class CertificateAPI
+class API_Certificates extends API
 {
-	/* OAuth authentication class */
-	private $auth;
-	/* decorated person object from the auth-handler */
-	private $person;
-	/* the parameters that are parsed from the API-request */
-	private $parameters;
 	/* the ca backend that is used for most certificate operations */
 	private $ca;
-
 	private $CERT_FORMATS = array('PKCS7_CABUNDLE', 'PKCS7_NOCHAIN');
 
 	function __construct()
 	{
-		$this->person = new Person();
-
-		try {
-			$this->auth = new Confusa_Auth_OAuth($this->person);
-			$this->auth->authenticate(TRUE);
-		} catch (Exception $e) {
-			$this->errorAuth();
-			exit(0);
-		}
-
+		parent::__construct();
 		$this->ca = CAHandler::getCA($this->person);
 		$perm = $this->person->mayRequestCertificate();
 
 		if (!$perm->isPermissionGranted()) {
 			$this->errorNotAuthorized($perm);
 		}
-
-		$this->parameters = array();
-		set_exception_handler(array("CertificateAPI", "errorUncaughtException"));
 	} /* end constructor */
 
 	/**
@@ -196,63 +177,8 @@ class CertificateAPI
 		echo "status=Accepted\n";
 		exit(0);
 	}
-
-	/**
-	 * tell the REST client that either on its side or on server side something
-	 * went wrong
-	 */
-	private function errorBadRequest()
-	{
-		header("HTTP/1.1 400 Bad request");
-		echo "What you have supplied does not look like a legal request.\n";
-		echo "If you want to query for certificates, do HTTP GET on an URL like:\n";
-		echo "/api/certifificates.php/<auth-key>/<cert-format> where:\n";
-		echo "\t\t<auth-key>:\tUnique identifier of the certificate.\n";
-		echo "\t\t<cert-format>:\tThe format of the certificate, one of " .
-		     implode(",", $this->CERT_FORMATS) . "\n";
-		exit(1);
-	} /* end errorBadRequest */
-
-	/**
-	 * tell the REST client that it did not authorize itself correctly or at all
-	 */
-	private function errorAuth()
-	{
-		header("HTTP/1.1 403 Forbidden");
-		echo "You need a valid access token to perform API requests.\n";
-		echo "Either you did not have that or your access token expired.\n";
-		echo "Note that depending on NREN settings, token expiry can happen\n";
-		echo "within a rather short time-period.\n";
-		exit(1);
-	} /* end errorAuth */
-
-	private function errorNotAuthorized($permission)
-	{
-		header("HTTP/1.1 412 Precondition failed");
-		echo "You may not perform any operations on the certificate endpoint,";
-		echo "because: " . $permission->getFormattedReasons() . "\n";
-		exit(1);
-	} /* end errorNotAuthorized */
-
-	private function errorInternal()
-	{
-		header("HTTP/1.1 500 Internal server error");
-		echo "An unforeseen problem occured when processing your request.\n";
-		echo "Maybe something is misconfigured. Contact the server\n";
-		echo "administrators\n";
-		exit(1);
-	}
-
-	public static function errorUncaughtException(Exception $e)
-	{
-		header("HTTP/1.1 500 Internal server error");
-		echo "An uncaught exception was thrown while processing your request:\n";
-		echo $e->getMessage() . "\n";
-		exit(1);
-	} /* end errorUncaughtException */
-
 } /* end class CertificateAPI */
 
-$certAPI = new CertificateAPI();
+$certAPI = new API_Certificates();
 $certAPI->processRequest();
 ?>
