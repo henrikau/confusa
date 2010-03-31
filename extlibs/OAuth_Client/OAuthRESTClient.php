@@ -134,9 +134,23 @@ class OAuthRESTClient
 			echo $this->oauth->getLastResponse() . "\n";
 		}
 	} /* end uploadCertRequest */
+
+	public function getUserInfo($format = NULL)
+	{
+		$endpoint = $this->serviceBaseURL . "/api/infopoint.php/dn";
+
+		if (isset($format)) {
+			$endpoint .= "/$format";
+		}
+
+		if ($this->oauth->fetch($endpoint)) {
+			echo "Sent GET to API-endpoint " . $endpoint . "\n";
+			echo $this->oauth->getLastResponse() . "\n";
+		}
+	} /* end getUserInfo */
 } /* end class OAuth-REST-client */
 
-$shortopts = "ld:u:";
+$shortopts = "ld:u:i:";
 $options = getopt($shortopts);
 
 $apiConnection = new OAuthRESTClient();
@@ -150,11 +164,18 @@ if (isset($options['l'])) {
 } else if (isset($options['u'])) {
 	$csrFile = $options['u'];
 	$apiConnection->uploadCertRequest($csrFile);
+} else if (isset($options['i'])) {
+	$option = $options['i'];
+
+	$format = $option;
+	$apiConnection->getUserInfo($format);
 } else {
 	echo "Supplied the wrong arguments!\nCall \"php OAuthRESTClient.php -<opt>\" with <opt>:\n";
 	echo "\t-l\t\tList all certificates of the user\n";
 	echo "\t-d <cert-id>\tDownload certificate with <cert-id>\n";
 	echo "\t-u <csr-file>\tUpload CSR file located at <csr-file>\n";
+	echo "\t-i <format>\tGet information about the authN user.\n";
+	echo "\t   <format> can be: openssl, rfc2253\n";
 	exit(1);
 }
 
