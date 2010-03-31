@@ -154,17 +154,20 @@ $shortopts = "ld:u:i:";
 $options = getopt($shortopts);
 
 $apiConnection = new OAuthRESTClient();
-$apiConnection->getAuthorization();
 
 if (isset($options['l'])) {
+	$apiConnection->getAuthorization();
 	$apiConnection->listCertificates();
 } else if (isset($options['d'])) {
+	$apiConnection->getAuthorization();
 	$certID = $options['d'];
 	$apiConnection->downloadCertificate($certID);
 } else if (isset($options['u'])) {
+	$apiConnection->getAuthorization();
 	$csrFile = $options['u'];
 	$apiConnection->uploadCertRequest($csrFile);
 } else if (isset($options['i'])) {
+	$apiConnection->getAuthorization();
 	$option = $options['i'];
 
 	$format = $option;
