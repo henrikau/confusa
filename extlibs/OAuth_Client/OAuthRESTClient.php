@@ -49,13 +49,25 @@ class OAuthRESTClient
 
 	public function getAuthorization()
 	{
+		/* try to get cached access token first */
 		if (file_exists(".acc_tok_cache")) {
-			$accTokenString = file_get_contents(".acc_tok_cache");
-			$accessToken = unserialize($accTokenString);
 
-			echo "Using access token: ";
-			print_r($accessToken);
-		} else {
+			while ($reuseAccTok != 'y' && $reuseAccTok != 'n') {
+				$reuseAccTok = readline("Reuse cached access token (y/n)? ");
+				readline_add_history($reuseAccTok);
+			}
+
+			if ($reuseAccTok == 'y') {
+				$accTokenString = file_get_contents(".acc_tok_cache");
+				$accessToken = unserialize($accTokenString);
+
+				echo "Using access token: ";
+				print_r($accessToken);
+			}
+		}
+
+		/* no cached access token, get a new one */
+		if (empty($accessToken)) {
 			try {
 				$reqToken = $this->oauth->getRequestToken($this->reqTokenURL);
 			} catch (OAuthException $oae) {
