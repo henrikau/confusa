@@ -1,0 +1,21 @@
+<element name="certificates" xmlns="http://relaxng.org/ns/structure/1.0">
+	<attribute name="elementCount">
+	<text/>
+	</attribute>
+	<zeroOrMore>
+		<element name="certificate">
+			<element name="id">
+				<text/>
+			</element>
+			<element name="status">
+				<text/>
+			</element>
+			<element name="beginDate">
+				<text/>
+			</element>
+			<element name="endDate">
+				<text/>
+			</element>
+		</element>
+	</zeroOrMore>
+</element>

@@ -155,6 +155,10 @@ class API_Certificates extends API
 
 		$domTree->appendChild($certificates);
 
+		if ($domTree->relaxNGValidate("schema/certlist.rng") === FALSE) {
+			$this->errorInternal();
+		}
+
 		$xmlString = $domTree->saveXML();
 
 		$xmlHash = hash("sha256", $xmlString);
