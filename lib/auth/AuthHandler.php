@@ -23,10 +23,7 @@ class AuthHandler
 	public static function getAuthManager($person)
 	{
 		if (!isset(AuthHandler::$auth)) {
-			if (isset($_GET['oauth'])) {
-				require_once 'Confusa_Auth_OAuth.php';
-				AuthHandler::$auth = new Confusa_Auth_OAuth($person);
-			} else if (Config::get_config('auth_bypass') === TRUE) {
+			if (Config::get_config('auth_bypass') === TRUE) {
 				require_once 'Confusa_Auth_Bypass.php';
 				AuthHandler::$auth = new Confusa_Auth_Bypass($person);
 			} else {
