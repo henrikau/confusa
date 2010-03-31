@@ -6,6 +6,9 @@ require_once 'Person.php';
 /**
  * Abstract base class for all other API classes. Includes common functionality
  * such as error handlers and OAuth usage authorization.
+ *
+ * @since v0.6-rc0
+ * @author Thomas Zangerl <tzangerl@pdc.kth.se>
  */
 abstract class API
 {

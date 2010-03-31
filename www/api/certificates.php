@@ -4,6 +4,20 @@ require_once 'Person.php';
 require_once 'Input.php';
 require_once 'API.php';
 
+/**
+ * REST-API for certificate operations, like requesting new certificates,
+ * listing the certificates per user and downloading single certificates.
+ *
+ * Use the following way
+ * HTTP GET /api/certificates.php (list the certificates)
+ * HTTP GET /api/certificates.php/<auth-key>/<format> (download a specific
+ *      certificate)
+ * HTTP POST csr /api/certificates.php (upload a certificate signing request to
+ *      the API)
+ *
+ * @since v0.6-rc0
+ * @author Thomas Zangerl <tzangerl@pdc.kth.se>
+ */
 class API_Certificates extends API
 {
 	/* the ca backend that is used for most certificate operations */
