@@ -93,7 +93,12 @@ class API_Certificates extends API
 			$format = $this->parameters[1];
 
 			if (array_search(strtoupper($format), $this->CERT_FORMATS) === FALSE) {
-				$this->errorBadRequest();
+				$msg  = "If you want to query for certificates, do HTTP GET on an URL like:\n";
+				$msg .= "/api/certifificates.php/<auth-key>/<cert-format> where:\n";
+				$msg .= "\t\t<auth-key>:\tUnique identifier of the certificate.\n";
+				$msg .= "\t\t<cert-format>:\tThe format of the certificate, one of " .
+				        implode(",", $this->CERT_FORMATS) . "\n";
+				$this->errorBadRequest($msg);
 			}
 		}
 
@@ -156,7 +161,8 @@ class API_Certificates extends API
 		$domTree->appendChild($certificates);
 
 		if ($domTree->relaxNGValidate("schema/certlist.rng") === FALSE) {
-			$this->errorInternal();
+			$msg = "The XML-response the portal built appears to be non-conformant to its schema!\n";
+			$this->errorInternal($msg);
 		}
 
 		$xmlString = $domTree->saveXML();
@@ -179,7 +185,8 @@ class API_Certificates extends API
 		$auth_key = pubkey_hash($csr, TRUE);
 
 		if (!test_content($csr, $auth_key)) {
-			$this->errorBadRequest();
+			$msg = "The CSR you posted appears to be malformed!\n";
+			$this->errorBadRequest($msg);
 		}
 
 		try {

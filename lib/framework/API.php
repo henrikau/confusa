@@ -42,15 +42,11 @@ abstract class API
 	 * tell the REST client that either on its side or on server side something
 	 * went wrong
 	 */
-	protected function errorBadRequest()
+	protected function errorBadRequest($msg = "")
 	{
 		header("HTTP/1.1 400 Bad request");
 		echo "What you have supplied does not look like a legal request.\n";
-		echo "If you want to query for certificates, do HTTP GET on an URL like:\n";
-		echo "/api/certifificates.php/<auth-key>/<cert-format> where:\n";
-		echo "\t\t<auth-key>:\tUnique identifier of the certificate.\n";
-		echo "\t\t<cert-format>:\tThe format of the certificate, one of " .
-		     implode(",", $this->CERT_FORMATS) . "\n";
+		echo $msg;
 		exit(1);
 	} /* end errorBadRequest */
 
@@ -75,12 +71,13 @@ abstract class API
 		exit(1);
 	} /* end errorNotAuthorized */
 
-	protected function errorInternal()
+	protected function errorInternal($msg = "")
 	{
 		header("HTTP/1.1 500 Internal server error");
 		echo "An unforeseen problem occured when processing your request.\n";
 		echo "Maybe something is misconfigured. Contact the server\n";
 		echo "administrators\n";
+		echo $msg;
 		exit(1);
 	}
 

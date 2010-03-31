@@ -46,7 +46,8 @@ class API_Infopoint extends API
 			}
 		}
 
-		$this->errorBadRequest();
+		$msg = "Call the infopoint in a form like /api/infopoint.php/dn!\n";
+		$this->errorBadRequest($msg);
 	} /* end function processRequest */
 
 	/**
@@ -61,7 +62,8 @@ class API_Infopoint extends API
 			$format = $this->parameters[1];
 
 			if (array_search($format, $this->DN_FORMATS) === FALSE) {
-				$this->errorBadRequest();
+				$msg = "Did not recognize the format ($format) you supplied to the API!\n";
+				$this->errorBadRequest($msg);
 			}
 		}
 
