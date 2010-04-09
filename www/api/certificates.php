@@ -57,8 +57,8 @@ class API_Certificates extends API
 		}
 
 		/* ship the CSR to signing */
-		if (isset($_POST['csr'])) {
-			$this->processSigningRequest(Input::sanitizeBase64($_POST['csr']));
+		if (isset($_POST['request'])) {
+			$this->processSigningRequest(Input::sanitizeBase64($_POST['request']));
 		}
 
 		$path = $_SERVER['PATH_INFO'];
@@ -176,10 +176,41 @@ class API_Certificates extends API
 	/**
 	 * ship the CSR to the CA and let it sign the request
 	 *
-	 * @param $csr The CSR that is to be signed
+	 * @param $request The XML signing request
 	 */
-	public function processSigningRequest($csr)
+	public function processSigningRequest($request)
 	{
+		$doc = DOMDocument::loadXML($request);
+
+		if ($doc === FALSE) {
+			$this->errorBadRequest("Could not parse the given XML string!\n");
+		}
+
+		$check = $doc->relaxNGValidate('schema/signingRequest.rng');
+
+		if ($check === FALSE) {
+			$this->errorBadRequest("Could not validate the XML request, see " .
+			                       "/api/schema/signingRequest.rng for its schema!\n");
+		}
+
+		$csrNodes = $doc->getElementsByTagName("csr");
+		$csrNode = $csrNodes->item(0);
+
+		$csr = $csrNode->textContent;
+
+		$emailsNodes = $doc->getElementsByTagName("emails");
+		$emailsNode = $emailsNodes->item(0);
+		$emailsNodeElCount = $emailsNode->attributes->getNamedItem("elementCount");
+
+		if ($emailsNodeElCount > 0) {
+			$emailNodes = $doc->getElementsByTagName("email");
+
+			for ($i = 0; $i < $emailsNodeElCount; $i++) {
+				$emailNode = $emailNodes->item($i);
+				$this->person->regCertEmail(Input::sanitizeEmail($emailNode->textContent));
+			}
+		}
+
 		/* FIXME: Adapt to the new API once it exists */
 		require_once 'csr_lib.php';
 		$auth_key = pubkey_hash($csr, TRUE);
@@ -190,8 +221,6 @@ class API_Certificates extends API
 		}
 
 		try {
-			/* FIXME: will not work, until e-mail addresses for the cert can
-			 * be passed to the signkKey function */
 			$this->ca->signKey($auth_key, $csr);
 		} catch (ConfusaGenException $cge) {
 			$this->errorUncaughtException($cge);

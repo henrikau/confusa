@@ -1,0 +1,15 @@
+<element name="signingRequest" xmlns="http://relaxng.org/ns/structure/1.0">
+	<element name="csr">
+		<text/>
+	</element>
+	<element name="emails">
+	<attribute name="elementCount">
+	<text/>
+	</attribute>
+	<zeroOrMore>
+		<element name="email">
+			<text/>
+		</element>
+	</zeroOrMore>
+	</element>
+</element>
