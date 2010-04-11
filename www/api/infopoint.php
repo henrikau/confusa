@@ -43,7 +43,7 @@ class API_Infopoint extends API
 
 			switch($this->parameters[0]) {
 			case "dn":
-				$this->processInfoRequest();
+				$this->processDNRequest();
 				break;
 			case "user":
 				$this->processAttributeRequest();
@@ -63,7 +63,7 @@ class API_Infopoint extends API
 	 * Process requests about the user's DN. If the request is welformed and
 	 * can be served, print the full-DN of the user
 	 */
-	public function processInfoRequest()
+	public function processDNRequest()
 	{
 		/* default the format to openssl */
 		$format = "openssl";
