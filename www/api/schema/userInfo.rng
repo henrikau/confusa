@@ -1,0 +1,40 @@
+<element name="user" xmlns="http://relaxng.org/ns/structure/1.0">
+	<element name="uid">
+		<text/>
+	</element>
+	<element name="name">
+		<text/>
+	</element>
+	<element name="orgDN">
+		<text/>
+	</element>
+	<element name="orgID">
+		<text/>
+	</element>
+	<element name="country">
+		<text/>
+	</element>
+	<element name="nren">
+		<text/>
+	</element>
+	<element name="emails">
+		<attribute name="elementCount">
+			<text/>
+		</attribute>
+		<oneOrMore>
+			<element name="email">
+				<text/>
+			</element>
+		</oneOrMore>
+	</element>
+	<element name="entitlements">
+		<attribute name="elementCount">
+			<text/>
+		</attribute>
+		<zeroOrMore>
+			<element name="entitlement">
+				<text/>
+			</element>
+		</zeroOrMore>
+	</element>
+</element>

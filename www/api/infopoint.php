@@ -41,10 +41,19 @@ class API_Infopoint extends API
 		if (strlen($path) > 0) {
 			$this->parameters = explode("/", $path);
 
-			if ($this->parameters[0] === "dn") {
+			switch($this->parameters[0]) {
+			case "dn":
 				$this->processInfoRequest();
-			}
-		}
+				break;
+			case "user":
+				$this->processAttributeRequest();
+				break;
+			default:
+				$msg = "Allowed commands are infopoint.php/dn and infopoint.php/user!\n";
+				$this->errorBadRequest($msg);
+				break;
+			} /* end switch */
+		} /* end if */
 
 		$msg = "Call the infopoint in a form like /api/infopoint.php/dn!\n";
 		$this->errorBadRequest($msg);
@@ -84,6 +93,87 @@ class API_Infopoint extends API
 		echo "DN=$dnString";
 		exit(0);
 	} /* end processInfoRequest */
+
+	public function processAttributeRequest()
+	{
+		$domTree = new DOMDocument('1.0', 'utf-8');
+		$userNode = $domTree->createElement("user");
+		$uidNode = $domTree->createElement("uid");
+		$uidContent = $domTree->createTextNode($this->person->getEPPN());
+		$uidNode->appendChild($uidContent);
+		$userNode->appendChild($uidNode);
+
+		$nameNode = $domTree->createElement("name");
+		$nameContent = $domTree->createTextNode($this->person->getName());
+		$nameNode->appendChild($nameContent);
+		$userNode->appendChild($nameNode);
+
+		$orgDNNode = $domTree->createElement("orgDN");
+		$orgDNContent = $domTree->createTextNode($this->person->getSubscriber()->getOrgName());
+		$orgDNNode->appendChild($orgDNContent);
+		$userNode->appendChild($orgDNNode);
+
+		$orgIDNode = $domTree->createElement("orgID");
+		$orgIDContent = $domTree->createTextNode($this->person->getSubscriber()->getIdPName());
+		$orgIDNode->appendChild($orgIDContent);
+		$userNode->appendChild($orgIDNode);
+
+		$countryNode = $domTree->createElement("country");
+		$countryContent = $domTree->createTextNode($this->person->getCountry());
+		$countryNode->appendChild($countryContent);
+		$userNode->appendChild($countryNode);
+
+		$nrenNode = $domTree->createElement("nren");
+		$nrenContent = $domTree->createTextNode($this->person->getNREN());
+		$nrenNode->appendChild($nrenContent);
+		$userNode->appendChild($nrenNode);
+
+		$emailsNode = $domTree->createElement("emails");
+		$mailList = explode(",", $this->person->getEmail());
+		$emailsNodeECAttr = $domTree->createAttribute("elementCount");
+		$emailsNodeECACo = $domTree->createTextNode(count($mailList));
+		$emailsNodeECAttr->appendChild($emailsNodeECACo);
+		$emailsNode->appendChild($emailsNodeECAttr);
+
+		foreach ($mailList as $mail) {
+			$emailNode = $domTree->createElement("email");
+			$emailNodeContent = $domTree->createTextNode(trim($mail));
+			$emailNode->appendChild($emailNodeContent);
+			$emailsNode->appendChild($emailNode);
+		}
+
+		$userNode->appendChild($emailsNode);
+
+		$enttlsNode = $domTree->createElement("entitlements");
+		$enttlList = $this->person->getEntitlement(FALSE);
+		$enttlsNodeECAttr = $domTree->createAttribute("elementCount");
+		$enttlsNodeECACo = $domTree->createTextNode(count($enttlList));
+		$enttlsNodeECAttr->appendChild($enttlsNodeECACo);
+		$enttlsNode->appendChild($enttlsNodeECAttr);
+
+		foreach ($enttlList as $enttl) {
+			$enttlNode = $domTree->createElement("entitlement");
+			$enttlNodeContent = $domTree->createTextNode($enttl);
+			$enttlNode->appendChild($enttlNodeContent);
+			$enttlsNode->appendChild($enttlNode);
+		}
+
+		$userNode->appendChild($enttlsNode);
+
+		$domTree->appendChild($userNode);
+
+		if ($domTree->relaxNGValidate("schema/userInfo.rng") === FALSE) {
+			$msg = "The XML-response the portal built appears to be non-conformant to its schema!\n";
+			$this->errorInternal($msg);
+		}
+
+		$xmlString = $domTree->saveXML();
+
+		$xmlHash = hash("sha256", $xmlString);
+		header("ETag: \"$xmlHash\"");
+		echo $xmlString;
+		exit(0);
+	} /* end processAttributeRequest */
 } /* end class InfoPointAPI */
 
 $infopointAPI = new API_Infopoint();
