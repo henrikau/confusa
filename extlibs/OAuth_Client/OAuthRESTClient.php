@@ -121,14 +121,50 @@ class OAuthRESTClient
 	 * Upload a CSR to the portal in order to get it signed
 	 *
 	 * @param $csrFile string Path to the file containg the csr
+	 * @param $emails string E-mail addresses of the user
 	 */
-	public function uploadCertRequest($csrFile)
+	public function uploadCertRequest($csrFile, $emails)
 	{
 		$endpoint =  $this->serviceBaseURL . "/api/certificates.php";
 		$csr = file_get_contents($csrFile);
 
+		if (isset($emails)) {
+			$emailArray = explode(",", $emails);
+		} else {
+			$emailArray = array();
+		}
+
 		$params = array();
-		$params['csr'] = $csr;
+
+		$domTree = new DOMDocument('1.0', 'utf-8');
+		$signingRequest = $domTree->createElement("signingRequest");
+		$domTree->appendChild($signingRequest);
+
+		$csrNode = $domTree->createElement("csr");
+		$signingRequest->appendChild($csrNode);
+
+		$csrContent = $domTree->createTextNode($csr);
+		$csrNode->appendChild($csrContent);
+
+		$emails = $domTree->createElement("emails");
+		$signingRequest->appendChild($emails);
+
+		$emailsCount = $domTree->createAttribute("elementCount");
+		$emailsCountValue = $domTree->createTextNode((string) count($emailArray));
+		$emailsCount->appendChild($emailsCountValue);
+		$emails->appendChild($emailsCount);
+
+		if (count($emailArray) > 0) {
+			foreach($emailArray as $email) {
+				$emailEl = $domTree->createElement("email");
+				$emailContent = $domTree->createTextNode($email);
+				$emailEl->appendChild($emailContent);
+				$emails->appendChild($emailEl);
+			}
+		}
+
+		$params['request'] = $domTree->saveXML();
+
 		if ($this->oauth->fetch($endpoint, $params, OAUTH_HTTP_METHOD_POST)) {
 			echo "Posted CSR to API-endpoint " . $endpoint . "\n";
 			echo $this->oauth->getLastResponse() . "\n";
