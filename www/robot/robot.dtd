@@ -3,7 +3,8 @@
 <!--	Confusa Robotic Interface XML DTD	-->
 <!-- ========================================== -->
 
-<!ELEMENT ConfusaRobot (userList|revocationList|revokedCerts) >
+<!ELEMENT ConfusaRobot (userList|revocationList|revokedCerts|error) >
+
 <!--ConfusaRobot attribute listing				-->
 <!-- date:	the date when the list was created. This is not	-->
 <!--		necessary, but from a processing perspecitve, we-->
@@ -13,7 +14,7 @@
 <!---->
 <!-- subscriber:	The name of the subscriber. This *Must*	-->
 <!--			be an unique identifier and should match-->
-<!--			the DN of the certificate used to upload-->
+<!--			the O= of the certificate used to upload-->
 <!--			the XML					-->
 <!---->
 <!-- elementCount:	The number of elements found in the record-->
@@ -59,3 +60,13 @@
 <!-- For each user, a the number (elementCount) is given to indicate the -->
 <!-- number of revoked certificates. -->
 <!ELEMENT revokedCerts (listElement*)>
+
+<!-- Error-condition to return after revoke-actions (that failed) -->
+<!-- If a certificate could not be revoked for some reason, this will -->
+<!-- give an indication to why. It will return the uid so the client can -->
+<!-- do local debug -->
+<!ELEMENT error (errorElement*)>
+<!ELEMENT errorElement EMPTY>
+<!ATTLIST errorElement
+	  uid		#REQUIRED
+	  code		(test|not_found|other)>
