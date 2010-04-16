@@ -373,10 +373,10 @@ class CA_Comodo extends CA
 			}
 		}
 
-        $common_name = $this->person->getX509ValidCN();
+        $uid = $this->person->getEPPN();
         $organization = 'O=' . $this->person->getSubscriber()->getOrgName();
 
-        $params = $this->capiGetCertList($common_name, $days);
+        $params = $this->capiGetEPPNCertList($uid, $days);
         $res=array();
 		$dates = array();
 		/* initiallize the array with a high value, so that the cache stays
