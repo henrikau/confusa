@@ -18,9 +18,6 @@
 		<text/>
 	</element>
 	<element name="emails">
-		<attribute name="elementCount">
-			<text/>
-		</attribute>
 		<oneOrMore>
 			<element name="email">
 				<text/>
@@ -28,9 +25,6 @@
 		</oneOrMore>
 	</element>
 	<element name="entitlements">
-		<attribute name="elementCount">
-			<text/>
-		</attribute>
 		<zeroOrMore>
 			<element name="entitlement">
 				<text/>

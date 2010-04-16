@@ -149,11 +149,6 @@ class OAuthRESTClient
 		$emails = $domTree->createElement("emails");
 		$signingRequest->appendChild($emails);
 
-		$emailsCount = $domTree->createAttribute("elementCount");
-		$emailsCountValue = $domTree->createTextNode((string) count($emailArray));
-		$emailsCount->appendChild($emailsCountValue);
-		$emails->appendChild($emailsCount);
-
 		if (count($emailArray) > 0) {
 			foreach($emailArray as $email) {
 				$emailEl = $domTree->createElement("email");

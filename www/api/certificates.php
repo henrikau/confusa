@@ -119,11 +119,6 @@ class API_Certificates extends API
 		$domTree = new DOMDocument('1.0', 'utf-8');
 		$certificates = $domTree->createElement("certificates");
 
-		$certificatesCount = $domTree->createAttribute("elementCount");
-		$certCountValue = $domTree->createTextNode((string) count($list));
-		$certificatesCount->appendChild($certCountValue);
-		$certificates->appendChild($certificatesCount);
-
 		if (count($list) > 0) {
 			foreach ($list as $row) {
 				$certificate = $domTree->createElement("certificate");
@@ -200,7 +195,7 @@ class API_Certificates extends API
 
 		$emailsNodes = $doc->getElementsByTagName("emails");
 		$emailsNode = $emailsNodes->item(0);
-		$emailsNodeElCount = $emailsNode->attributes->getNamedItem("elementCount");
+		$emailsNodeElCount = $emailsNode->childNodes->length;
 
 		if ($emailsNodeElCount > 0) {
 			$emailNodes = $doc->getElementsByTagName("email");

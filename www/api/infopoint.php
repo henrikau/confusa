@@ -130,10 +130,6 @@ class API_Infopoint extends API
 
 		$emailsNode = $domTree->createElement("emails");
 		$mailList = explode(",", $this->person->getEmail());
-		$emailsNodeECAttr = $domTree->createAttribute("elementCount");
-		$emailsNodeECACo = $domTree->createTextNode(count($mailList));
-		$emailsNodeECAttr->appendChild($emailsNodeECACo);
-		$emailsNode->appendChild($emailsNodeECAttr);
 
 		foreach ($mailList as $mail) {
 			$emailNode = $domTree->createElement("email");
@@ -146,10 +142,6 @@ class API_Infopoint extends API
 
 		$enttlsNode = $domTree->createElement("entitlements");
 		$enttlList = $this->person->getEntitlement(FALSE);
-		$enttlsNodeECAttr = $domTree->createAttribute("elementCount");
-		$enttlsNodeECACo = $domTree->createTextNode(count($enttlList));
-		$enttlsNodeECAttr->appendChild($enttlsNodeECACo);
-		$enttlsNode->appendChild($enttlsNodeECAttr);
 
 		foreach ($enttlList as $enttl) {
 			$enttlNode = $domTree->createElement("entitlement");

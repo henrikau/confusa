@@ -1,7 +1,4 @@
 <element name="certificates" xmlns="http://relaxng.org/ns/structure/1.0">
-	<attribute name="elementCount">
-	<text/>
-	</attribute>
 	<zeroOrMore>
 		<element name="certificate">
 			<element name="id">

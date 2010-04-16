@@ -3,9 +3,6 @@
 		<text/>
 	</element>
 	<element name="emails">
-	<attribute name="elementCount">
-	<text/>
-	</attribute>
 	<zeroOrMore>
 		<element name="email">
 			<text/>
