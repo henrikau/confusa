@@ -265,6 +265,7 @@ function printXMLRes($resArray, $type = 'userList')
 		$element = $xml->addChild("revokedCerts");
 		break;
 	default:
+		Logger::log_event(LOG_NOTICE, "Unknown XML-list-type ($type), aborting.");
 		return;
 
 	}
@@ -350,7 +351,7 @@ case 'revoke_list':
 	}
 	break;
 default:
-	echo "Unknown action.<br />\n";
+	Logger::log_event(LOG_DEBUG, "Unknown action received from client. Got $action");
 	exit(0);
 }
 
