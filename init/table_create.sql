@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- 1 : one, and only one.
     -- n : multiple, or none, total user freedom.
     -- m : multiple, but at least one.
-    enable_email ENUM('0', '1', 'n', 'm'),
+    enable_email ENUM('0', '1', 'n', 'm') DEFAULT '1',
     -- The certificate validity. In test-mode this is always 14 days. For
     -- personal certificates it will be one of 365, 730 or 1095 days, for
     -- productive e-Science certs always 395 days
