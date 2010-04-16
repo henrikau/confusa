@@ -820,7 +820,7 @@ class Person{
 	    $errorCode = PW::create(8);
 
 		$query = "SELECT * FROM admins WHERE admin=? AND nren=? AND ";
-		$query .= "((admin_level='2' AND (ISNULL(idp_url) OR idp_url=?)) OR";
+		$query .= "((admin_level='2' AND (idp_url='' OR ISNULL(idp_url) OR idp_url=?)) OR";
 		$query .= "(admin_level='1' AND subscriber=?))";
 		$types = array('text', 'text', 'text', 'text');
 		$params = array($this->eppn, $this->nren->getID(), $this->nren->getIdP(), $this->subscriber->getDBID());
