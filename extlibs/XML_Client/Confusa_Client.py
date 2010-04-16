@@ -108,7 +108,10 @@ class Confusa_Client:
         try:
             parser.parse(opener.open(self.url, self.data))
         except xml.sax._exceptions.SAXParseException:
+            t.cancel_timeout()
             return None
         except TimeoutException:
             print "Did not receive a timely answer (%s seconds), aborting" % (timeout)
+
+        t.cancel_timeout()
         return cp.getElements()
