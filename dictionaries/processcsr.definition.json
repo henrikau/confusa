@@ -207,7 +207,7 @@
 		"en":	"<br /><br />Please don\\'t close the window and wait until processing is finished. That will take, depending on load about <b>2 minutes</b>. Then, install the certificate.<br /><br />If something goes wrong, you can install the certificate later from the download area!"
 	},
 	"l10n_aup_title": {
-		"en" :	"Acceptable User Policy (AUP)"
+		"en" :	"Acceptable Use Policy (AUP)"
 	},
 	"l10n_aup_agreement": {
 		"en" :	"I hereby state that I will adhere to the Requester's obligations as stated in the CPS."

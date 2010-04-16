@@ -1,6 +1,8 @@
 {
 	"l10n_reas_malfeppn": {
-		"de": "Ben\u00f6tige einen korrekt formatierten eindeutigen Bezeichner (z.B. eppn)!"
+		"no": "Trenger et korrekt formatert eduPersonPrincipalName!",
+		"cs": "Pot\u0159ebuji spr\u00e1vn\u011b nastavenou hodnotu eduPersonPrincipalName!",
+		"de": "Ben\u00f6tige einen korrekt formatierten eduPersonPrincipalName!"
 	},
 	"l10n_reas_nogivenname": {
 		"no": "Trenger fullt navn til sertifikatet",

@@ -126,5 +126,11 @@
 	"l10n_legend_availcerts": {
 		"no": "Tilgjengelige sertifikater",
 		"de": "Verf\u00fcgbare Zertifikate"
+	},
+	"l10n_infotext_instcacert1": {
+		"de": "Bitte installieren Sie auch das"
+	},
+	"l10n_infotext_instcacert2": {
+		"de": "CA-Zertifikat!"
 	}
 }
