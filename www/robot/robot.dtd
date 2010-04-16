@@ -3,7 +3,7 @@
 <!--	Confusa Robotic Interface XML DTD	-->
 <!-- ========================================== -->
 
-<!ELEMENT ConfusaRobot (userList|revocationList|revokedCerts|error) >
+<!ELEMENT ConfusaRobot ((userList|revocationList|revokedCerts), errors*) >
 
 <!--ConfusaRobot attribute listing				-->
 <!-- date:	the date when the list was created. This is not	-->
@@ -61,12 +61,30 @@
 <!-- number of revoked certificates. -->
 <!ELEMENT revokedCerts (listElement*)>
 
-<!-- Error-condition to return after revoke-actions (that failed) -->
-<!-- If a certificate could not be revoked for some reason, this will -->
-<!-- give an indication to why. It will return the uid so the client can -->
-<!-- do local debug -->
-<!ELEMENT error (errorElement*)>
-<!ELEMENT errorElement EMPTY>
-<!ATTLIST errorElement
-	  uid		#REQUIRED
-	  code		(test|not_found|other)>
+<!-- Error-condition -->
+
+<!-- The error-condition will trigger when: -->
+<!-- - something unforseen happens -->
+<!-- - when a you try to revoke a certificate that doesn't exist -->
+<!-- - when you try to sign a malformed CSR (too short, wrong keytype, -->
+<!--   blacklisted) -->
+<!ELEMENT errors (genErrors|revEerrors|batchErrors)+>
+
+<!-- General errors, cannot add a specific type, include text and once -->
+<!-- it's known, we can extend the dtd and write better parsers to -->
+<!-- handle it -->
+<!ELEMENT genErrors (#PCDATA)>
+
+<!ELEMENT revErrors (re+)>
+
+<!-- can contain message, but main info will be in attributes -->
+<!ELEMENT re (#PCDATA)>
+<!ATTLIST re
+	  uid		CDATA			#REQUIRED
+	  reason	(notFound|transError)	#REQUIRED>
+
+<!ELEMENT batchErrors (be+)>
+<!ELEMENT be (#PCDATA)>
+<!ATTLIST be
+	  uid		CDATA	#REQUIRED
+	  reason	(malformedDN|tooShort|blacklist|other) #REQUIRED>
