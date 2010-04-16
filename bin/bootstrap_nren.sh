@@ -118,7 +118,7 @@ nren_id=`echo $res | cut -d " " -f 2`
 #------------------------------------------------------------------------#
 
 if [ -n ${idp_url} ]; then
-	res=`run_query "SELECT * FROM admins where admin='${eppn}' AND idp_url='${idp_url}'`
+	res=`run_query "SELECT * FROM admins where admin='${eppn}' AND idp_url='${idp_url}'"`
 else
 	res=`run_query "SELECT * FROM admins WHERE admin='${eppn}'"`
 fi
