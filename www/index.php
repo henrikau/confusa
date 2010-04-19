@@ -2,7 +2,7 @@
 require_once 'confusa_include.php';
 require_once 'Content_Page.php';
 include_once 'Framework.php';
-include_once 'logger.php';
+include_once 'Logger.php';
 require_once 'Output.php';
 require_once 'pw.php';
 

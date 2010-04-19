@@ -93,6 +93,11 @@ abstract class Confusa_Auth
 			throw new CGE_CriticalAttributeException($msg);
 		}
 
+		$nren_id = $this->person->getNREN()->getID();
+
+		Logger::logEvent(LOG_INFO, "Confusa_Auth", "decoratePerson(..., $idp)",
+		                 "Decorating person with map from NREN $nren_id.");
+
 		$map = $this->person->getMap();
 		/* Normal mapping, this is what we want. */
 		if (isset($map) && is_array($map)) {

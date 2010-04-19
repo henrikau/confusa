@@ -28,14 +28,17 @@ function usage
 {
 prog_name=`basename $0`
 cat <<EOF
-Usage $prog_name  <nren_name> <Country> <principal> <contact> [uid-attr]
+Usage $prog_name  -n <nren_name> -c <country> -u <uid-val> -e <e-mail> -a [uid-attr] -i [idp-url]
     nren_name:   The name of the NREN. Must be unique within the database.
     country:     Two-letter country-code
-    principal:   eduPersonPrincipalName or another unique identifier
+    uid-val:     eduPersonPrincipalName or another unique identifier
                  for an initial NREN-admin
-    contact:     A contact information for the NREN
-    uid-attr:   (Optional) The attribute that is used for transmitting the
-                unique identifier for a user
+    e-mail:      A contact information for the NREN
+    uid-attr:    (Optional) The attribute that is used for transmitting the
+                 unique identifier for a user
+    idp-url:     (Optional) The IdP-url of the IdP with which the admin
+                 authenticates. Use that if the uid of the admin is not
+                 globally unique.
 EOF
 }
 
@@ -43,11 +46,28 @@ EOF
 if [ $# -lt 4 ]; then
     usage
     exit 1
-fi;
-nren_name=$1
-country=`echo $2 | tr '[:lower:]' '[:upper:]'`
-eppn=$3
-contact=$4
+else
+	while getopts "n:c:u:e:a:i:" opt; do
+	case $opt in
+		n) nren_name=$OPTARG ;;
+		c) country=`echo $OPTARG | tr '[:lower:]' '[:upper:]'` ;;
+		u) eppn=$OPTARG ;;
+		e) contact=$OPTARG ;;
+		a) eppn_key=$OPTARG ;;
+		i) idp_url=$OPTARG ;;
+		*) usage ;;
+	esac
+	done
+fi
+
+
+if   [ -z "$nren_name" ] ||
+     [ -z "$country" ] ||
+     [ -z "$eppn" ] ||
+     [ -z "$contact" ]; then
+	usage
+	exit 1
+fi
 
 # Include libraries
 if [ -z ../lib/bash/config_lib.sh ]; then
@@ -70,11 +90,12 @@ echo -ne "Is the NREN already present in the database? "
 res=`run_query "SELECT nren_id FROM nrens WHERE name='$nren_name'"`
 if [ -z "$res" ]; then
     echo -ne " ... no, creating ... "
+	nren_existed=0
     res=`run_query "INSERT INTO nrens(name, country, contact_email) VALUES('$nren_name', '$country', '$contact')"`
 	result=$?
 	if [ $result -ne 0 ]; then
 	    echo ""
-		echo "Could not insert the new NREN $1 with contact $3 into the DB"
+		echo "Could not insert the new NREN ${nren_name} with contact ${contact} into the DB"
 		echo "Is the supplied data wellformed and does your confusa_config.php"
 		echo "contain the right database access credentials?"
 		perror $result
@@ -88,6 +109,7 @@ if [ -z "$res" ]; then
 	fi
 	echo " done!"
 else
+	nren_existed=1
     echo " ... yes"
 fi
 nren_id=`echo $res | cut -d " " -f 2`
@@ -96,42 +118,70 @@ nren_id=`echo $res | cut -d " " -f 2`
 #------------------------------------------------------------------------#
 #		Can we add the admin
 #------------------------------------------------------------------------#
-res=`run_query "SELECT * FROM admins WHERE admin='${eppn}'"`
+
+if [ -n "${idp_url}" ]; then
+	res=`run_query "SELECT * FROM admins a, nrens n where a.admin='${eppn}'
+	    AND a.idp_url='${idp_url}' AND a.nren = n.nren_id AND n.name = '${nren_name}'"`
+else
+	res=`run_query "SELECT * FROM admins a, nrens n WHERE a.admin='${eppn}'
+	    AND a.nren = n.nren_id AND n.name = '${nren_name}'"`
+fi
+
 if [ -n "$res" ]; then
     cat <<EOF
-An administrator with UID ${eppn} already exists in the database. Since the UID
-is supposed to be an unique identifier, we cannot add this admin.
+An administrator with UID ${eppn} already exists in the database. Since
+the UID is supposed to be an unique identifier, we cannot add this admin.
 
-If this is not what you'd expected, you should have a look at the database and make sure that you
-have provided the correct UID, and that the admin is not already present. The result from the database was:
+If this is not what you'd expected, you should have a look at the database and
+make sure that you have provided the correct UID, and that the admin is not
+already present. The result from the database was:
 EOF
 echo $res
 exit 0
 fi
 
-echo "Adding new administrator to NREN ${nren_name}, internal ID ${nren_id}"
-res=`run_query "INSERT INTO admins(admin, admin_level, nren) VALUES('$eppn', '2', $nren_id)"`
-result=$?
+if [ -n "$idp_url" ]; then
+	echo "NREN ${nren_name}, internal ID ${nren_id}: Adding new administrator ${eppn}, bound to IdP ${idp_url}"
+	res=`run_query "INSERT INTO admins(admin, admin_level, nren, idp_url) VALUES('$eppn', '2', $nren_id, '$idp_url')"`
+	result=$?
+else
+	echo "NREN ${nren_name}, internal ID ${nren_id}: Adding new administrator ${eppn}"
+	res=`run_query "INSERT INTO admins(admin, admin_level, nren) VALUES('$eppn', '2', $nren_id)"`
+	result=$?
+fi
 
 if [ $result -ne 0 ]; then
-	echo "Error when inserting new admin ${2}, with contact-info ${3}, into DB"
+	echo "Error when inserting new admin ${eppn}, with contact-info ${contact}, into DB"
 	echo "Please check if all credentials are specified and if you supplied"
 	echo "a valid unique identifier (ePPN,...) for the new admin"
 	perror $result
 	exit 3
 fi
 
-if [ $# == 5 ]; then
-	eppn_key=${5}
-	echo "Now adding unique identifier ${eppn_key} to the attribute mapping of NREN ${nren_name}"
-	res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', '$eppn_key')"`
-	result=$?
+# only add a mapping for the NREN, if the NREN was newly created
+if [ $nren_existed -eq 0 ]; then
+	if [ -n "$eppn_key" ]; then
+		echo "Now adding unique identifier ${eppn_key} to the attribute mapping of NREN ${nren_name}"
+		res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', '$eppn_key')"`
+		result=$?
 
-	if [ $result -ne 0 ]; then
-		echo "Error when trying to add the unique identifier mapping to ${eppn_key} for NREN"
-		echo "${nren_name}. Please check if you provided a legal value for the UID!"
-		perror $result
-		exit 3
+		if [ $result -ne 0 ]; then
+			echo "Error when trying to add the unique identifier mapping to ${eppn_key} for NREN"
+			echo "${nren_name}. Please check if you provided a legal value for the UID!"
+			perror $result
+			exit 3
+		fi
+	else
+		echo "Defaulting the unique identifier for NREN ${nren_name} to eduPersonPrincipalName"
+		res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', 'eduPersonPrincipalName')"`
+		result=$?
+
+		if [ $result -ne 0 ]; then
+			echo "Error when trying to set eduPersonPrincipalName as the UID key for NREN "
+			echo "${nren_name}. Please check the DB connection settings."
+			perror $result
+			exit 3
+		fi
 	fi
 fi
 

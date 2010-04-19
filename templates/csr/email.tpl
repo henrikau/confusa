@@ -1,4 +1,4 @@
-{if $email_status == "n" || $email_status == "m"}
+{if $email_status != "0"}
 <hr style="width: 90%;" />
 <div class="spacer"></div>
 <p class="info">

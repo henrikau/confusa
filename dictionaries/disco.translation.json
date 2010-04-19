@@ -1,0 +1,14 @@
+{
+	"l10n_header_choosecountry": {
+		"de": "Bitte w\u00e4hlen Sie Ihr Land"
+	},
+	"l10n_link_textualview": {
+		"de": "Textansicht"
+	},
+	"l10n_link_graphicalview": {
+		"de": "Grafische Ansicht"
+	},
+	"l10n_err_idpretrieval": {
+		"de": "Konnte die l\u00e4nderspezifische IdP-Liste nicht abrufen. Die L\u00e4nderauswahl wird funktionieren, aber im n\u00e4chsten Schritt werden Sie alle IdPs aus allen L\u00e4ndern sehen, anstelle nur derjenigen aus Ihrem Land! Bitte benachrichtigen Sie einen IT-Administrator."
+	}
+}

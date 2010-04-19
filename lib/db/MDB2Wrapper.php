@@ -2,7 +2,7 @@
 /* require_once 'logger.php'; */
 require_once 'Config.php';
 require_once 'MDB2.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'db_query.php';
 require_once 'pw.php';
 

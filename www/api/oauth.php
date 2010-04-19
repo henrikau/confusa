@@ -60,7 +60,10 @@
 		$auth_idp->reAuthenticate();
 
 		$attributes = $auth_idp->getAttributes();
+		$idp = $attributes['idp'][0];
+
 		$accTokenValidity = getAccessTokenTimeout($idp);
+
 		$attributes[ConfusaConstants::$OAUTH_VALIDITY_ATTRIBUTE] = $accTokenValidity;
 		$store->authorize($requestToken, $attributes);
 

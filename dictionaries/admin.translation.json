@@ -163,5 +163,17 @@
 	},
 	"l10n_nren_cannot_downgrade": {
 		"de": "Sie k\u00f6nnen sich nicht zu einem Abonnenten-Admin herunterstufen, da Sie nicht die ben\u00f6tigten Berechtigungen gesetzt haben. Falls Sie dies machen w\u00fcrden, w\u00fcrden Sie sich aus der Admin-Oberfl\u00e4che aussperren!"
+	},
+	"l10n_infotext_idpforadmin": {
+		"de": "W\u00e4hlen Sie den IdP mit welchem sich der neue NREN-Admin authentifizieren wird. Sie k\u00f6nnen dieses Feld leer lassen, falls der eindeutige Bezeichner eindeutig f\u00fcr das gesamte NREN ist, z.B. falls es ein ePPN ist."
+	},
+	"l10n_label_idp": {
+		"de": "IdP:"
+	},
+	"l10n_label_uniqueinnren": {
+		"de": "Eindeutiger Bezeichner ist<b> eindeutig innerhalb des NRENs.<\/b>"
+	},
+	"l10n_infotext_enteruid": {
+		"de": "Geben Sie eine neue UID (eduPersonPrincipalName, eduPersonTargetedID,...) an, um einen neuen NREN Administrator hinzuzuf\u00fcgen."
 	}
 }

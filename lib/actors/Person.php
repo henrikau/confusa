@@ -58,8 +58,12 @@ class Person{
     /* status variables (so we poll the subsystem as little as possible) */
     private $isAuthenticated;
 
+	/* cache the admin status upon each page rendering to reduce the number
+	 * of DB connections */
+	private $adminStatus;
+
     function __construct() {
-	    $this->clearAttributes();
+		$this->adminStatus = NULL;
     } /* end constructor */
 
     function __destruct() {
@@ -796,20 +800,32 @@ class Person{
      */
     private function getAdminStatus()
     {
+		if (isset($this->adminStatus)) {
+			return $this->adminStatus;
+		}
+
 	    $adminRes = NORMAL_USER;
 	    if (!$this->isAuth()) {
+			$this->adminStatus = NORMAL_USER;
 		    return NORMAL_USER;
 	    }
 
 	    /* if the database is riddled with errors, do not run through the
 	     * test once more, just bail */
 	    if ($this->adminDBError) {
+			$this->adminStatus = NORMAL_USER;
 		    return NORMAL_USER;
 	    }
 	    require_once 'MDB2Wrapper.php';
 	    $errorCode = PW::create(8);
 
-	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND nren=?", array('text', 'text'), array($this->eppn, $this->nren->getID()));
+		$query = "SELECT * FROM admins WHERE admin=? AND nren=? AND ";
+		$query .= "((admin_level='2' AND (idp_url='' OR ISNULL(idp_url) OR idp_url=?)) OR";
+		$query .= "(admin_level='1' AND subscriber=?))";
+		$types = array('text', 'text', 'text', 'text');
+		$params = array($this->eppn, $this->nren->getID(), $this->nren->getIdP(), $this->subscriber->getDBID());
+
+	    $res	= MDB2Wrapper::execute($query, $types, $params);
 	    $size	= count($res);
 	    if ($size == 1) {
 		    $adminRes = $res[0]['admin_level'];
@@ -837,6 +853,7 @@ class Person{
 			    }
 		    }
 	    }
+		$this->adminStatus = $adminRes;
 	    return $adminRes;
     } /*  end getAdminStatus() */
 

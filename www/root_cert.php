@@ -56,11 +56,15 @@ class CP_Root_Certificate extends Content_Page
 			switch(htmlentities($_GET['send_file'])) {
 			case 'cacert':
 				$this->makeCertAvailable();
-				download_file(file_get_contents($this->cert_path), "confusa_cert.pem");
+				$idx = strrpos($this->cert_url, "/");
+				$cert_name = substr($this->cert_url, $idx+1);
+				download_file(file_get_contents($this->cert_path), $cert_name);
 				break;
 			case 'crl':
 				$this->makeCRLAvailable();
-				download_file(file_get_contents($this->crl_path), "confusa.crl");
+				$idx = strrpos($this->crl_url, "/");
+				$crl_name = substr($this->crl_url, $idx+1);
+				download_file(file_get_contents($this->crl_path), $crl_name);
 				break;
 			default:
 				return;
@@ -133,8 +137,6 @@ class CP_Root_Certificate extends Content_Page
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 			$crl_content = curl_exec($ch);
 			curl_close($ch);
-			/* get the right encoding */
-			$crl_file = CA::DERtoPEM($crl_content, 'crl');
 			file_put_contents($this->crl_path, $crl_file);
 		}
 	}
@@ -151,8 +153,7 @@ class CP_Root_Certificate extends Content_Page
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 			$ca_file_content = curl_exec($ch);
 			curl_close($ch);
-			$cert_file = CA::DERtoPEM($ca_file_content, 'cert');
-			file_put_contents($this->cert_path, $cert_file);
+			file_put_contents($this->cert_path, $ca_file_content);
 		}
 	}
 }

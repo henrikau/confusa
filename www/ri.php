@@ -3,7 +3,7 @@ require_once 'confusa_include.php';
 require_once 'Robot.php';
 require_once 'MDB2Wrapper.php';
 require_once 'cert_lib.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'Person.php';
 require_once 'CA.php';
 
@@ -249,11 +249,10 @@ function printXMLRes($resArray, $type = 'userList')
 	/* lets hope that the header has not yet been set so we can trigger
 	 * proper XML headers */
 	global $admin;
-
+	$element_count = 0;
 	$xml = new SimpleXMLElement("<ConfusaRobot></ConfusaRobot>");
 	$xml->addAttribute("date", date("Y-m-d H:i:s"));
 	$xml->addAttribute("subscriber", $admin->getSubscriber()->getOrgName());
-	$xml->addAttribute("elementCount", 1);
 	$xml->addAttribute("version", "1.0");
 
 	$element = null;
@@ -266,6 +265,7 @@ function printXMLRes($resArray, $type = 'userList')
 		$element = $xml->addChild("revokedCerts");
 		break;
 	default:
+		Logger::log_event(LOG_NOTICE, "Unknown XML-list-type ($type), aborting.");
 		return;
 
 	}
@@ -279,9 +279,11 @@ function printXMLRes($resArray, $type = 'userList')
 			if (isset($value['fullDN'])) {
 				$le->addAttribute('fullDN', htmlentities($value['fullDN']));
 			}
+			$element_count += 1;
 		}
 	}
-
+	$xml->addAttribute("elementCount", $element_count);
+	Logger::log_event(LOG_DEBUG, "Returning list with $element_count entries.");
 	header ("content-type: text/xml");
 	echo $xml->asXML();
 }
@@ -349,7 +351,7 @@ case 'revoke_list':
 	}
 	break;
 default:
-	echo "Unknown action.<br />\n";
+	Logger::log_event(LOG_DEBUG, "Unknown action received from client. Got $action");
 	exit(0);
 }
 

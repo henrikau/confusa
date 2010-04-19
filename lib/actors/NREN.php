@@ -58,6 +58,16 @@ class NREN
 	}
 
 	/**
+	 * Get the IdP from which the NREN was constructed.
+	 * @since v0.6-rc0
+	 * @return String the URL of the IdP from which this NREN was constructed
+	 */
+	public function getIdP()
+	{
+		return $this->idp_name;
+	} /* end getIdP() */
+
+	/**
 	 * isValid() returns a flag indicating whether or not the current NREN
 	 * is valid.
 	 *

@@ -1,7 +1,7 @@
 <?php
 require_once 'pw.php';
 require_once 'Person.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'MDB2Wrapper.php';
 class Robot
 {
