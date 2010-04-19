@@ -135,7 +135,7 @@ echo $res
 exit 0
 fi
 
-if [ -n $idp_url ]; then
+if [ -n "$idp_url" ]; then
 	echo "NREN ${nren_name}, internal ID ${nren_id}: Adding new administrator ${eppn}, bound to IdP ${idp_url}"
 	res=`run_query "INSERT INTO admins(admin, admin_level, nren, idp_url) VALUES('$eppn', '2', $nren_id, '$idp_url')"`
 	result=$?
@@ -156,7 +156,7 @@ if [ $result -ne 0 ]; then
 	exit 3
 fi
 
-if [ -n $eppn_key ]; then
+if [ -n "$eppn_key" ]; then
 	echo "Now adding unique identifier ${eppn_key} to the attribute mapping of NREN ${nren_name}"
 	res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', '$eppn_key')"`
 	result=$?
@@ -164,6 +164,17 @@ if [ -n $eppn_key ]; then
 	if [ $result -ne 0 ]; then
 		echo "Error when trying to add the unique identifier mapping to ${eppn_key} for NREN"
 		echo "${nren_name}. Please check if you provided a legal value for the UID!"
+		perror $result
+		exit 3
+	fi
+else
+	echo "Defaulting the unique identifier for NREN ${nren_name} to eduPersonPrincipalName"
+	res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', 'eduPersonPrincipalName')"`
+	result=$?
+
+	if [ $result -ne 0 ]; then
+		echo "Error when trying to set eduPersonPrincipalName as the UID key for NREN "
+		echo "${nren_name}. Please check the DB connection settings."
 		perror $result
 		exit 3
 	fi
