@@ -129,11 +129,12 @@ fi
 
 if [ -n "$res" ]; then
     cat <<EOF
-An administrator with UID ${eppn} already exists in the database. Since the UID
-is supposed to be an unique identifier, we cannot add this admin.
+An administrator with UID ${eppn} already exists in the database. Since
+the UID is supposed to be an unique identifier, we cannot add this admin.
 
-If this is not what you'd expected, you should have a look at the database and make sure that you
-have provided the correct UID, and that the admin is not already present. The result from the database was:
+If this is not what you'd expected, you should have a look at the database and
+make sure that you have provided the correct UID, and that the admin is not
+already present. The result from the database was:
 EOF
 echo $res
 exit 0
