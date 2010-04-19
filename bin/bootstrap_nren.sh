@@ -141,9 +141,6 @@ if [ -n "$idp_url" ]; then
 	echo "NREN ${nren_name}, internal ID ${nren_id}: Adding new administrator ${eppn}, bound to IdP ${idp_url}"
 	res=`run_query "INSERT INTO admins(admin, admin_level, nren, idp_url) VALUES('$eppn', '2', $nren_id, '$idp_url')"`
 	result=$?
-
-	echo "Connecting supplied IdP ${idp_url} to NREN ${nren_name}"
-	sh bootstrap_idp -i ${nren_id} -a ${idp_url}
 else
 	echo "NREN ${nren_name}, internal ID ${nren_id}: Adding new administrator ${eppn}"
 	res=`run_query "INSERT INTO admins(admin, admin_level, nren) VALUES('$eppn', '2', $nren_id)"`
