@@ -94,7 +94,7 @@ if [ -z "$res" ]; then
 	result=$?
 	if [ $result -ne 0 ]; then
 	    echo ""
-		echo "Could not insert the new NREN $1 with contact $3 into the DB"
+		echo "Could not insert the new NREN ${nren_name} with contact ${contact} into the DB"
 		echo "Is the supplied data wellformed and does your confusa_config.php"
 		echo "contain the right database access credentials?"
 		perror $result
@@ -149,7 +149,7 @@ else
 fi
 
 if [ $result -ne 0 ]; then
-	echo "Error when inserting new admin ${2}, with contact-info ${3}, into DB"
+	echo "Error when inserting new admin ${eppn}, with contact-info ${contact}, into DB"
 	echo "Please check if all credentials are specified and if you supplied"
 	echo "a valid unique identifier (ePPN,...) for the new admin"
 	perror $result
