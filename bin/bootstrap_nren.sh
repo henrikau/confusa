@@ -119,10 +119,12 @@ nren_id=`echo $res | cut -d " " -f 2`
 #		Can we add the admin
 #------------------------------------------------------------------------#
 
-if [ -n ${idp_url} ]; then
-	res=`run_query "SELECT * FROM admins where admin='${eppn}' AND idp_url='${idp_url}'"`
+if [ -n "${idp_url}" ]; then
+	res=`run_query "SELECT * FROM admins a, nrens n where a.admin='${eppn}'
+	    AND a.idp_url='${idp_url}' AND a.nren = n.nren_id AND n.name = '${nren_name}'"`
 else
-	res=`run_query "SELECT * FROM admins WHERE admin='${eppn}'"`
+	res=`run_query "SELECT * FROM admins a, nrens n WHERE a.admin='${eppn}'
+	    AND a.nren = n.nren_id AND n.name = '${nren_name}'"`
 fi
 
 if [ -n "$res" ]; then
