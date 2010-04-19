@@ -191,6 +191,8 @@ class ConfusaConstants {
 	 * users will be in UTC+1 */
 	public static $DEFAULT_TIMEZONE = 'Europe/Stockholm';
 
+	/* where the smarty templates are stored (relative to Confusa's root dir) */
+	public static $SMARTY_TEMPLATES = '/templates/';
 	/* where the compiled smarty classes get stored. Should be writable by
 	 * webserver user, hence it should not be in the normal directory tree */
 	public static $SMARTY_TEMPLATES_C = '/var/cache/confusa/templates_c';
