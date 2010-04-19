@@ -90,6 +90,7 @@ echo -ne "Is the NREN already present in the database? "
 res=`run_query "SELECT nren_id FROM nrens WHERE name='$nren_name'"`
 if [ -z "$res" ]; then
     echo -ne " ... no, creating ... "
+	nren_existed=0
     res=`run_query "INSERT INTO nrens(name, country, contact_email) VALUES('$nren_name', '$country', '$contact')"`
 	result=$?
 	if [ $result -ne 0 ]; then
@@ -108,6 +109,7 @@ if [ -z "$res" ]; then
 	fi
 	echo " done!"
 else
+	nren_existed=1
     echo " ... yes"
 fi
 nren_id=`echo $res | cut -d " " -f 2`
@@ -156,27 +158,30 @@ if [ $result -ne 0 ]; then
 	exit 3
 fi
 
-if [ -n "$eppn_key" ]; then
-	echo "Now adding unique identifier ${eppn_key} to the attribute mapping of NREN ${nren_name}"
-	res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', '$eppn_key')"`
-	result=$?
+# only add a mapping for the NREN, if the NREN was newly created
+if [ $nren_existed -eq 0 ]; then
+	if [ -n "$eppn_key" ]; then
+		echo "Now adding unique identifier ${eppn_key} to the attribute mapping of NREN ${nren_name}"
+		res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', '$eppn_key')"`
+		result=$?
 
-	if [ $result -ne 0 ]; then
-		echo "Error when trying to add the unique identifier mapping to ${eppn_key} for NREN"
-		echo "${nren_name}. Please check if you provided a legal value for the UID!"
-		perror $result
-		exit 3
-	fi
-else
-	echo "Defaulting the unique identifier for NREN ${nren_name} to eduPersonPrincipalName"
-	res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', 'eduPersonPrincipalName')"`
-	result=$?
+		if [ $result -ne 0 ]; then
+			echo "Error when trying to add the unique identifier mapping to ${eppn_key} for NREN"
+			echo "${nren_name}. Please check if you provided a legal value for the UID!"
+			perror $result
+			exit 3
+		fi
+	else
+		echo "Defaulting the unique identifier for NREN ${nren_name} to eduPersonPrincipalName"
+		res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', 'eduPersonPrincipalName')"`
+		result=$?
 
-	if [ $result -ne 0 ]; then
-		echo "Error when trying to set eduPersonPrincipalName as the UID key for NREN "
-		echo "${nren_name}. Please check the DB connection settings."
-		perror $result
-		exit 3
+		if [ $result -ne 0 ]; then
+			echo "Error when trying to set eduPersonPrincipalName as the UID key for NREN "
+			echo "${nren_name}. Please check the DB connection settings."
+			perror $result
+			exit 3
+		fi
 	fi
 fi
 
