@@ -32,15 +32,25 @@ class CP_Attributes extends Content_Page
 				$cn		= Input::sanitizeText($_POST['cn']);
 				$mail		= Input::sanitizeText($_POST['mail']);
 
+				/* only NREN-admin can change the mapping for
+				 * - organization-identifier
+				 * - entitlement
+				 */
 				if ($this->person->isNRENAdmin()) {
 					$epodn		= Input::sanitizeText($_POST['epodn']);
 					$entitlement	= Input::sanitizeText($_POST['entitlement']);
-					if ($this->person->getNREN()->saveMap($this->person->getEPPNKey(), $epodn, $cn, $mail, $entitlement)) {
+					if ($this->person->getNREN()->saveMap($this->person->getEPPNKey(),
+									      $epodn,
+									      $cn,
+									      $mail,
+									      $entitlement)) {
 						Framework::success_output($this->translateTag('l10n_suc_updmap', 'attributes'));
 					}
 				} else if ($this->person->isSubscriberAdmin()) {
 					try {
-						$result = $this->person->getSubscriber()->saveMap($this->person->getEPPNKey(), $cn, $mail);
+						$result = $this->person->getSubscriber()->saveMap($this->person->getEPPNKey(),
+												  $cn,
+												  $mail);
 					} catch (DBQueryException $dbqe) {
 						Framework::error_output($this->translateTag('l10n_err_updmap1', 'attributes') . "<br />" .
 						                        $this->translateTag('l10n_label_cn', 'attributes')
