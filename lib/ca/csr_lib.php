@@ -37,7 +37,7 @@ function test_content($content, $auth_url)
   /* test type. IGTF will soon change the charter to *not* issue DSA
    * certificates */
   if (get_algorithm($content) !== "rsa") {
-	  Framework::error_putput("Will only accept RSA keys!");
+	  Framework::error_output("Will only accept RSA keys!");
 	  return false;
   }
   /*
