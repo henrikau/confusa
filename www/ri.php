@@ -309,6 +309,8 @@ if (isset($_POST['action'])) {
 
 switch($action) {
 case 'cert_list':
+	Logger::log_event(LOG_NOTICE, "[RI] " . $admin->getEPPN() .
+			  " cert-list request.");
 	$res = Robot::createCertList($admin);
 	printXMLRes($res, 'userlist');
 	break;
