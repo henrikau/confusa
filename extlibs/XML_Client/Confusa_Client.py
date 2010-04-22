@@ -18,7 +18,7 @@
 
 """
 import time, xml.sax.handler, urllib, urllib2
-from Confusa_Parser import ConfusaParser
+import Parser
 from Timeout import Timeout, TimeoutException
 from HTTPSClient import HTTPSClientAuthHandler
 import xml.etree.ElementTree as ET
@@ -38,10 +38,7 @@ class Confusa_Client:
 
         """
         self.data    = urllib.urlencode({ 'action' : 'cert_list' })
-        res = self.execute()
-        # validate and parse result
-
-        return res
+        return self.execute().get_list(True)
 
     def send_revoke_list(self, eppn_list):
         """
@@ -85,7 +82,7 @@ class Confusa_Client:
         root.set("elementCount", "%d" % foundElements)
         post['list'] = ET.tostring(root)
         self.data = urllib.urlencode(post)
-        return self.execute()
+        return self.execute().get_list(False)
 
     def execute(self, timeout=60):
         """
@@ -96,22 +93,16 @@ class Confusa_Client:
         dictionary-entries or None will be returned.
 
         """
-        # Create the XML-parser
-        parser = xml.sax.make_parser()
-        parser.setFeature(xml.sax.handler.feature_namespaces, 0)
-        cp = ConfusaParser()
-        parser.setContentHandler(cp)
-
         # Get the result and parse it
         opener  = urllib2.build_opener(self.https_client)
         t = Timeout(timeout)
         try:
-            parser.parse(opener.open(self.url, self.data))
+            res = opener.open(self.url, self.data)
         except xml.sax._exceptions.SAXParseException:
             t.cancel_timeout()
             return None
         except TimeoutException:
             print "Did not receive a timely answer (%s seconds), aborting" % (timeout)
+            return None
 
-        t.cancel_timeout()
-        return cp.getElements()
+        return Parser.Parser(res)

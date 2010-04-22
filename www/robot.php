@@ -383,8 +383,8 @@ class CP_Robot_Interface extends Content_Page
 		require_once 'file_download.php';
 		$confusa_client = file_get_contents(Config::get_config('install_path')
 						    . "/extlibs/XML_Client/Confusa_Client.py");
-		$confusa_parser = file_get_contents(Config::get_config('install_path')
-						    . "/extlibs/XML_Client/Confusa_Parser.py");
+		$parser		= file_get_contents(Config::get_config('install_path')
+						    . "/extlibs/XML_Client/Parser.py");
 		$https_client	= file_get_contents(Config::get_config('install_path')
 						    . "/extlibs/XML_Client/HTTPSClient.py");
 		$timeout	= file_get_contents(Config::get_config('install_path')
@@ -401,9 +401,9 @@ class CP_Robot_Interface extends Content_Page
 		$name = tempnam($ZIP_CACHE, "XML_Cli_");
 		$zip->open($name, ZipArchive::OVERWRITE);
 		$zip->addFromString("XML_Client/Confusa_Client.py",	$confusa_client);
-		$zip->addFromString("XML_Client/Confusa_Parser.py",	$confusa_parser);
+		$zip->addFromString("XML_Client/Parser.py",		$parser);
 		$zip->addFromString("XML_Client/HTTPSClient.py",	$https_client);
-		$zip->addFromString("XML_Client/Timeout.py",	$timeout);
+		$zip->addFromString("XML_Client/Timeout.py",		$timeout);
 		$zip->addFromString("XML_Client/README",		$readme);
 		$zip->addFromString("XML_Client/LICENSE",		$license);
 		$zip->addFromString("XML_Client/COPYING",		$gplv3);
