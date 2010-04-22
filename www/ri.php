@@ -277,7 +277,7 @@ function printXMLRes($resArray, $type = 'userList')
 				$le->addAttribute('count', $value['count']);
 			}
 			if (isset($value['fullDN'])) {
-				$le->addAttribute('fullDN', htmlentities($value['fullDN']));
+				$le->addAttribute('fullDN', $value['fullDN']);
 			}
 			$element_count += 1;
 		}
