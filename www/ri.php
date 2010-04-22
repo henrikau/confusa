@@ -312,7 +312,7 @@ case 'cert_list':
 	Logger::log_event(LOG_NOTICE, "[RI] " . $admin->getEPPN() .
 			  " cert-list request.");
 	$res = Robot::createCertList($admin);
-	printXMLRes($res, 'userlist');
+	printXMLRes($res, 'userList');
 	break;
 case 'revoke_list':
 	if (!isset($_POST['list'])) {
