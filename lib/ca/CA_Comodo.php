@@ -714,7 +714,7 @@ class CA_Comodo extends CA
 
         $return_res = NULL;
 
-        Logger::log_event(LOG_NOTICE, "Trying to revoke certificate with order number " .
+        Logger::log_event(LOG_NOTICE, "Revoking certificate with order number " .
                                       $key .
                                       " using Comodo's auto-revoke-API. Sending to user with ip " .
                                       $_SERVER['REMOTE_ADDR']);
@@ -729,16 +729,17 @@ class CA_Comodo extends CA
 
         /* will not revoke test certificates? */
         if (Config::get_config('capi_test')) {
-            $postfields_revoke["test"] = 'Y';
+		Logger::log_event(LOG_DEBUG, "CA_C: in test-mode");
+		$postfields_revoke["test"] = 'Y';
         }
-
-		$data = CurlWrapper::curlContact($revoke_endpoint, "post", $postfields_revoke);
+	$data = CurlWrapper::curlContact($revoke_endpoint, "post", $postfields_revoke);
 
         /* try to catch all kinds of errors that can happen when connecting */
         if ($data === FALSE) {
-            throw new CGE_ComodoAPIException("Could not connect to revoke-API! " .
-                                        "Check Confusa configuration!\n"
-            );
+		Logger::log_event(LOG_NOTICE, "[CA_C]: Could not connect to revoke-API. Check configuration.");
+		throw new CGE_ComodoAPIException("Could not connect to revoke-API! " .
+						 "Check Confusa configuration!\n"
+			);
         } else {
 			$error_parts = explode("\n", $data, 2);
 			$STATUS_OK = "0";
@@ -891,8 +892,8 @@ class CA_Comodo extends CA
 
 	private function capiGetEPPNCertList($eppn, $days)
 	{
-		Logger::log_event(LOG_DEBUG, "Trying to the the list with the certificates " .
-		                             "for eppn $eppn");
+		Logger::log_event(LOG_DEBUG, "Trying to get the the list of the certificates " .
+		                             "for user $eppn");
 		$list_endpoint = ConfusaConstants::$CAPI_LISTING_ENDPOINT;
 		$postfields_list["loginName"]		= $this->login_name;
 		$postfields_list["loginPassword"]	= $this->login_pw;
@@ -920,17 +921,17 @@ class CA_Comodo extends CA
 			$msg .= "Perhaps some configuration-switch is not properly set.";
 			$msg .= "Server gave no error-code.";
 			throw new CGE_ComodoAPIException($msg);
-        }
+		}
 
-        if ($params['errorCode'] == "0") {
-            return $params;
-        } else {
+		if ($params['errorCode'] == "0") {
+			return $params;
+		} else {
 			$msg = $this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
 			throw new CGE_ComodoAPIException("Received error when trying to list " .
 			                                 "certificates from the remote-API: " .
 			                                 $params['errorMessage'] . $msg
-            );
-        }
+				);
+		}
 	} /* end capiGetEPPNCertList */
 
     /*
