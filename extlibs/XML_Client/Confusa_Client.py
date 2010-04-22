@@ -66,9 +66,9 @@ class Confusa_Client:
         rev = ET.SubElement(root, "revocationList")
         list = ""
         for i in eppn_list:
-            if 'eppn' in i:
+            if 'uid' in i:
                 le = ET.SubElement(rev, "listElement")
-                le.set("uid", i['eppn'])
+                le.set("uid", i['uid'])
                 foundElements += 1
 
         if foundElements ==  0:
