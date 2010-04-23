@@ -285,7 +285,7 @@ abstract class CA
 			$msg = $tpl->fetch($custom_template);
 		} else {
 			$default_template = Config::get_config('install_path') .
-				'/lib/smarty/templates/email/notification.tpl';
+				ConfusaConstants::$SMARTY_TEMPLATES . 'email/notification.tpl';
 			$msg = $tpl->fetch($default_template);
 		}
 	}
