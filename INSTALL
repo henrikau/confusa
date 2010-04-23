@@ -36,6 +36,7 @@ To install Confusa
   b) update apt (apt-get update)
 
   c) apt-get install confusa
+
 1) Webserver (apache)
 
      apache2
@@ -48,27 +49,23 @@ To install Confusa
 
      libapache2-php5
      php5-mysql
-     libphp_phpmailer
-     PEAR::MDB2_mysql_driver (note: pear and MDB2_Mysql_Driver is
-			      available through the backports, but we
-			       refrain from using this here).
+     libphp-phpmailer
+     php-pear (PEAR::MDB2_mysql_driver (note: pear and MDB2_Mysql_Driver is
+		     available through the backports, but we
+		     refrain from using this here)
+    smarty (*not* smarty-gettext)
 
-3 b) When using Comodo, you will also need the mcrypt and curl libraries:
+3 a) When using Comodo, you will also need the mcrypt and curl libraries:
 
      php5-mcrypt
      php5-curl
 
-3 c) When in standalone, you will need to configure the CA aspect slightly.
-     One thing is to generate the key and certificate for the CA operation.
-
-     An alternative is to just use the apache SSL-keys, generating this
-     is really left as an exercise for the reader.
-     The ca_* elements in the config/confusa_config.php must be set.
-
-     The, to make sure that the uploaded keys are not vulnerable, you
+3 b)
+     Then, to make sure that the uploaded keys are not vulnerable, you
      will need the blacklist-package:
 
      openssl-blacklist
+
 
 4) Configure Apache to use SSL, use the following lines in your
    apache2/sites-enabled/appropriate.config.file and php5-openssl
@@ -84,14 +81,20 @@ To install Confusa
    <VirtualHost your.host.org:443>
            Servername your.server.org
            SSLEngine On
-           SSLProtocol All-SSLv2
+           SSLProtocol All -SSLv2
            SSLCipherSuite ALL:!ADH:!EXPORT56:!EXPORT40:RC4+RSA:!SSLv2:+HIGH:+MEDIUM:+LOW:+EXP
-           SSLVerifyClient optional_no_ca
-           SSLVerifyDepth 10
            SSLOptions +StdEnvVars +ExportCertData
            SSLCertificateFile /etc/apache2/ssl/your_host.crt
            SSLCertificateKeyFile /etc/apache2/ssl/your_host.key
 	   ...
+	   Alias /confusa "/var/www/confusa/www/"
+	   <Directory /var/www/confusa/www/>
+	        SSLVerifyClient optional_no_ca
+		SSLVerifyDepth 10
+		Order allow,deny
+		deny from all
+		allow from localhost 127.0.0.0/255.0.0.0 ::/128
+	   </Directory>
    </VirtualHost>
 
    Set Apache to listen on port 443 as well in /etc/apache2/ports.conf
