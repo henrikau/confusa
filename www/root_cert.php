@@ -136,8 +136,13 @@ class CP_Root_Certificate extends Content_Page
 			$ch = curl_init($this->crl_url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 			$crl_content = curl_exec($ch);
+
+			/* convert from DER to PEM */
+			$crl_content = chunk_split(base64_encode($crl_content), 64, "\n");
+			$crl_content = "-----BEGIN X509 CRL-----\n$crl_content-----END X509 CRL-----\n";
+
 			curl_close($ch);
-			file_put_contents($this->crl_path, $crl_file);
+			file_put_contents($this->crl_path, $crl_content);
 		}
 	}
 
@@ -152,6 +157,11 @@ class CP_Root_Certificate extends Content_Page
 			$ch = curl_init($this->cert_url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 			$ca_file_content = curl_exec($ch);
+
+			/* convert from DER to PEM */
+			$ca_file_content = chunk_split(base64_encode($ca_file_content), 64, "\n");
+			$ca_file_content = "-----BEGIN CERTIFICATE-----\n$ca_file_content-----END CERTIFICATE-----\n";
+
 			curl_close($ch);
 			file_put_contents($this->cert_path, $ca_file_content);
 		}
