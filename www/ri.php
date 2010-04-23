@@ -277,7 +277,7 @@ function printXMLRes($resArray, $type = 'userList')
 				$le->addAttribute('count', $value['count']);
 			}
 			if (isset($value['fullDN'])) {
-				$le->addAttribute('fullDN', htmlentities($value['fullDN']));
+				$le->addAttribute('fullDN', $value['fullDN']);
 			}
 			$element_count += 1;
 		}
@@ -309,8 +309,10 @@ if (isset($_POST['action'])) {
 
 switch($action) {
 case 'cert_list':
+	Logger::log_event(LOG_NOTICE, "[RI] " . $admin->getEPPN() .
+			  " cert-list request.");
 	$res = Robot::createCertList($admin);
-	printXMLRes($res, 'userlist');
+	printXMLRes($res, 'userList');
 	break;
 case 'revoke_list':
 	if (!isset($_POST['list'])) {
@@ -318,7 +320,10 @@ case 'revoke_list':
 		exit(0);
 
 	}
+	/* for some reason, php adds 'smart-qoutes' to XML-data. Lets just call
+	 * this not-so-smart-quotes */
 	$xml = str_replace("\\", "", $_POST['list']);
+
 	/* Start parsing */
 	if (!is_null($xml)) {
 		try {
@@ -339,8 +344,15 @@ case 'revoke_list':
 				$res = Robot::parseRevList($value, $admin);
 				break;
 			default:
-				echo "Unknown type ($key). Are you sure you are following the DTD?\n";
-				exit(0);
+				if (Config::get_config('debug')) {
+					echo "Unknown type ($key). Are you sure you are following the DTD?\n";
+					/* only exit in debug-mode to minimize
+					 * number of log-entries etc.
+					 *
+					 * In prod. we want to parse the entire file.
+					 */
+					exit(0);
+				}
 				break;
 			}
 		}

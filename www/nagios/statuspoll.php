@@ -35,8 +35,7 @@ class StatusPoll
 	public function __construct()
 	{
 		$this->tpl	= new Smarty();
-		$this->tpl->template_dir= Config::get_config('install_path') .
-		                          'lib/smarty/templates';
+		$this->tpl->template_dir= Config::get_config('install_path') .'templates';
 		$this->tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
 		$this->tpl->config_dir	= Config::get_config('install_path') .
 		                          'lib/smarty/configs';

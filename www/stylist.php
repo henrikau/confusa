@@ -481,7 +481,7 @@ class CP_Stylist extends Content_Page
 			}
 		}
 
-		$main_tpl_path = Config::get_config('install_path') . 'lib/smarty/templates/';
+		$main_tpl_path = Config::get_config('install_path') . ConfusaConstants::$SMARTY_TEMPLATES;
 		$main_tpl_path .= 'email/notification.tpl';
 
 		try {
