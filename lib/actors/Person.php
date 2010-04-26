@@ -823,7 +823,11 @@ class Person{
 		$query .= "((admin_level='2' AND (idp_url='' OR ISNULL(idp_url) OR idp_url=?)) OR";
 		$query .= "(admin_level='1' AND subscriber=?))";
 		$types = array('text', 'text', 'text', 'text');
-		$params = array($this->eppn, $this->nren->getID(), $this->nren->getIdP(), $this->subscriber->getDBID());
+		$params = array($this->eppn,
+				$this->nren->getID(),
+				$this->nren->getIdP(),
+				(!is_null($this->getSubscriber() ?
+					  $this->getSubscriber()->getDBID() : -1)));
 
 	    $res	= MDB2Wrapper::execute($query, $types, $params);
 	    $size	= count($res);
