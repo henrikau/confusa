@@ -111,7 +111,7 @@ class IdPDisco
 		try {
 			$res = MDB2Wrapper::execute($query, null, null);
 		} catch (ConfusaGenException $cge) {
-			Logger::log_event(LOG_WARN, __FILE__ . " " . __LINE__ . ": [norm] Could not " .
+			Logger::log_event(LOG_WARNING, __FILE__ . " " . __LINE__ . ": [norm] Could not " .
 			                  "get the IdP-URLs for the different countries from " .
 			                  "the DB. Probably Confusa is misconfigured? " .
 			                  $cge->getMessage());
