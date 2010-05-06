@@ -100,15 +100,17 @@ abstract class Confusa_Auth
 
 		$map = $this->person->getMap();
 		/* Normal mapping, this is what we want. */
-		if (isset($map) && is_array($map)) {
+		if ($this->mapSanityCheck($map)) {
 
 			/* Now that we have the NREN-map, reiterate getMap() in
 			 * case we can find the subscriber-map. */
 			$subscriberIdPName = Input::sanitizeIdPName($attributes[$map['epodn']][0]);
 			$this->person->setSubscriber(new Subscriber($subscriberIdPName,
 								    $this->person->getNREN()));
-			$map = $this->person->getMap();
-
+			$new_map = $this->person->getMap();
+			if ($this->mapSanityCheck($new_map)) {
+				$map = $new_map;
+			}
 			$eppn = Input::sanitizeEPPN($attributes[$map['eppn']][0]);
 			$this->person->setEPPN($eppn);
 			if (!is_null($map['eppn'])) {
@@ -176,6 +178,10 @@ abstract class Confusa_Auth
 
 			/* is ePPN registred as NREN admin (from bootstrap) */
 			if ($this->person->isNRENAdmin()) {
+				if (is_array($map)) {
+					Logger::log_event(LOG_WARNING, "Map for NREN $nren_id ($idp) corrupted. ".
+							  "Contains empty fields, consider dropping the map.");
+				}
 				$msg = "No NREN map found!";
 
 				if (Config::get_config('debug')) {
@@ -196,6 +202,30 @@ abstract class Confusa_Auth
 			}
 		}
 	} /* end decoratePerson() */
+
+	private function mapSanityCheck($map)
+	{
+		if (is_null($map) || !is_array($map)) {
+			return false;
+		}
+		/* look for keys, make sure they're defined and not '' */
+		if (!(array_key_exists('epodn', $map) && $map['epodn'] != "")) {
+			return false;
+		}
+		if (!(array_key_exists('eppn', $map) && $map['eppn'] != "")) {
+			return false;
+		}
+		if (!(array_key_exists('cn', $map) && $map['cn'] != "")) {
+			return false;
+		}
+		if (!(array_key_exists('mail', $map) && $map['mail'] != "")) {
+			return false;
+		}
+		if (!(array_key_exists('entitlement', $map) && $map['entitlement'] != "")) {
+			return false;
+		}
+		return true;
+	}
 
 	/**
 	 * findEPPN() find the eppn-value in the attributes.
