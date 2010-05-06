@@ -15,7 +15,7 @@
 		"en":  "Help-desk URL: "
 	},
 	"fw_error_map_notfound": {
-		"en":	"<b>Error(s) with attributes</b><br /><br />No map has been configured for your subscriber. Please contact your local IT-departement and ask them to forward the request to the registred NREN administrator for your domain."
+		"en":	"<b>Error(s) with attributes</b><br /><br />No map (or the map contains errors) has been configured for your subscriber/NREN. Please contact your local IT-departement and ask them to forward the request to the registred NREN administrator for your domain."
 	},
 	"fw_error_critical_attribute1": {
 		"en":	"Error(s) with attributes"
