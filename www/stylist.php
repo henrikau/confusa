@@ -491,9 +491,9 @@ class CP_Stylist extends Content_Page
 			Framework::error_output("Could not open Confusa's default notification " .
 			                        "mail template! Server said " .
 			                        htmlentities($fexp->getMessage()) . "!");
-			Logger::log_event(LOG_WARN, "[nadm] Could not open Confusa's default " .
-			                            "notification mail template! Server said " .
-			                            $fexp->getMessage());
+			Logger::log_event(LOG_WARNING, "[nadm] Could not open Confusa's default " .
+					  "notification mail template! Server said " .
+					  $fexp->getMessage());
 		}
 	} /* end fetchNRENMailTpl */
 

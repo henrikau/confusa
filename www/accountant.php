@@ -236,7 +236,7 @@ class CP_Accountant extends Content_Page
 			Framework::error_message("[$errorTag] Problem deleting your old account: " .
 			                         htmlentities($dbe->getMessage()) .
 			                         ". Seems like a problem with the supplied data!");
-			Logger::logEvent(LOG_WARN, "Accountant", "deleteAccount($account_map_id)",
+			Logger::logEvent(LOG_WARNING, "Accountant", "deleteAccount($account_map_id)",
 			                 "Could not delete old login account of " .
 			                 "NREN $nren " . $dbe->getMessage(),
 			                 __LINE__, $errorTag);
@@ -246,9 +246,9 @@ class CP_Accountant extends Content_Page
 			Framework::error_message("[$errorTag] Problem deleting your old account: " .
 			                         htmlentities($dbe->getMessage()) .
 			                         ". Seems like a problem with the configuration. Please contact an administrator.");
-			Logger::logEvent(LOG_WARN, "Accountant", "deleteAccount($account_map_id)",
-			                  "Could not delete old login account of " .
-			                  "NREN $nren " . $dbe->getMessage(),
+			Logger::logEvent(LOG_WARNING, "Accountant", "deleteAccount($account_map_id)",
+					 "Could not delete old login account of " .
+					 "NREN $nren " . $dbe->getMessage(),
 			                  __LINE__, $errorTag);
 			return false;
 		}
@@ -332,10 +332,11 @@ class CP_Accountant extends Content_Page
 						    array($nren));
 			if (count($res) > 1) {
 				$errorTag = PW::create();
-				Framework::error_output("[$errorTag] Too many hits in database! " . count($res) . " Database inconsistency.");
+				Framework::error_output("[$errorTag] Too many hits in database! " .
+							count($res) . " Database inconsistency.");
 				Logger::logEvent(LOG_WARNING, "Accountant", "changeAccount($login_name)",
-				                  "Inconsistency detected in the database. $org has " . count($res) . " accounts",
-								  __LINE__, $errorTag);
+						 "Inconsistency detected in the database. $org has " .
+						 count($res) . " accounts", __LINE__, $errorTag);
 				return false;
 			}
 
