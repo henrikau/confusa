@@ -819,17 +819,19 @@ class Person{
 	    require_once 'MDB2Wrapper.php';
 	    $errorCode = PW::create(8);
 
-		$query = "SELECT * FROM admins WHERE admin=? AND nren=? AND ";
-		$query .= "((admin_level='2' AND (idp_url='' OR ISNULL(idp_url) OR idp_url=?)) OR";
-		$query .= "(admin_level='1' AND subscriber=?))";
-		$types = array('text', 'text', 'text', 'text');
-		$params = array($this->eppn,
-				$this->nren->getID(),
-				$this->nren->getIdP(),
-				(!is_null($this->getSubscriber() ?
-					  $this->getSubscriber()->getDBID() : -1)));
+	    $query = "SELECT * FROM admins WHERE admin=:admin AND nren=:nren_id AND ";
+	    $query .= "((admin_level='2' AND (idp_url='' OR ISNULL(idp_url) OR idp_url=:idp_url)) OR ";
+	    $query .= "(admin_level='1' AND subscriber=:subscriber_id))";
+	    $params = array();
+	    $params['admin'] = $this->eppn;
+	    $params['nren_id'] = $this->nren->getID();
+	    $params['idp_url'] = $this->nren->getIdP();
+	    $params['subscriber_id'] = -1;
+	    if (!is_null($this->getSubscriber())) {
+		    $params['subscriber_id'] = $this->getSubscriber()->getDBID();
+	    }
 
-	    $res	= MDB2Wrapper::execute($query, $types, $params);
+	    $res	= MDB2Wrapper::execute($query, null, $params);
 	    $size	= count($res);
 	    if ($size == 1) {
 		    $adminRes = $res[0]['admin_level'];
