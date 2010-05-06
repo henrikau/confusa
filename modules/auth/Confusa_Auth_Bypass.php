@@ -18,6 +18,8 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	{
 		parent::__construct($person);
 		$this->attributes = array();
+		$this->idp = "";
+
 		$personIndex = 0;
 		try {
 			$personIndex = (int)Config::get_config('bypass_id');
@@ -34,6 +36,7 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 				'organization'			=> array('o=Hogwarts, dc=hsww, dc=wiz'),
 				'nren'				=> array('testnren'),
 				'eduPersonEntitlement2'		=> array('urn:mace:feide.no:sigma.uninett.no:confusa'));
+			$this->idp = "idp.example.org";
 			break;
 		case 1:
 			$this->attributes = array(
@@ -43,10 +46,11 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 									 'jane@example.org',
 									 'janed@example.org'),
 				'country'			=> array('NN'),
-				'organization'			=> array('o=Hogwarts, dc=hsww, dc=wiz'),
+				'organization'			=> array('o=Barad, dc=Dur'),
 				'nren'				=> array('testnren'),
 				'eduPersonEntitlement2'		=> array('urn:mace:feide.no:sigma.uninett.no:confusaAdmin',
 									 'urn:mace:feide.no:sigma.uninett.no:confusa'));
+			$this->idp = "idp.example.org";
 			break;
 		case 2:
 		default:
@@ -60,6 +64,7 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 				'organization'			=> array('o=Hogwarts, dc=hsww, dc=wiz'),
 				'nren'				=> array('testnren'),
 				'eduPersonEntitlement2'		=> array('urn:mace:feide.no:sigma.uninett.no:confusa'));
+			$this->idp = "idp.example.org";
 			break;
 		}
 
@@ -71,14 +76,14 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	public function authenticate($authRequired)
 	{
 		$this->person->setAuth(true);
-		$this->decoratePerson($this->attributes, 'idp.example.org');
+		$this->decoratePerson($this->attributes, $this->idp);
 		return $this->person->isAuth();
 	}
 
 	public function reAuthenticate()
 	{
 		$this->person->setAuth(true);
-		$this->decoratePerson($this->attributes, 'idp.example.org');
+		$this->decoratePerson($this->attributes, $this->idp);
 		return $this->person->isAuth();
 	}
 
