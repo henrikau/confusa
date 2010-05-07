@@ -173,15 +173,7 @@ if [ $nren_existed -eq 0 ]; then
 		fi
 	else
 		echo "Defaulting the unique identifier for NREN ${nren_name} to eduPersonPrincipalName"
-		res=`run_query "INSERT INTO attribute_mapping(nren_id, eppn) VALUES('$nren_id', 'eduPersonPrincipalName')"`
-		result=$?
-
-		if [ $result -ne 0 ]; then
-			echo "Error when trying to set eduPersonPrincipalName as the UID key for NREN "
-			echo "${nren_name}. Please check the DB connection settings."
-			perror $result
-			exit 3
-		fi
+		echo "To play it safe, we do not create a map, Confusa will autodetect this version of UID"
 	fi
 fi
 
