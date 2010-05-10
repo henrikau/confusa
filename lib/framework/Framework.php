@@ -385,12 +385,12 @@ class Framework {
 			$customPortalTitle = $nren->getCustomPortalTitle();
 
 			if (isset($customPortalTitle)) {
-				$this->tpl->assign('system_title', $customPortalTitle);
+				$this->tpl->assign('system_title', '&nbsp;' .  $customPortalTitle);
 			} else {
-				$this->tpl->assign('system_title', Config::get_config('system_title'));
+				$this->tpl->assign('system_title', '&nbsp;' .  Config::get_config('system_title'));
 			}
 		} else {
-			$this->tpl->assign('system_title', '&nbsp;');
+			$this->tpl->assign('system_title', '');
 		}
 	} /* end applyNRENBranding */
 

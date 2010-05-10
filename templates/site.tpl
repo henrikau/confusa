@@ -64,11 +64,11 @@
 			  {/if}
 			</div> <!-- logo_header_left -->
 			<div id="logo_header_center">
-			  <a href="index.php" class="url">
+			  <a href="index.php">
 			    {if isset($logo_tc)}
-			    <img src="{$logo_tc}" alt="NREN logo" />&nbsp;{$system_title}
+			    <img src="{$logo_tc}" alt="NREN logo" />{$system_title}
 			    {else}
-			    {* empty *}&nbsp;{$system_title}
+			    {* empty *}{$system_title}
 			    {/if}
 
 			  </a>
