@@ -147,9 +147,18 @@ class NREN_Handler
 	{
 		try {
 			$res = MDB2Wrapper::execute($query, $params, $data);
-			if (count($res) == 1) {
-				if (array_key_exists('idp_url', $res[0])) {
-					return new NREN($res[0]['idp_url']);
+			if (count($res) == 0) {
+				return false;
+			}
+			/* loop through the resultset and return an NREN for
+			 * the first entry with idp_url.
+			 *
+			 * If we get multiple hits, there's no way we can adapt
+			 * to this, so we default to _the_first_valid_entry_
+			 */
+			foreach($res as $key => $r) {
+				if (array_key_exists('idp_url', $r)) {
+					return new NREN($r['idp_url']);
 				}
 			}
 		} catch (DBStatementException $dbse) {
