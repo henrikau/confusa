@@ -64,7 +64,7 @@
 			  {/if}
 			</div> <!-- logo_header_left -->
 			<div id="logo_header_center">
-			  <a href="index.php">
+			  <a href="index.php" title="{$title_logo}">
 			    {if isset($logo_tc)}
 			    <img src="{$logo_tc}" alt="NREN logo" />{$system_title}
 			    {else}

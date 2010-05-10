@@ -276,6 +276,7 @@ class Framework {
 			$this->person->setMode($new_mode);
 		}
 
+		$this->tpl->assign('title_logo', $this->contentPage->translateMessageTag('l10n_title_logo'));
 		$this->tpl->assign('person',	$this->person);
 		$this->tpl->assign('subscriber',$this->person->getSubscriber());
 		$this->tpl->assign('nren',	$this->person->getNREN());

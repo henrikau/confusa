@@ -124,5 +124,8 @@
 	},
 	"l10n_not_sub_2": {
 		"en" :	"If you think you should have access to this service, please contact local user-support."
+	},
+	"l10n_title_logo": {
+		"en":	"Portal overview"
 	}
 }
