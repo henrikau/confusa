@@ -51,6 +51,20 @@ final class CP_DownloadCertificate extends Content_Page
 			error_msg("This is an impossible condition. How did you get in here?");
 			return;
 		}
+
+		$subscriber = $this->person->getSubscriber();
+
+		if (empty($subscriber) || !$subscriber->isSubscribed()) {
+			$this->tpl->assign('not_subscribed_header',
+					   $this->translateTag('l10n_not_sub_header', 'messages'));
+			$this->tpl->assign('not_subscribed_1',
+					   $this->translateTag('l10n_not_sub_1', 'messages'));
+			$this->tpl->assign('not_subscribed_2',
+					   $this->translateTag('l10n_not_sub_2', 'messages'));
+			$this->tpl->assign('content', $this->tpl->fetch('errors/unsubscribed.tpl'));
+			return;
+		}
+
 		/* test and handle flags */
 		$this->processDBCert();
 		try {
@@ -64,8 +78,8 @@ final class CP_DownloadCertificate extends Content_Page
 			$this->tpl->assign('defaultDays',
 				               Config::get_config('capi_default_cert_poll_days'));
 		} catch (ConfusaGenException $e) {
-			Framework::error_output($this->translateMessageTag('downl_err_db') .
-			                        htmlentities($e->getMessage()));
+			Framework::error_output($this->translateMessageTag('downl_err_db') . " " .
+			                        $e->getMessage());
 		}
 
 		/* animate the user to install the root certificate in personal mode,

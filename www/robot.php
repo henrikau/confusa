@@ -301,6 +301,9 @@ class CP_Robot_Interface extends Content_Page
 			$params	= array('text', 'text', 'text', 'text', 'text', 'text', 'text');
 			$data	= array($subscriber_id, $admin_id, $cert->validTo(), $cert->getCert(), $cert->fingerprint(), $cert->serial(), $comment);
 			MDB2Wrapper::update($update, $params, $data);
+			Logger::log_event(LOG_INFO, "[RI] Added new certificate (". $cert->serial() .
+					  ") for subscriber " . $this->person->getSubscriber()->getOrgName() .
+					  " associated with admin " . $this->person->getEPPN());
 
 		} catch (Exception $e) {
 			/* FIXME */
@@ -333,6 +336,9 @@ class CP_Robot_Interface extends Content_Page
 				Framework::success_output($this->translateTag('l10n_suc_deletecert1', 'robot') .
 				                          htmlentities($serial) .
 				                          $this->translateTag('l10n_suc_deletecert2', 'robot'));
+				Logger::log_event(LOG_NOTICE, "[RI] " . $this->person->getEPPN() .
+						  " from " .$this->person->getSubscriber()->getOrgName().
+						  " deleted certificate $serial from the database");
 				return true;
 			} catch (Exception $e) {
 				Framework::error_output(htmlentities($e->getMessage()));
@@ -377,8 +383,8 @@ class CP_Robot_Interface extends Content_Page
 		require_once 'file_download.php';
 		$confusa_client = file_get_contents(Config::get_config('install_path')
 						    . "/extlibs/XML_Client/Confusa_Client.py");
-		$confusa_parser = file_get_contents(Config::get_config('install_path')
-						    . "/extlibs/XML_Client/Confusa_Parser.py");
+		$parser		= file_get_contents(Config::get_config('install_path')
+						    . "/extlibs/XML_Client/Parser.py");
 		$https_client	= file_get_contents(Config::get_config('install_path')
 						    . "/extlibs/XML_Client/HTTPSClient.py");
 		$timeout	= file_get_contents(Config::get_config('install_path')
@@ -395,9 +401,9 @@ class CP_Robot_Interface extends Content_Page
 		$name = tempnam($ZIP_CACHE, "XML_Cli_");
 		$zip->open($name, ZipArchive::OVERWRITE);
 		$zip->addFromString("XML_Client/Confusa_Client.py",	$confusa_client);
-		$zip->addFromString("XML_Client/Confusa_Parser.py",	$confusa_parser);
+		$zip->addFromString("XML_Client/Parser.py",		$parser);
 		$zip->addFromString("XML_Client/HTTPSClient.py",	$https_client);
-		$zip->addFromString("XML_Client/Timeout.py",	$timeout);
+		$zip->addFromString("XML_Client/Timeout.py",		$timeout);
 		$zip->addFromString("XML_Client/README",		$readme);
 		$zip->addFromString("XML_Client/LICENSE",		$license);
 		$zip->addFromString("XML_Client/COPYING",		$gplv3);

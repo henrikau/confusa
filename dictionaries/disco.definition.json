@@ -9,6 +9,6 @@
 		"en": "Graphical view"
 	},
 	"l10n_err_idpretrieval": {
-		"en": "Could not retrieve the IdP-list per country! Selecting your IdP will work, but in the next step you will see all IdPs from all countries instead of only the ones from your country! Please notify an IT-administrator about that."
+		"en": "Could not retrieve the IdP-list per country! Selecting your country will work, but in the next step you will see all IdPs from all countries instead of only the ones from your country! Please notify an IT-administrator about that."
 	}
 }

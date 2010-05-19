@@ -1,3 +1,16 @@
+<script type="text/javascript">
+{literal}
+function toggleUidAttrField()
+{
+	if (uidAttrField.hasAttribute("disabled")) {
+		uidAttrField.removeAttribute("disabled");
+	} else {
+		uidAttrField.setAttribute("disabled", "disabled");
+	}
+}
+{/literal}
+</script>
+
 <fieldset>
   <legend>{$l10n_legend_addnew}</legend>
   <form action="" method="post">
@@ -32,10 +45,11 @@
 	  <p class="info">
 	    {$l10n_infotext_attnm2}
 	  </p>
-	  <a href="http://rnd.feide.no/attribute/edupersonorgdn">
-	    eduPersonOrgDN</a><br />
-	  <a href="http://rnd.feide.no/content/schachomeorganization">
-	    schacHomeOrganization</a><br />
+		{if isset($nrenOrgAttr)}
+			<strong>{$nrenOrgAttr|escape}</strong><br />
+		{else}
+			<span style="color: #ff0000">{$l10n_label_undefined|escape}</span>
+		{/if}
 	  <br />
 	  <p class="info">
 	    {$l10n_infotext_attnm3}
@@ -90,6 +104,32 @@
       <tr><td colspan="2"><hr class="table"/><br /></td></tr>
       <tr><td><div class="spacer"></div></td><td></td></tr>
 
+	  {* ------------------------------------------------------ *}
+	  {* Unique identifier attribute of that subscriber			*}
+	  {* ------------------------------------------------------ *}
+	<tr>
+		<td colspan="2"><h3>{$l10n_heading_attruid}</h3></td>
+	</tr>
+	<tr>
+		<td colspan="2">
+		<p class="info">
+			{$l10n_infotext_attruid}
+		</p>
+		</td>
+	</tr>
+	<tr><td><div class="spacer"></div></td><td></td></tr>
+	<tr>
+	<td><font color="gray"><i>Attribute-key:</i></font></td>
+	<td><input id="uid_attr_field" type="text" name="uid_attr" size="40" value="{$eppnAttr}" />
+	</tr>
+	<tr><td></td><td>
+		<input id="uid_attr_box" type="checkbox" name="inherit_uid_attr" value="Inherit" checked="checked" onChange="toggleUidAttrField();" />
+		<label for="uid_attr_box">Inherit from NREN mapping</label>
+	</td>
+	</tr>
+	<tr><td><div class="spacer"></div></td><td></td></tr>
+      <tr><td colspan="2"><hr class="table"/><br /></td></tr>
+      <tr><td><div class="spacer"></div></td><td></td></tr>
 
       {* ------------------------------------------------------ *}
       {* Contact information for subscriber			*}
@@ -251,3 +291,8 @@
   </form>
   <br />
 </fieldset>
+
+<script type="text/javascript">
+	var uidAttrField = document.getElementById('uid_attr_field');
+	uidAttrField.setAttribute("disabled", "disabled");
+</script>

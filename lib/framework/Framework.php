@@ -9,8 +9,10 @@
 require_once 'confusa_include.php';
 require_once 'Confusa_Auth.php';
 require_once 'AuthHandler.php';
+require_once 'NREN_Handler.php';
+require_once 'NREN.php';
 require_once 'Person.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'Content_Page.php';
 require_once 'Output.php';
 require_once 'CGE_ComodoCredentialException.php';
@@ -73,7 +75,7 @@ class Framework {
 							  " We <b>strongly</b> recommend that ".
 							  "you enable SSLv3/TLS for this instance ".
 							  "even though you are running in debug-mode.");
-				Logger::log_event(LOG_WARNING, " Confusa is running (in debug-mode), ".
+				Logger::logEvent(LOG_WARNING, "Framework", "__construct()", " Confusa is running (in debug-mode), ".
 						  "and is accessible over plain HTTP.");
 			} else {
 				echo "Framework: HTTPS is OFF!<br />\n";
@@ -82,7 +84,8 @@ class Framework {
 				echo "Please configure Apache to serve content over SSL, and make sure that ";
 				echo "the instance is either not available over HTTP, or that it is ";
 				echo "redirected to a secure connection.";
-				Logger::log_event(LOG_CRIT, " Confusa is available via HTTP. Please configure HTTPS properly.");
+				Logger::logEvent(LOG_CRIT, "Framework", "__construct()",
+				" Confusa is available via HTTP. Please configure HTTPS properly.");
 				exit(0);
 			}
 		}
@@ -103,14 +106,16 @@ class Framework {
 		$this->tpl	= new Smarty();
 		$this->tpl->template_dir= Config::get_config('install_path').'templates';
 		if (!is_dir($this->tpl->template_dir)) {
-			Logger::log_event(LOG_ALERT, "Error: nonexistant templatedir: " . $this->tpl->template_dir);
+			Logger::logEvent(LOG_ALERT, "Framework", "__construct()",
+			                  "Error: nonexistant templatedir: " . $this->tpl->template_dir);
 			exit(0);
 		}
 		if (!is_dir(ConfusaConstants::$SMARTY_TEMPLATES_C) ||
 		    !is_writable(ConfusaConstants::$SMARTY_TEMPLATES_C)) {
-			Logger::log_event(LOG_NOTICE, "smarty template-compile-dir (" .
-					  ConfusaConstants::$SMARTY_TEMPLATES_C.
-					  ")  not writable to webserver. Please correct.");
+			Logger::logEvent(LOG_NOTICE, "Framework", "__construct()",
+			                 "smarty template-compile-dir (" .
+			                 ConfusaConstants::$SMARTY_TEMPLATES_C .
+			                 ")  not writable to webserver. Please correct.");
 		}
 		$this->tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
 
@@ -118,9 +123,10 @@ class Framework {
 
 		if (!is_dir(ConfusaConstants::$SMARTY_CACHE) ||
 		    !is_writable(ConfusaConstants::$SMARTY_CACHE)) {
-			Logger::log_event(LOG_NOTICE, "smarty template cache(" .
-					  ConfusaConstants::$SMARTY_CACHE.
-					  ")  not writable to webserver. Please correct.");
+			Logger::logEvent(LOG_NOTICE, "Framework", "__construct()",
+			                 "smarty template cache(" .
+			                 ConfusaConstants::$SMARTY_CACHE.
+			                 ")  not writable to webserver. Please correct.");
 		}
 		$this->tpl->cache_dir	= ConfusaConstants::$SMARTY_CACHE;
 
@@ -135,7 +141,7 @@ class Framework {
 	}
 
 	/**
-	 * @throws CriticalAttributeException If an attribute needed for the operation of Confusa is not found
+	 * @throws CGE_CriticalAttributeException If an attribute needed for the operation of Confusa is not found
 	 * @throws MapNotFoundException If the NREN-map for the attributes is not found
 	 */
 	public function authenticate() {
@@ -173,7 +179,7 @@ class Framework {
 			}
 		} else {
 			/* maybe we can guess the NREN from the URL */
-			$this->person->setNREN(NREN::getNRENByURL($_SERVER['SERVER_NAME']));
+			$this->person->setNREN(NREN_Handler::getNREN($_SERVER['SERVER_NAME']), 1);
 		}
 
 		/*
@@ -206,7 +212,7 @@ class Framework {
 		 */
 		try {
 			$this->authenticate();
-		} catch (CriticalAttributeException $cae) {
+		} catch (CGE_CriticalAttributeException $cae) {
 			$msg .= "<b>" . $this->contentPage->translateMessageTag('fw_error_critical_attribute1') . "</b><br /><br />";
 			$msg .= htmlentities($cae->getMessage()) . "<br /><br />";
 			$msg .= $this->contentPage->translateMessageTag('fw_error_critical_attribute2');
@@ -244,9 +250,12 @@ class Framework {
 		} catch (KeyNotFoundException $knfe) {
 				$this->renderError = true;
 
-				$msg  = "[".PW::create(8)."] " .
-					$this->contentPage->translateMessageTag('fw_keynotfound1');
-				Logger::log_event(LOG_INFO, $msg . $knfe->getMessage());
+				$errorTag = PW::create(8);
+				$msg  = "[$errorTag] " .
+				        $this->contentPage->translateMessageTag('fw_keynotfound1');
+				Logger::logEvent(LOG_NOTICE, "Framework", "start()",
+				                 "Config-file not properly configured: " . $knfe->getMessage(),
+				                 __LINE__, $errorTag);
 
 				$msg .= htmlentities($knfe->getMessage());
 				$msg .= "<br />" . $this->contentPage->translateMessageTag('fw_keynotfound2');
@@ -267,6 +276,7 @@ class Framework {
 			$this->person->setMode($new_mode);
 		}
 
+		$this->tpl->assign('title_logo', $this->contentPage->translateMessageTag('l10n_title_logo'));
 		$this->tpl->assign('person',	$this->person);
 		$this->tpl->assign('subscriber',$this->person->getSubscriber());
 		$this->tpl->assign('nren',	$this->person->getNREN());
@@ -279,7 +289,7 @@ class Framework {
 		 * self-contained wrt to exceptions.
 		 *
 		 * A NREN admin is supposed to be able to "fix stuff" such as for instance
-		 * CriticalAttributeExceptions and should hence see the pages also if
+		 * CGE_CriticalAttributeExceptions and should hence see the pages also if
 		 * renderError is set.
 		 */
 		if (!$this->renderError || $this->person->isNRENAdmin()) {
@@ -287,14 +297,19 @@ class Framework {
 				$this->applyNRENBranding();
 				$this->contentPage->process($this->person);
 			} catch (KeyNotFoundException $knfe) {
-				$msg  = "[".PW::create(8)."] " .
+				$errorTag = PW::create(8);
+				$msg  = "[$errorTag] " .
 				        $this->contentPage->translateMessageTag('fw_keynotfound1');
-				Logger::log_event(LOG_INFO, $msg . $knfe->getMessage());
+				Logger::logEvent(LOG_NOTICE, "Framework", "start()",
+				                 "Config-file not properly configured: " . $knfe->getMessage(),
+				                 __LINE__, $errorTag);
 				$msg .= htmlentities($knfe->getMessage());
 				$msg .= "<br />" . $this->contentPage->translateMessageTag('fw_keynotfound2');
 				Framework::error_output($msg);
 			} catch (Exception $e) {
-				Logger::log_event(LOG_INFO, "Unhandleded exception when running contentPage->process()");
+				Logger::logEvent(LOG_INFO, "Framework", "start()",
+				                 "Unhandleded exception when running contentPage->process()",
+				                 __LINE__);
 				Framework::error_output($this->contentPage->translateMessageTag('fw_unhandledexp1')
 				                        . "<br />\n" . htmlentities($e->getMessage()));
 			}
@@ -306,9 +321,13 @@ class Framework {
 				Framework::message_output($this->contentPage->translateMessageTag('fw_unrecoverable_nren') .
 				                          htmlentities($this->person->getEPPN()));
 			} else {
-				Framework::error_output($this->contentPage->translateMessageTag('fw_unrecoverable_nonren'));
-				Logger::log_event(LOG_WARNING, "User contacting us from " . $_SERVER['REMOTE_ADDR'] .
-				                  " tried to login from IdP that appears to have no NREN-mapping!");
+				$errorTag = PW::create();
+				Framework::error_output("[$errorTag] " .
+				                        $this->contentPage->translateMessageTag('fw_unrecoverable_nonren'));
+				Logger::logEvent(LOG_WARNING, "Framework", "start()",
+				                 "User contacting us from " . $_SERVER['REMOTE_ADDR'] .
+				                 " tried to login from IdP that appears to have no NREN-mapping!",
+				                 __LINE__, $errorTag);
 			}
 		}
 		$this->tpl->assign('logoutUrl', 'logout.php');
@@ -367,12 +386,12 @@ class Framework {
 			$customPortalTitle = $nren->getCustomPortalTitle();
 
 			if (isset($customPortalTitle)) {
-				$this->tpl->assign('system_title', $customPortalTitle);
+				$this->tpl->assign('system_title', '&nbsp;' .  $customPortalTitle);
 			} else {
-				$this->tpl->assign('system_title', Config::get_config('system_title'));
+				$this->tpl->assign('system_title', '&nbsp;' .  Config::get_config('system_title'));
 			}
 		} else {
-			$this->tpl->assign('system_title', '&nbsp;');
+			$this->tpl->assign('system_title', '');
 		}
 	} /* end applyNRENBranding */
 

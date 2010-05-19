@@ -2,9 +2,8 @@
 require_once 'confusa_include.php';
 require_once 'Person.php';
 require_once 'Config.php';
-require_once 'CriticalAttributeException.php';
+require_once 'CGE_CriticalAttributeException.php';
 require_once 'MapNotFoundException.php';
-require_once 'CriticalAttributeException.php';
 require_once 'confusa_constants.php';
 
 /**
@@ -46,7 +45,7 @@ abstract class Confusa_Auth
 	 * fields in person
 	 *
 	 * This function is a bit fragile. The reason for this, is that it needs
-	 * to 'bootstrap' the map for person-identifier (eduPersonPrincipalName)
+	 * to 'bootstrap' the map for person-identifier (e.g. ePPN)
 	 * through various encodings.
 	 *
 	 * One way would be to add a specific mapping for all known NRENs, but
@@ -59,15 +58,15 @@ abstract class Confusa_Auth
 	 * @author Henrik Austad <henrik.austad@uninett.no>
 	 * @author Thomas Zangerl <tzangerl@pdc.kth.se>
 	 *
-	 * @throws CriticalAttributeException If an attribute without which Confusa
-	 *                                    really can not work is not found
-	 * @throws MapNotFoundException       If the NREN-map is not found
+	 * @throws CGE_CriticalAttributeException If an attribute without which Confusa
+	 *                                        really can not work is not found
+	 * @throws MapNotFoundException           If the NREN-map is not found
 	 *
 	 * @param array	$attributes
 	 * @param String $idp
 	 * @throws MapNotFoundException
 	 */
-	public function decoratePerson($attributes, $idp)
+	protected function decoratePerson($attributes, $idp)
 	{
 		$cnPrefix = "";
 		$oPrefix  = "";
@@ -77,11 +76,11 @@ abstract class Confusa_Auth
 		}
 
 		if (is_null($idp)){
-			throw new CriticalAttributeException("Need the URL of the IdP in order to create an NREN-object!");
+			throw new CGE_CriticalAttributeException("Need the URL of the IdP in order to create an NREN-object!");
 		}
 
 		if (is_null($attributes)) {
-			throw new CriticalAttributeException("Cannot find <b>any</b> attributes!");
+			throw new CGE_CriticalAttributeException("Cannot find <b>any</b> attributes!");
 		}
 
 		/* From the IdP, find the NREN-details */
@@ -91,20 +90,27 @@ abstract class Confusa_Auth
 			$msg  = "Could not map from the identity provider to the NREN. ";
 			$msg .= "Probably the idp_map in the database is not configured for your idp ($idp) ";
 			$msg .= "Please tell an administrator about that problem!";
-			throw new CriticalAttributeException($msg);
+			throw new CGE_CriticalAttributeException($msg);
 		}
+
+		$nren_id = $this->person->getNREN()->getID();
+
+		Logger::logEvent(LOG_INFO, "Confusa_Auth", "decoratePerson(..., $idp)",
+		                 "Decorating person with map from NREN $nren_id.");
 
 		$map = $this->person->getMap();
 		/* Normal mapping, this is what we want. */
-		if (isset($map) && is_array($map)) {
+		if ($this->mapSanityCheck($map)) {
 
 			/* Now that we have the NREN-map, reiterate getMap() in
 			 * case we can find the subscriber-map. */
 			$subscriberIdPName = Input::sanitizeIdPName($attributes[$map['epodn']][0]);
 			$this->person->setSubscriber(new Subscriber($subscriberIdPName,
 								    $this->person->getNREN()));
-			$map = $this->person->getMap();
-
+			$new_map = $this->person->getMap();
+			if ($this->mapSanityCheck($new_map)) {
+				$map = $new_map;
+			}
 			$eppn = Input::sanitizeEPPN($attributes[$map['eppn']][0]);
 			$this->person->setEPPN($eppn);
 			if (!is_null($map['eppn'])) {
@@ -172,6 +178,10 @@ abstract class Confusa_Auth
 
 			/* is ePPN registred as NREN admin (from bootstrap) */
 			if ($this->person->isNRENAdmin()) {
+				if (is_array($map)) {
+					Logger::log_event(LOG_WARNING, "Map for NREN $nren_id ($idp) corrupted. ".
+							  "Contains empty fields, consider dropping the map.");
+				}
 				$msg = "No NREN map found!";
 
 				if (Config::get_config('debug')) {
@@ -192,6 +202,30 @@ abstract class Confusa_Auth
 			}
 		}
 	} /* end decoratePerson() */
+
+	private function mapSanityCheck($map)
+	{
+		if (is_null($map) || !is_array($map)) {
+			return false;
+		}
+		/* look for keys, make sure they're defined and not '' */
+		if (!(array_key_exists('epodn', $map) && $map['epodn'] != "")) {
+			return false;
+		}
+		if (!(array_key_exists('eppn', $map) && $map['eppn'] != "")) {
+			return false;
+		}
+		if (!(array_key_exists('cn', $map) && $map['cn'] != "")) {
+			return false;
+		}
+		if (!(array_key_exists('mail', $map) && $map['mail'] != "")) {
+			return false;
+		}
+		if (!(array_key_exists('entitlement', $map) && $map['entitlement'] != "")) {
+			return false;
+		}
+		return true;
+	}
 
 	/**
 	 * findEPPN() find the eppn-value in the attributes.
@@ -248,6 +282,20 @@ abstract class Confusa_Auth
 	 * @return array of attribute-keys.
 	 */
 	public abstract function getAttributeKeys();
+
+	/**
+	 * getAttributeValue() - return the attribute value for a certain key
+	 * in the current attributes.
+	 *
+	 * This can be helpful when mapping attributes or when only wanting the
+	 * attribute for a certain key in some part of the code.
+	 *
+	 * @param $key string The key for which the attribute value should be
+	 *                    returned
+	 * @return string the attribute value or an empty string, if it was not
+	 *                found
+	 */
+	public abstract function getAttributeValue($key);
 
 	/**
 	 * Get the currently assigned attributes from the authentication class.

@@ -163,5 +163,17 @@
 	},
 	"l10n_nren_cannot_downgrade": {
 		"en":	"You cannot downgrade to Subscriber-admin because you do not have the required entitlements set. If you do this, you will lock yourself out of the admin-interface!"
+	},
+	"l10n_infotext_idpforadmin": {
+		"en":	"Pick the IdP with which the new NREN admin will authenticate. You can leave that value blank if the principal identifier is unique for your whole NREN, e.g. if it is an EPPN."
+	},
+	"l10n_label_idp": {
+		"en":	"IdP:"
+	},
+	"l10n_label_uniqueinnren": {
+		"en":	"Principal identifier is <b> unique within NREN.</b>"
+	},
+	"l10n_infotext_enteruid": {
+		"en":	"Enter a new UID (eduPersonPrincipalName, eduPersonTargetedID,...) to add a new NREN administrator."
 	}
 }

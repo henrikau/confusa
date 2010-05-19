@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- 1 : one, and only one.
     -- n : multiple, or none, total user freedom.
     -- m : multiple, but at least one.
-    enable_email ENUM('0', '1', 'n', 'm'),
+    enable_email ENUM('0', '1', 'n', 'm') DEFAULT '1',
     -- The certificate validity. In test-mode this is always 14 days. For
     -- personal certificates it will be one of 365, 730 or 1095 days, for
     -- productive e-Science certs always 395 days
@@ -144,6 +144,9 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- "TCS eScience portal" for their branded Confusa view
     show_portal_title BOOLEAN DEFAULT TRUE,
     portal_title VARCHAR(35),
+    -- The timeout in minutes, after which Confusa will ask for reauthentication
+    -- upon sensitive actions.
+    reauth_timeout INT DEFAULT 10,
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) engine=InnoDB;
 
@@ -180,7 +183,7 @@ CREATE TABLE IF NOT EXISTS idp_map (
 CREATE TABLE IF NOT EXISTS subscribers (
     subscriber_id INT PRIMARY KEY AUTO_INCREMENT,
     -- the name of the institution (e.g. KTH, CSC, Univ. of Oslo,...)
-    name VARCHAR(30) UNIQUE NOT NULL,
+    name VARCHAR(256) UNIQUE NOT NULL,
     -- the name that goes into the certificate subject DN (not that the
     -- organization name DN component may fill a maximum of 64 characters
     -- minus 'O=' that is 62 characters
@@ -226,7 +229,7 @@ CREATE TABLE order_store (
 	-- auth_key and owner for remote download and upload
 	auth_key CHAR(64) NOT NULL,
 	-- the ePPN of the owner of the ordered certificate
-	owner VARCHAR(128) NOT NULL,
+	owner VARCHAR(256) NOT NULL,
 	-- order number and collection code for bookkeeping, revocation,
 	-- delivery
 	order_date DATETIME NOT NULL,
@@ -293,7 +296,7 @@ CREATE TABLE cert_cache (
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS admins (
        admin_id INT PRIMARY KEY AUTO_INCREMENT,
-       admin varchar(128) NOT NULL, -- ePPN of the admin,
+       admin varchar(256) NOT NULL, -- ePPN of the admin,
 
         -- the full name. Will be decoreated when the admin logs in the first time
        admin_name varchar(128) DEFAULT "",
@@ -318,6 +321,12 @@ CREATE TABLE IF NOT EXISTS admins (
        -- store the subscriber to which the admin belongs.
        -- Leave this field NULL if the admin is a NREN-admin
        subscriber INT,
+       -- store the idp with admins that are NREN admins but do not have an
+       -- unique identifier that is unique within their NREN, but only within
+       -- their IDP
+       -- One can not use the subscriber for that, due to bootstrapping issues
+       -- (the subscriber will not be bootstrapped in the beginning)
+       idp_url VARCHAR(128),
        -- another nullable field, this time pointing to the NREN.
        -- This field helps to easily determine, for which NREN a NREN-admin is
        -- responsible. It would have been possible to find this information by
@@ -326,7 +335,10 @@ CREATE TABLE IF NOT EXISTS admins (
        -- The field can be left NULL or filled in if the admin is a subscriber
        -- admin.
        nren INT NOT NULL,
-       UNIQUE(admin, nren),
+       -- a NREN-admin must have an unique identifier at least on the idp-level
+       UNIQUE(admin, nren, idp_url),
+       -- and a subscriber admin has an unique identifer at the subscriber level
+       UNIQUE(admin, subscriber),
        FOREIGN KEY(subscriber) REFERENCES subscribers(subscriber_id) ON DELETE CASCADE,
        FOREIGN KEY(nren) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) engine=InnoDB;
@@ -342,7 +354,7 @@ CREATE TABLE IF NOT EXISTS admins (
 -- ---------------------------------------------------------
 CREATE TABLE IF NOT EXISTS user_crls (
        crl_id INT PRIMARY KEY AUTO_INCREMENT,
-       owner varchar(128), -- ePPN of the owner
+       owner varchar(256), -- ePPN of the owner
        cert_sn INT NOT NULL,
        valid_untill DATETIME NOT NULL
 ) engine=InnoDB;

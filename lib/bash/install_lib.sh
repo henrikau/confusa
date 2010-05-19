@@ -85,6 +85,7 @@ function single_trailing_slash
     if [ ! -z $1 ]; then
 	res="`echo $1|sed 's/[\/]*$//g'`/"
     fi
+    echo $res
 }
 
 

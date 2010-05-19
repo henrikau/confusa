@@ -3,7 +3,7 @@ require_once 'confusa_include.php';
 require_once 'Robot.php';
 require_once 'MDB2Wrapper.php';
 require_once 'cert_lib.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'Person.php';
 require_once 'CA.php';
 
@@ -218,10 +218,10 @@ function createAdminPerson()
 	}
 	try {
 		$person->setEPPN($ares[0]['admin']);
-	} catch (CriticalAttributeException $cae) {
-		echo "[$log_error_code] Problems with setting the eduPersonPrincipalName for robot-admin.<br />\n";
+	} catch (CGE_CriticalAttributeException $cae) {
+		echo "[$log_error_code] Problems with setting the unique identifier for robot-admin.<br />\n";
 		echo "Check the data in admins (admin_id: " . htmlentities($cert_res[0]['uploaded_by']) . ")<br />\n";
-		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Internal error? Suddenly provided admin-eppn is not available.");
+		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) Internal error? Suddenly provided admin-uid is not available.");
 		return null;
 	}
 	$person->setAuth(true);
@@ -249,11 +249,10 @@ function printXMLRes($resArray, $type = 'userList')
 	/* lets hope that the header has not yet been set so we can trigger
 	 * proper XML headers */
 	global $admin;
-
+	$element_count = 0;
 	$xml = new SimpleXMLElement("<ConfusaRobot></ConfusaRobot>");
 	$xml->addAttribute("date", date("Y-m-d H:i:s"));
 	$xml->addAttribute("subscriber", $admin->getSubscriber()->getOrgName());
-	$xml->addAttribute("elementCount", 1);
 	$xml->addAttribute("version", "1.0");
 
 	$element = null;
@@ -266,22 +265,25 @@ function printXMLRes($resArray, $type = 'userList')
 		$element = $xml->addChild("revokedCerts");
 		break;
 	default:
+		Logger::log_event(LOG_NOTICE, "Unknown XML-list-type ($type), aborting.");
 		return;
 
 	}
 	if (isset($resArray) && is_array($resArray) && count($resArray) > 0) {
 		foreach($resArray as $value) {
 			$le = $element->addChild('listElement');
-			$le->addAttribute('eppn', htmlentities($value['eppn']));
+			$le->addAttribute('uid', htmlentities($value['eppn']));
 			if (isset($value['count'])) {
 				$le->addAttribute('count', $value['count']);
 			}
 			if (isset($value['fullDN'])) {
-				$le->addAttribute('fullDN', htmlentities($value['fullDN']));
+				$le->addAttribute('fullDN', $value['fullDN']);
 			}
+			$element_count += 1;
 		}
 	}
-
+	$xml->addAttribute("elementCount", $element_count);
+	Logger::log_event(LOG_DEBUG, "Returning list with $element_count entries.");
 	header ("content-type: text/xml");
 	echo $xml->asXML();
 }
@@ -307,8 +309,10 @@ if (isset($_POST['action'])) {
 
 switch($action) {
 case 'cert_list':
+	Logger::log_event(LOG_NOTICE, "[RI] " . $admin->getEPPN() .
+			  " cert-list request.");
 	$res = Robot::createCertList($admin);
-	printXMLRes($res, 'userlist');
+	printXMLRes($res, 'userList');
 	break;
 case 'revoke_list':
 	if (!isset($_POST['list'])) {
@@ -316,7 +320,10 @@ case 'revoke_list':
 		exit(0);
 
 	}
+	/* for some reason, php adds 'smart-qoutes' to XML-data. Lets just call
+	 * this not-so-smart-quotes */
 	$xml = str_replace("\\", "", $_POST['list']);
+
 	/* Start parsing */
 	if (!is_null($xml)) {
 		try {
@@ -337,8 +344,15 @@ case 'revoke_list':
 				$res = Robot::parseRevList($value, $admin);
 				break;
 			default:
-				echo "Unknown type ($key). Are you sure you are following the DTD?\n";
-				exit(0);
+				if (Config::get_config('debug')) {
+					echo "Unknown type ($key). Are you sure you are following the DTD?\n";
+					/* only exit in debug-mode to minimize
+					 * number of log-entries etc.
+					 *
+					 * In prod. we want to parse the entire file.
+					 */
+					exit(0);
+				}
 				break;
 			}
 		}
@@ -349,7 +363,7 @@ case 'revoke_list':
 	}
 	break;
 default:
-	echo "Unknown action.<br />\n";
+	Logger::log_event(LOG_DEBUG, "Unknown action received from client. Got $action");
 	exit(0);
 }
 

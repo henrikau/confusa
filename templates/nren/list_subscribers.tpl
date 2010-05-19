@@ -160,6 +160,26 @@
 	<td></td>
       </tr>
 
+	<tr><td colspan="3"><b>{$l10n_heading_attruid}</b></td></tr>
+	<tr>
+		<td style="font-size: 0.8em; font-style: italic" colspan="2">
+			{$l10n_intotext_attruid_short}
+		</td>
+	</tr>
+	<tr><td><div class="spacer"></div></td><td></td><td></td></tr>
+	<tr>
+	<td align="right" style="padding-right: 10px">{$l10n_label_uid}</td>
+	{assign var='map' value=$subscriber->getMap()}
+		<td><b>{$map.eppn|default:$nren_eppn_key|escape}</b></td>
+	<td></td>
+      </tr>
+
+      <tr>
+	<td><div class="spacer"></div></td>
+	<td></td>
+	<td></td>
+      </tr>
+
 
       <tr><td colspan="3"><b>{$l10n_heading_contactinfo}</b></td></tr>
       <tr>

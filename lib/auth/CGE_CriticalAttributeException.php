@@ -1,7 +1,7 @@
 <?php
 require_once 'confusa_gen.php';
 
-class CriticalAttributeException extends ConfusaGenException
+class CGE_CriticalAttributeException extends ConfusaGenException
 {
     public function __construct($message, $code=0)
     {

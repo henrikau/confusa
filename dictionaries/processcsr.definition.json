@@ -60,7 +60,7 @@
 		"en":	"Upload CSR"
 	},
 	"l10n_infotext_email1": {
-		"en":	"Each certificate can contain zero, one or more of your email-addresses depending on how the portal has been configured. We have registred that you have"
+		"en":	"Each certificate can contain zero, one or more of your email-addresses depending on how the portal has been configured. We have registered that you have"
 	},
 	"l10n_infotext_email2": {
 		"en":	"registered addresses."
@@ -205,6 +205,41 @@
 	},
 	"l10n_infotext_brows_csr_ong": {
 		"en":	"<br /><br />Please don\\'t close the window and wait until processing is finished. That will take, depending on load about <b>2 minutes</b>. Then, install the certificate.<br /><br />If something goes wrong, you can install the certificate later from the download area!"
+	},
+	"l10n_aup_title": {
+		"en" :	"Acceptable Use Policy (AUP)"
+	},
+	"l10n_aup_agreement": {
+		"en" :	"I hereby state that I will adhere to the Requester's obligations as stated in the CPS."
+	},
+	"l10n_aup_info_short": {
+		"en" :	"more"
+	},
+	"l10n_aup_info_long1": {
+		"en":	"The AUP is a segment of the "
+	},
+	"l10n_aup_info_long2": {
+		"en":	"CPS"
+	},
+	"l10n_aup_info_long3": {
+		"en":	" which imposes a set of requirements upon the user. These include: "
+	},
+	"l10n_aup_item1": {
+		"en":	"Protect the account credentials you have with your institution. (section 4.1.2)"
+	},
+	"l10n_aup_item2": {
+		"en":	"Protect the private key of your new certificate. (4.1.2)"
+	},
+	"l10n_aup_item3": {
+		"en":	"Revoke your certificate if your private key has been compromised. (1.4.2)"
+	},
+	"l10n_aup_item4": {
+		"en":	"Do not use the certificates on a system where failure could cause critical damage. (1.4.2)"
+	},
+	"l10n_aup_item5": {
+		"en":	"Do not use the certificates in any unlawful transaction. (1.4.2)"
+	},
+	"l10n_header_privacynotice": {
+		"en":	"Privacy notice"
 	}
-
 }

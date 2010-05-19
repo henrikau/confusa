@@ -43,7 +43,7 @@ class Input
 	 */
 	static function sanitizeOrgName($input)
 	{
-		$output = preg_replace('/[^a-z0-9@_,\.\-\s]/i', '', $input);
+		$output = preg_replace('/[^a-z0-9@_,\.\s]/i', '', $input);
 		return $output;
 	}
 
@@ -57,7 +57,7 @@ class Input
 	 */
 	static function sanitizeIdPName($input)
 	{
-		$output = preg_replace('/[^a-z0-9_=,\s\.\-@]/i','', $input);
+		$output = preg_replace('/[^a-z0-9_=,:\/\s\.\-@]/i','', $input);
 		return $output;
 	}
 
@@ -229,6 +229,32 @@ class Input
 	static function sanitizeBase64($input)
 	{
 		$output = preg_replace('/a-z0-9\+\/\-\s=/i', '', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize a string which should contain only numeric (0-9) content.
+	 * Everything else will be stripped.
+	 *
+	 * @param $input string the unsanitized numeric-string
+	 * @return string the sanitized numeric string
+	 */
+	static function sanitizeNumeric($input)
+	{
+		$output = preg_replace('/[^0-9]/', '', $input);
+		return $output;
+	}
+
+	/**
+	 * Sanitize a string which should contain only alphabetical characters
+	 * [a-zA-Z]. Everything else will be stripped.
+	 *
+	 * @param $input string the unsanitized alphabetical-string
+	 * @return string the sanitized alphabetical string
+	 */
+	static function sanitizeAlpha($input)
+	{
+		$output = preg_replace('/[^a-z]/i', '', $input);
 		return $output;
 	}
 

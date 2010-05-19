@@ -35,12 +35,14 @@ Options:
   -a <idp.url.org>    Add a new IdP to the map
   -m <metadata-file>  Add all IdPs from the specified metadata file
   -d <idp_url>        Delete the specified IdP-url from the database
+  -S <metadata-file>  Sync all IdPs in the DB with the specified metadata file
   -i <NREN_id>        Set the NREN_ID for later usage (must be set before -a to avoid interactive input)
   -l                  List all NRENs in the database.
   -L                  List all NRENs in the database joined with configured IdPs
   -h                  This help-text
   -s <idp_url>        Search the DB for the mapping with the given IdP-url
 EOF
+   exit 1
 }
 
 
@@ -99,6 +101,108 @@ function add_by_metadata
 	IFS=$oldifs
 }
 
+# delete all IdPs from a selected NREN that are not in the passed metadata
+# file and add those that are in the metadata file but not in the DB. That
+# can be handy to keep the DB in synch with the metadata if one uses cron
+# jobs to keep the metadata up to date
+#
+function sync_with_metadata
+{
+	if [ -z "$id" ]; then
+		list_db
+		echo -ne "Please enter the ID of the NREN to use: "
+		read id
+	fi
+
+	metadata_file=$1
+	midp_list=`cat $metadata_file | grep "\\$metadata" | cut -d "=" -f 1 | cut -d "'" -f 2 | cut -d "'" -f 1`
+	dbidp_list=`run_query "SELECT idp_url FROM idp_map WHERE nren_id='$id'"`
+
+	oldifs=$IFS
+	IFS=`echo -en "\n\b"`
+	for line in $midp_list; do
+		idp=$line
+
+		IFS=$oldifs
+
+		idp_exists=`test_idp "$idp"`
+		if [ $idp_exists == "0" ]; then
+			echo "Metadata sync: Add IdP $idp to the DB, NREN ID $id"
+			add "$idp"
+		fi
+
+		IFS=`echo -en "\n\b"`
+	done
+	for line in $dbidp_list; do
+		idp=$line
+
+		IFS=$oldifs
+
+		idp_in_metadata=`cat $metadata_file | grep "$idp" | grep "\\$metadata"`
+
+		if [ -z "$idp_in_metadata" ]; then
+			echo "Metadata sync: Delete IdP $idp from DB, not in metadata for NREN ID $id"
+			delete "$idp"
+		fi
+
+		IFS=`echo -en "\n\b"`
+	done
+	IFS=$oldifs
+
+	echo -e "\nSync of NREN $id with metadata $1: Done."
+}
+
+# delete all IdPs from a selected NREN that are not in the passed metadata
+# file and add those that are in the metadata file but not in the DB. That
+# can be handy to keep the DB in synch with the metadata if one uses cron
+# jobs to keep the metadata up to date
+#
+function sync_with_metadata
+{
+	if [ -z "$id" ]; then
+		list_db
+		echo -ne "Please enter the ID of the NREN to use: "
+		read id
+	fi
+
+	metadata_file=$1
+	midp_list=`cat $metadata_file | grep "\\$metadata" | cut -d "=" -f 1 | cut -d "'" -f 2 | cut -d "'" -f 1`
+	dbidp_list=`run_query "SELECT idp_url FROM idp_map WHERE nren_id='$id'"`
+
+	oldifs=$IFS
+	IFS=`echo -en "\n\b"`
+	for line in $midp_list; do
+		idp=$line
+
+		IFS=$oldifs
+
+		idp_exists=`test_idp "$idp"`
+		if [ $idp_exists == "0" ]; then
+			echo "Metadata sync: Add IdP $idp to the DB, NREN ID $id"
+			add "$idp"
+		fi
+
+		IFS=`echo -en "\n\b"`
+	done
+	for line in $dbidp_list; do
+		idp=$line
+
+		IFS=$oldifs
+
+		idp_in_metadata=`cat $metadata_file | grep "$idp" | grep "\\$metadata"`
+
+		if [ -z "$idp_in_metadata" ]; then
+			echo "Metadata sync: Delete IdP $idp from DB, not in metadata for NREN ID $id"
+			delete "$idp"
+		fi
+
+		IFS=`echo -en "\n\b"`
+	done
+	IFS=$oldifs
+
+	echo -e "\nSync of NREN $id with metadata $1: Done."
+}
+
 function list_db
 {
     echo "Stored (and hopefully configured) NRENs in the database:"
@@ -114,8 +218,17 @@ function list_nren_idp
 }
 function delete
 {
-    idp=`run_query "SELECT * FROM idp_map WHERE idp_url='$1'"`
-    echo $idp
+	numIdPs=`run_query "SELECT COUNT(*) FROM idp_map WHERE idp_url='$1'"`
+
+	if [ $numIdPs == "1" ]; then
+		res=`run_query "DELETE FROM idp_map WHERE idp_url='$1'"`
+		echo "Deleted IdP $1"
+	elif [ $numIdPs == "0" ]; then
+		echo "IdP $1 can not be deleted: Does not exist!"
+	else
+		echo "Database inconsistency! IdP $1 exists more than once in the DB!"
+		echo "Please try to fix that manually."
+	fi
 }
 
 function search_for_mapping
@@ -128,11 +241,12 @@ function search_for_mapping
 if [ $# == "0" ]; then
     usage
 else
-    while getopts ":a:m:d:hi:lLs:" opt; do
+    while getopts ":a:m:d:S:hi:lLs:" opt; do
 	case $opt in
 	    a) add $OPTARG ;;
 	    m) add_by_metadata $OPTARG ;;
 	    d) delete $OPTARG ;;
+		S) sync_with_metadata $OPTARG ;;
 	    h) usage ;;
 	    i) id=$OPTARG ;;
 	    s) search_for_mapping $OPTARG ;;

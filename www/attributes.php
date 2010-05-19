@@ -3,6 +3,8 @@ require_once 'confusa_include.php';
 require_once 'Content_Page.php';
 require_once 'Framework.php';
 require_once 'Content_Page.php';
+require_once 'Confusa_Auth.php';
+require_once 'AuthHandler.php';
 
 /**
  * Manage the mapping from the attributes that the IdPs sent to the keys
@@ -30,15 +32,25 @@ class CP_Attributes extends Content_Page
 				$cn		= Input::sanitizeText($_POST['cn']);
 				$mail		= Input::sanitizeText($_POST['mail']);
 
+				/* only NREN-admin can change the mapping for
+				 * - organization-identifier
+				 * - entitlement
+				 */
 				if ($this->person->isNRENAdmin()) {
 					$epodn		= Input::sanitizeText($_POST['epodn']);
 					$entitlement	= Input::sanitizeText($_POST['entitlement']);
-					if ($this->person->getNREN()->saveMap($this->person->getEPPNKey(), $epodn, $cn, $mail, $entitlement)) {
+					if ($this->person->getNREN()->saveMap($this->person->getEPPNKey(),
+									      $epodn,
+									      $cn,
+									      $mail,
+									      $entitlement)) {
 						Framework::success_output($this->translateTag('l10n_suc_updmap', 'attributes'));
 					}
 				} else if ($this->person->isSubscriberAdmin()) {
 					try {
-						$result = $this->person->getSubscriber()->saveMap($cn, $mail);
+						$result = $this->person->getSubscriber()->saveMap($this->person->getEPPNKey(),
+												  $cn,
+												  $mail);
 					} catch (DBQueryException $dbqe) {
 						Framework::error_output($this->translateTag('l10n_err_updmap1', 'attributes') . "<br />" .
 						                        $this->translateTag('l10n_label_cn', 'attributes')
@@ -93,14 +105,36 @@ class CP_Attributes extends Content_Page
 			$map = $this->person->getMap();
 		}
 
-		if (!is_null($this->person->getSubscriber())) {
-			$this->tpl->assign('epodn', $this->person->getSubscriber()->getIdPName());
+		$auth = AuthHandler::getAuthManager($this->person);
+
+		if (isset($map['epodn'])) {
+			$epodn = implode(', ', $auth->getAttributeValue($map['epodn']));
+			$this->tpl->assign('epodn', $epodn);
 		} else {
-			$this->tpl->assign('epodn', "");
+			$this->tpl->assign('epodn', '');
 		}
-		$this->tpl->assign('cn',	$this->person->getName());
-		$this->tpl->assign('mail',	$this->person->getEmail());
-		$this->tpl->assign('entitlement', $this->person->getEntitlement());
+
+		if (isset($map['cn'])) {
+			$cn = implode(', ', $auth->getAttributeValue($map['cn']));
+			$this->tpl->assign('cn', $cn);
+		} else {
+			$this->tpl->assign('cn', '');
+		}
+
+		if (isset($map['mail'])) {
+			$mail = implode(', ', $auth->getAttributeValue($map['mail']));
+			$this->tpl->assign('mail', $mail);
+		} else {
+			$this->tpl->assign('mail', '');
+		}
+
+		if (isset($map['entitlement'])) {
+			$entitlement = implode(', ', $auth->getAttributeValue($map['entitlement']));
+			$this->tpl->assign('entitlement', $entitlement);
+		} else {
+			$this->tpl->assign('entitlement', '');
+		}
+
 		$this->tpl->assign('map',	$map);
 		$this->tpl->assign('keys',	AuthHandler::getAuthManager($this->person)->getAttributeKeys($this->person->isNRENAdmin()));
 		$this->tpl->assign('content', 	$this->tpl->fetch('attributes.tpl'));
@@ -117,6 +151,10 @@ class CP_Attributes extends Content_Page
 		if (empty($attr_key)) {
 			exit(0);
 		}
+
+		$auth = AuthHandler::getAuthManager($this->person);
+		$attr_value = @implode(", ", $auth->getAttributeValue($attr_key));
+		echo htmlentities($attr_value, ENT_COMPAT, "UTF-8");
 		exit(0);
 	}
 }

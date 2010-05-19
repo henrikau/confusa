@@ -36,7 +36,7 @@
 		"en":	"Serial number:"
 	},
 	"l10n_label_uploadedby": {
-		"en":	"Uploaded by:"
+		"en":	"Owner:"
 	},
 	"l10n_label_uploadeddate": {
 		"en":	"Uploaded:"
@@ -49,6 +49,9 @@
 	},
 	"l10n_label_fingerprint": {
 		"en":	"Fingerprint:"
+	},
+	"l10n_label_dn": {
+		"en":	"Certificate DN:"
 	},
 	"l10n_label_comment": {
 		"en":	"Comment:"

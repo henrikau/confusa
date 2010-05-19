@@ -1,7 +1,7 @@
 <?php
 require_once 'pw.php';
 require_once 'Person.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'MDB2Wrapper.php';
 class Robot
 {
@@ -133,13 +133,14 @@ class Robot
 		foreach ($list as $value) {
 
 			/* Get eppn from value*/
-			$eppn = $value['eppn'];
-			if (!isset($eppn) || $eppn == "") {
-				echo "Need eppn. This is a REQUIRED attribute.<br />\n";
+			$uid = $value['uid'];
+			if (!isset($uid) || $uid == "") {
+				echo "Need the UID. This is a REQUIRED attribute.<br />\n";
 				break;
 			}
 			/* Search after matches for cn and subscriber */
-			$list = $ca->getCertListForEPPN($eppn, $admin->getSubscriber()->getOrgName());
+			$list = $ca->getCertListForEPPN($uid, $admin->getSubscriber()->getOrgName());
+			Logger::log_event(LOG_DEBUG, "[Robot] Got list (" . count($list) . " in total) of certs for $uid to revoke.");
 			$count = 0;
 			if (count($list) > 0) {
 				foreach ($list as $key => $value) {
@@ -147,14 +148,14 @@ class Robot
 						if ($ca->revokeCert($value['auth_key'], "privilegeWithdrawn")) {
 							$count = $count + 1;
 						}
-
 					} catch (CGE_KeyRevokeException $kre) {
 						echo htmlentities($kre->getMessage()) . "<br />\n";
 					}
-				}
+				} /* end foreach() uid-list */
+				$revokedUsers[] = array('uid' => $uid, 'count' => $count);
 			}
-			$revokedUsers[] = array('eppn' => $eppn, 'count' => $count);
-		}
+		} /* end foreach() */
+
 		return $revokedUsers;
 	} /* end parseRevList */
 } /* end class Robot */

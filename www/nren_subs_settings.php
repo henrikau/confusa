@@ -34,13 +34,14 @@ class CP_NREN_Subs_Settings extends Content_Page
 			switch($_POST['setting']) {
 			case 'nren_contact':
 				if ($this->person->isNRENAdmin()) {
-					$this->person->getNREN()->setContactEmail(Input::sanitizeEmail($_POST['contact_email']));
-					$this->person->getNREN()->setContactPhone(Input::sanitizePhone($_POST['contact_phone']));
-					$this->person->getNREN()->setCertPhone(   Input::sanitizePhone($_POST['cert_phone']));
-					$this->person->getNREN()->setCertEmail(   Input::sanitizeEmail($_POST['cert_email']));
-					$this->person->getNREN()->setURL(         Input::sanitizeURL($_POST['url']));
-					$this->person->getNREN()->setLang(        Input::sanitizeLangCode($_POST['language']));
-					$this->person->getNREN()->setWAYFURL(     Input::sanitizeURL($_POST['wayf_url']));
+					$this->person->getNREN()->setContactEmail( Input::sanitizeEmail($_POST['contact_email']));
+					$this->person->getNREN()->setContactPhone( Input::sanitizePhone($_POST['contact_phone']));
+					$this->person->getNREN()->setCertPhone(    Input::sanitizePhone($_POST['cert_phone']));
+					$this->person->getNREN()->setCertEmail(    Input::sanitizeEmail($_POST['cert_email']));
+					$this->person->getNREN()->setURL(          Input::sanitizeURL($_POST['url']));
+					$this->person->getNREN()->setLang(         Input::sanitizeLangCode($_POST['language']));
+					$this->person->getNREN()->setWAYFURL(      Input::sanitizeURL($_POST['wayf_url']));
+					$this->person->getNREN()->setReauthTimeout(Input::sanitizeNumeric($_POST['reauth_timeout']));
 
 					$nren = $this->person->getNREN();
 

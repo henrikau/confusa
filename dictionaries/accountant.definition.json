@@ -30,7 +30,7 @@
 		"en": "undefined"
 	},
 	"l10n_button_revert": {
-		"en": "Revert to default"
+		"en": "Reset"
 	},
 	"l10n_button_update": {
 		"en": "Update"
@@ -39,7 +39,7 @@
 		"en": "Add new"
 	},
 	"l10n_button_clear": {
-		"en": "Clear"
+		"en": "Clear form"
 	},
 	"l10n_button_addnew": {
 		"en": "Add account"

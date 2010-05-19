@@ -37,7 +37,7 @@
 	<form method="post" action="process_csr.php">
 	<table>
 	<tr>
-	<td style="width: 20%;">
+	<td id="keygenCell" style="width: 20%;">
 	<keygen name="browserRequest" keytype="RSA" />
 	</td>
 	<td>
@@ -67,6 +67,46 @@
 	</tr>
 	</table>
 	</form>
+
+<script type="text/javascript">
+
+var keysize={$keysize};
+
+{literal}
+	var keygenCell = document.getElementById("keygenCell");
+	var options = keygenCell.getElementsByTagName("option");
+
+	/* Gecko based browsers use some strange "Grade" syntax for keylengths - replace*/
+	if (navigator.userAgent.indexOf('Gecko') != -1) {
+		/* do not touch the constants!
+		 * You will break key generation otherwise */
+		var GECKO_STRING_HIGH = "High Grade";
+		var GECKO_STRING_MEDIUM = "Medium Grade";
+
+		for (var i = 0; i < options.length; i++) {
+			var option = options[i];
+
+			if (option.text == GECKO_STRING_HIGH) {
+				option.text = "2048 bits";
+				option.value=GECKO_STRING_HIGH;
+			} else if (option.text == GECKO_STRING_MEDIUM) {
+				option.text = "1024 bits";
+				option.value=GECKO_STRING_MEDIUM;
+			}
+		}
+	}
+
+	/* autoselect the option with the right keysize */
+	for (var i = 0; i < options.length; i++) {
+		var option = options[i];
+
+		if (option.text.indexOf(keysize) != -1) {
+			option.selected = true;
+			break;
+		}
+	}
+</script>
+{/literal}
 {/if}
 </div>
 </fieldset>

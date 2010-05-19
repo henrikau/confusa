@@ -190,5 +190,56 @@
 	},
 	"l10n_label_finalCertDN": {
 		"de": "Die Inhaber-ID Ihres Zertifikats wird sein:"
+	},
+	"l10n_info_installcert1": {
+		"de": "<b>Fertig<\/b> mit der Bearbeitung! Bitte"
+	},
+	"l10n_link_installcert": {
+		"de": "installieren Sie Ihr Zertifikat"
+	},
+	"l10n_link_cacert": {
+		"de": "CA-Zertifikat"
+	},
+	"l10n_info_installcert2": {
+		"de": "und das"
+	},
+	"l10n_infotext_brows_csr_ong": {
+		"de": "<br \/><br \/>Bitte schlie\u00dfen Sie das Fenster nicht und warten Sie, bis die Bearbeitung beendet ist. Das wird, abh\u00e4ngig von der Last, ungef\u00e4hr <b>2 Minuten<\/b> dauern. Anschlie\u00dfen installieren Sie bitte das Zertifikat.<br \/><br \/>Falls etwas schiefgeht, k\u00f6nnen Sie das Zertifikat sp\u00e4ter von \"Meine Zertifikate\" aus installieren."
+	},
+	"l10n_aup_title": {
+		"de": "Nutzungsbestimmungen (AUP)"
+	},
+	"l10n_aup_agreement": {
+		"de": "Ich willige hiermit ein, dass ich den Verpflichtungen der beantragenden Partei, wie sie im CPS dargelegt sind, nachkommen werde."
+	},
+	"l10n_aup_info_short": {
+		"de": "mehr"
+	},
+	"l10n_aup_info_long1": {
+		"de": "Die AUP ist ein Abschnitt des"
+	},
+	"l10n_aup_info_long2": {
+		"de": "CPS"
+	},
+	"l10n_aup_info_long3": {
+		"de": "welcher eine Anzahl Anforderungen an den Nutzer stellt. Diese beinhalten:"
+	},
+	"l10n_aup_item1": {
+		"de": "Sch\u00fctzen Sie die Kontoinformationen Ihres Institutionskontos (Abschnitt 4.1.2)"
+	},
+	"l10n_aup_item2": {
+		"de": "Sch\u00fctzen Sie den privaten Schl\u00fcssel Ihres neuen Zertifikates. (4.1.2)"
+	},
+	"l10n_aup_item3": {
+		"de": "Widerrufen Sie Ihr Zertifikat, falls Ihr privater Schl\u00fcssel kompromittiert wird. (1.4.2)"
+	},
+	"l10n_aup_item4": {
+		"de": "Verwenden Sie die Zertifikate nicht auf einem System, auf dem Fehler kritische Sch\u00e4den verursachen k\u00f6nnen. (1.4.2)"
+	},
+	"l10n_aup_item5": {
+		"de": "Verwenden Sie die Zertifikate nicht in Transaktionen, die gegen das Gesetz versto\u00dfen. (1.4.2)"
+	},
+	"l10n_header_privacynotice": {
+		"de": "Datenschutzerkl\u00e4rung"
 	}
 }

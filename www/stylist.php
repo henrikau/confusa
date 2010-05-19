@@ -6,7 +6,7 @@ require_once 'MDB2Wrapper.php';
 require_once 'Input.php';
 require_once 'file_io.php';
 require_once 'file_upload.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'classTextile.php';
 require_once 'confusa_constants.php';
 
@@ -481,7 +481,7 @@ class CP_Stylist extends Content_Page
 			}
 		}
 
-		$main_tpl_path = Config::get_config('install_path') . 'lib/smarty/templates/';
+		$main_tpl_path = Config::get_config('install_path') . ConfusaConstants::$SMARTY_TEMPLATES;
 		$main_tpl_path .= 'email/notification.tpl';
 
 		try {
@@ -491,9 +491,9 @@ class CP_Stylist extends Content_Page
 			Framework::error_output("Could not open Confusa's default notification " .
 			                        "mail template! Server said " .
 			                        htmlentities($fexp->getMessage()) . "!");
-			Logger::log_event(LOG_WARN, "[nadm] Could not open Confusa's default " .
-			                            "notification mail template! Server said " .
-			                            $fexp->getMessage());
+			Logger::log_event(LOG_WARNING, "[nadm] Could not open Confusa's default " .
+					  "notification mail template! Server said " .
+					  $fexp->getMessage());
 		}
 	} /* end fetchNRENMailTpl */
 

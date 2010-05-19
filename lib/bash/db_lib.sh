@@ -10,6 +10,7 @@ if [ -f "/etc/confusa/confusa_config.inc.php" ]; then
 		| cut -d "'" -f 2`
 	pw=`grep "\\$dbpass=" $db_config_file | cut -d '=' -f 2 \
 		| cut -d "'" -f 2`
+	pw="-p${pw}"
 	host=`grep "\\$dbserver=" $db_config_file | cut -d '=' -f 2 \
 		| cut -d "'" -f 2`
 	db=`grep "\\$dbname=" $db_config_file | cut -d '=' -f 2 \

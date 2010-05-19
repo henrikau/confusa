@@ -1,7 +1,7 @@
 <?php
 require_once 'Input.php';
 require_once 'Output.php';
-require_once 'CriticalAttributeException.php';
+require_once 'CGE_CriticalAttributeException.php';
 require_once 'Permission.php';
 require_once 'CGE_AuthException.php';
 require_once 'NREN.php';
@@ -27,7 +27,7 @@ require_once 'Framework.php';
  * Thus, Person is little more than a convenient storage pool of related data.
  *
  * @Author	Henrik Austad <henrik.austad@uninett.no>
- * @license	http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
+ * @license	http://www.gnu.org/licenses/gpl-3.0.txt GPLv3
  * @since	File available since Confusa v0.4-rc0
  * @package	resources
  */
@@ -58,8 +58,12 @@ class Person{
     /* status variables (so we poll the subsystem as little as possible) */
     private $isAuthenticated;
 
+	/* cache the admin status upon each page rendering to reduce the number
+	 * of DB connections */
+	private $adminStatus;
+
     function __construct() {
-	    $this->clearAttributes();
+		$this->adminStatus = NULL;
     } /* end constructor */
 
     function __destruct() {
@@ -160,7 +164,7 @@ class Person{
 		$msg .= " This normally means that the Mapping could not";
 		$msg .= " determine the encoding of the attributes.<br /><br />";
 		$msg .= "Please make operational support aware of this issue.";
-		throw new CriticalAttributeException($msg);
+		throw new CGE_CriticalAttributeException($msg);
 	}
 	$this->eppn = $eppn;
     }
@@ -796,20 +800,38 @@ class Person{
      */
     private function getAdminStatus()
     {
+		if (isset($this->adminStatus)) {
+			return $this->adminStatus;
+		}
+
 	    $adminRes = NORMAL_USER;
 	    if (!$this->isAuth()) {
+			$this->adminStatus = NORMAL_USER;
 		    return NORMAL_USER;
 	    }
 
 	    /* if the database is riddled with errors, do not run through the
 	     * test once more, just bail */
 	    if ($this->adminDBError) {
+			$this->adminStatus = NORMAL_USER;
 		    return NORMAL_USER;
 	    }
 	    require_once 'MDB2Wrapper.php';
 	    $errorCode = PW::create(8);
 
-	    $res	= MDB2Wrapper::execute("SELECT * FROM admins WHERE admin=? AND nren=?", array('text', 'text'), array($this->eppn, $this->nren->getID()));
+	    $query = "SELECT * FROM admins WHERE admin=:admin AND nren=:nren_id AND ";
+	    $query .= "((admin_level='2' AND (idp_url='' OR ISNULL(idp_url) OR idp_url=:idp_url)) OR ";
+	    $query .= "((admin_level='1' OR admin_level='0') AND subscriber=:subscriber_id))";
+	    $params = array();
+	    $params['admin'] = $this->eppn;
+	    $params['nren_id'] = $this->nren->getID();
+	    $params['idp_url'] = $this->nren->getIdP();
+	    $params['subscriber_id'] = -1;
+	    if (!is_null($this->getSubscriber())) {
+		    $params['subscriber_id'] = $this->getSubscriber()->getDBID();
+	    }
+
+	    $res	= MDB2Wrapper::execute($query, null, $params);
 	    $size	= count($res);
 	    if ($size == 1) {
 		    $adminRes = $res[0]['admin_level'];
@@ -837,6 +859,7 @@ class Person{
 			    }
 		    }
 	    }
+		$this->adminStatus = $adminRes;
 	    return $adminRes;
     } /*  end getAdminStatus() */
 

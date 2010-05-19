@@ -6,7 +6,7 @@ require_once 'MDB2Wrapper.php';
  * Stateful class for a subscriber.
  *
  * @author	Henrik Austad <henrik.austad@uninett.no>
- * @license	http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
+ * @license	http://www.gnu.org/licenses/gpl-3.0.txt GPLv3
  * @since	File available since Confusa v0.4-rc0
  * @package	resources
  */
@@ -208,13 +208,13 @@ class Subscriber
 					"there are uncommited messages in Subscriber";
 			}
 		}
-		$query = "SELECT * FROM subscribers WHERE name = ? AND nren_id = ?";
+		$query = "SELECT * FROM subscribers WHERE name=:subscriber_name AND nren_id=:nren_id";
+		$data = array();
+		$data['subscriber_name'] = $this->idp_name;
+		$data['nren_id'] = $this->nren->getID();
 		try {
-			$res = MDB2Wrapper::execute($query,
-						    array('text', 'text'),
-						    array($this->idp_name, $this->nren->getID()));
+			$res = MDB2Wrapper::execute($query, null, $data);
 			if (count($res) != 1) {
-				/* Could not find the subscriber. Aborting. */
 				return false;
 			}
 		} catch (DBStatementException $dbse) {
@@ -773,6 +773,8 @@ class Subscriber
 	 * should remain unaware of Framework and thus Framework::error_output and
 	 * just rethrowing a new exception does not make sense, does it).
 	 *
+	 * @param string $eppn The map-key for the unique identifiers of persons
+	 *                     that log on
 	 * @param string $cn The map-key for the common-name of persons that log on
 	 * @param string $mail The map-key for the mail address of persons that log
 	 *                     on
@@ -784,14 +786,14 @@ class Subscriber
 	 * @throws DBStatementException If something goes wrong in contacting the DB,
 	 *                              probably due to a configuration error
 	 */
-	public function saveMap($cn, $mail)
+	public function saveMap($eppn, $cn, $mail)
 	{
 		$doUpdate = false;
 		$nrenMap = $this->nren->getMap();
 		$nrenID = $this->nren->getID();
 
 		if ($this->hasMap) {
-			if (($cn != $this->map['cn']) ||
+			if ( ($cn != $this->map['cn']) ||
 			     ($mail != $this->map['mail'])) {
 				$doUpdate = true;
 				$statement = "UPDATE attribute_mapping " .
@@ -806,7 +808,7 @@ class Subscriber
 			$statement .= "(nren_id, subscriber_id, eppn, epodn, cn, mail, entitlement) ";
 			$statement .= "VALUES(?,?,?,?,?,?,?)";
 			$types = array('text', 'text', 'text', 'text', 'text', 'text');
-			$data = array($nrenID, $this->db_id, $nrenMap['eppn'],
+			$data = array($nrenID, $this->db_id, $eppn,
 			              $nrenMap['epodn'], $cn, $mail, $nrenMap['entitlement']);
 		}
 

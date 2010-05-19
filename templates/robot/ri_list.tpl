@@ -11,36 +11,45 @@
 <hr style="width: 90%;"/>
 {if $robotCerts}
 <table>
+  <tr>
+    <td></td>
+    <td></td>
+    <td style="width: 30px;"></td>
+    <td></td>
+    <td></td>
+  </tr>
 {foreach from=$robotCerts item=element}
   <tr>
-    <td><div class="spacer"></div></td>
     <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
+
     <td valign="top">
-      <a href="?robot_action=delete&serial={$element->serial()}">
-	<img src="https://slcstest.uninett.no/silk_icons/delete.png"/
-	alt="Delete" title="{$l10n_title_deleterc}" class="url">
+      <a href="?robot_action=delete&amp;serial={$element->serial()}">
+	<img src="https://slcstest.uninett.no/silk_icons/delete.png"
+	     alt="Delete"
+	     title="{$l10n_title_deleterc}"
+	     class="url" />
 	{$l10n_label_deleterc}
-    </a>
+      </a>
     </td>
+
+    <td style="width: 20px;"></td>
+
     <td>
-    </td>
-    <td>
-      <a href="?robot_action=info&serial={$element->serial()}">
+      <a href="?robot_action=info&amp;serial={$element->serial()}">
 	<img src="https://slcstest.uninett.no/silk_icons/information.png"
-	alt="Info" title="{$l10n_title_inforc}" class="url"/>
+	     alt="Info"
+	     title="{$l10n_title_inforc}"
+	     class="url" />
 	{$l10n_label_inforc}
-    </a>
+      </a>
     </td>
+
   </tr>
+
   <tr>
-    <td width="20px"></td>
+    <td></td>
     <td>{$l10n_label_serialnumber}</td>
-    <td width="30px"></td>
+    <td></td>
     <td>{$element->serial()|escape}</td>
   </tr>
   <tr>
@@ -52,7 +61,7 @@
   <tr>
     <td></td>
     <td>{$l10n_label_uploadeddate}</td>
-    <td width="30px"></td>
+    <td></td>
     <td>{$element->madeAvailable()|escape}</td>
   </tr>
   <tr>
@@ -63,43 +72,47 @@
   </tr>
 
   {if $cert_info}
+  { if $element->serial() eq $cert_info_serial}
   <tr>
-    <td>
-      <div class="spacer"></div>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td><br />
+      <b>{$l10n_label_extendedinfo}</b><br />
     </td>
   </tr>
 
-  { if $element->serial() eq $cert_info_serial}
-  <tr><td></td>
+  <tr>
     <td></td>
-    <td></td>
-    <td><b>{$l10n_label_extendedinfo}</b><br /></td>
-  </tr>
-  <tr><td></td>
     <td>{$l10n_label_fingerprint}</td>
     <td></td>
     <td>{$element->fingerprint()|escape}</td>
   </tr>
-  <tr><td></td>
-    <td>{$l10n_label_comment}</td><td></td>
-    <td>{$element->getComment()|escape}
-    </td>
+
+  <tr>
+    <td></td>
+    <td>{$l10n_label_dn}</td>
+    <td></td>
+    <td>{$element->getDN()|escape}</td>
   </tr>
+
+  <tr>
+    <td></td>
+    <td>{$l10n_label_comment}</td>
+    <td></td>
+    <td>{$element->getComment()|escape}</td>
+  </tr>
+
   {if $element->getLastWarningSent()}
-  <tr><td></td>
+  <tr>
+    <td></td>
     <td>{$l10n_label_warnsent}</td>
     <td></td>
-    <td>{$element->getLastWarningSent()|escape}
-    </td>
+    <td>{$element->getLastWarningSent()|escape}</td>
   </tr>
-  {/if}
-  <tr><td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  {/if}
-  {/if}
+  {/if} {* getLastWarningSent *}
+  {/if} {* Extended info *}
+  {/if} {* certi info * }
   {/foreach}
 </table>
 {else}

@@ -196,7 +196,24 @@
 	</td>
       </tr>
       <tr><td colspan="3"><div class="spacer"></div></td></tr>
-
+	<tr>
+		<td align="right">
+			{$l10n_label_reauthtimeout}
+		</td>
+		<td></td>
+		<td>
+			{if isset($nrenInfo.reauth_timeout)}
+				<input style="width: 3em; text-align: right" type="text" name="reauth_timeout" value="{$nrenInfo.reauth_timeout}" />
+			{else}
+				<input style="width: 3em" type="text" name="reauth_timeout" value="" />
+			{/if}
+		</td>
+	<tr>
+		<td></td>
+		<td></td>
+		<td><span style="font-size: 0.8em; font-style: italic">{$l10n_infotext_reauthtimeout}</span></td>
+	</tr>
+	<tr><td colspan="3"><div class="spacer"></div></td></tr>
       <tr>
 	<td align="right">
 	  <input type="reset"

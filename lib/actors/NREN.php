@@ -1,7 +1,7 @@
 <?php
 require_once 'confusa_include.php';
 require_once 'MDB2Wrapper.php';
-require_once 'CriticalAttributeException.php';
+require_once 'CGE_CriticalAttributeException.php';
 require_once 'classTextile.php';
 
 /**
@@ -12,7 +12,7 @@ require_once 'classTextile.php';
  * per-NREN information¸ and also for storing this information.
  *
  * @author	Henrik Austad <henrik.austad@uninett.no>
- * @license	http://www.gnu.org/licenses/lgpl-3.0.txt LGPLv3
+ * @license	http://www.gnu.org/licenses/gpl-3.0.txt GPLv3
  * @since	File available since Confusa v0.4-rc0
  * @package	resources
  */
@@ -56,6 +56,16 @@ class NREN
 	{
 		return $this->data['name'];
 	}
+
+	/**
+	 * Get the IdP from which the NREN was constructed.
+	 * @since v0.6-rc0
+	 * @return String the URL of the IdP from which this NREN was constructed
+	 */
+	public function getIdP()
+	{
+		return $this->idp_name;
+	} /* end getIdP() */
 
 	/**
 	 * isValid() returns a flag indicating whether or not the current NREN
@@ -228,6 +238,22 @@ class NREN
 			return false;
 		}
 	}
+
+	/**
+	 * getReauthTimeout()
+	 *
+	 * @param  void
+	 * @return integer the timeout before the portal will force reauth
+	 *                 upon sensitive actions
+	 */
+	public function getReauthTimeout()
+	{
+		if (isset($this->data) && isset($this->data['reauth_timeout'])) {
+			return $this->data['reauth_timeout'];
+		} else {
+			ConfusaConstants::$DEFAULT_REAUTH_TIMEOUT;
+		}
+	} /* end getReauthTimeout() */
 
 	/**
 	 * getCustomPortalTitle()
@@ -449,6 +475,23 @@ class NREN
 		}
 	}
 
+	/**
+	 * setReauthTimeout() set the NREN's reauth-timeout for sensitive actions
+	 *
+	 * @param	integer $reauth_timeout
+	 * @return	void
+	 * @access	public
+	 */
+	public function setReauthTimeout($reauth_timeout)
+	{
+		if (isset($reauth_timeout)) {
+			if ($this->data['reauth_timeout'] != $reauth_timeout) {
+				$this->data['reauth_timeout'] = $reauth_timeout;
+				$this->pendingChanges = true;
+			}
+		}
+	} /* end setReauthTimeout() */
+
 	/* setCertPhone()
 	 *
 	 * @see setCertEmail
@@ -579,10 +622,10 @@ class NREN
 		if ($this->pendingChanges) {
 			$query  = "UPDATE nrens SET contact_email=?, contact_phone=?, ";
 			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=?, cert_validity=?,";
-			$query .= " show_portal_title=?, portal_title=?, wayf_url=? ";
+			$query .= " show_portal_title=?, portal_title=?, wayf_url=?, reauth_timeout=? ";
 			$query .= "WHERE nren_id=?";
 			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text',
-			                'text', 'text', 'text', 'text');
+			                'text', 'text', 'text', 'text', 'text');
 			$data	= array($this->data['contact_email'],
 					$this->data['contact_phone'],
 					$this->data['cert_phone'],
@@ -594,6 +637,7 @@ class NREN
 					$this->data['show_portal_title'],
 					$this->data['portal_title'],
 					$this->data['wayf_url'],
+					$this->data['reauth_timeout'],
 					$this->getID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);
@@ -666,7 +710,7 @@ class NREN
 		$query .= "		n.cert_phone,		n.lang,		n.url, ";
 		$query .= "		n.country,		idp.idp_url as idp_url, ";
 		$query .= "		n.enable_email,	n.cert_validity, ";
-		$query .= "		n.show_portal_title, n.portal_title, n.wayf_url ";
+		$query .= "		n.show_portal_title, n.portal_title, n.wayf_url, n.reauth_timeout ";
 		$query .= "FROM idp_map idp LEFT JOIN ";
 		$query .= "nrens n on idp.nren_id = n.nren_id WHERE idp.idp_url=?";
 		try {
@@ -676,6 +720,8 @@ class NREN
 				if (Config::get_config('debug')) {
 					echo "no IdP with name (".$this->idp_name.") found in db!<br />\n";
 				}
+				Logger::log_event(LOG_NOTICE, "Could not find NREN-map for idp " . $this->idp_name .
+						  ". Is the NREN bootstrapped properly?");
 				return false;
 			case 1:
 				/* decorate NREN */
@@ -899,31 +945,25 @@ class NREN
 	 */
 	public function getIdPList()
 	{
-		$query = "SELECT m.idp_url FROM idp_map m " .
-		         "WHERE m.nren_id = ?";
-
+		$query = "SELECT m.idp_url FROM idp_map m WHERE m.nren_id = ?";
 		try {
 			$res = MDB2Wrapper::execute($query,
 			                            array('text'),
 			                            array($this->getID()));
+			if (count($res) > 0) {
+				$idpList = array();
+				foreach($res as $row) {
+					$idpList[] = $row['idp_url'];
+				}
+				return $idpList;
+			}
 		} catch (ConfusaGenException $cge) {
 			Logger::log_event(LOG_NOTICE, __FILE__ . " " . __LINE__ .  ": Could not " .
 			                  "get the IdP list for NREN with ID " .
 			                  $this->getID() . ". All IdP scoping will fail!");
 		}
-
-		if (count($res) > 0) {
-			$idpList = array();
-
-			foreach($res as $row) {
-				$idpList[] = $row['idp_url'];
-			}
-		} else {
-			return null;
-		}
-
-		return $idpList;
-	}
+		return null;
+	} /* end getIdPList() */
 
 	/**
 	 * replaceTags() take the texdt and replace known tags with
@@ -981,52 +1021,5 @@ class NREN
 
 		return $text;
 	}
-
-	/**
-	 * Construct a NREN object from an URL. Sometimes a NREN object is needed
-	 * without the user being authenticated and a decorated person object
-	 * being available. Since NREN admins can define a custom-URL this function
-	 * tries to construct the NREN from such an URL.
-	 *
-	 * @param nrenURL string the URL that was configured for the NREN
-	 * @return NREN|null
-	 * @since v0.6-rc0
-	 */
-	static function getNRENByURL($nrenURL)
-	{
-		$query  = "SELECT n.nren_id,      n.name,           n.login_account, ";
-		$query .= "       n.contact_email,n.contact_phone,  n.cert_email, ";
-		$query .= "       n.cert_phone,   n.lang,           n.url, ";
-		$query .= "       n.country,      n.enable_email,   n.cert_validity, ";
-		$query .= "       n.show_portal_title,              n.portal_title, ";
-		$query .= "       n.wayf_url ";
-		$query .= "FROM nrens n WHERE n.url = ?";
-
-		try {
-			$res = MDB2Wrapper::execute($query,
-			                            array('text'),
-			                            array($nrenURL));
-		} catch (ConfusaGenException $cge) {
-			Framework::error_output("Cannot connect to DB. Server said:<br />"
-			                        . $cge->getMessage());
-			Logger::log_event(LOG_ALERT, __FILE__ . ":" . __LINE__ .
-			                  " error with db-connect. " . $cge->getMessage());
-			return null;
-		}
-
-		if (count($res) > 0) {
-			$nren = new NREN(null);
-
-			foreach($res[0] as $k => $value) {
-				/* no sanitation needed since the data *comes* from the DB anyways */
-				$nren->data[$k] = $value;
-			}
-
-			return $nren;
-		} else {
-			return null;
-		}
-	} /* end getNRENByURL */
-
 } /* end class NREN */
 ?>

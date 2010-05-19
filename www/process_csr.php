@@ -3,7 +3,7 @@ require_once 'confusa_include.php';
 require_once 'Content_Page.php';
 require_once 'Framework.php';
 require_once 'MDB2Wrapper.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'csr_lib.php';
 require_once 'file_upload.php';
 require_once 'Config.php';
@@ -43,8 +43,9 @@ final class CP_ProcessCsr extends Content_Page
 		parent::pre_process($person);
 		$res = false;
 
+		$subscriber = $this->person->getSubscriber();
 		/* Test subscriber-status: */
-		if (!$this->person->getSubscriber()->isSubscribed()) {
+		if (empty($subscriber) || !$subscriber->isSubscribed()) {
 			return false;
 		}
 
@@ -132,7 +133,10 @@ final class CP_ProcessCsr extends Content_Page
 
 	public function process()
 	{
-		if (!$this->person->getSubscriber()->isSubscribed()) {
+
+		$subscriber = $this->person->getSubscriber();
+
+		if (empty($subscriber) || !$subscriber->isSubscribed()) {
 			$this->tpl->assign('not_subscribed_header',
 					   $this->translateTag('l10n_not_sub_header', 'messages'));
 			$this->tpl->assign('not_subscribed_1',
@@ -142,6 +146,13 @@ final class CP_ProcessCsr extends Content_Page
 			$this->tpl->assign('content', $this->tpl->fetch('errors/unsubscribed.tpl'));
 			return;
 		}
+
+		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+			$this->tpl->assign('cps', ConfusaConstants::$LINK_ESCIENCE_CPS);
+		} else {
+			$this->tpl->assign('cps', ConfusaConstants::$LINK_PERSONAL_CPS);
+		}
+
 		$this->processDBCsr();
 		/* Set default-values to false to avoid warnings */
 		$this->tpl->assign('approve_csr', false);
@@ -149,11 +160,6 @@ final class CP_ProcessCsr extends Content_Page
 		$this->tpl->assign('upload_csr',  false);
 		$this->tpl->assign('paste_csr',   false);
 		$this->tpl->assign('aup_box_checked', $this->aup_set);
-		$this->tpl->assign('l10n_pcsr_email_table_summary',
-				   $this->translateTag('l10n_pcsr_email_table_summary', 'processcsr'));
-
-		$this->tpl->assign('l10n_privacy_notice_header',
-				   $this->translateTag('l10n_privacy_notice_header', 'messages'));
 		$this->tpl->assign('privacy_notice_text', $this->person->getNREN()->getPrivacyNotice($this->person));
 		$this->tpl->assign('finalDN',   $this->ca->getFullDN());
 
@@ -247,15 +253,6 @@ final class CP_ProcessCsr extends Content_Page
 		/* showing the normal UI */
 		$user_cert_enabled = $this->person->testEntitlementAttribute(Config::get_config('entitlement_user'));
 		$this->tpl->assign('user_cert_enabled', $user_cert_enabled);
-		/* get the UAP-tags */
-		$this->tpl->assign('csr_aup_title',
-				   $this->translateMessageTag('csr_aup_title'));
-		$this->tpl->assign('csr_aup_agreement',
-				   $this->translateMessageTag('csr_aup_agreement'));
-		$this->tpl->assign('csr_aup_info_short',
-				   $this->translateMessageTag('csr_aup_info_short'));
-		$this->tpl->assign('csr_aup_info_long',
-				   $this->translateMessageTag('csr_aup_info_long'));
 
 		/* decide which page to view */
 		if (array_key_exists('show', $_GET) &&  !is_null($_GET['show'])) {
@@ -333,9 +330,10 @@ final class CP_ProcessCsr extends Content_Page
 						    array('text', 'text', 'text', 'text'),
 						    array($csr, $ip, $this->person->getX509ValidCN(), $authvar));
 
-				$logmsg  = __FILE__ . " Inserted new CSR from $ip (" . $this->person->getX509ValidCN();
-				$logmsg .=") with hash " . pubkey_hash($csr, true);
-				Logger::log_event(LOG_INFO, $logmsg);
+				$logmsg  = "Inserted new CSR from $ip (" . $this->person->getX509ValidCN();
+				$logmsg .= ") with hash " . pubkey_hash($csr, true);
+				Logger::logEvent(LOG_INFO, "Process_CSR", "processUploadedCSR()",
+				                 $logmsg);
 			}
 		}
 
@@ -374,9 +372,10 @@ final class CP_ProcessCsr extends Content_Page
 			} catch (ConfusaGenException $cge) {
 				$msg = "Too menu returns received. This can indicate database inconsistency.";
 				Framework::error_output($msg);
-				Logger::log_event(LOG_ALERT, "Several identical CSRs (" .
-						  $auth_token . ") exists in the database for user " .
-						  $this->person->getX509ValidCN());
+				Logger::logEvent(LOG_ALERT, "Process_CSR", "processDBCSR()",
+				                 "Several identical CSRs (" .
+				                 $auth_token . ") exists in the database for user " .
+				                 $this->person->getX509ValidCN(), __LINE__);
 				return;
 			}
 		}
@@ -414,9 +413,12 @@ final class CP_ProcessCsr extends Content_Page
 		try  {
 			$csr = get_csr_from_db($this->person, $authToken);
 		} catch (ConfusaGenException $e) {
-			Framework::error_output("Too many hits. Database incosistency.");
-			Logger::log_event(LOG_ALERT, $this->person->getX509ValidCN() .
-					  " tried to find CSR with key $authToken which resulted in multiple hits");
+			$errorTag = PW::create();
+			Framework::error_output("[$errorTag] Too many hits. Database incosistency.");
+			Logger::logEvent(LOG_ALERT, "Process_CSR", "approveCSR($authToken)",
+			                 $this->person->getX509ValidCN() .
+			                 " tried to find CSR with key $authToken which resulted in multiple hits",
+			                 __LINE__, $errorTag);
 			return false;
 		} catch (CSRNotFoundException $csrnfe) {
 			Framework::error_output("CSR not found, are you sure this is your CSR?\n");
@@ -424,10 +426,12 @@ final class CP_ProcessCsr extends Content_Page
 		}
 
 		if (!isset($csr)) {
-			Framework::error_output("Did not find CSR with auth_token " . htmlentities($auth_token));
+			$errorTag = PW::create();
+			Framework::error_output("[$errorTag] Did not find CSR with auth_token " . htmlentities($auth_token));
 			$msg  = "User " . $this->person->getEPPN() . " ";
 			$msg .= "tried to delete CSR with auth_token " . $authToken . " but was unsuccessful";
-			Logger::log_event(LOG_NOTICE, $msg);
+			Logger::logEvent(LOG_NOTICE, "Process_CSR", "approveCSR($authToken)",
+			                 $msg, __LINE__, $errorTag);
 			return false;
 		}
 

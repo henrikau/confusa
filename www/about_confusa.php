@@ -20,11 +20,7 @@ class CP_About_Confusa extends Content_Page
 		 */
 		if ($this->person->isAdmin()) {
 			$this->assignVersionVariables();
-
-			if (Config::get_config('debug') === true) {
-				$this->tpl->assign('debug', true);
-				$this->assignDebugVariables();
-			}
+			$this->assignSystemVariables();
 		}
 
 		$operator_logo = Config::get_config('operator_logo');
@@ -71,14 +67,14 @@ class CP_About_Confusa extends Content_Page
 	}
 
 	/**
-	 * Assign information that can be helpful for debugging Confusa to the
+	 * Assign information about the system this Confusa instance runs on to the
 	 * about template. This might be the PHP version and other information.
 	 */
-	private function assignDebugVariables()
+	private function assignSystemVariables()
 	{
 		$phpVersion = phpversion();
 		$this->tpl->assign('dPHPVersion', $phpVersion);
-		$hostname = $_SERVER['SERVER_NAME'];
+		$hostname = php_uname('n');
 		$this->tpl->assign('dHostname', $hostname);
 
 		$mysqlVersion = mysql_get_server_info();

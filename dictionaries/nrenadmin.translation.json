@@ -235,5 +235,20 @@
 	},
 	"l10n_confirm_delete_confirm": {
 		"de": "Sind Sie sicher?"
+	},
+	"l10n_label_undefined": {
+		"de": "nicht festgelegt!"
+	},
+	"l10n_heading_attruid": {
+		"de": "Attribut f\u00fcr den eindeutigen Bezeichner"
+	},
+	"l10n_infotext_attruid": {
+		"de": "Das Attribut, das verwendet wird, um den eindeutigen Bezeichner f\u00fcr diesen Abonnenten zu \u00fcbermitteln. Ver\u00e4ndern Sie diesen Wert nur, falls der Abonnent einen anderen Attributsschl\u00fcssel f\u00fcr den eindeutigen Bezeichner verwendet als das NREN.<br \/><br \/>Beispiel. Die NREN-Einstellung ist ePPN, aber der Abonnent w\u00fcrde seine Nutzer gerne mittels eduPersonTargetedID identifizieren."
+	},
+	"l10n_intotext_attruid_short": {
+		"de": "Das Attribut, das verwendet wird, um Nutzer beim Abonnenten zu identifizieren. Diese Information wird sowohl Teil der Zertifikats-ID sein, als auch helfen, Administratoren zu identifizieren."
+	},
+	"l10n_label_uid": {
+		"de": "Eindeutiger Bezeichner:"
 	}
 }

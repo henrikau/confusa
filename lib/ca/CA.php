@@ -6,7 +6,7 @@
    * Author: Henrik Austad <henrik.austad@uninett.no>
    */
 require_once 'MDB2Wrapper.php';
-require_once 'logger.php';
+require_once 'Logger.php';
 require_once 'csr_lib.php';
 require_once 'Config.php';
 require_once 'MailManager.php';
@@ -285,7 +285,7 @@ abstract class CA
 			$msg = $tpl->fetch($custom_template);
 		} else {
 			$default_template = Config::get_config('install_path') .
-				'/lib/smarty/templates/email/notification.tpl';
+				ConfusaConstants::$SMARTY_TEMPLATES . 'email/notification.tpl';
 			$msg = $tpl->fetch($default_template);
 		}
 	}

@@ -60,7 +60,7 @@
 		"en":	"Here you can define contact information and configure settings for your NREN. Define an e-mail address that is tied to one or more persons that will react if they receive notifications from the portal. This address may be used in case of critical errors or to notify you of mass-revocation of certificates."
 	},
 	"l10n_label_encertmail": {
-		"en":	"Enable cert. email:"
+		"en":	"Enable email in certificates:"
 	},
 
 	"l10n_infotext_nren_settings_summary": {
@@ -99,5 +99,11 @@
 	},
 	"l10n_infotext_wayf_url": {
 		"en":	"If your NREN has a WAYF service, use this URL to point to it. Then your own, branded IdP discovery will be shown to your users."
+	},
+	"l10n_label_reauthtimeout": {
+		"en":	"Reauth. Timeout:"
+	},
+	"l10n_infotext_reauthtimeout": {
+		"en":	"The timeout in minutes after which the user will have to reauthenticate for performing a sensitive action (requesting certs or revoking them)."
 	}
 }

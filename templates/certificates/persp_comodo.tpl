@@ -16,6 +16,7 @@
 {/literal}
 {/if}
 
+{if isset($certList)}
 <table style="width: 100%; table-layout: fixed; padding: 1em 0em 1em
 		1em; margin: 0em 0em 0em 0em" >
 		{foreach from=$certList item=cert}
@@ -167,3 +168,4 @@
 						 style="border: none" /> </a>
 	{/if}
 </div>
+{/if}

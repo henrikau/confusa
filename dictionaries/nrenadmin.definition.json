@@ -129,13 +129,16 @@
 		"en":	"The attribute-name of the subscriber, is the name the way it is exported from the IdP."
 	},
 	"l10n_infotext_attnm2": {
-		"en":	"Normally, this one one of the following attributes:"
+		"en":	"For your NREN this is the value of the following attribute (configured <a href=\"attributes.php\">here</a>):"
 	},
 	"l10n_infotext_attnm3": {
-		"en":	"The important element to remember is that this must be the <b>unique</b> identifier for the subscriber organization exported by the IdP."
+		"en":	"Enter the value that the IdP will assign to this attribute for the subscriber you add."
+	},
+	"l10n_label_undefined": {
+		"en":	"undefined!"
 	},
 	"l10n_label_attnm": {
-		"en":	"Attribute-name:"
+		"en":	"Attribute-value:"
 	},
 	"l10n_label_forinstance": {
 		"en":	"e.g.:"
@@ -238,5 +241,17 @@
 	},
 	"l10n_suc_deletesubs4": {
 		"en":	"certificates were also revoked."
+	},
+	"l10n_heading_attruid": {
+		"en":	"Attribute for the unique identifier"
+	},
+	"l10n_infotext_attruid": {
+		"en":	"The attribute that is used for transporting the unique identifier for that subscriber. Change this value only if the subscriber requires a different attribute key for the unique identifier than the NREN.<br /><br />Example: The NREN setting is ePPN but the subscriber wishes to identify its users by eduPersonTargetedID."
+	},
+	"l10n_intotext_attruid_short": {
+		"en":	"The attribute that is used for identifying users at that subscriber. This information will both be part of the certificate-DN as well as serve for identifying administrators."
+	},
+	"l10n_label_uid": {
+		"en":	"Unique identifier:"
 	}
 }

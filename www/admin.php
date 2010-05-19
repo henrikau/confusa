@@ -4,7 +4,7 @@ require_once 'Content_Page.php';
 include_once 'Framework.php';
 include_once 'MDB2Wrapper.php';
 include_once 'db_query.php';
-include_once 'logger.php';
+include_once 'Logger.php';
 include_once 'Input.php';
 
 
@@ -45,7 +45,8 @@ class CP_Admin extends Content_Page
 				case 'downgrade_self':
 					if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_admin'))) {
 						$this->downgradeNRENAdmin($this->person->getEPPN(),
-									  $this->person->getSubscriber()->getDBID());
+									  $this->person->getSubscriber()->getDBID(),
+									  $this->person->getNREN()->getID());
 					}
 					break;
 				case 'upgrade_subs_admin':
@@ -54,7 +55,14 @@ class CP_Admin extends Content_Page
 					break;
 				case 'add_nren_admin':
 					$admin = Input::sanitizeEPPN($_POST['nren_admin']);
-					$this->addNRENAdmin($admin);
+					$idp = Input::sanitizeIdPName($_POST['idp']);
+
+					if ($idp === '-') {
+						$this->addNRENAdmin($admin, NULL);
+					} else {
+						$this->addNRENAdmin($admin, $idp);
+					}
+
 					break;
 				case 'delete_subs_admin':
 					$admin = Input::sanitizeEPPN($_POST['subs_admin']);
@@ -148,7 +156,7 @@ class CP_Admin extends Content_Page
 	private function getNRENAdmins($nren)
 	{
 
-		$query  = "SELECT admin, admin_name, admin_email ";
+		$query  = "SELECT admin, admin_name, admin_email, idp_url ";
 		$query .= "FROM admins WHERE admin_level='2' AND nren=?";
 
 		$nrenID = $nren->getID();
@@ -175,7 +183,8 @@ class CP_Admin extends Content_Page
 			foreach($res as $row) {
 				$admins[] =  array('eppn' => $row['admin'],
 				                   'name' => $row['admin_name'],
-				                   'email' => $row['admin_email']);
+				                   'email' => $row['admin_email'],
+				                   'idp_url' => $row['idp_url']);
 			}
 		}
 
@@ -236,10 +245,10 @@ class CP_Admin extends Content_Page
 	/**
 	 * addNRENAdmin() add a new NREN administrator to the admin-table.
 	 *
-	 * @param String The unique name of the new admin (typically ePPN).
-	 * @param String The name of the NREN for the new administrator.
+	 * @param $admin string The unique name of the new admin (typically ePPN).
+	 * @param $idp string The IdP that the new admin should be associatied with
 	 */
-	private function addNRENAdmin($admin) {
+	private function addNRENAdmin($admin, $idp) {
 		if (!isset($admin)) {
 			Framework::error_output("Need to have the name of the new admin in order to add a new NREN-admin!");
 			return;
@@ -262,9 +271,9 @@ class CP_Admin extends Content_Page
 				return;
 			}
 
-			MDB2Wrapper::update("INSERT INTO admins (admin, admin_level, last_mode, nren) VALUES(?,?,?,?)",
-					    array('text', 'text', 'text', 'Integer'),
-					    array($admin, '2', '0', $nrenID));
+			MDB2Wrapper::update("INSERT INTO admins (admin, admin_level, last_mode, nren, idp_url) VALUES(?,?,?,?,?)",
+					    array('text', 'text', 'text', 'Integer', 'text'),
+					    array($admin, '2', '0', $nrenID, $idp));
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem with statement, probably server-issues. Server said " .
 			                        htmlentities($dbse->getMessage()));
@@ -326,8 +335,13 @@ class CP_Admin extends Content_Page
 				$this->tpl->assign('has_adm_entl',false);
 			}
 
+			$nren = $this->person->getNREN();
+			$idpList = $nren->getIdPList();
+			/* append an empty entry to the beginning */
+			$idpList = array_merge((array)'-', $idpList);
+			$this->tpl->assign('idps', $idpList);
 			$this->tpl->assign('nren_admins', $admins);
-			$this->tpl->assign('nren', $this->person->getNREN());
+			$this->tpl->assign('nren', $nren);
 			$this->tpl->assign('subscribers', $subscribers);
 	}
 
@@ -376,7 +390,7 @@ class CP_Admin extends Content_Page
 	 * This function will take the $admin and add it as a new
 	 * subscriber-admin. Given that the user has the admin-entitlement set.
 	 *
-	 * @param String admin	The ePPN of the admin to add
+	 * @param String admin	The unique identifier (e.g. ePPN) of the admin to add
 	 * @param String level	Subscriber-admin level (either subscribera-admin
 	 *			or sub-admin).
 	 * @param subscriberID integer The ID of the subscriber as exported by
@@ -482,38 +496,42 @@ class CP_Admin extends Content_Page
 	/**
 	 * downgradeNRENAdmin() Downgrade a NREN admin to the status of a subscriber admin
 	 *
-	 * @param $admin	The admin that should be downgraded to subscriber level
-	 * @param $subscriberID integer	The ID of the subscriber of which the admin is to become
-	 *			admin.
-	 *
+	 * @param  $admin_uid		String  The UID of the admin that should be downgraded.
+	 * @param  $subscriber_id	Int	ID of subscriber in the database.
+	 * @param  $nren_id		Int	ID of NREN in the database.
 	 * @return void
+	 * @access private
 	 */
-	private function downgradeNRENAdmin($admin, $subscriberID)
+	private function downgradeNRENAdmin($admin_uid, $subscriber_id, $nren_id)
 	{
-		$nren = $this->person->getNREN();
-		if (empty($subscriberID)) {
-			$msg  = "Tried to downgrade NREN admin " . htmlentities($admin) . " from NREN " .
-			        htmlentities($nren) . " to subscriber admin, ";
+		if (empty($subsriber_id)) {
+			$msg  = "Tried to downgrade NREN admin " . htmlentities($person_>getEPPN()) . " from NREN " .
+			        htmlentities($person->getNREN()->getName()) . " to subscriber admin, ";
 			$msg .= "but admin's subscriber affiliaton is not set. Cannot continue.";
 			Logger::log_event(LOG_NOTICE,$msg);
 			Framework::error_output($msg);
 		}
 
-		$query="UPDATE admins SET admin_level='1', subscriber=? WHERE admin=?";
-
 		try {
-			$res2 = MDB2Wrapper::update($query,
-										array('text','text'),
-										array($subscriberID, $admin));
+			$query  = "UPDATE admins SET admin_level='1', subscriber=:subscriber_id ";
+			$query .= "WHERE admin=:admin AND nren=:nren_id";
+			$data = array();
+			$data['subscriber_id']	= $subscriber_id;
+			$data['admin']	        = $admin_uid;
+			$data['nrend_id']	= $nren_id;
+			$res = MDB2Wrapper::update($query, null, $data);
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Problem updating your admin status. Server said: " . htmlentities($dbqe->getMessage()));
+			Framework::error_output("Problem updating your admin status. Server said: " .
+						htmlentities($dbqe->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
 							" of subscriber with ID $subscriberID");
 			return;
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Problem updating your admin status. Server said: " . htmlentities($dbse->getMessage()));
-			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
-							" of subscriber with ID $subscriberID");
+			Framework::error_output("Problem updating your admin status. Server said: " .
+						htmlentities($dbse->getMessage()));
+			Logger::log_event(LOG_NOTICE,
+					  "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
+					  " of subscriber with ID $subscriberID");
 			return;
 		}
 
@@ -567,7 +585,7 @@ class CP_Admin extends Content_Page
 	/**
 	 * ugradeSubscriberAdmin() Upgrade an admin from subscriber to NREN
 	 *
-	 * @param String admin the ePPN of the admin to upgrade
+	 * @param String admin the unique identifier (e.g. eppn) of the admin to upgrade
 	 *
 	 * @return void
 	 */
@@ -604,7 +622,7 @@ class CP_Admin extends Content_Page
 	/*
 	 * "Upgrade" a subscriber-sub-admin to a subscriber admin
 	 *
-	 * @param $admin The ePPN of the admin
+	 * @param $admin The unique identifier (e.g. eppn) of the admin
 	 * @param $subscriberID integer The ID of the subscriber within which everything happens
 	 */
 	private function upgradeSubscriberSubAdmin($admin, $subscriberID)

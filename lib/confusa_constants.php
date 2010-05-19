@@ -43,6 +43,9 @@ class ConfusaConstants {
 	/* certificate validity period in test mode */
 	public static $CAPI_TEST_VALID_DAYS = '14';
 
+	public static $LINK_PERSONAL_CPS = 'https://www.terena.org/activities/tcs/repository/cps-personal.pdf';
+	public static $LINK_ESCIENCE_CPS = 'https://www.terena.org/activities/tcs/repository/cps-personal-escience.pdf';
+
 	/* Limit the file endings that are going to be accepted.
 	 * There can be images with embedded comments. As the comments can
 	 * contain PHP code, allowing files with suffix .php is dangerous,
@@ -188,6 +191,8 @@ class ConfusaConstants {
 	 * users will be in UTC+1 */
 	public static $DEFAULT_TIMEZONE = 'Europe/Stockholm';
 
+	/* where the smarty templates are stored (relative to Confusa's root dir) */
+	public static $SMARTY_TEMPLATES = '/templates/';
 	/* where the compiled smarty classes get stored. Should be writable by
 	 * webserver user, hence it should not be in the normal directory tree */
 	public static $SMARTY_TEMPLATES_C = '/var/cache/confusa/templates_c';
@@ -226,6 +231,19 @@ class ConfusaConstants {
 	public static $EPPN_ATTRS = array('eduPersonPrincipalName',
 	                                  'urn:mace:dir:attribute-def:eduPersonPrincipalName',
 	                                  'urn:oid:1.3.6.1.4.1.5923.1.1.1.6');
-}
 
+	/* the default timeout in minutes upon which a user will be asked to reauth
+	 * for performing sensitive actions
+	 */
+	public static $DEFAULT_REAUTH_TIMEOUT = 10;
+
+	/* the endpoints of for requesting request tokens and requesting access
+	 * tokens in simplesamlphp. Those are included in the OAuth-API to be
+	 * able to offer a complete interface */
+	public static $OAUTH_REQUEST_ENDPOINT = 'modules/oauth/www/requestToken.php';
+	/* the attribute that is used as a helper attribute in OAuth to limit the
+	 * access token validity to the per-NREN-configured reauth-period in
+	 * Confusa */
+	public static $OAUTH_VALIDITY_ATTRIBUTE = 'conf_accTokValidity';
+}
 ?>

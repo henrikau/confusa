@@ -23,12 +23,10 @@
 
 <div class="spacer"></div>
 
-{if isset($debug) && $debug === true}
-{* debug information *}
 <table style="border-style: dashed; border-width: 0.1em">
 <thead>
 <tr>
-<th style="width: 15em">Debug information</th>
+<th style="width: 15em">System information</th>
 </tr>
 </thead>
 <tbody>
@@ -50,7 +48,6 @@
 </tr>
 </tbody>
 </table>
-{/if}
 </div>
 
 <h4>{$l10n_heading_credits}</h4>

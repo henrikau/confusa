@@ -91,5 +91,17 @@
 	},
 	"l10n_infotext_certvalidity": {
 		"de": "Die Anzahl an Tagen, die Zertifikate, die von Ihren Anwendern beantragt werden, g\u00fcltig sein werden."
+	},
+	"l10n_label_wayfurl": {
+		"de": "WAYF-URL"
+	},
+	"l10n_infotext_wayf_url": {
+		"de": "Falls Ihr NREN \u00fcber einen WAYF-Dienst verf\u00fcgt, verwenden Sie diese URL, um dorthin zu verweisen. In dem Fall wird Ihre eigene, angepasste IdP-Erkennungsseite dem Nutzer gezeigt."
+	},
+	"l10n_label_reauthtimeout": {
+		"de": "Reauth. Timeout:"
+	},
+	"l10n_infotext_reauthtimeout": {
+		"de": "Der Timeout in Minuten, nach welchem der Nutzer sich neu authentifizieren muss, um eine kritische Aktion durchzuf\u00fchren (Zertifikate beantragen oder widerrufen)."
 	}
 }
