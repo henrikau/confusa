@@ -821,7 +821,7 @@ class Person{
 
 	    $query = "SELECT * FROM admins WHERE admin=:admin AND nren=:nren_id AND ";
 	    $query .= "((admin_level='2' AND (idp_url='' OR ISNULL(idp_url) OR idp_url=:idp_url)) OR ";
-	    $query .= "(admin_level='1' AND subscriber=:subscriber_id))";
+	    $query .= "((admin_level='1' OR admin_level='0') AND subscriber=:subscriber_id))";
 	    $params = array();
 	    $params['admin'] = $this->eppn;
 	    $params['nren_id'] = $this->nren->getID();
