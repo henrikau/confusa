@@ -45,7 +45,8 @@ class CP_Admin extends Content_Page
 				case 'downgrade_self':
 					if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_admin'))) {
 						$this->downgradeNRENAdmin($this->person->getEPPN(),
-									  $this->person->getSubscriber()->getDBID());
+									  $this->person->getSubscriber()->getDBID(),
+									  $this->person->getNREN()->getID());
 					}
 					break;
 				case 'upgrade_subs_admin':
@@ -495,18 +496,17 @@ class CP_Admin extends Content_Page
 	/**
 	 * downgradeNRENAdmin() Downgrade a NREN admin to the status of a subscriber admin
 	 *
-	 * @param $admin	The admin that should be downgraded to subscriber level
-	 * @param $subscriberID integer	The ID of the subscriber of which the admin is to become
-	 *			admin.
-	 *
+	 * @param  $admin_uid		String  The UID of the admin that should be downgraded.
+	 * @param  $subscriber_id	Int	ID of subscriber in the database.
+	 * @param  $nren_id		Int	ID of NREN in the database.
 	 * @return void
+	 * @access private
 	 */
-	private function downgradeNRENAdmin($admin, $subscriberID)
+	private function downgradeNRENAdmin($admin_uid, $subscriber_id, $nren_id)
 	{
-		$nren = $this->person->getNREN();
-		if (empty($subscriberID)) {
-			$msg  = "Tried to downgrade NREN admin " . htmlentities($admin) . " from NREN " .
-			        htmlentities($nren) . " to subscriber admin, ";
+		if (empty($subsriber_id)) {
+			$msg  = "Tried to downgrade NREN admin " . htmlentities($person_>getEPPN()) . " from NREN " .
+			        htmlentities($person->getNREN()->getName()) . " to subscriber admin, ";
 			$msg .= "but admin's subscriber affiliaton is not set. Cannot continue.";
 			Logger::log_event(LOG_NOTICE,$msg);
 			Framework::error_output($msg);
