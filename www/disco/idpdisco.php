@@ -99,36 +99,42 @@ class IdPDisco
 	}
 
 	/**
-	 * Show a country map with links (for each country) to the simplesamlphp
-	 * disco scoped to the IdPs of that country
+	 * displayNRENSelection() Display a list of all idp_urls from all NRENs
+	 *
+	 * This function shall return a list of all available IdP-URLs registred
+	 * in the database so that it can be listed in the idpdisco-page.
+	 *
+	 * @param void
+	 * @return void
+	 * @access private
 	 */
 	private function displayNRENSelection()
 	{
-		$query = "SELECT m.idp_url, n.country FROM idp_map m, nrens n
-				  WHERE n.nren_id = m.nren_id";
+		$query = "SELECT m.idp_url, n.country FROM idp_map m, nrens n " .
+			"WHERE n.nren_id = m.nren_id";
 
 		try {
 			$res = MDB2Wrapper::execute($query, null, null);
 		} catch (ConfusaGenException $cge) {
-			Logger::log_event(LOG_WARNING, __FILE__ . " " . __LINE__ . ": [norm] Could not " .
+			Logger::log_event(LOG_WARNING, __FILE__ . " " . __LINE__ .
+					  ": [norm] Could not " .
 			                  "get the IdP-URLs for the different countries from " .
 			                  "the DB. Probably Confusa is misconfigured? " .
 			                  $cge->getMessage());
-			$this->tpl->assign('error_message', "Error while trying to retrieve the IdPs for the different NRENs");
+			$this->tpl->assign('error_message',
+					   "Error while trying to retrieve the IdPs for the different NRENs");
 		}
 
 		if (count($res) > 0) {
-			$idpList = array();
-			$scopeParam = htmlentities($this->SCOPE_PARAM);
-			$idpParam = htmlentities($this->IDP_PARAM);
+			$idpList	= array();
+			$scopeParam	= htmlentities($this->SCOPE_PARAM);
+			$idpParam	= htmlentities($this->IDP_PARAM);
 
 			foreach ($res as $row) {
 				$country = strtolower($row['country']);
-
 				if (!isset($idpList[$country])) {
 					$idpList[$country] = "";
 				}
-
 				$idpList[$country][] = $row['idp_url'];
 			}
 		}
