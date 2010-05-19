@@ -512,21 +512,26 @@ class CP_Admin extends Content_Page
 			Framework::error_output($msg);
 		}
 
-		$query="UPDATE admins SET admin_level='1', subscriber=? WHERE admin=?";
-
 		try {
-			$res2 = MDB2Wrapper::update($query,
-										array('text','text'),
-										array($subscriberID, $admin));
+			$query  = "UPDATE admins SET admin_level='1', subscriber=:subscriber_id ";
+			$query .= "WHERE admin=:admin AND nren=:nren_id";
+			$data = array();
+			$data['subscriber_id']	= $subscriber_id;
+			$data['admin']	        = $admin_uid;
+			$data['nrend_id']	= $nren_id;
+			$res = MDB2Wrapper::update($query, null, $data);
 		} catch (DBQueryException $dbqe) {
-			Framework::error_output("Problem updating your admin status. Server said: " . htmlentities($dbqe->getMessage()));
+			Framework::error_output("Problem updating your admin status. Server said: " .
+						htmlentities($dbqe->getMessage()));
 			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
 							" of subscriber with ID $subscriberID");
 			return;
 		} catch (DBStatementException $dbse) {
-			Framework::error_output("Problem updating your admin status. Server said: " . htmlentities($dbse->getMessage()));
-			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
-							" of subscriber with ID $subscriberID");
+			Framework::error_output("Problem updating your admin status. Server said: " .
+						htmlentities($dbse->getMessage()));
+			Logger::log_event(LOG_NOTICE,
+					  "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
+					  " of subscriber with ID $subscriberID");
 			return;
 		}
 
