@@ -9,17 +9,18 @@ require_once 'Input.php';
 require_once 'Logger.php';
 
 /**
- * Class showing an IdP-discovery page tailored to the requirements of
- * Confusa's cross-federated setup. First it is checked, whether a NREN can
- * be deduced from the server-URL and if so, the user is redirected to
- * simplesamlphp's discovery service with a scoped list of that NREN's IdPs
- * as query-parameters.
+ * IdPDisco - tailor the IdP-discovery page.
  *
- * If the NREN can not be deduced, a map is shown on which the user can pick
- * her country. Then the user is forwarded to simplesamlphp's disco-page with
- * a scoped IdP-list of IdPs of the *country* which the user has picked. This
- * distinction is important because some countries (France,...) have more than
- * one NREN.
+ * It does this in several, discrete steps:
+ * 1) Can the NREN be deduced from the server-URL?
+ *	-> Yes: user directed to SimpleSAMLphp's discovery service scoped to the
+ *		list of that particular NRENs IdPs
+ * 2) Show a map of Europe where the user can pick the country. Confusa then
+ *    turns into the same mode as in step 1, showing a scoped list of all IdPs
+ *    registred for the given country.
+ *
+ *    This distinction is important because some countries have more than one
+ *    NREN.
  *
  * @author Thomas Zangerl <tzangerl@pdc.kth.se>
  * @since  v0.6-rc0
@@ -38,29 +39,27 @@ class IdPDisco
 
 	function __construct()
 	{
-		$this->tpl	= new Smarty();
+		/* SimpleSAMLphp include and initial configuration */
+		$sspdir		 = Config::get_config('simplesaml_path');
+		require_once $sspdir . 'lib/_autoload.php';
+		SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
+		$sspConfig	 = SimpleSAML_Configuration::getInstance();
+		$this->discoPath = "https://" . $_SERVER['SERVER_NAME'] . "/" .
+			$sspConfig->getString('baseurlpath') .
+			"module.php/saml/disco.php?" .
+			$_SERVER['QUERY_STRING'];
+
+
+		$this->tpl		= new Smarty();
 		$this->tpl->template_dir= Config::get_config('install_path').'templates';
 		$this->tpl->compile_dir	= ConfusaConstants::$SMARTY_TEMPLATES_C;
 		$this->tpl->cache_dir	= ConfusaConstants::$SMARTY_CACHE;
-
-		$sspdir = Config::get_config('simplesaml_path');
-		require_once $sspdir . 'lib/_autoload.php';
-		SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
-		$sspConfig = SimpleSAML_Configuration::getInstance();
-		$this->discoPath = "https://" . $_SERVER['SERVER_NAME'] . "/" .
-		                   $sspConfig->getString('baseurlpath') .
-		                   "module.php/saml/disco.php?" .
-		                   $_SERVER['QUERY_STRING'];
-
 		$this->translator = new Translator();
 		$this->translator->guessBestLanguage(new Person());
-	}
 
-	public function pre_process()
-	{
 		$this->showNRENIdPs($_SERVER['SERVER_NAME']);
 		$this->displayNRENSelection();
-	} /* end pre-process */
+	} /* end __construct */
 
 	/**
 	 * Forward the user to the simplesamlphp IdPdisco showing the IdPs of the
@@ -152,9 +151,8 @@ class IdPDisco
 		$this->translator->decorateTemplate($this->tpl, 'disco');
 		$this->tpl->assign('disco_path', htmlentities($this->discoPath));
 		$this->tpl->display('disco/idpdisco.tpl');
-	}
+	} /* end displayNRENSelection() */
 } /* end class IdPDisco */
 
 $disco = new IdPDisco();
-$disco->pre_process();
 ?>
