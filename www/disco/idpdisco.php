@@ -72,32 +72,45 @@ class IdPDisco
 	 * @param $url string the URL of the NREN whose IdPs should be shown
 	 *
 	 * @return null
+	 * @access private
 	 */
 	private function showNRENIdPs($url)
 	{
 		$nren = NREN_Handler::getNREN($url, 1);
 
+		/* No NREN with the given URL found in the table, cannot set
+		 * the scoping */
 		if (empty($nren)) {
 			return;
 		}
 
-		/* if the NREN has its own WAYF, use that for IdP display */
+		/* if the NREN has its own WAYF, redirect to WAYF, set the
+		 * return-address and stop the rendering. */
 		$wayf = $nren->getWAYFURL();
-
 		if (isset($wayf)) {
 			header("Location: " . $wayf . "?" . $_SERVER['QUERY_STRING']);
 			exit(0);
 		}
 
-		$scopedIDPList = $nren->getIdPList();
-
-		foreach($scopedIDPList as $key => $idp) {
-			$queryString .= $this->SCOPE_PARAM . $idp;
+		$scopedIDPList	= $NREN->getIdPList();
+		$queryString	= "";
+		switch (count($scopedIDPList)) {
+		case 0:
+			Logger::log_event(LOG_ALERT, "No IdP found for NREN " . $nren->getName() .
+					  " disco-selection will probably fail..");
+			break;
+		case 1:
+			$queryString = $this->SCOPE_PARAM . $scopdedIDPList[0];
+			break;
+		default:
+			foreach($scopedIDPList as $key => $idp) {
+				$queryString .= $this->SCOPE_PARAM . $idp;
+			}
+			break;
 		}
-
 		header("Location: " . $this->discoPath . $queryString);
 		exit(0);
-	}
+	} /* end showNRENIdPs() */
 
 	/**
 	 * Show a country map with links (for each country) to the simplesamlphp
