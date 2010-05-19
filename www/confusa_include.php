@@ -27,7 +27,6 @@ $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/www';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/lib';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/modules';
-$path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/modules';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/programs';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/config';
 $path .= PATH_SEPARATOR . dirname(WEB_DIR) . '/include';
