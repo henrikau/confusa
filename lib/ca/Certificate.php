@@ -246,9 +246,34 @@ class Certificate extends CryptoElement
 	{
 		if (!is_null($this->x509_parsed) &&
 		    array_key_exists('serialNumber', $this->x509_parsed)) {
-			/* note the +0, this is needed to trigger correct
-			 * handling of unsigned int in PHP when converting long strings. */
-			return strtoupper(dechex($this->x509_parsed['serialNumber']+0));
+			/*
+			 * PHP will return the serial as an integer, whereas
+			 * everybody else use the hex-represenatation of the
+			 * number.
+			 *
+			 * Due to the fact that Comodo uses *insanely* large
+			 * serial-numbers, we need to be a bit creative when we
+			 * get the serial as PHP won't cope with numbers larger
+			 * than MAX_INT (2**32 on 32 bits arch)
+			 */
+			$serial = $this->x509_parsed['serialNumber'] . "";
+			$base = bcpow("2", "32");
+			$counter = 100;
+			$res = "";
+			while($counter > 0 && $val > 0) {
+				$counter = $counter - 1;
+				$tmpres = dechex(bcmod($val, $base)) . "";
+				/* adjust for 0's */
+				for ($i = 8-strlen($tmpres); $i > 0; $i = $i-1) {
+					$tmpres = "0$tmpres";
+				}
+				$res = $tmpres .$res;
+				$val = bcdiv($val, $base);
+			}
+			if ($counter <= 0) {
+				return false;
+			}
+			return strtoupper($res);
 		}
 		return false;
 	} /* end getSerial() */
