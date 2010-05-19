@@ -945,31 +945,25 @@ class NREN
 	 */
 	public function getIdPList()
 	{
-		$query = "SELECT m.idp_url FROM idp_map m " .
-		         "WHERE m.nren_id = ?";
-
+		$query = "SELECT m.idp_url FROM idp_map m WHERE m.nren_id = ?";
 		try {
 			$res = MDB2Wrapper::execute($query,
 			                            array('text'),
 			                            array($this->getID()));
+			if (count($res) > 0) {
+				$idpList = array();
+				foreach($res as $row) {
+					$idpList[] = $row['idp_url'];
+				}
+				return $idpList;
+			}
 		} catch (ConfusaGenException $cge) {
 			Logger::log_event(LOG_NOTICE, __FILE__ . " " . __LINE__ .  ": Could not " .
 			                  "get the IdP list for NREN with ID " .
 			                  $this->getID() . ". All IdP scoping will fail!");
 		}
-
-		if (count($res) > 0) {
-			$idpList = array();
-
-			foreach($res as $row) {
-				$idpList[] = $row['idp_url'];
-			}
-		} else {
-			return null;
-		}
-
-		return $idpList;
-	}
+		return null;
+	} /* end getIdPList() */
 
 	/**
 	 * replaceTags() take the texdt and replace known tags with
