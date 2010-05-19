@@ -208,13 +208,13 @@ class Subscriber
 					"there are uncommited messages in Subscriber";
 			}
 		}
-		$query = "SELECT * FROM subscribers WHERE name = ? AND nren_id = ?";
+		$query = "SELECT * FROM subscribers WHERE name=:subscriber_name AND nren_id=:nren_id";
+		$data = array();
+		$data['subscriber_name'] = $this->idp_name;
+		$data['nren_id'] = $this->nren->getID();
 		try {
-			$res = MDB2Wrapper::execute($query,
-						    array('text', 'text'),
-						    array($this->idp_name, $this->nren->getID()));
+			$res = MDB2Wrapper::execute($query, null, $data);
 			if (count($res) != 1) {
-				/* Could not find the subscriber. Aborting. */
 				return false;
 			}
 		} catch (DBStatementException $dbse) {
