@@ -13,7 +13,12 @@ final class CP_Index extends Content_Page
 	{
 		parent::__construct("Index", false, "index");
 	}
-
+	function pre_process($person)
+	{
+		parent::pre_process($person);
+		$this->tpl->assign('extraScripts', array('js/jquery-1.4.1.min.js'));
+		$this->tpl->assign('rawScript', file_get_contents('../include/rawToggleExpand.js'));
+	}
 	/**
 	 * process - main control function for handling CSRs and certificates
 	 *
