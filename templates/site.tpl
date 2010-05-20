@@ -24,6 +24,10 @@
     <link rel="stylesheet" href="{$css}" type ="text/css" />
     {/if}
 
+    {if isset($rawScript)}
+    {$rawScript}
+    {/if}
+
     {$extraHeader}
 
     {literal}
