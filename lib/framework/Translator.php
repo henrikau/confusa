@@ -300,7 +300,8 @@ class Translator {
 		 * But there can be configurations in bypass auth-mode without a working
 		 * simplesamlphp instance
 		 */
-		if (include_once $sspdir . '/lib/_autoload.php') {
+		if (file_exists($sspdir . "/lib/_autoload.php")) {
+			require_once $sspdir . '/lib/_autoload.php';
 			$accept_languages = SimpleSAML_Utilities::getAcceptLanguage();
 			$available_languages = Config::get_config('language.available');
 
