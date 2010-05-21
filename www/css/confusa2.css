@@ -540,4 +540,6 @@ div.eh_toggle_container {
 	background-color: #EBDDE2;
 	border-style: solid;
 	border-width: 1px;
+        -moz-border-radius: 10px;
+        -webkit-border-radius: 10px;
 }
