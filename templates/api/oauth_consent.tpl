@@ -31,6 +31,9 @@
 	<td style="text-align: right; padding-right: 2em">{$l10n_label_serviceid}</td>
 	<td>{$consumer_key}</td>
 </tr>
+<tr>
+	<td style="text-align: right; padding-right: 2em">{$l10n_label_accessduration}</td>
+	<td>{$access_duration} {$l10n_text_minutes}</td>
 </table>
 
 <div style="width: 50%">
