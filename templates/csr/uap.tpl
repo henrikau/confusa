@@ -33,8 +33,8 @@
   </ul>
 </div>
 
-<div>
 {if strlen($privacy_notice_text) > 0}
+<div>
 <strong>{$l10n_header_privacynotice}</strong>:
 
 <div id="shortPrivacyNotice" style="display: none">
@@ -45,8 +45,8 @@
 <div id="fullPrivacyNotice">
 	{$privacy_notice_text} <a href="#" onclick="togglePrivacyNotice();"><img src="graphics/triangle_up.png" alt="Collapse" /> Collapse.</a>
 </div>
-{/if}
 </div>
+{/if}
 
 <div class="spacer"></div>
 </fieldset>
