@@ -69,6 +69,11 @@
 			exit;
 		}
 
+		$attributes = $auth_idp->getAttributes();
+		$idp = $attributes['idp'][0];
+
+		$accTokenValidity = getAccessTokenTimeout($idp);
+
 		$consent_val = mt_rand();
 		$_SESSION['oauth_authZ'] = TRUE;
 		$_SESSION['request_token'] = $requestToken;
@@ -93,6 +98,7 @@
 		$tpl->assign('consumer_key', $consumer_key);
 		$tpl->assign('consumer_name', $consumer_info['name']);
 		$tpl->assign('consumer_description', $consumer_info['description']);
+		$tpl->assign('access_duration', $accTokenValidity);
 		$translator = new Translator();
 		$translator->guessBestLanguage($person);
 		$translator->decorateTemplate($tpl, 'oauth');

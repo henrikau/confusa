@@ -3,7 +3,7 @@
 		"en":  "Authorize an OAuth request token"
 	},
 	"l10n_infotext_consent1": {
-		"en":	"You are authorizing <strong>request of certificates</strong> and access to your <strong>identify information</strong> for the following service:"
+		"en":	"You are authorizing <strong>certificate request/retrieval</strong> and access to your <strong>identify information</strong> for the following service and the following period of time:"
 	},
 	"l10n_label_consumername": {
 		"en":	"Consumer name:"
@@ -13,6 +13,12 @@
 	},
 	"l10n_label_serviceid": {
 		"en":	"Service identitifier:"
+	},
+	"l10n_label_accessduration": {
+		"en": "Access duration:"
+	},
+	"l10n_text_minutes": {
+		"en": "minutes"
 	},
 	"l10n_infotext_consent2": {
 		"en":	"If you <strong>did not</strong> request any certificate operation at a service called"
