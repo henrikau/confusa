@@ -13,7 +13,6 @@
       {include file="csr/email.tpl"}
       <div class="spacer"></div>
       <table>
-	</p>
 	<tr>
 	  <td>
 	    <div><!-- XHTML strict won't allow inputs just within forms -->
@@ -22,7 +21,6 @@
 	      <input type="file" name="user_csr" />
 	      <input type="submit"
 		     value="{$l10n_button_uploadcsr}"
-		     value="Upload CSR"
 		     onclick="return isBoxChecked(aup_box);" />
 	    </div>
 	  </td>
