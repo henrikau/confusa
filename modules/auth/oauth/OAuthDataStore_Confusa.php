@@ -55,6 +55,25 @@ class OAuthDataStore_Confusa extends OAuthDataStore
 		return new OAuthConsumer($consumer['value']['key'], $consumer['value']['secret'], NULL);
 	}
 
+	/**
+	 * Get the consumer from a request token. Needed for the consent step in
+	 * an OAuth authorization chain (the user needs to know for which consumer
+	 * they consent information reuse).
+	 *
+	 * @param $request_token The request-token, as used in the initial request
+	 * @return The consumer-key of the consumer which made the request
+	 */
+	function consumer_from_token($request_token)
+	{
+		$data = $this->store->get('consumerTokenMapping', $request_token, '');
+
+		if ($data == NULL) {
+			throw new Exception('Could not find the consumer that is associated with the request token');
+		}
+
+		return $data['value'];
+	}
+
 	function lookup_token($consumer, $token_type, $token)
 	{
 		$this->store->removeExpired();
@@ -79,7 +98,55 @@ class OAuthDataStore_Confusa extends OAuthDataStore
 	{
 		$token = new OAuthToken(SimpleSAML_Utilities::generateID(), SimpleSAML_Utilities::generateID());
 		$this->store->set('request', $token->key, $consumer->key, $token, 60*30);
+		/* use an explicit type to avoid conflicts with the types in registry.edit */
+		$this->store->set('consumerTokenMapping', $token->key, '', $consumer->key);
         return $token;
+	}
+
+	/*
+	 * Get the name, description and owner of
+	 * a consumer as it has been defined in registry.edit
+	 *
+	 * @param $consumer_key The key of the consumer, defined when adding it
+	 * @return The info about the the consumer, defined when adding it
+	 */
+	function get_consumer_info($consumer_key)
+	{
+		$data = $this->store->get('consumers', $consumer_key, '');
+
+		if ($data == NULL) {
+			throw new Exception('No consumer registered for key ' .
+			                    $consumer_key);
+		}
+
+		if (empty($data['value']['name'])) {
+			$errorStr = "No consumer name found for consumer with key " .
+			            $consumer_key . "!";
+			Logger::logEvent(LOG_ERROR, __CLASS__, __METHOD__, $errorStr,
+			                 __LINE__);
+			throw new Exception($errorStr);
+		}
+
+		if (empty($data['value']['description'])) {
+			$errorStr = "No consumer description found for consumer with key" .
+			            " $consumer_key!";
+			Logger::logEvent(LOG_ERROR, __CLASS__, __METHOD__, $errorStr,
+			                 __LINE__);
+			throw new Exception($errorStr);
+		}
+
+		if (empty($data['value']['owner'])) {
+			$errorStr = "No owner found for consumer with key" .
+			            " $consumer_key!";
+			Logger::logEvent(LOG_ERROR, __CLASS__, __METHOD__, $errorStr,
+			                 __LINE__);
+			throw new Exception($errorStr);
+		}
+
+		$result = array('name' => $data['value']['name'],
+		                'description' => $data['value']['description'],
+		                'owner' => $data['value']['owner']);
+		return $result;
 	}
 
 	/* change the functionality of the simplesamlphp access token request

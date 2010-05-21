@@ -1,0 +1,32 @@
+{
+	"l10n_heading_consent": {
+		"en":  "Authorize an OAuth request token"
+	},
+	"l10n_infotext_consent1": {
+		"en":	"You are authorizing <strong>request of certificates</strong> and access to your <strong>identify information</strong> for the following service:"
+	},
+	"l10n_label_consumername": {
+		"en":	"Consumer name:"
+	},
+	"l10n_label_consumerdescription": {
+		"en":	"Consumer description:"
+	},
+	"l10n_label_serviceid": {
+		"en":	"Service identitifier:"
+	},
+	"l10n_infotext_consent2": {
+		"en":	"If you <strong>did not</strong> request any certificate operation at a service called"
+	},
+	"l10n_infotext_consent3": {
+		"en":	"or fitting to the above description, then it is possible that somebody tries to take over your identity in order to falsely get a certificate impersonating YOU!"
+	},
+	"l10n_infotext_consent4": {
+		"en":	"In that case, please deny consent and"
+	},
+	"l10n_infotext_consent5": {
+		"en":	"contact a local helpdesk"
+	},
+	"l10n_infotext_consent6": {
+		"en":	"Please supply the above consumer information."
+	}
+}
