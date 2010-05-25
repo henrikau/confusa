@@ -91,7 +91,7 @@ class IdPDisco
 			exit(0);
 		}
 
-		$scopedIDPList	= $NREN->getIdPList();
+		$scopedIDPList	= $nren->getIdPList();
 		$queryString	= "";
 		switch (count($scopedIDPList)) {
 		case 0:
