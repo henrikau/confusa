@@ -197,14 +197,13 @@ class CP_NREN_Admin extends Content_Page
 		$this->tpl->assign('nrenName'		, $this->person->getNREN());
 		$this->tpl->assign('org_states'		, ConfusaConstants::$ORG_STATES);
 
+		/* Export the NREN UID key */
+		$map = $this->person->getNREN()->getMap();
+		$this->tpl->assign('nren_eppn_key', $map['eppn']);
+
 		if (isset($_GET['target'])) {
 			switch(Input::sanitize($_GET['target'])) {
 			case 'list':
-
-				$map = $this->person->getNREN()->getMap();
-				$nrenEPPNKey = $map['eppn'];
-
-				$this->tpl->assign('nren_eppn_key'		, $nrenEPPNKey);
 				/* get all info from database and publish to template */
 				$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
 				$this->tpl->assign('self_subscriber'	, $this->person->getSubscriber()->getIdPName());
@@ -214,8 +213,6 @@ class CP_NREN_Admin extends Content_Page
 				$am = AuthHandler::getAuthManager($this->person);
 				$attributes = $am->getAttributes();
 				$nren = $this->person->getNREN();
-
-				$map = $this->person->getNREN()->getMap();
 
 				if (isset($attributes[$map['epodn']])) {
 					$this->tpl->assign('foundUniqueName', $attributes[$map['epodn']][0]);
