@@ -19,9 +19,10 @@
   {* {if $password_label != "undefined"}*}
   <h4>{$l10n_heading_curaccount}</h4>
   <form action="" method="post">
-    <p>
+    <div>
       <input type="hidden" name="account" value="edit" />
-    </p>
+      {$panticsrf}
+    </div>
     <table>
       <tr>
 	<td style="width: 20px"></td>
@@ -99,6 +100,7 @@
   <form action="" method="post">
     <p>
       <input type="hidden" name="account" value="new" />
+      {$panticsrf}
     </p>
     <table>
       <tr>
