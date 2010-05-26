@@ -68,6 +68,7 @@
   <br />
 
   <form action="" method="post">
+    <div>{$panticsrf}</div>
     <table class="mapping">
       <tr>
 	<th align="right">{$l10n_th_category}</th>
