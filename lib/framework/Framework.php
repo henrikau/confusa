@@ -346,7 +346,9 @@ class Framework {
 		}
 		$this->tpl->display('site.tpl');
 
-		$this->contentPage->post_process($this->person);
+		if (!$this->renderError) {
+			$this->contentPage->post_process($this->person);
+		}
 	} /* end start() */
 
 	/**
