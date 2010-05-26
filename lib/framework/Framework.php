@@ -18,7 +18,7 @@ require_once 'Output.php';
 require_once 'CGE_ComodoCredentialException.php';
 require_once 'confusa_handler.php';
 require_once 'Translator.php';
-
+require_once 'Input.php';
 /* global config */
 require_once 'Config.php';
 require_once 'CA_Comodo.php';
@@ -247,11 +247,31 @@ class Framework {
 			} else if (array_key_exists('HTTP_REFERER', $_SERVER)) {
 				/* valid facsrft, but directed from another
 				 * page, in most cases, this'll be a csrf,
-				 * block log and stop */
-				Logger::log_event(LOG_ALERT, "[Anti CSRF] Got correct anti-csrf from client, but HTTP_REFERER was set (".
-						  Input::sanitizeURL($_SERVER['HTTP_REFERER']).
-						  "). Possible CSRF attempt. Request was blocked.");
-				$csrf_error = true;
+				 * block log and stop.
+				 *
+				 * In most settings, this step is superflous,
+				 * but if a user is tricked into giving away an
+				 * anti-csrf-token, this will prevent an
+				 * attacker that has placed this token into a
+				 * CSRF-exploit and tricked the same user into
+				 * dereferencing that particular URL.
+				 */
+				$url  = Input::sanitizeURL("http" . (($_SERVER['HTTPS'] == 'on') ? "s" : "").
+							   "://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME']);
+				$rurl = Input::sanitizeURL(Input::sanitizeURL($_SERVER['HTTP_REFERER']));
+
+				/* if we use GET, the url will change, and the
+				 * browser will set the REFERER to the filename
+				 * including the GET-params. These must be stripped. */
+				$p = strpos($rurl, "?");
+				if ($p) {
+					$rurl = substr($rurl, 0, $p);
+				}
+				if ($url !== $rurl) {
+					Logger::log_event(LOG_ALERT, "[Anti CSRF] Got correct anti-csrf from client, but HTTP_REFERER was set." .
+							  "Got $rurl, expected $url. Possible CSRF attempt. Request was blocked.");
+					$csrf_error = true;
+				}
 			}
 			if ($csrf_error) {
 				Framework::error_output($this->contentPage->translateMessageTag('fw_anticsrf_msg'));
