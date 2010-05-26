@@ -4,6 +4,7 @@
   <form action="?robot_view=list" method="post">
     <p>
       <input type="hidden" name="robot_action" value="paste_new" />
+      {$panticsrf}
     </p>
     <table>
       <tr>

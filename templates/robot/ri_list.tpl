@@ -21,16 +21,18 @@
   <tr>
     <td></td>
     <td valign="top">
-      <a href="?robot_action=delete&serial={$element->serial()}">
-	<img src="https://slcstest.uninett.no/silk_icons/delete.png"/
-	alt="Delete" title="{$l10n_title_deleterc}" class="url">
+      <a href="?robot_action=delete&amp;serial={$element->serial()}&amp;{$ganticsrf}">
+	<img src="https://slcstest.uninett.no/silk_icons/delete.png"
+	     alt="Delete"
+	     title="{$l10n_title_deleterc}"
+	     class="url" />
 	{$l10n_label_deleterc}
     </a>
     </td>
     <td>
     </td>
     <td>
-      <a href="?robot_action=info&serial={$element->serial()}">
+      <a href="?robot_action=info&amp;serial={$element->serial()}&amp;{$ganticsrf}">
 	<img src="https://slcstest.uninett.no/silk_icons/information.png"
 	alt="Info" title="{$l10n_title_inforc}" class="url"/>
 	{$l10n_label_inforc}
