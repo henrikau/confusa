@@ -23,7 +23,7 @@
     <td></td>
 
     <td valign="top">
-      <a href="?robot_action=delete&amp;serial={$element->serial()}">
+      <a href="?robot_action=delete&amp;serial={$element->serial()}&amp;{$ganticsrf}">
 	<img src="https://slcstest.uninett.no/silk_icons/delete.png"
 	     alt="Delete"
 	     title="{$l10n_title_deleterc}"
@@ -35,7 +35,7 @@
     <td style="width: 20px;"></td>
 
     <td>
-      <a href="?robot_action=info&amp;serial={$element->serial()}">
+      <a href="?robot_action=info&amp;serial={$element->serial()}&amp;{$ganticsrf}">
 	<img src="https://slcstest.uninett.no/silk_icons/information.png"
 	     alt="Info"
 	     title="{$l10n_title_inforc}"

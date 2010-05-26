@@ -36,6 +36,7 @@
   <p>
     <input type="hidden" name="robot_action" value="download_archive" />
     <input type="submit" value="{$l10n_button_downloadfile}" />
+    {$panticsrf}
   </p>
 </form>
 {/if}
