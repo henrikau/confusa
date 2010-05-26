@@ -46,7 +46,7 @@
 
 		<td>
 		  <!-- Send via email -->
-		  <a href="download_certificate.php?email_cert={$cert.order_number}">
+		  <a href="download_certificate.php?email_cert={$cert.order_number}&nbsp;{$ganticsrf}">
 		    <img src="graphics/email.png"
 			 alt="{$l10n_title_email|escape}"
 			 title="{$l10n_title_email|escape}"
@@ -56,7 +56,7 @@
 		  <br />
 
 		  <!-- download as file -->
-		  <a href="download_certificate.php?file_cert={$cert.order_number}">
+		  <a href="download_certificate.php?file_cert={$cert.order_number}&nbsp;{$ganticsrf}">
 		    <img src="graphics/disk.png"
 			 alt="{$l10n_title_download_cert|escape}"
 			 title="{$l10n_title_download_cert|escape}"
@@ -67,7 +67,7 @@
 
 		  {if empty($inspectElement[$cert.order_number])}
 		  <!-- Show details -->
-		  <a href="download_certificate.php?inspect_cert={$cert.order_number}"
+		  <a href="download_certificate.php?inspect_cert={$cert.order_number}&nbsp;{$ganticsrf}"
 		     onclick="return inspectCertificateAJAX('{$cert.order_number}');">
 		    <img src="graphics/information.png"
 			 alt="{$l10n_title_inspect|escape}"
@@ -81,7 +81,7 @@
 		  {/if}
 
 		  <!-- install into keystore in browser -->
-		  <a href="download_certificate.php?install_cert={$cert.order_number}"
+		  <a href="download_certificate.php?install_cert={$cert.order_number}&nbsp;{$ganticsrf}"
 		  {if isset($ca_certificate)}onclick="showCANotification()"{/if}>
 		    <img src="graphics/database_add.png"
 		    alt="{$l10n_title_install_ks|escape}"
@@ -96,6 +96,7 @@
 		  <td>
 		    <form action="revoke_certificate.php" method="get">
 		      <div>
+			{$panticsrf}
 			{* Revoke-button *}
 			<input type="hidden" name="revoke"		value="revoke_single" />
 			<input type="hidden" name="order_number"	value="{$cert.order_number|escape}" />
@@ -153,7 +154,7 @@
 			{$l10n_status_certhist|escape} {$defaultDays} {$l10n_status_days|escape}.</p>
 		{/if}
 
-		<a href="download_certificate.php?certlist_all=true">
+		<a href="download_certificate.php?certlist_all=true&nbsp;{$ganticsrf}">
 		{$l10n_text_showall|escape} <img src="graphics/triangle_down.png" alt="Show older" style="border: none" /></a>
 	{else}
 		{if $numCerts == 0}
@@ -162,7 +163,7 @@
 			{$l10n_text_showingall|escape}<br />
 		{/if}
 
-		<a href="download_certificate.php?certlist_all=false">
+		<a href="download_certificate.php?certlist_all=false&nbsp;{$ganticsrf}">
 		{$l10n_text_hideold|escape} <img src="graphics/triangle_up.png"
 						 alt="{$l10n_text_hideold|escape}"
 						 style="border: none" /> </a>
