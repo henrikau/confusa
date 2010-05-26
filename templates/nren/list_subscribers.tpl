@@ -67,6 +67,7 @@
 			<input type="hidden" name="subscriber" value="delete" />
 			<input type="hidden" name="name" value="{$subscriber->getIdPName()|escape}" />
 			<input type="hidden" name="id" value="{$subscriber->getDBID()|escape}" />
+			{$panticsrf}
 
 			{if $subscriber->getIdPName() == $self_subscriber}
 				<input type="image" name="delete" title="{$l10n_title_deletesubs}"
@@ -90,6 +91,7 @@
 			<input type="hidden" name="subscriber" value="info" />
 			<input type="hidden" name="name" value="{$subscriber->getIdPName()|escape}" />
 			<input type="hidden" name="id" value="{$subscriber->getDBID()|escape}" />
+			{$panticsrf}
 			<input type="image" name="information" title="{$l10n_title_subsinfo} {$subscriber->getIdPName()|escape}"
 			       value="info" src="graphics/information.png"
 			       alt="{$l10n_title_subsinfo} {$subscriber->getIdPName()|escape}" />
@@ -113,6 +115,7 @@
 			  <div>
 				<input type="hidden" name="subscriber" value="editState" />
 				<input type="hidden" name="id" value="{$subscriber->getDBID()}" />
+				{$panticsrf}
 				{html_options output=$org_states values=$org_states selected=$subscriber->getState() name=state}
 				<input type="submit" class="button"
 				value="{$l10n_button_updstate}" />
@@ -136,6 +139,7 @@
 		<input type="hidden" name="subscriber" value="edit" />
 		<input type="hidden" name="id" value="{$subscriber->getDBID()|escape}" />
 		<input type="hidden" name="dn_name" value="{$subscriber->getOrgName()|escape}" />
+		{$panticsrf}
 	</td>
 	<td style="width: 25px"></td>
 	<td style="width: 300px"></td>

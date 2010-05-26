@@ -8,6 +8,7 @@
   <form method="post" action="">
     <p>
       <input type="hidden" name="setting" value="nren_contact" />
+      {$panticsrf}
     </p>
     <table summary="{$l10n_infotext_nren_settings_summary}">
       <tr>

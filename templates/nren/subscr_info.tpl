@@ -8,6 +8,7 @@
   <form method="post" action="">
   <p>
     <input type="hidden" name="setting" value="subscriber_contact" />
+    {$panticsrf}
   </p>
     <table>
       <tr>
