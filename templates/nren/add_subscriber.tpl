@@ -58,9 +58,7 @@ function toggleUidAttrField()
       </tr>
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
-	<td>
-	  <font color="gray"><i>{$l10n_label_attnm}</i></font>
-	</td>
+	<td class="attr">{$l10n_label_attnm}</td>
 	<td>
 	  <input type="text" name="db_name" size="40" />
 	</td>
@@ -92,7 +90,7 @@ function toggleUidAttrField()
 	</tr>
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
-	<td><font color="gray"><i>/O=</i></font></td>
+	<td class="attr">/O=</td>
 
 	{if $confusa_grid_restrictions === TRUE}
 	<td><input maxlength="62" type="text" name="dn_name" size="40"/></td>
@@ -119,15 +117,21 @@ function toggleUidAttrField()
 	</tr>
 	<tr><td><div class="spacer"></div></td><td></td></tr>
 	<tr>
-	<td><font color="gray"><i>Attribute-key:</i></font></td>
-	<td><input id="uid_attr_field" type="text" name="uid_attr" size="40" value="{$eppnAttr}" />
+	<td class="attr">Attribute-key:</td>
+	<td>
+	  <input id="uid_attr_field"
+		 type="text"
+		 name="uid_attr"
+		 size="40"
+		 value="{$eppnAttr}" />
+	</td>
 	</tr>
-	<tr><td></td><td>
+	<tr><td>&nbsp;</td><td>
 		<input id="uid_attr_box" type="checkbox" name="inherit_uid_attr" value="Inherit" checked="checked" onChange="toggleUidAttrField();" />
 		<label for="uid_attr_box">Inherit from NREN mapping</label>
 	</td>
 	</tr>
-	<tr><td><div class="spacer"></div></td><td></td></tr>
+	<tr><td><div class="spacer"></div></td><td>&nbsp;</td></tr>
       <tr><td colspan="2"><hr class="table"/><br /></td></tr>
       <tr><td><div class="spacer"></div></td><td></td></tr>
 
@@ -147,16 +151,21 @@ function toggleUidAttrField()
       </tr>
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
-	<td><font color="gray"><i>{$l10n_label_contactemail}</i></font></td>
+	<td class="attr">{$l10n_label_contactemail}</td>
 	<td><input type="text" name="subscr_email" size="40"/></td>
       </tr>
       <tr><td></td><td>
       <span style="font-size: 0.8em; font-style: italic">
 	{$l10n_expl_contactemail}
-      </span></td>
+      </span>
+	</td>
+      </tr>
       <tr>
-	<td><font color="gray"><i>{$l10n_label_contactphone}</i></font></td>
-	<td><input type="text" name="subscr_phone" size="40" /></td>
+	<td class="attr">{$l10n_label_contactphone}</td>
+	<td><input type="text"
+		   name="subscr_phone"
+		   size="40" />
+	</td>
       </tr>
       <tr><td></td><td>
       <span style="font-size: 0.8em; font-style: italic">
@@ -165,8 +174,8 @@ function toggleUidAttrField()
       </td>
       </tr>
       <tr>
-	<td><font color="gray"><i>{$l10n_heading_resppers}:</i></font></td>
-	<td><input type="text" name="subscr_responsible_name" size="40" />
+	<td class="attr">{$l10n_heading_resppers}:</td>
+	<td><input type="text" name="subscr_responsible_name" size="40" /></td>
       </tr>
       <tr>
       <td></td>
@@ -175,7 +184,7 @@ function toggleUidAttrField()
       </td>
       </tr>
       <tr>
-	<td><font color="gray"><i>{$l10n_label_respemail}</i></font></td>
+	<td class="attr">{$l10n_label_respemail}</td>
 	<td><input type="text" name="subscr_responsible_email" size="40" /></td>
       </tr>
       <tr>
@@ -200,14 +209,15 @@ function toggleUidAttrField()
 	   {$l10n_infotext_helpdeskcont}
 	  </p>
 	</td>
+	</tr>
       <tr><td><div class="spacer" /></td><td></td></tr>
       <tr>
-	<td><font color="gray"><i>{$l10n_label_helpdeskurl}</i></font></td>
+	<td class="attr">{$l10n_label_helpdeskurl}</td>
 	<td><input type="text" name="subscr_help_url" size="40"/></td>
       </tr>
       <tr><td><div class="spacer" /></td><td></td></tr>
       <tr>
-	<td><font color="gray"><i>{$l10n_label_helpdeskemail}</i></font></td>
+	<td class="attr">{$l10n_label_helpdeskemail}</td>
 	<td><input type="text" name="subscr_help_email" size="40" /></td>
       </tr>
 
@@ -226,6 +236,7 @@ function toggleUidAttrField()
 	    {$l10n_infotext_arbcomm1}
 	  </p>
 	</td>
+      </tr>
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td colspan="2">
@@ -251,15 +262,15 @@ function toggleUidAttrField()
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2">
 	  <dl style="padding-bottom: 1em">
-	    <dt><i><u>Subscribed:</u></i></dt>
+	    <dt style="text-decoration: underline; font-style: italic">Subscribed:</dt>
 	    <dd class="info">
 		{$l10n_infotext_subscribed}
 	    </dd>
-	    <dt><i><u>Unsubscribed:</u></i></dt>
+	    <dt style="text-decoration: underline; font-style: italic">Unsubscribed:</dt>
 	    <dd class="info">
 		{$l10n_infotext_unsubscribed}
 	    </dd>
-	    <dt><i><u>Suspended:</u></i></dt>
+	    <dt style="text-decoration: underline; font-style: italic">Suspended:</dt>
 	    <dd>
 		{$l10n_infotext_suspended}
 		</dd>
@@ -268,7 +279,7 @@ function toggleUidAttrField()
 	</td>
       </tr>
       <tr>
-	<td><font color="gray"><i>{$l10n_heading_subscrstate}:</i></font></td>
+	<td class="attr">{$l10n_heading_subscrstate}:</td>
 	<td>{html_options output=$org_states values=$org_states selected="unsubscribed" name=state}</td>
       </tr>
 
