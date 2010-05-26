@@ -31,6 +31,6 @@
 
 <h3>{$heading_view_menu|escape}</h3>
 <ul>
-<li><a href="?mode=normal">{$item_view_user|escape}</a></li>
+<li><a href="?mode=normal&amp;{$ganticsrf}">{$item_view_user|escape}</a></li>
 <li>{$item_view_subscr_admin|escape}</li>
 </ul>
