@@ -44,7 +44,7 @@
 	   <div id="language_list">
 		<ul>
 		{foreach from=$available_languages key=lang_code item=lang}
-		<li>{if $lang_code == $selected_language}{$lang}{else}<a href="?lang={$lang_code}">{$lang}</a>{/if}</li>
+		<li>{if $lang_code == $selected_language}{$lang}{else}<a href="?lang={$lang_code}&amp;{$ganticsrf}">{$lang}</a>{/if}</li>
 		{/foreach}
 		</ul>
 		</div>
@@ -55,7 +55,7 @@
 </script>
 
 {if !$person->isAuth()}
-<h3><a href="index.php?start_login=yes">{$item_login|escape}</a></h3>
+<h3><a href="index.php?start_login=yes&amp;{$ganticsrf}">{$item_login|escape}</a></h3>
 {else}
 <h3><a href="{$logoutUrl}">{$item_logout|escape}</a></h3>
 {/if}
