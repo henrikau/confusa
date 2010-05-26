@@ -14,8 +14,10 @@ function toggleUidAttrField()
 <fieldset>
   <legend>{$l10n_legend_addnew}</legend>
   <form action="" method="post">
+    <p>
     <input type="hidden" name="subscriber" value="add" />
-
+    {$panticsrf}
+    </p>
     <table width="90%">
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
