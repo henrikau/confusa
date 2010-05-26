@@ -30,8 +30,13 @@
 		<td style="width: 30px">
 		<form action="" method="post">
 			<div>
-			<input type="hidden" name="subs_operation" value="downgrade_subs_admin" />
-			<input type="hidden" name="subs_admin" value="{$subscriber_admin.eppn}" />
+			<input type="hidden"
+			       name="subs_operation"
+			       value="downgrade_subs_admin" />
+			<input type="hidden"
+			       name="subs_admin"
+			       value="{$subscriber_admin.eppn}" />
+			{$panticsrf}
 			{if ($subscriber_admin.eppn == $self)}
 			<input type="image" src="graphics/arrow_down.png" alt="{$l10n_title_downgrade_adm}"
 			title="{$l10n_title_downgrade_adm}"
@@ -47,8 +52,13 @@
 		<td style="width: 30px">
 		<form action="" method="post">
 		<div>
-				<input type="hidden" name="subs_operation" value="delete_subs_admin" />
-				<input type="hidden" name="subs_admin" value="{$subscriber_admin.eppn}" />
+		  <input type="hidden"
+			 name="subs_operation"
+			 value="delete_subs_admin" />
+		  <input type="hidden"
+			 name="subs_admin"
+			 value="{$subscriber_admin.eppn}" />
+		  {$panticsrf}
 		{if ($subscriber_admin.eppn == $self)}
 			<input type="image" src="graphics/delete.png" alt="{$l10n_title_delete_adm}"
 				title="{$l10n_title_delete_adm}"
@@ -93,8 +103,12 @@
 	<td style="width: 30px">
 	</td>
 	<td style="width: 15em">
-		<input type="hidden" name="subs_operation" value="add_subs_admin" />
-		<input type="text" name="subs_admin" />
+	  <input type="hidden"
+		 name="subs_operation"
+		 value="add_subs_admin" />
+	  <input type="text" name="subs_admin" />
+	  {$panticsrf}
+
 	</td>
 	<td style="width: 15em">
 		<input type="text" disabled="disabled" value="{$l10n_info_ass_flogin}" />
@@ -142,6 +156,7 @@
 		<td style="width: 30px">
 			<form action="" method="post">
 			<div>
+			  {$panticsrf}
 				<input type="hidden" name="subs_operation" value="upgrade_subs_sub_admin" />
 				<input type="hidden" name="subs_sub_admin" value="{$admin.eppn}" />
 				<input type="image" src="graphics/arrow_up.png" alt="{$l10n_title_upgrade_adm}"
@@ -153,6 +168,7 @@
 		<td style="width: 30px">
 			<form action="" method="post">
 			<div>
+			  {$panticsrf}
 			<input type="hidden" name="subs_operation" value="delete_subs_sub_admin" />
 			<input type="hidden" name="subs_sub_admin" value="{$admin.eppn}" />
 			<input type="image" src="graphics/delete.png" alt="{$l10n_title_delete_adm}"
@@ -187,6 +203,7 @@
 	<td style="width: 30px"></td>
 	<td style="width: 30px"></td>
 	<td style="width: 15em">
+	  {$panticsrf}
 		<input type="hidden" name="subs_operation" value="add_subs_sub_admin" />
 		<input type="text" name="subs_sub_admin" />
 	</td>
