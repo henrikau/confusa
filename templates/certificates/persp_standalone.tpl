@@ -25,12 +25,12 @@
 
 		<tr>
 		<td>
-		  <a href="download_certificate.php?email_cert={$key}&nbsp;{$ganticsrf}">
+		  <a href="download_certificate.php?email_cert={$key}&amp;{$ganticsrf}">
 		    <img src="graphics/email.png" alt=""
 			 title="{$l10n_title_email|escape}" class ="url" /> {$l10n_item_email|escape}
 		  </a><br />
 
-		  <a href="download_certificate.php?file_cert={$key}&nbsp;{$ganticsrf}">
+		  <a href="download_certificate.php?file_cert={$key}&amp;{$ganticsrf}">
 		    <img src="graphics/disk.png"
 			 alt=""
 			 title="{$l10n_title_download_cert|escape}"
@@ -39,7 +39,7 @@
 		  </a><br />
 
 		  {if empty($inspectElement[$key])}
-		  <a href="download_certificate.php?inspect_cert={$key}&nbsp;{$ganticsrf}"
+		  <a href="download_certificate.php?inspect_cert={$key}&amp;{$ganticsrf}"
 		     onclick="return inspectCertificateAJAX('{$key}');">
 		    <img src="graphics/information.png"
 			 alt=""
@@ -50,7 +50,7 @@
 			</span>
 		  </a><br />
 		  {/if}
-		  <a href="download_certificate.php?delete_cert={$key}&nbsp;{$ganticsrf}">
+		  <a href="download_certificate.php?delete_cert={$key}&amp;{$ganticsrf}">
 		    <img src="graphics/delete.png"
 			 alt=""
 			 title="{$l10n_title_delete|escape}"
