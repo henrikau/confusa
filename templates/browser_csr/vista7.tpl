@@ -75,10 +75,25 @@ function createIEVistaRequest(dn, keysize)
 </div>
 
 <div id="reqDiv" style="margin-top: 2em">
-	<form id="reqForm" name="reqForm" method="post" action="process_csr.php" onsubmit="return createIEVistaRequest('{$dn}', {$keysize});">
-		<input type="hidden" id="reqField" name="browserRequest" value="" />
-		<input type="hidden" name="browserSigning" value="vista7" />
-		<input type="submit" id="chooseButton" style="display: none" value="{$l10n_button_choose}" />
+	<form id="reqForm"
+	      name="reqForm"
+	      method="post"
+	      action="process_csr.php"
+	      onsubmit="return createIEVistaRequest('{$dn}', {$keysize});">
+	  <div>
+	    <input type="hidden"
+		   id="reqField"
+		   name="browserRequest"
+		   value="" />
+	    <input type="hidden"
+		   name="browserSigning"
+		   value="vista7" />
+	    {$panticsrf}
+	  </div>
+	    <input type="submit"
+		   id="chooseButton"
+		   style="display: none"
+		   value="{$l10n_button_choose}" />
 	</form>
 </div>
 
