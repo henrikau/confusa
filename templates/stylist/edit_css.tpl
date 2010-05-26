@@ -1,10 +1,10 @@
 <div class="tabheader">
 <ul class="tabs">
-<li><a href="?show=text">{$l10n_tab_texts}</a></li>
+<li><a href="?show=text&amp;{$ganticsrf}">{$l10n_tab_texts}</a></li>
 <li><span>{$l10n_tab_css}</span></li>
-<li><a href="?show=logo">{$l10n_tab_logo}</a></li>
-<li><a href="?show=title">{$l10n_tab_portaltitle}</a></li>
-<li><a href="?show=mail">{$l10n_tab_notificationmail}</a></li>
+<li><a href="?show=logo&amp;{$ganticsrf}">{$l10n_tab_logo}</a></li>
+<li><a href="?show=title&amp;{$ganticsrf}">{$l10n_tab_portaltitle}</a></li>
+<li><a href="?show=mail&amp;{$ganticsrf}">{$l10n_tab_notificationmail}</a></li>
 </ul>
 </div>
 
@@ -29,6 +29,7 @@
 			<input type="submit" name="change" value="{$l10n_button_update}" />
 		</span>
 		<input type="hidden" name="stylist_operation" value="change_css" />
+		{$panticsrf}
 	</div>
   </form>
 </fieldset>
