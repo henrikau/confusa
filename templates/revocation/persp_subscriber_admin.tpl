@@ -47,6 +47,7 @@ immediately see a result entry *}
 	   {/if}
 	   />
     <input type="submit" name="Search" value="{$l10n_button_search}" />
+    {$panticsrf}
 	<br />
 	<noscript>
 	  <p>
@@ -75,6 +76,7 @@ immediately see a result entry *}
 	<input type="hidden" name="max_file_size" value="10000000" />
 	<input name="{$file_name}" type="file" />
 	<input type="submit" value="{$l10n_button_uploadlist}" />
+	{$pantcsrf}
       </p>
     </form>
     <br />
@@ -108,6 +110,7 @@ immediately see a result entry *}
             {html_options name="reason" values=$nren_reasons output=$nren_reasons selected=$selected}
             <input type="hidden" name="revoke_operation" value="revoke_by_list" />
             <input type="submit" value="Revoke all" onclick="return confirm('{$l10n_confirm_listrevoke}')" />
+	    {$panticsrf}
             </form>
         </div>
 
