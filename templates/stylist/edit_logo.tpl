@@ -172,11 +172,11 @@
 
 <div class="tabheader">
 <ul class="tabs">
-<li><a href="?show=text">{$l10n_tab_texts}</a></li>
-<li><a href="?show=css">{$l10n_tab_css}</a></li>
+<li><a href="?show=text&amp;{$ganticsrf}">{$l10n_tab_texts}</a></li>
+<li><a href="?show=css&amp;{$ganticsrf}">{$l10n_tab_css}</a></li>
 <li><span>{$l10n_tab_logo}</span></li>
-<li><a href="?show=title">{$l10n_tab_portaltitle}</a></li>
-<li><a href="?show=mail">{$l10n_tab_notificationmail}</a></li>
+<li><a href="?show=title&amp;{$ganticsrf}">{$l10n_tab_portaltitle}</a></li>
+<li><a href="?show=mail&amp;{$ganticsrf}">{$l10n_tab_notificationmail}</a></li>
 </ul>
 </div>
 
@@ -218,6 +218,7 @@
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="tl" />
 			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
+			{$panticsrf}
 		</form>
 		</div>
 		<a href="#" onclick="uploadLogo('tl', '{$l10n_js_mlogotl}')">
@@ -244,6 +245,7 @@
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="tc" />
 			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
+			{$panticsrf}
 		</form>
 		</div>
 		<a class="logos" href="#" onclick="uploadLogo('tc', '{$l10n_js_mlogotc}')">
@@ -270,6 +272,7 @@
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="tr" />
 			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
+			{$panticsrf}
 		</form>
 		</div>
 		<a href="#" onclick="uploadLogo('tr', '{$l10n_js_mlogotr}')">
@@ -303,6 +306,7 @@
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="bg" />
 			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
+			{$panticsrf}
 		</form>
 		</div>
 	</div>
@@ -322,6 +326,7 @@
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="bl" />
 			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
+			{$panticsrf}
 		</form>
 		</div>
 		<a href="#" onclick="uploadLogo('bl', '{$l10n_js_mlogobl}')">
@@ -347,6 +352,7 @@
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="bc" />
 			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
+			{$panticsrf}
 		</form>
 		</div>
 		<a href="#" onclick="uploadLogo('bc', '{$l10n_js_mlogobc}')">
@@ -372,6 +378,7 @@
 			<input type="hidden" name="stylist_operation" value="delete_logo" />
 			<input type="hidden" name="position" value="br" />
 			<input type="submit" name="delete" value="{$l10n_button_deletelogo}" />
+			{$panticsrf}
 		</form>
 		</div>
 		<a href="#" onclick="uploadLogo('br', '{$l10n_js_mlogobr}')">
@@ -394,10 +401,11 @@
 		<input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
 		<input type="file" name="nren_logo" />
 		<input type="submit" value="{$l10n_button_uploadimg}" />
+		{$panticsrf}
 	</div>
   </form>
   <div class="spacer"></div>
   <div id="infoDiv" style="margin-bottom: 1em; display: none">
-  <a href="stylist.php?show=logo" style="margin-bottom: 1em">{$l10n_link_goback}</a>
+  <a href="stylist.php?show=logo&amp;{$ganticsrf}" style="margin-bottom: 1em">{$l10n_link_goback}</a>
   </div>
 </fieldset>

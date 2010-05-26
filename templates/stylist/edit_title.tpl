@@ -1,10 +1,10 @@
 <div class="tabheader">
 <ul class="tabs">
-<li><a href="?show=text">{$l10n_tab_texts}</a></li>
-<li><a href="?show=css">{$l10n_tab_css}</a></li>
-<li><a href="?show=logo">{$l10n_tab_logo}</a></li>
+<li><a href="?show=text&amp;{$ganticsrf}">{$l10n_tab_texts}</a></li>
+<li><a href="?show=css&amp;{$ganticsrf}">{$l10n_tab_css}</a></li>
+<li><a href="?show=logo&amp;{$ganticsrf}">{$l10n_tab_logo}</a></li>
 <li><span>{$l10n_tab_portaltitle}</span></li>
-<li><a href="?show=mail">{$l10n_tab_notificationmail}</a></li>
+<li><a href="?show=mail&amp;{$ganticsrf}">{$l10n_tab_notificationmail}</a></li>
 </ul>
 </div>
 
@@ -32,6 +32,7 @@ function toggleForm(checkbox)
 
 <form method="post" action="">
 <div style="margin-bottom: 0.5em">
+{$panticsrf}
 <input type="hidden" name="stylist_operation" value="change_title" />
 <input id="portalTitleField" type="text" name="portalTitle" value="{$portalTitle}" {if !$showPortalTitle}disabled="disabled"{/if}/>
 </div>

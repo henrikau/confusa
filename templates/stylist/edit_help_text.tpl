@@ -1,10 +1,10 @@
 <div class="tabheader">
 <ul class="tabs">
 <li><span>{$l10n_tab_texts}</span></li>
-<li><a href="?show=css">{$l10n_tab_css}</a></li>
-<li><a href="?show=logo">{$l10n_tab_logo}</a></li>
-<li><a href="?show=title">{$l10n_tab_portaltitle}</a></li>
-<li><a href="?show=mail">{$l10n_tab_notificationmail}</a></li>
+<li><a href="?show=css&amp;{$ganticsrf}">{$l10n_tab_css}</a></li>
+<li><a href="?show=logo&amp;{$ganticsrf}">{$l10n_tab_logo}</a></li>
+<li><a href="?show=title&amp;{$ganticsrf}">{$l10n_tab_portaltitle}</a></li>
+<li><a href="?show=mail&amp;{$ganticsrf}">{$l10n_tab_notificationmail}</a></li>
 </ul>
 </div>
 
@@ -34,6 +34,7 @@
 
 	<div style="width: 90%">
 		<input type="hidden" name="stylist_operation" value="change_help_text" />
+		{$panticsrf}
 		<textarea style="width: 100%" name="help_text" rows="10" cols="80">{$help_text}</textarea>
 	</div>
 	<div class="spacer"></div>
@@ -69,6 +70,7 @@
   <form action="" method="post">
 	<div style="width: 90%">
 		<input type="hidden" name="stylist_operation" value="change_about_text" />
+		{$panticsrf}
 		<textarea name="about_text" style="width: 100%" rows="10" cols="80">{$about_text}</textarea>
 	</div>
 	<div class="spacer"></div>
@@ -95,6 +97,7 @@
 	     name="stylist_operation"
 	     value="change_privnotice_text" />
 
+      {$panticsrf}
       <textarea name="privnotice_text"
 		style="width: 100%"
 		rows="10"
