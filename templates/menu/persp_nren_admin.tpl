@@ -4,7 +4,7 @@
    <li><a href="admin.php"{$prot_title}>
       {$prot_l}{$item_admins|escape}{$prot_r}</a></li>
   <li>
-    <a href="stylist.php?show=text"{$prot_title}>
+    <a href="stylist.php?show=text&amp;{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_appearance|escape}{$prot_r}</a>
   </li>
 </ul>
