@@ -53,10 +53,24 @@ function createIEXPRequest(dn, keysize)
 </div>
 
 <div id="reqDiv" style="margin-top: 2em">
-	<form id="reqForm" name="reqForm" method="post" action="process_csr.php" onsubmit="return createIEXPRequest('{$dn}', {$keysize});">
-		<input type="hidden" id="reqField" name="browserRequest" value="" />
-		<input type="hidden" name="browserSigning" value="xp2003" />
-		<input type="submit" id="chooseButton" style="display: none" value="{$l10n_button_choose}" />
+	<form id="reqForm"
+	      name="reqForm"
+	      method="post"
+	      action="process_csr.php" onsubmit="return createIEXPRequest('{$dn}', {$keysize});">
+	  <div>
+	    <input type="hidden"
+		   id="reqField"
+		   name="browserRequest"
+		   value="" />
+	    <input type="hidden"
+		   name="browserSigning"
+		   value="xp2003" />
+	    {$panticsrf}
+	  </div>
+	  <input type="submit"
+		 id="chooseButton"
+		 style="display: none"
+		 value="{$l10n_button_choose}" />
 	</form>
 </div>
 
@@ -82,7 +96,7 @@ function createIEXPRequest(dn, keysize)
 		</script>
 
 		<div style="margin-top: 1em">
-			{$l10n_info_installcert1} <a href="process_csr.php?install_cert={$order_number|escape}">{$l10n_link_installcert}</a>
+			{$l10n_info_installcert1} <a href="process_csr.php?install_cert={$order_number|escape}&nbsp;{$ganticsrf}">{$l10n_link_installcert}</a>
 			{if isset($ca_certificate)}{$l10n_info_installcert2} <a href="{$ca_certificate}">{$l10n_link_cacert}</a>{/if}!
 		</div>
 	{/if}

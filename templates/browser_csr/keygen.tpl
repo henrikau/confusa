@@ -7,7 +7,7 @@
 	<noscript>
 		<p class="info">
 		{$l10n_infotext_kgprocessing1} {$l10n_infotext_kgprocessing2}
-		{$order_number} <a href="process_csr.php?install_cert={$order_number}">
+		{$order_number} <a href="process_csr.php?install_cert={$order_number}&nbsp;{$ganticsrf}">
 		{$l10n_link_kgclickhere}</a> {$l10n_infotext_kgprocessing3}
 		</p>
 	</noscript>
@@ -29,12 +29,13 @@
 		</script>
 
 		<div style="margin-top: 1em">
-			{$l10n_info_installcert1} <a href="process_csr.php?install_cert={$order_number|escape}">{$l10n_link_installcert}</a>
+			{$l10n_info_installcert1} <a href="process_csr.php?install_cert={$order_number|escape}&nbsp;{$ganticsrf}">{$l10n_link_installcert}</a>
 			{if isset($ca_certificate)}{$l10n_info_installcert2} <a href="{$ca_certificate}">{$l10n_link_cacert}</a>{/if}!
 		</div>
 	{/if}
 {else}
 	<form method="post" action="process_csr.php">
+	  <div>{$panticsrf}</div>
 	<table>
 	<tr>
 	<td id="keygenCell" style="width: 20%;">
