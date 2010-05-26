@@ -52,6 +52,7 @@
       <input type="hidden"
 	     name="revoke_operation"
 	     value="search_by_cn" />
+      {$panticsrf}
     <select name="subscriber">
       {foreach from=$subscribers item=nren_subscriber}
       {if $nren_subscriber->getOrgName() == $active_subscriber}
