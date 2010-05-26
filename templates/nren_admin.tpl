@@ -5,14 +5,14 @@
 {if isset($add_subscriber)}
 <div class="tabheader">
 <ul class="tabs">
-<li><a href="?target=list">{$l10n_tab_listsubs}</a></li>
+<li><a href="?target=list&amp;{$ganticsrf}">{$l10n_tab_listsubs}</a></li>
 <li><span>{$l10n_tab_addsubs}</span></li>
 </ul>
 </div>
 {include file='nren/add_subscriber.tpl'}
 <div class="tabheader">
 <ul class="tabs">
-<li><a href="?target=list">{$l10n_tab_listsubs}</a></li>
+<li><a href="?target=list&amp;{$ganticsrf}">{$l10n_tab_listsubs}</a></li>
 <li><span>{$l10n_tab_addsubs}</span></li>
 </ul>
 </div>
@@ -21,14 +21,14 @@
 <div class="tabheader">
 <ul class="tabs">
 <li><span>{$l10n_tab_listsubs}</span></li>
-<li><a href="?target=add">{$l10n_tab_addsubs}</a></li>
+<li><a href="?target=add&amp;{$ganticsrf}">{$l10n_tab_addsubs}</a></li>
 </ul>
 </div>
 {include file='nren/list_subscribers.tpl'}
 <div class="tabheader">
 <ul class="tabs">
 <li><span>{$l10n_tab_listsubs}</span></li>
-<li><a href="?target=add">{$l10n_tab_addsubs}</a></li>
+<li><a href="?target=add&amp;{$ganticsrf}">{$l10n_tab_addsubs}</a></li>
 </ul>
 </div>
 {/if}
