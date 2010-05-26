@@ -85,13 +85,21 @@
 
       <tr>
 	<td>
-	  <a href="?delete_csr={$csrInspect.auth_token}"><img src="graphics/delete.png"
-	  alt="{$l10n_title_deletecsr}" title="{$l10n_title_deletecsr}" class="url"/> {$l10n_link_delete}</a>
+	  <a href="?delete_csr={$csrInspect.auth_token}&amp;{$ganticsrf}">
+	    <img src="graphics/delete.png"
+		 alt="{$l10n_title_deletecsr}"
+		 title="{$l10n_title_deletecsr}"
+		 class="url"/> {$l10n_link_delete}
+	  </a>
 	</td>
 	<td></td>
 	<td>
-	  <a href="?sign_csr={$csrInspect.auth_token}"><img src="graphics/accept.png"
-	  alt="{$l10n_title_approvecsr}" title="{$l10n_title_approvecsr}" class="url"/> {$l10n_link_approvecsr}</a>
+	  <a href="?sign_csr={$csrInspect.auth_token}&amp;{$ganticsrf}">
+	    <img src="graphics/accept.png"
+		 alt="{$l10n_title_approvecsr}"
+		 title="{$l10n_title_approvecsr}"
+		 class="url"/> {$l10n_link_approvecsr}
+	  </a>
 	</td>
       </tr>
       <tr><td></td></tr>
