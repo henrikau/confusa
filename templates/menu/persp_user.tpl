@@ -22,19 +22,19 @@
 		<h3>{$heading_view_menu|escape}</h3>
 			<ul>
 			<li>{$item_view_user|escape}</li>
-			<li><a href="?mode=admin">{$item_view_nren_admin|escape}</a></li>
+			<li><a href="?mode=admin&amp;{$ganticsrf}">{$item_view_nren_admin|escape}</a></li>
 			</ul>
 	{elseif $person->isSubscriberAdmin()}
 		<h3>{$heading_view_menu|escape}</h3>
 			<ul>
 			<li>{$item_view_user|escape}</li>
-			<li><a href="?mode=admin">{$item_view_subscr_admin|escape}</a></li>
+			<li><a href="?mode=admin&amp;{$ganticsrf}">{$item_view_subscr_admin|escape}</a></li>
 			</ul>
 	{elseif $person->isSubscriberSubAdmin()}
 		<h3>{$heading_view_menu|escape}</h3>
 			<ul>
 			<li>{$item_view_user|escape}</li>
-			<li><a href="?mode=admin">{$item_view_admin|escape}</a></li>
+			<li><a href="?mode=admin&amp;{$ganticsrf}">{$item_view_admin|escape}</a></li>
 			</ul>
 	{/if}
 {/if}
