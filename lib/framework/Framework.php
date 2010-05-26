@@ -227,6 +227,47 @@ class Framework {
 			$this->renderError = true;
 		}
 
+		/* Anti CSRF actions, if POST or GET is set, we must validate
+		 * the anticsrf-token */
+		if (!empty($_GET) || !empty($_POST)) {
+			$facsrft = null; /* form anti CSRF token */
+			if (isset($_GET) && array_key_exists('anticsrf', $_GET)) {
+				$facsrft = Input::sanitizeAntiCSRFToken($_GET['anticsrf']);
+			} else if (isset($_POST) && array_key_exists('anticsrf', $_POST)) {
+				$facsrft = Input::sanitizeAntiCSRFToken($_POST['anticsrf']);
+			}
+			$csrf_error = false;
+			if (!$this->validateACSRFT($facsrft)) {
+				$msg =  "Got a GET/POST request without the correct anticsrf tag.";
+				if (array_key_exists('HTTP_REFERER', $_SERVER)) {
+					$msg .= " Referer was " . $_SERVER['HTTP_REFERER'];
+				}
+				Logger::log_event(LOG_WARNING, "[Anti CSRF] $msg");
+				$csrf_error = true;
+			} else if (array_key_exists('HTTP_REFERER', $_SERVER)) {
+				/* valid facsrft, but directed from another
+				 * page, in most cases, this'll be a csrf,
+				 * block log and stop */
+				Logger::log_event(LOG_ALERT, "[Anti CSRF] Got correct anti-csrf from client, but HTTP_REFERER was set (".
+						  Input::sanitizeURL($_SERVER['HTTP_REFERER']).
+						  "). Possible CSRF attempt. Request was blocked.");
+				$csrf_error = true;
+			}
+			if ($csrf_error) {
+				Framework::error_output($this->contentPage->translateMessageTag('fw_anticsrf_msg'));
+				$this->tpl->assign('instance', Config::get_config('system_name'));
+				$this->tpl->assign('errors', self::$errors);
+				$this->tpl->display('site.tpl');
+				exit(0);
+			}
+		} /* end GET/POST assertion */
+
+		/* Create a new anti CSRF token and export to the template engine */
+		$this->current_anticsrf = $this->createACSRFT();
+		$this->tpl->assign('ganticsrf', 'anticsrf='.$this->current_anticsrf);
+		$this->tpl->assign('panticsrf',
+				   '<input type="hidden" name="anticsrf" value="'.
+				   $this->current_anticsrf.'" />');
 		/*
 		 * Try to run the pre-processing
 		 */
