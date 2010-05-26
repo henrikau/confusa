@@ -48,6 +48,19 @@ class Input
 	}
 
 	/**
+	 * sanitize an anti-CSRF-token. Only characters, numbers and the
+	 * delimiting ':' is allowed, all other values are discarded.
+	 *
+	 * @param	String	$token	the anti-CSRF token
+	 * @return	String		the sanitized token
+	 * @access	public
+	 */
+	static function sanitizeAntiCSRFToken($token)
+	{
+		return preg_replace('/[^a-z0-9]+[^a-z0-9:]/i', '', $token);
+	}
+
+	/**
 	 * Sanitize Confusa's internal representation of a subscriber-name. This
 	 * equals the value sent in the attribute identifying the subscriber
 	 * (eduPersonOrgDN, schacHomeOrganization).
