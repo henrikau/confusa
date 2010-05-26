@@ -10,9 +10,9 @@
 
 <div class="tabheader">
   <ul class="tabs">
-    <li><a href="?show=browser_csr">{$l10n_tab_browsergen}</a></li>
-    <li><a href="?show=upload_csr">{$l10n_tab_uploadcsr}</a></li>
-    <li><a href="?show=paste_csr">{$l10n_tab_pastecsr}</a></li>
+    <li><a href="?show=browser_csr&amp;{$ganticsrf}">{$l10n_tab_browsergen}</a></li>
+    <li><a href="?show=upload_csr&amp;{$ganticsrf}">{$l10n_tab_uploadcsr}</a></li>
+    <li><a href="?show=paste_csr&amp;{$ganticsrf}">{$l10n_tab_pastecsr}</a></li>
 </ul>
 </div>
 <div class="spacer"></div>

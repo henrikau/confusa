@@ -14,6 +14,7 @@
 {include file="csr/email.tpl"}
 <div class="spacer"></div>
 	  <p>
+	    {$panticsrf}
 	    <input type="hidden"
 		   name="browserSigning"
 		   value="start" />

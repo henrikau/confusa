@@ -14,6 +14,7 @@
       <div class="spacer"></div>
       <p>
 	<input type="hidden" name="pastedCSR" value="pastedCSR" />
+	{$panticsrf}
       </p>
       <table>
 	<tr>

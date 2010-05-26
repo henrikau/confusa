@@ -2,7 +2,7 @@
 <div class="success">
 <CENTER>
 	{$l10n_infotext_certproc1}
-	<a href="download_certificate.php?poll={$sign_csr}">{$l10n_link_here}</a>
+	<a href="download_certificate.php?poll={$sign_csr}&amp;{$ganticsrf}">{$l10n_link_here}</a>
 </CENTER>
 </div>
 {/if}
