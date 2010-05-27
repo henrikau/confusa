@@ -81,7 +81,7 @@ function createIEXPRequest(dn, keysize)
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	document.getElementById('info_view').style.display = 'none';
 	document.getElementById("reqDiv").style.display = "none";
-	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
+	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}&{$ganticsrf}";', 10000);
 	document.write('{$l10n_infotext_processing} {$order_number|escape}');
 	document.writeln('<span id="dots"></span>');
 	document.writeln('{$l10n_infotext_brows_csr_ong}');
