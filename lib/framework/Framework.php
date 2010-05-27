@@ -267,7 +267,7 @@ class Framework {
 				if ($p) {
 					$rurl = substr($rurl, 0, $p);
 				}
-				if ($url !== $rurl) {
+				if (dirname($url) !== dirname($rurl)) {
 					Logger::log_event(LOG_ALERT, "[Anti CSRF] Got correct anti-csrf from client, but HTTP_REFERER was set." .
 							  "Got $rurl, expected $url. Possible CSRF attempt. Request was blocked.");
 					$csrf_error = true;
