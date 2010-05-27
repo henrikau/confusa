@@ -21,7 +21,8 @@ class CP_Attributes extends Content_Page
 	public function pre_process($person)
 	{
 		parent::pre_process($person);
-
+		$script = file_get_contents('../include/fetch_attr.js');
+		$this->tpl->assign('rawScript', $script);
 		if (!$person->isNRENAdmin() && !$person->isSubscriberAdmin()) {
 			return;
 		}
