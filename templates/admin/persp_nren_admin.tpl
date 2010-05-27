@@ -207,7 +207,7 @@
 		{foreach from=$subscriber_admins item=subscriber_admin}
 			<tr>
 			<td style="width: 30px">
-				<form action="" method="post">
+				<form action="admin.php" method="post">
 				<input type="hidden" name="nren_operation" value="upgrade_subs_admin" />
 				<input type="hidden" name="subscriber" value="{$subscriber->getOrgName()}" />
 				<input type="hidden" name="subscriberID" value="{$subscriber->getDBID()}" />

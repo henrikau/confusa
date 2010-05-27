@@ -497,7 +497,6 @@ class CP_Admin extends Content_Page
 	 *
 	 * @param  $admin_uid		String  The UID of the admin that should be downgraded.
 	 * @param  $subscriber_id	Int	ID of subscriber in the database.
-	 * @param  $nren_id		Int	ID of NREN in the database.
 	 * @return void
 	 * @access private
 	 */
