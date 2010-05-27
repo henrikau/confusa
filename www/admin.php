@@ -45,8 +45,7 @@ class CP_Admin extends Content_Page
 				case 'downgrade_self':
 					if ($this->person->testEntitlementAttribute(Config::get_config('entitlement_admin'))) {
 						$this->downgradeNRENAdmin($this->person->getEPPN(),
-									  $this->person->getSubscriber()->getDBID(),
-									  $this->person->getNREN()->getID());
+									  $this->person->getSubscriber()->getDBID());
 					}
 					break;
 				case 'upgrade_subs_admin':
@@ -502,7 +501,7 @@ class CP_Admin extends Content_Page
 	 * @return void
 	 * @access private
 	 */
-	private function downgradeNRENAdmin($admin_uid, $subscriber_id, $nren_id)
+	private function downgradeNRENAdmin($admin_uid, $subscriber_id)
 	{
 		if (empty($subsriber_id)) {
 			$msg  = "Tried to downgrade NREN admin " . htmlentities($this->person->getEPPN()) . " from NREN " .
@@ -518,7 +517,7 @@ class CP_Admin extends Content_Page
 			$data = array();
 			$data['subscriber_id']	= $subscriber_id;
 			$data['admin']	        = $admin_uid;
-			$data['nrend_id']	= $nren_id;
+			$data['nren_id']	= $this->person->getNREN()->getID();
 			$res = MDB2Wrapper::update($query, null, $data);
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating your admin status. Server said: " .
