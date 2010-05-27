@@ -58,6 +58,7 @@
 			   name="Downgrade"
 			   title="{$l10n_title_downgrade_adm}"
 			   onclick="return confirm('{$l10n_confirm_downgrade_selfn}')" />
+		    {$panticsrf}
 		  </form>
 		  {else}
 		  <img src="graphics/flag_orange.png"
@@ -70,6 +71,7 @@
 		<td style="width: 30px">
 			<form action="" method="post">
 				<div>
+				  {$panticsrf}
 				<input type="hidden" name="nren_operation" value="delete_nren_admin" />
 				<input type="hidden" name="nren_admin" value="{$admin.eppn}" />
 		{if ($admin.eppn == $self)}
@@ -127,6 +129,7 @@
 	<td style="width: 15em">
 		<input type="hidden" name="nren_operation" value="add_nren_admin" />
 		<input type="text" name="nren_admin" />
+		{$panticsrf}
 	</td>
 	<td style="width: 15em">
 		<input type="text" value="{$l10n_info_ass_flogin}" disabled="disabled" />
@@ -209,6 +212,7 @@
 				<input type="hidden" name="subscriber" value="{$subscriber->getOrgName()}" />
 				<input type="hidden" name="subscriberID" value="{$subscriber->getDBID()}" />
 				<input type="hidden" name="subs_admin" value="{$subscriber_admin.eppn}" />
+				{$panticsrf}
 				<input type="image" src="graphics/arrow_up.png" alt="{$l10n_title_upgrade_adm}"
 				name="Upgrade" title="{$l10n_title_upgrade_adm}"
 				onclick="return confirm('{$l10n_confirm_upgrade_sadm1} {$subscriber_admin.eppn|escape} {$l10n_confirm_upgrade_sadm2} {$nren|escape}?')" />
@@ -217,6 +221,7 @@
 			<td style="width: 30px">
 					<form action="" method="post">
 					<div>
+					  {$panticsrf}
 					<input type="hidden" name="nren_operation" value="delete_subs_admin" />
 					<input type="hidden" name="subscriber" value="{$subscriber->getOrgName()}" />
 					<input type="hidden" name="subscriberID" value="{$subscriber->getDBID()}" />
@@ -254,6 +259,7 @@
 			<td style="width: 30px">
 			</td>
 		<td style="width: 15em">
+		  {$panticsrf}
 			<input type="hidden" name="nren_operation" value="add_subs_admin" />
 			<input type="hidden" name="subscriber" value="{$subscriber->getOrgName()}" />
 			<input type="hidden" name="subscriberID" value="{$subscriber->getDBID()}" />
