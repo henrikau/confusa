@@ -11,12 +11,13 @@
     <!--					be written to		-->
     <!-- @param	errMsg string: A string that will be displayed if the -->
     <!--						attribute value can not be fetched -->
+    <!-- @param anticsrf String: A string contaning a unique token to prevent CSRF -->
     <!-- @return	void						-->
-    function fetchAttributeValue(selectElement, targetElementID,  errMsg)
+    function fetchAttributeValue(selectElement, targetElementID,  errMsg, anticsrf)
 {
     var req   = new XMLHttpRequest();
     var field = document.getElementById(targetElementID);
-    var path  = "?attr_value=" + selectElement.value;
+    var path  = "?attr_value=" + selectElement.value + "&amp" + anticsrf;
 
     req.open("GET", path, true);
 

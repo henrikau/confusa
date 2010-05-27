@@ -63,7 +63,10 @@
       <tr>
 	<td align="right">{$l10n_label_epodn}<br /></td>
 	<td align="right">
-	  <select {if ! $person->isNRENAdmin()} disabled="disabled"{/if} name="epodn" onchange="fetchAttributeValue(this, 'orgNameField', '{$l10n_err_attvalna}');">
+	  <select
+	     {if ! $person->isNRENAdmin()}disabled="disabled"{/if}
+	    name="epodn"
+	    onchange="fetchAttributeValue(this, 'orgNameField', '{$l10n_err_attvalna}', '{$ganticsrf}');">
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $map.epodn}selected="selected"{/if} value="{$element}">
 	      {$element}
@@ -81,7 +84,8 @@
       <tr>
 	<td align="right">{$l10n_label_cn}<br /></td>
 	<td align="right">
-	  <select name="cn" onchange="fetchAttributeValue(this, 'cnField', '{$l10n_err_attvalna}');">
+	  <select name="cn"
+		  onchange="fetchAttributeValue(this, 'cnField', '{$l10n_err_attvalna}', '{$ganticsrf}');">
 	    <option value="">&nbsp; </option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $map.cn}selected="selected"{/if} value="{$element}">
@@ -99,7 +103,8 @@
       <tr>
 	<td align="right">{$l10n_label_mail}<br /></td>
 	<td align="right">
-	  <select name="mail" onchange="fetchAttributeValue(this, 'emailField', '{$l10n_err_attvalna}');">
+	  <select name="mail"
+		  onchange="fetchAttributeValue(this, 'emailField', '{$l10n_err_attvalna}', '{$ganticsrf}');">
 	    <option value="">&nbsp; </option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $map.mail}selected="selected"{/if} value="{$element}">
@@ -118,7 +123,12 @@
 	<td align="right">{$l10n_label_entitlement}<br /></td>
 	<td align="right">
 	  {* activate the entitlement field only for NREN-admins *}
-	  <select {if ! $person->isNRENAdmin()} disabled="disabled"{/if} name="entitlement" onchange="fetchAttributeValue(this, 'entitlementField', '{$l10n_err_attvalna}')">
+	  <select 
+	     {if ! $person->isNRENAdmin()}
+	    disabled="disabled"
+	    {/if}
+	    name="entitlement"
+	    onchange="fetchAttributeValue(this, 'entitlementField', '{$l10n_err_attvalna}', '{$ganticsrf}')">
 	    <option value="">&nbsp; </option>
 	    {foreach from=$keys item=element}
 	    <option {if $element eq $map.entitlement}selected="selected"{/if} value="{$element}">
