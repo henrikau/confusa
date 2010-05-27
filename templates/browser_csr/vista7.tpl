@@ -105,7 +105,7 @@ function createIEVistaRequest(dn, keysize)
 	document.getElementById('info_view').style.display = 'none';
 	document.getElementById("reqDiv").style.display = "none";
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
-	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}";', 10000);
+	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}&{$ganticsrf}";', 10000);
 	document.write('{$l10n_infotext_processing} {$order_number|escape}');
 	document.writeln('<span id="dots"></span>');
 	document.writeln('{$l10n_infotext_brows_csr_ong}');
@@ -120,7 +120,7 @@ function createIEVistaRequest(dn, keysize)
 		</script>
 
 		<div style="margin-top: 1em">
-			{$l10n_info_installcert1} <a href="process_csr.php?install_cert={$order_number|escape}">{$l10n_link_installcert}</a>
+			{$l10n_info_installcert1} <a href="process_csr.php?install_cert={$order_number|escape}&{$ganticsrf}">{$l10n_link_installcert}</a>
 			{if isset($ca_certificate)}{$l10n_info_installcert2} <a href="{$ca_certificate}">{$l10n_link_cacert}</a>{/if}!
 		</div>
 	{/if}
