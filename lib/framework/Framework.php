@@ -565,3 +565,5 @@ class Framework {
 	} /* end validateACSRFT() */
 
 } /* end class Framework */
+
+?>
