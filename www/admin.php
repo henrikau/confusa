@@ -505,8 +505,8 @@ class CP_Admin extends Content_Page
 	private function downgradeNRENAdmin($admin_uid, $subscriber_id, $nren_id)
 	{
 		if (empty($subsriber_id)) {
-			$msg  = "Tried to downgrade NREN admin " . htmlentities($person_>getEPPN()) . " from NREN " .
-			        htmlentities($person->getNREN()->getName()) . " to subscriber admin, ";
+			$msg  = "Tried to downgrade NREN admin " . htmlentities($this->person->getEPPN()) . " from NREN " .
+			        htmlentities($this->person->getNREN()->getName()) . " to subscriber admin, ";
 			$msg .= "but admin's subscriber affiliaton is not set. Cannot continue.";
 			Logger::log_event(LOG_NOTICE,$msg);
 			Framework::error_output($msg);
@@ -523,22 +523,22 @@ class CP_Admin extends Content_Page
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output("Problem updating your admin status. Server said: " .
 						htmlentities($dbqe->getMessage()));
-			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
-							" of subscriber with ID $subscriberID");
+			Logger::log_event(LOG_NOTICE, "ADMIN: Could not update admin status of admin $admin_uid to subscriber admin " .
+							" of subscriber with ID $subscriber_id");
 			return;
 		} catch (DBStatementException $dbse) {
 			Framework::error_output("Problem updating your admin status. Server said: " .
 						htmlentities($dbse->getMessage()));
 			Logger::log_event(LOG_NOTICE,
-					  "ADMIN: Could not update admin status of admin $admin to subscriber admin " .
-					  " of subscriber with ID $subscriberID");
+					  "ADMIN: Could not update admin status of admin $admin_uid to subscriber admin " .
+					  " of subscriber with ID $subscriber_id");
 			return;
 		}
 
-		Logger::log_event(LOG_NOTICE, "Admin: NREN admin $admin downgraded his/her status to subscriber admin of " .
-						"subscriber with ID $subscriberID");
+		Logger::log_event(LOG_NOTICE, "Admin: NREN admin $admin_id downgraded his/her status to subscriber admin of " .
+						"subscriber with ID $subscriber_id");
 		Framework::success_output($this->translateTag('l10n_suc_downgrnren', 'admin') .
-		                          htmlentities($subscriberID));
+		                          htmlentities($subscriber_id));
 	}
 
 	/*
