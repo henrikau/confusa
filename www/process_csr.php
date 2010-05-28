@@ -96,12 +96,18 @@ final class CP_ProcessCsr extends Content_Page
 			$ua = Output::getUserAgent();
 			$script = $this->ca->getCertDeploymentScript($order_number, $ua);
 
-			if ($ua == "keygen") {
+			switch($ua) {
+			case "opera":
+			case "safari":
+			case "mozilla":
+			case "chrome":
 			    include_once 'file_download.php';
 			    download_certificate($script, "install.crt");
 			    exit(0);
-			} else {
+				break;
+			default:
 				$this->tpl->assign('deployment_script', $script);
+				break;
 			}
 		}
 
@@ -512,7 +518,10 @@ final class CP_ProcessCsr extends Content_Page
 		case "msie_pre_vista":
 			return "browser_csr/xp2003.tpl";
 			break;
-		case "keygen":
+		case "chrome":
+		case "safari":
+		case "opera":
+		case "mozilla":
 			return "browser_csr/keygen.tpl";
 			break;
 		case "other":
