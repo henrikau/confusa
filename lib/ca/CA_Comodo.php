@@ -875,6 +875,20 @@ class CA_Comodo extends CA
             break;
 
         case "chrome":
+			 $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
+                                   "?loginName=" . $this->login_name .
+                                    "&loginPassword=" . $this->login_pw .
+                                    "&orderNumber=" . $key .
+                                    "&queryType=2" .
+                                    "&responseType=3" . /* PKCS#7 */
+                                    "&responseEncoding=0"; /* encode base-64 */
+
+            $data = CurlWrapper::curlContact($collect_endpoint);
+            $cert = trim(substr($data, 2));
+            $der_cert = CA::PEMtoDER($cert, "cert");
+            return $der_cert;
+            break;
+
         case "mozilla":
         case "safari":
         case "opera":
