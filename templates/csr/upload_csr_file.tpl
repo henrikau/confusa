@@ -20,6 +20,7 @@
 	      <input type="hidden" name="uploadedCSR" value="uploadedCSR" />
 	      <input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
 	      <input type="file" name="user_csr" />
+	      {$panticsrf}
 	      <input type="submit"
 		     value="{$l10n_button_uploadcsr}"
 		     value="Upload CSR"
