@@ -294,7 +294,7 @@ class Framework {
 		try {
 			$res = $this->contentPage->pre_process($this->person);
 			if ($res) {
-				$this->tpl->assign('extraHeader', $res);
+				$this->tpl->assign('extraHeader', $res."&amp;".$this->current_anticsrf);
 			}
 		} catch (CGE_RemoteCredentialException $rce) {
 			$msg  = $this->contentPage->translateMessageTag('fw_error_remote_credential1');
