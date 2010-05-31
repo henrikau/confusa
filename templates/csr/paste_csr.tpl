@@ -19,7 +19,7 @@
       <table>
 	<tr>
 	  <td colspan="2">
-	    <textarea name="user_csr" rows="20" cols=" 60"></textarea><br />
+	    <textarea name="user_csr" rows="20" cols="70"></textarea><br />
 	  </td>
 	</tr>
 	<tr>
