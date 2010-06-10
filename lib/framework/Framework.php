@@ -283,7 +283,7 @@ class Framework {
 		} /* end GET/POST assertion */
 
 		/* Create a new anti CSRF token and export to the template engine */
-		$this->current_anticsrf = $this->createACSRFT();
+		$this->current_anticsrf = self::getAntiCSRF();
 		$this->tpl->assign('ganticsrf', 'anticsrf='.$this->current_anticsrf);
 		$this->tpl->assign('panticsrf',
 				   '<input type="hidden" name="anticsrf" value="'.
@@ -294,7 +294,7 @@ class Framework {
 		try {
 			$res = $this->contentPage->pre_process($this->person);
 			if ($res) {
-				$this->tpl->assign('extraHeader', $res."&amp;".$this->current_anticsrf);
+				$this->tpl->assign('extraHeader');
 			}
 		} catch (CGE_RemoteCredentialException $rce) {
 			$msg  = $this->contentPage->translateMessageTag('fw_error_remote_credential1');
@@ -493,55 +493,23 @@ class Framework {
 	 * - it is easy to fake a HTTP_REFERER value by explicitly setting the
 	 *   headers sent.
 	 * - browsers are vulnerable, exploits exists
-	 */
-	public static function getAntiCSRF()
-	{
-		$santicsrf = CS::getSessionKey('anticsrf');
-		if (is_null($santicsrf)) {
-			$session = session_id();
-			$random = rand(0, PHP_INT_MAX);
-			list($ts_us, $ts_s) = explode(" ", microtime());
-			$santicsrf = sha1($session . $ts_tot . $random);
-			CS::setSessionKey('anticsrf', $santicsrf);
-		}
-		return $santicsrf;
-	} /* end getAntiCSRF() */
-
-
-	/**
-	 * createACSRFT() Create Anti-CSRF Token
-	 *
-	 * We could introduce the session_id, but to aovid session-hijacking we
-	 * do not want to include this into all the form-requests in Confusa.
-	 *
-	 * Instead we use a second-order identifier derived from the session
-	 * along with extra randomness. This is then concatenated and fed
-	 * through a one-way function (to proect the session_id).
-	 *
-	 * The token is then presented the same way a crypt-part is used,
-	 * although we use a strongher hash (but the idea with the salt is the
-	 * same).
-	 *
-	 * Why not rely upon HTTP_REFERER as a test?
-	 * - *nothing* from a browser (with respect to anti CSRF) can be trusted.
-	 * - it is easy to fake a HTTP_REFERER value by explicitly setting the
-	 *   headers sent.
-	 * - browsers are vulnerable, exploits exists
 	 *
 	 * @param	String $rand	A random seed. If not supplied, a random
 	 *				value is generated.
 	 * @return	String		The Anti CSRF token.
-	 * @access	private
+	 * @access	static
 	 */
-	private function createACSRFT($rand = null)
+	public static function getAntiCSRF($rand = null)
 	{
 		if (is_null($rand)) {
 			$rand = rand(0, PHP_INT_MAX);
 		}
 		/* make sure rand only contains allowed characters. */
 		$rand = Input::sanitizeAntiCSRFToken($rand);
+
 		return $rand.":".sha1(session_id().$rand);
-	} /* end createACSRFT() */
+	} /* end getAntiCSRF() */
+
 
 	/**
 	 * validateACSRFT() validate a supplied token
@@ -551,8 +519,9 @@ class Framework {
 	 *
 	 * @param	String	$token	The token to validate
 	 * @return	Boolean		True if the token is valid
+	 * @access	static
 	 */
-	private function validateACSRFT($token)
+	public static function validateACSRFT($token)
 	{
 		if (is_null($token) || $token == "") {
 			return false;
@@ -561,7 +530,7 @@ class Framework {
 		if (!$pos) {
 			throw new ConfusaGenException("Malformed Anti CSRF token, could not determine placement of delimiter.");
 		}
-		return $token === $this->createACSRFT(substr($token, 0, $pos));
+		return $token === self::getAntiCSRF(substr($token, 0, $pos));
 	} /* end validateACSRFT() */
 
 } /* end class Framework */
