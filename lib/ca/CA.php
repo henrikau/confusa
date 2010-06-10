@@ -135,12 +135,6 @@ abstract class CA
   *         about the certificates
   */
   abstract function getCertListForEPPN($eppn, $org);
-  /*
-   * If the person has been changed in the framework or elsewhere, it can be updated here
-   */
-  public function updatePerson($pers) {
-    $this->person = $pers;
-  }
 
   /**
    * Convert from DER certificates to PEM certificates.
