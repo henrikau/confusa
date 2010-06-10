@@ -477,10 +477,8 @@ final class CP_ProcessCsr extends Content_Page
 		 * <HEAD>-section in framework. This is to provide a
 		 * auto-refrech for the user, resulting in a cleaner user
 		 * experience. */
-		$url = "http";
-		if ($_SERVER['SERVER_PORT'] == 443)
-			$url .= "s";
-		$url .= "://" . $_SERVER['HTTP_HOST'] . "/" . dirname($_SERVER['PHP_SELF']) . "/download_certificate.php?poll=$authToken";
+		$url = "https://";
+		$url .= $_SERVER['HTTP_HOST'] . "/" . dirname($_SERVER['PHP_SELF']) . "/download_certificate.php?poll=$authToken";
 		return "<META HTTP-EQUIV=\"REFRESH\" content=\"3; url=$url\">\n";
 	} /* end approve_csr_remote() */
 
