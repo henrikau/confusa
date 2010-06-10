@@ -308,8 +308,9 @@ class CP_RevokeCertificate extends Content_Page
 		$owners = array();
 		$orders = array();
 		foreach($certs as $row) {
-			$owners[] = $row['cert_owner'];
-			$orders[Input::sanitizeCommonName($row['cert_owner'])][] = $row['auth_key'];
+			$owner = Input::sanitizeCommonName($row['cert_owner']);
+			$owners[] = $owner;
+			$orders[$owner][] = $row['auth_key'];
 		}
 
 		/* total number of occurences for every owner */
