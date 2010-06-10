@@ -160,12 +160,23 @@ class Input
 	/**
 	 * Sanitize an URL. Include most characters needed for protocol-, host-,
 	 * domain- and query-part. Drop the rest. No punycode URLs.
+	 *
+	 * This will also strip all excessive // in the URL except after the
+	 * https://-bit.
+	 *
 	 * @param $input the unsanitized URL
 	 * @return string the sanitized URL
 	 */
 	static function sanitizeURL($input)
 	{
 		$output = preg_replace('|[^\:/\.a-z0-9\-\?&%\=~_]|i', '', $input);
+		/* strip excessive //'s*/
+		$pos = strpos($output, "://");
+		if ($pos > 0) {
+			$pos += strlen("://");
+			$output = substr($output, 0, $pos) .
+				preg_replace("/\/\//","/", substr($output, $pos));
+		}
 		return $output;
 	}
 
