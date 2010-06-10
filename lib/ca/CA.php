@@ -128,10 +128,10 @@ abstract class CA
   * - query for wildcard-prefixed eppn in common-name field in eScience mode
   * - query for the eppn in the unstructuredName field in personal mode
   *
-  * @param $eppn string The EPPN of the subject which is queried fore
-  * @param $org string The name of the organization to which the query is
+  * @param string $eppn The EPPN of the subject which is queried for.
+  * @param string $org The name of the organization to which the query is
   *                    constrained
-  * $return array(auth_key, subject, valid_untill) list with meta-information
+  * $return array(auth_key, subject, valid_until) list with meta-information
   *         about the certificates
   */
   abstract function getCertListForEPPN($eppn, $org);

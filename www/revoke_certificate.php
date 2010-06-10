@@ -294,6 +294,10 @@ class CP_RevokeCertificate extends Content_Page
 	 * Not being blessed with the privileges that institution-adminship offers,
 	 * the normal user will only be given the possibility to revoke the full
 	 * set of her own certificates.
+	 *
+	 * @param	void
+	 * @return	void
+	 * @access	private
 	 */
 	 private function showNonAdminRevokeTable()
 	 {

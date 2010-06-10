@@ -196,6 +196,11 @@ class Framework {
 	 * Some actions are more sensitive than others. This function will
 	 * notify the framework that the user should be AuthN recently. The
 	 * limit is configurable.
+	 *
+	 * @param	void
+	 * @return	void
+	 * @access	public
+	 * @static
 	 */
 	public static function sensitive_action()
 	{
@@ -395,6 +400,18 @@ class Framework {
 		}
 	} /* end applyNRENBranding */
 
+	/**
+	 * Register new error-message to display in the page
+	 *
+	 * This will post a message in the top of the general content-area
+	 * surrounded with a red (if the CSS is unaltered) box to draw
+	 * attention.
+	 *
+	 * @param	String $message the error to display
+	 * @return	void
+	 * @access	public
+	 * @
+	 */
 	public static function error_output($message)
 	{
 		self::$errors[] = $message;
