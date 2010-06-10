@@ -474,7 +474,9 @@ final class CP_ProcessCsr extends Content_Page
 		$url = "http";
 		if ($_SERVER['SERVER_PORT'] == 443)
 			$url .= "s";
-		$url .= "://" . $_SERVER['HTTP_HOST'] . "/" . dirname($_SERVER['PHP_SELF']) . "/download_certificate.php?poll=$authToken";
+		$url .= "://" . $_SERVER['HTTP_HOST'] . "/" . dirname($_SERVER['PHP_SELF']) .
+			"/download_certificate.php?poll=$authToken" .
+			"&amp;anticsrf=" . Framework::getAntiCSRF();
 		return "<META HTTP-EQUIV=\"REFRESH\" content=\"3; url=$url\">\n";
 	} /* end approveCSR() */
 
