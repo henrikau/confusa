@@ -7,6 +7,7 @@ require_once 'send_element.php';
 require_once 'csv_lib.php';
 require_once 'Input.php';
 require_once 'MDB2Wrapper.php';
+require_once 'CS.php';
 
 class CP_RevokeCertificate extends Content_Page
 {
@@ -293,25 +294,28 @@ class CP_RevokeCertificate extends Content_Page
 	 * Not being blessed with the privileges that institution-adminship offers,
 	 * the normal user will only be given the possibility to revoke the full
 	 * set of her own certificates.
+	 *
+	 * @param	void
+	 * @return	void
+	 * @access	private
 	 */
 	 private function showNonAdminRevokeTable()
-	{
-		if (isset($_SESSION['auth_keys'])) {
-			unset($_SESSION['auth_keys']);
-		}
+	 {
+		 CS::deleteSessionKey('auth_keys');
 
 		$eppn = $this->person->getEPPN();
 		$certs = $this->ca->getCertListForEPPN($eppn, $this->person->getSubscriber()->getOrgName());
 		$owners = array();
 		$orders = array();
 		foreach($certs as $row) {
-			$owners[] = $row['cert_owner'];
-			$orders[Input::sanitizeCommonName($row['cert_owner'])][] = $row['auth_key'];
+			$owner = Input::sanitizeCommonName($row['cert_owner']);
+			$owners[] = $owner;
+			$orders[$owner][] = $row['auth_key'];
 		}
 
 		/* total number of occurences for every owner */
 		$stats = array_count_values($owners);
-		$_SESSION['auth_keys'] = $orders;
+		CS::setSessionKey('auth_keys',$orders);
 		$owners = array_unique($owners);
 		$this->tpl->assign('owners', $owners);
 		$this->tpl->assign('stats', $stats);
@@ -341,10 +345,7 @@ class CP_RevokeCertificate extends Content_Page
 	 */
 	private function searchCertsDisplay($common_name, $subscriber)
 	{
-		if (isset($_SESSION['auth_keys'])) {
-			unset($_SESSION['auth_keys']);
-		}
-
+		CS::deleteSessionKey('auth_keys');
 		if (!empty($subscriber)) {
 			$certs = $this->ca->getCertListForPersons($common_name, $subscriber);
 		}
@@ -366,7 +367,7 @@ class CP_RevokeCertificate extends Content_Page
 
 			/* total number of occurences for every owner */
 			$stats = array_count_values($owners);
-			$_SESSION['auth_keys'] = $orders;
+			CS::setSessionKey('auth_keys', $orders);
 			$owners = array_unique($owners);
 			$this->tpl->assign('owners', $owners);
 			$this->tpl->assign('stats', $stats);
@@ -397,16 +398,14 @@ class CP_RevokeCertificate extends Content_Page
 		    Config::get_config('capi_test') === true) {
 			Framework::message_output($this->translateTag('l10n_msg_revsim1', 'revocation'));
 		}
-		$auth_keys = array();
-
-		if (isset($_SESSION['auth_keys'])) {
-			$auth_keys = $_SESSION['auth_keys'];
-			unset($_SESSION['auth_keys']);
-		} else {
+		$auth_keys = CS::getSessionKey('auth_keys');
+		CS::deleteSessionKey('auth_keys');
+		if (is_null($auth_keys)) {
 			Framework::error_output("Lost the certificate identifiers associated with " .
 			                        "common name " .
 			                        htmlentities($common_name) .
 			                        " during the session! Please try again!");
+			return;
 		}
 		if (!array_key_exists($common_name, $auth_keys)) {
 			Framework::error_output("Auth-keys has no such common-name ($common_name). Cannot continue.");
@@ -462,13 +461,12 @@ class CP_RevokeCertificate extends Content_Page
 			Framework::message_output($this->translateTag('l10n_msg_revsim1', 'revocation'));
 		}
 
-		$auth_keys = array();
-		if (isset($_SESSION['auth_keys'])) {
-			$auth_keys = $_SESSION['auth_keys'];
-			unset($_SESSION['auth_keys']);
-		} else {
+		$auth_keys = CS::getSessionKey('auth_keys');
+		CS::deleteSessionKey('auth_keys');
+		if (is_null($auth_keys)) {
 			Framework::error_output("Lost session! Please log-out of Confusa, " .
-									"log-in again and try again!\n");
+						"log-in again and try again!\n");
+			return;
 		}
 
 		$num_certs = count($auth_keys);
@@ -523,9 +521,7 @@ class CP_RevokeCertificate extends Content_Page
 		 * an endless list of auth_keys as hidden parameters
 		 * to the user and then from there back again with a POST to the server
 		 */
-		if (isset($_SESSION['auth_keys'])) {
-			unset($_SESSION['auth_keys']);
-		}
+		CS::deleteSessionKey('auth_keys');
 
 		$csvl = new CSV_Lib($eppn_file);
 		$eppn_list = $csvl->get_csv_entries();
@@ -548,7 +544,7 @@ class CP_RevokeCertificate extends Content_Page
 			}
 
 			$owners = array_unique($owners);
-			$_SESSION['auth_keys'] = $auth_keys;
+			CS::setSessionKey('auth_keys', $auth_keys);
 			$this->tpl->assign('owners', $owners);
 			$this->tpl->assign('revoke_list', true);
 			$this->tpl->assign('nren_reasons', ConfusaConstants::$REVOCATION_REASONS);

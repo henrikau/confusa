@@ -136,15 +136,21 @@ final class CP_DownloadCertificate extends Content_Page
 		$ua = Output::getUserAgent();
 		$script = $this->ca->getCertDeploymentScript($authKey, $ua);
 
-		if ($ua == "keygen") {
+		switch($ua) {
+		case "chrome":
+		case "opera":
+		case "mozilla":
+		case "safari":
 			include 'file_download.php';
 			download_certificate($script, "install.crt");
 			exit(0);
-		} else {
+			break;
+		default:
 			$script .= "<noscript><b>" .
 			           $this->translateTag('l10n_noscript_notice', 'download') .
 			           "</b></noscript>";
 			$this->tpl->assign("script", $script);
+			break;
 		}
 	}
 

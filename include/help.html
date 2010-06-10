@@ -2,8 +2,11 @@
 <ul class="toc">
   <li><b>Table of contents:</b></li>
   <li><span><a href="#csr_create">How do I create a CSR?</a></span><br /></li>
+  <li><span><a href="#browsers">Which browser are supported for browser requests?</a></span><br /></li>
   <li><span><a href="#export">How to export certificates from the keystore</a></span><br /></li>
   <li><span><a href="#pkcs12">How to convert between PKCS#12 and X.509</a></span><br /></li>
+  <li><span><a href="#export_chrome_linux">How to export certificates from the keystore (Chrome/Linux)</a></span><br /></li>
+  <li><span><a href="#import_chrome">How to import CA certificates into Chrome</a></span></li>
 </ul>
 
 
@@ -31,6 +34,24 @@ be arbitrary, as shown above, because Confusa will replace it with real values
 matching you, once it issues the certificate!
 <br /><br />
 
+<h3 id="browsers">Which browsers are supported for browser requests</h3>
+
+<ul class="help">
+<li>Mozilla based browsers (Firefox, SeaMonkey)</li>
+<li>Internet Explorer (on Windows XP, Vista, 7)</li>
+<li>Apple Safari (on MacOS X)</li>
+<li>Google Chrome (on Windows, Linux)</li>
+<li>Opera</li>
+</ul>
+<p>These browsers are <b>not</b> supported at the moment:</p>
+
+<ul class="help">
+<li>Apple Safari on the iPhone/iPad</li>
+<li>Internet Explorer on old Windows versions</li>
+<li>Google Chrome on MacOS X</li>
+</ul>
+<br />
+
 <h3 id="export">How to export certificates from the keystore</h3>
 
 <b>Firefox:</b> Go to "Preferences/Advanced/Encryption/View Certificates/Your certificates".
@@ -42,7 +63,10 @@ steps <a href="#pkcs12">here</a>.<br />
 <b>Internet Explorer:</b> Go to "Internet options/Content/Certificates". Click the certificate you
 want to export and click "export". When asked, whether to include the private key, confirm the message.
 Select PKCS#12 format and "enable strong protection". If you need the certificate for Grid submission, follow the
-steps <a href="#pkcs12">here</a>.
+steps <a href="#pkcs12">here</a>.<br />
+<b>Safari/Mac OS X:</b> Your certificate should be automatically added to the keyring.<br />
+<b>Chrome/Windows:</b> It works the same way as with Internet Explorer.<br />
+<b>Chrome/Linux:</b> See the <a href="#export_chrome_linux">separate section for that topic</a>.<br />
 <br />
 <br />
 
@@ -65,3 +89,23 @@ Subsequently, give them the right permissions:<br />
 chmod 0600 userkey.pem<br />
 chmod 0644 usercert.pem
 </p>
+<br />
+<h3 id="export_chrome_linux">How to export certificates from the keystore (Chrome/Linux)</h3>
+
+<p>Instead of having it's own certificate management facilities, on Linux Google chrome ties into libnss3-tools. See the <a href="http://code.google.com/p/chromium/wiki/LinuxCertManagement" target="_blank">Chrome documentatio</a>n on certificate management. On the downside, users will not have a very nice graphical interface to manage their certificates. On the other downside, the certutil command is not very easy to use. On the upside, it is rather powerful.</p>
+<p>So after issuing a certificate, it can be checked whether it is present as one of the user's certificates:</p>
+<p class="example">certutil -d sql:$HOME/.pki/nssdb -L
+<p>Unfortunately the auto-generated cert id makes all cert operations an input-hazzle. List the details of a certificate:</p>
+<p class="example">certutil -d sql:$HOME/.pki/nssdb -L -n Confusa\ Test\ User\ Full\ Name\ aeoeaa\ confusatest@feide.no\'s\ TERENA\ eScience\ Personal\ CA\ ID</p>
+<p>To export the certificate, from the NSS3 database, pk12util has to be used because certutil can only export the public key:</p>
+<p class="example">pk12util -d sql:$HOME/.pki/nssdb -o cert.p12 -n Confusa\ Test\ User\ Full\ Name\ aeoeaa\ confusatest@feide.no\'s\ TERENA\ eScience\ Personal\ CA\ ID</p>
+<p>Now that the certificate has been exported in PKCS#12 format, it needs to be <a href="#pkcs12">converted to PKCS#7 format</a> in order to be used with the Globus/Grid software.
+
+<h3 id="import_chrome">How to import CA certificates into Chrome</h3>
+
+<h4>Importing the CA certificate (Windows)</h4>
+<p>Automatic import via the Chrome browser does not work. Instead the certificate has to be downloaded to the harddrive. Opening the browser options, navigating to "Under the hood" and clicking on the "Certificate Management" button, will bring up Windows' integrated certificate management. There the certificate can be imported.</p>
+<br />
+<h4>Importing the CA certificate (Linux)</h4>
+<p>Our friend CertUtil will have to help us with importing again. First we download the CA-cert from the CA section of the portal and then we import it with certutil. -t T,c,c tells cert-util that the certificate can serve as a well CA for client certificates in SSL and is a valid CA for S/MIME and JAR.</p>
+<p class="example">certutil -d sql:$HOME/.pki/nssdb -A -n terena_escience_ca -t T,c,c -i TERENAeSciencePersonalCA.crt</p>

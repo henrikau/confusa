@@ -153,7 +153,7 @@ class Input
 	 */
 	static function sanitizeCommonName($input)
 	{
-		$output = mb_ereg_replace('[^[:alpha:]\s\.0-9@_\-\+]', '', $input, 'ip');
+		$output = mb_ereg_replace('[^[:alpha:]\s\.0-9@_\-\+=/,]', '', $input, 'ip');
 		return $output;
 	}
 
