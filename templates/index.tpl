@@ -8,7 +8,7 @@
 </p>
 
 <div style="text-align: center; margin: 2em 0 2em 0">
-<a href="?start_login=yes&amp;{$gantics}">
+<a href="?start_login=yes&amp;{$ganticsrf}">
 <img src="graphics/login_button.gif" alt="Login" style="border: 0" />
 </a>
 </div>
