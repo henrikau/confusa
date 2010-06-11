@@ -50,9 +50,17 @@
 		$server->add_signature_method($hmac_method);
 		$server->add_signature_method($plaintext_method);
 
-		$req = OAuthRequest::from_request();
-		$token = $server->fetch_request_token($req);
-		echo $token;
+		try {
+			$req = OAuthRequest::from_request();
+			$token = $server->fetch_request_token($req);
+			echo $token;
+		} catch (OAuthException $oae) {
+			header("HTTP/1.1 403 Forbidden");
+			echo $oae->getMessage() . "\n";
+			echo $oae->getTraceAsString() . "\n";
+		}
+
+		exit;
 		break;
 
 	case '/authorize':
@@ -80,8 +88,16 @@
 		$_SESSION['consent_val'] = $consent_val;
 
 		$store = new OAuthDataStore_Confusa();
-		$consumer_key = $store->consumer_from_token($requestToken);
-		$consumer_info = $store->get_consumer_info($consumer_key);
+
+		try {
+			$consumer_key = $store->consumer_from_token($requestToken);
+			$consumer_info = $store->get_consumer_info($consumer_key);
+		} catch (Exception $e) {
+			header("HTTP/1.1 403 Forbidden");
+			echo $e->getMessage() . "<br />\n";
+			echo $e->getTraceAsString() . "<br />\n";
+			exit;
+		}
 
 		$tpl = new Smarty();
 		$tpl->template_dir= Config::get_config('install_path').'templates';
@@ -154,7 +170,15 @@
 
 		$server->add_signature_method($hmac_method);
 		$server->add_signature_method($plaintext_method);
-		$store->authorize($requestToken, $attributes);
+
+		try {
+			$store->authorize($requestToken, $attributes);
+		} catch (Exception $e) {
+			header("HTTP/1.1 412 Precondition Failed");
+			echo $e->getMessage() . "<br />\n";
+			echo $e->getTraceAsString() . "<br />\n";
+			exit;
+		}
 
 		if (isset($_GET['relayURL'])) {
 			$relayURL = $_GET['relayURL'];
@@ -180,15 +204,29 @@
 		$server->add_signature_method($hmac_method);
 		$server->add_signature_method($plaintext_method);
 
-		$req = OAuthRequest::from_request();
-		$requestToken = $req->get_parameter('oauth_token');
+		try {
+			$req = OAuthRequest::from_request();
+			$requestToken = $req->get_parameter('oauth_token');
 
-		if (!$store->isAuthorized($requestToken)) {
-			throw new Exception('Your request was not authorized. Request token [' . $requestToken . '] not found.');
+			if (!$store->isAuthorized($requestToken)) {
+				throw new Exception('Your request was not authorized. ' .
+					'Request token [' . $requestToken . '] not found.');
+			}
+
+			$accessToken = $server->fetch_access_token($req);
+			$data = $store->moveAuthorizedData($requestToken,
+			                                   $accessToken->key);
+		} catch (OAuthException $oae) {
+			header("HTTP/1.1 403 Forbidden");
+			echo $oae->getMessage() . "\n";
+			echo $oae->getTraceAsString() . "\n";
+			exit;
+		} catch (Exception $e) {
+			header("HTTP/1.1 500 Internal server error");
+			echo $e->getMessagE() . "\n";
+			echo $e->getTraceAsString() . "\n";
+			exit;
 		}
-
-		$accessToken = $server->fetch_access_token($req);
-		$data = $store->moveAuthorizedData($requestToken, $accessToken->key);
 
 		echo $accessToken;
 		break;
