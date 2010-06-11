@@ -206,6 +206,14 @@ class API_Certificates extends API
 			}
 		}
 
+		$regCertEmails = $this->person->getRegCertEmails();
+		if (empty($regCertEmails)) {
+			$msg = "The supplied mail address does not match any federation " .
+			       "federation attribute!";
+			$this->errorBadRequest($msg);
+			exit(1);
+		}
+
 		/* FIXME: Adapt to the new API once it exists */
 		require_once 'csr_lib.php';
 		$auth_key = pubkey_hash($csr, TRUE);
