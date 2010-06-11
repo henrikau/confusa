@@ -21,6 +21,15 @@ abstract class API
 
 	function __construct()
 	{
+		/* will not allow OAuth operations with magic_quotes_gpc! */
+		if (ini_get('magic_quotes_gpc') == '1') {
+			$this->errorInternal("magic_quotes_gpc is activated on this " .
+			                     "server. As this will lead to problems " .
+			                     "with OAuth signature verification, please " .
+			                     "tell an administrator to switch it off!\n");
+			exit(1);
+		}
+
 		$this->person = new Person();
 
 		try {
