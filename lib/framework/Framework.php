@@ -227,60 +227,13 @@ class Framework {
 			$this->renderError = true;
 		}
 
-		/* Anti CSRF actions, if POST or GET is set, we must validate
-		 * the anticsrf-token */
-		if (!empty($_GET) || !empty($_POST)) {
-			$facsrft = null; /* form anti CSRF token */
-			if (isset($_GET) && array_key_exists('anticsrf', $_GET)) {
-				$facsrft = Input::sanitizeAntiCSRFToken($_GET['anticsrf']);
-			} else if (isset($_POST) && array_key_exists('anticsrf', $_POST)) {
-				$facsrft = Input::sanitizeAntiCSRFToken($_POST['anticsrf']);
-			}
-			$csrf_error = false;
-			if (!$this->validateACSRFT($facsrft)) {
-				$msg =  "Got a GET/POST request without the correct anticsrf tag.";
-				if (array_key_exists('HTTP_REFERER', $_SERVER)) {
-					$msg .= " Referer was " . $_SERVER['HTTP_REFERER'];
-				}
-				Logger::log_event(LOG_WARNING, "[Anti CSRF] $msg");
-				$csrf_error = true;
-			} else if (array_key_exists('HTTP_REFERER', $_SERVER)) {
-				/* valid facsrft, but directed from another
-				 * page, in most cases, this'll be a csrf,
-				 * block log and stop.
-				 *
-				 * In most settings, this step is superflous,
-				 * but if a user is tricked into giving away an
-				 * anti-csrf-token, this will prevent an
-				 * attacker that has placed this token into a
-				 * CSRF-exploit and tricked the same user into
-				 * dereferencing that particular URL.
-				 */
-				$url  = Input::sanitizeURL("http" . (($_SERVER['HTTPS'] == 'on') ? "s" : "").
-							   "://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME']);
-				$rurl = Input::sanitizeURL(Input::sanitizeURL($_SERVER['HTTP_REFERER']));
-
-				/* if we use GET, the url will change, and the
-				 * browser will set the REFERER to the filename
-				 * including the GET-params. These must be stripped. */
-				$p = strpos($rurl, "?");
-				if ($p) {
-					$rurl = substr($rurl, 0, $p);
-				}
-				if ($url !== $rurl) {
-					Logger::log_event(LOG_ALERT, "[Anti CSRF] Got correct anti-csrf from client, but HTTP_REFERER was set." .
-							  "Got $rurl, expected $url. Possible CSRF attempt. Request was blocked.");
-					$csrf_error = true;
-				}
-			}
-			if ($csrf_error) {
-				Framework::error_output($this->contentPage->translateMessageTag('fw_anticsrf_msg'));
-				$this->tpl->assign('instance', Config::get_config('system_name'));
-				$this->tpl->assign('errors', self::$errors);
-				$this->tpl->display('site.tpl');
-				exit(0);
-			}
-		} /* end GET/POST assertion */
+		if ($this->isCSRFAttempt()) {
+			Framework::error_output($this->contentPage->translateMessageTag('fw_anticsrf_msg'));
+			$this->tpl->assign('instance', Config::get_config('system_name'));
+			$this->tpl->assign('errors', self::$errors);
+			$this->tpl->display('site.tpl');
+			exit(0);
+		}
 
 		/* Create a new anti CSRF token and export to the template engine */
 		$this->current_anticsrf = self::getAntiCSRF();
@@ -457,6 +410,81 @@ class Framework {
 		}
 	} /* end applyNRENBranding */
 
+	/**
+	 * isCSRFAttempt() - test to see if the current connection is an CSRF
+	 *
+	 * If a GET or POST is set, the client tries to send data to the
+	 * portal, and we must make sure that the user is not being fooled by a
+	 * malicious site.
+	 *
+	 * @param	void
+	 * @return	boolean status indicating if a detectable
+	 * @access	private
+	 */
+	private function isCSRFAttempt()
+	{
+		if (!empty($_GET) || !empty($_POST)) {
+			$facsrft = null;
+			if (isset($_GET) && array_key_exists('anticsrf', $_GET)) {
+				$facsrft = Input::sanitizeAntiCSRFToken($_GET['anticsrf']);
+			} else if (isset($_POST) && array_key_exists('anticsrf', $_POST)) {
+				$facsrft = Input::sanitizeAntiCSRFToken($_POST['anticsrf']);
+			}
+
+			if (!self::validateACSRFT($facsrft)) {
+				$msg =  "Got a GET/POST request without the correct anticsrf tag.";
+				if (array_key_exists('HTTP_REFERER', $_SERVER)) {
+					$msg .= " Referer was " . $_SERVER['HTTP_REFERER'];
+				}
+				Logger::log_event(LOG_WARNING, "[Anti CSRF] $msg");
+				return true;
+			}
+
+			/* If start_login is set, referer will be another server
+			 * (the IdP), so stop testing here */
+			if (array_key_exists('start_login', $_GET)) {
+				if (Input::sanitizeText($_GET['start_login']) == "yes") {
+					return false;
+				}
+			}
+
+			/* Not a direct CSRF, but verify the HTTP_REFERER to
+			 * avoid replay attacks of the token if it is somehow
+			 * leaked
+			 */
+			if (array_key_exists('HTTP_REFERER', $_SERVER)) {
+				$url  = Input::sanitizeURL("http" . (($_SERVER['HTTPS'] == 'on') ? "s" : "").
+							   "://" . $_SERVER['HTTP_HOST'] .
+							   $_SERVER['SCRIPT_NAME']);
+				$rurl = Input::sanitizeURL(Input::sanitizeURL($_SERVER['HTTP_REFERER']));
+
+				/* Strip out all GET-params in the URL */
+				$p = strpos($rurl, "?");
+				if ($p) {
+					$rurl = substr($rurl, 0, $p);
+				}
+				if (dirname($url) !== dirname($rurl)) {
+					Logger::log_event(LOG_ALERT, "[Anti CSRF] Got correct anti-csrf from client, but HTTP_REFERER was set." .
+							  "Got $rurl, expected $url. Possible CSRF attempt. Request was blocked.");
+					return true;
+				}
+			}
+		}
+		return false; /* no detectable CSRF attempt */
+	} /* end CSRFAttempt() */
+
+	/**
+	 * Register new error-message to display in the page
+	 *
+	 * This will post a message in the top of the general content-area
+	 * surrounded with a red (if the CSS is unaltered) box to draw
+	 * attention.
+	 *
+	 * @param	String $message the error to display
+	 * @return	void
+	 * @access	public
+	 * @
+	 */
 	public static function error_output($message)
 	{
 		self::$errors[] = $message;
