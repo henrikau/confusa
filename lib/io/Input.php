@@ -126,21 +126,25 @@ class Input
 		return $output;
 	}
 	/**
-	 * Sanitize the name of a person. Allow UTF-8 characters, spaces and '.'
-	 * symbols for initials.
-	 * Drop all other characters. Due to the UTF-8 regex, this function is
-	 * slower than normal sanitation (measured factor 3 to around 8,
-	 * although on a few-10-microseconds scale).
-	 * It should probably not be used in a loop for a lot of data in time or
-	 * performance critical code parts.
-	 * @param $input string the unsanitized name string
-	 * @return string the sanitized name string
+	 * sanitizePersonName()
+	 *
+	 * Sanitize the name of a person. Allow UTF-8 characters, spaces, '.'
+	 * and hyphens ('-') symbols for initials.  Drop all other
+	 * characters.
+	 *
+	 * Due to the UTF-8 regex, this function is slower than normal
+	 * sanitation (measured factor 3 to around 8, although on a
+	 * few-10-microseconds scale).
+	 *
+	 * @param	string $input the unsanitized name
+	 * @return	string $output the sanitized name
+	 * @access	private
+	 * @static
 	 */
 	static function sanitizePersonName($input)
 	{
-		/* allow UTF-8 characters in names.
-		 * Note that mb_ereg_replace is somewhat notorious for being slow. */
-		$output = mb_ereg_replace('[^[:alpha:]\s\.]', '', $input, 'ip');
+		$output = preg_replace('|--|i', '-', $input);
+		$output = mb_ereg_replace('[^[:alpha:]\-\s\.]', '', $output, 'ip');
 		return $output;
 	}
 
