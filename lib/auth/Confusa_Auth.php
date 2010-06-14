@@ -119,9 +119,22 @@ abstract class Confusa_Auth
 			if(!is_null($map['cn'])) {
 				if (array_key_exists($map['cn'], $attributes)) {
 					$cn = Input::sanitizePersonName($attributes[$map['cn']][0]);
+					if ($cn !== $attributes[$map['cn']][0]) {
+						/* need to keep track of issued warning,
+						 * some pages call ecoratePerson twice */
+						static $cn_changed_seen = false;
+						if (!$cn_changed_seen) {
+							$cn_changed_seen = true;
+							$msg = "Your CN contains characters deemed illegal in the certificate <br />".
+								"Original: " . htmlentities($attributes[$map['cn']][0]) . " <br />" .
+								"Current: $cn";
+							Framework::error_output($msg);
+						}
+					}
 					$this->person->setName($cnPrefix . $cn);
 				}
-			}
+			} /* end map has cn */
+
 			if (!is_null($map['mail'])) {
 				if (array_key_exists($map['mail'], $attributes)) {
 					$mail = Input::sanitizeEmail($attributes[$map['mail']]);
