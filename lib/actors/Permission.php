@@ -64,7 +64,16 @@ class Permission
 		return $formattedReasons;
 	}
 
+	public function getStringReasons()
+	{
+		$stringReasons = "";
 
+		foreach ($this->reasons as $reason) {
+			$stringReasons .= $reason . "\n";
+		}
+
+		return $stringReasons;
+	}
 }
 
 ?>

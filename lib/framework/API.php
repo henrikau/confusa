@@ -76,7 +76,7 @@ abstract class API
 	{
 		header("HTTP/1.1 412 Precondition failed");
 		echo "You may not perform any operations on the certificate endpoint,";
-		echo "because: " . $permission->getFormattedReasons() . "\n";
+		echo "because: " . $permission->getStringReasons() . "\n";
 		exit(1);
 	} /* end errorNotAuthorized */
 
