@@ -57,7 +57,7 @@ class Input
 	 */
 	static function sanitizeAntiCSRFToken($token)
 	{
-		return preg_replace('/[^a-z0-9]+[^a-z0-9:]/i', '', $token);
+		return preg_replace('/[^0-9]+[:][^a-f0-9]/i', '', $token);
 	}
 
 	/**
