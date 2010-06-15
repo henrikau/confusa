@@ -86,7 +86,7 @@ final class CP_ProcessCsr extends Content_Page
 			/* assign the order_number again */
 			$this->tpl->assign('order_number', $order_number);
 			$this->tpl->assign('status_poll', true);
-			$this->tpl->assign('ganticsrf', "anticsrf=".Input::sanitizeCertKey($_GET['anticsrf']));
+			$this->tpl->assign('ganticsrf', "anticsrf=".Input::sanitizeAntiCSRFToken($_GET['anticsrf']));
 			if ($this->ca->pollCertStatus($order_number)) {
 			    $this->tpl->assign('done', TRUE);
 			}
