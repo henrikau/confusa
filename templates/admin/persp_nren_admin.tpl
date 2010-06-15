@@ -280,6 +280,7 @@
 		<div style="text-align: right">
 			<form action="" method="post">
 			<div>
+			  {$panticsrf}
 			{$l10n_label_select_subs}:
 			<select name="subscriberID">
 			{foreach from=$subscribers item=other}
