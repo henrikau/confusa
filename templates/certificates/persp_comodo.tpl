@@ -39,7 +39,7 @@
 		    [{$l10n_item_install|escape}]
 		  </td>
 		  {if isset($cert.valid_untill) && isset($cert.order_number) && $cert.status == "Awaiting Validation"}
-		  <script type="text/javascript">pollCertStatus({$cert.order_number}, 30000)</script>
+		  <script type="text/javascript">pollCertStatus({$cert.order_number}, 30000, {$ganticsrf})</script>
 		  {/if}
 		  {else}
 		  {* valid certificate, show with normal graphics etc *}
@@ -68,7 +68,7 @@
 		  {if empty($inspectElement[$cert.order_number])}
 		  <!-- Show details -->
 		  <a href="download_certificate.php?inspect_cert={$cert.order_number}&amp;{$ganticsrf}"
-		     onclick="return inspectCertificateAJAX('{$cert.order_number}');">
+		     onclick="return inspectCertificateAJAX('{$cert.order_number}', '{$ganticsrf}');">
 		    <img src="graphics/information.png"
 			 alt="{$l10n_title_inspect|escape}"
 			 title="{$l10n_title_inspect|escape}"
