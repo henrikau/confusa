@@ -35,11 +35,13 @@
 	 * done.
 	 *
 	 * @param orderNumber the orderNumber of the certificate
+	 * @param anticsrf the Anti-CSRF token used to prevent malicious
+	 *		   code. If not set, the portal will block the request.
 	 */
-	function pollCertStatusAJAX(orderNumber) {
+	function pollCertStatusAJAX(orderNumber, anticsrf) {
 		var req = new XMLHttpRequest();
 
-		req.open("GET", "?cert_status=" + orderNumber, true);
+		req.open("GET", "?cert_status=" + orderNumber + "&" + anticsrf, true);
 		req.send(null);
 		req.onreadystatechange = function() {
 			if (req.readyState == 4 /*complete*/) {
@@ -63,8 +65,10 @@
 	 * "Collapse"
 	 *
 	 * @param key mixed the auth_key or order_number identifying the certificate
+	 * @param anticsrf the Anti-CSRF token used to prevent malicious
+	 *		   code. If not set, the portal will block the request.
 	 */
-	function inspectCertificateAJAX(key) {
+	function inspectCertificateAJAX(key, anticsrf) {
 		var req = new XMLHttpRequest();
 		var inspectArea = document.getElementById('inspectArea' + key);
 		var inspectText = document.getElementById('inspectText' + key);
@@ -76,7 +80,7 @@
 			return false;
 		}
 
-		req.open("GET", "?inspect_cert=" + key + "&ajax=true", true);
+		req.open("GET", "?inspect_cert=" + key + "&ajax=true&" + anticsrf, true);
 		req.send(null);
 		req.onreadystatechange = function() {
 			if (req.readyState == 4) {
@@ -108,10 +112,12 @@
 	 * @param orderNumber integer the orderNumber of the certificate
 	 * @param interval integer the interval in which the certificate status is
 	 *                 polled
+	 * @param anticsrf the Anti-CSRF token used to prevent malicious
+	 *		   code. If not set, the portal will block the request.
 	 */
-	function pollCertStatus(orderNumber, interval)
+	function pollCertStatus(orderNumber, interval, anticsrf)
 	{
-		timer = window.setInterval("pollCertStatusAJAX(" + orderNumber + ")", interval);
+		timer = window.setInterval("pollCertStatusAJAX(" + orderNumber + "," + anticsrf + ")", interval);
 		/* give some visual feedback to the user that "something is happening" */
 		timer2 = window.setInterval("showSmallDots(" + orderNumber + ")", 2000);
 	}

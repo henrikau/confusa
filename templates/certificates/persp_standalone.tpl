@@ -40,7 +40,7 @@
 
 		  {if empty($inspectElement[$key])}
 		  <a href="download_certificate.php?inspect_cert={$key}&amp;{$ganticsrf}"
-		     onclick="return inspectCertificateAJAX('{$key}');">
+		     onclick="return inspectCertificateAJAX('{$key}', '{$ganticsrf}');">
 		    <img src="graphics/information.png"
 			 alt=""
 			 title="{$l10n_title_inspect|escape}"
