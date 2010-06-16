@@ -126,7 +126,7 @@ abstract class Confusa_Auth
 						if (!$cn_changed_seen) {
 							$cn_changed_seen = true;
 							$msg = "Your CN contains characters deemed illegal in the certificate <br />".
-								"Original: " . htmlentities($attributes[$map['cn']][0]) . " <br />" .
+								"Original: " . htmlentities($attributes[$map['cn']][0], ENT_COMPAT, "UTF-8") . " <br />" .
 								"Current: $cn";
 							Framework::error_output($msg);
 						}
