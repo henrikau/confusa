@@ -34,5 +34,11 @@
 	},
 	"l10n_infotext_consent6": {
 		"en":	"Please supply the above consumer information."
+	},
+	"l10n_button_consent": {
+		"en":	"Yes, I consent."
+	},
+	"l10n_button_noconsent": {
+		"en":	"No, I do NOT consent."
 	}
 }

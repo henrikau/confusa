@@ -50,13 +50,13 @@
 	<div style="width: 10em; float:left">
 	<form action="consent" method="post">
 		<input type="hidden" name="consent_val" value="{$consent_val}" />
-		<input type="submit" name="consent" value="Yes, I consent." />
+		<input type="submit" name="consent" value="{$l10n_button_consent}" />
 	</form>
 	</div>
 
 	<div style="width: 10em; float: left">
 	<form action="noconsent" method="get">
-		<input type="submit" name="noconsent" value="No, I do NOT consent." />
+		<input type="submit" name="noconsent" value="{$l10n_button_noconsent}" />
 	</form>
 	</div>
 </div>
