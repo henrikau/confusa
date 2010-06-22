@@ -832,7 +832,7 @@ function perform_postinstallation_steps
 	# Manage database-crontab
 	get_user_alternative "Do you want setup to install a crontab for cleaning and backing up the DB? (Y/n)" "Y"
 
-	if [ $answer == "y" ] || [ $answer == "Y"; then
+	if [ $answer == "y" ] || [ $answer == "Y" ]; then
 		write_cron_jobs ${install_path}
 	fi
 
@@ -851,7 +851,7 @@ function perform_postinstallation_steps
 	fi
 
 	# Setup the permissions for the cert-handling stuff
-	if [ $ca_mode = "STANDALONE" ]; then
+	if [ "$ca_mode" == "STANDALONE" ]; then
 		postinstall_standalone $custom_apache_user $install_path
 	fi
 
