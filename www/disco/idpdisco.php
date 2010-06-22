@@ -87,9 +87,18 @@ class IdPDisco
 		/* if the NREN has its own WAYF, redirect to WAYF, set the
 		 * return-address and stop the rendering. */
 		$wayf = $nren->getWAYFURL();
+
+		/* the WAYF URL must contain a protocol part, otherwise it will be
+		 * interpreted as relative to the disco */
 		if (isset($wayf)) {
-			header("Location: " . $wayf . "?" . $_SERVER['QUERY_STRING']);
-			exit(0);
+			if (strpos($wayf, "://") !== FALSE) {
+				header("Location: " . $wayf . "?" . $_SERVER['QUERY_STRING']);
+				exit(0);
+			} else {
+				Logger::logEvent(LOG_NOTICE, __CLASS__, __METHOD__,
+				                 "Can not use NREN WAYF-URL $wayf as it " .
+				                 "does not contain a protocol!");
+			}
 		}
 
 		$scopedIDPList	= $nren->getIdPList();
