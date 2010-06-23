@@ -464,12 +464,14 @@ class Framework {
 							   $_SERVER['SCRIPT_NAME']);
 				$rurl = Input::sanitizeURL(Input::sanitizeURL($_SERVER['HTTP_REFERER']));
 
-				/* Strip out all GET-params in the URL */
+				/* Strip out all GET-params in the URL and the pagename */
 				$p = strpos($rurl, "?");
 				if ($p) {
 					$rurl = substr($rurl, 0, $p);
 				}
-				if (dirname($url) !== dirname($rurl)) {
+				$url  = substr($url , 0, strrpos($url , "/") + 1);
+				$rurl = substr($rurl, 0, strrpos($rurl, "/") + 1);
+				if ($url !== $rurl) {
 					Logger::log_event(LOG_ALERT, "[Anti CSRF] Got correct anti-csrf from client, but HTTP_REFERER was set." .
 							  "Got $rurl, expected $url. Possible CSRF attempt. Request was blocked.");
 					return true;
