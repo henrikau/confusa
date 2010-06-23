@@ -39,7 +39,7 @@
 		"en":	"CERT (phone):"
 	},
 	"l10n_label_nrenurl": {
-		"en":	"URL:"
+		"en":	"Virtual Host Name:"
 	},
 	"l10n_button_reset": {
 		"en":	"Reset"
@@ -79,7 +79,7 @@
 		"en":	"Phone-number to the NREN CERT."
 	},
 	"l10n_infotext_nren_portal_url": {
-		"en":	"NREN specific portal URL. This URL should be a unique per-NREN URL (e.g. nren-a.example.org) that the NREN controls. This will then allow the portal to brand itself to the NRENs choice when a user visits the portal via this URL."
+		"en":	"NREN-specific virtual host name. This will allow the portal to guess the branding based on incoming URL."
 	},
 	"l10n_infotext_nren_portal_language": {
 		"en":	"Pre-defined language. When the portal is able to detect the NREN, it will pick this language and translate the text into the defined language."
