@@ -367,7 +367,7 @@ class NREN
 	 * set WAYFURL() Set the WAYF-service URL for the NREN
 	 *
 	 * @param String $url the address of the WAYF service
-	 * @return void
+	 * @return Boolean false if URL is malformed
 	 * @access public
 	 * @since v0.6-rc0
 	 */
@@ -375,10 +375,14 @@ class NREN
 	{
 		if (!is_null($url)) {
 			if ($this->data['wayf_url'] != $url) {
-				$this->data['wayf_url'] = $url;
+				if (!preg_match("/^http[s]?/",$url, $matches)) {
+					return false;
+				}
+				$this->data['wayf_url'] = Input::sanitizeURL($url);
 				$this->pendingChanges = true;
 			}
 		}
+		return true;
 	} /* end setWAYFURL() */
 
 	/**
