@@ -40,7 +40,9 @@ class CP_NREN_Subs_Settings extends Content_Page
 					$this->person->getNREN()->setCertEmail(    Input::sanitizeEmail($_POST['cert_email']));
 					$this->person->getNREN()->setURL(          Input::sanitizeURL($_POST['url']));
 					$this->person->getNREN()->setLang(         Input::sanitizeLangCode($_POST['language']));
-					$this->person->getNREN()->setWAYFURL(      Input::sanitizeURL($_POST['wayf_url']));
+					if (!$this->person->getNREN()->setWAYFURL(      Input::sanitizeURL($_POST['wayf_url']))) {
+						Framework::error_output($this->translateTag('l10n_error_wayf_url', 'contactinfo'));
+					}
 					$this->person->getNREN()->setReauthTimeout(Input::sanitizeNumeric($_POST['reauth_timeout']));
 
 					$nren = $this->person->getNREN();
