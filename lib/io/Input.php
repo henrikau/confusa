@@ -174,12 +174,13 @@ class Input
 	static function sanitizeURL($input)
 	{
 		$output = preg_replace('|[^\:/\.a-z0-9\-\?&%\=~_]|i', '', $input);
+		$output = preg_replace('|\://[/]*|i', '://', $output);
 		/* strip excessive //'s*/
 		$pos = strpos($output, "://");
 		if ($pos > 0) {
 			$pos += strlen("://");
 			$output = substr($output, 0, $pos) .
-				preg_replace("/\/\//","/", substr($output, $pos));
+				preg_replace("/[\/]+/","/", substr($output, $pos));
 		}
 		return $output;
 	}
