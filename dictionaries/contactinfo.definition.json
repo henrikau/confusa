@@ -101,7 +101,7 @@
 		"en":	"If your NREN has a WAYF service, using this value will direct a user directly to the WAYF upon authentication. Note: this must be the <b>complete</b> URL, including http(s)."
 	},
 	"l10n_error_wayf_url": {
-		"en":	"Could not saveWAYF-URL!<br />Make sure that it is properly formatted - e.g. https://idp.example.org/"
+		"en":	"Could not save WAYF-URL!<br />Make sure that it is properly formatted - e.g. https://idp.example.org/"
 	},
 	"l10n_label_reauthtimeout": {
 		"en":	"Reauth. Timeout:"
