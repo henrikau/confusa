@@ -105,4 +105,5 @@ class Confusa_Client:
             print "Did not receive a timely answer (%s seconds), aborting" % (timeout)
             return None
 
+        t.cancel_timeout()
         return Parser.Parser(res)
