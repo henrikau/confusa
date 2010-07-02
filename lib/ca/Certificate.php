@@ -45,11 +45,11 @@ class Certificate extends CryptoElement
 		$this->encoding = $this->getEncoding($content);
 		switch($this->encoding) {
 		case parent::$KEY_ENCODING_PEM:
-			$this->x509_pem = $this->content;
+			$this->x509_pem = (string)$this->content;
 			break;
 		case parent::$KEY_ENCODING_DER:
 			$this->x509_pem = $this->der2pem($this->content);
-			$this->x509_der	= $this->content;
+			$this->x509_der	= (string)$this->content;
 			break;
 		default:
 			throw new CryptoElementException("Internal problem, encoding set to non-recognizable format.");
