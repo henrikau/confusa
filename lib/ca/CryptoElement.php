@@ -3,7 +3,7 @@
 abstract class CryptoElement
 {
 	protected static $KEY_ENCODING_PEM = 1;
-	protected static $KEY_ENCODING_DER = 1;
+	protected static $KEY_ENCODING_DER = 2;
 
 	protected $content;
 	protected $encoding;
