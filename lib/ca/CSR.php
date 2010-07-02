@@ -169,51 +169,6 @@ class CSR extends CryptoElement
 	} /* end updateDetails() */
 
 	/**
-	 * Convert a CSR in PEM-format to DER format
-	 *
-	 * @author	Henrik Austad <henrik@austad.us>
-	 * @author	dan -AT- NOSPAM danschafer DOT netTT (http://php.net/manual/en/ref.openssl.php)
-	 */
-	private function pem2der($pem_data) {
-		$begin = "REQUEST-----";
-		$end   = "-----END";
-		$pem_data = substr($pem_data, strpos($pem_data, $begin)+strlen($begin));
-		$pem_data = substr($pem_data, 0, strpos($pem_data, $end));
-		return base64_decode($pem_data);
-	}
-
-	/**
-	 * @see pem2der
-	 */
-	private function der2pem($der_data) {
-		$pem = chunk_split(base64_encode($der_data), 64, "\n");
-		$pem = "-----BEGIN CERTIFICATE REQUEST-----\n".$pem."-----END CERTIFICATE REQUEST-----\n";
-		return $pem;
-	}
-
-
-	/**
-	 * getEncoding() Determine the CSR encoding.
-	 *
-	 * The function is very simple. It assumes the CSR is valid, and the
-	 * only valid alternatives are PEM and DER. If the CSR is not PEM, it is
-	 * assumed to be DER.
-	 *
-	 * @param	void
-	 * @return	int internal constant
-	 * @access	private
-	 */
-	private function getEncoding($csr)
-	{
-		$start_pos = substr($csr, "-----BEGIN CERTIFICATE REQUEST-----");
-		$end_pos   = substr($csr, "-----END CERTIFICATE REQUEST-----"  );
-		if ($start_pos && $end_pos) {
-			return parent::$KEY_ENCODING_PEM;
-		}
-		return parent::$KEY_ENCODING_DER;
-	} /* end getEncoding() */
-
-	/**
 	 * getFromDB() find one (or all) CSR(s) for a person in the database.
 	 *
 	 * @param	Person		$person limit the query to the person's common-name

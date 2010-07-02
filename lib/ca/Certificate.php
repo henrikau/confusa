@@ -388,47 +388,5 @@ class Certificate extends CryptoElement
 		return is_array($this->x509_pubkey_details);
 	} /* End pubkeyDetails() */
 
-	/**
-	 * Convert a certificate in PEM-format to DER format
-	 *
-	 * @author	dan -AT- NOSPAM danschafer DOT netTT (http://php.net/manual/en/ref.openssl.php)
-	 */
-	private function pem2der($pem_data) {
-		$begin = "CERTIFICATE-----";
-		$end   = "-----END";
-		$pem_data = substr($pem_data, strpos($pem_data, $begin)+strlen($begin));
-		$pem_data = substr($pem_data, 0, strpos($pem_data, $end));
-		return base64_decode($pem_data);
-	}
-
-	/**
-	 * @see pem2der
-	 */
-	private function der2pem($der_data) {
-		$pem = chunk_split(base64_encode($der_data), 64, "\n");
-		$pem = "-----BEGIN CERTIFICATE-----\n".$pem."-----END CERTIFICATE-----\n";
-		return $pem;
-	}
-
-	/**
-	 * getEncoding() Determine the certificate encoding.
-	 *
-	 * The function is very simple. It assumes the certificate is valid, and
-	 * the only valid alternatives are PEM and DER. If the certificate is
-	 * not PEM, it is assumed to be DER.
-	 *
-	 * @param	void
-	 * @return	int internal constant
-	 * @access	private
-	 */
-	private function getEncoding($cert)
-	{
-		$start_pos = substr($cert, "-----BEGIN CERTIFICATE-----");
-		$end_pos = substr($cert, "-----END CERTIFICATE-----");
-		if ($start_pos && $end_pos) {
-			return parent::$KEY_ENCODING_PEM;
-		}
-		return parent::$KEY_ENCODING_DER;
-	}
 } /* end Certificate */
 ?>

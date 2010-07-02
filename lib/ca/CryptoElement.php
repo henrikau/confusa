@@ -118,6 +118,81 @@ abstract class CryptoElement
 	 */
 	public abstract function getDERContent($raw = true);
 
+	protected function pem2der($content, $type='cert')
+	{
+		switch ($type) {
+		case 'cert':
+			$begin = "CERTIFICATE-----";
+			$end = "-----END";
+			break;
+		case 'crl':
+			$begin = "CRL-----";
+			$end = "-----END";
+			break;
+		case 'csr':
+			$begin = "REQUEST-----";
+			$end   = "-----END";
+			break;
+		default:
+			return false;
+		}
+		$pem = substr($pem, strpos($pem, $begin)+strlen($begin));
+		$pem = substr($pem, 0, strpos($pem, $end));
+		$der = base64_decode($pem);
+		return $der;
+	}
+
+	protected function der2pem($der_data, $type='cert')
+	{
+		$pem = chunk_split(base64_encode($der_data), 64, "\n");
+		switch ($type) {
+		case 'cert':
+			$pem = "-----BEGIN CERTIFICATE-----\n".
+				$pem.
+				"-----END CERTIFICATE-----\n";
+			break;
+		case 'crl':
+			$pem = "-----BEGIN X509 CRL-----\n".
+				$pem.
+				"-----END X509 CRL-----\n";
+			break;
+		case 'csr':
+			$pem = "-----BEGIN CERTIFICATE REQUEST-----\n".
+				$pem.
+				"-----END CERTIFICATE REQUEST-----\n";
+			break;
+		default:
+			return false;
+		}
+		return $pem;
+	}
+
+	protected function getEncoding($element, $type='cert')
+	{
+		switch ($type) {
+		case 'cert':
+			$start = "-----BEGIN CERTIFICATE-----";
+			$end   = "-----END CERTIFICATE-----";
+
+		case 'crl':
+			$start = "-----BEGIN X509 CRL-----";
+			$end   = "-----END X509 CRL-----";
+			break;
+		case 'csr':
+			$start = "-----BEGIN CERTIFICATE REQUEST-----";
+			$end   = "-----END CERTIFICATE REQUEST-----";
+
+			break;
+		default:
+			return false;
+		}
+		$start_pos = substr($element, $start);
+		$end_pos   = substr($element, $end);
+		if ($start_pos && $end_pos) {
+			return self::$KEY_ENCODING_PEM;
+		}
+		return self::$KEY_ENCODING_DER;
+	} /* end getEncoding() */
 } /* end CryptoElement */
 
 ?>
