@@ -1,7 +1,10 @@
 <?php
 require_once 'confusa_include.php';
 require_once 'Content_Page.php';
+require_once('Certificate.php');
 include_once 'Framework.php';
+require_once('CRL.php');
+
 class CP_Root_Certificate extends Content_Page
 {
 	/* The local (filesystem) path to the CA-certificate*/
@@ -56,15 +59,17 @@ class CP_Root_Certificate extends Content_Page
 			switch(htmlentities($_GET['send_file'])) {
 			case 'cacert':
 				$this->makeCertAvailable();
+				$cert = new Certificate(file_get_contents($this->cert_path));
 				$idx = strrpos($this->cert_url, "/");
 				$cert_name = substr($this->cert_url, $idx+1);
-				download_file(file_get_contents($this->cert_path), $cert_name);
+				download_file($cert->getPEMContent(), $cert_name);
 				break;
 			case 'crl':
 				$this->makeCRLAvailable();
+				$crl = new CRL(file_get_contents($this->crl_path));
 				$idx = strrpos($this->crl_url, "/");
 				$crl_name = substr($this->crl_url, $idx+1);
-				download_file(file_get_contents($this->crl_path), $crl_name);
+				download_file($crl->getPEMContent(), $crl_name);
 				break;
 			default:
 				return;
@@ -73,27 +78,26 @@ class CP_Root_Certificate extends Content_Page
 		} else if (isset($_GET['link']) && file_exists($this->cert_path)) {
 			switch(htmlentities($_GET['link'])) {
 			case 'cacert':
-				$cert = file_get_contents($this->cert_path);
-				$cert = CA::PEMtoDER($cert, 'cert');
+				require_once('Certificate.php');
+				$cert = new Certificate(file_get_contents($this->cert_path));
 				header("Content-type: application/x-x509-ca-cert");
 				// IE fix (for HTTPS only)
 				header("Cache-Control: private");
 				header("Pragma: private");
-				header("Content-Length: " . strlen($cert));
+				header("Content-Length: " . strlen($cert->getPEMContent()));
 				header("Content-Disposition: inline; filename=confusa.pem");
-				echo $cert;
+				echo $cert->getPEMContent();
 				exit(0);
 				break;
 			case 'crl':
-				$crl = file_get_contents($this->crl_path);
-				$crl = CA::PEMtoDER($crl, 'crl');
+				$crl = new CRL(file_get_contents($this->crl_path));
 				// IE fix (for HTTPS only)
 				header("Cache-Control: private");
 				header("Pragma: private");
 				header("Content-type: application/x-pkcs7-crl");
-				header("Content-Length: " . strlen($crl));
+				header("Content-Length: " . strlen($crl->getPEMContent()));
 				header("Content-Disposition: inline; filename=confusa.crl");
-				echo $crl;
+				echo $crl->getPEMContent();
 				exit(0);
 				break;
 			}
@@ -105,21 +109,20 @@ class CP_Root_Certificate extends Content_Page
 	{
 		if (isset($_GET['show_root_cert'])) {
 			$this->makeCertAvailable();
-			$ca_file_content = file_get_contents($this->cert_path);
-			openssl_x509_export($ca_file_content, $tmp, false);
-			$this->tpl->assign('ca_dump', $tmp);
+			$cdata = file_get_contents($this->cert_path);
+			$cert = new Certificate($cdata);
+			$this->tpl->assign('ca_dump', $cert->getPEMContent(false));
 		}
 
 		if (isset($_GET['show_crl'])) {
 			$this->makeCRLAvailable();
-			$crl_content = file_get_contents($this->crl_path);
-			$crl_dump = openssl_crl_export($crl_content);
-			$this->tpl->assign('crl_dump', $crl_dump);
+			$crl = new CRL(file_get_contents($this->crl_path));
+			$this->tpl->assign('crl_dump', $crl->getPEMContent(false));
 		}
 
-		$this->tpl->assign('ca_download_link', $this->cert_url);
-		$this->tpl->assign('crl_download_link', $this->crl_url);
-		$this->tpl->assign('content', $this->tpl->fetch('root_cert.tpl'));
+		$this->tpl->assign('ca_download_link',	$this->cert_url);
+		$this->tpl->assign('crl_download_link',	$this->crl_url);
+		$this->tpl->assign('content',		$this->tpl->fetch('root_cert.tpl'));
 	}
 
 	/**
