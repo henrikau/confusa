@@ -388,5 +388,27 @@ class Certificate extends CryptoElement
 		return is_array($this->x509_pubkey_details);
 	} /* End pubkeyDetails() */
 
+
+	protected function getEncoding($elem)
+	{
+		$start = "CERTIFICATE-----";
+		$end   = "CERTIFICATE-----";
+		return parent::getEncoding($elem, $start, $end);
+	}
+
+	protected function der2pem($elem)
+	{
+		$start = "-----BEGIN CERTIFICATE REQUEST-----\n";
+		$end   = "-----END CERTIFICATE REQUEST-----\n";
+		return parent::der2pem($elem, $start, $end);
+	}
+
+	protected function pem2der($elem)
+	{
+		$start = "CERTIFICATE-----";
+		$end = "-----END";
+		return parent::pem2der($elem, $start, $end);
+	}
 } /* end Certificate */
+
 ?>

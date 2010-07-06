@@ -130,7 +130,7 @@ class CSR extends CryptoElement
 	public function getDERContent($raw = true)
 	{
 		if (!isset($this->csr_der)) {
-			$this->csr_der = $this->pem2der($this->csr_pem);
+			$this->csr_der = $this->pem2der($this->csr_pem, 'csr');
 		}
 		return $this->csr_der;
 	}
@@ -292,4 +292,25 @@ class CSR extends CryptoElement
 		}
 		return true;
 	} /* end deleteFromDB() */
+
+	protected function getEncoding($elem)
+	{
+		$start = "CERTIFICATE REQUEST-----";
+		$end   = "CERTIFICATE REQUEST-----";
+		return parent::getEncoding($elem, $start, $end);
+	}
+
+	protected function der2pem($elem)
+	{
+		$start = "-----BEGIN CERTIFICATE-----\n";
+		$end = "-----END CERTIFICATE-----\n";
+		return parent::der2pem($elem, $start, $end);
+	}
+
+	protected function pem2der($elem)
+	{
+		$start = "REQUEST-----";
+		$end   = "-----END";
+		return parent::pem2der($elem, $start, $end);
+	}
 } /* end class CSR */
