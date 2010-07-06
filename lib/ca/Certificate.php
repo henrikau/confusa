@@ -45,17 +45,18 @@ class Certificate extends CryptoElement
 		$this->encoding = $this->getEncoding($content);
 		switch($this->encoding) {
 		case parent::$KEY_ENCODING_PEM:
-			$this->x509_pem = (string)$this->content;
+			openssl_x509_export($this->content, $this->x509_pem, true);
 			break;
 		case parent::$KEY_ENCODING_DER:
-			$this->x509_pem = $this->der2pem($this->content);
-			$this->x509_der	= (string)$this->content;
+			$this->x509_der	= trim((string)$this->content);
+			openssl_x509_export(trim($this->der2pem($this->x509_der)),
+					    $this->x509_pem, true);
 			break;
 		default:
 			throw new CryptoElementException("Internal problem, encoding set to non-recognizable format.");
 		}
 		$this->x509 = openssl_x509_read($this->x509_pem);
-		$this->x509_parsed = openssl_X509_parse($this->x509);
+		$this->x509_parsed = openssl_x509_parse($this->x509_pem, false);
 	}
 
 	/**
@@ -174,7 +175,7 @@ class Certificate extends CryptoElement
 			if ($raw) {
 				return $this->x509_pem;
 			}
-			openssl_x509_export($this->x509_pem, $fullCert, true);
+			openssl_x509_export($this->x509_pem, $fullCert, false);
 			return $fullCert;
 		}
 		return null;
