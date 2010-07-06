@@ -141,6 +141,10 @@ class Certificate extends CryptoElement
 		/* if we were unable to import it as an X.509 certificate, it
 		 * was malformed and as far as we're concerned, it is invalid */
 		if (!$this->x509 || !is_array($this->x509_parsed)) {
+			if (Config::get_config('debug')) {
+				echo __FILE__ . ":" . __LINE__ .
+					"Missing essential data (either x509, or x509_parsed is not set!)<br />\n";
+			}
 			return false;
 		}
 		/* test dates, not expired, not too early */
