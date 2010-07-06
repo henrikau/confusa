@@ -1,5 +1,5 @@
 <?php
-
+require_once 'CryptoElementException.php';
 abstract class CryptoElement
 {
 	protected static $KEY_ENCODING_PEM = 1;
@@ -11,7 +11,7 @@ abstract class CryptoElement
 	function __construct($content)
 	{
 		if (is_null($content)) {
-			throw new CryptoElementException(__CLASS__ . " need content to continue.");
+			throw new CryptoElementException(__CLASS__ . " empty content. A CryptoElement with nothing as element is moot.");
 		}
 		$this->content = $content;
 	}
