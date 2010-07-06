@@ -6,10 +6,11 @@
    * Author: Henrik Austad <henrik.austad@uninett.no>
    */
 require_once 'MDB2Wrapper.php';
-require_once 'Logger.php';
-require_once 'csr_lib.php';
-require_once 'Config.php';
 require_once 'MailManager.php';
+require_once 'Certificate.php';
+require_once 'Logger.php';
+require_once 'Config.php';
+require_once 'CSR.php';
 
 abstract class CA
 {
