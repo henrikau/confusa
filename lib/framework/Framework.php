@@ -446,38 +446,39 @@ class Framework {
 				return true;
 			}
 
-			/* If start_login is set, referer will be another server
-			 * (the IdP), so stop testing here */
-			if (array_key_exists('start_login', $_GET)) {
-				if (Input::sanitizeText($_GET['start_login']) == "yes") {
-					return false;
-				}
-			}
 
 			/* Not a direct CSRF, but verify the HTTP_REFERER to
 			 * avoid replay attacks of the token if it is somehow
 			 * leaked
 			 */
 			if (array_key_exists('HTTP_REFERER', $_SERVER)) {
-				$url  = Input::sanitizeURL("http" . (($_SERVER['HTTPS'] == 'on') ? "s" : "").
-							   "://" . $_SERVER['HTTP_HOST'] .
-							   $_SERVER['SCRIPT_NAME']);
-				$rurl = Input::sanitizeURL(Input::sanitizeURL($_SERVER['HTTP_REFERER']));
+				$rurl = parse_url(Input::sanitizeURL(Input::sanitizeURL($_SERVER['HTTP_REFERER'])));
+				$remote= $rurl['scheme'] . "://" . $rurl['host'];
+				$local = "http" . (($_SERVER['HTTPS'] == 'on') ? "s" : "") . "://" . $_SERVER['HTTP_HOST'];
 
-				/* Strip out all GET-params in the URL and the pagename */
-				$p = strpos($rurl, "?");
-				if ($p) {
-					$rurl = substr($rurl, 0, $p);
+				/* If the person is in the process of logging
+				 * in, match the referer-url to the IdP-url
+				 * exported from SimpleSAMLphp. */
+				if ($this->person->isAuth() &&
+				    $this->person->getNREN()->getIdP() === $remote &&
+				    array_key_exists('start_login', $_GET) &&
+				    Input::sanitizeText($_GET['start_login']) == "yes") {
+					return false;
 				}
-				$url  = substr($url , 0, strrpos($url , "/") + 1);
-				$rurl = substr($rurl, 0, strrpos($rurl, "/") + 1);
-				if ($url !== $rurl) {
-					Logger::log_event(LOG_ALERT, "[Anti CSRF] Got correct anti-csrf from client, but HTTP_REFERER was set." .
-							  "Got $rurl, expected $url. Possible CSRF attempt. Request was blocked.");
+
+				if ($local !== $remote) {
+					$msg  = "[AntiCSRF] csrf-token validates, HTTP_REFERER mismatch -  user is *not* in the process of logging in!";
+					$msg .= " Expected (base) URL: $local";
+					if ($this->person->isAuth()) {
+						$msg .= " Valid IdP: " . $this->person->getNREN()->getIdP();
+					}
+					$msg .= " Referer (small) URL: " . $rurl['scheme'] . "://" . $rurl['host'];
+					$msg .= " Referer (complete) URL: " . Input::sanitizeURL($_SERVER['HTTP_REFERER']);
+					Logger::log_event(LOG_ALERT, $msg);
 					return true;
 				}
 			}
-		}
+		} /* end GET or POST set */
 		return false; /* no detectable CSRF attempt */
 	} /* end CSRFAttempt() */
 
