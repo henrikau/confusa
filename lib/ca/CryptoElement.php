@@ -27,9 +27,8 @@ abstract class CryptoElement
 	 */
 	function __toString()
 	{
-		if (!is_null($this->content) &&
-		    $this->encoding == CryptoElement::$KEY_ENCODING_PEM) {
-			return $this->content;
+		if (!is_null($this->content)) {
+			return $this->getPEMContent();
 		}
 		return "CryptoElement";
 	}
