@@ -24,12 +24,12 @@ final class CP_DownloadCertificate extends Content_Page
 		$res = false;
 		if ($this->person->isAuth()){
 			if (isset($_GET['file_cert'])) {
-				$authKey = htmlentities($_GET['file_cert']);
+				$authKey = Input::sanitizeCertKey($_GET['file_cert']);
 				try {
 					$cert = $this->ca->getCert($authKey);
-					if (isset($cert)) {
+					if (isset($cert) && $cert->isValid()) {
 						include 'file_download.php';
-						download_file($cert, 'usercert.pem');
+						download_file($cert->getPEMContent(), 'usercert.pem');
 						exit(0);
 					}
 				} catch(ConfusaGenException $cge) {

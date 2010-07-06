@@ -648,10 +648,12 @@ class CA_Comodo extends CA
     /**
      * Retrieve a certificate from a remote endpoint (e.g. Comodo).
      *
-     * @params key either an order-number that can be used to retrieve a certificate
-     * directly or an auth-key with which we can retrieve the order-number
-     *
-     * @param $key The order-number or an auth_key that can be transformed to order_number
+     * @params	key	either an order-number that can be used to retrieve a
+     *			certificate directly or an auth-key with which we can
+     *			retrieve the order-number
+     * @param	key	The order-number or an auth_key that can be transformed
+     *			to order_number.
+     * @access	public
      * @throws ConfusaGenException
      */
     public function getCert($key)
@@ -678,9 +680,10 @@ class CA_Comodo extends CA
          */
 
         $status=substr($data,0,1);
+	$cert = false;
         switch($status) {
         case $STATUS_OK:
-            $return_res = substr($data,2);
+		$cert = new Certificate(substr($data,2));
             break;
         case $STATUS_PEND:
             Framework::message_output("The certificate is being processed and is not yet available");
@@ -699,7 +702,7 @@ class CA_Comodo extends CA
               throw new CGE_ComodoAPIException($msg);
             }
         }
-        return $return_res;
+        return $cert;
     }
 
     /*
