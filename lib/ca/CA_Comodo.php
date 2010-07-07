@@ -114,21 +114,6 @@ class CA_Comodo extends CA
                                 $encrypted_pw, MCRYPT_MODE_CFB,
                                 $ivector)));
     }
-
-    /**
-     * Insert a list of user certificates into the cache
-     *
-     * @param $raw_list the (unprocessed) array of certificates as they were
-     *        received
-     * @param $days integer the number of days of certificate history that is
-     *                      included in raw_list
-     */
-    private function cacheInsertList($raw_list, $days)
-    {
-		CS::setSessionKey('rawCertList', $raw_list);
-		CS::setSessionKey('confusaCachedDays', $days);
-    } /* end cacheInsertList */
-
 	/**
 	 * Set an expiry date on the cache based on the time of the latest
 	 * certificate order. The idea is that the more recently a certificate has
@@ -422,7 +407,8 @@ class CA_Comodo extends CA
         }
 
 		$this->cacheSetExpiryDate(min($dates));
-		$this->cacheInsertList($res, $days);
+		CS::setSessionKey('rawCertList', $res);
+		CS::setSessionKey('confusaCachedDays', $days);
         return $res;
     }
     /* delete a certificate from the DB (Deprecated)
