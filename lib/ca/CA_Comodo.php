@@ -210,14 +210,6 @@ class CA_Comodo extends CA
 		}
 	}
 
-    /**
-     * Delete the certificate list from cache. Useful if there were changes
-     * (Revocation, insertion)
-     */
-    private function cacheInvalidate()
-    {
-		CS::deleteSessionKey('rawCertList');
-    }
 
 	/**
 	 * Sign the CSR identified by auth_key using the Online-CA's remote API
@@ -231,7 +223,7 @@ class CA_Comodo extends CA
 		$this->capiUploadCSR($auth_key, $csr);
 		$this->capiAuthorizeCSR();
 
-		$this->cacheInvalidate();
+		CS::deleteSessionKey('rawCertList');
 		$timezone = new DateTimeZone($this->person->getTimezone());
 		$dt = new DateTime("now", $timezone);
 
@@ -286,7 +278,7 @@ class CA_Comodo extends CA
         }
 
 		$this->capiAuthorizeCSR();
-		$this->cacheInvalidate();
+		CS::deleteSessionKey('rawCertList');
 
 		$timezone = new DateTimeZone($this->person->getTimezone());
 		$dt = new DateTime("now", $timezone);
@@ -411,6 +403,7 @@ class CA_Comodo extends CA
 		CS::setSessionKey('confusaCachedDays', $days);
         return $res;
     }
+
     /* delete a certificate from the DB (Deprecated)
      *
      * May come in handy when we have the cache for online-certificates though.
@@ -733,7 +726,7 @@ class CA_Comodo extends CA
 
 			switch($error_parts[0]) {
 			case $STATUS_OK:
-				$this->cacheInvalidate();
+				CS::deleteSessionKey('rawCertList');
 				Logger::log_event(LOG_NOTICE, "Revoked certificate with " .
 								  "order number $key using Comodo's AutoRevoke " .
 								  "API. User contacted us from " .
