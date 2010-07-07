@@ -116,18 +116,6 @@ class CA_Comodo extends CA
     }
 
     /**
-     * Lookup a list of user certificates from cache
-     * The cache is tied to a user simplesamlphp session
-     *
-     * @return the list of unprocessed certificates as they were received from
-     *         the online CA
-     */
-    private function cacheLookupList()
-    {
-		return CS::getSessionKey('rawCertList');
-    }
-
-    /**
      * Insert a list of user certificates into the cache
      *
      * @param $raw_list the (unprocessed) array of certificates as they were
@@ -358,7 +346,7 @@ class CA_Comodo extends CA
 		 * "Certificate" class
 		 */
 		if ($this->cacheHasCertHistory($days)) {
-			$res = $this->cacheLookupList();
+			$res = CS::getSessionKey('rawCertList');
 
 			if (isset($res)) {
 				/* apply local date filtering (much faster than querying again) */
