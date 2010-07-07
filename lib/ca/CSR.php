@@ -171,28 +171,24 @@ class CSR extends CryptoElement
 	/**
 	 * getFromDB() find one (or all) CSR(s) for a person in the database.
 	 *
-	 * @param	Person		$person limit the query to the person's common-name
-	 * @param	String|null	$pubHash the hash of the public key - a
-	 *				unique identifier in case a *single*
-	 *				CSR is to be retrieved.
-	 * @return	Array::CSR|CSR|False a set of CSRs or a single if
-	 *				pubHash is provided.
+	 * @param	uid		$person limit the query to the person's common-name
+	 * @param	String|null	$pubHash the hash of the public key
+	 * @return	CSR|False	The CSR for the person
 	 * @access	public
 	 */
-	static function getFromDB($person, $pubHash=null)
+	static function getFromDB($uid, $pubHash=null)
 	{
 		$res = false;
-		if (!isset($person)) {
+		if (!isset($uid)) {
 			return false;
 		}
-		$data = array();
 		$query  = "SELECT * FROM csr_cache WHERE ";
-		if (!is_null($pubHash)) {
-			$query .= "auth_key=:auth_key AND ";
-			$data['auth_key'] = $pubHash;
-		}
+		$query .= "auth_key=:auth_key AND ";
 		$query .= "common_name=:common_name";
-		$data['common_name'] = $person->getX509ValidCN();
+
+		$data = array();
+		$data['auth_key'] = $pubHash;
+		$data['common_name'] = $uid;
 
 		try {
 			$csr_res = MDB2Wrapper::execute($query, null, $data);
@@ -207,16 +203,7 @@ class CSR extends CryptoElement
 					  $dbse->getMessage());
 			return false;
 		}
-
-		if (is_null($pubHash)) {
-			$res = array();
-			foreach ($csr_res as $key => $content) {
-				$res[$content['auth_key']] = new CSR($content['csr']);
-			}
-		} else {
-			$res = new CSR($csr_res[0]['csr']);
-		}
-		return $res;
+		return new CSR($csr_res[0]['csr']);
 	} /* end getFromDB() */
 
 	/**
