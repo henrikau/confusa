@@ -349,30 +349,11 @@ class CSR extends CryptoElement
 	{
 		if (is_string($csr)) {
 			$csr = new CSR($csr);
+			if ($csr->isVali()) {
+				return $csr->storeDB();
+			}
 		}
-		if (!$csr->isValid()) {
-			return false;
-		}
-		$insert  = "INSERT INTO csr_cache (csr, uploaded_date, common_name, auth_key) ";
-		$insert .= "VALUES(?,current_timestamp(),?,?)";
-		$param   = array('text', 'text', 'text');
-		$data	 = array($csr->getPEMContent(),
-				 $person->getX509ValidCN(),
-				 $csr->getPubKeyHash());
-		try {
-			MDB2Wrapper::update($insert, $param, $data);
-		} catch (DBStatementException $dbse) {
-			Logger::log_event(LOG_WARNING, __FILE__ . ":" . __LINE__ .
-					  " Coult not insert CSR into database. Server said: " .
-					  $dbse->getMessage());
-			return false;
-		} catch (DBQueryException $dbqe) {
-			Logger::log_event(LOG_WARNING, __FILE__ . ":" . __LINE__ .
-					  " Coult not insert CSR into database. Server said: " .
-					  $dbqe->getMessage());
-			return false;
-		}
-		return true;
+		return false;
 	} /* end insertIntoDB() */
 
 	/**
