@@ -17,6 +17,7 @@ class Test_Input extends Test
 		}
 		$res=true;
 		$res &= $this->testURL();
+		$res &= $this->testSanitizeDiff();
 
 		return $res;
 	}
@@ -28,5 +29,74 @@ class Test_Input extends Test
 		if (Input::sanitizeURL($url_ugly) !== $url)
 			return false;
 		return true;
-	}}
+	}
+
+	private function testSanitizeDiff()
+	{
+		$originalString = "Stichting FOM - Nikhef";
+		$sanitizedString = "Stichting FOM  Nikhef";
+		$difference = "-";
+
+		if (Input::findSanitizedCharacters($originalString, $sanitizedString)
+		                                                    != $difference) {
+			return false;
+		}
+
+		$originalString = "avalid@Orgname,.";
+		$sanitizedString = "avalid@Orgname,.";
+		$difference = "";
+
+		if (Input::findSanitizedCharacters($originalString, $sanitizedString)
+		                                               != $difference) {
+			return false;
+		}
+
+		$originalString = "--'??";
+		$sanitizedString = "";
+		$difference = $originalString;
+
+		if (Input::findSanitizedCharacters($originalString, $sanitizedString)
+		                                               != $difference) {
+			return false;
+		}
+
+		$originalString = "";
+		$sanitizedString = "";
+		$difference = "";
+
+		if (Input::findSanitizedCharacters($originalString, $sanitizedString)
+		                                                != $difference) {
+			return false;
+		}
+
+		$originalString = "-?'";
+		$sanitizedString = "-";
+		$difference = "?'";
+
+		if (Input::findSanitizedCharacters($originalString, $sanitizedString)
+		                                                 != $difference) {
+			return false;
+		}
+
+		$originalString = "@-?";
+		$sanitizedString = "-";
+		$difference = "@?";
+
+		if (Input::findSanitizedCharacters($originalString, $sanitizedString)
+		                                                 != $difference) {
+			return false;
+		}
+
+		$originalString = "@?-";
+		$sanitizedString = "-";
+		$difference = "@?";
+
+		if (Input::findSanitizedCharacters($originalString, $sanitizedString)
+		                                                != $difference) {
+			return false;
+		}
+
+		return true;
+	}
+}
 ?>
