@@ -235,7 +235,14 @@ class CSR extends CryptoElement
 					  $dbse->getMessage());
 			return false;
 		}
-		return new CSR($csr_res[0]['csr']);
+
+		$csr = new CSR($csr_res[0]['csr']);
+		if ($csr->getAuthToken() !== $pubHash) {
+			Logger::log_event(LOG_ALERT, "Found CSR in database with hash $pubHash but ".
+					  "this does not correspond to pubkey. Corrupted db?");
+			return false;
+		}
+		return $csr;
 	} /* end getFromDB() */
 
 	/**
