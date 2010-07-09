@@ -47,7 +47,8 @@ abstract class CA
     } /* end destructor */
 
 
-  /* signKey()
+  /**
+   * signKey()
    *
    * This is the signing routine of the system. In this release, it will use PHP
    * for signing, using a local CA-key.
@@ -55,8 +56,10 @@ abstract class CA
    * In the future, it will sign the CSR and ship it to the CA, receive the
    * response and notify the user
    *
+   * @param	CSR to sign
+   * @return	void
    */
-  abstract function signKey($auth_key, $csr);
+  abstract function signKey($csr);
 
    /**
     * Sign a CSR as received from the browser's crypto mechanisms.
@@ -136,6 +139,7 @@ abstract class CA
   *         about the certificates
   */
   abstract function getCertListForEPPN($eppn, $org);
+
 
   /**
    * Convert from DER certificates to PEM certificates.
