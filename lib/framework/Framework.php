@@ -452,18 +452,20 @@ class Framework {
 			 * leaked
 			 */
 			if (array_key_exists('HTTP_REFERER', $_SERVER)) {
-				$rurl = parse_url(Input::sanitizeURL(Input::sanitizeURL($_SERVER['HTTP_REFERER'])));
-				$remote= $rurl['scheme'] . "://" . $rurl['host'];
-				$local = "http" . (($_SERVER['HTTPS'] == 'on') ? "s" : "") . "://" . $_SERVER['HTTP_HOST'];
+				$rurl   = parse_url(Input::sanitizeURL(Input::sanitizeURL($_SERVER['HTTP_REFERER'])));
+				$local  = "http" . (($_SERVER['HTTPS'] == 'on') ? "s" : "") . "://" . $_SERVER['HTTP_HOST'];
+				$remote = $rurl['scheme'] . "://" . $rurl['host'];
 
 				/* If the person is in the process of logging
 				 * in, match the referer-url to the IdP-url
 				 * exported from SimpleSAMLphp. */
 				if ($this->person->isAuth() &&
-				    $this->person->getNREN()->getIdP() === $remote &&
 				    array_key_exists('start_login', $_GET) &&
 				    Input::sanitizeText($_GET['start_login']) == "yes") {
-					return false;
+					$idp_url = parse_url($this->person->getNREN()->getIdP());
+					if ($idp_url['host'] === $rurl['host']) {
+						return false; /* valid referer-host, */
+					}
 				}
 
 				if ($local !== $remote) {
