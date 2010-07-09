@@ -134,6 +134,42 @@ abstract class Content_Page
 		return false;
 	}
 
+	/**
+	 * Show an error (in the framework) about an invalid character found
+	 * during sanitation.
+	 *
+	 * @param $original The original string, e.g. as it was received via the
+	 *                  POST array
+	 * @param $sanitized The string as it appeared after sanitizing it
+	 * @param $dictEntry The dictionary entry to look up from the dictionary
+	 *                   when referring to the input element that cause the
+	 *                   sanitation.
+	 * @param $dictionary The dictionary from which the entry should be looked
+	 *                    up. If this is NULL, the current page's dictionary
+	 *                    will be used by default.
+	 */
+	protected function displayInvalidCharError($original,
+	                                        $sanitized,
+	                                        $dictEntry = NULL,
+											$dictionary = NULL) {
+		$invalidChars = Input::findSanitizedCharacters($original, $sanitized);
+		$errorMsg = "";
+
+		if (empty($dictionary)) {
+			$dictionary = $this->dictionary;
+		}
+
+		if (isset($dictEntry)) {
+			$errorMsg .= $this->translateTag($dictEntry, $this->dictionary);
+		}
+
+		$errorMsg .= " ";
+		$errorMsg .= $this->translateTag('l10n_err_sanitation',
+					                     'messages');
+		$errorMsg .= " $invalidChars";
+		Framework::error_output($errorMsg);
+	}
+
 
 	/**
 	 * process()	- the main content-page processingfunction. This is
