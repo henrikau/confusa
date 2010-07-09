@@ -463,6 +463,14 @@ class Framework {
 				    array_key_exists('start_login', $_GET) &&
 				    Input::sanitizeText($_GET['start_login']) == "yes") {
 					$idp_url = parse_url($this->person->getNREN()->getIdP());
+
+					/* in some cases, the IdP-url is reported without the scheme. This will
+					 * cause parse_url to break. We can safely fix this if *both* 'host'
+					 * *and* 'scheme' is null -> prefix the URL with 'https://' */
+					if (is_null($idp_url['host']) && is_null($idp_url['scheme'])) {
+						$idp_url = parse_url("https://".$this->person->getNREN()->getIdP());
+					}
+
 					if ($idp_url['host'] === $rurl['host']) {
 						return false; /* valid referer-host, */
 					}
