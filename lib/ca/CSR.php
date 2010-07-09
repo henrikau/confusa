@@ -249,6 +249,46 @@ class CSR extends CryptoElement
 		return $csr;
 	} /* end getFromDB() */
 
+
+	/**
+	 * listPErsonCSRs() get a list of a person's CSRs
+	 *
+	 * This will *not* return the CSRs, but the data stored around the
+	 * CSRs. From this, it is trivial to retrieve the data from the
+	 * database.
+	 *
+	 * Data stored in the array:
+	 *
+	 * - csr_id		The ID in the database.
+	 * - uploaded_date	when the CSR was uploaded
+	 * - common_name	Owner of the CSR
+	 * - auth_key		Hash of the pubkey, used to retrieve a specific CSR
+	 * - from_ip		The IP that sent the CSR.
+	 *
+	 * @param	String the x509Name stored as common-name in csr_cache
+	 * @return	Array of CSR entries.
+	 * @access	public
+	 * @static
+	 */
+	static function listPersonCSRs($x509Name)
+	{
+		$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip".
+			" FROM csr_cache WHERE common_name=:cn ORDER BY uploaded_date";
+		try {
+			$res = MDB2Wrapper::execute($query, null, array('cn' => $x509Name));
+		} catch (DBStatementException $dbse) {
+			Logger::log_event(LOG_WARNING, __FILE__ . ":" . __LINE__ .
+					  "cannot retrieve CSR from DB. Server said: " .
+					  $dbse->getMessage());
+			return false;
+		} catch (DBQueryException $dbqe) {
+			Logger::log_event(LOG_WARNING, __FILE__ . ":" . __LINE__ .
+					  "cannot retrieve CSR from DB. Server said: " .
+					  $dbse->getMessage());
+			return false;
+		}
+		return $res;
+	}
 	/**
 	 * insertIntoDB() insert a CSR into the database (csr_cache)
 	 *
