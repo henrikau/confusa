@@ -322,7 +322,7 @@ final class CP_ProcessCsr extends Content_Page
 						    array($authvar));
 			if (count($res)>0) {
 				Framework::warning_output($this->translateTag('l10n_warn_keypresent', 'processcsr'));
-				$this->tpl->assign('csrList',		$this->listAllCSR($this->person));
+				$this->tpl->assign('csrList', CSR::listPersonCSRs($this->person->getX509ValidCN()));
 				$this->tpl->assign('list_all_csr',	true);
 				/* match the DN only when using standalone CA, no need to do it for Comodo */
 			} else if (Config::get_config('ca_mode') == CA_COMODO ||
@@ -473,25 +473,6 @@ final class CP_ProcessCsr extends Content_Page
 		return "<META HTTP-EQUIV=\"REFRESH\" content=\"3; url=$url\">\n";
 	} /* end approveCSR() */
 
-
-	/**
-	 * listAllCSR
-	 *
-	 * List all currently active CSRs for the user. Since we will only accept upload
-	 * of CSRs through authenticated channels, no expiry will be enforced on CSRs.
-	 */
-	private function listAllCSR()
-	{
-		$query = "SELECT csr_id, uploaded_date, common_name, auth_key, from_ip FROM csr_cache WHERE common_name=? ORDER BY uploaded_date DESC LIMIT 10";
-		$res = MDB2Wrapper::execute($query,
-					    array('text'),
-					    $this->person->getX509ValidCN());
-		/* Format the IPs */
-		foreach ($res as $key => $value) {
-			$res[$key]['from_ip'] = Output::formatIP($value['from_ip'], true);
-		}
-		return $res;
-	}
 
 	/**
 	 * Show the right template for the browser of the user
