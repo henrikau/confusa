@@ -299,51 +299,23 @@ final class CP_ProcessCsr extends Content_Page
 		if(isset($_FILES['user_csr']['name'])) {
 			$fu = new FileUpload('user_csr', true, true, 'test_content');
 			if ($fu->file_ok()) {
-				$csr = $fu->get_content();
+				$csr = new CSR($fu->get_content());
 			} else {
 				/* File NOT OK */
 				$msg  = $this->translateTag('l10n_err_csrproc', 'processcsr');
 				Framework::error_output($msg);
 			}
 		} else if (isset($_POST['user_csr'])) {
-			$csr = Input::sanitizeBase64($_POST['user_csr']);
+			$csr = new CSR(Input::sanitizeBase64($_POST['user_csr']));
 		}
 
-		if (!is_null($csr)) {
-			$subject = openssl_csr_get_subject($csr, true);
-			$authvar = substr(pubkey_hash($csr, true), 0, ConfusaConstants::$AUTH_KEY_LENGTH);
-			if (is_null($authvar) || $authvar == "") {
-				Framework::error_output("Problems with CSR. Please create a new CSR and try again.");
-				return;
-			}
-			/* is the CSR already uploaded? */
-			$res = MDB2Wrapper::execute("SELECT auth_key, from_ip FROM csr_cache WHERE auth_key=?",
-						    array('text'),
-						    array($authvar));
-			if (count($res)>0) {
-				Framework::warning_output($this->translateTag('l10n_warn_keypresent', 'processcsr'));
-				$this->tpl->assign('csrList', CSR::listPersonCSRs($this->person->getX509ValidCN()));
-				$this->tpl->assign('list_all_csr',	true);
-				/* match the DN only when using standalone CA, no need to do it for Comodo */
-			} else if (Config::get_config('ca_mode') == CA_COMODO ||
-				   match_dn($subject, $this->ca->getFullDN())) {
-				$ip	= $_SERVER['REMOTE_ADDR'];
-				$query  = "INSERT INTO csr_cache (csr, uploaded_date, from_ip,";
-				$query .= " common_name, auth_key)";
-				$query .= " VALUES(?, current_timestamp(), ?, ?, ?)";
-
-				MDB2Wrapper::update($query,
-						    array('text', 'text', 'text', 'text'),
-						    array($csr, $ip, $this->person->getX509ValidCN(), $authvar));
-
-				$logmsg  = "Inserted new CSR from $ip (" . $this->person->getX509ValidCN();
-				$logmsg .= ") with hash " . pubkey_hash($csr, true);
-				Logger::logEvent(LOG_INFO, "Process_CSR", "processUploadedCSR()",
-				                 $logmsg);
+		if (Config::get_config('ca_mode') == CA_COMODO ||
+		    match_dn($csr->getsubject(), $this->ca->getFullDN())) {
+			if ($csr->storeDB()) {
+				return $csr->getAuthToken();
 			}
 		}
-
-		return $authvar;
+		return false;
 	} /* end processUploadedCSR() */
 
 	/**
@@ -357,18 +329,23 @@ final class CP_ProcessCsr extends Content_Page
 	private function processDBCSR()
 	{
 		if (isset($_GET['delete_csr'])) {
-			$res = delete_csr_from_db($this->person, Input::sanitizeCertKey($_GET['delete_csr']));
-			if ($res) {
+			if (CSR::deleteFromDB($this->person, Input::sanitizeCertKey($_GET['delete_csr']))) {
 				Framework::message_output($this->translateTag('l10n_suc_delcsr', 'processcsr') .
 				                          htmlentities($this->person->getEPPN()) . ".");
 			} else {
 				Framework::error_output("Could not delete CSR.");
 			}
-		}
-		elseif (isset($_GET['inspect_csr'])) {
+		} elseif (isset($_GET['inspect_csr'])) {
 			try {
-				$this->tpl->assign('csrInspect', get_csr_details($this->person,
-				                   Input::sanitizeCertKey($_GET['inspect_csr'])));
+				$csr = CSR::getFromDB($this->person->getX509ValidCN(),
+						      Input::sanitizeCertKey($_GET['inspect_csr']));
+				$res = array(
+					'auth_token'	=> $csr->getAuthToken(),
+					'length'	=> $csr->getLength(),
+					'uploaded'	=> $csr->getUploadedDate(),
+					'from_ip'	=> $csr->getUploadeFromIP()
+					);
+
 			} catch (CSRNotFoundException $csrnfe) {
 				$msg  = "Error with auth-token (" . htmlentities($auth_key) . ") - not found. ";
 				$msg .= "Please verify that you have entered the correct auth-url and try again.";
