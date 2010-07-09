@@ -289,6 +289,9 @@ class CSR extends CryptoElement
 		}
 
 		$csr = new CSR($csr_res[0]['csr']);
+		$csr->setUploadedDate($csr_res[0]['uploaded_date']);
+		$csr->setUploadedFromIP(Output::formatIP($csr[0]['from_ip'], true));
+
 		if ($csr->getAuthToken() !== $pubHash) {
 			Logger::log_event(LOG_ALERT, "Found CSR in database with hash $pubHash but ".
 					  "this does not correspond to pubkey. Corrupted db?");
