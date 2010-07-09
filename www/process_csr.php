@@ -416,24 +416,11 @@ final class CP_ProcessCsr extends Content_Page
 	 */
 	private function approveCSR($authToken)
 	{
-		try  {
-			$csr = get_csr_from_db($this->person, $authToken);
-		} catch (ConfusaGenException $e) {
+		$csr = CSR::getFromDB($this->person->getX509ValidCN(), $authToken);
+		if (!isset($csr) || !$csr) {
 			$errorTag = PW::create();
-			Framework::error_output("[$errorTag] Too many hits. Database incosistency.");
-			Logger::logEvent(LOG_ALERT, "Process_CSR", "approveCSR($authToken)",
-			                 $this->person->getX509ValidCN() .
-			                 " tried to find CSR with key $authToken which resulted in multiple hits",
-			                 __LINE__, $errorTag);
-			return false;
-		} catch (CSRNotFoundException $csrnfe) {
-			Framework::error_output("CSR not found, are you sure this is your CSR?\n");
-			return false;
-		}
-
-		if (!isset($csr)) {
-			$errorTag = PW::create();
-			Framework::error_output("[$errorTag] Did not find CSR with auth_token " . htmlentities($auth_token));
+			Framework::error_output("[$errorTag] Did not find CSR with auth_token " .
+						htmlentities($auth_token));
 			$msg  = "User " . $this->person->getEPPN() . " ";
 			$msg .= "tried to delete CSR with auth_token " . $authToken . " but was unsuccessful";
 			Logger::logEvent(LOG_NOTICE, "Process_CSR", "approveCSR($authToken)",
@@ -443,12 +430,11 @@ final class CP_ProcessCsr extends Content_Page
 
 		try {
 			if (!isset($this->ca)) {
-				Framework::error_output("CA is NULL!");
+				Framework::error_output("No available CA, cannot contine signing the CSR.");
 				return false;
 			}
 
 			$permission = $this->person->mayRequestCertificate();
-
 			if ($permission->isPermissionGranted() === false) {
 				Framework::error_output($this->translateTag('l10n_err_noperm1', 'processcsr') .
 				                        "<br /><br />" .
@@ -460,14 +446,17 @@ final class CP_ProcessCsr extends Content_Page
 			$this->ca->signKey($authToken, $csr);
 
 		} catch (CGE_ComodoAPIException $capie) {
-			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" . htmlentities($capie));
+			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" .
+						htmlentities($capie));
 			return false;
 		} catch (ConfusaGenException $e) {
-			$msg = "Error signing key, remote said: <br /><br /><i>" . htmlentities($e->getMessage()) . "</i><br />";
+			$msg = "Error signing key, remote said: <br /><br /><i>" .
+				htmlentities($e->getMessage()) . "</i><br />";
 			Framework::error_output($msg);
 			return false;
 		} catch (KeySigningException $kse) {
-			Framework::error_output("Could not sign certificate. Server said: " . htmlentites($kse->getMessage()));
+			Framework::error_output("Could not sign certificate. Server said: " .
+						htmlentites($kse->getMessage()));
 			return false;
 		}
 		delete_csr_from_db($this->person, $authToken);
