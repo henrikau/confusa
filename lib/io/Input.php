@@ -370,5 +370,42 @@ class Input
 		$output = strtr($input, array("<br />" => "\n"));
 		return $output;
 	}
+
+	/**
+	 * Return all the characters that are included in unsanitizedInput, but
+	 * not in sanitizedInput. This is a handy function to display which
+	 * characters were sanitized away to the user. Note, that this function
+	 * can *not* be used to obtain a diff, because it only checks which
+	 * characters are in the first string, but not in the second.
+	 *
+	 * N.B: Use only on short strings!
+	 *
+	 * @param $unsanitizedInput original string
+	 * @param $sanitizedInput string that was sanitized
+	 * @return Characters that were in the original string, but not in the
+	 *         sanitized one.
+	 */
+	static function findSanitizedCharacters($unsanitizedInput,
+	                                        $sanitizedInput)
+	{
+		if (!isset($unsanitizedInput) || !isset($sanitizedInput)) {
+			return "";
+		}
+
+		if (strlen($unsanitizedInput) == 0) {
+			return "";
+		}
+
+		$returnString = "";
+
+		for ($i = 0; $i < strlen($unsanitizedInput); $i++) {
+			$currentOriginalChar = substr($unsanitizedInput, $i, 1);
+
+			if (strpos($sanitizedInput, $currentOriginalChar) === FALSE) {
+				$returnString .= $currentOriginalChar;
+			}
+		}
+		return $returnString;
+	}
 }
 ?>
