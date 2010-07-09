@@ -164,6 +164,18 @@ class CSR extends CryptoElement
 	 * --------------------------------------------------------------- *
 	 */
 
+
+	public function getAuthToken()
+	{
+		$pubkey = openssl_csr_get_public_key($this->csr_pem);
+		if (!$pubkey) {
+			return;
+		}
+		$keydata = openssl_pkey_get_details($pubkey);
+		return sha1($keydata['key']);
+	}
+
+
 	/**
 	 * updateDetails() scan the pubkey and retrieve key-specific details
 	 *
