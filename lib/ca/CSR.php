@@ -135,6 +135,26 @@ class CSR extends CryptoElement
 		return $this->csr_der;
 	}
 
+	protected function getEncoding($elem)
+	{
+		$start = "CERTIFICATE REQUEST-----";
+		$end   = "CERTIFICATE REQUEST-----";
+		return parent::getEncoding($elem, $start, $end);
+	}
+
+	protected function der2pem($elem)
+	{
+		$start = "-----BEGIN CERTIFICATE-----\n";
+		$end = "-----END CERTIFICATE-----\n";
+		return parent::der2pem($elem, $start, $end);
+	}
+
+	protected function pem2der($elem)
+	{
+		$start = "REQUEST-----";
+		$end   = "-----END";
+		return parent::pem2der($elem, $start, $end);
+	}
 
 	/*
 	 * --------------------------------------------------------------- *
@@ -279,25 +299,4 @@ class CSR extends CryptoElement
 		}
 		return true;
 	} /* end deleteFromDB() */
-
-	protected function getEncoding($elem)
-	{
-		$start = "CERTIFICATE REQUEST-----";
-		$end   = "CERTIFICATE REQUEST-----";
-		return parent::getEncoding($elem, $start, $end);
-	}
-
-	protected function der2pem($elem)
-	{
-		$start = "-----BEGIN CERTIFICATE-----\n";
-		$end = "-----END CERTIFICATE-----\n";
-		return parent::der2pem($elem, $start, $end);
-	}
-
-	protected function pem2der($elem)
-	{
-		$start = "REQUEST-----";
-		$end   = "-----END";
-		return parent::pem2der($elem, $start, $end);
-	}
 } /* end class CSR */
