@@ -43,7 +43,7 @@ class Input
 	 */
 	static function sanitizeOrgName($input)
 	{
-		$output = preg_replace('/[^a-z0-9@_,\.\s]/i', '', $input);
+		$output = preg_replace('/[^a-z0-9@_\-,\.\s]/i', '', $input);
 		return $output;
 	}
 
