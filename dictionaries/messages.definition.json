@@ -130,5 +130,8 @@
 	},
 	"l10n_title_logo": {
 		"en":	"Portal overview"
+	},
+	"l10n_err_sanitation": {
+		"en":	"included the following invalid characters:"
 	}
 }
