@@ -34,13 +34,74 @@ class CP_NREN_Subs_Settings extends Content_Page
 			switch($_POST['setting']) {
 			case 'nren_contact':
 				if ($this->person->isNRENAdmin()) {
+
+					$sanitizedEmail =
+						Input::sanitizeEmail($_POST['contact_email']);
+					$sanitizedContactPhone =
+						Input::sanitizePhone($_POST['contact_phone']);
+					$sanitizedCertPhone =
+						Input::sanitizePhone($_POST['cert_phone']);
+					$sanitizedCertEmail =
+						Input::sanitizeEmail($_POST['cert_email']);
+					$sanitizedURL = Input::sanitizeURL($_POST['url']);
+					$sanitizedWAYF = Input::sanitizeURL($_POST['wayf_url']);
+
+					$validationError = false;
+
+					if ($_POST['contact_email'] != $sanitizedEmail) {
+						$this->displayInvalidCharError($_POST['contact_email'],
+						                               $sanitizedEmail,
+						                               'l10n_label_contactemail');
+						$validationError = true;
+					}
+
+					if ($_POST['contact_phone'] != $sanitizedContactPhone) {
+						$this->displayInvalidCharError($_POST['contact_phone'],
+						                               $sanitizedContactPhone,
+						                               'l10n_label_contactphone');
+						$validationError = true;
+					}
+
+					if ($_POST['cert_phone'] != $sanitizedCertPhone) {
+						$this->displayInvalidCharError($_POST['cert_phone'],
+						                               $sanitizedCertPhone,
+						                               'l10n_label_certphone');
+						$validationError = true;
+					}
+
+					if ($_POST['cert_email'] != $sanitizedCertEmail) {
+						$this->displayInvalidCharError($_POST['cert_email'],
+						                               $sanitizedCertEmail,
+						                               'l10n_label_certmail');
+						$validationError = true;
+					}
+
+					if ($_POST['url'] != $sanitizedURL) {
+						$this->displayInvalidCharError($_POST['url'],
+						                               $sanitizedURL,
+						                               'l10n_label_nrenurl');
+						$validationError = true;
+					}
+
+					if ($_POST['wayf_url'] != $sanitizedWAYF) {
+						$this->displayInvalidCharError($_POST['wayf_url'],
+						                               $sanitizedWAYF,
+						                               'l10n_label_wayfurl');
+						$validationError = true;
+					}
+
+					/* don't continue if information has been stripped */
+					if ($validationError) {
+						return;
+					}
+
 					$this->person->getNREN()->setContactEmail( Input::sanitizeEmail($_POST['contact_email']));
-					$this->person->getNREN()->setContactPhone( Input::sanitizePhone($_POST['contact_phone']));
-					$this->person->getNREN()->setCertPhone(    Input::sanitizePhone($_POST['cert_phone']));
-					$this->person->getNREN()->setCertEmail(    Input::sanitizeEmail($_POST['cert_email']));
-					$this->person->getNREN()->setURL(          Input::sanitizeURL($_POST['url']));
+					$this->person->getNREN()->setContactPhone( $sanitizedContactPhone);
+					$this->person->getNREN()->setCertPhone(    $sanitizedCertPhone);
+					$this->person->getNREN()->setCertEmail(    $sanitizedCertEmail);
+					$this->person->getNREN()->setURL(          $sanitizedURL);
 					$this->person->getNREN()->setLang(         Input::sanitizeLangCode($_POST['language']));
-					if (!$this->person->getNREN()->setWAYFURL(      Input::sanitizeURL($_POST['wayf_url']))) {
+					if (!$this->person->getNREN()->setWAYFURL( $sanitizedWAYF)) {
 						Framework::error_output($this->translateTag('l10n_error_wayf_url', 'contactinfo'));
 					}
 					$this->person->getNREN()->setReauthTimeout(Input::sanitizeNumeric($_POST['reauth_timeout']));
@@ -72,14 +133,77 @@ class CP_NREN_Subs_Settings extends Content_Page
 				break;
 			case 'subscriber_contact':
 				if ($this->person->isSubscriberAdmin()) {
-					$this->updateSubscriberContact(
-						Input::sanitizeEmail($_POST['contact_email']),
-						Input::sanitizePhone($_POST['contact_phone']),
-						Input::sanitizePersonName($_POST['resp_name']),
-						Input::sanitizeEmail($_POST['resp_email']),
-						Input::sanitizeURL($_POST['helpdesk_url']),
-						Input::sanitizeEmail($_POST['helpdesk_email']),
-						Input::sanitizeLangCode($_POST['language']));
+					$sanitizedMail =
+						Input::sanitizeEmail($_POST['contact_email']);
+					$sanitizedPhone =
+						Input::sanitizePhone($_POST['contact_phone']);
+					$sanitizedRespName =
+						Input::sanitizePersonName($_POST['resp_name']);
+					$sanitizedRespMail =
+						Input::sanitizeEmail($_POST['resp_email']);
+					$sanitizedHelpdeskURL =
+						Input::sanitizeURL($_POST['helpdesk_url']);
+					$sanitizedHelpdeskMail =
+						Input::sanitizeEmail($_POST['helpdesk_email']);
+
+					$validationError = false;
+
+					if ($_POST['contact_email'] != $sanitizedMail) {
+						$this->displayInvalidCharError($_POST['contact_email'],
+						                               $sanitizedMail,
+						                               'l10n_label_contactemail');
+						$validationError = true;
+					}
+
+					if ($_POST['contact_phone'] != $sanitizedPhone) {
+						$this->displayInvalidCharError($_POST['contact_phone'],
+						                              $sanitizedPhone,
+						                              'l10n_label_contactphone');
+						$validationError = true;
+					}
+
+					if ($_POST['resp_name'] != $sanitizedRespName) {
+						$this->displayInvalidCharError($_POST['resp_name'],
+						                               $sanitizedRespName,
+						                               'l10n_label_respname');
+						$validationError = true;
+					}
+
+					if ($_POST['resp_email'] != $sanitizedRespMail) {
+						$this->displayInvalidCharError($_POST['resp_email'],
+						                               $sanitizedRespMail,
+						                               'l10n_label_respemail');
+						$validationError = true;
+					}
+
+					if ($_POST['helpdesk_url'] != $sanitizedHelpdeskURL) {
+						$this->displayInvalidCharError($_POST['helpdesk_url'],
+						                               $sanitizedHelpdeskURL,
+						                               'l10n_label_helpdeskurl');
+						$validationError = true;
+					}
+
+					if ($_POST['helpdesk_email'] != $sanitizedHelpdeskMail) {
+						$this->displayInvalidCharError($_POST['helpdesk_email'],
+						                               $sanitizedHelpdeskMail,
+						                               'l10n_label_helpemail');
+						$validationError = true;
+					}
+
+					/*
+					 * don't continue if data got stripped
+					 */
+					if ($validationError) {
+						return;
+					}
+
+					$this->updateSubscriberContact($sanitizedMail,
+					                               $sanitizedPhone,
+					                               $sanitizedRespName,
+					                               $sanitizedRespMail,
+					                               $sanitizedHelpdeskURL,
+					                               $sanitizedHelpdeskMail,
+					               Input::sanitizeLangCode($_POST['language']));
 				}
 				break;
 			default:
