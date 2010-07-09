@@ -33,6 +33,12 @@ class CP_NREN_Admin extends Content_Page
 			$this->tpl->assign('confusa_grid_restrictions', false);
 		}
 
+		/* if the function exists due to failed field validation, it should
+		 * display all affected fiels. Everything else is very annoying for
+		 * the user.
+		 */
+		$validationErrors = false;
+
 		/* handle nren-flags */
 		if (isset($_POST['subscriber'])) {
 			if (isset($_POST['id']))
@@ -43,29 +49,72 @@ class CP_NREN_Admin extends Content_Page
 
 			if (isset($_POST['db_name'])) {
 				$db_name	= Input::sanitizeIdPName($_POST['db_name']);
+
+				if ($db_name != $_POST['db_name']) {
+					$this->displayInvalidCharError($_POST['db_name'],
+					                               $db_name,
+					                               'l10n_heading_attnm');
+					$validationErrors = true;
+				}
 			}
 
 			if (isset($_POST['dn_name'])) {
 				$dn_name = Input::sanitizeOrgName($_POST['dn_name']);
+
+				/* warn user if characters got sanitized away */
+				if ($dn_name != $_POST['dn_name']) {
+					$this->displayInvalidCharError($_POST['dn_name'],
+					                               $dn_name,
+					                               'l10n_heading_dnoname');
+					$validationErrors = true;
+				}
 			}
 
 			if(isset($_POST['subscr_email']) && $_POST['subscr_email'] != "") {
 				$subscr_email = Input::sanitizeEmail($_POST['subscr_email']);
+
+				if ($subscr_email != $_POST['subscr_email']) {
+					$this->displayInvalidCharError($_POST['subscr_email'],
+					                               $subscr_email,
+					                               'l10n_label_contactemail');
+					$validationErrors = true;
+				}
 			} else {
 				$subscr_email = "";
 			}
 			if(isset($_POST['subscr_phone']) && $_POST['subscr_phone'] != "") {
 				$subscr_phone = Input::sanitizePhone($_POST['subscr_phone']);
+
+				if ($subscr_phone != $_POST['subscr_phone']) {
+					$this->displayInvalidCharError($_POST['subscr_phone'],
+					                               $subscr_phone,
+					                               'l10n_label_contactphone');
+					$validationErrors = true;
+				}
 			} else {
 				$subscr_phone = "";
 			}
 			if(isset($_POST['subscr_responsible_name']) && $_POST['subscr_responsible_name'] != "") {
 				$subscr_responsible_name = Input::sanitizePersonName($_POST['subscr_responsible_name']);
+
+				if ($subscr_responsible_name != $_POST['subscr_responsible_name']) {
+					$this->displayInvalidCharError($_POST['subscr_responsible_name'],
+					                               $subscr_responsible_name,
+					                               'l10n_heading_resppers');
+					$validationErrors = true;
+				}
 			} else {
 				$subscr_responsible_name = "";
 			}
 			if(isset($_POST['subscr_responsible_email']) && $_POST['subscr_responsible_email'] != "") {
-					$subscr_responsible_email = Input::sanitizeEmail($_POST['subscr_responsible_email']);
+				$subscr_responsible_email = Input::sanitizeEmail($_POST['subscr_responsible_email']);
+
+				if ($subscr_responsible_email != $_POST['subscr_responsible_email']) {
+					$this->displayInvalidCharError($_POST['subscr_responsible_email'],
+					                               $subscr_responsible_email,
+					                               'l10n_label_respemail');
+					$validationErrors = true;
+				}
 			} else {
 				$subscr_responsible_email = "";
 			}
@@ -76,13 +125,33 @@ class CP_NREN_Admin extends Content_Page
 			}
 			if(isset($_POST['subscr_help_url']) && $_POST['subscr_help_url'] != "") {
 				$subscr_help_url = Input::sanitizeURL($_POST['subscr_help_url']);
+
+				if ($subscr_help_url != $_POST['subscr_help_url']) {
+					$this->displayInvalidCharError($_POST['subscr_help_url'],
+					                               $subscr_help_url,
+					                               'l10n_label_helpdeskurl');
+					$validationErrors = true;
+				}
 			} else {
 				$subscr_help_url= "";
 			}
 			if(isset($_POST['subscr_help_email']) && $_POST['subscr_help_email'] != "") {
 				$subscr_help_email = Input::sanitizeEmail($_POST['subscr_help_email']);
+
+				if ($subscr_help_email != $_POST['subscr_help_email']) {
+					$this->displayInvalidCharError($_POST['subscr_help_email'],
+					                               $subscr_help_email,
+					                               'l10n_label_helpdeskemail');
+					$validationErrors = true;
+				}
 			} else {
 				$subscr_help_email= "";
+			}
+
+			/* don't continue, if data was stripped due to the field
+			 * sanitation */
+			if ($validationErrors) {
+				return;
 			}
 
 			switch(htmlentities($_POST['subscriber'])) {
