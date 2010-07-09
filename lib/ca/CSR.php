@@ -208,22 +208,26 @@ class CSR extends CryptoElement
 	 * @return	CSR|False	The CSR for the person
 	 * @access	public
 	 */
-	static function getFromDB($uid, $pubHash=null)
+	static function getFromDB($uid, $pubHash)
 	{
 		$res = false;
-		if (!isset($uid)) {
+		if (!isset($uid) || !isset($pubHash)) {
 			return false;
 		}
+
 		$query  = "SELECT * FROM csr_cache WHERE ";
 		$query .= "auth_key=:auth_key AND ";
 		$query .= "common_name=:common_name";
 
 		$data = array();
-		$data['auth_key'] = $pubHash;
+		$data['auth_key']    = $pubHash;
 		$data['common_name'] = $uid;
 
 		try {
 			$csr_res = MDB2Wrapper::execute($query, null, $data);
+			if (count($csr_res) != 1) {
+				return false;
+			}
 		} catch (DBStatementException $dbse) {
 			Logger::log_event(LOG_WARNING, __FILE__ . ":" . __LINE__ .
 					  "cannot retrieve CSR from DB. Server said: " .
