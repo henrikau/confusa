@@ -208,6 +208,22 @@ class CSR extends CryptoElement
 		return true;
 	} /* end storeDB */
 
+	public function setUploadedDate($date)
+	{
+		$this->date = $date;
+	}
+	public function getUploadedDate()
+	{
+		return $this->date;
+	}
+	public function getUploadeFromIP()
+	{
+		return $this->ip;
+	}
+	public function setUploadeFromIP($ip)
+	{
+		$this->ip = $ip;
+	}
 	/**
 	 * updateDetails() scan the pubkey and retrieve key-specific details
 	 *
