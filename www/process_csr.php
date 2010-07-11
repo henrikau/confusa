@@ -363,6 +363,16 @@ final class CP_ProcessCsr extends Content_Page
 		}
 	} /* end processDBCSR() */
 
+	/**
+	 * approveBrowserGenerated()
+	 *
+	 * The function accepts a CSR generated in the browser and ships it for
+	 * signing.
+	 *
+	 * @param	CSR
+	 * @return	Ordernumber|false
+	 * @access	private
+	 */
 	private function approveBrowserGenerated($csr)
 	{
 		$permission = $this->person->mayRequestCertificate();
@@ -371,12 +381,12 @@ final class CP_ProcessCsr extends Content_Page
 			                        "<br /><br />" .
 			                        $permission->getFormattedReasons() . "<br />" .
 			                        $this->translateTag('l10n_err_noperm2', 'processcsr'));
-			return;
+			return false;
 		}
 		$order_number = $this->ca->signBrowserCSR($csr->getPEMContent(),
 							  Output::getUserAgent());
 		return $order_number;
-	}
+	} /* end approveBrowserGenerated() */
 
 	/**
 	 * approveCsr - send the CSR to cert-manager for signing
