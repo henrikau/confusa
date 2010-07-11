@@ -444,7 +444,7 @@ final class CP_ProcessCsr extends Content_Page
 						htmlentites($kse->getMessage()));
 			return false;
 		}
-		delete_csr_from_db($this->person, $authToken);
+		CSR::deleteFromDB($this->peron, $authToken);
 		$this->signing_ok = true;
 
 		/* Construct a meta http-equiv to be included in the
