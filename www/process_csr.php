@@ -116,11 +116,10 @@ final class CP_ProcessCsr extends Content_Page
 		 * here.
 		 */
 		if (isset($_POST['browserRequest']) && $this->aup_set) {
-			$request = Input::sanitizeBase64($_POST['browserRequest']);
-			$request = trim($request);
-			if (!empty($request)) {
+			$csr  = new CSR(trim(Input::sanitizeBase64($_POST['browserRequest'])));
+			if (!empty($csr) && $csr->isValid()) {
 				try {
-					$order_number = $this->approveBrowserGenerated($request, Output::getUserAgent());
+					$order_number = $this->approveBrowserGenerated($csr);
 					$this->tpl->assign('order_number', $order_number);
 				} catch (KeySignException $kse) {
 					Framework::error_output($this->translateTag('l10n_sign_error', 'processcsr')
@@ -135,7 +134,7 @@ final class CP_ProcessCsr extends Content_Page
 		if (!$res)
 			return;
 		return $res;
-	}
+	} /* end pre_process() */
 
 	public function process()
 	{
