@@ -364,10 +364,9 @@ final class CP_ProcessCsr extends Content_Page
 		}
 	} /* end processDBCSR() */
 
-	private function approveBrowserGenerated($csr, $browser)
+	private function approveBrowserGenerated($csr)
 	{
 		$permission = $this->person->mayRequestCertificate();
-
 		if ($permission->isPermissionGranted() === false) {
 			Framework::error_output($this->translateTag('l10n_err_noperm1', 'processcsr') .
 			                        "<br /><br />" .
@@ -375,8 +374,8 @@ final class CP_ProcessCsr extends Content_Page
 			                        $this->translateTag('l10n_err_noperm2', 'processcsr'));
 			return;
 		}
-
-		$order_number = $this->ca->signBrowserCSR($csr, $browser);
+		$order_number = $this->ca->signBrowserCSR($csr->getPEMContent(),
+							  Output::getUserAgent());
 		return $order_number;
 	}
 
