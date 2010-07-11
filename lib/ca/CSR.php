@@ -1,6 +1,7 @@
 <?php
 require_once 'CryptoElement.php';
 require_once 'Config.php';
+require_once 'Output.php';
 /**
  * CSR Class for handling signing requests
  *
@@ -216,11 +217,11 @@ class CSR extends CryptoElement
 	{
 		return $this->date;
 	}
-	public function getUploadeFromIP()
+	public function getUploadedFromIP()
 	{
 		return $this->ip;
 	}
-	public function setUploadeFromIP($ip)
+	public function setUploadedFromIP($ip)
 	{
 		$this->ip = $ip;
 	}
@@ -290,7 +291,7 @@ class CSR extends CryptoElement
 
 		$csr = new CSR($csr_res[0]['csr']);
 		$csr->setUploadedDate($csr_res[0]['uploaded_date']);
-		$csr->setUploadedFromIP(Output::formatIP($csr[0]['from_ip'], true));
+		$csr->setUploadedFromIP(Output::formatIP($csr_res[0]['from_ip'], true));
 
 		if ($csr->getAuthToken() !== $pubHash) {
 			Logger::log_event(LOG_ALERT, "Found CSR in database with hash $pubHash but ".
