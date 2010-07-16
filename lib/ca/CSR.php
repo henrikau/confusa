@@ -66,8 +66,9 @@ class CSR extends CryptoElement
 	{
 		if ($this->updateDetails('bits')) {
 			return $this->csr_pubkey_details['bits'];
+		} else {
+			throw new CryptoElementException("Could not update details of this CSR. Probably the CSR could not get parsed.");
 		}
-		return false;
 	}
 
 	/**
