@@ -37,5 +37,8 @@
 	},
 	"l10n_heading_crldump": {
 		"en": "CRL dump:"
+	},
+	"l10n_text_downlchain": {
+		"en": "Download the full CA-chain:"
 	}
 }

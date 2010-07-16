@@ -60,6 +60,15 @@ class CP_Root_Certificate extends Content_Page
 				$cert_name = substr($this->cert_url, $idx+1);
 				download_file(file_get_contents($this->cert_path), $cert_name);
 				break;
+			case 'cachain':
+				$this->makeChainAvailable();
+				$idx = strrpos($this->cert_url, "/");
+				$cert_name = substr($this->cert_url, $idx+1);
+				$dot_idx = strrpos($cert_name, ".");
+				$cert_name = substr($cert_name, 0, $dot_idx);
+				$cert_name = $cert_name . '_bundle.pem';
+				download_file(file_get_contents($this->cert_path), $cert_name);
+				break;
 			case 'crl':
 				$this->makeCRLAvailable();
 				$idx = strrpos($this->crl_url, "/");
@@ -164,6 +173,38 @@ class CP_Root_Certificate extends Content_Page
 
 			curl_close($ch);
 			file_put_contents($this->cert_path, $ca_file_content);
+		}
+	}
+
+	/**
+	 * Provision the whole CA chain (the signing CA cert plus the intermediate
+	 * CA cert, plus the root CA).
+	 *
+	 * @see makeCRLAvailabe
+	 */
+	private function makeChainAvailable()
+	{
+		if (Config::get_config('ca_mode') == CA_COMODO) {
+			$ch = curl_init(ConfusaConstants::$CAPI_ROOT_CA);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$root_ca_content = curl_exec($ch);
+			curl_close($ch);
+
+			$ch = curl_init(ConfusaConstants::$CAPI_INTERMEDIATE_CA);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$interm_ca_content = curl_exec($ch);
+			curl_close($ch);
+
+			$ch = curl_init($this->cert_url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$actual_ca_cert = curl_exec($ch);
+			curl_close($ch);
+
+			$ca_chain = $root_ca_content .
+			            $interm_ca_content .
+			            CA::DERtoPEM($actual_ca_cert, 'cert');
+
+			file_put_contents($this->cert_path, $ca_chain);
 		}
 	}
 }

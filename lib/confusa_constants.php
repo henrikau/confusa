@@ -23,6 +23,8 @@ class ConfusaConstants {
 	public static $CAPI_REVOKE_ENDPOINT = 'https://secure.comodo.net/products/!AutoRevokeCCC';
 	/* these fields are for informational use, when the user clicks "view CRL/view root cert"
 	 * in Confusa */
+	public static $CAPI_ROOT_CA = 'https://www.terena.org/activities/tcs/repository/AAA_Certificate_Services.pem';
+	public static $CAPI_INTERMEDIATE_CA = 'https://www.terena.org/activities/tcs/repository/UTN-USERFirst-Client_Authentication_and_Email.pem';
 	public static $CAPI_ESCIENCE_ROOT_CERT = 'http://crt.tcs.terena.org/TERENAeSciencePersonalCA.crt';
 	public static $CAPI_ESCIENCE_CRL = 'http://crl.tcs.terena.org/TERENAeSciencePersonalCA.crl';
 	public static $CAPI_PERSONAL_ROOT_CERT = 'http://crt.tcs.terena.org/TERENAPersonalCA.crt';

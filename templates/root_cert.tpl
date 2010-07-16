@@ -20,6 +20,17 @@
 	  </p>
 	</form>
 </li>
+
+<li>
+	<form method="get" action="root_cert.php">
+		<p>
+			<input type="hidden" name="send_file" value="cachain" />
+			{$panticsrf}
+			{$l10n_text_downlchain}
+			<input type="submit" name="submit" value="{$l10n_button_download}" />
+		</p>
+	</form>
+</li>
 </ul>
 
 <div class="spacer"></div>
