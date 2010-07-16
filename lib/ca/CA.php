@@ -167,8 +167,7 @@ abstract class CA
       $trailer = "-----END X509 CRL-----\n";
       break;
     default:
-      /* nothing we can do for the caller */
-      return "Transcoding from DER to PEM failed!";
+      throw new ConfusaGenException("Type must be one of: cert, crl");
     }
 
     $pem = chunk_split(base64_encode($der), 64, "\n");
@@ -205,6 +204,8 @@ abstract class CA
 			$der = base64_decode($pem);
 			return $der;
 			break;
+		default:
+			throw new ConfusaGenException("Type must be one of: cert, crl");
 		}
 	}
 
