@@ -17,9 +17,6 @@
 	"l10n_text_rootcaexpl3": {
 		"en": "to the certificate (install)."
 	},
-	"l10n_text_downldirect": {
-		"en": "If you want to download it directly:"
-	},
 	"l10n_button_download": {
 		"en": "Download"
 	},
@@ -38,7 +35,13 @@
 	"l10n_heading_crldump": {
 		"en": "CRL dump:"
 	},
+	"l10n_text_downlcacert": {
+		"en": "the CA certificate."
+	},
 	"l10n_text_downlchain": {
-		"en": "Download the full CA-chain:"
+		"en": "the full CA-chain."
+	},
+	"l10n_text_downlcrl": {
+		"en": "the CRL."
 	}
 }
