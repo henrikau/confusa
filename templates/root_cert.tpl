@@ -11,25 +11,9 @@
 	<a href="{$ca_download_link}">{$l10n_link_direct}</a> {$l10n_text_rootcaexpl3}
 </li>
 <li>
-	<form method="get" action="root_cert.php">
-	  <p>
-		<input type="hidden" name="send_file" value="cacert" />
-		{$panticsrf}
-		{$l10n_text_downldirect}
-		<input type="submit" name="submit" value="{$l10n_button_download}" />
-	  </p>
-	</form>
-</li>
-
+	<a href="root_cert.php?send_file=cacert&amp;{$ganticsrf}">{$l10n_button_download}</a> {$l10n_text_downlcacert}
 <li>
-	<form method="get" action="root_cert.php">
-		<p>
-			<input type="hidden" name="send_file" value="cachain" />
-			{$panticsrf}
-			{$l10n_text_downlchain}
-			<input type="submit" name="submit" value="{$l10n_button_download}" />
-		</p>
-	</form>
+	<a href="root_cert.php?send_file=cachain&amp;{$ganticsrf}">{$l10n_button_download}</a> {$l10n_text_downlchain}
 </li>
 </ul>
 
@@ -47,14 +31,7 @@
 <a href="root_cert.php?show_crl=yes&amp;{$ganticsrf}">{$l10n_text_here} </a></li>
 <li>{$l10n_text_crldili} <a href="{$crl_download_link}">{$l10n_text_here}</a>.</li>
 <li>
-	<form method="get" action="">
-	  <p>
-	    <input type="hidden" name="send_file" value="crl" />
-	    {$panticsrf}
-	    {$l10n_text_downldirect}
-	    <input type="submit" name="submit" value="{$l10n_button_download}" />
-	  </p>
-	</form>
+	<a href="root_cert.php?send_file=crl&amp;{$ganticsrf}">{$l10n_button_download}</a> {$l10n_text_downlcrl}
 </li>
 </ul>
 
