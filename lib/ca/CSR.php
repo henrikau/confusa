@@ -56,7 +56,7 @@ abstract class CSR extends CryptoElement
 	{
 		$insert  = "INSERT INTO csr_cache (csr, uploaded_date, common_name, auth_key, from_ip) ";
 		$insert .= "VALUES(?,current_timestamp(),?,?, ?)";
-		$param   = array('text', 'text', 'text');
+		$param   = array('text', 'text', 'text', 'text');
 		$data	 = array($this->getPEMContent(),
 				 $this->getSubject(),
 				 $this->getPubKeyHash(),
