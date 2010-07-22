@@ -44,6 +44,10 @@ class ConfusaConstants {
 	public static $CAPI_TEST_CN_PREFIX = '';
 	/* certificate validity period in test mode */
 	public static $CAPI_TEST_VALID_DAYS = '14';
+	/* Comodo API parameter for certificate signing requests in SPKAC format */
+	public static $CAPI_FORMAT_SPKAC = 'spkac';
+	/* Comodo API parameter for certificate signing requests in PKCS#10 format */
+	public static $CAPI_FORMAT_PKCS10 ='csr';
 
 	public static $LINK_PERSONAL_CPS = 'https://www.terena.org/activities/tcs/repository/cps-personal.pdf';
 	public static $LINK_ESCIENCE_CPS = 'https://www.terena.org/activities/tcs/repository/cps-personal-escience.pdf';

@@ -61,13 +61,6 @@ abstract class CA
    */
   abstract function signKey($csr);
 
-   /**
-    * Sign a CSR as received from the browser's crypto mechanisms.
-    * Since these cert requests are not always in PKCS#10 format, handle them
-    * specifically to the browser from which they originate
-    */
-  abstract function signBrowserCSR($csr, $browser);
-
   /**
    * Get the (browser-specific) deployment script for a certain certificate
    * Usually this should return some JavaScript that will call installCertificate()

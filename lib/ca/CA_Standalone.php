@@ -182,14 +182,6 @@ class CA_Standalone extends CA
 		return getCertListForPersons($eppn, $org);
 	}
 
-    public function signBrowserCSR($csr, $browser)
-    {
-	    /* FIXME */
-	    Framework::error_output("I am sorry, but this functionality is not yet implemented for standalone.");
-	    return null;
-    } /* end signBrowserCSR */
-
-
     /**
      * Return true if processing of the certificate is finished and false
      * otherwise.
