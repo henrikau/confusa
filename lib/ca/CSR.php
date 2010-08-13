@@ -50,34 +50,55 @@ abstract class CSR extends CryptoElement
 	 * storeDB() store the CSR into the database
 	 *
 	 * @param	void
-	 * @return	boolean True upon successfully storing the certificate
-	 *			in the database
+	 * @return void
 	 * @access	public
+	 * @throws DBStatementException If inserting the CSR into the DB failed
+	 * @throws DBQueryException inserting the CSR into the DB failed
 	 */
 	public function storeDB($owner)
 	{
 		$insert  = "INSERT INTO csr_cache (csr, uploaded_date, common_name, auth_key, from_ip, type) ";
-		$insert .= "VALUES(?,current_timestamp(),?,?,?,?)";
-		$param   = array('text', 'text', 'text', 'text', 'text');
+		$insert .= "VALUES(?,?,?,?,?,?)";
+		$param   = array('text', 'text', 'text', 'text', 'text', 'text');
 		$data	 = array($this->getPEMContent(),
+				 $this->date,
 				 $owner->getX509ValidCN(),
 				 $this->getPubKeyHash(),
-				 $_SERVER['REMOTE_ADDR'],
+				 $this->ip,
 				 $this->getCSRType());
 		try {
 			MDB2Wrapper::update($insert, $param, $data);
 		} catch (DBStatementException $dbse) {
 			Logger::log_event(LOG_WARNING, __FILE__ . ":" . __LINE__ .
-					  " Coult not insert CSR into database. Server said: " .
+					  " Could not insert CSR into database. Server said: " .
 					  $dbse->getMessage());
-			return false;
+			/* logged the exception, rethrow */
+			throw $dbse;
 		} catch (DBQueryException $dbqe) {
-			Logger::log_event(LOG_WARNING, __FILE__ . ":" . __LINE__ .
-					  " Coult not insert CSR into database. Server said: " .
-					  $dbqe->getMessage());
-			return false;
+			Logger::log_event(LOG_INFO, __FILE__ . ":" . __LINE__ .
+					"Could not insert CSR into database. " .
+					"Testing whether it already exists.");
+
+			$query = "SELECT * FROM csr_cache WHERE auth_key = :auth_key";
+			$authKey = $this->getPubKeyHash();
+			$data = array();
+			$data['auth_key'] = $authKey;
+
+			try {
+				$res = MDB2Wrapper::execute($query, null, $data);
+			} catch (Exception $nestedEx) {
+				Logger::logEvent(LOG_ERR, __CLASS__, "storeDB()",
+				"Verifying if CSR with auth-key $authKey already exists " .
+				"failed. Stopping now, rethrowing original exception.");
+				throw $dbqe;
+			}
+
+			if (count($res) != 1) {
+			/* inserting failed and CSR does not already exist. Rethrow
+			 * original exception */
+			throw $dbqe;
+			}
 		}
-		return true;
 	} /* end storeDB */
 
 	public function setUploadedDate($date)
