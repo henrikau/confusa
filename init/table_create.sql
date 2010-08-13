@@ -262,7 +262,9 @@ CREATE TABLE csr_cache (
        -- for the challenge-response cycle. when we ask the user to approve
        -- the system will generate a one-time password and encrypt it with the
        -- uploaded public-key.
-       auth_key char(40) UNIQUE NOT NULL
+       auth_key char(40) UNIQUE NOT NULL,
+       -- the format of the CSR
+       type ENUM('spkac','pkcs10') DEFAULT 'pkcs10'
 ) engine=InnoDB;
 
 -- ---------------------------------------------------------
@@ -343,7 +345,7 @@ CREATE TABLE IF NOT EXISTS admins (
        FOREIGN KEY(nren) REFERENCES nrens(nren_id) ON DELETE CASCADE
 ) engine=InnoDB;
 
- 
+
 -- ---------------------------------------------------------
 --
 -- user_crls

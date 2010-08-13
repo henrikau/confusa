@@ -122,5 +122,10 @@ class CSR_SPKAC extends CSR
 	{
 		return sha1($this->spkac_der);
 	}
+
+	public function getCSRType()
+	{
+		return "spkac";
+	}
 }
 ?>

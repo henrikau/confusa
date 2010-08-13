@@ -44,6 +44,8 @@ abstract class CSR extends CryptoElement
 
 	public abstract function getAuthToken();
 
+	public abstract function getCSRType();
+
 	/**
 	 * storeDB() store the CSR into the database
 	 *
@@ -52,15 +54,16 @@ abstract class CSR extends CryptoElement
 	 *			in the database
 	 * @access	public
 	 */
-	public function storeDB()
+	public function storeDB($owner)
 	{
-		$insert  = "INSERT INTO csr_cache (csr, uploaded_date, common_name, auth_key, from_ip) ";
-		$insert .= "VALUES(?,current_timestamp(),?,?, ?)";
-		$param   = array('text', 'text', 'text', 'text');
+		$insert  = "INSERT INTO csr_cache (csr, uploaded_date, common_name, auth_key, from_ip, type) ";
+		$insert .= "VALUES(?,current_timestamp(),?,?,?,?)";
+		$param   = array('text', 'text', 'text', 'text', 'text');
 		$data	 = array($this->getPEMContent(),
-				 $this->getSubject(),
+				 $owner->getX509ValidCN(),
 				 $this->getPubKeyHash(),
-				 $_SERVER['REMOTE_ADDR']);
+				 $_SERVER['REMOTE_ADDR'],
+				 $this->getCSRType());
 		try {
 			MDB2Wrapper::update($insert, $param, $data);
 		} catch (DBStatementException $dbse) {
@@ -135,7 +138,17 @@ abstract class CSR extends CryptoElement
 			return false;
 		}
 
-		$csr = new CSR($csr_res[0]['csr']);
+		$csr_type = $csr_res[0]['type'];
+
+		if ($csr_type == CSR_PKCS10::getCSRType()) {
+			$csr = new CSR_PKCS10($csr_res[0]['csr']);
+		} else if ($csr_type == CSR_SPKAC::getCSRType()) {
+			$csr = new CSR_SPKAC($csr_res[0]['csr']);
+		} else {
+			throw new CryptoElementException("Unsupported CSR type " .
+			                                 $csr_type . "!");
+		}
+
 		$csr->setUploadedDate($csr_res[0]['uploaded_date']);
 		$csr->setUploadedFromIP(Output::formatIP($csr_res[0]['from_ip'], true));
 

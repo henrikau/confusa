@@ -161,5 +161,10 @@ class CSR_PKCS10 extends CSR
 		}
 		return is_array($this->csr_pubkey_details);
 	} /* end updateDetails() */
+
+	public function getCSRType()
+	{
+		return "pkcs10";
+	}
 }
 ?>
