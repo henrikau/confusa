@@ -229,13 +229,17 @@ class CA_Comodo extends CA
 
 		$authKey = $csr->getAuthToken();
 
+		Logger::logEvent(LOG_DEBUG, __CLASS__, "signKey()",
+		                 "Signing CSR with authKey $authKey",
+		                 __LINE__);
+
 		/* FIXME: better solution */
 		if ($csr instanceof CSR_PKCS10) {
-			$this->capiUploadCSR($auth_key,
+			$this->capiUploadCSR($authKey,
 			                     $csr->getPEMContent(),
 			                     ConfusaConstants::$CAPI_FORMAT_PKCS10);
 		} else if ($csr instanceof CSR_SPKAC) {
-			$this->capiUploadCSR($auth_key(),
+			$this->capiUploadCSR($authKey,
 			                     $csr->getDERContent(),
 			                     ConfusaConstants::$CAPI_FORMAT_SPKAC);
 		}
@@ -251,7 +255,7 @@ class CA_Comodo extends CA
 		                         $_SERVER['REMOTE_ADDR'],
 		                         $this->person,
 		                         $this->getFullDN());
-		Logger::log_event(LOG_INFO, "Signed CSR for user with auth_key $auth_key");
+		Logger::log_event(LOG_INFO, "Signed CSR for user with authKey $authKey");
 	} /* end signKey() */
 
     /**
