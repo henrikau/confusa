@@ -256,6 +256,7 @@ class CA_Comodo extends CA
 		                         $this->person,
 		                         $this->getFullDN());
 		Logger::log_event(LOG_INFO, "Signed CSR for user with authKey $authKey");
+		return $this->order_number;
 	} /* end signKey() */
 
     /**
