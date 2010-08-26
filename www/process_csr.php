@@ -130,7 +130,10 @@ final class CP_ProcessCsr extends Content_Page
 				break;
 			case "msie_pre_vista":
 			case "msie_post_vista":
-				$csr = new CSR_PKCS10(trim(Input::sanitizeBase64($_POST['browserRequest'])));
+				$csrContent = CSR::$PEM_PREFIX . "\n" .
+				              trim(Input::sanitizeBase64($_POST['browserRequest'])) . "\n" .
+				              CSR::$PEM_SUFFIX;
+				$csr = new CSR_PKCS10($csrContent);
 				break;
 			}
 

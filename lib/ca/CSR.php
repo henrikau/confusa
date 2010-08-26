@@ -12,6 +12,10 @@ require_once 'Output.php';
  */
 abstract class CSR extends CryptoElement
 {
+
+	public static $PEM_PREFIX="-----BEGIN CERTIFICATE REQUEST-----";
+	public static $PEM_SUFFIX="-----END CERTIFICATE REQUEST-----";
+
 	protected function getEncoding($elem)
 	{
 		$start = "CERTIFICATE REQUEST-----";
@@ -21,9 +25,7 @@ abstract class CSR extends CryptoElement
 
 	protected function der2pem($elem)
 	{
-		$start = "-----BEGIN CERTIFICATE-----\n";
-		$end = "-----END CERTIFICATE-----\n";
-		return parent::der2pem($elem, $start, $end);
+		return parent::der2pem($elem, CSR::$PEM_PREFIX, CSR::$PEM_SUFFIX);
 	}
 
 	protected function pem2der($elem)
