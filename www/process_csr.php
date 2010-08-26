@@ -4,8 +4,11 @@ require_once 'Content_Page.php';
 require_once 'Framework.php';
 require_once 'MDB2Wrapper.php';
 require_once 'Logger.php';
-require_once 'csr_lib.php';
-require_once 'file_upload.php';
+require_once 'CSR.php';
+require_once 'CSR_SPKAC.php';
+require_once 'CSR_PKCS10.php';
+require_once 'CSRUpload.php';
+require_once 'file.php';
 require_once 'Config.php';
 require_once 'send_element.php';
 require_once 'Input.php';
@@ -116,8 +119,22 @@ final class CP_ProcessCsr extends Content_Page
 		 * here.
 		 */
 		if (isset($_POST['browserRequest']) && $this->aup_set) {
-			$csr  = new CSR(trim(Input::sanitizeBase64($_POST['browserRequest'])));
-			if (!empty($csr) && $csr->isValid()) {
+			$ua = Output::getUserAgent();
+
+			switch($ua) {
+			case "opera":
+			case "safari":
+			case "mozilla":
+			case "chrome":
+				$csr = new CSR_SPKAC(trim(Input::sanitizeBase64($_POST['browserRequest'])));
+				break;
+			case "msie_pre_vista":
+			case "msie_post_vista":
+				$csr = new CSR_PKCS10(trim(Input::sanitizeBase64($_POST['browserRequest'])));
+				break;
+			}
+
+			if (!empty($csr)) {
 				try {
 					$order_number = $this->approveBrowserGenerated($csr);
 					$this->tpl->assign('order_number', $order_number);
@@ -223,16 +240,20 @@ final class CP_ProcessCsr extends Content_Page
 		/* signing of a copied/pasted CSR */
 		} else if (isset($_POST['pastedCSR']) && $this->aup_set) {
 			/* show upload-form. If it returns false, no uploaded CSRs were processed */
-			$authkey = $this->processUploadedCSR($this->person);
+			$csr = $this->processUploadedCSR($this->person);
 			Framework::message_output($this->translateTag('l10n_msg_pastecert', 'processcsr') .
 			                          "<a href=\"process_csr.php\">" .
 			                          $this->translateTag('l10n_link_change', 'processcsr') .
 			                          "</a>.");
 			$this->tpl->assign('post', 'pastedCSR');
+			$subject = $csr->getSubject();
 
-			$this->tpl->assign('csrInspect', get_csr_details($this->person,
-			                                 $authkey));
-
+			$this->tpl->assign('csrInspect', true);
+			$this->tpl->assign('subject', $subject);
+			$this->tpl->assign('uploadedDate', $csr->getUploadedDate());
+			$this->tpl->assign('uploadedFromIP', $csr->getUploadedFromIP());
+			$this->tpl->assign('authToken', $csr->getAuthToken());
+			$this->tpl->assign('length', $csr->getLength());
 			$this->tpl->assign('legendTitle',
 			                   $this->translateTag('l10n_legend_pastedcsr', 'processcsr'));
 			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
@@ -240,15 +261,20 @@ final class CP_ProcessCsr extends Content_Page
 		/* signing of a CSR that was uploaded from a file */
 		} else if (isset($_POST['uploadedCSR']) && $this->aup_set) {
 			/* show upload-form. If it returns false, no uploaded CSRs were processed */
-			$authkey = $this->processUploadedCSR($this->person);
+			$csr = $this->processUploadedCSR($this->person);
 			Framework::message_output($this->translateTag('l10n_msg_uploadcsr', 'processcsr') .
 			                          " <a href=\"process_csr.php\">" .
 									  $this->translateTag('l10n_link_change', 'processcsr') .
 									  "</a>.");
 			$this->tpl->assign('post', 'uploadedCSR');
-
-			$this->tpl->assign('csrInspect', get_csr_details($this->person,
-			                                 $authkey));
+			$subject = $csr->getSubject();
+			/* FIXME */
+			$this->tpl->assign('csrInspect', true);
+			$this->tpl->assign('subject', $subject);
+			$this->tpl->assign('uploadedDate', $csr->getUploadedDate());
+			$this->tpl->assign('uploadedFromIP', $csr->getUploadedFromIP());
+			$this->tpl->assign('authToken', $csr->getAuthToken());
+			$this->tpl->assign('length', $csr->getLength());
 			$this->tpl->assign('legendTitle',
 			                   $this->translateTag('l10n_legend_uploadedcsr', 'processcsr'));
 			$this->tpl->assign('content',	$this->tpl->fetch('csr/approve_csr.tpl'));
@@ -296,25 +322,34 @@ final class CP_ProcessCsr extends Content_Page
 		$csr = null;
 		/* Testing for uploaded files */
 		if(isset($_FILES['user_csr']['name'])) {
-			$fu = new FileUpload('user_csr', true, true, 'test_content');
-			if ($fu->file_ok()) {
-				$csr = new CSR($fu->get_content());
-			} else {
-				/* File NOT OK */
+			try {
+				$csr = CSRUpload::receiveUploadedCSR('user_csr', true);
+			} catch (FileException $fileEx) {
 				$msg  = $this->translateTag('l10n_err_csrproc', 'processcsr');
-				Framework::error_output($msg);
+				Framework::error_output($msg . $fileEx->getMessage());
+				return null;
 			}
 		} else if (isset($_POST['user_csr'])) {
-			$csr = new CSR(Input::sanitizeBase64($_POST['user_csr']));
+			$csr = new CSR_PKCS10(Input::sanitizeBase64($_POST['user_csr']));
+		}
+
+		if (!$csr->isValid()) {
+			$msg = $this->translateTag('l10n_err_csrinvalid1', 'processcsr');
+			$msg .= Config::get_config('key_length');
+			$msg .= $this->translateTag('l10n_err_csrinvalid2', 'processcsr');
+			Framework::error_output($msg);
+			return null;
 		}
 
 		if (Config::get_config('ca_mode') == CA_COMODO ||
-		    match_dn($csr->getsubject(), $this->ca->getFullDN())) {
-			if ($csr->storeDB()) {
-				return $csr->getAuthToken();
-			}
+			match_dn($csr->getSubject(), $this->ca->getFullDN())) {
+
+			$csr->setUploadedDate(date("Y-m-d H:i:s"));
+			$csr->setUploadedFromIP($_SERVER['REMOTE_ADDR']);
+			$csr->storeDB($this->person);
+			return $csr;
 		}
-		return false;
+		return null;
 	} /* end processUploadedCSR() */
 
 	/**
@@ -369,7 +404,7 @@ final class CP_ProcessCsr extends Content_Page
 	 * The function accepts a CSR generated in the browser and ships it for
 	 * signing.
 	 *
-	 * @param	CSR
+	 * @param	SPKAC
 	 * @return	Ordernumber|false
 	 * @access	private
 	 */
@@ -383,8 +418,7 @@ final class CP_ProcessCsr extends Content_Page
 			                        $this->translateTag('l10n_err_noperm2', 'processcsr'));
 			return false;
 		}
-		$order_number = $this->ca->signBrowserCSR($csr->getPEMContent(),
-							  Output::getUserAgent());
+		$order_number = $this->ca->signKey($csr);
 		return $order_number;
 	} /* end approveBrowserGenerated() */
 
@@ -428,7 +462,7 @@ final class CP_ProcessCsr extends Content_Page
 				return;
 			}
 
-			$this->ca->signKey($authToken, $csr);
+			$this->ca->signKey($csr);
 
 		} catch (CGE_ComodoAPIException $capie) {
 			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" .
@@ -444,7 +478,7 @@ final class CP_ProcessCsr extends Content_Page
 						htmlentites($kse->getMessage()));
 			return false;
 		}
-		CSR::deleteFromDB($this->peron, $authToken);
+		CSR::deleteFromDB($this->person, $authToken);
 		$this->signing_ok = true;
 
 		/* Construct a meta http-equiv to be included in the

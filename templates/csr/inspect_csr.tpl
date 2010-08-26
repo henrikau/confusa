@@ -19,73 +19,53 @@
       <tr>
 	<td>{$l10n_label_authtoken}</td>
 	<td></td>
-	<td>{$csrInspect.auth_token|escape}</td>
+	<td>{$authToken|escape}</td>
       </tr>
       <tr><td></td></tr>
 
-      {* Country *}
-      {if !empty($csrInspect.countryName)}
+      {* Subject *}
+      {if !empty($subject)}
       <tr>
-	<td>{$l10n_label_country}</td>
+	<td>{$l10n_label_subject}:</td>
 	<td></td>
-	<td>{$csrInspect.countryName|escape}</td>
-      </tr>
-      <tr><td></td></tr>
-      {/if}
-
-      {* Organization name *}
-      {if !empty($csrInspect.organizationName)}
-      <tr>
-	<td>{$l10n_label_orgname}</td>
-	<td></td>
-	<td>{$csrInspect.organizationName|escape}</td>
-      </tr>
-      <tr><td></td></tr>
-      {/if}
-
-      {* Common-Name *}
-      {if !empty($csrInspect.commonName)}
-      <tr>
-	<td>{$l10n_label_cn}</td>
-	<td></td>
-	<td>{$csrInspect.commonName|escape}</td>
+	<td>{$subject|escape}</td>
       </tr>
       <tr><td></td></tr>
       {/if}
 
       {* Length of key *}
-      {if !empty($csrInspect.length)}
+      {if !empty($length)}
       <tr>
 	<td>{$l10n_label_keyl}</td>
 	<td></td>
-	<td>{$csrInspect.length|escape}</td>
+	<td>{$length|escape}</td>
       </tr>
       <tr><td></td></tr>
       {/if}
 
       {* Uploaded *}
-      {if !empty($csrInspect.length)}
+      {if !empty($uploadedDate)}
       <tr>
 	<td>{$l10n_label_uploadedwhen}</td>
 	<td></td>
-	<td>{$csrInspect.uploaded|escape}</td>
+	<td>{$uploadedDate|escape}</td>
       </tr>
       <tr><td></td></tr>
       {/if}
 
       {* Remote IP *}
-      {if !empty($csrInspect.length)}
+      {if !empty($uploadedFromIP)}
       <tr>
 	<td>{$l10n_label_ip}</td>
 	<td></td>
-	<td>{$csrInspect.from_ip}</td>
+	<td>{$uploadedFromIP}</td>
       </tr>
       <tr><td></td></tr>
       {/if}
 
       <tr>
 	<td>
-	  <a href="?delete_csr={$csrInspect.auth_token}&amp;{$ganticsrf}">
+	  <a href="?delete_csr={$authToken}&amp;{$ganticsrf}">
 	    <img src="graphics/delete.png"
 		 alt="{$l10n_title_deletecsr}"
 		 title="{$l10n_title_deletecsr}"
@@ -94,7 +74,7 @@
 	</td>
 	<td></td>
 	<td>
-	  <a href="?sign_csr={$csrInspect.auth_token}&amp;{$ganticsrf}">
+	  <a href="?sign_csr={$authToken}&amp;{$ganticsrf}">
 	    <img src="graphics/accept.png"
 		 alt="{$l10n_title_approvecsr}"
 		 title="{$l10n_title_approvecsr}"

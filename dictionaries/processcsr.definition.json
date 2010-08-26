@@ -241,5 +241,14 @@
 	},
 	"l10n_header_privacynotice": {
 		"en":	"Privacy notice"
+	},
+	"l10n_err_csrinvalid1": {
+		"en":	"The provided CSR is invalid. Check the keylength (must be longer than"
+	},
+	"l10n_err_csrinvalid2": {
+		"en":	"bits) and the type of the public key (must be RSA)."
+	},
+	"l10n_label_subject": {
+		"en":	"Subject"
 	}
 }
