@@ -43,14 +43,14 @@ class Certificate extends CryptoElement
 	{
 		parent::__construct($content);
 		$this->encoding = $this->getEncoding($content);
+
 		switch($this->encoding) {
 		case parent::$KEY_ENCODING_PEM:
 			openssl_x509_export($this->content, $this->x509_pem, true);
 			break;
 		case parent::$KEY_ENCODING_DER:
 			$this->x509_der	= trim((string)$this->content);
-			openssl_x509_export(trim($this->der2pem($this->x509_der)),
-					    $this->x509_pem, true);
+			$this->x509_pem = trim($this->der2pem($this->x509_der));
 			break;
 		default:
 			throw new CryptoElementException("Internal problem, encoding set to non-recognizable format.");
@@ -403,8 +403,8 @@ class Certificate extends CryptoElement
 
 	protected function der2pem($elem)
 	{
-		$start = "-----BEGIN CERTIFICATE REQUEST-----\n";
-		$end   = "-----END CERTIFICATE REQUEST-----\n";
+		$start = "-----BEGIN CERTIFICATE-----\n";
+		$end   = "-----END CERTIFICATE-----\n";
 		return parent::der2pem($elem, $start, $end);
 	}
 
