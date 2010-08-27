@@ -819,8 +819,8 @@ class CA_Comodo extends CA
                                     "&responseEncoding=0"; /* encode base-64 */
 
             $data = CurlWrapper::curlContact($collect_endpoint);
-            $cert = trim(substr($data, 2));
-            $der_cert = CA::PEMtoDER($cert, "cert");
+            $cert = new Certificate(trim(substr($data, 2)));
+            $der_cert = $cert->getDERContent(true);
             return $der_cert;
             break;
 
