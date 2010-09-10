@@ -299,7 +299,7 @@ class CP_Robot_Interface extends Content_Page
 			$update  = "INSERT INTO robot_certs (subscriber_id, uploaded_by, uploaded_date, valid_until, cert, fingerprint, serial, comment)";
 			$update .= " VALUES(?, ?, current_timestamp(), ?, ?, ?, ?, ?)";
 			$params	= array('text', 'text', 'text', 'text', 'text', 'text', 'text');
-			$data	= array($subscriber_id, $admin_id, $cert->validTo(), $cert->getCert(), $cert->getFingerprint(), $cert->getSerial(), $comment);
+			$data	= array($subscriber_id, $admin_id, $cert->getEndDate(), $cert->getPEMContent(), $cert->getFingerprint(), $cert->getSerial(), $comment);
 			MDB2Wrapper::update($update, $params, $data);
 			Logger::log_event(LOG_INFO, "[RI] Added new certificate (". $cert->getSerial() .
 					  ") for subscriber " . $this->person->getSubscriber()->getOrgName() .
