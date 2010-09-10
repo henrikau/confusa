@@ -23,7 +23,7 @@
     <td></td>
 
     <td valign="top">
-      <a href="?robot_action=delete&amp;serial={$element->serial()}&amp;{$ganticsrf}">
+      <a href="?robot_action=delete&amp;serial={$element->getSerial()}&amp;{$ganticsrf}">
 	<img src="https://slcstest.uninett.no/silk_icons/delete.png"
 	     alt="Delete"
 	     title="{$l10n_title_deleterc}"
@@ -35,7 +35,7 @@
     <td style="width: 20px;"></td>
 
     <td>
-      <a href="?robot_action=info&amp;serial={$element->serial()}&amp;{$ganticsrf}">
+      <a href="?robot_action=info&amp;serial={$element->getSerial()}&amp;{$ganticsrf}">
 	<img src="https://slcstest.uninett.no/silk_icons/information.png"
 	     alt="Info"
 	     title="{$l10n_title_inforc}"
@@ -50,7 +50,7 @@
     <td></td>
     <td>{$l10n_label_serialnumber}</td>
     <td></td>
-    <td>{$element->serial()|escape}</td>
+    <td>{$element->getSerial()|escape}</td>
   </tr>
   <tr>
     <td></td>
@@ -62,17 +62,17 @@
     <td></td>
     <td>{$l10n_label_uploadeddate}</td>
     <td></td>
-    <td>{$element->madeAvailable()|escape}</td>
+    <td>{$element->getMadeAvailable()|escape}</td>
   </tr>
   <tr>
     <td></td>
     <td>{$l10n_label_validuntil}</td>
     <td></td>
-    <td>{$element->validTo()|escape}</td>
+    <td>{$element->getEndDate()|escape}</td>
   </tr>
 
   {if $cert_info}
-  { if $element->serial() eq $cert_info_serial}
+  { if $element->getSerial() eq $cert_info_serial}
   <tr>
     <td></td>
     <td></td>
@@ -86,14 +86,14 @@
     <td></td>
     <td>{$l10n_label_fingerprint}</td>
     <td></td>
-    <td>{$element->fingerprint()|escape}</td>
+    <td>{$element->getFingerprint()|escape}</td>
   </tr>
 
   <tr>
     <td></td>
     <td>{$l10n_label_dn}</td>
     <td></td>
-    <td>{$element->getDN()|escape}</td>
+    <td>{$element->getOwner()|escape}</td>
   </tr>
 
   <tr>
