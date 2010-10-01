@@ -256,7 +256,7 @@ class CP_NREN_Admin extends Content_Page
 		if (!$this->person->isNRENAdmin()) {
 			$errorTag = PW::create();
 			Logger::logEvent(LOG_NOTICE, "NRENAdmin", "process()",
-			                  "User " . $this->person->getX509ValidCN() . " tried to access the NREN-area",
+			                  "User " . stripslashes($this->person->getX509ValidCN()) . " tried to access the NREN-area",
 			                  __LINE__, $errorTag);
 			$this->tpl->assign('reason', "[$errorTag] You are not an NREN-admin");
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));

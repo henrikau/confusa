@@ -336,7 +336,7 @@ final class CP_ProcessCsr extends Content_Page
 						    array('text', 'text', 'text', 'text'),
 						    array($csr, $ip, $this->person->getX509ValidCN(), $authvar));
 
-				$logmsg  = "Inserted new CSR from $ip (" . $this->person->getX509ValidCN();
+				$logmsg  = "Inserted new CSR from $ip (" . stripslashes($this->person->getX509ValidCN());
 				$logmsg .= ") with hash " . pubkey_hash($csr, true);
 				Logger::logEvent(LOG_INFO, "Process_CSR", "processUploadedCSR()",
 				                 $logmsg);
@@ -381,7 +381,8 @@ final class CP_ProcessCsr extends Content_Page
 				Logger::logEvent(LOG_ALERT, "Process_CSR", "processDBCSR()",
 				                 "Several identical CSRs (" .
 				                 $auth_token . ") exists in the database for user " .
-				                 $this->person->getX509ValidCN(), __LINE__);
+				                 stripslashes($this->person->getX509ValidCN()),
+				                 __LINE__);
 				return;
 			}
 		}
@@ -422,7 +423,7 @@ final class CP_ProcessCsr extends Content_Page
 			$errorTag = PW::create();
 			Framework::error_output("[$errorTag] Too many hits. Database incosistency.");
 			Logger::logEvent(LOG_ALERT, "Process_CSR", "approveCSR($authToken)",
-			                 $this->person->getX509ValidCN() .
+			                 stripslashes($this->person->getX509ValidCN()) .
 			                 " tried to find CSR with key $authToken which resulted in multiple hits",
 			                 __LINE__, $errorTag);
 			return false;

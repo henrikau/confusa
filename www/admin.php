@@ -125,7 +125,7 @@ class CP_Admin extends Content_Page
 	{
 		/* IF user is not an admin, we stop here */
 		if (!($this->person->isAdmin())) {
-			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " was rejected at the admin-interface");
+			Logger::log_event(LOG_NOTICE, "User " . stripslashes($this->person->getX509ValidCN()) . " was rejected at the admin-interface");
 			$this->tpl->assign('reason', 'You do not have sufficient rights to view this page');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return false;

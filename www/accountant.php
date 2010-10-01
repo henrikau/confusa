@@ -72,7 +72,7 @@ class CP_Accountant extends Content_Page
 		if (!$this->person->isNRENAdmin()) {
 			$errorTag = PW::create();
 			Logger::logEvent(LOG_NOTICE, "Accountant", "process()",
-			                 "User " . $this->person->getX509ValidCN() . " tried to access the accountant.",
+			                 "User " . stripslashes($this->person->getX509ValidCN()) . " tried to access the accountant.",
 			                __LINE__, $errorTag);
 			$this->tpl->assign('reason', "[$errorTag] You are not an NREN-admin");
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
@@ -80,7 +80,7 @@ class CP_Accountant extends Content_Page
 		} else if (Config::get_config('ca_mode') != CA_COMODO) {
 			$errorTag = PW::create();
 			Logger::logEvent(LOG_NOTICE, "Accountant", "process()",
-			                "User " . $this->person->getX509ValidCN() . "tried to access the accountant, " .
+			                "User " . stripslashes($this->person->getX509ValidCN()) . "tried to access the accountant, " .
 			                "even though Confusa is not using the Comodo CA.",
 			                __LINE__, $errorTag);
 			$this->tpl->assign('reason', "[$errorTag] Confusa is not using Comodo CA");
