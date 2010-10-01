@@ -108,12 +108,12 @@ class CA_Standalone extends CA
 			                         $this->person,
 			                         $this->getFullDN());
 			Logger::log_event(LOG_INFO, "Certificate successfully signed for ".
-					  $this->person->getX509ValidCN() .
+					  stripslashes($this->person->getX509ValidCN()) .
 					  " Contacting us from ".
 					  $_SERVER['REMOTE_ADDR']);
 		} else {
 			Logger::log_event(LOG_INFO, "Will not sign invalid CSR for user ".
-					  $this->person->getX509ValidCN() .
+					  stripslashes($this->person->getX509ValidCN()) .
 					  " from ip ".$_SERVER['REMOTE_ADDR']);
 			throw new KeySignException("CSR subject verification failed!");
 		}
@@ -225,7 +225,7 @@ class CA_Standalone extends CA
         }
         else {
             $msg = "Error in getting certificate, got " . count($res) . " results\n";
-            $cn = $this->person->getX509ValidCN();
+            $cn = stripslashes($this->person->getX509ValidCN());
             $msg .= "Queried for key $key and CN $cn\n";
             throw new DBQueryException($msg);
         }

@@ -395,7 +395,8 @@ final class CP_ProcessCsr extends Content_Page
 				Logger::logEvent(LOG_ALERT, "Process_CSR", "processDBCSR()",
 				                 "Several identical CSRs (" .
 				                 $auth_token . ") exists in the database for user " .
-				                 $this->person->getX509ValidCN(), __LINE__);
+				                 stripslashes($this->person->getX509ValidCN()),
+				                 __LINE__);
 				return;
 			}
 		}

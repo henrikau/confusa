@@ -82,7 +82,7 @@ class CP_Attributes extends Content_Page
 	public function process()
 	{
 		if (!$this->person->isNRENAdmin() && !$this->person->isSubscriberAdmin()) {
-			Logger::log_event(LOG_NOTICE, "User " . $this->person->getX509ValidCN() . " tried to access the NREN-area");
+			Logger::log_event(LOG_NOTICE, "User " . stripslashes($this->person->getX509ValidCN()) . " tried to access the NREN-area");
 			$this->tpl->assign('reason', 'You are not an NREN or subscriber-admin');
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;

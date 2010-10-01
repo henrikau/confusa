@@ -292,7 +292,7 @@ abstract class CA
 				$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
 			}
 
-			$dn .= "/CN=" . $this->person->getX509ValidCN();
+			$dn .= "/CN=" . strislashes($this->person->getX509ValidCN());
 			$dn .= "/unstructuredName=" . $this->person->getEPPN();
 		} else { /* eScience */
 
@@ -300,7 +300,7 @@ abstract class CA
 				$dn .= "/O=" . Output::mapUTF8ToASCII($this->person->getSubscriber()->getOrgName());
 			}
 
-			$dn .= "/CN=" . $this->person->getX509ValidCN();
+			$dn .= "/CN=" . stripslashes($this->person->getX509ValidCN());
 		}
 
 		return $dn;
@@ -325,11 +325,11 @@ abstract class CA
 
 		if (Config::get_config('cert_product') == PRD_PERSONAL) {
 			$dn .= "O=" . $this->person->getSubscriber()->getOrgName() . ", ";
-			$dn .= "CN=" . $this->person->getX509ValidCN();
+			$dn .= "CN=" . stripslashes($this->person->getX509ValidCN());
 			$dn .= "/unstructuredName=" . $this->person->getEPPN();
 		} else { /* eScience */
 			$dn .= "O=" . Output::mapUTF8ToASCII($this->person->getSubscriber()->getOrgName()) . ", ";
-			$dn .= "CN=" . $this->person->getX509ValidCN();
+			$dn .= "CN=" . stripslashes($this->person->getX509ValidCN());
 		}
 
 		return $dn;

@@ -163,12 +163,12 @@ function delete_csr_from_db($person, $auth_key)
 	} catch (CSRNotFoundException $csrnfe) {
 		echo "No matching CSR found.<BR>\n";
 		$msg  = "Could not delete CSR from ip ".$_SERVER['REMOTE_ADDR'];
-		$msg .= " : " . $person->getX509ValidCN() . " Reason: not found";
+		$msg .= " : " . stripslashes($person->getX509ValidCN()) . " Reason: not found";
 		Logger::log_event(LOG_NOTICE, $msg);
 		return false;
 	} catch (ConfusaGenException $cge) {
 		$msg  = "Error in deleting CSR (" . htmlentities($auth_key) . ")";
-		$msg .= "for user: " . htmlentities($person->getX509ValidCN()) . " ";
+		$msg .= "for user: " . htmlentities(stripslashes($person->getX509ValidCN())) . " ";
 		$msg .= "Too many hits!";
 		Framework::error_output($msg);
 		Logger::log_event(LOG_ALERT, $msg);
@@ -179,7 +179,7 @@ function delete_csr_from_db($person, $auth_key)
 			    array('text', 'text'),
 			    array($auth_key, $person->getX509ValidCN()));
 	$msg  = "Dropping csr ". $auth_key . " ";
-	$msg .= "for user ".$person->getX509ValidCN()."  (".$_SERVER['REMOTE_ADDR'] . ") from csr_cache";
+	$msg .= "for user ". stripslashes($person->getX509ValidCN()) ."  (".$_SERVER['REMOTE_ADDR'] . ") from csr_cache";
 	logger::log_event(LOG_NOTICE, $msg);
 	return true;
 }
@@ -197,7 +197,7 @@ function print_csr_details($person, $auth_key)
 	} catch (ConfusaGenException $cge) {
 		$msg = "Too menu returns received. This can indicate database inconsistency.";
 		Framework::error_output($msg);
-		Logger::log_event(LOG_ALERT, "Several identical CSRs (" . $auth_token . ") exists in the database for user " . $person->getX509ValidCN());
+		Logger::log_event(LOG_ALERT, "Several identical CSRs (" . $auth_token . ") exists in the database for user " . stripslashes($person->getX509ValidCN()));
 		return false;
 	}
 	$subj = openssl_csr_get_subject($csr['csr'], false);

@@ -351,7 +351,7 @@ class CA_Comodo extends CA
 			}
 
             $res[$i-1]['order_number'] = $params[$i . '_orderNumber'];
-            $res[$i-1]['cert_owner'] = $this->person->getX509ValidCN();
+            $res[$i-1]['cert_owner'] = stripslashes($this->person->getX509ValidCN());
 			$res[$i-1]['status'] = $status;
 
 			if (isset($params[$i . '_1_notBefore'])) {
@@ -1056,7 +1056,8 @@ class CA_Comodo extends CA
 
 		/* manually compose the subject. Necessary, because we want to have
          * Terena domainComponents */
-        $postfields_sign_req["subject_commonName_$pf_counter"] = $this->person->getX509ValidCN();
+        $postfields_sign_req["subject_commonName_$pf_counter"] =
+		stripslashes($this->person->getX509ValidCN());
 		$pf_counter++;
 
         $postfields_sign_req["subject_organizationName_".$pf_counter++] = $orgName;
@@ -1101,7 +1102,7 @@ class CA_Comodo extends CA
                                         "order number " .
                                         $this->order_number .
                                         " for user " .
-                                        $this->person->getX509ValidCN() .
+                                        stripslashes($this->person->getX509ValidCN()) .
                                         " Person contacted us from " .
                                         $_SERVER['REMOTE_ADDR']);
 
@@ -1221,7 +1222,7 @@ class CA_Comodo extends CA
                               array('text'),
                               array($this->order_number));
           Logger::log_event(LOG_NOTICE, "Authorized remote certificate for person ".
-                                        $this->person->getX509ValidCN().
+                                        stripslashes($this->person->getX509ValidCN()).
                                         " with order number " .
                                         $this->order_number .
                                         " Person contacted us from ".
