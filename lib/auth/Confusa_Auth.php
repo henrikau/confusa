@@ -118,7 +118,7 @@ abstract class Confusa_Auth
 			}
 			if(!is_null($map['cn'])) {
 				if (array_key_exists($map['cn'], $attributes)) {
-					$cn = Input::sanitizePersonName($attributes[$map['cn']][0]);
+					$cn = Input::sanitizeCommonName($attributes[$map['cn']][0]);
 					if ($cn !== $attributes[$map['cn']][0]) {
 						/* need to keep track of issued warning,
 						 * some pages call ecoratePerson twice */
