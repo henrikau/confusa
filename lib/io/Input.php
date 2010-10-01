@@ -143,7 +143,7 @@ class Input
 	 */
 	static function sanitizePersonName($input)
 	{
-		$output = mb_ereg_replace('[^[:alpha:]\-\s\.]', '', $input, 'ip');
+		$output = mb_ereg_replace('[^[:alpha:]\-\s\.,]', '', $input, 'ip');
 		return $output;
 	}
 
