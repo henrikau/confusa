@@ -292,7 +292,7 @@ abstract class CA
 				$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
 			}
 
-			$dn .= "/CN=" . strislashes($this->person->getX509ValidCN());
+			$dn .= "/CN=" . stripslashes($this->person->getX509ValidCN());
 			$dn .= "/unstructuredName=" . $this->person->getEPPN();
 		} else { /* eScience */
 
