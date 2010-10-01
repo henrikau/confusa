@@ -223,7 +223,7 @@ class Person{
 			$cn = Output::mapUTF8ToASCII($name);
 			$cn = $cn . " " . $this->getEPPN(false);
 		} else {
-			$cn = Input::sanitizePersonName($name);
+			$cn = $name;
 		}
 
 		return $cn;
@@ -477,7 +477,7 @@ class Person{
      * testEntitlementAttribute() If a given attribute is part of the entitlement field.
      *
      * @param String The attribute to test for in the supplied entitlement field
-     * @return Boolean $hasAttribute indicating if the queried attribute has been set 
+     * @return Boolean $hasAttribute indicating if the queried attribute has been set
      */
     public function testEntitlementAttribute($attribute)
     {
