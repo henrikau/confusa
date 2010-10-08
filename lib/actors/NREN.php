@@ -375,11 +375,12 @@ class NREN
 	{
 		if (!is_null($url)) {
 			if ($this->data['wayf_url'] != $url) {
-				if (!preg_match("/^http[s]?/",$url, $matches)) {
+				if (empty($url) || preg_match("/^http[s]?/",$url, $matches)) {
+					$this->data['wayf_url'] = Input::sanitizeURL($url);
+					$this->pendingChanges = true;
+				} else {
 					return false;
 				}
-				$this->data['wayf_url'] = Input::sanitizeURL($url);
-				$this->pendingChanges = true;
 			}
 		}
 		return true;
@@ -949,25 +950,31 @@ class NREN
 	 */
 	public function getIdPList()
 	{
-		$query = "SELECT m.idp_url FROM idp_map m WHERE m.nren_id = ?";
+		$query = "SELECT m.idp_url FROM idp_map m " .
+		         "WHERE m.nren_id = ?";
+
 		try {
 			$res = MDB2Wrapper::execute($query,
 			                            array('text'),
 			                            array($this->getID()));
-			if (count($res) > 0) {
-				$idpList = array();
-				foreach($res as $row) {
-					$idpList[] = $row['idp_url'];
-				}
-				return $idpList;
-			}
 		} catch (ConfusaGenException $cge) {
 			Logger::log_event(LOG_NOTICE, __FILE__ . " " . __LINE__ .  ": Could not " .
 			                  "get the IdP list for NREN with ID " .
 			                  $this->getID() . ". All IdP scoping will fail!");
 		}
-		return null;
-	} /* end getIdPList() */
+
+		if (count($res) > 0) {
+			$idpList = array();
+
+			foreach($res as $row) {
+				$idpList[] = $row['idp_url'];
+			}
+		} else {
+			return null;
+		}
+
+		return $idpList;
+	}
 
 	/**
 	 * replaceTags() take the texdt and replace known tags with
