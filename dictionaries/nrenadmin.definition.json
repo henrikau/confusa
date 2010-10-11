@@ -253,5 +253,8 @@
 	},
 	"l10n_label_uid": {
 		"en":	"Unique identifier:"
+	},
+	"l10n_error_illegalattributemap": {
+		"en":	"Your subscriber could not be found. Please check that an organization attribute is exported by your IdP and correctly mapped in the portal. Before adding/editing subscribers you <b>must</b> configure the "
 	}
 }
