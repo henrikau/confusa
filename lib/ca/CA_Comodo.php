@@ -1084,7 +1084,7 @@ class CA_Comodo extends CA
 		if (isset($params['errorItem'])) {
 			$msg .= " " . $params['errorItem'];
 		}
-		$this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
+		$msg .= $this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
 		throw new CGE_ComodoAPIException($msg);
         }
 
