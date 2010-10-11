@@ -155,7 +155,7 @@ class CP_Attributes extends Content_Page
 
 		$auth = AuthHandler::getAuthManager($this->person);
 		$attr_value = @implode(", ", $auth->getAttributeValue($attr_key));
-		echo htmlentities($attr_value, ENT_COMPAT, "UTF-8");
+		echo htmlentities("attribute=$attr_value", ENT_COMPAT, "UTF-8");
 		exit(0);
 	}
 }
