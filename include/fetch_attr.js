@@ -17,17 +17,19 @@
 {
     var req   = new XMLHttpRequest();
     var field = document.getElementById(targetElementID);
-    var path  = "?attr_value=" + selectElement.value + "&amp" + anticsrf;
+    var path  = "?attr_value=" + selectElement.value + "&" + anticsrf;
 
     req.open("GET", path, true);
 
     req.send(null);
     req.onreadystatechange = function() {
-    	if (req.readyState == 4 /*complete*/) {
-    	    if (req.status == 200) {
-    		if (req.responseText.length > 0) {
-    		    field.innerHTML = req.responseText;
-    		    field.title = req.responseText;
+		if (req.readyState == 4 /*complete*/) {
+		    if (req.status == 200) {
+			if (req.responseText.length > 10 &&
+			    req.responseText.substr(0,10) == "attribute=") {
+			    var text = req.responseText.substr(10,req.responseText.length);
+				field.innerHTML = text;
+				field.title = text;
     		}
     	    } else {
     		field.innerHTML = errMsg;
