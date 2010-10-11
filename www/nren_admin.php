@@ -300,7 +300,18 @@ class CP_NREN_Admin extends Content_Page
 		} else {
 			/* get all info from database and publish to template */
 			$this->tpl->assign('subscriber_list'	, $this->getSubscribers());
-			$this->tpl->assign('self_subscriber'	, $this->person->getSubscriber()->getIdPName());
+			$subscriber = $this->person->getSubscriber();
+
+			if (isset($subscriber)) {
+				$this->tpl->assign('self_subscriber', $subscriber);
+			} else {
+				$this->tpl->assign('self_subscriber', '');
+				Framework::error_output($this->translateTag('l10n_error_illegalattributemap', 'nrenadmin')
+				                        . '<a href="attributes.php">' .
+				                        $this->translateTag('item_attributes', 'menu') .
+				                        '</a>.');
+			}
+
 			$this->tpl->assign('list_subscribers', true);
 		}
 
