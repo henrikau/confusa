@@ -89,18 +89,14 @@ class CP_Accountant extends Content_Page
 		}
 		$res = $this->getNRENAccounts($this->person->getNREN());
 
-		if (isset($res[0]['login_name'])) {
-			$this->tpl->assign('login_name', $res[0]['login_name']);
-		} else {
+		if (empty($res) || empty($res[0])) {
 			$this->tpl->assign('login_name',
 			                   $this->translateTag('l10n_fieldval_undefined', 'accountant'));
-		}
-
-		if (isset($res[0]['ap_name'])) {
-			$this->tpl->assign('ap_name', $res[0]['ap_name']);
-		} else {
 			$this->tpl->assign('ap_name',
 			                   $this->translateTag('l10n_fieldval_undefined', 'accountant'));
+		} else {
+			$this->tpl->assign('login_name', $res[0]['login_name']);
+			$this->tpl->assign('ap_name', $res[0]['ap_name']);
 		}
 
 		$this->tpl->assign('content',			$this->tpl->fetch('accountant.tpl'));
