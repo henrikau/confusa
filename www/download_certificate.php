@@ -143,7 +143,6 @@ final class CP_DownloadCertificate extends Content_Page
 		case "safari":
 			include 'file_download.php';
 			download_certificate($script, "install.crt");
-			exit(0);
 			break;
 		default:
 			$script .= "<noscript><b>" .
