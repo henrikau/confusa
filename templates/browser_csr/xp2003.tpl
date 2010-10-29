@@ -78,9 +78,9 @@ function createIEXPRequest(dn, keysize)
 	document.getElementById('info_view').style.display = 'none';
 	document.getElementById("reqDiv").style.display = "none";
 	var timer1 = setTimeout('window.location="browser_csr.php?status_poll={$order_number}&{$ganticsrf}";', 10000);
-	document.write('{$l10n_infotext_processing} {$order_number|escape}');
+	document.write("{$l10n_infotext_processing} {$order_number|escape}");
 	document.writeln('<span id="dots"></span>');
-	document.writeln('{$l10n_infotext_brows_csr_ong}');
+	document.writeln("{$l10n_infotext_brows_csr_ong}");
 	showSmallishDots(0);
 	</script>
 </div>
@@ -101,8 +101,9 @@ function createIEXPRequest(dn, keysize)
 
 {else}
 <script type="text/javascript">
-	var cryptProvText = '{$l10n_infotext_cryptprov} \"Microsoft Enhanced Cryptographic Provider\"!)';
-	var cspErrorText = '{$l10n_infotext_csperror}';
+	var cryptProvText = "{$l10n_infotext_cryptprov} \"Microsoft Enhanced Cryptographic Provider\"!)";
+	var cspErrorText = "{$l10n_infotext_csperror}";
+
 	{literal}
 	/* let the user choose the CSP (Cryptographic service provider) */
 	var select = $("<select></select>");

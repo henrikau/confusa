@@ -105,9 +105,9 @@ function createIEVistaRequest(dn, keysize)
 	document.getElementById("reqDiv").style.display = "none";
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	var timer1 = setTimeout('window.location="browser_csr.php?status_poll={$order_number}&{$ganticsrf}";', 10000);
-	document.write('{$l10n_infotext_processing} {$order_number|escape}');
+	document.write("{$l10n_infotext_processing} {$order_number|escape}");
 	document.writeln('<span id="dots"></span>');
-	document.writeln('{$l10n_infotext_brows_csr_ong}');
+	document.writeln("{$l10n_infotext_brows_csr_ong}");
 	showSmallishDots(0);
 	</script>
 </div>
@@ -129,8 +129,8 @@ function createIEVistaRequest(dn, keysize)
 {else}
 <script type="text/javascript">
 	{* let the user choose the CSP (Cryptographic service provider) *}
-	var cryptProvText = '{$l10n_infotext_cryptprov} \"Microsoft Software Key Storage Provider\"!)';
-	var cspErrorText = '{$l10n_infotext_csperror}';
+	var cryptProvText = "{$l10n_infotext_cryptprov} \"Microsoft Software Key Storage Provider\"!)";
+	var cspErrorText = "{$l10n_infotext_csperror}";
 
 	{literal}
 	var infoView = document.getElementById("info_view");

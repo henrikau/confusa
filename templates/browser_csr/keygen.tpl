@@ -15,10 +15,10 @@
 	<script type="text/javascript">
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	var timer1 = setTimeout('window.location="browser_csr.php?status_poll={$order_number}&{$ganticsrf}";', 10000);
-	document.write('{$l10n_infotext_processing} {$order_number|escape}');
+	document.write("{$l10n_infotext_processing} {$order_number|escape}");
 	document.writeln('<span id="dots"></span>');
 	{* tell the end-user not to close the browser etc. *}
-	document.writeln('{$l10n_infotext_brows_csr_ong}');
+	document.writeln("{$l10n_infotext_brows_csr_ong}");
 	showSmallishDots(0);
 	</script>
 </div>
