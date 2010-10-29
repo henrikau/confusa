@@ -1,5 +1,7 @@
+<h3>2. Select your e-mail address</h3>
+<fieldset>
+<form action="receive_csr.php" method="post">
 {if $email_status != "0"}
-<hr style="width: 90%;" />
 <div class="spacer"></div>
 <p class="info">
   {$l10n_infotext_email1} {$person->getNumEmails()|escape} {$l10n_infotext_email2}
@@ -50,7 +52,19 @@
   </tr>
 </table>
 {/if}
+{/if}
 
 <div class="spacer"></div>
-<hr style="width: 90%;" />
-{/if}
+</fieldset>
+
+<div style="float: right;" class="nav">
+		{$panticsrf}
+		<input id="nextButton" class="nav" type="submit" title="next" value="next >" />
+</div>
+</form>
+
+<div style="float: right;" class="nav">
+<form action="confirm_aup.php?{$ganticsrf}" method="get">
+	<input type="submit" class="nav" title="back" value="< back" />
+</form>
+</div>
