@@ -176,6 +176,12 @@
 	"l10n_infotext_kgkeysize2": {
 		"en":	"bits. Please check which keysizes correspond to which \"grades\" in your browser!"
 	},
+	"l10n_infotext_kgkeysize3": {
+		"en":	"Note that keys that are shorter than"
+	},
+	"l10n_infotext_kgkeysize4": {
+		"en":	"bits will be rejected by the portal."
+	},
 	"l10n_button_send": {
 		"en":	"Send"
 	},

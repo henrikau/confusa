@@ -46,7 +46,8 @@
 	</td>
 	<td>
 	<p class="info">{$l10n_infotext_kgkeysize1}
-	<b> {$keysize|escape} </b> {$l10n_infotext_kgkeysize2}</p>
+	<b> {$default_keysize|escape} </b> {$l10n_infotext_kgkeysize2}</p>
+	<p class="info">{$l10n_infotext_kgkeysize3} {$min_keysize|escape} {$l10n_infotext_kgkeysize4}</p>
 	</td>
 	</tr><tr><td>
 	</td>
@@ -72,7 +73,7 @@
 
 <script type="text/javascript">
 
-var keysize={$keysize};
+var keysize={$default_keysize};
 
 {literal}
 	var keygenCell = document.getElementById("keygenCell");

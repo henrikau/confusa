@@ -226,7 +226,8 @@ final class CP_ProcessCsr extends Content_Page
 		    $this->aup_set) {
 			$browser_adapted_dn = $this->ca->getBrowserFriendlyDN();
 			$this->tpl->assign('dn',				$browser_adapted_dn);
-			$this->tpl->assign('keysize',			Config::get_config('default_key_length'));
+			$this->tpl->assign('default_keysize',	Config::get_config('default_key_length'));
+			$this->tpl->assign('min_keysize',		Config::get_config('min_key_length'));
 			$browserTemplate = $this->dispatchBrowserTemplate();
 			Framework::message_output($this->translateTag('l10n_msg_browsergen', 'processcsr') .
 			                          " <a href=\"process_csr.php\">" .
