@@ -162,7 +162,7 @@ class Robot_Certificate extends Certificate
 	{
 		/* TODO: define time-format */
 
-		if (!is_set($date)) {
+		if (!isset($date)) {
 			/* use gettimeofday()? */
 			return false;
 		}

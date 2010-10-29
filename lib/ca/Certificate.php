@@ -265,6 +265,8 @@ class Certificate extends CryptoElement
 			$base = bcpow("2", "32");
 			$counter = 100;
 			$res = "";
+			$val = $serial;
+
 			while($counter > 0 && $val > 0) {
 				$counter = $counter - 1;
 				$tmpres = dechex(bcmod($val, $base)) . "";
