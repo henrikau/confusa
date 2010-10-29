@@ -1150,7 +1150,7 @@ class CA_Comodo extends CA
 			break;
 		case "-13":
 			$msg .= "<br /><br />You created a certificate with a non-standard keysize! Please ";
-			$msg .= "create your certificate requests with a keysize of " . Config::get_config('key_length');
+			$msg .= "create your certificate requests with a keysize of " . Config::get_config('default_key_length');
 			$msg .= " bits!";
 			break;
 		case "-20":
