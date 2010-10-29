@@ -29,9 +29,9 @@ class Certificate
 			throw new KeyNotFoundException($msg);
 		}
 		/* Length ok? */
-		if ((int)openssl_x509_keylength($this->cert) < Config::get_config('key_length')) {
+		if ((int)openssl_x509_keylength($this->cert) < Config::get_config('min_key_length')) {
 			throw new CertificateException("The key is too short. Need a minimum of " .
-						       Config::get_config('key_length') .
+						       Config::get_config('min_key_length') .
 						       " bits");
 		}
 

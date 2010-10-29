@@ -15,7 +15,7 @@ CSR and drop the CSR if any of these attributes does not correspond
 with attributes obtained from the federated identity.
 
 Current attributes that are checked:
- - key length. Keys shorter than key_length in
+ - key length. Keys shorter than min_key_length in
    config/confusa_config.php will be discarded when the key is
    uploaded.
  - Subject in key. CommonName *must* correspond to

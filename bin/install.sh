@@ -367,11 +367,11 @@ function configure_confusa_settings
 	# Specify the minimum keylength for Confusa
 	# If nothing is found in the template, use a hardcoded value of 1024.
 	###############################################################################
-	get_from_config_template "key_length"
+	get_from_config_template "min_key_length"
 	if [ -z $res ]; then
-	    key_length=$res
+	    min_key_length=$res
 	    else
-	    key_length="1024"
+	    min_key_length="1024"
 	fi
 	echo "
 Specify the minimum key length in bits for Confusa-issued certificates.
@@ -379,23 +379,23 @@ Specify the minimum key length in bits for Confusa-issued certificates.
 This is important as it determins how strong the keys *must* be. Note
 that this will not stop users from creating keys that are even longer."
 
-	read -p "(It is recommended to have a key length >= 1024) [$key_length]: " \
+	read -p "(It is recommended to have a key length >= 1024) [$min_key_length]: " \
 	    custom_key_length
 
 	# basic check on the key length
 	while [ 1 -eq 1 ]; do
 		if [ -z $custom_key_length ]; then
-			custom_key_length=$key_length
+			custom_key_length=$min_key_length
 			break
 		else
 			case $custom_key_length in
 				512|1024|2048|4096) break ;;
 			esac
-			read -p "Key length must be one of 512, 1024, 2048 and 4096 [$key_length]: " \
+			read -p "Key length must be one of 512, 1024, 2048 and 4096 [$min_key_length]: " \
 			    custom_key_length
 		fi
 	done
-	replace_config_entry "key_length" $custom_key_length
+	replace_config_entry "min_key_length" $custom_key_length
 	echo ""
 
 	# Skip the DB-name, host, username and password configuration, if a config
