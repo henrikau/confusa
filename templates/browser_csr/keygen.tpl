@@ -1,4 +1,5 @@
-<div style="padding-top: 3em">
+<h3 id="heading">4. Process browser generated CSR</h3>
+<form method="post" action="browser_csr.php">
 <fieldset>
 <legend>{$l10n_legend_browsercsr}</legend>
 <div id="info_view">
@@ -7,13 +8,13 @@
 	<noscript>
 		<p class="info">
 		{$l10n_infotext_kgprocessing1} {$l10n_infotext_kgprocessing2}
-		{$order_number} <a href="process_csr.php?install_cert={$order_number}&amp;{$ganticsrf}">
+		{$order_number} <a href="browser_csr.php?install_cert={$order_number}&amp;{$ganticsrf}">
 		{$l10n_link_kgclickhere}</a> {$l10n_infotext_kgprocessing3}
 		</p>
 	</noscript>
 	<script type="text/javascript">
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
-	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}&{$ganticsrf}";', 10000);
+	var timer1 = setTimeout('window.location="browser_csr.php?status_poll={$order_number}&{$ganticsrf}";', 10000);
 	document.write('{$l10n_infotext_processing} {$order_number|escape}');
 	document.writeln('<span id="dots"></span>');
 	{* tell the end-user not to close the browser etc. *}
@@ -26,15 +27,17 @@
 		<script type="text/javascript">
 			clearTimeout(timer1);
 			document.getElementById("pendingArea").style.display = "none";
+			$('#nextButton').show();
+			$('#backButton').show();
+			$('#heading').html('5. Install your certificate');
 		</script>
 
 		<div style="margin-top: 1em">
-			{$l10n_info_installcert1} <a href="process_csr.php?install_cert={$order_number|escape}&amp;{$ganticsrf}">{$l10n_link_installcert}</a>
+			{$l10n_info_installcert1} <a href="download_certificate.php?install_cert={$order_number|escape}&amp;{$ganticsrf}">{$l10n_link_installcert}</a>
 			{if isset($ca_certificate)}{$l10n_info_installcert2} <a href="{$ca_certificate}">{$l10n_link_cacert}</a>{/if}!
 		</div>
 	{/if}
 {else}
-	<form method="post" action="process_csr.php">
 	  <div>{$panticsrf}</div>
 	<table>
 	<tr>
@@ -59,7 +62,6 @@
 	<tr>
 	<td>
 		<input type="hidden" name="browserSigning" value="keygen" />
-		<input type="submit" value="{$l10n_button_send}" />
 	</td>
 	<td>
 	<p class="info" style="padding-top: 1em">
@@ -67,7 +69,6 @@
 	</p></td>
 	</tr>
 	</table>
-	</form>
 
 <script type="text/javascript">
 
@@ -111,4 +112,22 @@ var keysize={$keysize};
 {/if}
 </div>
 </fieldset>
+
+<div id="nextButton" style="float: right" class="nav">
+		{$panticsrf}
+		<input type="submit" class="nav" value="next >" />
 </div>
+</form>
+
+<div id="backButton" style="float: right" class="nav">
+<form action="receive_csr.php?{$ganticsrf}" method="get">
+	<input type="submit" class="nav" value="< back" />
+</form>
+</div>
+
+{if isset($order_number)}
+<script type="text/javascript">
+	$('#nextButton').hide();
+	$('#backButton').hide();
+</script>
+{/if}

@@ -109,8 +109,6 @@ function createIEVistaRequest(dn, keysize)
 	document.writeln('<span id="dots"></span>');
 	document.writeln('{$l10n_infotext_brows_csr_ong}');
 	showSmallishDots(0);
-	$('#nextButton').hide();
-	$('#backButton').hide();
 	</script>
 </div>
 
@@ -177,3 +175,10 @@ function createIEVistaRequest(dn, keysize)
 	<input type="submit" class="nav" value="< back" />
 </form>
 </div>
+
+{if isset($order_number)}
+<script type="text/javascript">
+$('#nextButton').hide();
+$('#backButton').hide();
+</script>
+{/if}
