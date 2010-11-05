@@ -18,11 +18,11 @@
 	$('#infoBlock').hide();
 
 	$('#infoHeader').toggle(function () {
-		$('#infoBlock').toggle();
+		$('#infoBlock').slideToggle('slow');
 		$('#infoHeader').html('Less information');
 	},
 		function() {
-		$('#infoBlock').toggle();
+		$('#infoBlock').slideToggle('slow');
 		$('#infoHeader').html('More information');
 	});
 </script>

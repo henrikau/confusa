@@ -62,7 +62,7 @@
 
 	$(".privacyNotice").click(
 		function () {
-			$("#fullPrivacyNotice").toggle();
+			$("#fullPrivacyNotice").slideToggle('slow');
 			$("#shortPrivacyNotice").toggle();
 			$("#collapseLink").toggle();
 		}
