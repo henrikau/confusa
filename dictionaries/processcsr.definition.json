@@ -75,7 +75,7 @@
 		"en":	"Upload new CSR"
 	},
 	"l10n_infotext_uploadnewcsr1": {
-		"en":	"Upload a local CSR for signing by the CA. If you created this with any globus-specific tools, you should look for the folder \".globus\" in your home directory."
+		"en":	"Upload a local CSR for signing by the CA. If you created this with any globus-specific tools, you should look for the folder \".globus\" in your home directory. After selecting the CSR-file, click the \"next\" button. Clicking on \"back\" will discard your file choice."
 	},
 	"l10n_infotext_csroverview1": {
 		"en":	"Please choose one of the options available below to create your certificate."
