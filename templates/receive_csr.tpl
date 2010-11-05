@@ -37,7 +37,7 @@
 </div>
 <div class="spacer"></div>
 
-<form id="startForm" method="post" action="{$nextScript}">
+<form id="startForm" method="post" action="{$nextScript}" {if isset($upload_csr)}enctype="multipart/form-data"{/if}>
 <fieldset>
 
 {if isset($browser_csr)}
@@ -60,22 +60,12 @@
 		{$l10n_infotext_uploadnewcsr1}
       </p>
       <div class="spacer"></div>
-      <table>
-	<tr>
-	  <td>
-	    <div><!-- XHTML strict won't allow inputs just within forms -->
+	    <div style="margin-bottom: 1em"><!-- XHTML strict won't allow inputs just within forms -->
 	      <input type="hidden" name="uploadedCSR" value="uploadedCSR" />
 	      <input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
 	      <input type="file" name="user_csr" />
 	      {$panticsrf}
-	      <input type="submit"
-		     value="{$l10n_button_uploadcsr}"
-		     onclick="return isBoxChecked(aup_box);" />
 	    </div>
-	  </td>
-	</tr>
-      </table>
-      <br />
 {/if}
 
 {*
