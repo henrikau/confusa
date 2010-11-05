@@ -59,12 +59,12 @@
 
 <div style="float: right;" class="nav">
 		{$panticsrf}
-		<input id="nextButton" class="nav" type="submit" title="next" value="next >" />
+		<input id="nextButton" type="submit" title="next" value="next >" />
 </div>
 </form>
 
 <div style="float: right;" class="nav">
 <form action="confirm_aup.php?{$ganticsrf}" method="get">
-	<input type="submit" class="nav" title="back" value="< back" />
+	<input id="backButton" type="submit" title="back" value="< back" />
 </form>
 </div>

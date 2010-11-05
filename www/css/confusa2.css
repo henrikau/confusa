@@ -590,3 +590,31 @@ div#certbar a#revokecert span {
 	padding-left: 35px;
 	margin: 5px 0 0 0;
 }
+
+div.nav {
+	padding-top: 1em;
+	float: right;
+}
+
+div.nav input {
+	background-color: #ffffff;
+	border: 1pt solid black;
+}
+
+div.nav input[disabled] {
+	border: 1pt solid grey;
+}
+
+div.nav input:hover {
+	font-weight: bold;
+	font-style: italic;
+}
+
+div.nav input[disabled]:hover {
+	font-weight: normal;
+	font-style: normal;
+}
+
+div.nav #backButton {
+	margin-right: 2em;
+}

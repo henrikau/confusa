@@ -164,15 +164,15 @@ function createIEVistaRequest(dn, keysize)
 {/if}
 </fieldset>
 
-<div id="nextButton" style="float: right;" class="nav">
+<div class="nav">
 		{$panticsrf}
-		<input id="nextButton" type="submit" class="nav" value="next >" />
+		<input id="nextButton" type="submit" value="next >" />
 </div>
 </form>
 
-<div id="backButton" style="float: right;" class="nav">
+<div id="backButton" class="nav">
 <form action="receive_csr.php?{$ganticsrf}" method="get">
-	<input type="submit" class="nav" value="< back" />
+	<input type="submit" value="< back" />
 </form>
 </div>
 

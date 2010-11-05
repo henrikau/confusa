@@ -114,15 +114,15 @@ var keysize={$default_keysize};
 </div>
 </fieldset>
 
-<div id="nextButton" style="float: right" class="nav">
+<div class="nav">
 		{$panticsrf}
-		<input type="submit" class="nav" value="next >" />
+		<input id="nextButton" type="submit" value="next >" />
 </div>
 </form>
 
-<div id="backButton" style="float: right" class="nav">
+<div class="nav">
 <form action="receive_csr.php?{$ganticsrf}" method="get">
-	<input type="submit" class="nav" value="< back" />
+	<input id="backButton" type="submit" value="< back" />
 </form>
 </div>
 
