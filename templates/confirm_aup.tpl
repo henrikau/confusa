@@ -10,6 +10,7 @@
 	 name="aup_box"
 	 id="aup_box"
 	 value="user_agreed"
+	 {if $aup_session_state == true}checked="checked"{/if}
 	 />
   <label for="aup_box">{$l10n_aup_agreement}</label>
 </p>
@@ -87,9 +88,12 @@
 
 {literal}
 <script type="text/javascript">
-	$("#nextButton").attr("disabled", true);
+	if ($("#aup_box").attr('checked') == false) {
+		$("#nextButton").attr("disabled", true);
+	}
+
 	$("#aup_box").click(function() {
-		if ($('#aup_box').attr('checked') == true) {
+		if ($("#aup_box").attr('checked') == true) {
 			$("#nextButton").removeAttr("disabled");
 		} else {
 			$("#nextButton").attr("disabled", true);
