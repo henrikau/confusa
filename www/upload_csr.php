@@ -70,6 +70,7 @@ final class CP_Upload_CSR extends Content_Page
 			$this->tpl->assign('length', $this->csr->getLength());
 			$this->tpl->assign('legendTitle',
 			                   $this->translateTag('l10n_legend_pastedcsr', 'processcsr'));
+			$this->tpl->assign('finalDN',   $this->ca->getFullDN());
 			$this->tpl->assign('content', $this->tpl->fetch('csr/approve_csr.tpl'));
 		}
 	}
