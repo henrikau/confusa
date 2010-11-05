@@ -3,6 +3,7 @@ require_once 'confusa_include.php';
 require_once 'Content_Page.php';
 require_once 'Framework.php';
 require_once 'CSR_PKCS10.php';
+require_once 'CSRUpload.php';
 
 /**
  * Class for processing uploaded/pasted CSR files
