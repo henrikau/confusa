@@ -62,7 +62,7 @@ function createIEVistaRequest(dn, keysize)
       name="reqForm"
       method="post"
       action="browser_csr.php"
-      onsubmit="return createIEVistaRequest('{$dn}', {$keysize});">
+      onsubmit="return createIEVistaRequest('{$dn}', {$default_keysize});">
 <fieldset>
 <legend>{$l10n_legend_browsercsr}</legend>
 <div id="info_view">

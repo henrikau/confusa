@@ -38,7 +38,7 @@ function createIEXPRequest(dn, keysize)
 <form id="reqForm"
 	      name="reqForm"
 	      method="post"
-	      action="browser_csr.php" onsubmit="return createIEXPRequest('{$dn}', {$keysize});">
+	      action="browser_csr.php" onsubmit="return createIEXPRequest('{$dn}', {$default_keysize});">
 <fieldset>
 <legend>{$l10n_legend_browsercsr}</legend>
 <div id="info_view">
