@@ -91,6 +91,7 @@ function get_algorithm($csr)
 /* pubkey_hash()
  *
  * Calculates the sha1-hash of the public-key in the uploaded CSR
+ * @deprecated
  */
 function pubkey_hash($ssl_data, $is_csr)
 {

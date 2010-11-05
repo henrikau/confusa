@@ -6,10 +6,11 @@
    * Author: Henrik Austad <henrik.austad@uninett.no>
    */
 require_once 'MDB2Wrapper.php';
-require_once 'Logger.php';
-require_once 'csr_lib.php';
-require_once 'Config.php';
 require_once 'MailManager.php';
+require_once 'Certificate.php';
+require_once 'Logger.php';
+require_once 'Config.php';
+require_once 'CSR.php';
 
 abstract class CA
 {
@@ -46,7 +47,8 @@ abstract class CA
     } /* end destructor */
 
 
-  /* signKey()
+  /**
+   * signKey()
    *
    * This is the signing routine of the system. In this release, it will use PHP
    * for signing, using a local CA-key.
@@ -54,15 +56,10 @@ abstract class CA
    * In the future, it will sign the CSR and ship it to the CA, receive the
    * response and notify the user
    *
+   * @param	CSR to sign
+   * @return	void
    */
-  abstract function signKey($auth_key, $csr);
-
-   /**
-    * Sign a CSR as received from the browser's crypto mechanisms.
-    * Since these cert requests are not always in PKCS#10 format, handle them
-    * specifically to the browser from which they originate
-    */
-  abstract function signBrowserCSR($csr, $browser);
+  abstract function signKey($csr);
 
   /**
    * Get the (browser-specific) deployment script for a certain certificate
@@ -135,74 +132,6 @@ abstract class CA
   *         about the certificates
   */
   abstract function getCertListForEPPN($eppn, $org);
-
-  /**
-   * Convert from DER certificates to PEM certificates.
-   * This is needed because TERENA/Comodo publish their CA-certificate in
-   * DER format, while PHP's openssl can only process PEM formatted certs
-   *
-   * @param $der the certificate in DER format
-   * @param $type the type of certificate. One of:
-   * 				* 'cert' - a X509 certificate
-   * 				* 'crl' - a certificate revocation list
-   * @return $pem the certificate in PEM format
-   */
-  public static function DERtoPEM($der, $type)
-  {
-    $header = "";
-    $trailer = "";
-
-    switch($type) {
-    case 'cert':
-      $header = "-----BEGIN CERTIFICATE-----\n";
-      $trailer = "-----END CERTIFICATE-----\n";
-      break;
-    case 'crl':
-      $header = "-----BEGIN X509 CRL-----\n";
-      $trailer = "-----END X509 CRL-----\n";
-      break;
-    default:
-      throw new ConfusaGenException("Type must be one of: cert, crl");
-    }
-
-    $pem = chunk_split(base64_encode($der), 64, "\n");
-    $pem =  $header . $pem . $trailer;
-
-    return $pem;
-  }
-
-  /**
-   * Convert a certificate from PEM format to DER format
-   *
-   * @param $pem string the certificate in PEM format
-   * @param $type string the type of the certificate. One of:
-   * 			* 'cert'  - a X509 certificate
-   * 			* 'crl'   - a certificate revocation list
-   * @return $der string the certificate in DER format
-   */
-  public static function PEMtoDER($pem, $type)
-  {
-		switch($type) {
-		case 'cert':
-			$begin = "CERTIFICATE-----";
-			$end = "-----END";
-			$pem = substr($pem, strpos($pem, $begin)+strlen($begin));
-			$pem = substr($pem, 0, strpos($pem, $end));
-			$der = base64_decode($pem);
-			return $der;
-			break;
-		case 'crl':
-			$begin = "CRL-----";
-			$end = "-----END";
-			$pem = substr($pem, strpos($pem, $begin)+strlen($begin));
-			$pem = substr($pem, 0, strpos($pem, $end));
-			$der = base64_decode($pem);
-			return $der;
-			break;
-		default:
-			throw new ConfusaGenException("Type must be one of: cert, crl");
-		}
-	}
 
   /**
    * Send a notification upon the issuance of a new X.509 certificate, as it is

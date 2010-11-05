@@ -27,13 +27,13 @@ class CA_Standalone extends CA
 	 *
 	 * @throws: KeySignException
 	 */
-	public function signKey($auth_key, $csr)
+	public function signKey($csr)
 	{
 		if (!$this->person->getSubscriber()->isSubscribed()) {
 			throw new KeySignException("Subscriber not subscribed, cannot create certificate!");
 		}
-
-		if ($this->verifyCSR($csr)) {
+		$auth_key = $csr->getAuthToken();
+		if ($this->verifyCSR($csr->getPEMContent())) {
 			$cert_file_name	= tempnam("/tmp/", "REV_CERT_");
 			$cert_file = fopen($cert_file_name, "w");
 			fclose($cert_file);
@@ -181,14 +181,6 @@ class CA_Standalone extends CA
 	{
 		return getCertListForPersons($eppn, $org);
 	}
-
-    public function signBrowserCSR($csr, $browser)
-    {
-	    /* FIXME */
-	    Framework::error_output("I am sorry, but this functionality is not yet implemented for standalone.");
-	    return null;
-    } /* end signBrowserCSR */
-
 
     /**
      * Return true if processing of the certificate is finished and false

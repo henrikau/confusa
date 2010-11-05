@@ -130,6 +130,18 @@
 <fieldset>
 <legend>{$l10n_legend_availcerts|escape}</legend>
 
+<div id="certbar">
+	<a id="newcert" href="confirm_aup.php">
+		<img src="graphics/new-certificate.png" alt="Add new certificate" />
+		<span> New certificate</span>
+	</a>
+
+	<a id="revokecert" href="revoke_certificate.php">
+		<img src="graphics/revoke-all.png" alt="Revoke all certificates" />
+		<span> Revoke all</span>
+	</a>
+</div>
+
 {if $standalone}
 	{include file='certificates/persp_standalone.tpl'}
 {else}

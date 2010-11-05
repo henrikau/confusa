@@ -1,12 +1,7 @@
 <h3>{$heading_certificates|escape}</h3>
 <ul>
-  <li><a href="process_csr.php"	{$prot_title}>
-      {$prot_l}{$item_request_new|escape}{$prot_r}</a></li>
   <li><a href="download_certificate.php"{$prot_title}>
-      {$prot_l}{$item_my_certificates|escape}{$prot_r}</a></li>
-  <li><a href="revoke_certificate.php"{$prot_title}>
-      {$prot_l}{$item_revoke_certificates|escape}{$prot_r}</a></li>
-  <li><a href="root_cert.php">{$item_cacert|escape}</a></li>
+      {$prot_l}My certificates{$prot_r}</a></li>
 </ul>
 
 <h3>{$heading_help|escape}</h3>
@@ -15,6 +10,7 @@
   <li><a href="about_confusa.php">{$item_aboutconf|escape}</a></li>
   <li style="margin-bottom: 1em"><a href="privacy_notice.php">{$item_privacy_notice|escape}</a></li>
   <li><a href="help.php">{$item_help|escape}</a></li>
+  <li><a href="root_cert.php">{$item_cacert|escape}</a></li>
 </ul>
 
 {if $person->isAdmin()}

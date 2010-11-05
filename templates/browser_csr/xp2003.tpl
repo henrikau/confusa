@@ -1,3 +1,7 @@
+<h3 id="heading">4. Process browser generated CSR</h3>
+
+{* Provide the Windows XP/Server 2003 class factory *}
+<object id="XEnroll" classid="clsid:127698e4-e730-4e5c-a2b1-21490a70c8a1" codebase="xenroll.dll"></object>
 {* big section with Windows certificate request JavaScript ahead *}
 {literal}
 <script type="text/javascript">
@@ -17,8 +21,7 @@ function createIEXPRequest(dn, keysize)
     /* Note that the "base provider" will only allow for RSA keys with a maximum
      * of 512 bits due to former export restrictions - therefore use the
      * enhanced cryptographic provider */
-	var providerSelector = document.getElementById("providerSelector");
-	var providerName = providerSelector.options[providerSelector.selectedIndex].text;
+	var providerName = $('#providerSelector :selected').text();
     XEnroll.ProviderName = providerName;
     /* create the key with the right keysize (upper 16 bits)
      * flag 1 (crypt_exportable) as the export policy for the private key */
@@ -32,46 +35,39 @@ function createIEXPRequest(dn, keysize)
 </script>
 {/literal}
 
+<form id="reqForm"
+	      name="reqForm"
+	      method="post"
+	      action="browser_csr.php" onsubmit="return createIEXPRequest('{$dn}', {$default_keysize});">
 <fieldset>
 <legend>{$l10n_legend_browsercsr}</legend>
 <div id="info_view">
-		{* Provide the Windows XP/Server 2003 class factory *}
-		<object id="XEnroll" classid="clsid:127698e4-e730-4e5c-a2b1-21490a70c8a1" codebase="xenroll.dll"></object>
+
 		<noscript>
 			<br />
 			<b>{$l10n_infotext_reqjs}</b>
 		</noscript>
 
-<div style="border-style: inset; border-width: 1px; padding: 0.5em">
-	<p class="info" >
-		<strong>{$l10n_label_finalCertDN}</strong>
-	</p>
-	<p style="font-size: 1em; font-family: monospace; margin-bottom: 1em">
-		{$finalDN}
-	</p>
-</div>
+	<div style="border-style: inset; border-width: 1px; padding: 0.5em">
+		<p class="info" >
+			<strong>{$l10n_label_finalCertDN}</strong>
+		</p>
+		<p style="font-size: 1em; font-family: monospace; margin-bottom: 1em">
+			{$finalDN}
+		</p>
+	</div>
 </div>
 
 <div id="reqDiv" style="margin-top: 2em">
-	<form id="reqForm"
-	      name="reqForm"
-	      method="post"
-	      action="process_csr.php" onsubmit="return createIEXPRequest('{$dn}', {$keysize});">
 	  <div>
 	    <input type="hidden"
 		   id="reqField"
 		   name="browserRequest"
 		   value="" />
-	    <input type="hidden"
-		   name="browserSigning"
-		   value="xp2003" />
 	    {$panticsrf}
 	  </div>
-	  <input type="submit"
-		 id="chooseButton"
-		 style="display: none"
-		 value="{$l10n_button_choose}" />
-	</form>
+	  <div id="csps">
+	  </div>
 </div>
 
 {* TODO: build the form with JavaScript, thus a user not having it enabled will not even see it - more user friendly *}
@@ -81,10 +77,10 @@ function createIEXPRequest(dn, keysize)
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	document.getElementById('info_view').style.display = 'none';
 	document.getElementById("reqDiv").style.display = "none";
-	var timer1 = setTimeout('window.location="process_csr.php?status_poll={$order_number}&{$ganticsrf}";', 10000);
-	document.write('{$l10n_infotext_processing} {$order_number|escape}');
+	var timer1 = setTimeout('window.location="browser_csr.php?status_poll={$order_number}&{$ganticsrf}";', 10000);
+	document.write("{$l10n_infotext_processing} {$order_number|escape}");
 	document.writeln('<span id="dots"></span>');
-	document.writeln('{$l10n_infotext_brows_csr_ong}');
+	document.writeln("{$l10n_infotext_brows_csr_ong}");
 	showSmallishDots(0);
 	</script>
 </div>
@@ -93,35 +89,34 @@ function createIEXPRequest(dn, keysize)
 		<script type="text/javascript">
 			clearTimeout(timer1);
 			document.getElementById("pendingArea").style.display = "none";
+			$('#nextButton').show();
+			$('#heading').html('5. Install your certificate');
 		</script>
 
 		<div style="margin-top: 1em">
-			{$l10n_info_installcert1} <a href="process_csr.php?install_cert={$order_number|escape}&amp;{$ganticsrf}">{$l10n_link_installcert}</a>
+			{$l10n_info_installcert1} <a href="download_certificate.php?install_cert={$order_number|escape}&amp;{$ganticsrf}">{$l10n_link_installcert}</a>
 			{if isset($ca_certificate)}{$l10n_info_installcert2} <a href="{$ca_certificate}">{$l10n_link_cacert}</a>{/if}!
 		</div>
 	{/if}
 
 {else}
 <script type="text/javascript">
-	var cryptProvText = '{$l10n_infotext_cryptprov} \"Microsoft Enhanced Cryptographic Provider\"!)';
-	var cspErrorText = '{$l10n_infotext_csperror}';
+	var cryptProvText = "{$l10n_infotext_cryptprov} \"Microsoft Enhanced Cryptographic Provider\"!)";
+	var cspErrorText = "{$l10n_infotext_csperror}";
 
 	{literal}
 	/* let the user choose the CSP (Cryptographic service provider) */
-	var infoView = document.getElementById("info_view");
-	var requestForm = document.getElementById("reqForm");
-
-	var select = document.createElement("select");
-	select.id = "providerSelector";
+	var select = $("<select></select>");
+	select.attr('id','providerSelector');
 
 	XEnroll.Reset();
 	XEnroll.ProviderType = 1;
 
 	try {
 		for (var cspNo = 0;; cspNo++) {
-			var option = document.createElement("option");
-			option.innerHTML = XEnroll.EnumProviders(cspNo, 0);
-			select.appendChild(option);
+			var option = $("<option></option>");
+			option.html(XEnroll.EnumProviders(cspNo, 0));
+			select.append(option);
 		}
 	} catch (e) {
 		if (e.number == -2147024637) {
@@ -131,17 +126,30 @@ function createIEXPRequest(dn, keysize)
 		}
 	}
 
-	var chooseButton = document.getElementById("chooseButton");
-	requestForm.insertBefore(select, chooseButton);
-	requestForm.insertBefore(document.createElement("br"), chooseButton);
+	$('#csps').append(select);
+	$('#csps').append('<div class="spacer"></div>');
+	$('#csps').append('<p class="info">' + cryptProvText + '</p>');
 	/* make it only visible if the user has JavaScript enabled */
-	chooseButton.style.cssText = "display: block";
 
-	var spacer = document.createElement("div");
-	spacer.setAttribute("class", "spacer");
-	infoView.appendChild(spacer);
-	infoView.innerHTML += "<p class=\"info\">" + cryptProvText + "</p>";
 	{/literal}
 </script>
 {/if}
 </fieldset>
+<div class="nav">
+		{$panticsrf}
+		<input id="nextButton" type="submit" value="next >" />
+</div>
+</form>
+
+<div class="nav">
+<form action="receive_csr.php?{$ganticsrf}" method="get">
+	<input id="backButton" type="submit" value="< back" />
+</form>
+</div>
+
+{if isset($order_number)}
+<script type="text/javascript">
+$('#nextButton').hide();
+$('#backButton').hide();
+</script>
+{/if}

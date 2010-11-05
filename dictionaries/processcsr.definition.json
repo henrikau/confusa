@@ -12,7 +12,7 @@
 		"en":	"Uploaded CSR"
 	},
 	"l10n_infotext_signcert1": {
-		"en":	"You provided a certificate signing request consisting of the following fields. Press \"Sign certificate\" to get your request signed and \"Delete\" to cancel the signing operation."
+		"en":	"You provided a certificate signing request consisting of the following fields. Press \"Next\" to get your request signed and \"Back\" to cancel the signing operation and delete the uploaded CSR."
 	},
 	"l10n_label_authtoken": {
 		"en":	"Auth token:"
@@ -51,7 +51,7 @@
 		"en":	"Paste new CSR"
 	},
 	"l10n_infotext_pastenewcsr1": {
-		"en":	"Paste an already created CSR here and press \"Upload CSR\" to send the CSR to the portal."
+		"en":	"Paste an already created CSR here and click \"Next\" to send the CSR to the portal. Clicking the \"Back\" button will cause the portal to discard the pasted CSR."
 	},
 	"l10n_button_reset": {
 		"en":	"Reset form"
@@ -75,7 +75,7 @@
 		"en":	"Upload new CSR"
 	},
 	"l10n_infotext_uploadnewcsr1": {
-		"en":	"Upload a local CSR for signing by the CA. If you created this with any globus-specific tools, you should look for the folder \".globus\" in your home directory."
+		"en":	"Upload a local CSR for signing by the CA. If you created this with any globus-specific tools, you should look for the folder \".globus\" in your home directory. After selecting the CSR-file, click the \"next\" button. Clicking on \"back\" will discard your file choice."
 	},
 	"l10n_infotext_csroverview1": {
 		"en":	"Please choose one of the options available below to create your certificate."
@@ -176,6 +176,12 @@
 	"l10n_infotext_kgkeysize2": {
 		"en":	"bits. Please check which keysizes correspond to which \"grades\" in your browser!"
 	},
+	"l10n_infotext_kgkeysize3": {
+		"en":	"Note that keys that are shorter than"
+	},
+	"l10n_infotext_kgkeysize4": {
+		"en":	"bits will be rejected by the portal."
+	},
 	"l10n_button_send": {
 		"en":	"Send"
 	},
@@ -213,7 +219,7 @@
 		"en" :	"I hereby state that I will adhere to the Requester's obligations as stated in the CPS."
 	},
 	"l10n_aup_info_short": {
-		"en" :	"more"
+		"en" :	"more information"
 	},
 	"l10n_aup_info_long1": {
 		"en":	"The AUP is a segment of the "
@@ -241,5 +247,14 @@
 	},
 	"l10n_header_privacynotice": {
 		"en":	"Privacy notice"
+	},
+	"l10n_err_csrinvalid1": {
+		"en":	"The provided CSR is invalid. Check the keylength (must be longer than"
+	},
+	"l10n_err_csrinvalid2": {
+		"en":	"bits) and the type of the public key (must be RSA)."
+	},
+	"l10n_label_subject": {
+		"en":	"Subject"
 	}
 }

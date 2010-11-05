@@ -547,3 +547,74 @@ div.eh_toggle_container {
         -moz-border-radius: 10px;
         -webkit-border-radius: 10px;
 }
+
+div#certbar {
+	width: 100%;
+	height: 50px;
+	padding: 10px 0 10px 0;
+}
+
+div#certbar a {
+	height: 50px;
+	min-height: 50px;
+	max-height: 50px;
+}
+
+div#certbar a#newcert {
+	float: left;
+	width: 50%;
+}
+
+div#certbar a#revokecert {
+	float: right;
+	margin: 0 0 10px 0;
+	width: 20%;
+}
+
+div#certbar a img {
+	float: left;
+}
+
+div#certbar a span {
+	display: block;
+}
+
+div#certbar a#newcert span {
+	font-size: 20px;
+	font-weight: bold;
+	padding-left: 45px;
+	margin-top: 10px;
+}
+
+div#certbar a#revokecert span {
+	padding-left: 35px;
+	margin: 5px 0 0 0;
+}
+
+div.nav {
+	padding-top: 1em;
+	float: right;
+}
+
+div.nav input {
+	background-color: #ffffff;
+	border: 1pt solid black;
+}
+
+div.nav input[disabled] {
+	border: 1pt solid grey;
+}
+
+div.nav input:hover {
+	font-weight: bold;
+	font-style: italic;
+}
+
+div.nav input[disabled]:hover {
+	font-weight: normal;
+	font-style: normal;
+}
+
+div.nav #backButton {
+	margin-right: 2em;
+}
