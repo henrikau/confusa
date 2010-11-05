@@ -54,7 +54,7 @@ final class CP_Receive_CSR extends Content_Page
 				$this->tpl->assign('upload_csr', true);
 				break;
 			case 'paste_csr':
-				$this->tpl->assign('nextScript', 'paste_csr.php');
+				$this->tpl->assign('nextScript', 'upload_csr.php');
 				$this->tpl->assign('paste_csr', true);
 				break;
 			default:
