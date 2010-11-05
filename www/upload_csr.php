@@ -4,6 +4,12 @@ require_once 'Content_Page.php';
 require_once 'Framework.php';
 require_once 'CSR_PKCS10.php';
 
+/**
+ * Class for processing uploaded/pasted CSR files
+ * @author tzangerl
+ * @since v0.7-rc0
+ *
+ */
 final class CP_Upload_CSR extends Content_Page
 {
 	private $csr;
@@ -34,7 +40,7 @@ final class CP_Upload_CSR extends Content_Page
 
 		if (!$csr->isValid()) {
 			$msg = $this->translateTag('l10n_err_csrinvalid1', 'processcsr');
-			$msg .= Config::get_config('key_length');
+			$msg .= Config::get_config('min_key_length');
 			$msg .= $this->translateTag('l10n_err_csrinvalid2', 'processcsr');
 			Framework::error_output($msg);
 			$this->csr = null;

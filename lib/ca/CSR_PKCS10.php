@@ -100,7 +100,7 @@ class CSR_PKCS10 extends CSR
 	 */
 	public function isValid()
 	{
-		if ($this->getLength() < Config::get_config('key_length')) {
+		if ($this->getLength() < Config::get_config('min_key_length')) {
 			return false;
 		}
 		if ($this->getType() != "rsa") {
