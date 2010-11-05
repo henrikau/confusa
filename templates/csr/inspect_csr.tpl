@@ -1,3 +1,4 @@
+<form action="upload_csr.php" method="post">
 <div class="csr">
   <fieldset class="inpsect_csr">
     <legend>{$legendTitle}</legend>
@@ -63,25 +64,6 @@
       <tr><td></td></tr>
       {/if}
 
-      <tr>
-	<td>
-	  <a href="?delete_csr={$authToken}&amp;{$ganticsrf}">
-	    <img src="graphics/delete.png"
-		 alt="{$l10n_title_deletecsr}"
-		 title="{$l10n_title_deletecsr}"
-		 class="url"/> {$l10n_link_delete}
-	  </a>
-	</td>
-	<td></td>
-	<td>
-	  <a href="?sign_csr={$authToken}&amp;{$ganticsrf}">
-	    <img src="graphics/accept.png"
-		 alt="{$l10n_title_approvecsr}"
-		 title="{$l10n_title_approvecsr}"
-		 class="url"/> {$l10n_link_approvecsr}
-	  </a>
-	</td>
-      </tr>
       <tr><td></td></tr>
 
       <tr>
@@ -91,4 +73,19 @@
       </tr>
     </table>
   </fieldset>
+
+  <div style="float: right;" class="nav">
+		{$panticsrf}
+		<input type="hidden" name="signCSR" value="{$authToken}" />
+		<input id="nextButton" type="submit" class="nav" value="next >" />
+  </div>
+</form>
+
+<div style="float: right;" class="nav">
+<form action="receive_csr.php" method="post">
+	{$panticsrf}
+	<input type="hidden" name="deleteCSR" value="{$authToken}" />
+	<input id="backButton" class="nav" type="submit" value="< back" />
+</form>
+</div>
 </div> <!-- inspect_csr -->

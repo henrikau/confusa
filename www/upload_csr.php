@@ -13,7 +13,10 @@ require_once 'CSRUpload.php';
  */
 final class CP_Upload_CSR extends Content_Page
 {
+	/** CSR object - populated after successful CSR upload */
 	private $csr;
+	/** authKey - populated after successful signing operation */
+	private $authKey;
 
 	function __construct()
 	{
@@ -25,6 +28,12 @@ final class CP_Upload_CSR extends Content_Page
 		parent::pre_process($person);
 		$authvar = "";
 		$csr = null;
+
+		if (isset($_POST['signCSR'])) {
+			$this->signCSR(Input::sanitizeCertKey($_POST['signCSR']));
+			return;
+		}
+
 		/* Testing for uploaded files */
 		if(isset($_FILES['user_csr']['name'])) {
 			try {
@@ -60,9 +69,11 @@ final class CP_Upload_CSR extends Content_Page
 
 	public function process()
 	{
-		if (is_null($this->csr)) {
-			Framework::error_output("Processing of the uploaded/pasted CSR failed.");
-		} else {
+		if (isset($this->authKey)) {
+			/* redirect the user to the certificate download page */
+			header("Location: download_certificate.php");
+			exit(0);
+		} else if (isset($this->csr)) {
 			$this->tpl->assign('csrInspect', true);
 			$this->tpl->assign('subject', $this->csr->getSubject());
 			$this->tpl->assign('uploadedDate', $this->csr->getUploadedDate());
@@ -73,7 +84,62 @@ final class CP_Upload_CSR extends Content_Page
 			                   $this->translateTag('l10n_legend_pastedcsr', 'processcsr'));
 			$this->tpl->assign('finalDN',   $this->ca->getFullDN());
 			$this->tpl->assign('content', $this->tpl->fetch('csr/approve_csr.tpl'));
+		} else {
+			Framework::error_output("Processing of the uploaded/pasted CSR failed.");
 		}
+	}
+
+	/**
+	 * Sign the CSR with the passed authToken. If signing succeeds, the class
+	 * member authKey is set to the orderNumber/certHash. If not, an error is
+	 * displayer
+	 * @param $authToken pubkey hash of the CSR that is to be signed
+	 */
+	private function signCSR($authToken) {
+		$csr = CSR::getFromDB($this->person->getX509ValidCN(), $authToken);
+		if (!isset($csr) || !$csr) {
+			$errorTag = PW::create();
+			Framework::error_output("[$errorTag] Did not find CSR with auth_token " .
+						htmlentities($auth_token));
+			$msg  = "User " . $this->person->getEPPN() . " ";
+			$msg .= "tried to delete CSR with auth_token " . $authToken . " but was unsuccessful";
+			Logger::logEvent(LOG_NOTICE, "Process_CSR", "approveCSR($authToken)",
+			                 $msg, __LINE__, $errorTag);
+			return false;
+		}
+
+		try {
+			if (!isset($this->ca)) {
+				Framework::error_output("No available CA, cannot contine signing the CSR.");
+				return false;
+			}
+
+			$permission = $this->person->mayRequestCertificate();
+			if ($permission->isPermissionGranted() === false) {
+				Framework::error_output($this->translateTag('l10n_err_noperm1', 'processcsr') .
+				                        "<br /><br />" .
+				                        $permission->getFormattedReasons() . "<br />" .
+				                        $this->translateTag('l10n_err_noperm2', 'processcsr'));
+				return;
+			}
+
+			$this->authKey = $this->ca->signKey($csr);
+
+		} catch (CGE_ComodoAPIException $capie) {
+			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" .
+						htmlentities($capie));
+			return false;
+		} catch (ConfusaGenException $e) {
+			$msg = "Error signing key, remote said: <br /><br /><i>" .
+				htmlentities($e->getMessage()) . "</i><br />";
+			Framework::error_output($msg);
+			return false;
+		} catch (KeySigningException $kse) {
+			Framework::error_output("Could not sign certificate. Server said: " .
+						htmlentites($kse->getMessage()));
+			return false;
+		}
+		CSR::deleteFromDB($this->person, $authToken);
 	}
 }
 

@@ -15,6 +15,13 @@ final class CP_Receive_CSR extends Content_Page
 	function pre_process($person)
 	{
 		parent::pre_process($person);
+
+		/* can be received when pressing "Back" on the CSR-signing overview */
+		if (isset($_POST['deleteCSR'])) {
+			$authToken = Input::sanitizeCertKey($_POST['deleteCSR']);
+			CSR::deleteFromDB($person, $authToken);
+		}
+
 		$this->tpl->assign('extraScripts', array('js/jquery-1.4.1.min.js'));
 		$this->tpl->assign('rawScript', file_get_contents('../include/rawToggleExpand.js'));
 

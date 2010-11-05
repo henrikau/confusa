@@ -12,7 +12,7 @@
 		"en":	"Uploaded CSR"
 	},
 	"l10n_infotext_signcert1": {
-		"en":	"You provided a certificate signing request consisting of the following fields. Press \"Sign certificate\" to get your request signed and \"Delete\" to cancel the signing operation."
+		"en":	"You provided a certificate signing request consisting of the following fields. Press \"Next\" to get your request signed and \"Back\" to cancel the signing operation and delete the uploaded CSR."
 	},
 	"l10n_label_authtoken": {
 		"en":	"Auth token:"
