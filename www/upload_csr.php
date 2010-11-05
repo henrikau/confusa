@@ -59,15 +59,15 @@ final class CP_Upload_CSR extends Content_Page
 
 	public function process()
 	{
-		if ($this->csr == null) {
-			Framework::error_output("Processing your CSR failed most terribly.");
+		if (is_null($this->csr)) {
+			Framework::error_output("Processing of the uploaded/pasted CSR failed.");
 		} else {
 			$this->tpl->assign('csrInspect', true);
-			$this->tpl->assign('subject', $csr->getSubject());
-			$this->tpl->assign('uploadedDate', $csr->getUploadedDate());
-			$this->tpl->assign('uploadedFromIP', $csr->getUploadedFromIP());
-			$this->tpl->assign('authToken', $csr->getAuthToken());
-			$this->tpl->assign('length', $csr->getLength());
+			$this->tpl->assign('subject', $this->csr->getSubject());
+			$this->tpl->assign('uploadedDate', $this->csr->getUploadedDate());
+			$this->tpl->assign('uploadedFromIP', $this->csr->getUploadedFromIP());
+			$this->tpl->assign('authToken', $this->csr->getAuthToken());
+			$this->tpl->assign('length', $this->csr->getLength());
 			$this->tpl->assign('legendTitle',
 			                   $this->translateTag('l10n_legend_pastedcsr', 'processcsr'));
 			$this->tpl->assign('content', $this->tpl->fetch('csr/approve_csr.tpl'));
