@@ -102,18 +102,6 @@
 	  <td><div class="spacer"></div></td>
 	  <td></td>
 	</tr>
-	<tr>
-	  <td align="right" style="padding-right: 10px">
-	    <input type="reset" class="button" value="{$l10n_button_reset}" />
-	  </td>
-	  <td align="left">
-	    <input type="submit"
-		   class="button"
-		   value="{$l10n_button_uploadcsr}"
-		   onclick="return isBoxChecked(aup_box);" />
-	    <br />
-	  </td>
-	</tr>
     </table>
 {/if}
 

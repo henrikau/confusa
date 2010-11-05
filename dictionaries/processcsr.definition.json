@@ -51,7 +51,7 @@
 		"en":	"Paste new CSR"
 	},
 	"l10n_infotext_pastenewcsr1": {
-		"en":	"Paste an already created CSR here and press \"Upload CSR\" to send the CSR to the portal."
+		"en":	"Paste an already created CSR here and click \"Next\" to send the CSR to the portal. Clicking the \"Back\" button will cause the portal to discard the pasted CSR."
 	},
 	"l10n_button_reset": {
 		"en":	"Reset form"
