@@ -25,13 +25,6 @@ final class CP_Receive_CSR extends Content_Page
 		$this->tpl->assign('extraScripts', array('js/jquery-1.4.1.min.js'));
 		$this->tpl->assign('rawScript', file_get_contents('../include/rawToggleExpand.js'));
 
-		/* FIXME: more security checks */
-		if (CS::getSessionKey('hasAcceptedAUP') !== true) {
-			Framework::error_output($this->translateTag("l10n_err_aupagreement",
-				"processcsr"));
-			return;
-		}
-
 		if (isset($_POST['subjAltName_email']) &&
 		    is_array($_POST['subjAltName_email'])) {
 
@@ -48,7 +41,6 @@ final class CP_Receive_CSR extends Content_Page
 
 	function process()
 	{
-		/* FIXME: more security checks */
 		if (CS::getSessionKey('hasAcceptedAUP') !== true) {
 			Framework::error_output($this->translateTag("l10n_err_aupagreement",
 				"processcsr"));

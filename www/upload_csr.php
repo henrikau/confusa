@@ -69,6 +69,12 @@ final class CP_Upload_CSR extends Content_Page
 
 	public function process()
 	{
+		if (CS::getSessionKey('hasAcceptedAUP') !== true) {
+			Framework::error_output($this->translateTag("l10n_err_aupagreement",
+				"processcsr"));
+			return;
+		}
+
 		if (isset($this->authKey)) {
 			/* redirect the user to the certificate download page */
 			header("Location: download_certificate.php");

@@ -21,11 +21,6 @@ final class CP_Browser_CSR extends Content_Page
 		$this->tpl->assign('extraScripts', array('js/jquery-1.4.1.min.js'));
 		$this->tpl->assign('rawScript', file_get_contents('../include/rawToggleExpand.js'));
 
-		/* FIXME: more security checks */
-		if (CS::getSessionKey('hasAcceptedAUP') !== true) {
-			return;
-		}
-
 		if (isset($_GET['status_poll'])) {
 				$order_number = Input::sanitizeCertKey($_GET['status_poll']);
 				/* assign the order_number again */
@@ -87,6 +82,12 @@ final class CP_Browser_CSR extends Content_Page
 
 	public function process()
 	{
+		if (CS::getSessionKey('hasAcceptedAUP') !== true) {
+			Framework::error_output($this->translateTag('l10n_err_aupagreement',
+				'processcsr'));
+			return;
+		}
+
 		$user_cert_enabled = $this->person->testEntitlementAttribute(Config::get_config('entitlement_user'));
 		$this->tpl->assign('user_cert_enabled', $user_cert_enabled);
 		$this->tpl->assign('finalDN',   $this->ca->getFullDN());
