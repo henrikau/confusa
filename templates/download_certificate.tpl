@@ -129,13 +129,13 @@
 
 <div id="certbar">
 	<a id="newcert" href="confirm_aup.php">
-		<img src="graphics/new-certificate.png" alt="Add new certificate" />
-		<span> New certificate</span>
+		<img src="graphics/new-certificate.png" alt="{$l10n_alt_newcertificate}" />
+		<span> {$l10n_item_newcertificate}</span>
 	</a>
 
 	<a id="revokecert" href="revoke_certificate.php">
-		<img src="graphics/revoke-all.png" alt="Revoke all certificates" />
-		<span> Revoke all</span>
+		<img src="graphics/revoke-all.png" alt="{$l10n_alt_revokeall}" />
+		<span> {$l10n_item_revokeall}</span>
 	</a>
 </div>
 

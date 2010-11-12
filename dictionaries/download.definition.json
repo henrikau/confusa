@@ -100,5 +100,17 @@
 	},
 	"l10n_infotext_instcacert2": {
 		"en":	"CA-certificate!"
+	},
+	"l10n_item_newcertificate": {
+		"en":	"New certificate"
+	},
+	"l10n_item_revokeall": {
+		"en":	"Revoke all"
+	},
+	"l10n_alt_newcertificate": {
+		"en":	"Add new certificate"
+	},
+	"l10n_alt_revokeall": {
+		"en":	"Revoke all certificates"
 	}
 }

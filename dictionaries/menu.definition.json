@@ -5,14 +5,8 @@
 	"heading_certificates": {
 		"en": "Certificates"
 	},
-	"item_request_new": {
-		"en": "Request new"
-	},
 	"item_my_certificates": {
 		"en": "My certificates"
-	},
-	"item_revoke_certificates": {
-		"en": "Revoke"
 	},
 	"heading_help": {
 		"en": "Help"
