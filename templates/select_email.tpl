@@ -1,4 +1,4 @@
-<h3>2. Select your e-mail address</h3>
+<h3>{$l10n_heading_step2email}</h3>
 <fieldset>
 <form action="receive_csr.php" method="post">
 {if $email_status != "0"}
@@ -59,12 +59,12 @@
 
 <div style="float: right;" class="nav">
 		{$panticsrf}
-		<input id="nextButton" type="submit" title="next" value="next >" />
+		<input id="nextButton" type="submit" title="{$l10n_button_next}" value="{$l10n_button_next} >" />
 </div>
 </form>
 
 <div style="float: right;" class="nav">
 <form action="confirm_aup.php?{$ganticsrf}" method="get">
-	<input id="backButton" type="submit" title="back" value="< back" />
+	<input id="backButton" type="submit" title="{$l10n_button_back}" value="< {$l10n_button_back}" />
 </form>
 </div>

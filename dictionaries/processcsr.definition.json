@@ -271,5 +271,8 @@
 	},
 	"l10n_title_fullnotice": {
 		"en":	"Click to read full notice"
+	},
+	"l10n_heading_step2email": {
+		"en":	"2. Select your e-mail address"
 	}
 }
