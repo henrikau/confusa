@@ -3,7 +3,7 @@
 		"en": "Change CA NREN-account"
 	},
 	"l10n_infotext_caaccount1": {
-		"en": "Change/enter the account with which your NREN connects to the Comodo-API. You should have received account information either from TERENA or any other contract partner via which you signed up to Confusa."
+		"en": "Change/enter the account with which your NREN connects to the Comodo-API. You should have received account information either from TERENA or any other contract partner via which you signed up to the portal."
 	},
 	"l10n_infotext_caaccount2": {
 		"en": "Note: The account password will be encrypted using 256-Bit AES in CFB blockmode before being stored in the DB."
