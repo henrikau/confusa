@@ -76,7 +76,7 @@ final class CP_Browser_CSR extends Content_Page
 
 				}
 			} else {
-				Framework::error_output("Could not parse CSR from browser output!");
+				Framework::error_output($this->translateTag('l10n_err_parsecsr', 'processcsr'));
 				Logger::logEvent(LOG_NOTICE, "CP_Browser_CSR", "pre_process()",
 				                 "Received browser-CSR that could not be parsed!" .
 				                 " User: " . $this->person->getEPPN(),

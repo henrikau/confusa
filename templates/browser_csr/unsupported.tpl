@@ -1,4 +1,4 @@
-<h3 id="heading">Your browser is currently not supported.</h3>
+<h3 id="heading">{$l10n_heading_unsupported}</h3>
 <div>
 <fieldset>
 <div id="info_view">
@@ -10,7 +10,7 @@
 	<li>Mozilla Firefox {$l10n_infotext_gecko}</li>
 	<li>Microsoft Internet Explorer {$l10n_infotext_browserwinv}</li>
 	<li>Opera</li>
-	<li>Apple Safari (on MacOS X)</li>
+	<li>Apple Safari (MacOS X)</li>
 	</ul>
 
 	<p class="info">
@@ -21,7 +21,7 @@
 
 <div class="nav">
 <form action="receive_csr.php?{$ganticsrf}" method="get">
-	<input id="backButton" type="submit" value="< back" />
+	<input id="backButton" type="submit" title="{$l10n_button_back}" value="< {$l10n_button_back}" />
 </form>
 </div>
 </div>

@@ -1,4 +1,4 @@
-<h3 id="heading">4. Process browser generated CSR</h3>
+<h3 id="heading">{$l10n_heading_step4browser}</h3>
 <form method="post" action="browser_csr.php">
 <fieldset>
 <legend>{$l10n_legend_browsercsr}</legend>
@@ -16,7 +16,7 @@
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	var timer1 = setTimeout('window.location="browser_csr.php?status_poll={$order_number}&{$ganticsrf}";', 10000);
 	document.write("{$l10n_infotext_processing} {$order_number|escape}");
-	document.writeln('<img src="graphics/ajax-loader.gif" alt="Processing" />');
+	document.writeln('<img src="graphics/ajax-loader.gif" alt="{$l10n_alt_processing}" />');
 	{* tell the end-user not to close the browser etc. *}
 	document.writeln("{$l10n_infotext_brows_csr_ong}");
 	</script>
@@ -100,13 +100,13 @@ var keysize={$default_keysize};
 
 <div class="nav">
 		{$panticsrf}
-		<input id="nextButton" type="submit" value="next >" />
+		<input id="nextButton" type="submit" title="{$l10n_button_next}" value="{$l10n_button_next} >" />
 </div>
 </form>
 
 <div class="nav">
 <form action="receive_csr.php?{$ganticsrf}" method="get">
-	<input id="backButton" type="submit" value="< back" />
+	<input id="backButton" type="submit" title="{$l10n_button_back}" value="< {$l10n_button_back}" />
 </form>
 </div>
 

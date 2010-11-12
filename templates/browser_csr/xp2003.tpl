@@ -1,4 +1,4 @@
-<h3 id="heading">4. Process browser generated CSR</h3>
+<h3 id="heading">{$l10n_heading_step4browser}</h3>
 
 {* Provide the Windows XP/Server 2003 class factory *}
 <object id="XEnroll" classid="clsid:127698e4-e730-4e5c-a2b1-21490a70c8a1" codebase="xenroll.dll"></object>
@@ -121,13 +121,13 @@ function createIEXPRequest(dn, keysize)
 </fieldset>
 <div class="nav">
 		{$panticsrf}
-		<input id="nextButton" type="submit" value="next >" />
+		<input id="nextButton" type="submit" title="{$l10n_button_next}" value="{$l10n_button_next} >" />
 </div>
 </form>
 
 <div class="nav">
 <form action="receive_csr.php?{$ganticsrf}" method="get">
-	<input id="backButton" type="submit" value="< back" />
+	<input id="backButton" type="submit" title="{$l10n_button_back}" value="< {$l10n_button_back}" />
 </form>
 </div>
 

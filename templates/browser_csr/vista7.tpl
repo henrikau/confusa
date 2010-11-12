@@ -1,4 +1,4 @@
-<h3 id="heading">4. Process browser generated CSR</h3>
+<h3 id="heading">{$l10n_heading_step4browser}</h3>
 
 {* Provide the Windows Vista/7 class factory *}
 <object classid="clsid:884e2049-217d-11da-b2a4-000e7bbb2b09" id="classFactory" height="0" width="0" ></object>
@@ -106,7 +106,7 @@ function createIEVistaRequest(dn, keysize)
 	{* refresh the page all ten seconds, and update the processing label all 2 seconds *}
 	var timer1 = setTimeout('window.location="browser_csr.php?status_poll={$order_number}&{$ganticsrf}";', 10000);
 	document.write("{$l10n_infotext_processing} {$order_number|escape}");
-	document.writeln('<img src="graphics/ajax-loader.gif" alt="Processing" />');
+	document.writeln('<img src="graphics/ajax-loader.gif" alt="{$l10n_alt_processing}" />');
 	document.writeln("{$l10n_infotext_brows_csr_ong}");
 	</script>
 </div>
@@ -151,13 +151,13 @@ function createIEVistaRequest(dn, keysize)
 
 <div class="nav">
 		{$panticsrf}
-		<input id="nextButton" type="submit" value="next >" />
+		<input id="nextButton" type="submit" title="{$l10n_button_next}" value="{$l10n_button_next} >" />
 </div>
 </form>
 
 <div id="backButton" class="nav">
 <form action="receive_csr.php?{$ganticsrf}" method="get">
-	<input type="submit" value="< back" />
+	<input type="submit" title="{$l10n_button_back}" value="< {$l10n_button_back}" />
 </form>
 </div>
 
