@@ -50,12 +50,6 @@ class CP_Accountant extends Content_Page
 			case 'edit':
 				$res = $this->editNRENAccount($login_name, $password, $ap_name);
 				break;
-			case 'new':
-				$res = $this->addNRENAccount($login_name, $password, $ap_name);
-				if ($res) {
-					$res = $this->changeAccount($login_name);
-				}
-				break;
 			default:
 				Framework::error_output("Unknow accountant-operation (" .
 							$htmlentities($_POST['account']) .
@@ -70,6 +64,7 @@ class CP_Accountant extends Content_Page
 	public function process()
 	{
 		if (!$this->person->isNRENAdmin()) {
+
 			$errorTag = PW::create();
 			Logger::logEvent(LOG_NOTICE, "Accountant", "process()",
 			                 "User " . stripslashes($this->person->getX509ValidCN()) . " tried to access the accountant.",
@@ -77,7 +72,9 @@ class CP_Accountant extends Content_Page
 			$this->tpl->assign('reason', "[$errorTag] You are not an NREN-admin");
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
+
 		} else if (Config::get_config('ca_mode') != CA_COMODO) {
+
 			$errorTag = PW::create();
 			Logger::logEvent(LOG_NOTICE, "Accountant", "process()",
 			                "User " . stripslashes($this->person->getX509ValidCN()) . "tried to access the accountant, " .
@@ -86,6 +83,7 @@ class CP_Accountant extends Content_Page
 			$this->tpl->assign('reason', "[$errorTag] Confusa is not using Comodo CA");
 			$this->tpl->assign('content', $this->tpl->fetch('restricted_access.tpl'));
 			return;
+
 		}
 		$res = $this->getNRENAccounts($this->person->getNREN());
 
@@ -145,7 +143,8 @@ class CP_Accountant extends Content_Page
 	} /* end getNRENAccounts() */
 
 	/**
-	 * editNRENAccount() Change elements in an existing account
+	 * editNRENAccount() Insert a new NREN account, if none exists.
+	 *                   Otherwise update the existing account.
 	 *
 	 * @param String login_name	The new login-name. This must be a
 	 *				unique name (given by Comodo)
@@ -159,37 +158,34 @@ class CP_Accountant extends Content_Page
 	 */
 	private function editNRENAccount($login_name, $password, $ap_name)
 	{
+		Logger::log_event(LOG_INFO, "editNRENAccount($login_name...)");
 		$nren = $this->person->getNREN();
-		/*
-		 * get NREN and currently configured account
-		 */
-		$accountInfo = $this->getNRENAccounts($nren);
-		if (is_null($accountInfo)) {
-			Framework::error_output($this->translateTag('l10n_err_noaccfound', 'accountant'));
-			return false;
-		}
-		$nren_id	= $accountInfo[0]['nren_id'];
-		$account_id	= $accountInfo[0]['login_account'];
-
-		if (empty($nren_id) ||empty($account_id)) {
-			Framework::error_output("Vital info unavailable. Cannot update Account");
-			return false;
-		}
 
 		/*
 		 * new or changing existing account
 		 */
 		try {
-			$account_info = MDB2Wrapper::execute("SELECT * FROM account_map WHERE account_map_id = ?",
-							     array('text'),
-							     array($account_id));
+			$accountInfo = $this->getNRENAccounts($nren);
 			/* are we updating existing value, or adding new? */
-			if (count($account_info) == 1) {
+			if (is_null($accountInfo) || count($accountInfo) < 1) {
+
+				$this->addNRENAccount($login_name, $password, $ap_name);
+				$this->changeAccount($login_name);
+
+			} else if (count($accountInfo == 1)) {
+
+				$account_id = $accountInfo[0]['account_map_id'];
 				$this->updateNRENAccount($login_name, $password, $ap_name, $account_id);
-			}
-			else {
-				/* FIXME */
-				return false;
+
+			} else {
+
+				$errorTag = PW::create(8);
+				Logger::logEvent(LOG_ERR, __CLASS__, "editNRENAccount",
+					"Could not add/update NREN account due to DB inconsistency!",
+					__LINE__, $errorTag);
+				Framework::error_output("Could not add/update NREN account [$errorTag]." .
+					" Please contact an administrator about this problem.");
+
 			}
 		} catch (DBStatementException $dbse) {
 			Framework::error_output(__FILE__ . ":" . __LINE__ . htmlentities($dbse->getMessage()));
@@ -204,52 +200,6 @@ class CP_Accountant extends Content_Page
 		                          $this->translateTag('l10n_suc_changedacc2', 'accountant') .
 		                          " " . htmlentities($login_name));
 	} /* end editNRENAccount() */
-
-	/**
-	 * deleteAccount() Delete a CA-account for the current NREN
-	 *
-	 * NOTE: This function is currently not in use, but it is planned to be
-	 *	 used once we start listing all available accounts for the
-	 *	 NREN. Thus, it does not make sense to remove it.
-	 *
-	 * This will delete an account for the current admin's NREN.
-	 *
-	 * @param String account_map_id the id of the account to delete.
-	 * @return boolean Indicating if the account was successfully deleted.
-	 *
-	 */
-	private function deleteAccount($account_map_id)
-	{
-		$query  = "DELETE FROM account_map WHERE account_map_id ? AND nren_id = ";
-		$query .= "(SELECT nren_id FROM nrens WHERE name = ?)";
-
-		try {
-			MDB2Wrapper::update($query,
-					    array('text', 'text'),
-					    array($account_map_id, $this->person->getNREN()));
-		} catch (DBQueryException $dbe) {
-			$errorTag = PW::create();
-			Framework::error_message("[$errorTag] Problem deleting your old account: " .
-			                         htmlentities($dbe->getMessage()) .
-			                         ". Seems like a problem with the supplied data!");
-			Logger::logEvent(LOG_WARNING, "Accountant", "deleteAccount($account_map_id)",
-			                 "Could not delete old login account of " .
-			                 "NREN $nren " . $dbe->getMessage(),
-			                 __LINE__, $errorTag);
-			return false;
-		} catch (DBStatementException $dse) {
-			$errorTag = PW::create();
-			Framework::error_message("[$errorTag] Problem deleting your old account: " .
-			                         htmlentities($dbe->getMessage()) .
-			                         ". Seems like a problem with the configuration. Please contact an administrator.");
-			Logger::logEvent(LOG_WARNING, "Accountant", "deleteAccount($account_map_id)",
-					 "Could not delete old login account of " .
-					 "NREN $nren " . $dbe->getMessage(),
-			                  __LINE__, $errorTag);
-			return false;
-		}
-		return true;
-	}
 
 	/**
 	 * updateNRENAccount() - Change the data of an existing NREN account, but do not touch
