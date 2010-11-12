@@ -21,21 +21,6 @@
 	document.writeln("{$l10n_infotext_brows_csr_ong}");
 	</script>
 </div>
-
-	{if isset($done) && $done === TRUE}
-		<script type="text/javascript">
-			clearTimeout(timer1);
-			document.getElementById("pendingArea").style.display = "none";
-			$('#nextButton').show();
-			$('#backButton').show();
-			$('#heading').html('5. Install your certificate');
-		</script>
-
-		<div style="margin-top: 1em">
-			{$l10n_info_installcert1} <a href="download_certificate.php?install_cert={$order_number|escape}&amp;{$ganticsrf}">{$l10n_link_installcert}</a>
-			{if isset($ca_certificate)}{$l10n_info_installcert2} <a href="{$ca_certificate}">{$l10n_link_cacert}</a>{/if}!
-		</div>
-	{/if}
 {else}
 	  <div>{$panticsrf}</div>
 	<table>

@@ -111,20 +111,6 @@ function createIEVistaRequest(dn, keysize)
 	</script>
 </div>
 
-	{if isset($done) && $done === TRUE}
-		<script type="text/javascript">
-			clearTimeout(timer1);
-			document.getElementById("pendingArea").style.display = "none";
-			$('#nextButton').show();
-			$('#heading').html('5. Install your certificate');
-		</script>
-
-		<div style="margin-top: 1em">
-			{$l10n_info_installcert1} <a href="browser_csr.php?install_cert={$order_number|escape}&{$ganticsrf}">{$l10n_link_installcert}</a>
-			{if isset($ca_certificate)}{$l10n_info_installcert2} <a href="{$ca_certificate}">{$l10n_link_cacert}</a>{/if}!
-		</div>
-	{/if}
-
 {else}
 <script type="text/javascript">
 	{* let the user choose the CSP (Cryptographic service provider) *}
