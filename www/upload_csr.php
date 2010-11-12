@@ -85,7 +85,8 @@ final class CP_Upload_CSR extends Content_Page
 			$this->tpl->assign('finalDN',   $this->ca->getFullDN());
 			$this->tpl->assign('content', $this->tpl->fetch('upload_csr.tpl'));
 		} else {
-			Framework::error_output("Processing of the uploaded/pasted CSR failed.");
+			Framework::error_output($this->translateTag('l10n_err_procuploaded',
+				'processcsr'));
 		}
 	}
 
@@ -110,7 +111,8 @@ final class CP_Upload_CSR extends Content_Page
 
 		try {
 			if (!isset($this->ca)) {
-				Framework::error_output("No available CA, cannot contine signing the CSR.");
+				Framework::error_output($this->translateTag('l10n_err_noca',
+					'processcsr'));
 				return false;
 			}
 
@@ -126,16 +128,16 @@ final class CP_Upload_CSR extends Content_Page
 			$this->authKey = $this->ca->signKey($csr);
 
 		} catch (CGE_ComodoAPIException $capie) {
-			Framework::error_output("Error with remote API when trying to ship CSR for signing.<BR />\n" .
+			Framework::error_output($this->translateTag('l10n_sign_error', 'processcsr') .
 						htmlentities($capie));
 			return false;
 		} catch (ConfusaGenException $e) {
-			$msg = "Error signing key, remote said: <br /><br /><i>" .
+			$msg = $this->translateTag('l10n_sign_error', 'processcsr') . "<br /><br /><i>" .
 				htmlentities($e->getMessage()) . "</i><br />";
 			Framework::error_output($msg);
 			return false;
 		} catch (KeySigningException $kse) {
-			Framework::error_output("Could not sign certificate. Server said: " .
+			Framework::error_output($this->translateTag('l10n_sign_error', 'processcsr') .
 						htmlentites($kse->getMessage()));
 			return false;
 		}

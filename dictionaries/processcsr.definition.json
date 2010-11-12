@@ -280,5 +280,11 @@
 	},
 	"l10n_err_parsecsr": {
 		"en":	"Could not parse CSR from browser output!"
+	},
+	"l10n_err_procuploaded": {
+		"en":	"Processing of the uploaded/pasted CSR failed."
+	},
+	"l10n_err_noca": {
+		"en":	"No available CA, cannot contine signing the CSR."
 	}
 }
