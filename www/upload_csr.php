@@ -83,7 +83,7 @@ final class CP_Upload_CSR extends Content_Page
 			$this->tpl->assign('legendTitle',
 			                   $this->translateTag('l10n_legend_pastedcsr', 'processcsr'));
 			$this->tpl->assign('finalDN',   $this->ca->getFullDN());
-			$this->tpl->assign('content', $this->tpl->fetch('csr/approve_csr.tpl'));
+			$this->tpl->assign('content', $this->tpl->fetch('upload_csr.tpl'));
 		} else {
 			Framework::error_output("Processing of the uploaded/pasted CSR failed.");
 		}

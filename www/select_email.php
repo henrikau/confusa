@@ -30,7 +30,7 @@ final class CP_Select_Email extends Content_Page
 		$user_cert_enabled = $this->person->testEntitlementAttribute(Config::get_config('entitlement_user'));
 		$this->tpl->assign('email_status', $this->person->getNREN()->getEnableEmail());
 		$this->tpl->assign('user_cert_enabled', $user_cert_enabled);
-		$this->tpl->assign('content', $this->tpl->fetch('csr/email.tpl'));
+		$this->tpl->assign('content', $this->tpl->fetch('select_email.tpl'));
 	}
 
 }
