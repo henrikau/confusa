@@ -1,5 +1,5 @@
-<h3>3. Upload/create a certificate signing request (CSR)</h3>
-<a href="#" id="infoHeader" style="margin-bottom: 1em; display: none">More information</a>
+<h3>{$l10n_heading_step3csr}</h3>
+<a href="#" id="infoHeader" style="margin-bottom: 1em; display: none">{$l10n_item_moreinfo}</a>
 <div id="infoBlock" style="margin-top: 1em">
 	<p class="info">
 	  {$l10n_infotext_csroverview1}
@@ -12,21 +12,20 @@
 	</p>
 </div>
 
-{literal}
 <script type="text/javascript">
 	$('#infoHeader').show();
 	$('#infoBlock').hide();
 
-	$('#infoHeader').toggle(function () {
+	$('#infoHeader').toggle(function () {literal}{{/literal}
 		$('#infoBlock').slideToggle('slow');
-		$('#infoHeader').html('Less information');
-	},
-		function() {
+		$('#infoHeader').html('{$l10n_item_lessinfo}');
+	{literal}}{/literal},
+		function() {literal}{{/literal}
 		$('#infoBlock').slideToggle('slow');
-		$('#infoHeader').html('More information');
-	});
+		$('#infoHeader').html('{$l10n_item_moreinfo}');
+		{literal}}{/literal});
 </script>
-{/literal}
+
 
 <div class="tabheader">
   <ul class="tabs">
@@ -41,7 +40,7 @@
 <fieldset>
 
 {if isset($browser_csr)}
-<legend>Generate a CSR in the browser</legend>
+<legend>{$l10n_legend_browsercsr}</legend>
 <div class="spacer"></div>
 <div id="info_view">
 	<p class="info">
@@ -98,12 +97,12 @@
 </fieldset>
 <div style="float: right;" class="nav">
 		{$panticsrf}
-		<input id="nextButton" type="submit" class="nav" value="next >" />
+		<input id="nextButton" type="submit" class="nav" title="{$l10n_button_next}" value="{$l10n_button_next} >" />
 </div>
 </form>
 
 <div style="float: right;" class="nav">
 <form action="confirm_aup.php?{$ganticsrf}" method="get">
-	<input id="backButton" class="nav" type="submit" value="< back" />
+	<input id="backButton" class="nav" type="submit" value="< {$l10n_button_back}" title="{$l10n_button_back}" />
 </form>
 </div>

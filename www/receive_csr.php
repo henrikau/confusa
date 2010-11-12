@@ -27,7 +27,8 @@ final class CP_Receive_CSR extends Content_Page
 
 		/* FIXME: more security checks */
 		if (CS::getSessionKey('hasAcceptedAUP') !== true) {
-			Framework::error_output("You have not agreed to to the acceptable use policy. Please do so before proceeding!");
+			Framework::error_output($this->translateTag("l10n_err_aupagreement",
+				"processcsr"));
 			return;
 		}
 
@@ -49,7 +50,8 @@ final class CP_Receive_CSR extends Content_Page
 	{
 		/* FIXME: more security checks */
 		if (CS::getSessionKey('hasAcceptedAUP') !== true) {
-			Framework::error_output("You have not agreed to to the acceptable use policy. Please do so before proceeding!");
+			Framework::error_output($this->translateTag("l10n_err_aupagreement",
+				"processcsr"));
 			return;
 		}
 

@@ -120,10 +120,10 @@
 		"en":	"Please contact an IT-administrator about that!"
 	},
 	"l10n_legend_browsercsr": {
-		"en":	"Apply for a certificate in browser"
+		"en":	"Generate a CSR in the browser"
 	},
 	"l10n_infotext_browsercsr1": {
-		"en":	"Press the start button <b>once</b> to generate a certificate request in your browser.<br /><br />Sometimes it will take a little while until you can see a browser reaction and there can be delays between browser actions."
+		"en":	"Press the next button <b>once</b> to generate a certificate request in your browser.<br /><br />Sometimes it will take a little while until you can see a browser reaction and there can be delays between browser actions."
 	},
 	"l10n_button_applybrowsercsr": {
 		"en":	"Apply"
@@ -274,5 +274,11 @@
 	},
 	"l10n_heading_step2email": {
 		"en":	"2. Select your e-mail address"
+	},
+	"l10n_heading_step3csr": {
+		"en":	"3. Upload/create a certificate signing request (CSR)"
+	},
+	"l10n_err_aupagreement": {
+		"en":	"You have not agreed to to the acceptable use policy. Please do so before proceeding!"
 	}
 }
