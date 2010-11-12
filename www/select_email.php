@@ -5,6 +5,13 @@ require_once 'Framework.php';
 require_once 'confusa_constants.php';
 require_once 'Input.php';
 
+/**
+ * Class displaying a selection to the user about which e-mails addresses to
+ * include in the certificates' subject alt-name
+ * @author tzangerl
+ * @since v0.7-rc0
+ *
+ */
 final class CP_Select_Email extends Content_Page
 {
 	function __construct()

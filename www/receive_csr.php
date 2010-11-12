@@ -4,6 +4,14 @@ require_once 'Content_Page.php';
 require_once 'Framework.php';
 require_once 'confusa_constants.php';
 
+/**
+ * Class that displays a number of possibilities for CSR creation to the
+ * user (browser generation, upload, pasting) and provides the corresponding
+ * templates
+ * @author tzangerl
+ * @since v0.7-rc0
+ *
+ */
 final class CP_Receive_CSR extends Content_Page
 {
 	function __construct()

@@ -7,6 +7,15 @@ require_once 'Output.php';
 require_once 'CSR_SPKAC.php';
 require_once 'CSR_PKCS10.php';
 
+/**
+ * Class that dispatches the browser key generation templates based on the
+ * user's browser and sends brower-generated CSRs to the configured CA
+ * for signing.
+ *
+ * @author tzangerl
+ * @since v0.7-rc0
+ *
+ */
 final class CP_Browser_CSR extends Content_Page
 {
 	function __construct()
