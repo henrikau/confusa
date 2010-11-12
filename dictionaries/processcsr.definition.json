@@ -95,9 +95,6 @@
 	"l10n_tab_pastecsr": {
 		"en":	"Paste CSR"
 	},
-	"l10n_link_change": {
-		"en":	"Change"
-	},
 	"l10n_msg_browsergen": {
 		"en":	"Generating certificate signing request in the browser."
 	},
@@ -256,5 +253,23 @@
 	},
 	"l10n_label_subject": {
 		"en":	"Subject"
+	},
+	"l10n_heading_step1aup": {
+		"en":	"1. Agree to the acceptable use policy"
+	},
+	"l10n_button_next": {
+		"en":	"next"
+	},
+	"l10n_button_back": {
+		"en":	"back"
+	},
+	"l10n_item_moreinfo": {
+		"en":	"more information"
+	},
+	"l10n_item_lessinfo": {
+		"en":	"less information"
+	},
+	"l10n_title_fullnotice": {
+		"en":	"Click to read full notice"
 	}
 }

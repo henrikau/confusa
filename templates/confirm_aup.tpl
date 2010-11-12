@@ -1,4 +1,4 @@
-<h3>1. Agree to the acceptable use policy</h3>
+<h3>{$l10n_heading_step1aup}</h3>
 <form action="confirm_aup.php" method="post">
 <fieldset>
 <legend>{$l10n_aup_title}</legend>
@@ -27,24 +27,24 @@
 		</ul>
     </div>
 
-{literal}
+
 <script type="text/javascript">
 	$("#aupExpandable").toggle(
-		function () {
-			$(this).html("less information"); },
-		function() {
-			$(this).html("more information"); }
+		function () {literal}{{/literal}
+			$(this).html("{$l10n_item_lessinfo}"); {literal}}{/literal},
+		function() {literal}{{/literal}
+			$(this).html("{$l10n_item_moreinfo}"); {literal}}{/literal}
 	);
 </script>
-{/literal}
+
 
 {if strlen($privacy_notice_text) > 0}
 <div style="margin: 2em 0 0 0">
-<strong>{$l10n_header_privacynotice}</strong>: <span id="collapseLink" style="display: none"><a class="privacyNotice" href="#">(less information)</a></span>
+<strong>{$l10n_header_privacynotice}</strong>: <span id="collapseLink" style="display: none"><a class="privacyNotice" href="#">({$l10n_item_lessinfo})</a></span>
 
 <div id="shortPrivacyNotice" style="display: none">
 {$privacy_notice_text|truncate:50:"...":true}
-<a class="privacyNotice" href="#" title="Click to read full notice">(more information)</a>
+<a class="privacyNotice" href="#" title="{$l10n_title_fullnotice}">({$l10n_item_moreinfo})</a>
 </div>
 
 <div id="fullPrivacyNotice">
@@ -75,13 +75,13 @@
 
 <div style="float: right;" class="nav">
 		{$panticsrf}
-		<input id="nextButton" type="submit" title="next" value="next >" />
+		<input id="nextButton" type="submit" title="{$l10n_button_next}" value="{$l10n_button_next} >" />
 </div>
 </form>
 
 <div style="float: right;" class="nav">
 <form action="download_certificate.php?{$ganticsrf}" method="get">
-	<input type="submit" id="backButton" title="back" value="< back" />
+	<input type="submit" id="backButton" title="{$l10n_button_back}" value="< {$l10n_button_back}" />
 </form>
 </div>
 
