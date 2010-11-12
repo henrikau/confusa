@@ -42,7 +42,7 @@
       <tr>
 	<td></td>
 	<td>{$l10n_label_password}</td>
-	<td><i>{$l10n_label_passwhidden}</i></td>
+	<td><i>{$password}</i></td>
 	<td> <input type="password" name="password" value="" /> </td>
 	<td></td>
       </tr>

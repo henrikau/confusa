@@ -90,10 +90,21 @@ class CP_Accountant extends Content_Page
 		if (empty($res) || empty($res[0])) {
 			$this->tpl->assign('login_name',
 			                   $this->translateTag('l10n_fieldval_undefined', 'accountant'));
+			$this->tpl->assign('password',
+			                   $this->translateTag('l10n_fieldval_undefined', 'accountant'));
 			$this->tpl->assign('ap_name',
 			                   $this->translateTag('l10n_fieldval_undefined', 'accountant'));
 		} else {
 			$this->tpl->assign('login_name', $res[0]['login_name']);
+
+			if (empty($res[0]['password'])) {
+				$this->tpl->assign('password',
+					$this->translateTag('l10n_fieldval_undefined', 'accountant'));
+			} else {
+				$this->tpl->assign('password',
+					$this->translateTag('l10n_label_passwhidden', 'accountant'));
+			}
+
 			$this->tpl->assign('ap_name', $res[0]['ap_name']);
 		}
 
