@@ -49,7 +49,6 @@
 					if (req.responseText == "done") {
 						/* reload the list if the processing is done */
 						window.clearInterval(timer);
-						window.clearInterval(timer2);
 						window.location.reload();
 					}
 				} else {
@@ -118,8 +117,6 @@
 	function pollCertStatus(orderNumber, interval, anticsrf)
 	{
 		timer = window.setInterval("pollCertStatusAJAX(" + orderNumber + "," + anticsrf + ")", interval);
-		/* give some visual feedback to the user that "something is happening" */
-		timer2 = window.setInterval("showSmallDots(" + orderNumber + ")", 2000);
 	}
 
 // -->

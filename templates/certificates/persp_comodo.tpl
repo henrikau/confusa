@@ -38,8 +38,11 @@
 		    [{$l10n_item_inspect|escape}]
 		    [{$l10n_item_install|escape}]
 		  </td>
-		  {if isset($cert.valid_untill) && isset($cert.order_number) && $cert.status == "Awaiting Validation"}
-		  <script type="text/javascript">pollCertStatus({$cert.order_number}, 30000, {$ganticsrf})</script>
+		  {if isset($cert.order_number) && $cert.status == "Awaiting Validation"}
+		  <td>
+		  <div class="waitnotification"><img src="graphics/ajax-loader.gif" alt="Processing..." /></div>
+		  <script type="text/javascript">pollCertStatus({$cert.order_number}, 30000, "{$ganticsrf}")</script>
+		  </td>
 		  {/if}
 		  {else}
 		  {* valid certificate, show with normal graphics etc *}
