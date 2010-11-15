@@ -502,7 +502,7 @@ class CP_Admin extends Content_Page
 	 */
 	private function downgradeNRENAdmin($admin_uid, $subscriber_id)
 	{
-		if (empty($subsriber_id)) {
+		if (is_null($subscriber_id)) {
 			$msg  = "Tried to downgrade NREN admin " . htmlentities($this->person->getEPPN()) . " from NREN " .
 			        htmlentities($this->person->getNREN()->getName()) . " to subscriber admin, ";
 			$msg .= "but admin's subscriber affiliaton is not set. Cannot continue.";
