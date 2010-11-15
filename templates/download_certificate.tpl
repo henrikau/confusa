@@ -2,32 +2,6 @@
 <script type="text/javascript">
 <!--
 	var timer = null;
-	var timer2 = null;
-
-	/**
-	 * Show five incrementally appearing dots after a text, which visually
-	 * hints that something is happening.
-	 *
-	 * @param orderNumber the orderNumber, needed to find the right info-block
-	 */
-	function showSmallDots(orderNumber) {
-		var infoCell = document.getElementById('certInfoText' + orderNumber);
-		var infoText = infoCell.innerHTML;
-
-		var firstDot = infoText.indexOf(".");
-
-		if (firstDot >= 0) {
-			var numDots = infoText.substring(firstDot, infoText.length).length;
-		}
-
-		if (numDots >= 5) {
-			infoText =  infoText.substring(0, infoText.indexOf(".") + 1);
-		} else {
-			infoText = infoText + ".";
-		}
-
-		infoCell.innerHTML = infoText;
-	}
 
 	/**
 	 * Poll the processing status (Pending, processed) of an online-certificate
@@ -52,10 +26,11 @@
 						window.location.reload();
 					}
 				} else {
+					return;
 					/* didn't work, so what? */
 				}
 			}
-		}
+		};
 	}
 
 	/**
@@ -96,10 +71,11 @@
 					}
 
 				} else {
+					return;
 					/* no op */
 				}
 			}
-		}
+		};
 
 		return false;
 	}
@@ -116,7 +92,8 @@
 	 */
 	function pollCertStatus(orderNumber, interval, anticsrf)
 	{
-		timer = window.setInterval("pollCertStatusAJAX(" + orderNumber + "," + anticsrf + ")", interval);
+		var fun = "pollCertStatusAJAX(" + orderNumber + ", '" + anticsrf + "')";
+		timer = window.setInterval(fun, interval);
 	}
 
 // -->

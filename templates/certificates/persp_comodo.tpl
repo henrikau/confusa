@@ -41,7 +41,7 @@
 		  {if isset($cert.order_number) && $cert.status == "Awaiting Validation"}
 		  <td>
 		  <div class="waitnotification"><img src="graphics/ajax-loader.gif" alt="Processing..." /></div>
-		  <script type="text/javascript">pollCertStatus({$cert.order_number}, 30000, "{$ganticsrf}")</script>
+		  <script type="text/javascript">pollCertStatus({$cert.order_number}, 30000, '{$ganticsrf}');</script>
 		  </td>
 		  {/if}
 		  {else}
@@ -106,7 +106,7 @@
 			<input type="hidden" name="reason"		value="unspecified" />
 			<input type="submit" name="submit"		value="{$l10n_button_revoke|escape}"
 			       style=" background-color:#660000; color:#FFFFFF;"
-			       onclick="return confirm('\t\t{$l10n_confirm_revoke1|escape}\n\n{$l10n_text_ordernumber} {$cert.order_number|escape}\n{$l10n_confirm_revoke2|escape}     {$valid|escape}')" />
+			       onclick="return confirm('\t\t{$l10n_confirm_revoke1|escape}\n\n{$l10n_text_ordernumber} {$cert.order_number|escape}\n{$l10n_confirm_revoke2|escape}     {$valid|escape}');" />
 		      </div>
 		    </form>
 		  </td>

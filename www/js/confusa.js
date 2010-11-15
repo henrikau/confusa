@@ -4,13 +4,13 @@ if (typeof(XMLHttpRequest) == "undefined") {
 	XMLHttpRequest = function() {
 		/* define XMLHttpRequest for IE versions < 7 */
 		try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); }
-		catch(e) {}
+		catch(e1) {}
 		try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); }
-		catch(e) {}
+		catch(e2) {}
 		try { return new ActiveXObject("Msxml2.XMLHTTP"); }
-		catch(e) {}
+		catch(e3) {}
 		try { return new ActiveXObject("Microsoft.XMLHTTP"); }
-		catch(e) {}
+		catch(e4) {}
 	};
 }
 
@@ -19,11 +19,11 @@ if (typeof(XMLHttpRequest) == "undefined") {
  */
 function toggleExpand(doc, expandElem, collapseElem) {
 
-	if (typeof collapseElem == 'undefined') {
+	if (typeof(collapseElem) == 'undefined') {
 		collapseElem = '-';
 	}
 
-	if (typeof expandElem == 'undefined') {
+	if (typeof(expandElem) == 'undefined') {
 		expandElem = '+';
 	}
 
@@ -69,15 +69,14 @@ function installIEVistaCertificate()
 	document.writeln("<object classid=\"clsid:884e2049-217d-11da-b2a4-000e7bbb2b09\"" +
 	"id=\"classFactory\" height=\"0\" width=\"0\" ></object>");
 	var objEnroll = classFactory.CreateObject("X509Enrollment.CX509Enrollment");
-	objEnroll.Initialize(1) /* the request is for a user */
+	objEnroll.Initialize(1); /* the request is for a user */
 	/*
 	 * 0x4 in the first parameter: allow untrusted root
 	 * 0x1 in the last paremeter: certificate is base-64 encoded
 	 */
 	objEnroll.InstallResponse(4, g_ccc, 1, "");
     } catch (e) {
-		var message="Hit the following problem when trying to install the cert: "
-		+ e.description +
+		var message="Hit the following problem when trying to install the cert: " + e.description +
 		"\n\nPlease check if the certificate is already installed in your keystore.";
 		alert(message);
     }
