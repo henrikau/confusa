@@ -1,6 +1,6 @@
 /* globally define the XMLHttpRequest object, if not present.
  * Mostly this is necessary for the folks still surfing with IE 6. */
-if (typeof XMLHttpRequest == "undefined") {
+if (typeof(XMLHttpRequest) == "undefined") {
 	XMLHttpRequest = function() {
 		/* define XMLHttpRequest for IE versions < 7 */
 		try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); }
