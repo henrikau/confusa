@@ -76,7 +76,7 @@ immediately see a result entry *}
 	<input type="hidden" name="max_file_size" value="10000000" />
 	<input name="{$file_name}" type="file" />
 	<input type="submit" value="{$l10n_button_uploadlist}" />
-	{$pantcsrf}
+	{$panticsrf}
       </p>
     </form>
     <br />
