@@ -508,6 +508,7 @@ class CP_Admin extends Content_Page
 			$msg .= "but admin's subscriber affiliaton is not set. Cannot continue.";
 			Logger::log_event(LOG_NOTICE,$msg);
 			Framework::error_output($msg);
+			return;
 		}
 
 		try {
