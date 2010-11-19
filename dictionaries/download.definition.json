@@ -112,5 +112,11 @@
 	},
 	"l10n_alt_revokeall": {
 		"en":	"Revoke all certificates"
+	},
+	"l10n_err_ordnum_notfound": {
+		"en":	"Certificate with the given auth_key/order-number not found! Maybe you misspelled the order-number or auth_key?"
+	},
+	"l10n_err_retrieval_fail": {
+		"en":	"Retrieving certificate information failed:"
 	}
 }

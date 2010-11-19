@@ -60,7 +60,7 @@
 		</td>
 		<td>
 			{* Have the form wrap the table, otherwise it will not be legal HTML *}
-		<form action="revoke_certificate.php" method="get">
+		<form action="download_certificate.php" method="get">
 		<div>
 		  {$panticsrf}
 		{* Revoke-button *}

@@ -36,10 +36,49 @@ final class CP_DownloadCertificate extends Content_Page
 					Framework::error_output($this->translateMessageTag('downl_err_nodownload')
 					                        . " " . htmlentities($cge->getMessage()));
 				}
+
 			} else if (isset($_GET['cert_status'])) {
 				$this->pollCertStatusAJAX(Input::sanitizeCertKey($_GET['cert_status']));
+
 			} else if (isset($_GET['certlist_all'])) {
 				$this->showAll = ($_GET['certlist_all'] == "true");
+
+			} else if (isset($_GET['revoke']) && $_GET['revoke'] == 'revoke_single') {
+				$order_number	= Input::sanitizeCertKey($_GET['order_number']);
+
+				/* sanitized by checking inclusion in the REVOCATION_REASONS
+				 * array
+				 */
+				if (!array_key_exists('reason', $_GET)) {
+					Framework::error_output($this->translateMessageTag('rev_err_singlenoreason'));
+					return;
+				}
+
+				$reason		= Input::sanitizeText(trim($_GET['reason']));
+				try {
+					if (!isset($order_number) || !isset($reason)) {
+						Framework::error_output("Revoke Certificate: Errors with parameters, not set properly");
+					} elseif (!$this->checkRevocationPermissions($order_number)) {
+						Framework::error_output($this->translateMessageTag('rev_err_singlenoperm'));
+					} elseif (!$this->ca->revokeCert($order_number, $reason)) {
+						Framework::error_output($this->translateMessageTag('rev_err_notyet1') .
+						                        htmlentities($order_number) .
+						                        $this->translateMessageTag('rev_err_notyet2') .
+						                        htmlentities($reason));
+					} else {
+						Framework::message_output($this->translateMessageTag('rev_suc_single1') .
+						                          htmlentities($order_number) .
+						                          $this->translateMessageTag('rev_suc_single2'));
+
+						if (Config::get_config('ca_mode') === CA_COMODO &&
+						    Config::get_config('capi_test') === true) {
+								Framework::message_output($this->translateTag('l10n_msg_revsim1', 'revocation'));
+						}
+					}
+				} catch (ConfusaGenException $cge) {
+					Framework::error_output($this->translateMessageTag('rev_err_singleunspec')
+											. " " . htmlentities($cge->getMessage()));
+				}
 			}
 		}
 		return false;
@@ -257,6 +296,45 @@ final class CP_DownloadCertificate extends Content_Page
 			exit(0);
 		}
 	}
+
+	/**
+	 * Check if the person that called "revoke" on auth_key may revoke the respective
+	 * certificate, i.e. whether the certificate is issued to the person herself.
+	 *
+	 * @param $auth_key mixed The auth_key for which to check
+	 * @return boolean true, if revocation of the passed key is permitted
+	 */
+	private function checkRevocationPermissions($auth_key)
+	{
+		try {
+			$info = $this->ca->getCertInformation($auth_key);
+
+			if (is_null($info)) {
+				Framework::error_output($this->translateTag('l10n_err_ordnum_notfound',
+					'download'));
+				return false;
+			}
+
+			$cn = $this->person->getX509ValidCN();
+			$subscriber = $this->person->getSubscriber()->getOrgName();
+
+			if ((stripslashes($info['cert_owner']) === stripslashes($cn)) &&
+				($info['organization'] === $subscriber)) {
+
+				return true;
+			}
+
+		} catch (ConfusaGenException $cge) {
+			Framework::error_output($this->translateTag('l10n_err_retrieval_fail',
+				'download') . ' ' . htmlentities($cge->getMessage()));
+			Logger::log_event(LOG_INFO, "[norm] Revoking certificate " .
+				"with key $auth_key failed, because permissions could not be " .
+				"determined!");
+		}
+
+		return false;
+	} /* end checkRevocationPermissions */
+
 } /* end class DownloadCertificate */
 
 $fw = new Framework(new CP_DownloadCertificate());
