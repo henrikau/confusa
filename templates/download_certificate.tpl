@@ -105,16 +105,24 @@
 <legend>{$l10n_legend_availcerts|escape}</legend>
 
 <div id="certbar">
+{if $permission->isPermissionGranted()}
 	<a id="newcert" href="confirm_aup.php">
 		<img src="graphics/new-certificate.png" alt="{$l10n_alt_newcertificate}" />
 		<span> {$l10n_item_newcertificate}</span>
 	</a>
+{else}
+	<div style="float: left; width: 50%">
+	<img style="float: left" src="graphics/no-new-certificate.png" alt="{$l10n_alt_newcertificate}" title="{$permission->getStringReasons()}" />
+	<span style="color: gray; display: block; margin-top: 10px; cursor: default" title="{$permission->getStringReasons()}">{$l10n_item_newcertificate}</span>
+	</div>
+{/if}
 
 	<a id="revokecert" href="revoke_certificate.php">
 		<img src="graphics/revoke-all.png" alt="{$l10n_alt_revokeall}" />
 		<span> {$l10n_item_revokeall}</span>
 	</a>
 </div>
+
 
 {if $standalone}
 	{include file='certificates/persp_standalone.tpl'}
