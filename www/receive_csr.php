@@ -30,6 +30,9 @@ final class CP_Receive_CSR extends Content_Page
 			CSR::deleteFromDB($person, $authToken);
 		}
 
+		$emailsDesiredByNREN = $this->person->getNREN()->getEnableEmail();
+		$registeredPersonMails = $this->person->getNumEmails();
+
 		$this->tpl->assign('extraScripts', array('js/jquery-1.4.1.min.js'));
 		$this->tpl->assign('rawScript', file_get_contents('../include/rawToggleExpand.js'));
 
@@ -43,6 +46,19 @@ final class CP_Receive_CSR extends Content_Page
 				$this->person->regCertEmail(Input::sanitizeText($value));
 			}
 
+			$this->person->storeRegCertEmails();
+
+		} else if ($emailsDesiredByNREN == '0') {
+			Framework::message_output($this->translateTag('l10n_msg_skipemail1', 'processcsr') .
+				' ' . $this->translateTag('l10n_msg_skipemail4', 'processcsr'));
+
+		} else if ($emailsDesiredByNREN == '1' && $registeredPersonMails == 1) {
+			Framework::message_output($this->translateTag('l10n_msg_skipemail2', 'processcsr') .
+				'<ul><li style="margin: 1em 0 1em 2em">' . $this->person->getEmail() . '</li>' .
+				$this->translateTag('l10n_msg_skipemail3', 'processcsr') . ' ' .
+				$this->translateTag('l10n_msg_skipemail4', 'processcsr'));
+
+			$this->person->regCertEmail($this->person->getEmail());
 			$this->person->storeRegCertEmails();
 		}
 	}

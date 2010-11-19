@@ -20,11 +20,27 @@ final class CP_Select_Email extends Content_Page
 		Framework::sensitive_action();
 	}
 
+	/**
+	 * Redirect user immediately to receive_csr step if number e-mail
+	 * addresses is zero or both configured and available addresses equal
+	 * 1. Otherwise, display mail selection form.
+	 * @see Content_Page::pre_process()
+	 */
 	function pre_process($person)
 	{
 		parent::pre_process($person);
 		$this->tpl->assign('extraScripts', array('js/jquery-1.4.1.min.js'));
 		$this->tpl->assign('rawScript', file_get_contents('../include/rawToggleExpand.js'));
+
+		$emailsDesiredByNREN = $this->person->getNREN()->getEnableEmail();
+		$registeredPersonMails = $this->person->getNumEmails();
+
+		if ($emailsDesiredByNREN == '0' ||
+			($emailsDesiredByNREN == '1' && $registeredPersonMails == 1)) {
+
+				header("Location: receive_csr.php");
+				exit(0);
+		}
 	}
 
 	function process()
