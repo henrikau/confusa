@@ -287,17 +287,8 @@
 	"l10n_err_noca": {
 		"en":	"No available CA, cannot contine signing the CSR."
 	},
-	"l10n_msg_skipemail1": {
-		"en":	"The portal is configured not to include e-mail addresses in the issued certificates."
-	},
-	"l10n_msg_skipemail2": {
-		"en":	"Found exactly one e-mail address in your attributes:"
-	},
-	"l10n_msg_skipemail3": {
-		"en":	"This address will be included in your certificate."
-	},
-	"l10n_msg_skipemail4": {
-		"en":	"Skipping e-mail selection step."
+	"l10n_msg_skipemail": {
+		"en":	"Skipped e-mail selection step (only 1 address present or none required)."
 	},
 	"l10n_err_emailmissing": {
 		"en":	"Need at least one e-mail address, you didn't choose any! Please go back and choose at least one e-mail adress."

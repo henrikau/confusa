@@ -48,16 +48,13 @@ final class CP_Receive_CSR extends Content_Page
 
 			$this->person->storeRegCertEmails();
 
-		} else if ($emailsDesiredByNREN == '0') {
-			Framework::message_output($this->translateTag('l10n_msg_skipemail1', 'processcsr') .
-				' ' . $this->translateTag('l10n_msg_skipemail4', 'processcsr'));
+		} else if ($emailsDesiredByNREN == '0' || is_null($emailsDesiredByNREN)) {
+			$this->tpl->assign('skippedEmail', true);
 
-		} else if ($emailsDesiredByNREN == '1' && $registeredPersonMails == 1) {
-			Framework::message_output($this->translateTag('l10n_msg_skipemail2', 'processcsr') .
-				'<ul><li style="margin: 1em 0 1em 2em">' . $this->person->getEmail() . '</li>' .
-				$this->translateTag('l10n_msg_skipemail3', 'processcsr') . ' ' .
-				$this->translateTag('l10n_msg_skipemail4', 'processcsr'));
+		} else if (($emailsDesiredByNREN == '1' || $emailsDesiredByNREN == 'm')
+			&& $registeredPersonMails == 1) {
 
+			$this->tpl->assign('skippedEmail', true);
 			$this->person->regCertEmail($this->person->getEmail());
 			$this->person->storeRegCertEmails();
 		}

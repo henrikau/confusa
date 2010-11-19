@@ -1,4 +1,15 @@
+{if isset($skippedEmail) && $skippedEmail === true}
+<div id="skippedEmailSelNot" style="border: 2pt black solid; padding: 0.5em 0.5em 0.5em 0.5em; margin-bottom: 1em">
+	{$l10n_msg_skipemail}
+</div>
+
+<script type="text/javascript">
+	$("#skippedEmailSelNot").fadeOut(7000);
+</script>
+{/if}
+
 <h3>{$l10n_heading_step3csr}</h3>
+
 <a href="#" id="infoHeader" style="margin-bottom: 1em; display: none">{$l10n_item_moreinfo}</a>
 <div id="infoBlock" style="margin-top: 1em">
 	<p class="info">
