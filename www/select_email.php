@@ -39,7 +39,6 @@ final class CP_Select_Email extends Content_Page
 
 		echo "Got the following desired mails: $emailsDesiredByNREN";
 		switch($emailsDesiredByNREN) {
-		case null:
 		case '0':
 			header("Location: receive_csr.php");
 			exit(0);

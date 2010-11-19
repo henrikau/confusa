@@ -48,7 +48,7 @@ final class CP_Receive_CSR extends Content_Page
 
 			$this->person->storeRegCertEmails();
 
-		} else if ($emailsDesiredByNREN == '0' || is_null($emailsDesiredByNREN)) {
+		} else if ($emailsDesiredByNREN == '0') {
 			$this->tpl->assign('skippedEmail', true);
 
 		} else if (($emailsDesiredByNREN == '1' || $emailsDesiredByNREN == 'm')
@@ -86,9 +86,6 @@ final class CP_Receive_CSR extends Content_Page
 			}
 			break;
 		}
-
-
-
 
 		if (isset($_GET['show'])) {
 			switch($_GET['show']) {

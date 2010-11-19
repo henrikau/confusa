@@ -734,6 +734,14 @@ class NREN
 					$key = strtolower(Input::sanitizeText($k));
 					$this->data[$key] = Input::sanitizeText($value);
 				}
+
+				/* hack to work around MySQLs very limited view on the difference
+				 * between 0 and NULL
+				 */
+				if (is_null($this->data['enable_email'])) {
+					$this->data['enable_email'] = 0;
+				}
+
 				break;
 			default:
 				echo "too many nrens (" . count($res) . ") found in db. Aborting.<br />\n";
