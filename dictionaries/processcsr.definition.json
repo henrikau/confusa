@@ -298,5 +298,8 @@
 	},
 	"l10n_msg_skipemail4": {
 		"en":	"Skipping e-mail selection step."
+	},
+	"l10n_err_emailmissing": {
+		"en":	"Need at least one e-mail address, you didn't choose any! Please go back and choose at least one e-mail adress."
 	}
 }

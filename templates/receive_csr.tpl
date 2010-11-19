@@ -97,7 +97,7 @@
 </fieldset>
 <div style="float: right;" class="nav">
 		{$panticsrf}
-		<input id="nextButton" type="submit" class="nav" title="{$l10n_button_next}" value="{$l10n_button_next} >" />
+		<input id="nextButton" type="submit" {if isset($disable_next_button)}disabled=disabled{/if} class="nav" title="{$l10n_button_next}" value="{$l10n_button_next} >" />
 </div>
 </form>
 

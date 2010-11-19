@@ -63,6 +63,12 @@ final class CP_Receive_CSR extends Content_Page
 		}
 	}
 
+	/**
+	 * Display CSR generation choices. Fail if user has not accepted AUP
+	 * or number of registered e-mail addresses does not match the number
+	 * mandated by the NREN.
+	 * @see Content_Page::process()
+	 */
 	function process()
 	{
 		if (CS::getSessionKey('hasAcceptedAUP') !== true) {
@@ -70,6 +76,22 @@ final class CP_Receive_CSR extends Content_Page
 				"processcsr"));
 			return;
 		}
+
+		$numberRequiredEmails = $this->person->getNREN()->getEnableEmail();
+
+		switch($numberRequiredEmails) {
+		case '1':
+		case 'm':
+			$numberEmails = count($this->person->getRegCertEmails());
+			if ($numberEmails < 1) {
+				Framework::error_output($this->translateTag('l10n_err_emailmissing', 'processcsr'));
+				$this->tpl->assign('disable_next_button', true);
+			}
+			break;
+		}
+
+
+
 
 		if (isset($_GET['show'])) {
 			switch($_GET['show']) {
