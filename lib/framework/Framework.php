@@ -167,10 +167,11 @@ class Framework {
 
 						$msg .= "<br />\n";
 						$msg .= $this->contentPage->translateMessageTag('fw_error_entitlement_unset_3');
-						$msg .= "<br /><ul>\n<li>";
+						$msg .= '<br /><ul><li style="margin: 1em 0 0 2em">';
 
 						$msg .= $this->contentPage->translateMessageTag('fw_error_entitlement_unset_4');
-						$msg .= "<a href=\"mailto:$email\">$email</a></li>\n<li>";
+						$msg .= "<a href=\"mailto:$email\">$email</a></li>";
+						$msg .= '<li style="margin: 1em 0 0 2em">';
 						$msg .= $this->contentPage->translateMessageTag('fw_error_entitlement_unset_5');
 						$msg .= "<a href=\"$url\">$url</a></li>\n</ul><br />\n";
 					}
