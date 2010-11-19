@@ -32,14 +32,28 @@ final class CP_Select_Email extends Content_Page
 		$this->tpl->assign('extraScripts', array('js/jquery-1.4.1.min.js'));
 		$this->tpl->assign('rawScript', file_get_contents('../include/rawToggleExpand.js'));
 
+		$this->person->clearRegCertEmails();
+
 		$emailsDesiredByNREN = $this->person->getNREN()->getEnableEmail();
 		$registeredPersonMails = $this->person->getNumEmails();
 
-		if ($emailsDesiredByNREN == '0' ||
-			($emailsDesiredByNREN == '1' && $registeredPersonMails == 1)) {
+		echo "Got the following desired mails: $emailsDesiredByNREN";
+		switch($emailsDesiredByNREN) {
+		case null:
+		case '0':
+			header("Location: receive_csr.php");
+			exit(0);
+			break;
+		case '1':
+		case 'm':
+			if ($registeredPersonMails == 1) {
+				$this->person->regCertEmail($this->person->getEmail());
+				$this->person->storeRegCertEmails();
 
 				header("Location: receive_csr.php");
 				exit(0);
+			}
+			break;
 		}
 	}
 
