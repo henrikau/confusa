@@ -1,8 +1,9 @@
 <h3>{$l10n_heading_step2email}</h3>
+<form id="nextForm" action="receive_csr.php" method="post">
 <fieldset>
-<form action="receive_csr.php" method="post">
 {if $email_status != "0"}
 <div class="spacer"></div>
+<div>
 <p class="info">
   {$l10n_infotext_email1} {$person->getNumEmails()|escape} {$l10n_infotext_email2}
 </p>
@@ -10,6 +11,7 @@
 <p class="info">
   {$l10n_infotext_email3}
 </p>
+</div>
 <table style="width: 75%;"
        summary="{$l10n_pcsr_email_table_summary}">
   {* we could use html_checkboxes, but getting all the boxes ticked
