@@ -37,7 +37,6 @@ final class CP_Select_Email extends Content_Page
 		$emailsDesiredByNREN = $this->person->getNREN()->getEnableEmail();
 		$registeredPersonMails = $this->person->getNumEmails();
 
-		echo "Got the following desired mails: $emailsDesiredByNREN";
 		switch($emailsDesiredByNREN) {
 		case '0':
 			header("Location: receive_csr.php");
