@@ -70,3 +70,20 @@
 	<input id="backButton" type="submit" title="{$l10n_button_back}" value="< {$l10n_button_back}" />
 </form>
 </div>
+
+{* if the user has to specify *at least* one mail address, check whether she did *}
+{if $email_status == "m"}
+{literal}
+<script type="text/javascript">
+	$('#nextForm').click(function() {
+		var selectedMailAddresses = $('input:checked').length;
+
+		if (selectedMailAddresses < 1) {
+			$('#nextButton').attr("disabled", true);
+		} else {
+			$('#nextButton').attr("disabled", false);
+		}
+	});
+</script>
+{/literal}
+{/if}
