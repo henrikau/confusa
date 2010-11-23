@@ -9,7 +9,11 @@
 </p>
 {if $email_status == "n" || $email_status == "m"}
 <p class="info">
+{if $email_status == "n"}
   {$l10n_infotext_email3}
+{else}
+  {$l10n_infotext_email5}
+{/if}
 </p>
 </div>
 <table style="width: 75%;"
