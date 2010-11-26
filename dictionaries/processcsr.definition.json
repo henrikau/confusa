@@ -87,7 +87,7 @@
 		"en":	"You have several different ways of creating the certificate, ranging from a complete in-browser experience to different ways of uploading an existing CSR."
 	},
 	"l10n_infotext_csroverview3": {
-		"en":	"If you are unsure about what an CSR is, you probably want the in-browser approach."
+		"en":	"If you are unsure about what a CSR is, you probably want the in-browser approach."
 	},
 	"l10n_tab_browsergen": {
 		"en":	"Browser generation"
