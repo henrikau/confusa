@@ -1,6 +1,6 @@
 {
 	"fw_error_entitlement_unset_1": {
-		"en": 	"Requried entitlement is not set:"
+		"en": 	"Required entitlement is not set:"
 	},
 	"fw_error_entitlement_unset_2": {
 		"en":	"You do not qualify to request certificates at this time. Please ask an IT-administrator at your institution to resolve this issue. <br />"

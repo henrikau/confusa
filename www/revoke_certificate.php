@@ -38,53 +38,6 @@ class CP_RevokeCertificate extends Content_Page
 			}
 		}
 
-		if(isset($_GET['revoke'])) {
-			switch($_GET['revoke']) {
-
-				/* the revoke single is done via a GET
-				 * request. This is to allow for dedicated urls
-				 * for revocation to be used. */
-			case 'revoke_single':
-				$order_number	= Input::sanitizeCertKey($_GET['order_number']);
-				/* sanitized by checking inclusion in the REVOCATION_REASONS
-				 * array
-				 */
-				if (!array_key_exists('reason', $_GET)) {
-					Framework::error_output($this->translateMessageTag('rev_err_singlenoreason'));
-					return;
-				}
-				$reason		= Input::sanitizeText(trim($_GET['reason']));
-				try {
-					if (!isset($order_number) || !isset($reason)) {
-						Framework::error_output("Revoke Certificate: Errors with parameters, not set properly");
-					} elseif (!$this->checkRevocationPermissions($order_number)) {
-						Framework::error_output($this->translateMessageTag('rev_err_singlenoperm'));
-					} elseif (!$this->ca->revokeCert($order_number, $reason)) {
-						Framework::error_output($this->translateMessageTag('rev_err_notyet1') .
-						                        htmlentities($order_number) .
-						                        $this->translateMessageTag('rev_err_notyet2') .
-						                        htmlentities($reason));
-					} else {
-						Framework::message_output($this->translateMessageTag('rev_suc_single1') .
-						                          htmlentities($order_number) .
-						                          $this->translateMessageTag('rev_suc_single2'));
-
-						if (Config::get_config('ca_mode') === CA_COMODO &&
-						    Config::get_config('capi_test') === true) {
-								Framework::message_output($this->translateTag('l10n_msg_revsim1', 'revocation'));
-						}
-					}
-				} catch (ConfusaGenException $cge) {
-					Framework::error_output($this->translateMessageTag('rev_err_singleunspec')
-											. " " . htmlentities($cge->getMessage()));
-				}
-				break;
-			default:
-				Framework::error_output("Unknown operation received in parameter!");
-				break;
-			}
-		}
-
 		if (isset($_POST['revoke_operation'])) {
 			$reason = null;
 			if (array_key_exists('reason', $_POST)) {
@@ -551,79 +504,6 @@ class CP_RevokeCertificate extends Content_Page
 			$this->tpl->assign('selected', 'unspecified');
 		}
 	}
-
-	/**
-	 * Check if the person that called "revoke" on auth_key may revoke the respective
-	 * certificate.
-	 *
-	 * NREN-Admin: Is the certificate issued to one of the subscribers in the
-	 * 			constituency of the NREN?
-	 * Subscriber-Admin: Is the certificate issued to the organization of the admin?
-	 * "Normal" Person: Is the certificate issued to the person herself?
-	 *
-	 * @param $auth_key mixed The auth_key for which to check
-	 * @return boolean true, if revocation of the passed key is permitted
-	 */
-	private function checkRevocationPermissions($auth_key)
-	{
-		try {
-			$info = $this->ca->getCertInformation($auth_key);
-
-			if (is_null($info)) {
-				Framework::error_output("Certificate with the given auth_key/order-number " .
-					"not found! Maybe you misspelled the order-number or auth_key?");
-				return false;
-			}
-
-			/**
-			 * Check if the NREN admin may revoke the certificate. That holds only
-			 * if the organization name in the certificate matches one of the institutions
-			 * in the constituency of the NREN
-			 */
-			if ($this->person->isNRENAdmin()) {
-				$subscribers = $this->getNRENSubscribers($this->person->getNREN());
-
-				foreach ($subscribers as $subscriber) {
-					if ($subscriber->getOrgName() === $info['organization']) {
-						return true;
-					}
-				}
-			/** check if the subscriber admin may revoke the certificate.
-			 * She may do so only if the organization name in the certificate matches
-			 * her own organization
-			 */
-			} else if ($this->person->isSubscriberAdmin() || $this->person->isSubscriberSubAdmin()) {
-				$subscriber = $this->person->getSubscriber()->getOrgName();
-
-				if ($subscriber === $info['organization']) {
-					return true;
-				}
-			/*
-			 * Check if an individual user may revoke a certificate. That holds only
-			 * if the CN of the certificate matches the (constructed) CN of the user and
-			 * the organization the subscriber-organization of the user
-			 *
-			 * */
-			} else {
-				$cn = $this->person->getX509ValidCN();
-				$subscriber = $this->person->getSubscriber()->getOrgName();
-
-				if ((stripslashes($info['cert_owner']) === stripslashes($cn)) &&
-				   ($info['organization'] === $subscriber)) {
-					return true;
-				}
-			}
-
-		} catch (ConfusaGenException $cge) {
-			Framework::error_output("Retrieving certificate information failed: " .
-							htmlentities($cge->getMessage()));
-			Logger::log_event(LOG_INFO, "[nadm][sadm][norm] Revoking certificate " .
-				"with key $auth_key failed, because permissions could not be " .
-				"determined!");
-		}
-
-		return false;
-	} /* end checkRevocationPermissions */
 }
 
 $fw = new Framework(new CP_RevokeCertificate());

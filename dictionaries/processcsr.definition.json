@@ -66,10 +66,13 @@
 		"en":	"registered addresses."
 	},
 	"l10n_infotext_email3": {
-		"en":	"With the current settings, you can choose freely how many of your registered addressed you want in the certificate. Note, if you uncheck <b>all</b>, no address will be added to the certificate. This is most likely <b>not</b> what you want."
+		"en":	"With the current settings, you can choose freely how many of your registered addresses you want in the certificate. Note, if you uncheck <b>all</b>, no address will be added to the certificate. This is most likely <b>not</b> what you want."
 	},
 	"l10n_infotext_email4": {
 		"en":	"With the current settings, you can choose <b>one</b> of your registered addresses you want in the certificate. Please select which of the available addresses to include in the certificate."
+	},
+	"l10n_infotext_email5": {
+		"en":	"With the current settigns, you can choose one or more of your registered addresses for inclusion in the certificate. Note that you must pick at least <b>one</b> address."
 	},
 	"l10n_legend_uploadnewcsr": {
 		"en":	"Upload new CSR"
@@ -84,7 +87,7 @@
 		"en":	"You have several different ways of creating the certificate, ranging from a complete in-browser experience to different ways of uploading an existing CSR."
 	},
 	"l10n_infotext_csroverview3": {
-		"en":	"If you are unsure about what an CSR is, you probably want the in-browser approach."
+		"en":	"If you are unsure about what a CSR is, you probably want the in-browser approach."
 	},
 	"l10n_tab_browsergen": {
 		"en":	"Browser generation"
@@ -286,5 +289,11 @@
 	},
 	"l10n_err_noca": {
 		"en":	"No available CA, cannot contine signing the CSR."
+	},
+	"l10n_msg_skipemail": {
+		"en":	"Skipped e-mail selection step (only 1 address present or none required)."
+	},
+	"l10n_err_emailmissing": {
+		"en":	"Need at least one e-mail address, you didn't choose any! Please go back and choose at least one e-mail adress."
 	}
 }

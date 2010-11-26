@@ -215,7 +215,8 @@ class Certificate extends CryptoElement
 	public function getFingerprint()
 	{
 		/* prints out the digest of the DER encoded version of the whole certificate (see digest options). */
-		return chunk_split(strtoupper(sha1($this->getDERContent())), 2, ":");
+		$str = chunk_split(strtoupper(sha1($this->getDERContent())), 2, ":");
+		return substr($str, 0, strlen($str) - 1);
 	}
 
 

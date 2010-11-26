@@ -367,6 +367,14 @@ class Person{
 	    CS::setSessionKey('CertEmails', $emails);
     }
 
+    /**
+     * Delete the e-mails registered for a user from the sesssion information
+     */
+    public function clearRegCertEmails()
+    {
+        CS::deleteSessionKey('CertEmails');
+    }
+
     private function retrieveRegCertEmails()
     {
 	    $em = CS::getSessionKey('CertEmails');

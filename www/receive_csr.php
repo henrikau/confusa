@@ -28,13 +28,29 @@ final class CP_Receive_CSR extends Content_Page
 		if (isset($_POST['deleteCSR'])) {
 			$authToken = Input::sanitizeCertKey($_POST['deleteCSR']);
 			CSR::deleteFromDB($person, $authToken);
+			return;
 		}
 
 		$this->tpl->assign('extraScripts', array('js/jquery-1.4.1.min.js'));
 		$this->tpl->assign('rawScript', file_get_contents('../include/rawToggleExpand.js'));
 
-		if (isset($_POST['subjAltName_email']) &&
-		    is_array($_POST['subjAltName_email'])) {
+		$emailsDesiredByNREN = $this->person->getNREN()->getEnableEmail();
+		$registeredPersonMails = $this->person->getNumEmails();
+
+		/** e-mail selection was skipped */
+		if (isset($_GET['skipped_email']) && $_GET['skipped_email'] == 'yes') {
+
+			$this->tpl->assign('skippedEmail', true);
+
+			if (($emailsDesiredByNREN == '1' || $emailsDesiredByNREN == 'm')
+				&& $registeredPersonMails == 1) {
+
+				$this->tpl->assign('skippedEmail', true);
+				$this->person->regCertEmail($this->person->getEmail());
+				$this->person->storeRegCertEmails();
+			}
+		} else if (isset($_POST['subjAltName_email']) &&
+			is_array($_POST['subjAltName_email'])) {
 
 			foreach($_POST['subjAltName_email'] as $key => $value) {
 				Logger::logEvent(LOG_INFO, "CP_Select_Email", "pre_process()",
@@ -47,12 +63,36 @@ final class CP_Receive_CSR extends Content_Page
 		}
 	}
 
+	/**
+	 * Display CSR generation choices. Fail if user has not accepted AUP
+	 * or number of registered e-mail addresses does not match the number
+	 * mandated by the NREN.
+	 * @see Content_Page::process()
+	 */
 	function process()
 	{
 		if (CS::getSessionKey('hasAcceptedAUP') !== true) {
 			Framework::error_output($this->translateTag("l10n_err_aupagreement",
 				"processcsr"));
 			return;
+		}
+
+		$numberRequiredEmails = $this->person->getNREN()->getEnableEmail();
+
+		switch($numberRequiredEmails) {
+		case 'n':
+		case '0':
+			break;
+		case '1':
+		case 'm':
+			$numberEmails = count($this->person->getRegCertEmails());
+			if ($numberEmails < 1) {
+				Framework::error_output($this->translateTag('l10n_err_emailmissing', 'processcsr'));
+				$this->tpl->assign('disable_next_button', true);
+			}
+			break;
+		default:
+			break;
 		}
 
 		if (isset($_GET['show'])) {
