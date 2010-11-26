@@ -80,6 +80,9 @@ final class CP_Receive_CSR extends Content_Page
 		$numberRequiredEmails = $this->person->getNREN()->getEnableEmail();
 
 		switch($numberRequiredEmails) {
+		case 'n':
+		case '0':
+			break;
 		case '1':
 		case 'm':
 			$numberEmails = count($this->person->getRegCertEmails());
@@ -87,6 +90,8 @@ final class CP_Receive_CSR extends Content_Page
 				Framework::error_output($this->translateTag('l10n_err_emailmissing', 'processcsr'));
 				$this->tpl->assign('disable_next_button', true);
 			}
+			break;
+		default:
 			break;
 		}
 
