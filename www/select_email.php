@@ -37,9 +37,12 @@ final class CP_Select_Email extends Content_Page
 		$emailsDesiredByNREN = $this->person->getNREN()->getEnableEmail();
 		$registeredPersonMails = $this->person->getNumEmails();
 
+		$redirect = "receive_csr.php" . "?skipped_email=yes";
+		$redirect .= "&anticsrf=" . Framework::getAntiCSRF();
+
 		switch($emailsDesiredByNREN) {
 		case '0':
-			header("Location: receive_csr.php");
+			header("Location: $redirect");
 			exit(0);
 			break;
 		case '1':
@@ -48,7 +51,7 @@ final class CP_Select_Email extends Content_Page
 				$this->person->regCertEmail($this->person->getEmail());
 				$this->person->storeRegCertEmails();
 
-				header("Location: receive_csr.php");
+				header("Location: $redirect");
 				exit(0);
 			}
 			break;

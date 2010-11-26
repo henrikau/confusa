@@ -28,16 +28,29 @@ final class CP_Receive_CSR extends Content_Page
 		if (isset($_POST['deleteCSR'])) {
 			$authToken = Input::sanitizeCertKey($_POST['deleteCSR']);
 			CSR::deleteFromDB($person, $authToken);
+			return;
 		}
-
-		$emailsDesiredByNREN = $this->person->getNREN()->getEnableEmail();
-		$registeredPersonMails = $this->person->getNumEmails();
 
 		$this->tpl->assign('extraScripts', array('js/jquery-1.4.1.min.js'));
 		$this->tpl->assign('rawScript', file_get_contents('../include/rawToggleExpand.js'));
 
-		if (isset($_POST['subjAltName_email']) &&
-		    is_array($_POST['subjAltName_email'])) {
+		$emailsDesiredByNREN = $this->person->getNREN()->getEnableEmail();
+		$registeredPersonMails = $this->person->getNumEmails();
+
+		/** e-mail selection was skipped */
+		if (isset($_GET['skipped_email']) && $_GET['skipped_email'] == 'yes') {
+
+			$this->tpl->assign('skippedEmail', true);
+
+			if (($emailsDesiredByNREN == '1' || $emailsDesiredByNREN == 'm')
+				&& $registeredPersonMails == 1) {
+
+				$this->tpl->assign('skippedEmail', true);
+				$this->person->regCertEmail($this->person->getEmail());
+				$this->person->storeRegCertEmails();
+			}
+		} else if (isset($_POST['subjAltName_email']) &&
+			is_array($_POST['subjAltName_email'])) {
 
 			foreach($_POST['subjAltName_email'] as $key => $value) {
 				Logger::logEvent(LOG_INFO, "CP_Select_Email", "pre_process()",
@@ -46,16 +59,6 @@ final class CP_Receive_CSR extends Content_Page
 				$this->person->regCertEmail(Input::sanitizeText($value));
 			}
 
-			$this->person->storeRegCertEmails();
-
-		} else if ($emailsDesiredByNREN == '0') {
-			$this->tpl->assign('skippedEmail', true);
-
-		} else if (($emailsDesiredByNREN == '1' || $emailsDesiredByNREN == 'm')
-			&& $registeredPersonMails == 1) {
-
-			$this->tpl->assign('skippedEmail', true);
-			$this->person->regCertEmail($this->person->getEmail());
 			$this->person->storeRegCertEmails();
 		}
 	}
