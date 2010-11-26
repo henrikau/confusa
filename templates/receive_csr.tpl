@@ -51,6 +51,15 @@
 <fieldset>
 
 {if isset($browser_csr)}
+
+{literal}
+<script type="text/javascript">
+	function mayProceed() {
+		return true;
+	}
+</script>
+{/literal}
+
 <legend>{$l10n_legend_browsercsr}</legend>
 <div class="spacer"></div>
 <div id="info_view">
@@ -73,9 +82,25 @@
 	    <div style="margin-bottom: 1em"><!-- XHTML strict won't allow inputs just within forms -->
 	      <input type="hidden" name="uploadedCSR" value="uploadedCSR" />
 	      <input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
-	      <input type="file" name="user_csr" />
+	      <input id="fileUploader" type="file" name="user_csr" />
 	      {$panticsrf}
 	    </div>
+
+	{literal}
+	<script type="text/javascript">
+		function mayProceed() {
+			return $("form input[type=file]").val();
+		}
+
+		$('#fileUploader').change(function() {
+			if (mayProceed()) {
+				$('#nextButton').attr("disabled", false);
+			} else {
+				$('#nextButton').attr("disabled", true);
+			}
+		});
+	</script>
+	{/literal}
 {/if}
 
 {*
@@ -95,7 +120,7 @@
       <table>
 	<tr>
 	  <td colspan="2">
-	    <textarea name="user_csr" rows="20" cols="70"></textarea><br />
+	    <textarea id="csrBox" name="user_csr" rows="20" cols="70"></textarea><br />
 	  </td>
 	</tr>
 	<tr>
@@ -103,6 +128,22 @@
 	  <td></td>
 	</tr>
     </table>
+
+	{literal}
+	<script type="text/javascript">
+		function mayProceed() {
+			return $("textarea#csrBox").val();
+		}
+
+		$('#csrBox').change(function() {
+			if (mayProceed()) {
+				$('#nextButton').attr("disabled", false);
+			} else {
+				$('#nextButton').attr("disabled", true);
+			}
+		});
+	</script>
+	{/literal}
 {/if}
 
 </fieldset>
@@ -111,6 +152,14 @@
 		<input id="nextButton" type="submit" {if isset($disable_next_button)}disabled=disabled{/if} class="nav" title="{$l10n_button_next}" value="{$l10n_button_next} >" />
 </div>
 </form>
+
+{literal}
+<script type="text/javascript">
+	if (!mayProceed()) {
+		$('#nextButton').attr("disabled", true);
+	}
+</script>
+{/literal}
 
 <div style="float: right;" class="nav">
 <form action="confirm_aup.php?{$ganticsrf}" method="get">
