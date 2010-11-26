@@ -104,7 +104,7 @@ function createAdminPerson()
 	try {
 		$cert_res = MDB2Wrapper::execute("SELECT * FROM robot_certs WHERE fingerprint = ?",
 						 array('text'),
-						 array($fingerprint));
+						 array(trim($fingerprint)));
 	} catch (DBStatementException $dbse) {
 		Logger::log_event(LOG_NOTICE, "[RI] ($log_error_code) (line: ".__LINE__.
 				  ")Error with syntax for robot_certs-query.("
