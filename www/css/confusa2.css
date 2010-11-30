@@ -58,6 +58,23 @@ a:hover {
           text-decoration: underline;
 }
 
+input.countrylist {
+	background-color: white;
+	border: 0;
+	color: #942039;
+	font-size: medium;
+	cursor: pointer;
+}
+
+input.countrylist:hover {
+	color: #000;
+	border-bottom: 1px solid black;
+}
+
+#nren_sel_textual li {
+	margin-bottom: 1em;
+}
+
 img.url {
             border: none;
 }
