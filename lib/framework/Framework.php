@@ -176,6 +176,14 @@ class Framework {
 						$msg .= "<a href=\"$url\">$url</a></li>\n</ul><br />\n";
 					}
 					Framework::error_output($msg);
+				} else {
+					$entitlement = Config::get_config('entitlement_namespace') . ":";
+					$entitlement = Config::get_config('entitlement_user');
+					$msg = $this->contentPage->translateMessageTag('fw_error_entitlement_unset_1');
+					$msg .= "<br /><i>$entitlement</i><br /><br />";
+					$msg .= $this->contentPage->translateMessageTag('fw_error_entitlement_unset_6');
+
+					Framework::warning_output($msg);
 				}
 			}
 		} else {

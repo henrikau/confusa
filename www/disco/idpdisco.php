@@ -32,7 +32,7 @@ class IdPDisco
 	private $translator;
 
 	/* GET parameter used in simplesamlphp to scope the list of IdPs */
-	private $SCOPE_PARAM = "&IDPList[]=";
+	private $SCOPE_PARAM = "IDPList[]";
 	/* GET parameter used in simplesamlphp to skip disco entirely and proceed to
 	 * the passed IdP. Good to have if there is only *one* for a country */
 	private $IDP_PARAM = "&idpentityid=";
@@ -162,13 +162,23 @@ class IdPDisco
 		}
 
 		foreach ($idpList as $country => $nrenIdPScopes) {
+
 			if (count($nrenIdPScopes) > 1) {
-				$nrenIdPScopes = $scopeParam . implode($scopeParam,
-				                                       $nrenIdPScopes);
+
+				$this->tpl->assign("scopeMethod_$country", "post");
+				$this->tpl->assign("scopeKey_$country", $this->SCOPE_PARAM);
+				$this->tpl->assign("scopedIdPs_$country", $nrenIdPScopes);
+
 			} else if (count($nrenIdPScopes) == 1) {
-				$nrenIdPScopes = $idpParam . $nrenIdPScopes[0];
+
+				$this->tpl->assign("scopeMethod_$country", "get");
+				$this->tpl->assign("scopeKey_$country", $this->IDP_PARAM);
+				$this->tpl->assign("scopedIdPs_$country", $nrenIdPScopes[0]);
+
 			} else {
+
 				continue;
+
 			}
 
 			/* update the value in the list */
