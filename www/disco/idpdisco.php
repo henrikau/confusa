@@ -108,11 +108,11 @@ class IdPDisco
 					  " disco-selection will probably fail..");
 			break;
 		case 1:
-			$queryString = $this->SCOPE_PARAM . $scopedIDPList[0];
+			$queryString = "&" . $this->SCOPE_PARAM . $scopedIDPList[0];
 			break;
 		default:
 			foreach($scopedIDPList as $key => $idp) {
-				$queryString .= $this->SCOPE_PARAM . $idp;
+				$queryString .= "&" . $this->SCOPE_PARAM . $idp;
 			}
 			break;
 		}
