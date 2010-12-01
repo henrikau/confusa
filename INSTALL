@@ -110,24 +110,25 @@ To install Confusa
    Confusa uses simpleSAMLphp to handle AuthN, and thus, you should
    configure simpleSAMLphp before venturing on.
 
-   http://rnd.feide.no/view/simplesamlphpdocs
+   http://simplesamlphp.org/docs
 
    Contains excellent guides on how to configure simpelSAMLphp, and is
    *required* reading.
 
-   Until IdP discovery will be implemented in simplesamlphp's SAML2
-   module, the IdP must be hardcoded in the configuration. E.g. add/edit
+   If you want to use Confusa's IdP-discovery functionality, you must
+   configure Confusa's IdP-disco implementation  E.g. add/edit
    the following line to <simplesamlphp-dir>/config/authsources.php:
 
-   'saml2' => array(
-            'saml2:SP',
-            'idp' => 'https://exampleidp.example.com',
-	    /* fill in other values found via the documentation */
-	    ),
+   'default-sp' => array(
+                         'saml:SP',
+                         'discoURL' => 'https://beta.confusa.org/confusa/disco/idpdisco.php',
+                         /* fill in other values found via the documentation */
+    ),
 
-    Bear in mind that the IdP with which you wish to establish the above
-    trust relationship needs to accept the metadata of the saml2 module
-    on your side, not only your standard metadata.
+    If you are using Confusa 0.7 and the associated IdP-disco and want to use
+    simplesamlphp 1.6, you *need to* apply the patch included in the
+    simplesamlphp16 directory in Confusa to simplesamlphp. The README in the
+    same directory explains the reasons.
 
 
 6) Install and configure Confusa
