@@ -152,7 +152,7 @@ class Robot
 						echo htmlentities($kre->getMessage()) . "<br />\n";
 					}
 				} /* end foreach() uid-list */
-				$revokedUsers[] = array('uid' => $uid, 'count' => $count);
+				$revokedUsers[] = array('eppn' => $uid, 'count' => $count);
 			}
 		} /* end foreach() */
 
