@@ -1,0 +1,15 @@
+Index: IdPDisco.php
+===================================================================
+--- IdPDisco.php	(revision 2657)
++++ IdPDisco.php	(working copy)
+@@ -139,8 +139,8 @@
+ 			$this->setIdPentityID = NULL;
+ 		}
+ 
+-		if (array_key_exists('IDPList', $_GET)) {
+-			$this->scopedIDPList = $_GET['IDPList'];
++		if (array_key_exists('IDPList', $_REQUEST)) {
++			$this->scopedIDPList = $_REQUEST['IDPList'];
+ 		}
+ 
+ 	}
