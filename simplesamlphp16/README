@@ -1,0 +1,10 @@
+===== READ IF YOU ARE USING SIMPLESAMLPHP 1.6.x =====
+
+If you want to use the IdP discovery functionality in Confusa v0.7 along with
+simplesamlphp 1.6, it is *necessary* to apply the patch in this directory
+on simplesamlphp.
+
+This is because Confusa v0.7 and later, for practical reasons, uses POST to
+transfer the scoped IdP list to simplesamlphp's IdP discovery module.
+As this is supported only with simplesamlphp 1.7 and later, older versions
+need to be patched.
