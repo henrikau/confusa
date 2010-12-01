@@ -272,7 +272,7 @@ function printXMLRes($resArray, $type = 'userList')
 	if (isset($resArray) && is_array($resArray) && count($resArray) > 0) {
 		foreach($resArray as $value) {
 			$le = $element->addChild('listElement');
-			$le->addAttribute('uid', htmlentities($value['eppn']));
+			$le->addAttribute('uid', htmlentities($value['uid']));
 			if (isset($value['count'])) {
 				$le->addAttribute('count', $value['count']);
 			}
