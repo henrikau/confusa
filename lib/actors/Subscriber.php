@@ -151,7 +151,7 @@ class Subscriber
 	 */
 	public function getOrgName()
 	{
-		$res = $this->org_name;
+		$res = stripslashes($this->org_name);
 		/**
 		 * set the test prefix, if confusa is in 'capi_test' mode
 		 */
@@ -168,7 +168,7 @@ class Subscriber
 			if ($org_name === $this->org_name) {
 				return false;
 			}
-			$this->org_name = Input::sanitizeText($org_name);
+			$this->org_name = mysql_real_escape_string($org_name);
 			return true;
 		}
 		return false;
