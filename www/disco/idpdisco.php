@@ -33,9 +33,6 @@ class IdPDisco
 
 	/* POST parameter used in simplesamlphp to scope the list of IdPs */
 	private $SCOPE_PARAM = "IDPList[]";
-	/* GET parameter used in simplesamlphp to skip disco entirely and proceed to
-	 * the passed IdP. Good to have if there is only *one* for a country */
-	private $IDP_PARAM = "&idpentityid=";
 
 	function __construct()
 	{
@@ -150,7 +147,6 @@ class IdPDisco
 		if (count($res) > 0) {
 			$idpList	= array();
 			$scopeParam	= htmlentities($this->SCOPE_PARAM);
-			$idpParam	= htmlentities($this->IDP_PARAM);
 
 			foreach ($res as $row) {
 				$country = strtolower($row['country']);
