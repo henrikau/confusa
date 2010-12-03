@@ -5,7 +5,23 @@
 <div class="spacer"></div>
 <div>
 <p class="info">
-  {$l10n_infotext_email1} {$person->getNumEmails()|escape} {$l10n_infotext_email2}
+
+{if $email_status == 1}
+  {$l10n_infotext_onemail}
+{else}
+  {$l10n_infotext_nmails}
+{/if}
+
+  {$l10n_infotext_email1}  {$person->getNumEmails()|escape}
+
+{if $person->getNumEmails() == 1}
+  {$l10n_infotext_email_rec1}
+{else}
+  {$l10n_infotext_email_recn}
+{/if}
+
+{$l10n_infotext_email2}
+
 </p>
 {if $email_status == "n" || $email_status == "m"}
 <p class="info">
