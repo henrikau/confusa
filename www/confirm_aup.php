@@ -30,12 +30,7 @@ final class CP_Confirm_AUP extends Content_Page
 			($_POST['aup_box']) == "user_agreed")) {
 			CS::setSessionKey('hasAcceptedAUP', true);
 
-			if ($this->person->getNREN()->getEnableEmail() == "0") {
-				header("Location: receive_csr.php");
-			} else {
-				/* redirect user further to the actual request process */
-				header("Location: select_email.php");
-			}
+			header("Location: select_email.php");
 		}
 	}
 

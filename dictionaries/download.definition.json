@@ -118,5 +118,8 @@
 	},
 	"l10n_err_retrieval_fail": {
 		"en":	"Retrieving certificate information failed:"
+	},
+	"l10n_hint_install_cert": {
+		"en":	"Please install your new certificate."
 	}
 }

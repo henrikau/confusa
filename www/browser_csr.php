@@ -35,9 +35,13 @@ final class CP_Browser_CSR extends Content_Page
 				/* assign the order_number again */
 				$this->tpl->assign('order_number', $order_number);
 				$this->tpl->assign('status_poll', true);
-				$this->tpl->assign('ganticsrf', "anticsrf=".Input::sanitizeAntiCSRFToken($_GET['anticsrf']));
+
+				$anticsrf = "anticsrf=".Input::sanitizeAntiCSRFToken($_GET['anticsrf']);
+
+				$this->tpl->assign('ganticsrf', $anticsrf);
 				if ($this->ca->pollCertStatus($order_number)) {
 					/* redirect to certificate download area */
+					CS::setSessionKey("browserCert", $order_number);
 					header("Location: download_certificate.php");
 				}
 		}

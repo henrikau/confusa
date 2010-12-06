@@ -59,20 +59,35 @@
 	"l10n_button_uploadcsr": {
 		"en":	"Upload CSR"
 	},
+	"l10n_infotext_onemail": {
+		"en":	"Each certificate contains exactly one e-mail address."
+	},
+	"l10n_infotext_nmails": {
+		"en":	"Each certificate contains zero or more e-mail addresses."
+	},
+	"l10n_infotext_mmails": {
+		"en":	"Each certificate contains at least one e-mail address."
+	},
 	"l10n_infotext_email1": {
-		"en":	"Each certificate can contain zero, one or more of your email-addresses depending on how the portal has been configured. We have registered that you have"
+		"en":	"We have received"
+	},
+	"l10n_infotext_email_rec1": {
+		"en":	"address"
+	},
+	"l10n_infotext_email_recn": {
+		"en":	"addresses"
 	},
 	"l10n_infotext_email2": {
-		"en":	"registered addresses."
+		"en":	"from your identity provider."
 	},
 	"l10n_infotext_email3": {
-		"en":	"With the current settings, you can choose freely how many of your registered addresses you want in the certificate. Note, if you uncheck <b>all</b>, no address will be added to the certificate. This is most likely <b>not</b> what you want."
+		"en":	"You can choose freely how many of your registered addresses you want in the certificate. Note, if you uncheck <b>all</b>, no address will be added to the certificate. This is most likely <b>not</b> what you want."
 	},
 	"l10n_infotext_email4": {
-		"en":	"With the current settings, you can choose <b>one</b> of your registered addresses you want in the certificate. Please select which of the available addresses to include in the certificate."
+		"en":	"You can choose <b>one</b> of your registered addresses you want in the certificate. Please select which of the available addresses to include in the certificate."
 	},
 	"l10n_infotext_email5": {
-		"en":	"With the current settigns, you can choose one or more of your registered addresses for inclusion in the certificate. Note that you must pick at least <b>one</b> address."
+		"en":	"You can choose one or more of your registered addresses for inclusion in the certificate. Note that you must pick at least <b>one</b> address."
 	},
 	"l10n_legend_uploadnewcsr": {
 		"en":	"Upload new CSR"

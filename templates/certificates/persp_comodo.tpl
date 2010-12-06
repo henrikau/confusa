@@ -47,6 +47,22 @@
 		  {else}
 		  {* valid certificate, show with normal graphics etc *}
 
+		{if isset($newBrowserCert) && $newBrowserCert == $cert.order_number}
+		<td>
+			{* Only show install link for new browser certs to avoid user-confusion *}
+			<a href="download_certificate.php?install_cert={$cert.order_number}&amp;{$ganticsrf}">
+				<img src="graphics/database_add.png"
+					alt="{$l10n_title_install_ks|escape}"
+					title="{$l10n_title_install_ks|escape}"
+					class="url" />
+					{$l10n_item_install_ks|escape}
+			</a>
+		</td>
+		<td id="installHint" style="background-color: white; border: 1pt solid #942039; padding: 5px">
+			{$l10n_hint_install_cert}
+		</td>
+
+		{else}
 		<td>
 		  <!-- Send via email -->
 		  <a href="download_certificate.php?email_cert={$cert.order_number}&amp;{$ganticsrf}">
@@ -143,6 +159,8 @@
 		    </div>
 		    <br />
 		</td>
+
+		{/if}
 		</tr>
 	{/foreach}{* each certificate in list *}
 </table>

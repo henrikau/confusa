@@ -31,11 +31,8 @@ class IdPDisco
 	private $discoPath;
 	private $translator;
 
-	/* GET parameter used in simplesamlphp to scope the list of IdPs */
+	/* POST parameter used in simplesamlphp to scope the list of IdPs */
 	private $SCOPE_PARAM = "IDPList[]";
-	/* GET parameter used in simplesamlphp to skip disco entirely and proceed to
-	 * the passed IdP. Good to have if there is only *one* for a country */
-	private $IDP_PARAM = "&idpentityid=";
 
 	function __construct()
 	{
@@ -108,11 +105,11 @@ class IdPDisco
 					  " disco-selection will probably fail..");
 			break;
 		case 1:
-			$queryString = $this->SCOPE_PARAM . $scopedIDPList[0];
+			$queryString = "&" . $this->SCOPE_PARAM . "=" . $scopedIDPList[0];
 			break;
 		default:
 			foreach($scopedIDPList as $key => $idp) {
-				$queryString .= $this->SCOPE_PARAM . $idp;
+				$queryString .= "&" . $this->SCOPE_PARAM . "=" . $idp;
 			}
 			break;
 		}
@@ -150,7 +147,6 @@ class IdPDisco
 		if (count($res) > 0) {
 			$idpList	= array();
 			$scopeParam	= htmlentities($this->SCOPE_PARAM);
-			$idpParam	= htmlentities($this->IDP_PARAM);
 
 			foreach ($res as $row) {
 				$country = strtolower($row['country']);
@@ -163,17 +159,12 @@ class IdPDisco
 
 		foreach ($idpList as $country => $nrenIdPScopes) {
 
-			if (count($nrenIdPScopes) > 1) {
+			if (count($nrenIdPScopes) >= 1) {
 
 				$this->tpl->assign("scopeMethod_$country", "post");
 				$this->tpl->assign("scopeKey_$country", $this->SCOPE_PARAM);
 				$this->tpl->assign("scopedIdPs_$country", $nrenIdPScopes);
 
-			} else if (count($nrenIdPScopes) == 1) {
-
-				$this->tpl->assign("scopeMethod_$country", "get");
-				$this->tpl->assign("scopeKey_$country", $this->IDP_PARAM);
-				$this->tpl->assign("scopedIdPs_$country", $nrenIdPScopes[0]);
 
 			} else {
 

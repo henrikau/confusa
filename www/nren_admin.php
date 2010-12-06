@@ -59,7 +59,12 @@ class CP_NREN_Admin extends Content_Page
 			}
 
 			if (isset($_POST['dn_name'])) {
-				$dn_name = Input::sanitizeOrgName($_POST['dn_name']);
+				/* personal certificates may have UTF-8 chars in the DN */
+				if (Config::get_config('cert_product') == PRD_PERSONAL) {
+					$dn_name = mysql_real_escape_string($_POST['dn_name']);
+				} else {
+					$dn_name = Input::sanitizeOrgName($_POST['dn_name']);
+				}
 
 				/* warn user if characters got sanitized away */
 				if ($dn_name != $_POST['dn_name']) {
@@ -231,7 +236,7 @@ class CP_NREN_Admin extends Content_Page
 				$subscriber->setHelpEmail($subscr_help_email);
 				if ($subscriber->create()) {
 					Framework::success_output($this->translateTag('l10n_suc_addsubs1', 'nrenadmin') .
-					                          " " . htmlentities($dn_name) . " " .
+					                          " " . htmlentities($dn_name, ENT_COMPAT, "UTF-8") . " " .
 					                          $this->translateTag('l10n_suc_addsubs2', 'nrenadmin'));
 				}
 
