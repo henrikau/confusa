@@ -129,6 +129,14 @@ final class CP_DownloadCertificate extends Content_Page
 			                   ConfusaConstants::$CAPI_PERSONAL_ROOT_CERT);
 		}
 
+		/* coming from browser signing - hint the user to install the cert */
+		$browserCertOrderNumber = CS::getSessionKey("browserCert");
+
+		if (isset($browserCertOrderNumber)) {
+			CS::deleteSessionKey('browserCert');
+			$this->tpl->assign('newBrowserCert', $browserCertOrderNumber);
+		}
+
 		$this->tpl->assign('permission', $this->person->mayRequestCertificate());
 		$this->tpl->assign('standalone', (Config::get_config('ca_mode') === CA_STANDALONE));
 		$this->tpl->assign('content', $this->tpl->fetch('download_certificate.tpl'));
