@@ -45,7 +45,6 @@ final class CP_Receive_CSR extends Content_Page
 			if (($emailsDesiredByNREN == '1' || $emailsDesiredByNREN == 'm')
 				&& $registeredPersonMails == 1) {
 
-				$this->tpl->assign('skippedEmail', true);
 				$this->person->regCertEmail($this->person->getEmail());
 				$this->person->storeRegCertEmails();
 			}
