@@ -42,9 +42,9 @@ class CA_Comodo extends CA
 		}
 
 		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
-			$this->dcs[] = "tcs";
-			$this->dcs[] = "terena";
 			$this->dcs[] = "org";
+			$this->dcs[] = "terena";
+			$this->dcs[] = "tcs";
 		}
     }
 
