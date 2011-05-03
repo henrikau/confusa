@@ -700,7 +700,7 @@ class CA_Comodo extends CA
 				break;
 			default:
 				$msg = $this->capiErrorMessage($error_parts[0], $error_parts[1]);
-				Logger::log_event(LOG_ERROR, "Revocation of certificate with " .
+				Logger::log_event(LOG_ERR, "Revocation of certificate with " .
 				 "order_number $key failed! User contacted us from " .
 				 $_SERVER['REMOTE_ADDR']);
 				throw new CGE_ComodoAPIException("Received error message $data. $msg");
