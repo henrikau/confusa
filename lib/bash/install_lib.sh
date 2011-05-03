@@ -157,7 +157,7 @@ function copy_new_config_flags
 function write_cron_jobs
 {
 	install_path=$1
-	cron_file="/etc/cron.d/confusa.cron"
+	cron_file="/etc/cron.d/confusa"
 
 	# Get absolute path to the config file
 	conf_dir=`dirname $config`
