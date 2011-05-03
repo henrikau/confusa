@@ -169,8 +169,8 @@ function write_cron_jobs
 		return
 	fi
 
-	cronline1="*/10  *    *    *  *       ${install_path}/programs/clean_db.sh ${cnf_file}"
-	cronline2="0     */2  *    *  *   ${install_path}/programs/db_backup.sh ${cnf_file}"
+	cronline1="*/10  *    *    *  *   root   ${install_path}/programs/clean_db.sh ${cnf_file}"
+	cronline2="0     */2  *    *  *   root   ${install_path}/programs/db_backup.sh ${cnf_file}"
 
 	if [ -f $cron_file ]; then
 		get_user_alternative "Cron file ${cron_file} already exists. Overwrite (y/n)?"
