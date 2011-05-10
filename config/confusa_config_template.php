@@ -212,7 +212,7 @@ $confusa_config = array(
 	'auth_bypass'		=> false,
 
 	/* Which default ID to use when we are in bypass mode.
-	 * See lib/auth/bypass.php for the different IDs
+	 * See modules/auth/Confusa_Auth_Bypass.php for the different IDs
 	 */
 	'bypass_id'		=> 0,
 
