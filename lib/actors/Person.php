@@ -388,24 +388,6 @@ class Person{
     }
 
     /**
-     * getSubscriberIdPName() Return the name we use as key in the database.
-     *
-     * @param void
-     * @return String the name of the subscriber used as key in the database.
-     * @deprecated
-     */
-    public function getSubscriberIdPName()
-    {
-	    if (Config::get_config('debug')) {
-		    echo __CLASS__ . "::" . __FUNCTION__ . " " . __FILE__ .":".__LINE__.
-			    " <font color=\"red\"><b>Deprecated</b></font>".
-			    "Use getSubscriber->getIdPName() instead.<br />\n";
-	    }
-	    Logger::log_event(LOG_DEBUG, __CLASS__ . ":" . __FUNCTION__ . " deprecated");
-	    return $this->subscriber->getIdPName();
-    }
-
-    /**
      * setEntitlement() store the entitlement
      *
      * The entitlement is set by the IdP for the user, and we use this to test
