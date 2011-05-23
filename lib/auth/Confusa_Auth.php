@@ -104,8 +104,7 @@ abstract class Confusa_Auth
 
 			/* Now that we have the NREN-map, reiterate getMap() in
 			 * case we can find the subscriber-map. */
-			$subscriberIdPName = Input::sanitizeIdPName($attributes[$map['epodn']][0]);
-			$this->person->setSubscriber(new Subscriber($subscriberIdPName,
+			$this->person->setSubscriber(new Subscriber($attributes[$map['epodn']][0],
 								    $this->person->getNREN()));
 			$new_map = $this->person->getMap();
 			if ($this->mapSanityCheck($new_map)) {

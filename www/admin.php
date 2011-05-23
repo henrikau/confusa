@@ -263,7 +263,7 @@ class CP_Admin extends Content_Page
 				foreach ($res as $key => $val) {
 					$msg .= "<li>" . htmlentities($val['admin']) . " in NREN: " .
 					        htmlentities($this->person->getNREN()->getName()) . " for subscriber " .
-					        htmlentities($this->person->getSubscriber()->getIdPName()) . "</li>\n";
+					        $this->person->getSubscriber()->getIdPName() . "</li>\n";
 				}
 				$msg .= "</ul>\n";
 				Framework::error_output($msg);

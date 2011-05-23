@@ -286,25 +286,15 @@ abstract class CA
 			$dn .= "/C=" . $this->person->getNREN()->getCountry();
 		}
 
-		if (Config::get_config('cert_product') == PRD_PERSONAL) {
-
-			if (isset($subscriber)) {
-				$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
-			}
-
-			$dn .= "/CN=" . stripslashes($this->person->getX509ValidCN());
-			$dn .= "/unstructuredName=" . $this->person->getEPPN();
-		} else { /* eScience */
-
-			if (isset($subscriber)) {
-				$dn .= "/O=" . Output::mapUTF8ToASCII($this->person->getSubscriber()->getOrgName());
-			}
-
-			$dn .= "/CN=" . stripslashes($this->person->getX509ValidCN());
+		if (isset($subscriber)) {
+			$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
 		}
-
+		$dn .= "/CN=" . stripslashes($this->person->getX509ValidCN());
+		if (Config::get_config('cert_product') == PRD_PERSONAL) {
+			$dn .= "/unstructuredName=" . $this->person->getEPPN();
+		}
 		return $dn;
-  }
+  } /* end getFulLDN */
 
 	/**
 	 * Return the DN of the person, but in a more "browser-friendly" format,
@@ -323,15 +313,11 @@ abstract class CA
 
 		$dn .= "C=" . $this->person->getNREN()->getCountry() . ", ";
 
+		$dn .= "O=" . $this->person->getSubscriber()->getOrgName() . ", ";
+		$dn .= "CN=" . stripslashes($this->person->getX509ValidCN());
 		if (Config::get_config('cert_product') == PRD_PERSONAL) {
-			$dn .= "O=" . $this->person->getSubscriber()->getOrgName() . ", ";
-			$dn .= "CN=" . stripslashes($this->person->getX509ValidCN());
 			$dn .= "/unstructuredName=" . $this->person->getEPPN();
-		} else { /* eScience */
-			$dn .= "O=" . Output::mapUTF8ToASCII($this->person->getSubscriber()->getOrgName()) . ", ";
-			$dn .= "CN=" . stripslashes($this->person->getX509ValidCN());
 		}
-
 		return $dn;
 	}
 
