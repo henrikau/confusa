@@ -54,21 +54,19 @@ class Subscriber
 		}
 
 		/* ugly hack to circumvent the missing constructor overloading of PHP5 */
+		$this->nren = $nren; /* NREN-object */
+		$this->idp_name = Input::sanitizeIdPName($idp_name);
 		if (isset($dn_name) && isset($org_state)) {
-			$this->nren = $nren;
-			$this->idp_name = $idp_name;
-			$this->org_name = $dn_name;
-			$this->state = $org_state;
-			$this->db_id = $db_id;
+			$this->setOrgName($dn_name);
+			$this->setState($org_state);
+			$this->setDBID($db_id);
 		} else {
-			$this->nren	= $nren;
-			$this->idp_name = trim($idp_name);
 			$this->valid	= $this->updateFromDB();
 			if ($this->valid) {
 				$this->retrieveMap();
 			}
 		}
-	}
+	} /* end __construct() */
 
 	/**
 	 * toString() Return a plain textlist (html-formatted) of a subscriber
@@ -168,7 +166,11 @@ class Subscriber
 			if ($org_name === $this->org_name) {
 				return false;
 			}
-			$this->org_name = mysql_real_escape_string($org_name);
+			If (Config::get_config('cert_product') == PRD_ESCIENCE) {
+				$this->org_name = Input::sanitizeOrgName($org_name);
+			} else {
+				$this->org_name = mysql_real_escape_string($org_name);
+			}
 			return true;
 		}
 		return false;

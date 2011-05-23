@@ -177,7 +177,7 @@ class CP_RevokeCertificate extends Content_Page
 				}
 			}
 			if (!is_null($subscriber) && $subscriber instanceof Subscriber) {
-				$this->tpl->assign('active_subscriber', htmlentities($subscriber->getOrgName()));
+				$this->tpl->assign('active_subscriber', $subscriber->getOrgName());
 			}
 			if (! is_null($subscribers)) {
 				$this->tpl->assign('subscribers', $subscribers);
@@ -187,7 +187,7 @@ class CP_RevokeCertificate extends Content_Page
 		} else {
 			/* not specified any subscriber, use user's subscriber */
 			$subscriber = $this->person->getSubscriber()->getOrgName();
-			$this->tpl->assign('active_subscriber', $this->person->getSubscriber()->getOrgName());
+			$this->tpl->assign('active_subscriber', $subscriber);
 		}
 
 
