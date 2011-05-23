@@ -419,7 +419,7 @@ class NREN
 	{
 		if (!is_null($url)) {
 			if ($this->data['url'] != $url) {
-				$this->data['url'] = $url;
+				$this->data['url'] = Input::sanitizeURL($url);
 				$this->pendingChanges = true;
 			}
 		}
@@ -441,7 +441,7 @@ class NREN
 	{
 		if (!is_null($contact_email)) {
 			if ($this->data['contact_email'] != $contact_email) {
-				$this->data['contact_email'] = $contact_email;
+				$this->data['contact_email'] = Input::sanitizeEmail($contact_email);
 				$this->pendingChanges = true;
 			}
 		}
@@ -457,7 +457,7 @@ class NREN
 	{
 		if (!is_null($contact_phone)) {
 			if ($this->data['contact_phone'] != $contact_phone) {
-				$this->data['contact_phone'] = $contact_phone;
+				$this->data['contact_phone'] = Input::sanitizePhone($contact_phone);
 				$this->pendingChanges = true;
 			}
 		}
@@ -474,7 +474,7 @@ class NREN
 	{
 		if (!is_null($cert_email)) {
 			if ($this->data['cert_email'] != $cert_email) {
-				$this->data['cert_email'] = $cert_email;
+				$this->data['cert_email'] = Input::sanitizeEmail($cert_email);
 				$this->pendingChanges = true;
 			}
 		}
