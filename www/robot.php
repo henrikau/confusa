@@ -254,7 +254,7 @@ class CP_Robot_Interface extends Content_Page
 					$log_msg   .= " It should be " . $this->person->getSubscriber()->getOrgName();
 					$log_msg   .= ", but is NULL. Please update the database.";
 				} else {
-					$error_msg .= "For some reason, the subscriber (".htmlentities($this->person->getSubscriber()->getOrgName()).") ";
+					$error_msg .= "For some reason, the subscriber (".$this->person->getSubscriber()->getOrgName().") ";
 					$error_msg .= "is not properly configured in the database. ";
 					$error_msg .= "The exact reason is unknown. Please contact operational support.";
 
