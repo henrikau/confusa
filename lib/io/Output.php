@@ -14,7 +14,7 @@ class Output
 		$map = ConfusaConstants::$UTF8_ASCII_MAP;
 		$asciiString = str_replace(array_keys($map), array_values($map), $inputStr);
 		/* remove the rest of the ACSII characters the "hard way" */
-		$asciiString = preg_replace("/[^a-z0-9_.@ \d]/i", "", $asciiString);
+		$asciiString = preg_replace("/[^a-z0-9_.@\-,\.\s \d]/i", "", $asciiString);
 		return $asciiString;
 
 	}
