@@ -386,27 +386,6 @@ class Person{
 		    }
 	    }
     }
-    /**
-     * getSubscriberOrgName() The name of the person's subscriber organization name.
-     *
-     * This is a name of the home-institution, e.g. 'ntnu',  'uio'.
-     *
-     * @return String The subscriber's name.
-     * @deprecated
-     */
-    public function getSubscriberOrgName()
-    {
-	    if (Config::get_config('debug')) {
-		    echo __CLASS__ . "::" . __FUNCTION__ . " " . __FILE__ .
-			    ":".__LINE__. " <font color=\"red\"><b>Deprecated</b></font> ".
-			    "use getSubscriber()->getOrgName() instead<br />\n";
-	    }
-	    Logger::log_event(LOG_DEBUG, __CLASS__ . ":" . __FUNCTION__ . " deprecated");
-	    if (isset($this->subscriber)) {
-		    return $this->subscriber->getOrgName();
-	    }
-	    return "";
-    }
 
     /**
      * getSubscriberIdPName() Return the name we use as key in the database.
