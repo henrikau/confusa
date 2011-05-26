@@ -57,7 +57,7 @@ class Input
 	 */
 	static function sanitizeAntiCSRFToken($token)
 	{
-		return preg_replace('/[^0-9]+[:][^a-f0-9]/i', '', $token);
+		return preg_replace('/[^0-9]+[:][^a-f0-9]+/i', '', $token);
 	}
 
 	/**
@@ -104,8 +104,8 @@ class Input
 	/**
 	 * Sanitize an e-mail address. No validation, just dropping unwanted
 	 * characters.
-	 * @param $input string the unsanitized e-mail address
-	 * @return string the sanitized e-mail address
+	 * @param String $input the unsanitized e-mail address(es)
+	 * @return String|Array the sanitized e-mail address(es)
 	 */
 	static function sanitizeEmail($input)
 	{
@@ -174,7 +174,6 @@ class Input
 	{
 		$output = preg_replace('|[^\:/\.a-z0-9\-\?&%\=~_]|i', '', $input);
 		$output = preg_replace('|\://[/]*|i', '://', $output);
-		/* strip excessive //'s*/
 		$pos = strpos($output, "://");
 		if ($pos > 0) {
 			$pos += strlen("://");
@@ -269,8 +268,7 @@ class Input
 	 */
 	static function sanitizeNumeric($input)
 	{
-		$output = preg_replace('/[^0-9]/', '', $input);
-		return $output;
+		return filter_var((int)$input, FILTER_SANITIZE_NUMBER_INT);
 	}
 
 	/**
