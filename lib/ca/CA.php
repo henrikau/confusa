@@ -289,7 +289,7 @@ abstract class CA
 		if (isset($subscriber)) {
 			$dn .= "/O=" . $this->person->getSubscriber()->getOrgName();
 		}
-		$dn .= "/CN=" . stripslashes($this->person->getX509ValidCN());
+		$dn .= "/CN=" . $this->person->getX509ValidCN();
 		if (Config::get_config('cert_product') == PRD_PERSONAL) {
 			$dn .= "/unstructuredName=" . $this->person->getEPPN();
 		}
