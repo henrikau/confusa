@@ -42,9 +42,9 @@ class CA_Comodo extends CA
 		}
 
 		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
-			$this->dcs[] = "tcs";
-			$this->dcs[] = "terena";
 			$this->dcs[] = "org";
+			$this->dcs[] = "terena";
+			$this->dcs[] = "tcs";
 		}
     }
 
@@ -1060,9 +1060,14 @@ class CA_Comodo extends CA
         $postfields_sign_req["subject_countryName_".$pf_counter++] =
 		$this->person->getNREN()->getCountry();
 
-		foreach($this->dcs as $dc) {
-			$postfields_sign_req["subject_domainComponent_".$pf_counter++] = $dc;
-		}
+	foreach(array_reverse($this->dcs) as $dc) {
+		if ($dc == ConfusaConstants::$CAPI_TEST_DC_PREFIX)
+			continue;
+		$postfields_sign_req["subject_domainComponent_".$pf_counter++] = $dc;
+	}
+	if (Config::get_config('capi_test') == true) {
+		$postfields_sign_req["subject_domainComponent_".$pf_counter++] = ConfusaConstants::$CAPI_TEST_DC_PREFIX;
+	}
 
 	$data = CurlWrapper::curlContact($sign_endpoint, "post", $postfields_sign_req);
 
