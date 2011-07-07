@@ -1,4 +1,24 @@
 #!/bin/bash
+# base library for working with the confusa-config with bash libraries.
+# (c) 2009-2011 Henrik Austad <henrik@austad.us>
+# (c) 2009-2011 Thomas Zangerl <tzangerl@pdc.kth.se>
+#
+# This file is free software and adheres to the GPL license as the rest
+# of Confusa. Please see LICENSE and COPYING for additional information
+
+if [ -f "../config/confusa_config.php" ]; then
+    config_dir="../config"
+elif [ -f "/etc/confusa/confusa_config.php" ]; then
+    config_dir="/etc/confusa"
+else
+    echo "Confusa config file not found! Looked in"
+    echo "../config/confusa_config.php and in"
+    echo "/etc/confusa/confusa_config.php. Please create a config"
+    echo "file, e.g. from the template or using the Installer before"
+    echo "invoking this bootstrap script!"
+    exit 64
+fi
+config=${config_dir}/confusa_config.php
 
 # get_config_entry
 #
@@ -19,19 +39,6 @@
 #		fi
 function get_config_entry ()
 {
-	if [ -f "../config/confusa_config.php" ]; then
-		config_dir="../config"
-	elif [ -f "/etc/confusa/confusa_config.php" ]; then
-		config_dir="/etc/confusa"
-	else
-		echo "Confusa config file not found! Looked in"
-		echo "../config/confusa_config.php and in"
-		echo "/etc/confusa/confusa_config.php. Please create a config"
-		echo "file, e.g. from the template or using the Installer before"
-		echo "invoking this bootstrap script!"
-		exit 64
-	fi
-	config=${config_dir}/confusa_config.php
 	res=`grep "$1'[^]]" ${config} | grep ">" | cut -d '=' -f 2 | cut -d "'" -f 2`
 	if [ "$res" == "" ]; then
 	    echo "did not find key $1" >&2
