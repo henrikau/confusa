@@ -58,6 +58,21 @@ function _get_config_entry
     return 0
 }
 
+# get_config_array
+#
+# Get a config-value stored as an array.
+#
+#The result will be returned as a comma-separated list, where each
+#element is either a a value or a key => value pair. No attempt to
+#detect this is performed, this is left as an exercise for the caller.
+function get_config_array
+{
+    if [ -z $1 ]; then
+	return;
+    fi
+    grep "$1" $config | cut -d "(" -f 2 | cut -d ")" -f 1
+}
+
 # replace_config_entry
 #
 # Take the supplied key and value and use the template to verify it's
