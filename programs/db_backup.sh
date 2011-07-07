@@ -1,56 +1,54 @@
 #!/bin/bash
-# Not verified!
-#
 # Script for dumping the content of database to file
 #
 # Author: Henrik Austad <henrik.austad@uninett.no>
 
 if [ ! `whoami` == "root" ]; then
     echo "Should be root"
-fi
-if [ ! $# -eq 1 ]; then
-    echo "Errors in parameters, need exactly 1, $# given"
-    usage
+    exit
 fi
 
-if [ ! -f $1 ]; then
-    echo "config-file does not exist"
-    usage
+# set root to current dir
+base=`dirname $0`
+pushd $base >/dev/null
+
+# Include libraries
+if [ -z ../lib/bash/config_lib.sh ]; then
+    echo "Cannot find config-library. Aborting."
+    exit 127
 fi
-configfile=$1
+. ../lib/bash/config_lib.sh
 
 # find database to do backup from
-database=`grep "mysql_db" $configfile | cut -d '=' -f 2\
-    | cut -d "'" -f 2`
-if [ -z "$database" ]; then
-    echo "Cannot find configured database in confusa_config. Aborting"
+if ! database=`get_config_entry "mysql_db"`; then
+    echo "Could not retreive name of database from config, aborting" > /dev/stderr
     exit
 fi
 
 # find backupdir
-backupdir=`grep "mysql_backup_dir" $configfile | cut -d '=' -f 2\
-    | cut -d "'" -f 2`"/"
-if [ -z "$backupdir" ]; then
+if ! backupdir=`get_config_entry "mysql_backup_dir"`; then
     echo "Need a backupdir. Please set mysql_backup_dir in confusa_config.php"
     echo "Aborting"
     exit
 fi
 
-
-# test for debian-sys-maint
 file=/root/mysql_root.pw
-if [ ! -f $file ]; then
-    echo "$file not set. Aborting"
-    exit
+if [ -f "/root/mysql_root.pw" ]; then
+    pw=`cat /root/mysql_root.pw`
+    res=`mysqldump -uroot -p$pw $database`
+elif [ -f "/etc/mysql/debian.cnf" ]; then
+    res=`mysqldump --defaults-file=/etc/mysql/debian.cnf -t $database`
 fi
-pw=`cat /root/mysql_root.pw`
-res=`mysqldump -uroot -p$pw $database`
+
 if [ -z "$res" ]; then
     echo "dump of database failed for some reason."
     exit
 fi
 d=`date +%F_%T`
-fname=$backupdir$database"_backup_$d"
-echo $res > $fname
-
-echo "Backup done"
+if [[ ! -d "$backupdir" ]]; then
+    echo "backupdir does not exists, creating"
+    mkdir -p $backupdir
+fi
+fname="$backupdir/$database.bak.$d.gz"
+echo $res | gzip > $fname
+echo "Backup done, saved to $fname"
