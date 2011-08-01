@@ -7,6 +7,9 @@
     <a href="stylist.php?show=text&amp;{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_appearance|escape}{$prot_r}</a>
   </li>
+  <li>
+    <a href="portal_config.php"{$prot_title}>{$prot_l}{$item_portal_config|escape}{$prot_r}</a>
+  </li>
 </ul>
 
 <h3>{$heading_nren|escape}</h3>
