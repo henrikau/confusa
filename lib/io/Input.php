@@ -404,5 +404,14 @@ class Input
 		}
 		return $returnString;
 	}
+
+
+	/**
+	 * Return either y or n (or nothing) for a new Maint-mode.
+	 */
+	static function sanitizeMaintMode($mode)
+	{
+		return preg_replace('/[^ny]/i','',$mode);
+	}
 }
 ?>
