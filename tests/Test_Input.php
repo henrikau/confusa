@@ -22,6 +22,7 @@ class Test_Input extends Test
 		$res &= $this->testNumbers();
 		$res &= $this->testOrgName();
 		$res &= $this->testACSRF();
+		$res &= $this->testMaintMode();
 		return $res;
 	}
 
@@ -158,6 +159,27 @@ class Test_Input extends Test
 		                                                != $difference) {
 			return false;
 		}
+
+		return true;
+	}
+
+	private function testMaintMode()
+	{
+		if (Input::sanitizeMaintMode('y') !== 'y')
+			return false;
+		if (Input::sanitizeMaintMode('n') !== 'n')
+			return false;
+		if (Input::sanitizeMaintMode('n') === 'y')
+			return false;
+		if (Input::sanitizeMaintMode('y') === 'n')
+			return false;
+
+		if (Input::sanitizeMaintMode('æ') !== '')
+			return false;
+		if (Input::sanitizeMaintMode('<asdfasdfasdf') !== '')
+			return false;
+		if (Input::sanitizeMaintMode('<asdfasdfasdfn') !== 'n')
+			return false;
 
 		return true;
 	}
