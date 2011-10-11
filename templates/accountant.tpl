@@ -60,6 +60,23 @@
       </tr>
 
       <tr>
+	<td></td>
+	<td>
+	    {$l10n_verify_ca_credentials}
+	</td>
+	<td></td>
+	<td>
+	  <input type="checkbox"
+		 name="verify_ca_cred"
+		 value="yes"
+		 {if isset($verify_ca) && $verify_ca == "yes"}
+		 checked
+		 {/if}
+		 />
+	</td>
+      </tr>
+
+      <tr>
 	<td><div class="spacer" ></div></td>
 	<td></td>
 	<td></td>
@@ -81,3 +98,4 @@
 </fieldset>
 
 {/if} {* if in CA-mode *}
+
