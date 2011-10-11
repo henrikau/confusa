@@ -551,6 +551,25 @@ class CA_Comodo extends CA
 		return $res;
 	} /* end getCertListForEPPN */
 
+	/**
+	 * verifyCredentials() validate username/password to Comodo
+	 *
+	 * @param String $username
+	 * @param String $password
+	 * @return Boolean true if username/password was ok
+	 */
+	function verifyCredentials($username, $password)
+	{
+		require_once "pw.php";
+		require_once "CurlWrapper.php";
+		$pf = $this->bs_pf();
+		$pf["commonName"]    = "".PW::create(32);
+		$data = CurlWrapper::curlContact(ConfusaConstants::$CAPI_LISTING_ENDPOINT, "post", $pf);
+		parse_str($data, $params);
+		if (array_key_exists('errorCode', $params) && $params['errorCode'] === "0")
+			return true;
+		return false;
+	}
     /**
      * Return true if processing of the certificate is finished and false
      * otherwise.
