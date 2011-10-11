@@ -5,7 +5,7 @@ require_once "MDB2Wrapper.php";
 
 /** NRENAccount
  *
- * This class handles the account used for communication with (for now) Comodo
+n * This class handles the account used for communication with (for now) Comodo
  *
  * It will read and write to the database, only updating values that have
  * changed, and handle new entries.
@@ -28,17 +28,18 @@ class NRENAccount
 {
 
 	private static $NRENAccount = null;
-	static function get($nren)
+	static function get($person)
 	{
-		if (is_null($nren))
+		if (is_null($person))
 			return false;
 
 		if (is_null(self::$NRENAccount))
-			self::$NRENAccount = new NRENAccount($nren);
+			self::$NRENAccount = new NRENAccount($person);
 
 		return self::$NRENAccount;
 	}
 
+	private $person;
 	private $nren;
 	private $login_name;
 	private $password;
@@ -46,15 +47,18 @@ class NRENAccount
 	private $account_id;
 	private $changed;
 
-	private function __construct($nren)
+	private function __construct($person)
 	{
-		$this->nren = $nren;
+		if (is_null($person))
+			throw new ConfusaGenException("NRENAccount need person (to find NREN)");
+
+		$this->person = $person;
+		$this->nren = $this->person->getNREN();
 		$this->changed = False;
 		if (!$this->read()) {
-			Logger::logEvent(LOG_NOTICE,
-							 "error reading account-data, probably because the NREN (" .
-							 $this->nren->getID() .
-							 ")does not have an account yet.");
+			Logger::log_event(LOG_NOTICE,
+							  "error reading account-data, probably because the NREN (" .
+							  $this->nren->getID() .") does not have an account yet.");
 		}
 	}
 
@@ -65,17 +69,20 @@ class NRENAccount
 	public function setPassword($pw)
 	{
 		if (!isset($pw) || $pw === "" || $pw === $this->password) {
-			echo __FILE__ .":".__LINE__." bail on setPassword() - not valid\n";
 			return false;
 		}
 		$this->password = $pw;
 		$this->changed = true;
+		return true;
 	}
 
-	public function getPassword()
+	public function getPassword($encode=false)
 	{
-		if(isset($this->password))
+		if(isset($this->password)) {
+			if ($encode === true)
+				return urlencode($this->password);
 			return $this->password;
+		}
 		return false;
 	}
 
@@ -84,7 +91,8 @@ class NRENAccount
 		if (!isset($login_name) || $login_name === "" || $login_name === $this->login_name)
 			return false;
 		$this->login_name = $login_name;
-		$this->changed = True;
+		$this->changed = true;
+		return true;
 	}
 
 	public function getLoginName()
@@ -99,7 +107,8 @@ class NRENAccount
 		if (!isset($ap_name) || $ap_name === "" || $ap_name === $this->ap_name)
 			return false;
 		$this->ap_name = $ap_name;
-		$this->changed = True;
+		$this->changed = true;
+		return true;
 	}
 
 	public function getAPName()
@@ -174,11 +183,12 @@ class NRENAccount
 		if (!$this->changed) {
 			return false;
 		}
-
-		if ($validate && !$this->validateCredentials()) {
+		if ($validate && !(CAHandler::getCA($this->person)->verifyCredentials($this->login_name, $this->password))) {
+			/* FIXME: l10n */
 			throw new ConfusaGenException("Invalid username/password, Comodo will not accept!");
 		}
-		/* FIXME: add data to database */
+
+		/* We create a new ivector every time we save the password */
 		$size	= mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB);
 		$iv	= mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
 		$cryptpw= base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,
@@ -186,8 +196,6 @@ class NRENAccount
 											   base64_encode($this->password),
 											   MCRYPT_MODE_CFB,
 											   $iv));
-		$iv = base64_encode($iv);
-
 		if (isset($this->account_id)) {
 			$sql    = "UPDATE account_map SET login_name=?, password=?, ivector=?, ap_name=?";
 			$sql   .= " WHERE account_map_id = ?";
@@ -223,33 +231,6 @@ class NRENAccount
 		$this->changed = false;
 		return true;
 	} /* end save() */
-
-	/**
-	 * validateNRENCredentials()
-	 *
-	 * Very simple test to see if the username and password is valid. This makes
-	 * up for a very effective screening of passwords and will also avoid bogus
-	 * username/passwords be stored in the database.
-	 *
-	 * @param String $login username
-	 * @param String @pw password
-	 * @return Boolean true if username/pw is good
-	 * @access public
-	 */
-	private function validateCredentials()
-	{
-		require_once "pw.php";
-		require_once "CurlWrapper.php";
-		$pf = array();
-		$pf["commonName"] = "".PW::create(32);
-		$pf["loginName"]      = $this->login_name;
-		$pf["loginPassword"] = $this->password;
-		$data = CurlWrapper::curlContact(ConfusaConstants::$CAPI_LISTING_ENDPOINT, "post", $pf);
-		parse_str($data, $params);
-		if (array_key_exists('errorCode', $params) && $params['errorCode'] === "0")
-			return true;
-		return false;
-	} /* end validateNRENCredentials() */
 
 }
 ?>

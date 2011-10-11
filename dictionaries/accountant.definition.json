@@ -61,5 +61,8 @@
 	},
 	"l10n_suc_addednew2": {
 		"en": "to NREN"
+	},
+	"l10n_verify_ca_credentials": {
+		"en": "Verify CA Account credentials"
 	}
 }

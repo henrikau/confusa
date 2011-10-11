@@ -10,6 +10,7 @@ require_once 'confusa_constants.php';
 require_once 'CGE_ComodoCredentialException.php';
 require_once 'CurlWrapper.php';
 require_once 'CS.php';
+require_once 'NRENAccount.php';
 
 /**
  * CA_Comodo. Comodo signing extension for CA.
@@ -19,24 +20,20 @@ require_once 'CS.php';
  *
  * PHP version 5
  * @author: Thomas Zangerl <tzangerl@pdc.kth.se>
+ * @author: Henrik Austad <henrik@austad.us>
  */
 class CA_Comodo extends CA
 {
     /* order number for communication with the remote API */
     private $order_number;
-
-    /* login-name and password for the remote-signing CA */
-    private $login_name;
-    private $login_pw;
-    /* alliance-partner name for the remote-signing CA */
-    private $ap_name;
+	private $account;
 
 
     function __construct($pers, $validityPeriod)
     {
         parent::__construct($pers, $validityPeriod);
-        $this->getAccountInformation();
 
+		$this->account = NRENAccount::get($pers);
 		if (Config::get_config('capi_test') == true) {
 			$this->dcs[] = ConfusaConstants::$CAPI_TEST_DC_PREFIX;
 		}
@@ -48,72 +45,6 @@ class CA_Comodo extends CA
 		}
     }
 
-    /**
-     * Get username and password for the remote-CA account of the
-     * (NREN of) the managed person.
-     */
-    private function getAccountInformation() {
-
-		$nren = $this->person->getNREN();
-
-		/* can only get the account if we have NREN information */
-		if (empty($nren)) {
-			return;
-		}
-
-        $login_cred_query = "SELECT a.account_login_name, a.account_password, a.account_ivector, a.ap_name " .
-              "FROM nren_account_map_view a WHERE a.nren=?";
-
-        $nren = $this->person->getNREN();
-	if (Config::get_config('debug')) {
-		Logger::log_event(LOG_INFO, __CLASS__ . "::" . __FUNCTION__ .
-				  " Getting the remote-CA login " .
-				  "credentials for NREN " .
-				  $nren
-			);
-	}
-	try {
-		$errorCode = PW::create(8);
-		$errorMsg = "[$errorCode] " . __FILE__ . ":" . __LINE__ . " ";
-
-		$res = MDB2Wrapper::execute($login_cred_query, array('text'),
-					    array($nren));
-	} catch (DBStatementException $dbse) {
-		Logger::log_event(LOG_ALERT, "$errorMsg missing columns in account_map/nren_account_map_view");
-		$errorMsg .= "<br />The table does not have all required columns. Please contact operational support.";
-		throw new CGE_ComodoCredentialException($errorMsg);
-	} catch (DBQueryException $dbqe) {
-		if (is_null($nren) || $nren =="") {
-			Logger::log_event(LOG_NOTICE, "$errorMsg - Look for subscriber-map problems.");
-			$errorMsg .= "<br />NREN-name not properly set, cannot extract account-credentials.";
-			throw new CGE_ComodoCredentialException($errorMsg);
-		} else {
-			$errorMsg .= " unknown query-inconsistency";
-			Logger::log_event(LOG_NOTICE, $errorMsg);
-			throw new CGE_ComodoCredentialException($errorMsg);
-		}
-	}
-        if (count($res) != 1) {
-            Logger::log_event(LOG_NOTICE, "Could not extract the suitable remote CA credentials for NREN $nren!");
-            throw new CGE_ComodoCredentialException("Could not extract the suitable " .
-                           "remote CA credentials for NREN " . $this->person->getNREN() . "!\n");
-        }
-
-        $this->login_name = $res[0]['account_login_name'];
-        $this->ap_name = $res[0]['ap_name'];
-
-		if (!isset($this->login_name) || !isset($this->ap_name)) {
-			return;
-		}
-
-        $encrypted_pw = base64_decode($res[0]['account_password']);
-        $ivector = base64_decode($res[0]['account_ivector']);
-        $encryption_key = Config::get_config('capi_enc_pw');
-        $this->login_pw = trim(base64_decode(mcrypt_decrypt(
-                                MCRYPT_RIJNDAEL_256, $encryption_key,
-                                $encrypted_pw, MCRYPT_MODE_CFB,
-                                $ivector)));
-    }
 	/**
 	 * Set an expiry date on the cache based on the time of the latest
 	 * certificate order. The idea is that the more recently a certificate has
@@ -550,7 +481,6 @@ class CA_Comodo extends CA
 		}
 		return $res;
 	} /* end getCertListForEPPN */
-
 	/**
 	 * verifyCredentials() validate username/password to Comodo
 	 *
@@ -570,6 +500,7 @@ class CA_Comodo extends CA
 			return true;
 		return false;
 	}
+
     /**
      * Return true if processing of the certificate is finished and false
      * otherwise.
@@ -582,10 +513,10 @@ class CA_Comodo extends CA
         $key = $this->transformToOrderNumber($key);
 
         $polling_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
-                        "?loginName=" . $this->login_name .
-                        "&loginPassword=" . $this->login_pw .
-                        "&orderNumber=" . $key .
-                        "&queryType=0";
+			"?loginName="     . $this->account->getLoginName() .
+			"&loginPassword=" . $this->account->getPassword(true) .
+			"&orderNumber="   . $key .
+			"&queryType=0";
 
 		$data = CurlWrapper::curlContact($polling_endpoint);
 
@@ -617,11 +548,11 @@ class CA_Comodo extends CA
                                       $_SERVER['REMOTE_ADDR']);
 
         $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
-                            "?loginName=" . $this->login_name .
-                            "&loginPassword=" . $this->login_pw .
-                            "&orderNumber=" . $key .
-                            "&queryType=2" .
-                            "&responseMimeType=application/x-x509-user-cert";
+			"?loginName="     . $this->account->getLoginName() .
+			"&loginPassword=" . $this->account->getPassword(true) .
+			"&orderNumber=" . $key .
+			"&queryType=2" .
+			"&responseMimeType=application/x-x509-user-cert";
 
 		$data = CurlWrapper::curlContact($collect_endpoint);
 
@@ -677,19 +608,17 @@ class CA_Comodo extends CA
                                       $_SERVER['REMOTE_ADDR']);
 
         $revoke_endpoint = ConfusaConstants::$CAPI_REVOKE_ENDPOINT;
-        $postfields_revoke = array();
-        $postfields_revoke["loginName"] = $this->login_name;
-        $postfields_revoke["loginPassword"] = $this->login_pw;
+        $postfields_revoke = $this->bs_pf();
         $postfields_revoke["revocationReason"] = $reason;
-        $postfields_revoke["orderNumber"] = $key;
-        $postfields_revoke["includeInCRL"] = 'Y';
+        $postfields_revoke["orderNumber"]      = $key;
+        $postfields_revoke["includeInCRL"]     = 'Y';
 
         /* will not revoke test certificates? */
         if (Config::get_config('capi_test')) {
-		Logger::log_event(LOG_DEBUG, "CA_C: in test-mode");
-		$postfields_revoke["test"] = 'Y';
+			Logger::log_event(LOG_DEBUG, "CA_C: in test-mode");
+			$postfields_revoke["test"] = 'Y';
         }
-	$data = CurlWrapper::curlContact($revoke_endpoint, "post", $postfields_revoke);
+		$data = CurlWrapper::curlContact($revoke_endpoint, "post", $postfields_revoke);
 
         /* try to catch all kinds of errors that can happen when connecting */
         if ($data === FALSE) {
@@ -739,10 +668,8 @@ class CA_Comodo extends CA
 		$key = $this->transformToOrderNumber($key);
 
 		$list_endpoint = ConfusaConstants::$CAPI_LISTING_ENDPOINT;
-		$postfields_list = array();
-        $postfields_list["loginName"]		= $this->login_name;
-        $postfields_list["loginPassword"]	= $this->login_pw;
-        $postfields_list["orderNumber"] = $key;
+		$postfields_list = $this->bs_pf();
+        $postfields_list["orderNumber"]		= $key;
         $data = CurlWrapper::curlContact($list_endpoint, "post", $postfields_list);
 		$params = array();
 		parse_str($data, $params);
@@ -798,31 +725,30 @@ class CA_Comodo extends CA
         switch ($browser) {
         case "msie_post_vista":
             $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
-                                   "?loginName=" . $this->login_name .
-                                "&loginPassword=" . $this->login_pw .
-                                "&orderNumber=" . $key .
-                                "&queryType=1" .
-                                "&responseType=2" . /* PKCS#7 */
-                                "&responseEncoding=2" . /* encode in Javascript */
-                                "&responseMimeType=text/javascript" .
-                                /* call that function after the JS variable-declarations */
-                                "&callbackFunctionName=installIEVistaCertificate";
-
+				"?loginName=" . $this->account->getLoginName() .
+				"&loginPassword=" . $this->account->getPassword(true) .
+				"&orderNumber=" . $key .
+				"&queryType=1" .
+				"&responseType=2" . /* PKCS#7 */
+				"&responseEncoding=2" . /* encode in Javascript */
+				"&responseMimeType=text/javascript" .
+				/* call that function after the JS variable-declarations */
+				"&callbackFunctionName=installIEVistaCertificate";
 			$data = CurlWrapper::curlContact($collect_endpoint);
             return "<script type=\"text/javascript\">$data</script>";
             break;
 
         case "msie_pre_vista":
             $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
-                                   "?loginName=" . $this->login_name .
-                                "&loginPassword=" . $this->login_pw .
-                                "&orderNumber=" . $key .
-                                "&queryType=1" .
-                                "&responseType=2" . /* PKCS#7 */
-                                "&responseEncoding=2" . /* encode in Javascript */
-                                "&responseMimeType=text/javascript" .
-                                /* call that function after the JS variable-declarations */
-                                "&callbackFunctionName=installIEXPCertificate";
+				"?loginName="     . $this->account->getLoginName() .
+				"&loginPassword=" . $this->account->getPassword(true) .
+				"&orderNumber="   . $key .
+				"&queryType=1" .
+				"&responseType=2" . /* PKCS#7 */
+				"&responseEncoding=2" . /* encode in Javascript */
+				"&responseMimeType=text/javascript" .
+				/* call that function after the JS variable-declarations */
+				"&callbackFunctionName=installIEXPCertificate";
 
 			$data = CurlWrapper::curlContact($collect_endpoint);
             return "<script type=\"text/javascript\">$data</script>";
@@ -830,12 +756,12 @@ class CA_Comodo extends CA
 
         case "chrome":
 			 $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
-                                   "?loginName=" . $this->login_name .
-                                    "&loginPassword=" . $this->login_pw .
-                                    "&orderNumber=" . $key .
-                                    "&queryType=2" .
-                                    "&responseType=3" . /* PKCS#7 */
-                                    "&responseEncoding=0"; /* encode base-64 */
+				 "?loginName="     . $this->account->getLoginName() .
+				 "&loginPassword=" . $this->account->getPassword(true) .
+				 "&orderNumber="   . $key .
+				 "&queryType=2" .
+				 "&responseType=3" . /* PKCS#7 */
+				 "&responseEncoding=0"; /* encode base-64 */
 
             $data = CurlWrapper::curlContact($collect_endpoint);
             $cert = new Certificate(trim(substr($data, 2)));
@@ -847,12 +773,12 @@ class CA_Comodo extends CA
         case "safari":
         case "opera":
             $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
-                                   "?loginName=" . $this->login_name .
-                                    "&loginPassword=" . $this->login_pw .
-                                    "&orderNumber=" . $key .
-                                    "&queryType=2" .
-                                    "&responseType=3" . /* PKCS#7 */
-                                    "&responseEncoding=0"; /* encode base-64 */
+			"?loginName="     . $this->account->getLoginName() .
+			"&loginPassword=" . $this->account->getPassword(true) .
+			"&orderNumber="   . $key .
+			"&queryType=2" .
+			"&responseType=3" . /* PKCS#7 */
+			"&responseEncoding=0"; /* encode base-64 */
 
 			$data = CurlWrapper::curlContact($collect_endpoint);
             return trim(substr($data,2));
@@ -869,16 +795,15 @@ class CA_Comodo extends CA
 		Logger::log_event(LOG_DEBUG, "Trying to get the the list of the certificates " .
 		                             "for user $eppn");
 		$list_endpoint = ConfusaConstants::$CAPI_LISTING_ENDPOINT;
-		$postfields_list["loginName"]		= $this->login_name;
-		$postfields_list["loginPassword"]	= $this->login_pw;
+		$postfields_list = $this->bs_pf();
 
 		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
 			/* be sure to match the EPPN only and not also its suffix. For
 			 * instance test@feide.no should not match confusatest@feide.no
 			 */
-			$postfields_list["commonName"] = "% " . $eppn;
+			$postfields_list["commonName"] = urlencode("% " . $eppn);
 		} else if (Config::get_config('cert_product') == PRD_PERSONAL) {
-			$postfields_list["unstructuredName"] = $eppn;
+			$postfields_list["unstructuredName"] = urlencode($eppn);
 		} else {
 			throw new ConfusaGenException("Cert-Product must be one of PRD_ESCIENCE, " .
 			                              "PRD_PERSONAL!");
@@ -921,9 +846,8 @@ class CA_Comodo extends CA
                                     "for person $common_name");
 
         $list_endpoint = ConfusaConstants::$CAPI_LISTING_ENDPOINT;
-        $postfields_list["loginName"]		= $this->login_name;
-        $postfields_list["loginPassword"]	= $this->login_pw;
-        $postfields_list["commonName"]		= $common_name;
+		$postfields_list = $this->bs_pf();
+		$postfields_list["commonName"]		= $common_name;
         $postfields_list["notBefore"]		= time() - $days*24*3600;
 
         $data = CurlWrapper::curlContact($list_endpoint, "post", $postfields_list);
@@ -961,8 +885,7 @@ class CA_Comodo extends CA
 							"for organization $organization");
 
 		$listEndpoint = ConfusaConstants::$CAPI_LISTING_ENDPOINT;
-		$postfieldsList["loginName"]		= $this->login_name;
-		$postfieldsList["loginPassword"]	= $this->login_pw;
+		$postfieldsList = $this->bs_pf();
 		$postfieldsList["organizationName"]	= $organization;
 		$postfieldsList["notBefore"] 		= time() - $days*24*3600;
 
@@ -1012,15 +935,15 @@ class CA_Comodo extends CA
 		$orgName = $this->person->getSubscriber()->getOrgName();
 
         $postfields_sign_req=array();
-	$pf_counter = 1;
+		$pf_counter = 1;
 
         /* set all the required post parameters for upload */
-        $postfields_sign_req["ap"] = $this->ap_name;
-        $postfields_sign_req[$csr_format] = $csr;
-        $postfields_sign_req["days"] = $this->validityDays;
-        $postfields_sign_req["successURL"] = "none";
-        $postfields_sign_req["errorURL"] = "none";
-        $postfields_sign_req["caCertificateId"] = $ca_cert_id;
+	$postfields_sign_req["ap"] = $this->ap_name;
+	$postfields_sign_req[$csr_format] = $csr;
+	$postfields_sign_req["days"] = $this->validityDays;
+	$postfields_sign_req["successURL"] = "none";
+	$postfields_sign_req["errorURL"] = "none";
+	$postfields_sign_req["caCertificateId"] = $ca_cert_id;
 
 	$cert_email_option = $this->person->getNREN()->getEnableEmail();
 	$rce = $this->person->getRegCertEmails();
@@ -1034,7 +957,7 @@ class CA_Comodo extends CA
 		if (!is_null($rce)) {
 			$email = $rce[0];
 			/* set the field */
-			$postfields_sign_req["subject_rfc822name_".$pf_counter++] = $email;
+			$postfields_sign_req["subject_rfc822name_".$pf_counter++] = urlencode($email);
 		} else {
 			throw new KeySignException($no_cert_error);
 		}
@@ -1053,7 +976,7 @@ class CA_Comodo extends CA
 		if (!is_null($rce)) {
 			/* set the fields */
 			foreach ($rce as $email) {
-				$postfields_sign_req["subject_rfc822name_".$pf_counter++] = $email;
+				$postfields_sign_req["subject_rfc822name_".$pf_counter++] = urlencode($email);
 			}
 		}
 		break;
@@ -1072,12 +995,12 @@ class CA_Comodo extends CA
 		/* manually compose the subject. Necessary, because we want to have
          * Terena domainComponents */
         $postfields_sign_req["subject_commonName_$pf_counter"] =
-		stripslashes($this->person->getX509ValidCN());
+			stripslashes($this->person->getX509ValidCN());
 		$pf_counter++;
 
         $postfields_sign_req["subject_organizationName_".$pf_counter++] = $orgName;
         $postfields_sign_req["subject_countryName_".$pf_counter++] =
-		$this->person->getNREN()->getCountry();
+			$this->person->getNREN()->getCountry();
 
 	foreach(array_reverse($this->dcs) as $dc) {
 		if ($dc == ConfusaConstants::$CAPI_TEST_DC_PREFIX)
@@ -1228,10 +1151,7 @@ class CA_Comodo extends CA
     private function capiAuthorizeCSR()
     {
         $authorize_endpoint = ConfusaConstants::$CAPI_AUTH_ENDPOINT;
-
-        $postfields_auth = array();
-        $postfields_auth["loginName"] = $this->login_name;
-        $postfields_auth["loginPassword"] = $this->login_pw;
+		$postfields_auth =$this->bs_pf();
         $postfields_auth["orderNumber"] = $this->order_number;
 		$data = CurlWrapper::curlContact($authorize_endpoint, "post", $postfields_auth);
 
@@ -1256,5 +1176,16 @@ class CA_Comodo extends CA
         }
 
     } /* end capiAuthorizeCSR */
+
+	/**
+	 * bs_pf() Bootstrap Postfields
+	 */
+	private function bs_pf()
+	{
+        $pf                  = array();
+        $pf["loginName"]     = $this->account->getLoginName();
+        $pf["loginPassword"] = $this->account->getPassword(true);
+		return $pf;
+	}
 } /* end class CA_Comodo */
 ?>

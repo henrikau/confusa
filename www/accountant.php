@@ -23,16 +23,9 @@ class CP_Accountant extends Content_Page
 	public function pre_process($person)
 	{
 		$res = true;
-
-		/*  we cannot call parent::pre_process here because CA
-		 *  will bomb if the account_map is not properly set. */
-		/* parent::pre_process($person); */
 		$this->setPerson($person);
-		$this->account = NRENAccount::get($this->person->getNREN());
+		$this->account = NRENAccount::get($this->person);
 
-		/*
-		 * are we going to update the account-map?
-		 */
 		/* If the caller is not a nren-admin or Confusa is not in online mode, we stop here */
 		if (!$this->person->isNRENAdmin() || Config::get_config('ca_mode') != CA_COMODO) {
 			return false;
@@ -51,19 +44,16 @@ class CP_Accountant extends Content_Page
 					$this->account->setLoginName($login_name);
 					$res = false;
 				} else {
-					Framework::error_output("The new login_name contains illegal characters, will not update!");
+					/* FIXME: l10n */
+					Framework::error_output("The new login_name contains illegal characters, dropping new login!");
 				}
 			}
 
+			/* Do not sanitize password, we should allow special characters and
+			 * stuff, we should url-encode it. If Comodo does not sanitize
+			 * their password, it's their business, not ours. */
 			if (isset($_POST['password']) && $_POST['password']!=="") {
-				$pw = $_POST['password'];
-				$password = Input::sanitizeText(htmlspecialchars($pw));
-				if ($pw === $password) {
-					$this->account->setPassword($password);
-				} else {
-					Framework::error_output("The new password contains illegal characters, ($pw - $password)");
-					$res = false;
-				}
+				$this->account->setPassword($_POST['password']);
 			}
 
 			if (isset($_POST['ap_name'])) {
@@ -72,18 +62,27 @@ class CP_Accountant extends Content_Page
 				if ($ap === $ap_name) {
 					$this->account->setAPName($ap_name);
 				} else {
-					Framework::error_output("Cleaned ap-name and it contains illegal characters!");
+					/* FIXME: l10n */
+					Framework::error_output("Cleaned ap-name and it contains illegal characters, dropping new name!");
 					$res = false;
 				}
 			}
+
 			/* should we validate? */
 			try {
-				if ($this->account->save()) {
-					Framework::success_output("Changes successfully saved!");
+				$validate=false;
+				if (isset($_POST['verify_ca_cred']) && $_POST['verify_ca_cred'] === "yes") {
+					$validate=true;
+				}
+				if ($this->account->save($validate)) {
+					/* FIXME: l10n */
+					Framework::success_output("CA Account details successfully updated!");
+				} else {
+					Framework::message_output("No changes to account-details, not updating.");
 				}
 			} catch (ConfusaGenException $cge) {
 				/* FIXME: l10n */
-				Framework::error_output("Could not update account-data, username/password did not validate with backend CA");
+				Framework::error_output("Could not update account-data: " . $cge->getMessage());
 			}
 		}
 		parent::pre_process($person);
@@ -103,7 +102,6 @@ class CP_Accountant extends Content_Page
 			return;
 
 		} else if (Config::get_config('ca_mode') != CA_COMODO) {
-
 			$errorTag = PW::create();
 			Logger::logEvent(LOG_NOTICE, "Accountant", "process()",
 			                "User " . stripslashes($this->person->getX509ValidCN()) . "tried to access the accountant, " .
@@ -120,7 +118,8 @@ class CP_Accountant extends Content_Page
 			$this->tpl->assign('login_name',
 			                   $this->translateTag('l10n_fieldval_undefined', 'accountant'));
 		} else {
-			$this->tpl->assign('login_name', $this->account->getLoginName());
+			$this->tpl->assign('login_name',
+							   $this->account->getLoginName());
 		}
 
 		if (!$this->account->getPassword()) {
@@ -129,17 +128,19 @@ class CP_Accountant extends Content_Page
 		} else {
 			$this->tpl->assign('password',
 							   $this->translateTag('l10n_label_passwhidden', 'accountant'));
-
 		}
 
 		if (!$this->account->getAPName()) {
 			$this->tpl->assign('ap_name',
 			                   $this->translateTag('l10n_fieldval_undefined', 'accountant'));
 		} else {
-			$this->tpl->assign('ap_name', $this->account->getAPName());
+			$this->tpl->assign('ap_name',
+							   $this->account->getAPName());
 		}
 
-		$this->tpl->assign('content',			$this->tpl->fetch('accountant.tpl'));
+		$this->tpl->assign('verify_ca', 'yes');
+		$this->tpl->assign('content',
+						   $this->tpl->fetch('accountant.tpl'));
 	} /* end process */
 }
 
