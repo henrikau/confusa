@@ -367,11 +367,12 @@ class Framework {
 		$this->tpl->assign('warnings', self::$warnings);
 
 		if (Config::get_config('debug')) {
-			$res .= "<address>\n";
-			$res .= "During this session, we had ";
-			$res .= MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
-			$res .= "</address>\n";
-			$this->tpl->assign('db_debug', $res);
+			$db_debug_res = "";
+			$db_debug_res .= "<address>\n";
+			$db_debug_res .= "During this session, we had ";
+			$db_debug_res .= MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
+			$db_debug_res .= "</address>\n";
+			$this->tpl->assign('db_debug', $db_debug_res);
 		}
 		$this->tpl->display('site.tpl');
 
