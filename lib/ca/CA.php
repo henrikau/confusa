@@ -134,6 +134,15 @@ abstract class CA
   abstract function getCertListForEPPN($eppn, $org);
 
   /**
+   * verifyCredentials() test to see if username/password is valid
+   *
+   * @param String $username
+   * @param String $password
+   * @return Boolean true if credentials are valid
+   */
+  abstract function verifyCredentials($username, $password);
+
+  /**
    * Send a notification upon the issuance of a new X.509 certificate, as it is
    * required in section 3.2 of the MICS-profile.
    *
@@ -320,6 +329,7 @@ abstract class CA
 		}
 		return $dn;
 	}
+
 
 } /* end class CA */
 

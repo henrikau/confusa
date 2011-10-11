@@ -182,6 +182,13 @@ class CA_Standalone extends CA
 		return getCertListForPersons($eppn, $org);
 	}
 
+	/* we do not authN users for standalone (debug only) and server handles everything.
+	 */
+	function verifyCredentials($username, $password)
+	{
+		return true;
+	}
+
     /**
      * Return true if processing of the certificate is finished and false
      * otherwise.
