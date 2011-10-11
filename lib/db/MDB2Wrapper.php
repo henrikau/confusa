@@ -61,7 +61,7 @@ class MDB2Wrapper
 	       throw new DBStatementException("query failed: "	. $stmnt->getMessage() . ".");
           }
 
-	  $res = $stmnt->execute($data);
+		  $res = $stmnt->execute($data);
           if (PEAR::isError($res)) {
 		  $errorCode = PW::create(8);
 		  $logMsg  = "[$errorCode] Query failed: " . $res->getMessage() . " - ". $res->getUserInfo();
@@ -152,9 +152,10 @@ class MDB2Wrapper
                     );
                MDB2Wrapper::$conn = MDB2::factory($dsn, $options);
                if (PEAR::isError(MDB2Wrapper::$conn)){
-                    Logger::log_event(MDB2Wrapper::$conn->getMessage());
-                    echo "Cannot connect to database: " . MDB2Wrapper::$conn->getMessge() . "<br>\n";
-                    die(MDB2Wrapper::$conn->getMessage());
+				   Logger::log_event(LOG_WARN, MDB2Wrapper::$conn->getMessage());
+				   /* FIXME l10n, better error-reporting */
+                   echo "Cannot connect to database: " . MDB2Wrapper::$conn->getMessage() . "<br>\n";
+				   die(MDB2Wrapper::$conn->getMessage());
                }
 
      } /* end create() */
