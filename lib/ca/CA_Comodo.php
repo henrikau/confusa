@@ -932,7 +932,7 @@ class CA_Comodo extends CA
 		$pf_counter = 1;
 
         /* set all the required post parameters for upload */
-	$postfields_sign_req["ap"] = $this->ap_name;
+		$postfields_sign_req["ap"] = $this->account->getAPName();
 	$postfields_sign_req[$csr_format] = $csr;
 	$postfields_sign_req["days"] = $this->validityDays;
 	$postfields_sign_req["successURL"] = "none";
