@@ -75,6 +75,7 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	 */
 	public function authenticate($authRequired)
 	{
+		session_start();
 		$this->person->setAuth(true);
 		$this->decoratePerson($this->attributes, $this->idp);
 		return $this->person->isAuth();
