@@ -159,9 +159,8 @@ class CA_Comodo extends CA
 		}
 
 		$authKey = $csr->getAuthToken();
-
-		Logger::logEvent(LOG_DEBUG, __CLASS__, "signKey()",
-		                 "Signing CSR with authKey $authKey",
+		Logger::logEvent(LOG_INFO, __CLASS__, "signKey()",
+		                 "Preparing to sign CSR ($authKey) " .$this->owner_string,
 		                 __LINE__);
 
 		/* FIXME: better solution */
@@ -186,7 +185,7 @@ class CA_Comodo extends CA
 		                         $_SERVER['REMOTE_ADDR'],
 		                         $this->person,
 		                         $this->getFullDN());
-		Logger::log_event(LOG_INFO, "Signed CSR for user with authKey $authKey");
+		Logger::log_event(LOG_INFO, "Successfully signed new certificate. ". $this->owner_string);
 		return $this->order_number;
 	} /* end signKey() */
 
@@ -542,10 +541,9 @@ class CA_Comodo extends CA
     {
         $key = $this->transformToOrderNumber($key);
 
-        Logger::log_event(LOG_NOTICE, "Trying to retrieve certificate with order number " .
-                                      $key .
-                                      " from the Comodo collect API. Sending to user with ip " .
-                                      $_SERVER['REMOTE_ADDR']);
+        Logger::log_event(LOG_DEBUG, "Trying to retrieve certificate with order number " .
+						  $key .
+						  " from the Comodo collect API. " . $this->owner_string);
 
         $collect_endpoint = ConfusaConstants::$CAPI_COLLECT_ENDPOINT .
 			"?loginName="     . $this->account->getLoginName() .
@@ -603,9 +601,7 @@ class CA_Comodo extends CA
         $return_res = NULL;
 
         Logger::log_event(LOG_NOTICE, "Revoking certificate with order number " .
-                                      $key .
-                                      " using Comodo's auto-revoke-API. Sending to user with ip " .
-                                      $_SERVER['REMOTE_ADDR']);
+						  $key ." using Comodo's auto-revoke-API. " . $this->owner_string);
 
         $revoke_endpoint = ConfusaConstants::$CAPI_REVOKE_ENDPOINT;
         $postfields_revoke = $this->bs_pf();
@@ -642,15 +638,13 @@ class CA_Comodo extends CA
 				CS::deleteSessionKey('rawCertList');
 				Logger::log_event(LOG_NOTICE, "Revoked certificate with " .
 								  "order number $key using Comodo's AutoRevoke " .
-								  "API. User contacted us from " .
-								  $_SERVER['REMOTE_ADDR']);
+								  "API. " . $this->owner_string);
 				return true;
 				break;
 			default:
 				$msg = $this->capiErrorMessage($error_parts[0], $error_parts[1]);
 				Logger::log_event(LOG_ERR, "Revocation of certificate with " .
-				 "order_number $key failed! User contacted us from " .
-				 $_SERVER['REMOTE_ADDR']);
+								  "order_number $key failed! ". $this->owner_string);
 				throw new CGE_ComodoAPIException("Received error message $data. $msg");
 				break;
 			}
@@ -1041,13 +1035,8 @@ class CA_Comodo extends CA
 
             $this->order_number = $params['orderNumber'];
 
-            Logger::log_event(LOG_INFO, "Uploaded CSR to remote CA. Received " .
-                                        "order number " .
-                                        $this->order_number .
-                                        " for user " .
-                                        stripslashes($this->person->getX509ValidCN()) .
-                                        " Person contacted us from " .
-                                        $_SERVER['REMOTE_ADDR']);
+			Logger::log_event(LOG_INFO, "Successfully uploaded CSR to remote CA, got ".
+							  $this->order_number . $this->owner_string);
 
           $sql_command= "INSERT INTO order_store(auth_key, owner, " .
                         "order_number, order_date, authorized)" .
@@ -1161,12 +1150,8 @@ class CA_Comodo extends CA
           MDB2Wrapper::update("UPDATE order_store SET authorized='authorized' WHERE order_number=?",
                               array('text'),
                               array($this->order_number));
-          Logger::log_event(LOG_NOTICE, "Authorized remote certificate for person ".
-                                        stripslashes($this->person->getX509ValidCN()).
-                                        " with order number " .
-                                        $this->order_number .
-                                        " Person contacted us from ".
-                                        $_SERVER['REMOTE_ADDR']);
+          Logger::log_event(LOG_NOTICE, "Authorized certificate with order number " .
+							$this->order_number . ". " . $this->owner_string);
         } else {
             $msg = "Received an error when authorizing the CSR with orderNumber " .
                    $this->order_number . $data . "\n";
