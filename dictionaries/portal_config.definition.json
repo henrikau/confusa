@@ -13,5 +13,17 @@
 	},
 	"l10n_nren_maint_update_msg": {
 		"en":	"Update maintenance message"
+	},
+	"l10n_nren_maint_mode_header": {
+		"en":	"Change NREN maintenance mode"
+	},
+	"l10n_nren_maint_mode_info": {
+		"en":	"Change the mode. If you turn this ON, no user for your NREN will be able to use the portal. This is a useful setting when you are configuring your NREN for the first time. However, use with caution as it will also prevent users from revoking certificates should they have such a need."
+	},
+	"l10n_nren_maint_mode_enabled": {
+		"en":	"Maintenance-mode is currently enabled, meaning users for your NREN is unable to use or view the portal."
+	},
+	"l10n_nren_maint_mode_disabled": {
+		"en":	"Maintenance-mode is currently disabled and the users for your NREN can use the portal normally (given that everything is configured properly)."
 	}
 }
