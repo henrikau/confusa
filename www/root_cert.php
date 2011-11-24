@@ -48,6 +48,10 @@ class CP_Root_Certificate extends Content_Page
 
 	function __destruct()
 	{
+		if (Config::get_config('ca_mode') == CA_COMODO) {
+			@unlink($this->cert_path);
+			@unlink($this->crl_path);
+		}
 		parent::__destruct();
 	}
 

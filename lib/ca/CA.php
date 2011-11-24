@@ -15,6 +15,7 @@ require_once 'CSR.php';
 abstract class CA
 {
   protected $person;
+  protected $owner_string;
   /* the number of days that the certificate issued by the CA will be valid */
   protected $validityDays;
   /* domain components that will be added to the certificate subjects */
@@ -36,6 +37,10 @@ abstract class CA
 		$this->validityDays = $validity;
 		$this->dcs = array();
 
+		$this->owner_string = "User: ".stripslashes($this->person->getX509ValidCN()).
+			". Subscriber: " . $this->person->getSubscriber()->getIdPName() . " (".
+			$this->person->getNREN()->getName() . ") via ".
+			$_SERVER['REMOTE_ADDR'];
     } /* end __construct */
 
   /* this function is quite critical, as it must remove residual information
