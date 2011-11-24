@@ -121,6 +121,23 @@ abstract class Content_Page
 		$this->setPerson($person);
 		$this->setCA();
 
+		/* if the nren of the useris in maint-mode, trigger a warning here */
+		if ($this->person->getNREN()->inMaintMode()) {
+			$this->tpl->assign('instance', Config::get_config('system_name'));
+			$this->tpl->assign('maint_header', $this->translateTag('l10n_nren_maint_header', 'portal_config'));
+			$this->tpl->assign('maint_msg', $this->person->getNREN()->getMaintMsg());
+			if ($this->person->isNRENAdmin()) {
+				$this->tpl->assign('mode_toggle', true);
+				$this->tpl->assign('mode_toggle_text', $this->translateTag('l10n_nren_maint_mode_text', 'portal_config'));
+				$this->tpl->assign('mode_toggle_button', $this->translateTag('l10n_nren_maint_mode_button', 'portal_config'));
+			}
+			$this->tpl->assign('maint', $this->tpl->fetch('nren_maint.tpl'));
+			$this->tpl->display('site.tpl');
+			exit(0);
+		}
+
+
+
 		/* show the available languages in the template */
 		$available_languages = Config::get_config('language.available');
 		$this->tpl->assign('available_languages',

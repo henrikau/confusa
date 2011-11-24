@@ -1,34 +1,29 @@
-<h4>{$l10n_portal_config_title}</h4>
+<h3>{$l10n_portal_config_title|escape}</h3>
+
+<p class="info">
+  {$l10n_portal_config_intro|escape}
+</p>
 
 <fieldset>
-  <legend>{$l10n_nren_maint_mode_header}</legend>
+  <legend>{$l10n_nren_maint_mode_header|escape}</legend>
   <br />
-  <p class="info">{$l10n_nren_maint_mode_info}</p>
+  <p class="info">{$l10n_nren_maint_mode_info|escape}</p>
 
   {if isset($maint_mode)}
   <p class="info">
-  {if $maint_mode}
-  {$l10n_nren_maint_mode_enabled}
-  {else}
-  {$l10n_nren_maint_mode_disabled}
-  {/if}
+    {$maint_mode_msg}
   </p>
   {/if}
 
   <form method="post" action="">
     {$panticsrf}
-    <label name="maint_mode">Enabled </label>
-    <input type="radio"
-	   name="nren_maint_mode"
-	   value="y"
-	   {if $maint_mode}checked="checked"{/if}
-	   />
-    <label name="maint_mode">Disabled </label>
-    <input type="radio"
-	   name="nren_maint_mode"
-	   value="n"
-	   {if ! $maint_mode}checked="checked"{/if}
-	   />
+    {html_radios name='nren_maint_mode'
+	         values=$maint_mode_v
+                 output=$maint_mode_t
+	         selected=$maint_mode_selected
+                 separator='<br />'}
+
+    <br />
     <input type="submit" value="update" />
   </form>
   <br />
@@ -36,13 +31,11 @@
 
 <br />
 <fieldset>
-  <legend>{$l10n_nren_maint_legend}</legend>
+  <legend>{$l10n_nren_maint_legend|escape}</legend>
   <br />
   <p class="info">
-    {$l10n_nren_maint_msg}
+    {$l10n_nren_maint_msg|escape}
   </p>
-  <hr /><br />
-  <p class="info">{$l10n_nren_maint_toggle}</p>
 
   <form method="post" action="">
     {$panticsrf}
@@ -50,7 +43,7 @@
 	      rows="15"
 	      cols="70">{if isset($nren_maint_msg)}{$nren_maint_msg|escape}{/if}</textarea>
     <br /><br />
-    <input type="submit" value="{$l10n_nren_maint_update_msg}" />
+    <input type="submit" value="{$l10n_nren_maint_update_msg|escape}" />
     <br />
   </form>
   <br />

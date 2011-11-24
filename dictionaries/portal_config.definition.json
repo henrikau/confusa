@@ -1,15 +1,15 @@
 {
 	"l10n_portal_config_title": {
-		"en":	"Portal Config!"
+		"en":	"Portal Config"
+	},
+	"l10n_portal_config_intro": {
+		"en":	"NREN specific portal configuration. What you do here will (directly) affect your users, but not users from other NRENs. Please note that these changes probably will not be affectuated until after a user has authenticated to the IdP."
 	},
 	"l10n_nren_maint_legend": {
 		"en":	"Set NREN-specific maintenance message"
 	},
 	"l10n_nren_maint_msg": {
 		"en":	"You can now configure the portal more directly. At the moment, the only option is setting it in 'Maintenance-mode' for your NREN."
-	},
-	"l10n_nren_maint_toggle": {
-		"en":	"Toggle the maintenance-mode. Check the box to set the portal in maintenance-mode for all users for this NREN. Only NREN-admins will be able to view the portal, and only this page."
 	},
 	"l10n_nren_maint_update_msg": {
 		"en":	"Update maintenance message"
@@ -25,5 +25,32 @@
 	},
 	"l10n_nren_maint_mode_disabled": {
 		"en":	"Maintenance-mode is currently disabled and the users for your NREN can use the portal normally (given that everything is configured properly)."
+	},
+	"l10n_nren_maint_msg_success": {
+		"en":	"Successfully saved new NREN maintenance message to database."
+	},
+	"l10n_nren_maint_msg_failure": {
+		"en":	"Could not save NREN maintenance message to database."
+	},
+	"l10n_nren_maint_mode_success": {
+		"en":	"Successfully placed portal in NREN-maintenance mode."
+	},
+	"l10n_nren_maint_normal_success": {
+		"en":	"Successfully placed portal in NREN-normal mode."
+	},
+	"l10n_nren_maint_mode_failure": {
+		"en":	"Could not place portal in NREN-maintenance-mode."
+	},
+	"l10n_nren_maint_normal_failure": {
+		"en":	"Could not place portal in NREN-normal mode."
+	},
+	"l10n_nren_maint_header": {
+		"en":	"Maintenance!"
+	},
+	"l10n_nren_maint_mode_text": {
+		"en":	"You are NREN-admin and therefore disable maintenance-mode."
+	},
+	"l10n_nren_maint_mode_button": {
+		"en":	"Disable maint. mode"
 	}
 }
