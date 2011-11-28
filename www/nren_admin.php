@@ -182,7 +182,7 @@ class CP_NREN_Admin extends Content_Page
 					$update |= $subscriber->setHelpEmail(	$subscr_help_email);
 					if ($update) {
 						if (!$subscriber->save(true)) {
-							Framework::error_output("Could not update Subscriber, even with changed information.");
+							Framework::error_output($this->translateTag('l10n_fail_editsubs1', 'nrenadmin'));
 						} else {
 							Framework::success_output($this->translateTag('l10n_suc_editsubs1', 'nrenadmin'));
 						}
@@ -205,6 +205,7 @@ class CP_NREN_Admin extends Content_Page
 					if ($subscriber->setState($state)) {
 						if (!$subscriber->save(true)) {
 							Framework::error_output("Could not update state of subscriber. Is the database-layer broken?");
+							Framework::error_output($this->translateTag("l10n_fail_edit_subscr_state", "nrenadmin"));
 						}
 					}
 				}

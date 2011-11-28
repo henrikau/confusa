@@ -230,6 +230,12 @@
 	"l10n_suc_editsubs1": {
 		"en":	"Subscriber successfully saved to persistent storage."
 	},
+	"l10n_fail_editsubs1": {
+		"en":	"Could not update Subscriber, even with changed information."
+	},
+	"l10n_fail_edit_subscr_state": {
+		"en":	"Could not update state of subscriber. Is the database-layer broken?"
+	},
 	"l10n_suc_deletesubs1": {
 		"en":	"Successfully deleted subscriber ("
 	},
