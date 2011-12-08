@@ -41,7 +41,7 @@ abstract class API
 		}
 
 		$this->parameters = array();
-		set_exception_handler(array("CertificateAPI", "errorUncaughtException"));
+		set_exception_handler(array("API_Certificates", "errorUncaughtException"));
 	} /* end Constructor */
 
 	/** here the actual API processing will happen */
