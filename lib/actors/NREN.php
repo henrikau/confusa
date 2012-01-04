@@ -1050,10 +1050,10 @@ class NREN
 		}
 		if (!isset($this->maint_msg)) {
 			/* log error */
-			Logger::log_event(LOG_ALERT, "Could not retrieve maint-mode msg for nren " .
-							  $this->getID() . "(".$this->getName() . ")");
-			/* throw error */
-			throw new ConfusaGenException("Could not retrieve maintenance message from the database.");
+			Logger::log_event(LOG_INFO, "Could not retrieve maint-mode msg for nren " .
+							  $this->getID() . "(".$this->getName() . "). This is probably because it is not set.");
+			/* return empty string (should be set by admin) */
+			return "";
 		}
 		return $this->maint_msg;
 	} /* end getMaintMsg() */
