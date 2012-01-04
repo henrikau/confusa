@@ -37,10 +37,13 @@ abstract class CA
 		$this->validityDays = $validity;
 		$this->dcs = array();
 
+		$this->owner_string = "User not authN, unknown user!";
+		if ($this->person->isAuth()) {
 		$this->owner_string = "User: ".stripslashes($this->person->getX509ValidCN()).
 			". Subscriber: " . $this->person->getSubscriber()->getIdPName() . " (".
 			$this->person->getNREN()->getName() . ") via ".
 			$_SERVER['REMOTE_ADDR'];
+		}
     } /* end __construct */
 
   /* this function is quite critical, as it must remove residual information
