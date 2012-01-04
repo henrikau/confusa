@@ -21,7 +21,7 @@ abstract class Test
 		$this->valid = true;
 		if (!is_dir($this->file_folder)) {
 			if (is_writable('.')) {
-				echo "Making directory\n";
+				$this->printMsg("Making directory");
 				mkdir($this->file_folder);
 			}
 		}
@@ -49,14 +49,14 @@ abstract class Test
 	{
 		$path = 'files/'.$this->name."/".$filename;
 		if (!is_file($path)) {
-			echo "[".$this->name."] Cannot open $path, test will fail\n";
+			$this->printMsg("Cannot open $path, test will fail.");
 			$this->valid = false;
 			return null;
 		}
 		try {
 			$file = file_get_contents($path, false, null, 0, filesize($path));
 			if (!$file) {
-				echo "File $path not found!\n";
+				$this->printMsg("File $path not found!");
 				$this->valid = false;
 				return null;
 			}
@@ -69,7 +69,14 @@ abstract class Test
 
 	protected function printMsg($msg)
 	{
-		echo "[" . $this->name . "] $msg\n";
+		$file = fopen("test.log", "a+");
+		if (!$file) {
+			echo "Could not open file for writing!\n";
+			return;
+		}
+		fwrite($file,"[" . $this->name . "] ".date('Y-m-d H:i:s') ." $msg\n");
+		if (!fclose($file))
+			echo "Error closing logfile!";
 	}
 	/**
 	 * runTests() run all implementationspecific tests

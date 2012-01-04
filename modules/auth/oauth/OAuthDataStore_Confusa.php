@@ -122,7 +122,7 @@ class OAuthDataStore_Confusa extends OAuthDataStore
 		if (empty($data['value']['name'])) {
 			$errorStr = "No consumer name found for consumer with key " .
 			            $consumer_key . "!";
-			Logger::logEvent(LOG_ERROR, __CLASS__, __METHOD__, $errorStr,
+			Logger::logEvent(LOG_ERR, __CLASS__, __METHOD__, $errorStr,
 			                 __LINE__);
 			throw new Exception($errorStr);
 		}
@@ -130,7 +130,7 @@ class OAuthDataStore_Confusa extends OAuthDataStore
 		if (empty($data['value']['description'])) {
 			$errorStr = "No consumer description found for consumer with key" .
 			            " $consumer_key!";
-			Logger::logEvent(LOG_ERROR, __CLASS__, __METHOD__, $errorStr,
+			Logger::logEvent(LOG_ERR, __CLASS__, __METHOD__, $errorStr,
 			                 __LINE__);
 			throw new Exception($errorStr);
 		}
@@ -138,7 +138,7 @@ class OAuthDataStore_Confusa extends OAuthDataStore
 		if (empty($data['value']['owner'])) {
 			$errorStr = "No owner found for consumer with key" .
 			            " $consumer_key!";
-			Logger::logEvent(LOG_ERROR, __CLASS__, __METHOD__, $errorStr,
+			Logger::logEvent(LOG_ERR, __CLASS__, __METHOD__, $errorStr,
 			                 __LINE__);
 			throw new Exception($errorStr);
 		}

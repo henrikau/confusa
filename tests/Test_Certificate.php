@@ -11,7 +11,7 @@ class Test_Certificate extends Test
 
 	public function runTests()
 	{
-		return true;
+		return false;
 	}
 
 }

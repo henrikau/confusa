@@ -147,6 +147,12 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- The timeout in minutes, after which Confusa will ask for reauthentication
     -- upon sensitive actions.
     reauth_timeout INT DEFAULT 10,
+
+    -- Message (and mode-switch) to allow an NREN-admin to place the
+    -- portal (for the given NREN only) in maintenance-mode.
+    maint_msg TEXT DEFAULT "",
+    maint_mode ENUM('y','n') DEFAULT 'n',
+
     FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
 ) engine=InnoDB;
 

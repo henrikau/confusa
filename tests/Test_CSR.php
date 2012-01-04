@@ -25,7 +25,7 @@ class Test_CSR extends Test
 		}
 		if (count($allcsrs) < 1) {
 			$this->printMsg("No CSRs in the database to test, test cannot continue.");
-			return true;
+			return false;
 		}
 		foreach($allcsrs as $key => $csrItem) {
 			$csr = CSR::getFromDB($csrItem['common_name'], $csrItem['auth_key']);

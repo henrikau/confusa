@@ -1,3 +1,4 @@
+
 <?php
 require_once 'Test.php';
 require_once 'CRL.php';
@@ -13,6 +14,8 @@ class Test_CRL extends Test
 		$this->crl_pem  = $this->getFile('TERENAPersonalCA.crl.pem');
 		$this->crl_der  = $this->getFile('TERENAPersonalCA.crl.der');
 		$this->crl_dump = trim($this->getFile('TERENAPersonalCA.crl.dump'), "\n");
+		if (!$this->valid)
+			return;
 		$this->crlp = new CRL($this->crl_pem);
 		$this->crld = new CRL($this->crl_der);
 	}

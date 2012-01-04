@@ -62,7 +62,13 @@ function toggleUidAttrField()
       <tr>
 	<td class="attr">{$l10n_label_attnm}</td>
 	<td>
-	  <input type="text" name="db_name" size="40" />
+	  <input type="text"
+		 name="db_name"
+		 size="40"
+		 value="{$form_data.db_name|escape}"/>
+	  {if isset($form_data.db_name_invalid)}
+	  <block class="invalid">*</block>
+	  {/if}
 	</td>
       </tr>
       {if isset($foundUniqueName)}
@@ -95,10 +101,14 @@ function toggleUidAttrField()
 	<td class="attr">/O=</td>
 
 	{if $confusa_grid_restrictions === TRUE}
-	<td><input maxlength="62" type="text" name="dn_name" size="40"/></td>
+	<td><input maxlength="62" type="text" name="dn_name" size="40" value="{$form_data.dn_name|escape}"/></td>
 	{else}
-	<td><input type="text" name="dn_name" size="40"/></td>
+	<td><input type="text" name="dn_name" size="40" value="{$form_data.dn_name|escape}"/></td>
 	{/if}
+	{if isset($form_data.dn_name_invalid)}
+	<block class="invalid">*</block>
+	{/if}
+
       </tr>
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2"><hr class="table"/><br /></td></tr>
@@ -125,7 +135,10 @@ function toggleUidAttrField()
 		 type="text"
 		 name="uid_attr"
 		 size="40"
-		 value="{$eppnAttr}" />
+		 value="{$form_data.eppnAttr|escape}" />
+	  {if isset($form_data.eppnAttr_invalid)}
+	  <block class="invalid">*</block>
+	  {/if}
 	</td>
 	</tr>
 	<tr><td>&nbsp;</td><td>
@@ -154,7 +167,15 @@ function toggleUidAttrField()
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td class="attr">{$l10n_label_contactemail}</td>
-	<td><input type="text" name="subscr_email" size="40"/></td>
+	<td><input type="text"
+		   name="subscr_email"
+		   size="40"
+		   value="{$form_data.subscr_email}"/>
+	  {if isset($form_data.subscr_email_invalid)}
+	  <block class="invalid">*</block>
+	  {/if}
+
+	  </td>
       </tr>
       <tr><td></td><td>
       <span style="font-size: 0.8em; font-style: italic">
@@ -166,7 +187,11 @@ function toggleUidAttrField()
 	<td class="attr">{$l10n_label_contactphone}</td>
 	<td><input type="text"
 		   name="subscr_phone"
-		   size="40" />
+		   size="40"
+		   value="{$form_data.subscr_phone|escape}"/>
+	  {if isset($form_data.subscr_phone_invalid)}
+	  <block class="invalid">*</block>
+	  {/if}
 	</td>
       </tr>
       <tr><td></td><td>
@@ -177,7 +202,15 @@ function toggleUidAttrField()
       </tr>
       <tr>
 	<td class="attr">{$l10n_heading_resppers}:</td>
-	<td><input type="text" name="subscr_responsible_name" size="40" /></td>
+	<td>
+	  <input type="text"
+		 name="subscr_responsible_name"
+		 size="40"
+		 value="{$form_data.subscr_responsible_name|escape}"/>
+	  {if isset($form_data.subscr_responsible_name_invalid)}
+	  <block class="invalid">*</block>
+	  {/if}
+	</td>
       </tr>
       <tr>
       <td></td>
@@ -187,7 +220,14 @@ function toggleUidAttrField()
       </tr>
       <tr>
 	<td class="attr">{$l10n_label_respemail}</td>
-	<td><input type="text" name="subscr_responsible_email" size="40" /></td>
+	<td><input type="text"
+		   name="subscr_responsible_email"
+		   size="40"
+		   value="{$form_data.subscr_responsible_email|escape}"/>
+	  {if isset($form_data.subscr_responsible_email_invalid)}
+	  <block class="invalid">*</block>
+	  {/if}
+	</td>
       </tr>
       <tr>
       <td></td><td>
@@ -215,12 +255,28 @@ function toggleUidAttrField()
       <tr><td><div class="spacer" /></td><td></td></tr>
       <tr>
 	<td class="attr">{$l10n_label_helpdeskurl}</td>
-	<td><input type="text" name="subscr_help_url" size="40"/></td>
+	<td>
+	  <input type="text"
+		 name="subscr_help_url"
+		 size="40"
+		 value="{$form_data.subscr_help_url|escape}"/>
+	  {if isset($form_data.subscr_help_url_invalid)}
+	  <block class="invalid">*</block>
+	  {/if}
+	</td>
       </tr>
       <tr><td><div class="spacer" /></td><td></td></tr>
       <tr>
 	<td class="attr">{$l10n_label_helpdeskemail}</td>
-	<td><input type="text" name="subscr_help_email" size="40" /></td>
+	<td>
+	  <input type="text"
+		 name="subscr_help_email"
+		 size="40"
+		 value="{$form_data.subscr_help_email|escape}"/>
+	  {if isset($form_data.subscr_help_email_invalid)}
+	  <block class="invalid">*</block>
+	  {/if}
+	</td>
       </tr>
 
 
@@ -242,7 +298,7 @@ function toggleUidAttrField()
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td colspan="2">
-	  <textarea name="subscr_comment" rows="10" cols="60"></textarea>
+	  <textarea name="subscr_comment" rows="10" cols="60">{$form_data.subscr_comment}</textarea>
 	  </td>
       </tr>
 

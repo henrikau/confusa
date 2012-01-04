@@ -4,7 +4,7 @@
 <head>
 	<title>IdPDisco</title>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
-	<script type="text/javascript" src="../js/jquery-1.4.1.min.js"></script>
+	<script type="text/javascript" src="../js/jquery-1.6.min.js"></script>
 	<script type="text/javascript" src="../js/jquery.maphilight.min.js"></script>
 	<link rel="stylesheet" href="../css/confusa2.css" type ="text/css" />
 </head>

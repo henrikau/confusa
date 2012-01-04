@@ -41,6 +41,9 @@ class Subscriber
 	 * __construct() create the subscriber
 	 *
 	 * @param String $idp_name The name of the subscriber returned by the IdP.
+	 * @param NREN $nren the associated NREN
+	 * @param String $dn_name The organization-name (that goes into the cert DN)
+	 * @param String $org_state
 	 * @return void
 	 */
 	function __construct($idp_name, $nren, $dn_name=null, $org_state=null, $db_id=null)

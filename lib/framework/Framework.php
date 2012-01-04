@@ -47,6 +47,7 @@ class Framework {
 	private $contentPage;
 	private $tpl;
 	private $renderError = false;
+	private static $framework;
 	private static $errors = array();
 	private static $messages = array();
 	private static $warnings = array();
@@ -66,7 +67,7 @@ class Framework {
 			echo "You do not have a valid configuration. Please edit the confusa_config.php properly first<BR>\n";
 			exit(0);
 		}
-
+		self::$framework = $this;
 		/* is the connection running over SSL? */
 		if (!(array_key_exists('HTTPS', $_SERVER) || array_key_exists('https', $_SERVER)) ||
 		    strtolower($_SERVER['HTTPS']) != "on") {
@@ -367,11 +368,12 @@ class Framework {
 		$this->tpl->assign('warnings', self::$warnings);
 
 		if (Config::get_config('debug')) {
-			$res .= "<address>\n";
-			$res .= "During this session, we had ";
-			$res .= MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
-			$res .= "</address>\n";
-			$this->tpl->assign('db_debug', $res);
+			$db_debug_res = "";
+			$db_debug_res .= "<address>\n";
+			$db_debug_res .= "During this session, we had ";
+			$db_debug_res .= MDB2Wrapper::getConnCounter() . " individual DB-connections.<br />\n";
+			$db_debug_res .= "</address>\n";
+			$this->tpl->assign('db_debug', $db_debug_res);
 		}
 		$this->tpl->display('site.tpl');
 
@@ -544,6 +546,13 @@ class Framework {
 		}
 		return $token === self::getAntiCSRF(substr($token, 0, $pos));
 	} /* end validateACSRFT() */
+
+	public static function get()
+	{
+		if (!is_null(self::$framework))
+			return self::$framework;
+		return null;
+	}
 
 } /* end class Framework */
 

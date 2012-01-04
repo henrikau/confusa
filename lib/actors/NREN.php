@@ -25,11 +25,11 @@ class NREN
 
 	private $data;
 	private $pendingChanges;
+	private $maint_msg;
 
 	function __construct($idp_name)
 	{
 		$this->data = array();
-
 		if (isset($idp_name)) {
 			$this->idp_name = Input::sanitizeText($idp_name);
 			$this->pendingChanges = false;
@@ -126,6 +126,18 @@ class NREN
 	{
 		return $this->data['nren_id'];
 	}
+
+	/**
+	 * getMaintMode()
+	 *
+	 * FIXME
+	 */
+	public function getMaintMode()
+	{
+		return Input::sanitizeMaintMode($this->data['maint_mode']);
+	}
+
+	public function inMaintMode() { return $this->getMaintMode() === "y"; }
 
 	/**
 	 * getHelp() get the help-text from the database and return.
@@ -614,6 +626,23 @@ class NREN
 	}
 
 	/**
+	 * setMaintMode() update the maintenance-mode of the portal
+	 *
+	 * @param String $mode the new mode
+	 */
+	public function setMaintMode($mode)
+	{
+		if (!isset($mode) || $this->data['maint_mode'] === $mode) {
+			return false;
+		}
+
+		unset($this->data['maint_mode']);
+		$this->data['maint_mode'] = $mode;
+		$this->pendingChanges = true;
+		return $this->saveNREN();
+	}
+
+	/**
 	 * saveNREN() Save the current NREN to the database.
 	 *
 	 * This must be done after new values has been set.
@@ -627,10 +656,10 @@ class NREN
 		if ($this->pendingChanges) {
 			$query  = "UPDATE nrens SET contact_email=?, contact_phone=?, ";
 			$query .= " cert_phone=?, cert_email=?, url=?, lang=?, enable_email=?, cert_validity=?,";
-			$query .= " show_portal_title=?, portal_title=?, wayf_url=?, reauth_timeout=? ";
+			$query .= " show_portal_title=?, portal_title=?, wayf_url=?, reauth_timeout=?, maint_mode=? ";
 			$query .= "WHERE nren_id=?";
 			$params	= array('text','text', 'text', 'text', 'text', 'text', 'text',
-			                'text', 'text', 'text', 'text', 'text');
+			                'text', 'text', 'text', 'text', 'text', 'text');
 			$data	= array($this->data['contact_email'],
 					$this->data['contact_phone'],
 					$this->data['cert_phone'],
@@ -643,32 +672,33 @@ class NREN
 					$this->data['portal_title'],
 					$this->data['wayf_url'],
 					$this->data['reauth_timeout'],
+					$this->data['maint_mode'],
 					$this->getID());
 			try {
 				MDB2Wrapper::update($query, $params, $data);
 			} catch (DBQueryException $dqe) {
-				Framework::error_output("Could not change the NREN contact! Maybe something is " .
+				Framework::error_output("Could not change NREN-information! Maybe something is " .
 							"wrong with the data that you supplied? Server said: " .
 							htmlentities($dqe->getMessage()));
 				Logger::log_event(LOG_INFO, "[nadm] Could not update " .
-						  "contact of NREN " . $this->data['name'] . ": " .
+						  "information of NREN " . $this->data['name'] . ": " .
 						  $dqe->getMessage());
 				return false;
 			} catch (DBStatementException $dse) {
-				Framework::error_output("Could not change the NREN contact! Confusa " .
+				Framework::error_output("Could not change NREN-information! Confusa " .
 							"seems to be misconfigured. Server said: " .
 							htmlentities($dse->getMessage()));
 				Logger::log_event(LOG_WARNING, "[nadm] Could not update " .
-						  "contact of NREN " . $this->data['name'] . ": " .
-						  $dse->getMessage());
-				echo $query . "<br />\n";
+						  "information of NREN " . $this->data['name'] . ": " .
+								  $dse->getMessage());
 				return false;
 			}
 
-			Logger::log_event(LOG_DEBUG, "[nadm] Updated contact for NREN " . $this->getName());
+			Logger::log_event(LOG_INFO, "[nadm] Updated NREN (".$this->getName().") information ");
 			$this->pendingChanges = false;
 			return true;
 		}
+		return false;
 	} /* end saveNREN() */
 	/**
 	 * decorateNREN() Add information about the NREN to the object.
@@ -694,8 +724,10 @@ class NREN
 	 * | contact_email | varchar(64) | NO   |     | NULL    |                |
 	 * | contact_phone | varchar(24) | NO   |     | NULL    |                |
 	 * | cert_email    | varchar(64) | YES  |     | NULL    |                |
-	 * | cert_phone    | varchar(16) | YES  |     | NULL    |                |
-	 * | enable_email  | enum('0','1','n') | YES  |     | NULL    |          |
+	 * | cert_phone    | varchar(16)       | YES  |     | NULL    |                |
+	 * | enable_email  | enum('0','1','n') | YES  |     | NULL    |                |
+	 * | maint_msg     | text              | YES  |     | NULL    |                |
+	 * | maint_mode    | enum('y','n')     | YES  |     | n       |                |
 	 * +---------------+-------------+------+-----+---------+----------------+
 	 *
 	 * We do not retrieve all fields, the large text-fields ('help' and
@@ -713,7 +745,7 @@ class NREN
 		$query  = "SELECT	n.nren_id,		n.name,		n.login_account, ";
 		$query .= "		n.contact_email,	n.contact_phone,n.cert_email, ";
 		$query .= "		n.cert_phone,		n.lang,		n.url, ";
-		$query .= "		n.country,		idp.idp_url as idp_url, ";
+		$query .= "		n.country,	n.maint_mode,	idp.idp_url as idp_url, ";
 		$query .= "		n.enable_email,	n.cert_validity, ";
 		$query .= "		n.show_portal_title, n.portal_title, n.wayf_url, n.reauth_timeout ";
 		$query .= "FROM idp_map idp LEFT JOIN ";
@@ -948,6 +980,83 @@ class NREN
 		return "No Help-text for your NREN (" .
 			$this->getName(). ") can be found in the system.";
 	} /* end getHelpText() */
+
+
+	/**
+	 * Set/update maintenance message for a given NREN.
+	 *
+	 * @param Person $person
+	 * @param String $msg the new NREN maint-mode message
+	 * @returns Boolean true if update was successful
+	 * @access public
+	 */
+	public function setMaintMsg($person, $msg)
+	{
+		if (!isset($msg)||!isset($person))
+			return false;
+
+		try {
+			MDB2Wrapper::update("UPDATE nrens SET maint_msg=?  WHERE nren_id=?",
+								array('text', 'text'),
+								array($msg, $this->getID()));
+		} catch (DBQueryException $dbqe) {
+			/* FIXME */
+			;
+		} catch (DBStatementException $dbse) {
+			/* FIXME */
+			;
+		}
+
+		unset($this->maint_msg);
+		$this->getMaintMsg();
+		if ($this->maint_msg !== $msg) {
+			Logger::log_event(LOG_ERR, "Could not save NREN-maintenance-message for $nname to DB.");
+			return false;
+		}
+		Logger::log_event(LOG_NOTICE, $person->getEPPN() . "(".
+						  $person->getName().
+						  ") updated maintenance-message for " .
+						  $this->getName());
+		return true;
+	}
+
+	/**
+	 * getMaintMsg() read the maintenance-mode message for this given NREN from DB.
+	 *
+	 * @param void
+	 * @returns String the message from the database
+	 * @throws ConfusaGenException if the message could not be retrieved from the database.
+	 */
+	public function getMaintMsg()
+	{
+		if (!is_null($this->maint_msg))
+			return $this->maint_msg;
+
+		try {
+			$res =  MDB2Wrapper::execute("SELECT maint_msg FROM nrens WHERE nren_id=?",
+						     array('text'),
+						     array($this->getID()));
+		} catch (DBQueryException $dbqe) {
+			/* FIXME */
+			;
+		} catch (DBStatementException $dbse) {
+			/* FIXME */
+			;
+		}
+		if (count($res) == 1) {
+			if (array_key_exists('maint_msg', $res[0])) {
+				$this->maint_msg = $res[0]['maint_msg'];
+			}
+		}
+		if (!isset($this->maint_msg)) {
+			/* log error */
+			Logger::log_event(LOG_ALERT, "Could not retrieve maint-mode msg for nren " .
+							  $this->getID() . "(".$this->getName() . ")");
+			/* throw error */
+			throw new ConfusaGenException("Could not retrieve maintenance message from the database.");
+		}
+		return $this->maint_msg;
+	} /* end getMaintMsg() */
 
 	/**
 	 * Get the list of IdPs stored in the DB for this NREN.

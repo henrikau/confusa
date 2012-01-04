@@ -10,12 +10,23 @@ require_once 'Input.php';
 
 class CP_NREN_Admin extends Content_Page
 {
-	private $state;
+	private $form_data;
+	private $validationErrors;
 	function __construct()
 	{
 		parent::__construct("Admin", true, "nrenadmin");
+		$this->form_data = array();
+		$this->form_data['db_name'] = "";
+		$this->form_data['dn_name'] = "";
+		$this->form_data['subscr_email'] = "";
+		$this->form_data['subscr_phone'] = "";
+		$this->form_data['subscr_responsible_name'] = "";
+		$this->form_data['subscr_responsible_email'] = "";
+		$this->form_data['subscr_comment'] = "";
+		$this->form_data['subscr_help_url'] = "";
+		$this->form_data['subscr_help_email'] = "";
+		$this->form_data['eppnAttr'] = "";
 	}
-
 
 	public function pre_process($person)
 	{
@@ -37,125 +48,129 @@ class CP_NREN_Admin extends Content_Page
 		 * display all affected fiels. Everything else is very annoying for
 		 * the user.
 		 */
-		$validationErrors = false;
+		$this->validationErrors = false;
 
 		/* handle nren-flags */
 		if (isset($_POST['subscriber'])) {
-			if (isset($_POST['id']))
+			if (isset($_POST['id'])){
 				$id	= Input::sanitizeID($_POST['id']);
-
-			if (isset($_POST['state']))
-				$state	= Input::sanitizeOrgState($_POST['state']);
-
-			if (isset($_POST['db_name'])) {
-				$db_name	= Input::sanitizeIdPName($_POST['db_name']);
-
-				if ($db_name != $_POST['db_name']) {
-					$this->displayInvalidCharError($_POST['db_name'],
-					                               $db_name,
-					                               'l10n_heading_attnm');
-					$validationErrors = true;
-				}
 			}
+			if (isset($_POST['state'])) {
+				$state	= Input::sanitizeOrgState($_POST['state']);
+			}
+			if (isset($_POST['db_name'])) {
+				$this->form_data['db_name'] = Input::sanitizeIdPName($_POST['db_name']);
+				if ($this->form_data['db_name'] != $_POST['db_name']) {
+					$this->displayInvalidCharError($_POST['db_name'],
+												   $this->form_data['db_name'],
+												   'l10n_heading_attnm');
+					$this->form_data['db_name'] = "";
+					$this->form_data['db_name_invalid'] = true;
+					$this->validationErrors = true;
+				}
+			} /* db_name */
 
 			if (isset($_POST['dn_name'])) {
 				/* personal certificates may have UTF-8 chars in the DN */
 				if (Config::get_config('cert_product') == PRD_PERSONAL) {
-					$dn_name = mysql_real_escape_string($_POST['dn_name']);
+					$this->form_data['dn_name'] = mysql_real_escape_string($_POST['dn_name']);
 				} else {
-					$dn_name = Input::sanitizeOrgName($_POST['dn_name']);
+					$this->form_data['dn_name'] = Input::sanitizeOrgName($_POST['dn_name']);
 				}
 
 				/* warn user if characters got sanitized away */
-				if ($dn_name != $_POST['dn_name']) {
+				if ($this->form_data['dn_name'] != $_POST['dn_name']) {
 					$this->displayInvalidCharError($_POST['dn_name'],
-					                               $dn_name,
+					                               $this->form_data['dn_name'],
 					                               'l10n_heading_dnoname');
-					$validationErrors = true;
+					$this->form_data['dn_name'] = "";
+					$this->form_data['dn_name_invalid'] = true;
+					$this->validationErrors = true;
 				}
-			}
+			} /* dn_name */
 
 			if(isset($_POST['subscr_email']) && $_POST['subscr_email'] != "") {
-				$subscr_email = Input::sanitizeEmail($_POST['subscr_email']);
+				$this->form_data['subscr_email'] = Input::sanitizeEmail($_POST['subscr_email']);
 
-				if ($subscr_email != $_POST['subscr_email']) {
+				if ($this->form_data['subscr_email'] != $_POST['subscr_email']) {
 					$this->displayInvalidCharError($_POST['subscr_email'],
-					                               $subscr_email,
+					                               $this->form_data['subscr_email'],
 					                               'l10n_label_contactemail');
-					$validationErrors = true;
+					$this->form_data['subscr_email'] = "";
+					$this->form_data['subscr_email_invalid'] = true;
+					$this->validationErrors = true;
 				}
-			} else {
-				$subscr_email = "";
-			}
+			} /* subscr_email */
+
 			if(isset($_POST['subscr_phone']) && $_POST['subscr_phone'] != "") {
-				$subscr_phone = Input::sanitizePhone($_POST['subscr_phone']);
-
-				if ($subscr_phone != $_POST['subscr_phone']) {
+				$this->form_data['subscr_phone'] = Input::sanitizePhone($_POST['subscr_phone']);
+				if ($this->form_data['subscr_phone'] != $_POST['subscr_phone']) {
 					$this->displayInvalidCharError($_POST['subscr_phone'],
-					                               $subscr_phone,
+					                               $this->form_data['subscr_phone'],
 					                               'l10n_label_contactphone');
-					$validationErrors = true;
+					$this->form_data['subscr_phone'] = "";
+					$this->form_data['subscr_phone_invalid'] = true;
+					$this->validationErrors = true;
 				}
-			} else {
-				$subscr_phone = "";
-			}
+			} /* subscr_phone */
+
 			if(isset($_POST['subscr_responsible_name']) && $_POST['subscr_responsible_name'] != "") {
-				$subscr_responsible_name = Input::sanitizePersonName($_POST['subscr_responsible_name']);
+				$this->form_data['subscr_responsible_name'] = Input::sanitizePersonName($_POST['subscr_responsible_name']);
 
-				if ($subscr_responsible_name != $_POST['subscr_responsible_name']) {
+				if ($this->form_data['subscr_responsible_name'] != $_POST['subscr_responsible_name']) {
 					$this->displayInvalidCharError($_POST['subscr_responsible_name'],
-					                               $subscr_responsible_name,
+					                               $this->form_data['subscr_responsible_name'],
 					                               'l10n_heading_resppers');
-					$validationErrors = true;
+					$this->form_data['subscr_responsible_name'] = "";
+					$this->form_data['subscr_responsible_name_invalid'] = true;
+					$this->validationErrors = true;
 				}
-			} else {
-				$subscr_responsible_name = "";
-			}
+			} /* subscr_responsible_name */
+
 			if(isset($_POST['subscr_responsible_email']) && $_POST['subscr_responsible_email'] != "") {
-				$subscr_responsible_email = Input::sanitizeEmail($_POST['subscr_responsible_email']);
+				$this->form_data['subscr_responsible_email'] = Input::sanitizeEmail($_POST['subscr_responsible_email']);
 
-				if ($subscr_responsible_email != $_POST['subscr_responsible_email']) {
+				if ($this->form_data['subscr_responsible_email'] != $_POST['subscr_responsible_email']) {
 					$this->displayInvalidCharError($_POST['subscr_responsible_email'],
-					                               $subscr_responsible_email,
+					                               $this->form_data['subscr_responsible_email'],
 					                               'l10n_label_respemail');
-					$validationErrors = true;
+					$this->validationErrors = true;
 				}
-			} else {
-				$subscr_responsible_email = "";
-			}
+			} /* subscr_responsible_email */
+
 			if(isset($_POST['subscr_comment']) && $_POST['subscr_comment'] != "") {
-				$subscr_comment = Input::sanitizeText($_POST['subscr_comment']);
-			} else {
-				$subscr_comment = "";
+				$this->form_data['subscr_comment'] = Input::sanitizeText($_POST['subscr_comment']);
 			}
+
 			if(isset($_POST['subscr_help_url']) && $_POST['subscr_help_url'] != "") {
-				$subscr_help_url = Input::sanitizeURL($_POST['subscr_help_url']);
+				$this->form_data['subscr_help_url'] = Input::sanitizeURL($_POST['subscr_help_url']);
 
-				if ($subscr_help_url != $_POST['subscr_help_url']) {
+				if ($this->form_data['subscr_help_url'] != $_POST['subscr_help_url']) {
 					$this->displayInvalidCharError($_POST['subscr_help_url'],
-					                               $subscr_help_url,
+					                               $this->form_data['subscr_help_url'],
 					                               'l10n_label_helpdeskurl');
-					$validationErrors = true;
+					$this->form_data['subscr_help_url'] = "";
+					$this->form_data['subscr_help_url_invalid'] = true;
+					$this->validationErrors = true;
 				}
-			} else {
-				$subscr_help_url= "";
-			}
-			if(isset($_POST['subscr_help_email']) && $_POST['subscr_help_email'] != "") {
-				$subscr_help_email = Input::sanitizeEmail($_POST['subscr_help_email']);
+			} /* subscr_help_url */
 
-				if ($subscr_help_email != $_POST['subscr_help_email']) {
+			if(isset($_POST['subscr_help_email']) && $_POST['subscr_help_email'] != "") {
+				$this->form_data['subscr_help_email'] = Input::sanitizeEmail($_POST['subscr_help_email']);
+
+				if ($this->form_data['subscr_help_email'] != $_POST['subscr_help_email']) {
+					$this->form_data['subscr_help_email'] = "";
+					$this->form_data['subscr_help_email_invalid'] = true;
 					$this->displayInvalidCharError($_POST['subscr_help_email'],
-					                               $subscr_help_email,
+					                               $this->form_data['subscr_help_email'],
 					                               'l10n_label_helpdeskemail');
-					$validationErrors = true;
+					$this->validationErrors = true;
 				}
-			} else {
-				$subscr_help_email= "";
-			}
+			} /* subscr_help_email */
 
 			/* don't continue, if data was stripped due to the field
 			 * sanitation */
-			if ($validationErrors) {
+			if ($this->validationErrors) {
 				return;
 			}
 
@@ -172,17 +187,17 @@ class CP_NREN_Admin extends Content_Page
 				}
 				if (!is_null($subscriber)) {
 					/* subscriber will clean input */
-					$update  = $subscriber->setState(	$state);
-					$update |= $subscriber->setEmail(	$subscr_email);
-					$update |= $subscriber->setPhone(	$subscr_phone);
-					$update |= $subscriber->setRespName(	$subscr_responsible_name);
-					$update |= $subscriber->setRespEmail(	$subscr_responsible_email);
-					$update |= $subscriber->setComment(		$subscr_comment);
-					$update |= $subscriber->setHelpURL(		$subscr_help_url);
-					$update |= $subscriber->setHelpEmail(	$subscr_help_email);
+					$update  = $subscriber->setState(    $state);
+					$update |= $subscriber->setEmail(    $this->form_data['subscr_email']);
+					$update |= $subscriber->setPhone(    $this->form_data['subscr_phone']);
+					$update |= $subscriber->setRespName( $this->form_data['subscr_responsible_name']);
+					$update |= $subscriber->setRespEmail($this->form_data['subscr_responsible_email']);
+					$update |= $subscriber->setComment(  $this->form_data['subscr_comment']);
+					$update |= $subscriber->setHelpURL(  $this->form_data['subscr_help_url']);
+					$update |= $subscriber->setHelpEmail($this->form_data['subscr_help_email']);
 					if ($update) {
 						if (!$subscriber->save(true)) {
-							Framework::error_output("Could not update Subscriber, even with changed information.");
+							Framework::error_output($this->translateTag('l10n_fail_editsubs1', 'nrenadmin'));
 						} else {
 							Framework::success_output($this->translateTag('l10n_suc_editsubs1', 'nrenadmin'));
 						}
@@ -205,6 +220,7 @@ class CP_NREN_Admin extends Content_Page
 					if ($subscriber->setState($state)) {
 						if (!$subscriber->save(true)) {
 							Framework::error_output("Could not update state of subscriber. Is the database-layer broken?");
+							Framework::error_output($this->translateTag("l10n_fail_edit_subscr_state", "nrenadmin"));
 						}
 					}
 				}
@@ -252,7 +268,7 @@ class CP_NREN_Admin extends Content_Page
 				$this->delSubscriber($id);
 				break;
 			}
-		}
+		} /* isset($_POST['subscriber'] */
 
 	} /* end pre_process */
 
@@ -294,9 +310,9 @@ class CP_NREN_Admin extends Content_Page
 				}
 
 				if (isset($attributes[$map['eppn']])) {
-					$this->tpl->assign('eppnAttr', $map['eppn']);
+					$this->form_data['eppnAttr'] = $map['eppn'];
 				}
-
+				$this->tpl->assign('form_data', $this->form_data);
 				$this->tpl->assign('add_subscriber', true);
 				break;
 			default:

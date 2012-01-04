@@ -59,6 +59,9 @@
 	"item_appearance": {
 		"en": "Appearance"
 	},
+	"item_portal_config": {
+		"en": "Portal Config"
+	},
 	"heading_nren": {
 		"en": "NREN"
 	},
