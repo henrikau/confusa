@@ -75,8 +75,7 @@ class CP_Portal_Config extends Content_Page
 
 	private function handleMaintText()
 	{
-		if (array_key_exists("nren_maint_msg", $_POST)
-		    && $_POST["nren_maint_msg"] !== "") {
+		if (array_key_exists("nren_maint_msg", $_POST)) {
 			if ($this->person->getNREN()->setMaintMsg($this->person, $_POST['nren_maint_msg'])) {
 				Framework::success_output($this->translateTag("l10n_nren_maint_msg_success", 'portal_config'));
 			} else {

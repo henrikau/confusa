@@ -3,7 +3,7 @@
 		"en":	"Portal Config"
 	},
 	"l10n_portal_config_intro": {
-		"en":	"NREN specific portal configuration. What you do here will (directly) affect your users, but not users from other NRENs. Please note that these changes probably will not be affectuated until after a user has authenticated to the IdP."
+		"en":	"NREN specific portal configuration. What you do here will (directly) affect your users, but not users from other NRENs. Please note that these changes probably will not be effectuated until after a user has authenticated to the IdP."
 	},
 	"l10n_nren_maint_legend": {
 		"en":	"Set NREN-specific maintenance message"
