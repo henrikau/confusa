@@ -951,7 +951,7 @@ class CA_Comodo extends CA
 		if (!is_null($rce)) {
 			$email = $rce[0];
 			/* set the field */
-			$postfields_sign_req["subject_rfc822name_".$pf_counter++] = urlencode($email);
+			$postfields_sign_req["subject_rfc822name_".$pf_counter++] = $email;
 		} else {
 			throw new KeySignException($no_cert_error);
 		}
@@ -970,7 +970,7 @@ class CA_Comodo extends CA
 		if (!is_null($rce)) {
 			/* set the fields */
 			foreach ($rce as $email) {
-				$postfields_sign_req["subject_rfc822name_".$pf_counter++] = urlencode($email);
+				$postfields_sign_req["subject_rfc822name_".$pf_counter++] = $email;
 			}
 		}
 		break;
