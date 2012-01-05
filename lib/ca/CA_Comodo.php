@@ -1012,9 +1012,11 @@ class CA_Comodo extends CA
         /*
          * If something has failed, an errorCode parameter will be set in
          * the return message
+         *
+         * FIXME: add l10n to these messages
          */
         if (isset($params['errorCode'])) {
-		$msg = "Received an error when uploading the CSR to the remote CA: ";
+			$msg = "Received an error when uploading the CSR to the remote CA: ";
 		if (isset($params['errorMessage'])) {
 			$msg .= " " . $params['errorMessage'];
 		}
@@ -1169,7 +1171,9 @@ class CA_Comodo extends CA
 	{
         $pf                  = array();
         $pf["loginName"]     = $this->account->getLoginName();
-        $pf["loginPassword"] = $this->account->getPassword(true);
+		/* FIXME: use true as argument, password *should* be urlencoded! (But
+		 * comodo will bomb */
+        $pf["loginPassword"] = $this->account->getPassword(false);
 		return $pf;
 	}
 } /* end class CA_Comodo */
