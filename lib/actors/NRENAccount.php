@@ -55,7 +55,8 @@ class NRENAccount
 		$this->person = $person;
 		$this->nren = $this->person->getNREN();
 		$this->changed = False;
-		if (!$this->read()) {
+		/* No need to run through this is NREN is not set */
+		if ($this->nren && !$this->read()) {
 			Logger::log_event(LOG_NOTICE,
 							  "error reading account-data, probably because the NREN (" .
 							  $this->nren->getID() .") does not have an account yet.");
