@@ -87,7 +87,7 @@
       <tr>
 	<td></td>
 	<td><input type="reset" value="{$l10n_button_revert}" /></td>
-	<td><input type="submit" value="{$l10n_button_update} {$login_name|escape}" /></td>
+	<td><input type="submit" value="{$l10n_button_update}" /></td>
 	<td></td>
 	<td></td>
       </tr>
