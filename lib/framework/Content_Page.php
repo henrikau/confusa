@@ -122,7 +122,9 @@ abstract class Content_Page
 		$this->setCA();
 
 		/* if the nren of the useris in maint-mode, trigger a warning here */
-		if ($this->person->getNREN()->inMaintMode()) {
+		if (!is_null($this->person) &&
+			!is_null($this->person->getNREN()) &&
+			$this->person->getNREN()->inMaintMode()) {
 			$this->tpl->assign('instance', Config::get_config('system_name'));
 			$this->tpl->assign('maint_header', $this->translateTag('l10n_nren_maint_header', 'portal_config'));
 			$this->tpl->assign('maint_msg', $this->person->getNREN()->getMaintMsg());
