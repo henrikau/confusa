@@ -1155,13 +1155,15 @@ class CA_Comodo extends CA
           Logger::log_event(LOG_NOTICE, "Authorized certificate with order number " .
 							$this->order_number . ". " . $this->owner_string);
         } else {
+			Logger::log_event(LOG_WARNING,
+							  "Error authorizing CSR ".$this->order_number. " ".
+							  "Server said " . $error_parts[0] ." (".$error_parts[1].")";)
             $msg = "Received an error when authorizing the CSR with orderNumber " .
                    $this->order_number . $data . "\n";
 				   $error_parts = explode("\n", $data, 2);
 			$msg .= $this->capiErrorMessage($error_parts[0], $error_parts[1]);
             throw new CGE_ComodoAPIException($msg);
         }
-
     } /* end capiAuthorizeCSR */
 
 	/**
