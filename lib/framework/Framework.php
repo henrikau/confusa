@@ -228,7 +228,7 @@ class Framework {
 		try {
 			$this->authenticate();
 		} catch (CGE_CriticalAttributeException $cae) {
-			$msg .= "<b>" . $this->contentPage->translateMessageTag('fw_error_critical_attribute1') . "</b><br /><br />";
+			$msg  = "<b>" . $this->contentPage->translateMessageTag('fw_error_critical_attribute1') . "</b><br /><br />";
 			$msg .= htmlentities($cae->getMessage()) . "<br /><br />";
 			$msg .= $this->contentPage->translateMessageTag('fw_error_critical_attribute2');
 			Framework::error_output($msg);
