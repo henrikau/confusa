@@ -795,9 +795,9 @@ class CA_Comodo extends CA
 			/* be sure to match the EPPN only and not also its suffix. For
 			 * instance test@feide.no should not match confusatest@feide.no
 			 */
-			$postfields_list["commonName"] = urlencode("% " . $eppn);
+			$postfields_list["commonName"] = $eppn;
 		} else if (Config::get_config('cert_product') == PRD_PERSONAL) {
-			$postfields_list["unstructuredName"] = urlencode($eppn);
+			$postfields_list["unstructuredName"] = $eppn;
 		} else {
 			throw new ConfusaGenException("Cert-Product must be one of PRD_ESCIENCE, " .
 			                              "PRD_PERSONAL!");
