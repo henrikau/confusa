@@ -241,16 +241,17 @@ class CP_NREN_Admin extends Content_Page
 					Framework::error_output("Cannot create new, already existing.");
 					break;
 				}
-				$subscriber->setOrgName($dn_name);
-				$subscriber->setState($state);
-				$subscriber->setEmail($subscr_email);
-				$subscriber->setPhone($subscr_phone);
-				$subscriber->setRespName($subscr_responsible_name);
-				$subscriber->setRespEmail($subscr_responsible_email);
-				$subscriber->setComment($subscr_comment);
-				$subscriber->setHelpURL($subscr_help_url);
-				$subscriber->setHelpEmail($subscr_help_email);
-				if ($subscriber->create()) {
+
+				$update  = $subscriber->setState(    $state);
+				$update |= $subscriber->setOrgName(  $this->form_data['dn_name']);
+				$update |= $subscriber->setEmail(    $this->form_data['subscr_email']);
+				$update |= $subscriber->setPhone(    $this->form_data['subscr_phone']);
+				$update |= $subscriber->setRespName( $this->form_data['subscr_responsible_name']);
+				$update |= $subscriber->setRespEmail($this->form_data['subscr_responsible_email']);
+				$update |= $subscriber->setComment(  $this->form_data['subscr_comment']);
+				$update |= $subscriber->setHelpURL(  $this->form_data['subscr_help_url']);
+				$update |= $subscriber->setHelpEmail($this->form_data['subscr_help_email']);
+				if ($update && $subscriber->create()) {
 					Framework::success_output($this->translateTag('l10n_suc_addsubs1', 'nrenadmin') .
 					                          " " . htmlentities($dn_name, ENT_COMPAT, "UTF-8") . " " .
 					                          $this->translateTag('l10n_suc_addsubs2', 'nrenadmin'));
