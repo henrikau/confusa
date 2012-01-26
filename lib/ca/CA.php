@@ -39,10 +39,14 @@ abstract class CA
 
 		$this->owner_string = "User not authN, unknown user!";
 		if ($this->person->isAuth()) {
-		$this->owner_string = "User: ".stripslashes($this->person->getX509ValidCN()).
-			". Subscriber: " . $this->person->getSubscriber()->getIdPName() . " (".
-			$this->person->getNREN()->getName() . ") via ".
-			$_SERVER['REMOTE_ADDR'];
+			$this->owner_string = "User: ".stripslashes($this->person->getX509ValidCN()) . ".";
+			if (!is_null($this->person->getSubscriber())) {
+				$this->owner_string .= " Subscriber: " . $this->person->getSubscriber()->getIdPName();
+			}
+			if (!is_null($this->person->getNREN())) {
+				$this->owner_string .= " (". $this->person->getNREN()->getName() . ") ";
+			}
+			$this->owner_string .= "via " . $_SERVER['REMOTE_ADDR'];
 		}
     } /* end __construct */
 
