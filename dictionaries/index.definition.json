@@ -36,10 +36,10 @@
 		"en": "Privacy has been a very big concern in the design of Confusa. When you login, Confusa doesn't store any data about you! Only if you get a certificate issued by Confusa, Confusa and/or the Online-CA store the subject name of that certificate. Such a subject name usually contains your country, organization and full name. We <b>have</b> to store that information."
 	},
 	"index_faq_heading5": {
-		"en": "What is this \"Confusa\" I see everywhere?"
+		"en": "What is this 'Confusa' I see everywhere?"
 	},
 	"index_faq_text5": {
-		"en": "\"Confusa\" is the name of the portal software. This means that the portal <i>is</i> Confusa, yet it is not. A bit like the spoon. If you really want to know, have a look at <a href=\"http://www.confusa.org/\">www.confusa.org</a>"
+		"en": "'Confusa' is the name of the portal software. This means that the portal <i>is</i> Confusa, yet it is not. A bit like the spoon. If you really want to know, have a look at <a href='http://www.confusa.org'>www.confusa.org</a>"
 	},
 	"attribute_info1": {
 		"en": "This is information we have received from your home organization combined with information entered for your NREN"
