@@ -77,7 +77,7 @@
   <div style="float: right;" class="nav">
 		{$panticsrf}
 		<input type="hidden" name="signCSR" value="{$authToken}" />
-		<input id="nextButton" type="submit" class="nav" title="{$l10n_button_next}" value="{$l10n_button_next} >" />
+		<input id="nextButton" type="submit" class="nav" title="{$l10n_button_next}" value="{$l10n_button_next} &gt;" />
   </div>
 </form>
 
@@ -85,7 +85,7 @@
 <form action="receive_csr.php" method="post">
 	{$panticsrf}
 	<input type="hidden" name="deleteCSR" value="{$authToken}" />
-	<input id="backButton" class="nav" type="submit" title="{$l10n_button_back}" value="< {$l10n_button_back}" />
+	<input id="backButton" class="nav" type="submit" title="{$l10n_button_back}" value="&lt; {$l10n_button_back}" />
 </form>
 </div>
 </div> <!-- inspect_csr -->

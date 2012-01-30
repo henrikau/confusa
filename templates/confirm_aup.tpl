@@ -75,13 +75,13 @@
 
 <div style="float: right;" class="nav">
 		{$panticsrf}
-		<input id="nextButton" type="submit" title="{$l10n_button_next}" value="{$l10n_button_next} >" />
+		<input id="nextButton" type="submit" title="{$l10n_button_next}" value="{$l10n_button_next} &gt;" />
 </div>
 </form>
 
 <div style="float: right;" class="nav">
 <form action="download_certificate.php?{$ganticsrf}" method="get">
-	<input type="submit" id="backButton" title="{$l10n_button_back}" value="< {$l10n_button_back}" />
+	<input type="submit" id="backButton" title="{$l10n_button_back}" value="&lt; {$l10n_button_back}" />
 </form>
 </div>
 

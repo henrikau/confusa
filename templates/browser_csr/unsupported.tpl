@@ -21,7 +21,7 @@
 
 <div class="nav">
 <form action="receive_csr.php?{$ganticsrf}" method="get">
-	<input id="backButton" type="submit" title="{$l10n_button_back}" value="< {$l10n_button_back}" />
+	<input id="backButton" type="submit" title="{$l10n_button_back}" value="&lt; {$l10n_button_back}" />
 </form>
 </div>
 </div>
