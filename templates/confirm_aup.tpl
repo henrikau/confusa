@@ -88,12 +88,12 @@
 
 {literal}
 <script type="text/javascript">
-	if ($("#aup_box").attr('checked') == false) {
+	if (! $("#aup_box").attr('checked') ) {
 		$("#nextButton").attr("disabled", true);
 	}
 
 	$("#aup_box").click(function() {
-		if ($("#aup_box").attr('checked') == true) {
+		if ( $("#aup_box").attr('checked') ) {
 			$("#nextButton").removeAttr("disabled");
 		} else {
 			$("#nextButton").attr("disabled", true);
