@@ -921,6 +921,7 @@ class CA_Comodo extends CA
 		} else if (Config::get_config('cert_product') == PRD_ESCIENCE) {
 			$ca_cert_id = ConfusaConstants::$CAPI_ESCIENCE_ID;
 		} else {
+			Logger::log_event(LOG_INFO, "Confusa is not configured properly, please fix product-mode");
 			throw new KeySignException("Confusa's configured product-mode is " .
 			                           "illegal! Must be one of: PRD_ESCIENCE, " .
 			                           "PRD_PERSONAL. Please contact an IT " .
@@ -1004,7 +1005,7 @@ class CA_Comodo extends CA
 	if (Config::get_config('capi_test') == true) {
 		$postfields_sign_req["subject_domainComponent_".$pf_counter++] = ConfusaConstants::$CAPI_TEST_DC_PREFIX;
 	}
-
+	Logger::log_event(LOG_DEBUG, "Pushing new CSR to Comodo for " . $this->person->getX509ValidCN());
 	$data = CurlWrapper::curlContact($sign_endpoint, "post", $postfields_sign_req);
 
         $params=array();
@@ -1024,6 +1025,9 @@ class CA_Comodo extends CA
 			$msg .= " " . $params['errorItem'];
 		}
 		$msg .= $this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
+		Logger::log_event(LOG_WARN, "Error when uploading CSR, got " .
+						  $params['errorMessage'] . "(" .
+						  $params['errorItem'] . ")");
 		throw new CGE_ComodoAPIException($msg);
         }
 
@@ -1032,13 +1036,14 @@ class CA_Comodo extends CA
             if (!isset($params['orderNumber'])) {
                 $msg = "Response looks malformed. Maybe there is a configuration " .
                        "error in Confusa's Comodo-CA configuration!";
+				Logger::log_event(LOG_WARN, "Malformed response from Comodo, no error or orderNumber received.");
                 throw new CGE_ComodoAPIException($msg);
             }
 
             $this->order_number = $params['orderNumber'];
 
 			Logger::log_event(LOG_INFO, "Successfully uploaded CSR to remote CA, got ".
-							  $this->order_number . $this->owner_string);
+							  $this->order_number . " " . $this->owner_string);
 
           $sql_command= "INSERT INTO order_store(auth_key, owner, " .
                         "order_number, order_date, authorized)" .
@@ -1145,6 +1150,7 @@ class CA_Comodo extends CA
 		$postfields_auth =$this->bs_pf();
         $postfields_auth["orderNumber"] = $this->order_number;
 		$data = CurlWrapper::curlContact($authorize_endpoint, "post", $postfields_auth);
+		Logger::log_event(LOG_DEBUG, "Authorizing CSR " . $this->order_number . " for signing.");
 
         /* the only formal restriction we have is if the API returns 0 for the query */
         if (substr($data,0,1) == "0") {
