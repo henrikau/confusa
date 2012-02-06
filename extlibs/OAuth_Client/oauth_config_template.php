@@ -5,7 +5,7 @@
  * configuration interace, tab "Federation", section "Tools", link
  * "OAuth Consumer Registry"
  */
-$oauthc_config => array(
+$oauthc_config = array(
 	/* point me to your confusa installation, without trailing slash */
 	'portal_base_address'  => '',
 	'oauth_consumer_key'	=> '',
