@@ -152,7 +152,7 @@ class MDB2Wrapper
                     );
                MDB2Wrapper::$conn = MDB2::factory($dsn, $options);
                if (PEAR::isError(MDB2Wrapper::$conn)){
-				   Logger::log_event(LOG_WARN, MDB2Wrapper::$conn->getMessage());
+				   Logger::log_event(LOG_WARNING, MDB2Wrapper::$conn->getMessage());
 				   /* FIXME l10n, better error-reporting */
                    echo "Cannot connect to database: " . MDB2Wrapper::$conn->getMessage() . "<br>\n";
 				   die(MDB2Wrapper::$conn->getMessage());

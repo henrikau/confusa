@@ -1025,7 +1025,7 @@ class CA_Comodo extends CA
 			$msg .= " " . $params['errorItem'];
 		}
 		$msg .= $this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
-		Logger::log_event(LOG_WARN, "Error when uploading CSR, got " .
+		Logger::log_event(LOG_WARNING, "Error when uploading CSR, got " .
 						  $params['errorMessage'] . "(" .
 						  $params['errorItem'] . ")");
 		throw new CGE_ComodoAPIException($msg);
@@ -1036,7 +1036,7 @@ class CA_Comodo extends CA
             if (!isset($params['orderNumber'])) {
                 $msg = "Response looks malformed. Maybe there is a configuration " .
                        "error in Confusa's Comodo-CA configuration!";
-				Logger::log_event(LOG_WARN, "Malformed response from Comodo, no error or orderNumber received.");
+				Logger::log_event(LOG_WARNING, "Malformed response from Comodo, no error or orderNumber received.");
                 throw new CGE_ComodoAPIException($msg);
             }
 
