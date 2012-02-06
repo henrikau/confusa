@@ -1017,17 +1017,16 @@ class CA_Comodo extends CA
          * FIXME: add l10n to these messages
          */
         if (isset($params['errorCode'])) {
-			$msg = "Received an error when uploading the CSR to the remote CA: ";
+		$camsg = '';
 		if (isset($params['errorMessage'])) {
-			$msg .= " " . $params['errorMessage'];
+			$camsg .= " " . $params['errorMessage'];
 		}
 		if (isset($params['errorItem'])) {
-			$msg .= " " . $params['errorItem'];
+			$camsg .= " " . $params['errorItem'];
 		}
+		Logger::log_event(LOG_WARNING, "Error when uploading CSR, got" . $camsg );
+		$msg = "Received an error when uploading the CSR to the remote CA: " . $camsg;
 		$msg .= $this->capiErrorMessage($params['errorCode'], $params['errorMessage']);
-		Logger::log_event(LOG_WARNING, "Error when uploading CSR, got " .
-						  $params['errorMessage'] . "(" .
-						  $params['errorItem'] . ")");
 		throw new CGE_ComodoAPIException($msg);
         }
 
