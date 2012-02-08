@@ -44,6 +44,10 @@ class CSR_PKCS10 extends CSR
 	{
 		$sa = openssl_csr_get_subject($this->content);
 		$res=false;
+		if (is_null($sa) || !is_array($sa) || $sa == "") {
+			return false;
+		}
+
 		foreach($sa as $key => $value) {
 			$res.="/$key=$value";
 		}
