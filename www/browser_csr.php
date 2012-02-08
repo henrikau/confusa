@@ -104,8 +104,11 @@ final class CP_Browser_CSR extends Content_Page
 		$user_cert_enabled = $this->person->testEntitlementAttribute(Config::get_config('entitlement_user'));
 		$this->tpl->assign('user_cert_enabled', $user_cert_enabled);
 		$this->tpl->assign('finalDN',   $this->ca->getFullDN());
-		$browser_adapted_dn = $this->ca->getBrowserFriendlyDN();
-		$this->tpl->assign('dn',				$browser_adapted_dn);
+		$this->tpl->assign('dn',		$this->ca->getBrowserFriendlyDN());
+		if ((int)Config::get_config('ca_mode') ==  CA_COMODO) {
+			$this->tpl->assign('dn', str_replace(",", "", $this->ca->getBrowserFriendlyDN()));
+		}
+
 		$this->tpl->assign('default_keysize',	Config::get_config('default_key_length'));
 		$this->tpl->assign('min_keysize',		Config::get_config('min_key_length'));
 
