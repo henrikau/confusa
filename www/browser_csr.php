@@ -69,7 +69,7 @@ final class CP_Browser_CSR extends Content_Page
 				break;
 			}
 
-			if (!empty($csr)) {
+			if (!empty($csr) && $csr->isValid()) {
 				try {
 					$order_number = $this->signCSR($csr);
 					$this->tpl->assign('order_number', $order_number);
