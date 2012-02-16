@@ -323,9 +323,10 @@ abstract class CA
 	 * instead of /C=SE/O=EvilMastermindes/CN=Dr. Evil
 	 *
 	 * This is needed for in-browser request signing
+	 * @param Boolean ieCNbypass adapt the CN to IE browser-generation (strip ',')
 	 * @return string the DN in comma-separated format
 	 */
-  public function getBrowserFriendlyDN()
+  public function getBrowserFriendlyDN($ieCNbypass = false)
   {
 		$dn = "";
 		foreach ($this->dcs as $dc) {
@@ -335,7 +336,11 @@ abstract class CA
 		$dn .= "C=" . $this->person->getNREN()->getCountry() . ", ";
 
 		$dn .= "O=" . $this->person->getSubscriber()->getOrgName() . ", ";
-		$dn .= "CN=" . stripslashes($this->person->getX509ValidCN());
+		$cn = stripslashes($this->person->getX509ValidCN());
+		if ($ieCNbypass) {
+			$cn = str_replace(",", "", $cn);
+		}
+		$dn .= "CN=" . $cn;
 		if (Config::get_config('cert_product') == PRD_PERSONAL) {
 			$dn .= "/unstructuredName=" . $this->person->getEPPN();
 		}

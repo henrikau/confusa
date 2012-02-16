@@ -106,7 +106,7 @@ final class CP_Browser_CSR extends Content_Page
 		$this->tpl->assign('finalDN',   $this->ca->getFullDN());
 		$this->tpl->assign('dn',		$this->ca->getBrowserFriendlyDN());
 		if ((int)Config::get_config('ca_mode') ==  CA_COMODO) {
-			$this->tpl->assign('dn', str_replace(",", "", $this->ca->getBrowserFriendlyDN()));
+			$this->tpl->assign('dn', $this->ca->getBrowserFriendlyDN(true));
 		}
 
 		$this->tpl->assign('default_keysize',	Config::get_config('default_key_length'));
