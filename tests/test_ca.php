@@ -1,19 +1,7 @@
 <?php
-$webdir = dirname(__FILE__);
-$path = ini_get('include_path');
-$path .= PATH_SEPARATOR . $webdir;
-$path .= PATH_SEPARATOR . $webdir . '/mocks';
-$path .= PATH_SEPARATOR . dirname($webdir) . '/extlibs/simpletest';
-$path = $path . PATH_SEPARATOR;
-ini_set('include_path', $path);
-
-define("PRD_ESCIENCE", 0);
-define("PRD_PERSONAL", 1);
-
+require_once "include.inc";
 require_once "../lib/ca/CA.php";
 require_once "Person.php";		/* in mocks */
-
-require_once('autorun.php');
 
 $_SERVER['REMOTE_ADDR'] = "127.0.0.1";
 
