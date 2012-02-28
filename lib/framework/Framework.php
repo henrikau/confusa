@@ -219,6 +219,20 @@ class Framework {
 
 	public function start()
 	{
+		/* From OWASP (prevent clickjacking):
+		 *
+		 * This new (nonstandard) X-FRAME-OPTIONS header is used to mark
+		 * responses that shouldn't be framed. There are two options with
+		 * X-FRAME-OPTIONS. The first is DENY, which prevents everyone from
+		 * framing the content.
+		 *
+		 * This can also be done by apache itself:
+		 * a2enmod headers
+		 * Add to the Virtualhost, directory that hosts confusa:
+		 * Header set X-Frame-Options "DENY"
+		 */
+		header('X-Frame-Options: DENY');
+
 		/* Set tpl object to content page */
 		$this->contentPage->setTpl($this->tpl);
 
