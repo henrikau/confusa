@@ -77,26 +77,25 @@ class CSRUpload
 	 */
 	static function testBlacklist($content)
 	{
-		$shellContent = escapeshellarg($content);
-		$cmd = "echo \"$shellContent\" | openssl-vulnkey -";
-		exec($cmd, $output, $return);
-
-		switch ($return) {
-		case 0:
-			/* key is not blacklisted */
-			break;
-		case 1:
-			throw new ConfusaGenException("Key is blacklisted!");
-		case 127:
-			Logger::logEvent(LOG_INFO, __CLASS__, "testBlacklist()",
-			                 " openssl-vulnkey not installed", __LINE__);
-			break;
-		default:
-			Logger::logEvent(LOG_DEBUG, __CLASS__, "testBlacklist()",
-			                 " Unknown return ($return) value from shell",
-			                 __LINE__);
-		break;
+		$shellContent = Input::sanitizeBase64(escapeshellarg($content));
+		$fp = popen("echo $shellContent | openssl-vulnkey -", "r");
+		if (!$fp) {
+			Logger::log_event(LOG_ALERT, __CLASS__ . "::testBlacklist()",
+							  " Could not open process file-pointer in order to test for blacklisted CSR!");
+			/* if we cannot open openssl-vulnkey, we must assume that all uploaded
+			 * keys are blacklisted */
+			/* FIXME: add l10n */
+			throw new ConfusaGenException("Could not verify CSR against blacklist!");
 		}
+		$res = fread($fp, 1024);
+		fclose($fp);
+		if (stripos($res, "not blacklisted", 0) === 0) {
+			return;
+		} else if (stripos($res, "COMPROMISED", 0) === 0) {
+			throw new ConfusaGenException("Key is blacklisted!");
+		}
+		Logger::log_event(LOG_DEBUG, __CLASS__ . "::testBlacklist()",
+						  " Unknown return ($res) value from shell");
 	}
 }
-?>
+	?>
