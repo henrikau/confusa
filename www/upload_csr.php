@@ -45,7 +45,10 @@ final class CP_Upload_CSR extends Content_Page
 				return;
 			}
 		} else if (isset($_POST['user_csr'])) {
-			$csr = new CSR_PKCS10(Input::sanitizeBase64($_POST['user_csr']));
+			try {
+				$csr = CSRUPload::receivePastedCSR('user_csr');
+			} catch 
+			
 		}
 
 		if (!$csr->isValid()) {

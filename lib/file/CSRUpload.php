@@ -38,7 +38,30 @@ class CSRUpload
 		return new CSR_PKCS10($content);
 	}
 
-/**
+	/**
+	 * receivePastedCSR() handle a CSR pasted through an input-field
+	 *
+	 * @param String $csr_var_name String containing the CSR
+	 * @param Boolena $testBlacklist true if the CSR should be matched to the
+	 * openssl-vulnkey
+	 *
+	 * @return CSR_PKCS10|null
+	 * @throws ConfusaGenException if fthe CSR is malformed, blacklisted or
+	 *					otherwise invalid.
+	 */
+	public static function receivePastedCSR($csr_var_name, $testBlacklist = false)
+	{
+		if (!isset($_POST) || !array_key_exists($csr_var_name, $_POST)) {
+			throw new ConfusaGenException("csr not found in $_POST!");
+		}
+		$csr_content = Input::sanitizeBase64($_POST[$csr_var_name]);
+		if ($testBlacklist) {
+			CSRUpload::testBlacklist($csr_content);
+		}
+		return new CSR_PKCS10($csr_content);
+	}
+
+	/**
 	 * testFile() see if any known error-conditions are set for the file
 	 *
 	 * @param void
