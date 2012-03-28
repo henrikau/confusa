@@ -224,7 +224,9 @@ class API_Certificates extends API
 		}
 
 		try {
-			$this->ca->signKey($auth_key, $csr);
+			require_once 'CSR_PKCS10.php';
+			$csr = new CSR_PKCS10($csr);
+			$this->ca->signKey($csr);
 		} catch (ConfusaGenException $cge) {
 			$this->errorUncaughtException($cge);
 		}
