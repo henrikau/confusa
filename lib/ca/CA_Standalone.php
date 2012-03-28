@@ -7,6 +7,7 @@ require_once 'MDB2Wrapper.php';
 require_once 'db_query.php';
 require_once 'pw.php';
 require_once 'cert_lib.php';
+require_once 'csr_lib.php';
 require_once 'CGE_KeyRevokeException.php';
 /*
  * CA_Standalone Standalone-CA extension for CA.
@@ -228,7 +229,7 @@ class CA_Standalone extends CA
 		$msg  = "Sending certificate with hash " . pubkey_hash($res[0]['cert'], false) . " ";
 		$msg .= " and auth-token $key to user from ip " . $_SERVER['REMOTE_ADDR'];
 		Logger::log_event(LOG_NOTICE, $msg);
-		return $res[0]['cert'];
+		return new Certificate($res[0]['cert']);
         }
         else {
             $msg = "Error in getting certificate, got " . count($res) . " results\n";
