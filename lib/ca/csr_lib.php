@@ -250,17 +250,20 @@ function get_csr_details($person, $auth_key)
  */
 function match_dn($subject, $expectedSubj)
 {
-	/* Compose the DN in the 'correct' order, only use the fields set in
-	 * the subject */
-	$composed_dn = "";
-	if (isset($subject['C']))
-		$composed_dn .= "/C=".$subject['C'];
-	if (isset($subject['O']))
-		$composed_dn .= "/O=".$subject['O'];
-	if (isset($subject['OU']))
-		$composed_dn .= "/OU=".$subject['OU'];
-	if (isset($subject['C']))
-		$composed_dn .= "/CN=".$subject['CN'];
+	$composed_dn = $subject;
+	if (is_array($subject)) {
+		/* Compose the DN in the 'correct' order, only use the fields set in
+		 * the subject */
+		$composed_dn = "";
+		if (isset($subject['C']))
+			$composed_dn .= "/C=".$subject['C'];
+		if (isset($subject['O']))
+			$composed_dn .= "/O=".$subject['O'];
+		if (isset($subject['OU']))
+			$composed_dn .= "/OU=".$subject['OU'];
+		if (isset($subject['C']))
+			$composed_dn .= "/CN=".$subject['CN'];
+	}
 	$res = $expectedSubj === $composed_dn;
 	if (!$res) {
 		Framework::error_output("Supplied (". htmlentities($composed_dn) .
