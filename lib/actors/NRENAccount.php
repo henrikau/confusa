@@ -135,8 +135,10 @@ class NRENAccount
 			return false;
 		}
 
-		$query  = "SELECT account_map_id, login_name, password, ivector, ap_name ";
-		$query .= "FROM account_map WHERE nren_id=?";
+		$query  = "SELECT am.account_map_id, am.login_name, am.password, am.ivector, am.ap_name ";
+		$query .= "FROM account_map am LEFT JOIN nrens n ON n.login_account = am.account_map_id ";
+		$query .= "WHERE n.nren_id=?";
+
 		/* FIXME:
 		 * add internal state if in error
 		 * use l10n
@@ -170,7 +172,9 @@ class NRENAccount
 			return true;
 		} else if (count($res) > 1) {
 			Logger::log_event(LOG_ALERT,
-							  "Too many account-results returned from DB for NREN " . $this->nren->getID());
+							  "Too many account-results returned from DB for NREN " .
+							  $this->nren->getID() .
+							  ". This could indicate that the tables are corrupt (!)");
 		}
 		return false;
 	} /* end read() */
