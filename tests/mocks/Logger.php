@@ -15,5 +15,12 @@ class Logger
 		/* loop through Logger::$entries  */
 		return false;
 	}
+
+	static function dump_loglines()
+	{
+		echo "<pre>\n";
+		print_r(Logger::$entries);
+		echo "</pre>\n";
+	}
 }
 ?>
