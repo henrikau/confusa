@@ -8,6 +8,7 @@ require_once "test_csr_upload.php";
 require_once "test_ca.php";
 require_once "test_input.php";
 require_once "test_www.php";
+require_once "test_nren_account.php";
 
 /* start the test-harness */
 $test = new TestSuite("Confusa test-suite");
@@ -15,7 +16,7 @@ $test->add(new TestCSRUpload());
 $test->add(new TestOfInput());
 $test->add(new TestWeb());
 $test->add(new TestCA());
-
+$test->add(new TestNRENAccount());
 if (php_sapi_name() === "cli") {
 	$test->run(new TextReporter());
 } else {
