@@ -515,7 +515,10 @@ class CP_Stylist extends Content_Page
 			 */
 			File_IO::writeToFile($css_path, $content, TRUE, TRUE);
 		} catch (FileException $fexp) {
-			Framework::error_output("Could not write to custom CSS file! Please contact an administrator!");
+			$error_code = PW::create(8);
+			Logger::log_event(LOG_ERR, "[$error_code] could not write custom CSS for NREN $nren to file $css_path. Propagated error: " .
+							  $fexp->getMessage());
+			Framework::error_output("[$error_code] " . $this->translateTag('l10n_fail_updcss', 'stylist'));
 			return;
 		}
 

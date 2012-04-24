@@ -194,6 +194,9 @@
 	"l10n_suc_updcss": {
 		"en":	"Custom CSS for your NREN successfully updated!"
 	},
+	"l10n_fail_updcss": {
+		"en":	"Could not write to custom CSS to file, please contact an administrator."
+	},
 	"l10n_suc_updabouttext": {
 		"en":	"About-text successfully updated!"
 	},

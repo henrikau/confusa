@@ -24,7 +24,7 @@ class File_IO
 				if (!mkdir(dirname($path), 0755, TRUE)) {
 					throw new FileException("Could not create the directory " .
 											dirname($path) .
-											"when trying to write to $path");
+											" when trying to write to $path");
 				}
 			} else {
 				throw new FileException("Can not write to file $path, because the " .
