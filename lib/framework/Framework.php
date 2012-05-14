@@ -309,6 +309,13 @@ class Framework {
 			$this->renderError = true;
 		}
 
+		/* ----------------------------------------------------------------
+		 * Admin messages, trigger on missing elements
+		 */
+		if ($this->person->isNRENAdmin()) {
+			$this->triggerAdminIssues();
+		}
+
 		/* Mode-hook, to catch mode-change regardless of target-page (not only
 		 * index) */
 		if (isset($_GET['mode'])) {
@@ -473,6 +480,46 @@ class Framework {
 		} /* end GET or POST set */
 		return false; /* no detectable CSRF attempt */
 	} /* end CSRFAttempt() */
+
+	/**
+	 * triggerAdminIssues() - post error-messages
+	 *
+	 * Function will report issues in the form of errors to the screen when an
+	 * admin looks at the portal and something is amiss. This includes:
+	 *
+	 * - missing privacy notice for the NREN
+	 * - missing about_nren text
+	 * - incomplete or missing attribute-map
+	 *
+	 * @param	void
+	 * @return	void
+	 * @access	private
+	 */
+	private function triggerAdminIssues()
+	{
+		if (!isset($this->person))
+			return;
+		$nren = $this->person->getNREN();
+		if (!$nren)
+			return;
+
+		$url_arg = "?mode=admin&show=text&anticsrf=".Framework::getAntiCSRF();
+
+		if (!$nren->hasHelpText()) {
+			Framework::warning_output("Missing NREN help-text. <a href=\"stylist.php" .
+									  $url_arg . "#edit_help\">Configure</a>");
+		}
+
+		if (!$nren->hasAboutText()) {
+			Framework::warning_output("Missing About-NREN text. <a href=\"stylist.php".
+									  $url_arg . "#edit_about\">Configure</a>");
+		}
+
+		if (!$nren->hasPrivacyNotice()) {
+			Framework::warning_output("Missing privacy-notice. <a href=\"stylist.php" .
+									  $url_arg . "#edit_pn\">Configure</a>");
+		}
+	} /* end triggerAdminIssues() */
 
 	/**
 	 * Register new error-message to display in the page

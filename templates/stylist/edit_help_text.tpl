@@ -9,7 +9,7 @@
 </div>
 
   <fieldset>
-  <legend>{$l10n_legend_changehelptext}</legend>
+  <legend><a name="edit_help">{$l10n_legend_changehelptext}</a></legend>
 	<p class="info">
 		{$l10n_infotext_help1}
 	</p>
@@ -46,7 +46,7 @@
   <div class="spacer"></div>
 
   <fieldset>
-  <legend>{$l10n_legend_abouttext}</legend>
+  <legend><a name="edit_about">{$l10n_legend_abouttext}</a></legend>
   <p class="info">
   {$l10n_infotext_abouttext1}
   </p>
@@ -84,7 +84,7 @@
   <div class="spacer"></div>
 
   <fieldset>
-  <legend>{$l10n_legend_change_privnotice}</legend>
+  <legend><a name="edit_pn">{$l10n_legend_change_privnotice}</a></legend>
   <p class="info">
     {$l10n_privnotice_1}
   </p>
