@@ -2,10 +2,12 @@
 <div class="spacer"></div>
 {if isset($nren_pt_text)}
 {$nren_pt_text}
+{elseif isset($nren_unset_pt_text)}
+{$nren_unset_pt_text|escape}
+<p class="center">
+<a href="mailto:{$nren_contact_email|escape}">{$nren_contact_email|escape}</a>
+</p>
 {else}
-<br />
-<br />
-<br />
 <p>
   The current privacy notice that applies to <b>you</b> is crafted per
   NREN and per portal, and cannot be displayed before we know your

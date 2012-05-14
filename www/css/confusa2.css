@@ -295,7 +295,10 @@ div.csr {
 p {
     padding-bottom: 1em;
     }
-
+p.center {
+    padding-bottom: 1em;
+    text-align: center;
+}
 p.info {
     font-style: italic;
     width: 80%;

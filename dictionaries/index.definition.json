@@ -94,5 +94,8 @@
 	},
 	"l10n_heading_privnotice": {
 		"en":	"Privacy notice"
+	},
+	"nren_unset_pt_text": {
+		"en":	"The privacy-notice has not been set for your NREN. Someone should be hard at work doing this, in the meantime, send them en email and let them know."
 	}
 }
