@@ -458,7 +458,28 @@ class NREN
 			}
 		}
 	}
-
+	/**
+	 * getContactEmail()
+	 *
+	 * You can choose if only the contact-address or address + name should be returned
+	 *
+	 *			foo@example.org
+	 *			Foo B. Ar <foo@example.org>
+	 *
+	 * @param Boolean formatted if the address should be nicely formatted for page-inclusion
+	 * @return String the address
+	 * @access public
+	 */
+	public function getContactEmail($formatted=false)
+	{
+		if (!is_null($this->data) && array_key_exists('contact_email', $this->data)) {
+			if ($formatted && array_key_exists('name', $this->data)) {
+				return $this->data['name'] . " <" . $this->data['contact_email'] . ">";
+			}
+			return $this->data['contact_email'];
+		}
+		return false;
+	}
 
 	/**
 	 * setContactPhone()
