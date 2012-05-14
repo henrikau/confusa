@@ -884,10 +884,11 @@ class NREN
 	 * getPrivacyNotice() - return the privacy-notice for the NREN
 	 *
 	 * @param Person $person the current person (for translating the tags)
+	 * @return String|null the privacy notice for this NREN
 	 */
 	public function getPrivacyNotice($person)
 	{
-		$query = "SELECT privacy_notice FROM nrens WHERE nren_id = ?";
+		$query = "SELECT privacy_notice FROM nrens WHERE nren_id = ? AND privacy_notice IS NOT NULL";
 		$res = array();
 		try {
 			$res = MDB2Wrapper::execute($query,
@@ -905,6 +906,7 @@ class NREN
 			return "";
 		}
 
+		/* Found something, grab the first hit */
 		if (count($res) > 0) {
 			$pn=$res[0]['privacy_notice'];
 
@@ -912,13 +914,11 @@ class NREN
 			$pn=Input::br2nl($pn);
 			$textile = new Textile();
 
-			/* replalce tags */
+			/* replace tags */
 			return $this->replaceTags($textile->TextileRestricted($pn,0), $person);
 
 		}
-		return "No privacy-notice has yet been set for your NREN (".
-			$this->getName().")<br />";
-
+		return null;
 	}
 
 	/**
@@ -930,12 +930,13 @@ class NREN
 	 */
 	public function getAboutText($person)
 	{
-		$query = "SELECT about FROM nrens WHERE nren_id = ?";
+		$query = "SELECT about FROM nrens WHERE nren_id = ? AND about IS NOT NULL";
 
 		try {
 			$res = MDB2Wrapper::execute($query,
 						    array('text'),
 						    array($this->getID()));
+
 		} catch (DBStatementException $dbse) {
 			Framework::error_output($this->translateMessageTag('abt_err_dbstat') . " " .
 			                        htmlentities($dbse->getMessage()));
@@ -955,10 +956,8 @@ class NREN
 
 			return $this->replaceTags($textile->TextileRestricted($at,0), $person);
 		}
-		return "No about-NREN text has been defined for your NREN (" .
-			$this->getName(). ")";
+		return null;
 	}
-
 
 	/**
 	 * getHelpText()
@@ -970,7 +969,7 @@ class NREN
 	 */
 	public function getHelpText($person)
 	{
-		$query = "SELECT help FROM nrens WHERE nren_id = ?";
+		$query = "SELECT help FROM nrens WHERE nren_id = ? AND help IS NOT NULL";
 		$res = array();
 		try {
 			$res = MDB2Wrapper::execute($query,
@@ -998,8 +997,7 @@ class NREN
 			$help_text = $textile->TextileRestricted($help_text,0);
 			return $this->replaceTags($help_text, $person);
 		}
-		return "No Help-text for your NREN (" .
-			$this->getName(). ") can be found in the system.";
+		return null;
 	} /* end getHelpText() */
 
 
