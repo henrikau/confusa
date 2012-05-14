@@ -1001,6 +1001,47 @@ class NREN
 	} /* end getHelpText() */
 
 
+	public function hasAboutText()
+	{
+		$query = "SELECT about FROM nrens WHERE nren_id = ? AND about IS NOT NULL";
+
+		try {
+			$res = MDB2Wrapper::execute($query,
+						    array('text'),
+						    array($this->getID()));
+
+		} catch (Exception $e) {
+			Logger::log_even(LOG_WARN, "Trouble checking for valid about-text (nren-id: ".$this->getID()."), error was " . $e->getMessage());
+		}
+		return count($res)>0;
+	}
+
+	public function hasPrivacyNotice()
+	{
+		$query = "SELECT privacy_notice FROM nrens WHERE nren_id = ? and privacy_notice IS NOT NULL";
+		try {
+			$res = MDB2Wrapper::execute($query,
+						    array('text'),
+						    array($this->getID()));
+		} catch (Exception $e) {
+			Logger::log_even(LOG_WARN, "Trouble checking for valid privacy-notice (nren-id: ".$this->getID()."), error was " . $e->getMessage());
+		}
+		return count($res) > 0;
+	}
+
+	public function hasHelpText()
+	{
+		$query = "SELECT help FROM nrens WHERE nren_id = ? AND help IS NOT NULL";
+		try {
+			$res = MDB2Wrapper::execute($query,
+						    array('text'),
+						    array($this->getID()));
+		} catch (Exception $e) {
+			Logger::log_even(LOG_WARN, "Trouble checking for valid help-text (nren-id: ".$this->getID()."), error was " . $e->getMessage());
+		}
+		return count($res)>0;
+	}
+
 	/**
 	 * Set/update maintenance message for a given NREN.
 	 *
