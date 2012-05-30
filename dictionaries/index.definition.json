@@ -96,6 +96,9 @@
 		"en":	"Privacy notice"
 	},
 	"nren_unset_pt_text": {
-		"en":	"The privacy-notice has not been set for your NREN. Someone should be hard at work doing this, in the meantime, send them en email and let them know."
+		"en":	"The privacy-notice has not been set for your NREN. Someone should be hard at work doing this, in the meantime, send them an email and let them know."
+	},
+	"nren_unset_about_text": {
+		"en":	"The about-NREN notice has not been set for your NREN. Someone should be hard at workd doing this. In the meantime, send them an email and let t hem know."
 	}
 }
