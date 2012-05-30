@@ -940,11 +940,17 @@ class NREN
 		} catch (DBStatementException $dbse) {
 			Framework::error_output($this->translateMessageTag('abt_err_dbstat') . " " .
 			                        htmlentities($dbse->getMessage()));
-			return "";
+			Logger::log_event(LOG_INFO, "Could not retrive about-text for NREN $nren " .
+							  "due to an error with the statement. " .
+							  "Server said: " . $dbse->getMessage());
+			return null;
 		} catch (DBQueryException $dbqe) {
 			Framework::error_output($this->translateMessageTag('abt_err_dbquery') .  " " .
 			                        htmlentities($nren));
-			return "";
+			Logger::log_event(LOG_INFO, "Could not retrieve about-text for NREN $nren " .
+							  "due to an error in the statement. Server said: " .
+							  $dbqe->getMessage());
+			return null;
 		}
 
 		if (count($res) > 0) {
