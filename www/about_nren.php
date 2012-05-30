@@ -16,18 +16,21 @@ class CP_About_NREN extends Content_Page
 	public function process()
 	{
 		$nren = $this->person->getNREN();
-
-		if (isset($nren)) {
-			$aboutText = $nren->getAboutText($this->person);
-		} else {
-			$this->tpl->assign('content', $this->tpl->fetch('about_nren.tpl'));
+		if (!isset($nren)) {
+			$this->tpl->assign('content', $this->tpl->fetch('unclassified_intro.tpl'));
 			return;
 		}
 
-		$this->tpl->assign('text_info', $aboutText);
+		$aboutText = $nren->getAboutText($this->person);
+		if (isset($aboutText)) {
+			$this->tpl->assign('text_info', $aboutText);
+		} else {
+			$this->tpl->assign('nren_unset_about_text',
+							   $this->translateTag('nren_unset_about_text', 'index'));
+			$this->tpl->assign('nren_contact_email', $nren->getContactEmail(true));
+		}
 		$this->tpl->assign('content', $this->tpl->fetch('about_nren.tpl'));
-	}
-
+	} /* end process() */
 }
 
 $fw = new Framework(new CP_About_NREN());

@@ -1,4 +1,4 @@
-<h3>Confusa</h3>
+<h2>{$l10n_heading_aboutnren}</h2>
 <br />
 <p class="info">
   {$unauth_welcome_1|escape}<br />
