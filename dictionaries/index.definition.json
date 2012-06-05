@@ -100,5 +100,8 @@
 	},
 	"nren_unset_about_text": {
 		"en":	"The about-NREN notice has not been set for your NREN. Someone should be hard at workd doing this. In the meantime, send them an email and let t hem know."
+	},
+	"nren_unset_help_text": {
+		"en":	"The help-text for this NREN has not been set. Someone should be hard at work doing so. You can let them know via email."
 	}
 }
