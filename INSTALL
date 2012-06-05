@@ -1,21 +1,21 @@
-Requirements posed upon the user:
+	Installation instructions for Confusa
 
-In this document,with user, we mean *you*, the person that downloads,
-configures and installs Confusa on a server.
+In this document, with user, we mean *you*, the person that downloads,
+configures and installs Confusa on a server. From source.
 
 You should have
 - some experience with Apache-configuration
 - basic knowledge about cryptography (i.e. what a certificate is, and
-  how it's used) but not much more is required.
+  how it's used) but not much more is required
 - some, but not excessive, knowledge about PHP and bash-scripting, as
   this will help both *you* and *us* to track down bugs
-- Some knowlegde about server administration and virtual machine management.
+- Some knowlegde about server administration
 - an open and positive mind (for a more pleasent interaction with the
   world as a whole). This has nothing to do with Confusa
 
-To install Confusa
+Installing Confusa
 
-=== Requirements: ===
+=== Requirements (shortlist): ===
  - git (for latest checkout of confusa source code). *not* required, but handy
  - svn (for latest simplesamlphp checkout). *not* required, but handy
  - Apache2
@@ -42,17 +42,24 @@ To install Confusa
      apache2
 
 2) Database (MySQL)
-     mysql-server-5.0
-     mysql-client-5.0 (you need this for bootstrapping the tables)
+
+   We're not that strict with the MySQL version, older version will
+   probably work, but as a general rule of thumb, you should always pick
+   the most up-to-date version
+
+     mysql-server-5.x
+     mysql-client-5.x (you need this for bootstrapping the tables)
 
 3) PHP
 
-     libapache2-php5
+     libapache2-mod-php5
      php5-mysql
      libphp-phpmailer
      php-pear (PEAR::MDB2_mysql_driver (note: pear and MDB2_Mysql_Driver is
 		     available through the backports, but we
 		     refrain from using this here)
+	       pear install MDB2_Driver_mysql
+
     smarty (*not* smarty-gettext)
 
 3 a) When using Comodo, you will also need the mcrypt and curl libraries:
@@ -156,6 +163,17 @@ c) Configure the confusa_config.php file (copy the
    confusa_config_template.php and modify with values that makes sense
    to you - the template explaines the attributes).
 
+   Also; the templates will look for 2 directories for compiles
+   templates and smarty-cache. You need to create these and give them to
+   the webserver-user (www-data in most cases):
+
+       mkdir -p /var/cache/confusa/templates_c/
+       mkdir -p /var/cache/confusa/smarty_cache/
+       chown -R www-data:www-data /var/cache/confusa/templates_c/
+       chown -R www-data:www-data /var/cache/confusa/smarty_cache/
+       chmod 0700 /var/cache/confusa/templates_c/
+       chmod 0700 /var/cache/confusa/smarty_cache/
+
 d) Run the create_database.sh script in the confusa/bin/ folder
    This will create the database, the user and the tables. it will use
    the confusa_config.php file, so make sure that this is configured
@@ -220,3 +238,22 @@ f) Add a cron-job that takes backup of the database. The most critical
     OAuth may oblige you to create a directory /tmp/oauth with write
     permissions for the webserver-process, which it will use as a token
     store.
+
+10*) Enable tests
+
+    Confusa comes bundled with a test-suite and you can enable this via apache if you are so inclined.
+
+             Alias /confusa_test "/var/www/confusa/tests"
+             <Directory /var/www/confusa/tests/>
+                        Options Indexes MultiViews
+                        AllowOverride None
+                        Order deny,allow
+                        Deny from all
+			Allow from localhost 127.0.0.0/255.0.0.0 ::/128
+             </Directory>
+
+    You can also run the tests from the commandline:
+
+       cd /var/www/confusa/tests && php -f all_tests.php
+
+    This should print a short summary of the tests and whether or not they passed.
