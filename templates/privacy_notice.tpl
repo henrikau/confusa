@@ -2,7 +2,7 @@
 <div class="spacer"></div>
 {if isset($nren_pt_text)}
 {$nren_pt_text}
-{elseif isset($nren_unset_pt_text)}
+{elseif isset($nren_unset_pt_text) && isset($nren_contact_email)}
 {$nren_unset_pt_text|escape}
 <p class="center">
 <a href="mailto:{$nren_contact_email|escape}">{$nren_contact_email|escape}</a>
