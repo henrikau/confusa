@@ -132,7 +132,9 @@ class CP_NREN_Subs_Settings extends Content_Page
 					    array_search($_POST['cert_validity'], ConfusaConstants::$CAPI_VALID_PERSONAL) !== FALSE) {
 						$this->form_data['cert_validity'] = $_POST['cert_validity'];
 					}
-
+					if (isset($_POST['language'])) {
+						$this->form_data['language'] = Input::sanitizeLangCode($_POST['language']);
+					}
 
 					/* don't continue if information has been stripped */
 					if ($this->validation_error) {
@@ -303,6 +305,10 @@ class CP_NREN_Subs_Settings extends Content_Page
 		if (isset($this->form_data['cert_validity']) &&
 			$this->form_data['cert_validity'] !== "") {
 			$nren->setCertValidity($this->form_data['cert_validity']);
+		}
+		if (isset($this->form_data['language']) &&
+			$this->form_data['language'] !== "") {
+			$nren->setLang($this->form_data['language']);
 		}
 		if (isset($this->form_data['reauth_timeout']) &&
 			$this->form_data['reauth_timeout'] !== "") {
