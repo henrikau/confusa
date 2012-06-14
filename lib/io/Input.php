@@ -242,7 +242,7 @@ class Input
 	 */
 	static function sanitizeLangCode($input)
 	{
-		$output = preg_replace('/a-z\-/i', '', $input);
+		$output = preg_replace('/[^a-z\-]/i', '', $input);
 		return $output;
 	}
 

@@ -13,6 +13,15 @@ class TestOfInput extends UnitTestCase {
 	{
 		/* cleanup */
 	}
+
+	function testLang()
+	{
+		$this->assertEqual("en", Input::sanitizeLangCode("en"));
+		$this->assertEqual("no", Input::sanitizeLangCode("no123"));
+		$this->assertEqual("de-DE", Input::sanitizeLangCode("de-DE"));
+		$this->assertEqual("abcdefgh", Input::sanitizeLangCode("ab123cde8493fg8989h"));
+	}
+
 	function testACSRF()
 	{
 		$res = true;
