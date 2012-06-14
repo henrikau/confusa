@@ -13,6 +13,12 @@ class CP_Help extends Content_Page
 		parent::__construct("Help", false, "index");
 	}
 
+	public function pre_process($person)
+	{
+		parent::pre_process($person);
+		$this->tpl->assign('extraScripts', array('js/jquery-1.6.1.min.js'));
+		$this->tpl->assign('rawScript', file_get_contents('../include/rawToggleExpand.js'));
+	}
 	public function process()
 	{
 		$nren = $this->person->getNREN();
