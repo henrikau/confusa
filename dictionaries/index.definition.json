@@ -21,7 +21,7 @@
 		"en": "How long are the certificates valid?"
 	},
 	"index_faq_text2": {
-		"en": "Certificates issued by Confusa are valid for 13 months."
+		"en": "It depends on the Certificate Authority, but normally it is valid for at least 1 year."
 	},
 	"index_faq_heading3": {
 		"en": "Why do I have to login?"
