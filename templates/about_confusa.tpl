@@ -12,7 +12,7 @@
 <h4>{$l10n_heading_authentication}</h4>
 
 <p class="info">
-  <a href="http://rnd.feide.no/simplesamlphp" target="_blank">simplesamlphp</a> {$l10n_infotext_thanks2}
+  <a href="http://rnd.feide.no/simplesamlphp">simplesamlphp</a> {$l10n_infotext_thanks2}
 </p>
 
 <h4>{$l10n_heading_icons}</h4>

@@ -188,8 +188,8 @@ Subsequently, give them the right permissions:<br />
 <p>
   Instead of having it's own certificate management facilities, on Linux
   Google chrome ties into libnss3-tools. See
-  the <a href="http://code.google.com/p/chromium/wiki/LinuxCertManagement"
-  target="_blank">Chrome documentatio</a>n on certificate management. On
+  the <a href="http://code.google.com/p/chromium/wiki/LinuxCertManagement">
+    Chrome documentatio</a>n on certificate management. On
   the downside, users will not have a very nice graphical interface to
   manage their certificates. On the other downside, the certutil command
   is not very easy to use. On the upside, it is rather powerful.
@@ -219,8 +219,12 @@ Subsequently, give them the right permissions:<br />
   Full\ Name\ aeoeaa\ confusatest@feide.no\'s\ TERENA\ eScience\
   Personal\ CA\ ID
 </p>
-<p>Now that the certificate has been exported in PKCS#12 format, it needs to be <a href="#pkcs12">converted to PKCS#7 format</a> in order to be used with the Globus/Grid software.
-</div><div class="spacer"></div>
+<p>Now that the certificate has been exported in PKCS#12 format, it
+  needs to be <a href="#pkcs12">converted to PKCS#7 format</a> in order
+  to be used with the Globus/Grid software.
+</p>
+</div>
+<div class="spacer"> </div>
 
 <a href="#" class="eh_head" id="toc_import_chrome">
   How to import CA certificates into Chrome
