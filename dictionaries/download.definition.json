@@ -35,9 +35,12 @@
 	"l10n_status_processing": {
 		"en":	"Processing pending"
 	},
+	"l10n_status_revoked_in_progess": {
+		"en":	"Revocation in progress..."
+		},
 	"l10n_status_revoked": {
-		"en":	"Revoked!!"
-	},
+		"en":	"Revoked!"
+		},
 	"l10n_status_nonew": {
 		"en":	"No new certificates in the last"
 	},
