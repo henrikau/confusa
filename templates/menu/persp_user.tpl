@@ -1,6 +1,6 @@
 <h3>{$heading_certificates|escape}</h3>
 <ul>
-  <li><a href="download_certificate.php"{$prot_title}>
+  <li><a href="download_certificate.php" {$prot_title}>
       {$prot_l}{$item_my_cert|escape}{$prot_r}</a></li>
 </ul>
 
