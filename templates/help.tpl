@@ -179,6 +179,12 @@ Subsequently, give them the right permissions:<br />
   chmod 0600 userkey.pem<br />
   chmod 0644 usercert.pem
 </p>
+
+<p>Please note that you need to use OpenSSL version 0.9.X, because grid
+   software cannot handle certificates converted with OpenSSL 1.X at
+  this time.
+</p>
+
 </div><div class="spacer"></div>
 
 <a href="#" class="eh_head" id="toc_export_chrome_linux">
