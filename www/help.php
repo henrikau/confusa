@@ -1,5 +1,6 @@
 <?php
 require_once 'confusa_include.php';
+require_once 'confusa_constants.php';
 require_once 'Content_Page.php';
 require_once 'Framework.php';
 require_once 'Person.php';
@@ -31,6 +32,9 @@ class CP_Help extends Content_Page
 				$this->tpl->assign('nren_contact_email', $nren->getContactEmail(true));
 			}
 			$this->tpl->assign('help_file', file_get_contents('../include/help.html'));
+			if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+				$this->tpl->assign('portal_escience', true);
+			}
 			$this->tpl->assign('nren', $nren->getName());
 			$this->tpl->assign('content', $this->tpl->fetch('help.tpl'));
 		} else {

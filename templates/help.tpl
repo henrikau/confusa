@@ -180,10 +180,13 @@ Subsequently, give them the right permissions:<br />
   chmod 0644 usercert.pem
 </p>
 
-<p>Please note that you need to use OpenSSL version 0.9.X, because grid
-   software cannot handle certificates converted with OpenSSL 1.X at
-  this time.
+{if isset($portal_escience) and $portal_escience}
+<p>
+  <b>Note!</b> you need to use OpenSSL version 0.9.X, because
+   currently, most grid software cannot handle certificates converted
+   with OpenSSL 1.X.
 </p>
+{/if}
 
 </div><div class="spacer"></div>
 
