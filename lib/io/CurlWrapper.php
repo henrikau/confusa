@@ -2,8 +2,7 @@
 
 ini_set('mbstring.http_input', 'pass');
 ini_set('mbstring.http_output', 'pass');
-
-
+require_once "Logger.php";
 /*
  * Wrap Curl calls in a convenience class
  */
@@ -77,6 +76,7 @@ class CurlWrapper
 		/* Do basic URL filtering */
 		$curlurl = Input::sanitizeURL($url);
 		if (is_null($curlurl) || $curlurl === "" || filter_var($curlurl, FILTER_VALIDATE_URL)) {
+			Logger::log_event(LOG_NOTICE, "invalid URL, aborting curl-fetch");
 			return false;
 		}
 
@@ -88,34 +88,53 @@ class CurlWrapper
 		}
 		$rkey = openssl_pkey_get_private($key, $keypw);
 		if ($rkey === false) {
+			Logger::log_event(LOG_NOTICE, "Could not parse private key for CurlContactCert, aborting");
 			return false;
 		}
 		if (!openssl_x509_check_private_key($cert, $rkey)) {
-			/* echo "cert/key mismatch\n"; */
-			/* echo "key:\n" . $key; */
-			/* echo "\ncert:\n" . $cert; */
+			Logger::log_event(LOG_NOTICE, "Provided key and certificate is not a pair, cannot continue.");
+			/* throw exception? */
 			return false;
 		}
-		$rcert = openssl_x509_read($cert);
-		$cert_data = openssl_x509_parse($rcert);
-		echo "validTo: " . $cert_data['validTo'] . "\n";
-		echo "time():  " . time() . "\n";
-		if ($cert_data['validTo'] < time()) {
-			echo "Certificate has expired!\n";
-			/* expired cert */
+		$rcert = new Certificate($cert);
+		if (!$rcert->isValid()) {
+			$logline="Certificate (" . $rcert->getHash() . ") has expired, cannot use this. Aborting curl.";
+			Logger::log_event(LOG_NOTICE, $logline);
 			return false;
 		}
+
+		if (!file_exists("/tmp/".$rcert->getHash().".key")||
+			!file_exists("/tmp/".$rcert->getHash().".crt")) {
+			if (file_put_contents("/tmp/".$rcert->getHash().".key", $key) === false) {
+				Logger::log_event(LOG_NOTICE, "Could not write key to file");
+			}
+			if (file_put_contents("/tmp/".$rcert->getHash().".crt", $cert) === false) {
+				Logger::log_event(LOG_NOTICE, "Could not write cert to file");
+			}
+	}	
+
 		$options = 	array(
-			CURLOPT_URL => $curlurl,
-			CURLOPT_SSL_VERIFYPEER => false,
-			CURLOPT_SSL_VERIFYHOST =>  2,
-			CURLOPT_SSLKEY => 'my.key',
-			CURLOPT_SSLCERT => 'my.crt',
-			CURLOPT_SSLKEYPASSWD => 'foobar'
+			CURLOPT_URL					=> $curlurl,
+			CURLOPT_SSL_VERIFYPEER		=> false,
+			CURLOPT_SSL_VERIFYHOST		=> 2,
+			CURLOPT_SSLKEY				=> "/tmp/".$rcert->getHash().".key",
+			CURLOPT_SSLCERT				=> "/tmp/".$rcert->getHash().".crt",
+			CURLOPT_SSLKEYPASSWD		=> $keypw,
 		);
 
-		$ch = curl_init();
-		return "data";			/* to trigger tests, this is bogus data */
+		$channel = curl_init();
+		curl_setopt_array($channel, $options);
+		$data = curl_exec($channel);
+		$status = curl_errno($channel);
+		curl_close($channel);
+
+		if ($status !== 0) {
+			throw new ConfusaGenException("Could not connect properly to remote " .
+			                              "endpoint $url using cert-based authN! ".
+										  "Maybe the Confusa instance is misconfigured? " .
+			                              "Please contact an administrator!");
+		}
+		return $data;
 	}
 }
 ?>

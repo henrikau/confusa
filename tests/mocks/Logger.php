@@ -1,6 +1,6 @@
 <?php
 
-class Logger 
+class Logger
 {
 	static private $entries = array();
 
@@ -12,15 +12,24 @@ class Logger
 
 	static function assert_logline($line)
 	{
-		/* loop through Logger::$entries  */
+		foreach(Logger::$entries as $e) {
+			if ($line === $e[1]) return true;
+		}
 		return false;
 	}
 
 	static function dump_loglines()
 	{
 		echo "<pre>\n";
-		print_r(Logger::$entries);
+		foreach (Logger::$entries as $e) {
+			echo $e[0] . " : " . $e[1] . "\n";
+		}
 		echo "</pre>\n";
+	}
+
+	static function empty_loglines()
+	{
+		Logger::$entries = array();
 	}
 }
 ?>
