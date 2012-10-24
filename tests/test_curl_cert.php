@@ -79,6 +79,7 @@ class TestCurlCert extends UnitTestCase {
 
 	function testCurlWrapper_InvalidURL()
 	{
+		$this->expectException('ConfusaGenException');
 		$res =  CurlWrapper::curlContactCert("http://134566.48",
 											 $this->defkey,
 											 $this->defcert,
