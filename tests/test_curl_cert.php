@@ -141,9 +141,12 @@ class TestCurlCert extends UnitTestCase {
 											 $this->defcert,
 											 $this->defpw,
 											 $this->defdata);
-		$this->assertTrue(file_exists("/tmp/$hash.key "), "CurlWrapper should have cached key (/tmp/$hash.key) to disk");
-		$this->assertTrue(file_exists("/tmp/$hash.crt "), "CurlWrapper should have cached cert (/tmp/$hash.crt) to disk");
-		//Logger::dump_loglines();
+
+		$this->assertTrue(file_exists("/tmp/$hash.key"),
+						  "CurlWrapper should have cached key (/tmp/$hash.key) to disk");
+		$this->assertTrue(file_exists("/tmp/$hash.crt"),
+						  "CurlWrapper should have cached cert (/tmp/$hash.crt) to disk");
+		Logger::dump_loglines();
 	}
 
 	function testCurlWrapper_contactEndpoint()
