@@ -75,11 +75,11 @@ class CurlWrapper
 
 		/* Do basic URL filtering */
 		$curlurl = Input::sanitizeURL($url);
-		if (is_null($curlurl) || $curlurl === "" || filter_var($curlurl, FILTER_VALIDATE_URL)) {
-			Logger::log_event(LOG_NOTICE, "invalid URL, aborting curl-fetch");
+		if (is_null($curlurl) || $curlurl === "" || filter_var($curlurl, FILTER_VALIDATE_URL) === false) {
+			Logger::log_event(LOG_NOTICE, "invalid URL (".$curlurl."), aborting curl-fetch.");
 			return false;
 		}
-
+		Logger::log_event(LOG_DEBUG, "Contacting $curlurl using cert AuthN");
 		/* key should be encrypted, if not, do not use it (not safe!) */
 		$start = "-----BEGIN ENCRYPTED PRIVATE KEY-----";
 		if (substr($key, 0, strlen($start)) !== $start) {
@@ -111,7 +111,7 @@ class CurlWrapper
 			if (file_put_contents("/tmp/".$rcert->getHash().".crt", $cert) === false) {
 				Logger::log_event(LOG_NOTICE, "Could not write cert to file");
 			}
-	}	
+		}
 
 		$options = 	array(
 			CURLOPT_URL					=> $curlurl,
@@ -130,7 +130,7 @@ class CurlWrapper
 
 		if ($status !== 0) {
 			throw new ConfusaGenException("Could not connect properly to remote " .
-			                              "endpoint $url using cert-based authN! ".
+			                              "endpoint $curlurl using cert-based authN! ".
 										  "Maybe the Confusa instance is misconfigured? " .
 			                              "Please contact an administrator!");
 		}
