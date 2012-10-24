@@ -120,6 +120,9 @@ class CurlWrapper
 			CURLOPT_SSLKEY				=> "/tmp/".$rcert->getHash().".key",
 			CURLOPT_SSLCERT				=> "/tmp/".$rcert->getHash().".crt",
 			CURLOPT_SSLKEYPASSWD		=> $keypw,
+			CURLOPT_HEADER				=> false, /* ignore headers */
+			CURLOPT_FOLLOWLOCATION		=> true,	  /* follow redirects */
+			CURLOPT_RETURNTRANSFER		=> 1, /* do not dump data to stdout */
 		);
 
 		$channel = curl_init();
