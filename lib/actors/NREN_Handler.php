@@ -135,6 +135,18 @@ class NREN_Handler
 	}
 
 
+	static function getAllNRENs()
+	{
+		$nrens = array();
+		$query ="SELECT name, nren_id FROM nrens ORDER BY nren_id";
+		$res = MDB2Wrapper::execute($query, NULL, NULL);
+		foreach($res as $key => $value) {
+			$nrens[] = array('name' => $res[$key]['name'],
+							 'id'   => $res[$key]['nren_id']);
+
+		}
+		return $nrens;
+	}
 	/**
 	 * getFromQuery() run the query and create a new NREN
 	 *

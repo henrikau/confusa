@@ -506,8 +506,12 @@ class CA_Comodo extends CA
      *
      * @param $key The auth_key or order number of the certificate for which is
      * polled
+     * @param $raw Bool flag to indicate if the result should be returned
+     * without being parsed to true/false
+     *
+     * @return Boolean|Array
      */
-    public function pollCertStatus($key)
+    public function pollCertStatus($key, $raw=false)
     {
         $key = $this->transformToOrderNumber($key);
 
@@ -518,13 +522,15 @@ class CA_Comodo extends CA
 			"&queryType=0";
 
 		$data = CurlWrapper::curlContact($polling_endpoint);
-
+		if ($raw) {
+			return $data;
+		}
         if ($data == 1) {
             return true;
         } else {
             return false;
         }
-    }
+    } /* end pollCertStratus */
 
     /**
      * Retrieve a certificate from a remote endpoint (e.g. Comodo).
