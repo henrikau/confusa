@@ -51,61 +51,71 @@ function queryOrder($nren, $order)
 	$errors = explode("\n", $status, 2);
 	if (!is_numeric($errors[0])) {
 		echo "Malformed response from CA, all bets are off :/\n";
-		print_r($errors);
 		return;
 	}
+	echo "Response from CA backend: " . $errors[0] . ":\n";
 	switch($errors[0]) {
+	case 0:
+		echo "Certificate is currently being processed by Comodo\n";
+		break;
 	case 1:
-		echo "Certificate looks OK, no errors detected\n";
+		echo "Certificate available, no errors detected\n";
 		echo "TODO: download cert and inspect content here\n";
 		break;
-
+	case -1:
+		echo "Request via vulnerable channel (non-https)\n";
+		break;
+	case -2:
+		echo "Unrecognized argument sent to CA backend.\n";
+		echo $status . "\n";
+		break;
+	case "-3":
 	case "-4":
 		/* invalid password? */
-		$known_error = false;
 		echo "You are not allowed to log in and view this certificate\n";
 		$caa = "CA Account problems -";
 		if (strpos($errors[1], "loginPassword") !== FALSE) {
 			echo "$caa invalid password\n";
-			$known_error = true;
 		}
 		/* invalid username? */
 		if (strpos($errors[1], "loginName") !== FALSE) {
 			echo "$caa invalid username\n";
-			$known_error = true;
 		}
 		if (strpos($errors[1], "ap") !== FALSE) {
 			echo "$caa invalid AP-Name\n";
-			$known_error = true;
 		}
 		if (strpos($errors[1], "orderNumber") !== FALSE) {
 			echo "Invalid orderNumber, make sure that the certificate you are looking for".
 				" are accessible via this NREN-account!\n";
-			$known_error = true;
 		}
-		if (!$known_error)
-			print_r($errors);
-		break;
-	case "-16":
-		echo "meh";
 		break;
 	case "-13":
 		echo "The CSR contained a publickey with invalid keysize, make sure it is long enough!\n";
-		print_r($errors[1]);
+		break;
+	case "-14":
+		echo "Unknown error\n";
+		break;
+	case "-16":
+		echo "Permission denied when contacting Comodo backend\n";
+		break;
+	case "-17":
+		echo "Confusa used GET insted of POST when contacting CA backend\n";
 		break;
 	case "-20":
-		echo "CSR rejected\n";
-		print_r($errors[1]);
+		echo "CSR rejected by CA\n";
 		break;
 	case "-21":
 		echo "Certificate has been revoked\n";
-		print_r($errors[1]);
+		break;
+	case "-22":
+		echo "Awaiting payment, certificate on hold\n";
 		break;
 	default:
 		echo "unknown error (" . $errors[0] . ")\n";
-		print_r($errors[1]);
 		break;
 	} /* endswitch */
+
+	print_r($errors[1]);
 	echo "\n";
 }
 
