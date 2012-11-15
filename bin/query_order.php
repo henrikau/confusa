@@ -4,6 +4,8 @@ if (php_sapi_name() !=="cli") {
 	echo "test_capi will only run in cli-mode!\n";
 	exit(1);
 }
+$extended = false;
+
 require_once dirname(__FILE__) . "/../www/confusa_include.php";
 require_once "confusa_constants.php";
 require_once "NREN_Handler.php";
@@ -16,7 +18,7 @@ function show_help()
 	echo "-l\t\tList all nrens found in the database\n";
 	echo "-n NREN\t\tID of NREN as found in the database\n";
 	echo "-o orderNumber\tThe ordernumber assigned to the request by Comodo\n";
-	echo "-q\t\tQuiet, no extra output, just status\n";
+	echo "-e extended\tExtended search for a certificate, get as much info about the owner as possible (requires a valid orderNumber)\n";
 	echo "-h\t\tShow this helptext\n";
 }
 
@@ -33,6 +35,32 @@ function listNRENs()
 		echo $value['id'] . "\t" . $value['name'] . "\n";
 	}
 }
+function getCert($ca, $order)
+{
+	global $extended;
+
+	$cert = $ca->getCert($order);
+	if ($cert !== null) {
+		echo "\nFound cert, dumping data\n";
+		echo "Subject:\t"    . $cert->getSubject()     . "\n";
+		echo "Length:\t\t"   . $cert->getLength()      . "\n";
+		echo "Type:\t\t"     . $cert->getType()        . "\n";
+		echo "Fingerprint:\t". $cert->getFingerprint() . "\n";
+		echo "Hash:\t\t"     . $cert->getHash()        . "\n";
+		echo "Pubkeyhash:\t" . $cert->getPubKeyHash()  . "\n";
+		echo "Serial:\t\t"   . $cert->getSerial()      . "\n";
+		echo "Valid from:\t" . $cert->getBeginDate()   . "\n";
+		echo "Valid to:\t" .   $cert->getEnddate()     . "\n";
+	}
+
+	if ($extended) {
+		$res = $ca->getCertList(true);
+		foreach ($res as $item) {
+			print_r($item);
+		}
+	}
+	/* $list = $ca->getCertList(true); */
+}
 
 function queryOrder($nren, $order)
 {
@@ -47,6 +75,7 @@ function queryOrder($nren, $order)
 	$person->setNREN($nren);
 	$person->isAuth(true);
 	$ca = CAHandler::getCA($person);
+
 	$status = $ca->pollCertStatus($order, true);
 	$errors = explode("\n", $status, 2);
 	if (!is_numeric($errors[0])) {
@@ -60,7 +89,7 @@ function queryOrder($nren, $order)
 		break;
 	case 1:
 		echo "Certificate available, no errors detected\n";
-		echo "TODO: download cert and inspect content here\n";
+		getCert($ca, $order);
 		break;
 	case -1:
 		echo "Request via vulnerable channel (non-https)\n";
@@ -119,12 +148,11 @@ function queryOrder($nren, $order)
 	echo "\n";
 }
 
-$options = getopt("o:n:hql");
+$options = getopt("o:n:ehl");
 if (is_null($options) || count($options) == 0) {
 	show_help();
 	exit(0);
 }
-$quiet = false;
 foreach($options as $opt => $value) {
 	switch($opt) {
 	case 'l':
@@ -136,10 +164,9 @@ foreach($options as $opt => $value) {
 	case 'o':
 		$orderNumber = $value;
 		break;
-	case 'q':
-		$quiet = true;
+	case 'e':
+		$extended = true;
 		break;
-
 		/* fallthrough  */
 	case 'h':
 	default:
@@ -149,7 +176,7 @@ foreach($options as $opt => $value) {
 } /* end foreach */
 
 if (isset($nren) && isset($orderNumber)) {
-		queryOrder($nren, $orderNumber);
+	queryOrder($nren, $orderNumber);
 } else {
 	echo "Some errors with params, please provide proper input\n";
 	show_help();
