@@ -35,13 +35,38 @@ function listNRENs()
 		echo $value['id'] . "\t" . $value['name'] . "\n";
 	}
 }
-function getCert($ca, $order)
+function getSubjectArray($subject)
 {
-	global $extended;
-
+	$res = array();
+	foreach (explode("/", trim($subject)) as $key => $item) {
+		if ($item==="")
+			continue;
+		$component = explode("=", $item);
+		if (array_key_exists($component[0], $res)) {
+			$res[$component[0]] .= ", " . $component[1];
+		} else {
+			$res[$component[0]] = $component[1];
+		}
+	}
+	return $res;
+}
+function getEppnCN($cn)
+{
+	/* last element is eppn */
+	$ceppn = explode(" ", trim($cn));
+	return $ceppn[count($ceppn) - 1];
+}
+function getNameCN($cn)
+{
+	/* assume eppn is present, i.e. PRD_ESCIENCE */
+	$eppn = getEppnCN($cn);
+	$epos = strpos($cn, $eppn);
+	return substr($cn, 0, $epos);
+}
+function getAndPrintOrder($ca, $order, $print)
+{
 	$cert = $ca->getCert($order);
-	if ($cert !== null) {
-		echo "\nFound cert, dumping data\n";
+	if ($cert !== null && $print) {
 		echo "Subject:\t"    . $cert->getSubject()     . "\n";
 		echo "Length:\t\t"   . $cert->getLength()      . "\n";
 		echo "Type:\t\t"     . $cert->getType()        . "\n";
@@ -52,15 +77,33 @@ function getCert($ca, $order)
 		echo "Valid from:\t" . $cert->getBeginDate()   . "\n";
 		echo "Valid to:\t" .   $cert->getEnddate()     . "\n";
 	}
+	return $cert;
+}
+function getCert($ca, $order, $person)
+{
+	global $extended;
+	$cert = getAndPrintOrder($ca, $order, !$extended);
 
 	if ($extended) {
-		$res = $ca->getCertList(true);
-		foreach ($res as $item) {
-			print_r($item);
+		echo "Running extended search\n";
+		$subj = getSubjectArray($cert->getSubject());
+		$eppn = null;
+		/* need to decorate $person further in order for CA to accept it */
+		$name = $subj['CN'];
+		/* set eppn if appropriate */
+		if (Config::get_config('cert_product') === PRD_ESCIENCE) {
+			$eppn = getEppnCN($name);
+			$name = getNameCN($name);
+		}
+		$person->setName($name);
+		$person->setEPPN($eppn);
+		$list = $ca->getCertListForEPPN(getEppnCN($subj['CN']), $subj['O']);
+		foreach ($list as $item) {
+			echo "Looking at order " . $item['auth_key'] . "\n";
+			getAndPrintOrder($ca, $item['auth_key'], true);
 		}
 	}
-	/* $list = $ca->getCertList(true); */
-}
+} /* end getCert */
 
 function queryOrder($nren, $order)
 {
@@ -89,7 +132,7 @@ function queryOrder($nren, $order)
 		break;
 	case 1:
 		echo "Certificate available, no errors detected\n";
-		getCert($ca, $order);
+		getCert($ca, $order, $person);
 		break;
 	case -1:
 		echo "Request via vulnerable channel (non-https)\n";
