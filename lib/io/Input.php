@@ -37,13 +37,21 @@ class Input
 	 * sanitize a subscriber org-name (the /O= name in the subject DN).
 	 * This function does not perform any validation whatsoever, it just removes
 	 * characters that are not meant to be in subject-DN org-name.
+	 *
+	 * Update: it was discovered that the CA backend did not eat ',' in the
+	 *	       orgname too well and needs to be stripped out.
+	 *
 	 * @param $input string an input which is supposed to be a subscriber
 	 *               org-name
 	 * @return string the sanitized input string
 	 */
 	static function sanitizeOrgName($input)
 	{
-		$output = preg_replace('/[^a-z0-9@_\-,\.\s]/i', '', $input);
+		$output = preg_replace('/[^a-z0-9@_\-\.\s]/i', '', $input);
+		if (Config::get_config('cert_product') == PRD_ESCIENCE) {
+			/* cannot use ',' and length > 64 */
+			return substr($output, 0, 64);
+		}
 		return $output;
 	}
 
@@ -65,6 +73,7 @@ class Input
 	 * equals the value sent in the attribute identifying the subscriber
 	 * (eduPersonOrgDN, schacHomeOrganization).
 	 * No validation, just removal of "bad" characters
+	 *
 	 * @param $input string The unsanitized subscriber-db-name
 	 * @return string The sanitized subscriber-IdP-name
 	 */

@@ -116,5 +116,27 @@ class TestOfInput extends UnitTestCase {
 		$this->assertEqual(Input::sanitizeMaintMode('<asdfasdfasdf'), '');
 		$this->assertEqual(Input::sanitizeMaintMode('<asdfasdfasdfn'), 'n');
 	}
+
+	function testGoodSubscriberName()
+	{
+		$good = "some subscriber-name";
+		$this->assertEqual(Input::sanitizeOrgName($good), $good);
+	}
+	function testTooLongSubscriberName()
+	{
+		/* CPS 3.1.3 eScience state that O= should not be longer than 64 char */
+		$toolong = "This name is way too long and should be truncated by Input::sanitizeIdPName";
+		$sanitized = Input::sanitizeOrgName($toolong);
+		$this->assertNotEqual($sanitized,
+							  $toolong,
+							  "Error when sanitizing name - should truncate name that is too long");
+		$this->assertEqual(64, strlen($sanitized));
+	}
+
+	function testCommaSubscriberName()
+	{
+		$bad = "Some, subscriber";
+		$this->assertEqual(Input::sanitizeOrgName($bad), "Some subscriber");
+	}
 } /* end TestOfInput */
 ?>
