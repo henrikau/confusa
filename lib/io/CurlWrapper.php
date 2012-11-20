@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 ini_set('mbstring.http_input', 'pass');
 ini_set('mbstring.http_output', 'pass');
@@ -31,6 +31,7 @@ class CurlWrapper
 		}
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15); /* 15 sec timeout */
         $data = curl_exec($ch);
 		$status = curl_errno($ch);
         curl_close($ch);
@@ -123,6 +124,7 @@ class CurlWrapper
 			CURLOPT_HEADER				=> false, /* ignore headers */
 			CURLOPT_FOLLOWLOCATION		=> true,	  /* follow redirects */
 			CURLOPT_RETURNTRANSFER		=> 1, /* do not dump data to stdout */
+			CURLOPT_CONNECTTIMEOUT		=> 15, /* 15 sec timeout */
 		);
 
 		$channel = curl_init();
