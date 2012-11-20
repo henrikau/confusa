@@ -29,6 +29,9 @@
 	"l10n_text_crldili": {
 		"en": "Direct link to crl (install):"
 	},
+	"l10n_crl_fetch_error": {
+		"en": "Error getting CRL from remote!"
+	},
 	"l10n_heading_cadump": {
 		"en": "CA certificate dump:"
 	},
@@ -37,6 +40,12 @@
 	},
 	"l10n_text_downlcacert": {
 		"en": "the CA certificate."
+	},
+	"l10n_cacert_fetch_error": {
+		"en": "Error getting the Root CA Certificate!"
+	},
+	"l10n_cachain_fetch_error": {
+		"en": "Error fetching the component and constructing the CA-chain!"
 	},
 	"l10n_text_downlchain": {
 		"en": "the full CA-chain."
