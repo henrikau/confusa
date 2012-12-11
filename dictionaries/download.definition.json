@@ -90,7 +90,7 @@
 		"en":	"Signed certificate"
 	},
 	"l10n_mail_body": {
-		"en":	"Attached is your new certificate. Remember to store this in $HOME/.globus/usercert.pem for ARC to use"
+		"en":	"Attached is your new certificate."
 	},
 	"l10n_heading_nocerts": {
 		"en":	"No certificates in database"
