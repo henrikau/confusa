@@ -155,11 +155,11 @@ function createIEVistaRequest(dn, keysize)
 </div>
 </form>
 
-<div class="nav">
 <form action="receive_csr.php?{$ganticsrf}" method="get">
+<div class="nav">
 	<input id="backButton" type="submit" title="{$l10n_button_back}" value="&lt; {$l10n_button_back}" />
-</form>
 </div>
+</form>
 
 {if isset($order_number)}
 <script type="text/javascript">

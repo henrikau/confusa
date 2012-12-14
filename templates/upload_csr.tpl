@@ -81,11 +81,11 @@
   </div>
 </form>
 
-<div style="float: right;" class="nav">
 <form action="receive_csr.php" method="post">
+<div style="float: right;" class="nav">
 	{$panticsrf}
 	<input type="hidden" name="deleteCSR" value="{$authToken}" />
 	<input id="backButton" class="nav" type="submit" title="{$l10n_button_back}" value="&lt; {$l10n_button_back}" />
-</form>
 </div>
+</form>
 </div> <!-- inspect_csr -->

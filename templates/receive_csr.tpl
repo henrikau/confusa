@@ -161,8 +161,8 @@
 </script>
 {/literal}
 
-<div style="float: right;" class="nav">
 <form action="confirm_aup.php?{$ganticsrf}" method="get">
+<div style="float: right;" class="nav">
 	<input id="backButton" class="nav" type="submit" value="&lt; {$l10n_button_back}" title="{$l10n_button_back}" />
-</form>
 </div>
+</form>

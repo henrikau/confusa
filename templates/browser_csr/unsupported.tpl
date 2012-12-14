@@ -19,9 +19,9 @@
 </div>
 </fieldset>
 
-<div class="nav">
 <form action="receive_csr.php?{$ganticsrf}" method="get">
+<div class="nav">
 	<input id="backButton" type="submit" title="{$l10n_button_back}" value="&lt; {$l10n_button_back}" />
-</form>
 </div>
+</form>
 </div>

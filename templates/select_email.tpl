@@ -85,11 +85,11 @@
 </div>
 </form>
 
-<div style="float: right;" class="nav">
 <form action="confirm_aup.php?{$ganticsrf}" method="get">
+<div style="float: right;" class="nav">
 	<input id="backButton" type="submit" title="{$l10n_button_back}" value="&lt; {$l10n_button_back}" />
-</form>
 </div>
+</form>
 
 {* if the user has to specify *at least* one mail address, check whether she did *}
 {if $email_status == "m"}
