@@ -131,6 +131,11 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 	{
 		Framework::error_output("Cannot log out, you're in bypass-mode!");
 	}
+
+	public function getDiscoPath()
+	{
+		return "debug_disco.php"
+	}
 }
 
 ?>

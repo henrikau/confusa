@@ -325,5 +325,13 @@ abstract class Confusa_Auth
 	 * on their own reAuthentication needs.
 	 */
 	public abstract function reAuthenticate();
+
+	/**
+	 * Get the path to the discovery-site for the given auth-module.
+	 *
+	 * This is where you normally see a (scoped) list of available
+	 * authentication sources.
+	 */
+	public abstract function getDiscoPath();
 } /* end class Confusa_Auth */
 ?>

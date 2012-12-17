@@ -179,5 +179,17 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		}
 	} /* end deAuthenticateUser */
 
+	public function getDiscoPath()
+	{
+		$sspdir		 = Config::get_config('simplesaml_path');
+		require_once $sspdir . 'lib/_autoload.php';
+		SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
+		$sspConfig	 = SimpleSAML_Configuration::getInstance();
+		$discoPath = "http://" . $_SERVER['SERVER_NAME'] . "/" .
+			$sspConfig->getString('baseurlpath') .
+			"module.php/saml/disco.php?" .
+			$_SERVER['QUERY_STRING'];
+		return $discoPath;
+	}
 } /* end class IdP */
 ?>
