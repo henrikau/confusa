@@ -463,22 +463,30 @@ class Framework {
 	{
 		if (!empty($_GET) || !empty($_POST)) {
 			$facsrft = null;
+
 			if (isset($_GET) && array_key_exists('anticsrf', $_GET)) {
 				$facsrft = Input::sanitizeAntiCSRFToken($_GET['anticsrf']);
 			} else if (isset($_POST) && array_key_exists('anticsrf', $_POST)) {
 				$facsrft = Input::sanitizeAntiCSRFToken($_POST['anticsrf']);
+			} else if (isset($_GET) && array_key_exists('return', $_GET)) {
+				/* handle SSP redirect to idp_select */
+				$res = self::getCSRFRandToken(urldecode(urldecode($_GET['return'])));
+				if (is_array($res)) {
+					$facsrft = $res['full'];
+				}
 			}
-
 			if (!self::validateACSRFT($facsrft)) {
 				$msg =  "Got a GET/POST request without the correct anticsrf tag.";
+				$msg .= "Supplied: $facsrft";
 				if (array_key_exists('HTTP_REFERER', $_SERVER)) {
 					$msg .= " Referer was " . $_SERVER['HTTP_REFERER'];
 				}
 				Logger::log_event(LOG_WARNING, "[Anti CSRF] $msg");
 				return true;
 			}
-		} /* end GET or POST set */
-		return false; /* no detectable CSRF attempt */
+		}
+		/* no detectable CSRF attempt */
+		return false;
 	} /* end CSRFAttempt() */
 
 	/**
@@ -581,10 +589,21 @@ class Framework {
 		}
 		/* make sure rand only contains allowed characters. */
 		$rand = Input::sanitizeAntiCSRFToken($rand);
-
 		return $rand.":".sha1(session_id().$rand);
 	} /* end getAntiCSRF() */
 
+	private static function getCSRFRandToken($token)
+	{
+		$token = substr($token, strpos($token, 'anticsrf') + strlen('anticsrf') + 1 );
+		$pos = strrpos($token, ":");
+		if ($pos===false) {
+			echo $token; 
+			return false;
+		}
+		return array('rand' => substr($token, 0, $pos),
+					 'csrf' => substr($token, $pos +1),
+					 'full' => $token);
+	}
 
 	/**
 	 * validateACSRFT() validate a supplied token
