@@ -134,7 +134,7 @@ class Confusa_Auth_Bypass extends Confusa_Auth
 
 	public function getDiscoPath()
 	{
-		return "debug_disco.php"
+		return "debug_disco.php";
 	}
 }
 
