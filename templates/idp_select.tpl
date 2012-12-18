@@ -51,8 +51,6 @@ function showInfo(event, code) {
 	}
 	document.body.appendChild(form);
 	form.submit();
-    } else {
-	document.write("error");
     }
 }
 
