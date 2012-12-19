@@ -40,35 +40,13 @@
 
 {if strlen($privacy_notice_text) > 0}
 <div style="margin: 2em 0 0 0">
-<strong>{$l10n_header_privacynotice}</strong>: <span id="collapseLink" style="display: none"><a class="privacyNotice" href="#">({$l10n_item_lessinfo})</a></span>
+ <a href="#" id="privnoticeExpandable"
+    class="eh_head">{$l10n_header_privacynotice}</a>
+ <div class="eh_toggle_container">
+   {$privacy_notice_text}
+ </div>
 
-<div id="shortPrivacyNotice" style="display: none">
-{$privacy_notice_text|truncate:50:"...":true}
-<a class="privacyNotice" href="#" title="{$l10n_title_fullnotice}">({$l10n_item_moreinfo})</a>
-</div>
-
-<div id="fullPrivacyNotice">
-	{$privacy_notice_text}
-</div>
-</div>
 {/if}
-
-{literal}
-<script type="text/javascript">
-
-	/* show only short privacy notice, let user expand if JavaScript available */
-	$("#shortPrivacyNotice").show();
-	$("#fullPrivacyNotice").hide();
-
-	$(".privacyNotice").click(
-		function () {
-			$("#fullPrivacyNotice").slideToggle('slow');
-			$("#shortPrivacyNotice").toggle();
-			$("#collapseLink").toggle();
-		}
-	);
-</script>
-{/literal}
 
 <div class="spacer"></div>
 </fieldset>
