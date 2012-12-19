@@ -128,7 +128,7 @@ Installing Confusa
 
    'default-sp' => array(
                          'saml:SP',
-                         'discoURL' => 'https://beta.confusa.org/confusa/disco/idpdisco.php',
+                         'discoURL' => 'https://beta.confusa.org/confusa/idpselect.php',
                          /* fill in other values found via the documentation */
     ),
 
