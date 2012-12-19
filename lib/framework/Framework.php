@@ -597,7 +597,7 @@ class Framework {
 		$token = substr($token, strpos($token, 'anticsrf') + strlen('anticsrf') + 1 );
 		$pos = strrpos($token, ":");
 		if ($pos===false) {
-			echo $token; 
+			/* echo $token;  */
 			return false;
 		}
 		return array('rand' => substr($token, 0, $pos),
