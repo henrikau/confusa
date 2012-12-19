@@ -185,7 +185,7 @@ class Confusa_Auth_IdP extends Confusa_Auth
 		require_once $sspdir . 'lib/_autoload.php';
 		SimpleSAML_Configuration::setConfigDir($sspdir . '/config');
 		$sspConfig	 = SimpleSAML_Configuration::getInstance();
-		$discoPath = "http://" . $_SERVER['SERVER_NAME'] . "/" .
+		$discoPath = "https://" . $_SERVER['SERVER_NAME'] . "/" .
 			$sspConfig->getString('baseurlpath') .
 			"module.php/saml/disco.php?" .
 			$_SERVER['QUERY_STRING'];
