@@ -1,4 +1,4 @@
-    <h1>{$l10n_header_choosecountry}</h1>
+    <h2>{$l10n_header_choosecountry}</h2>
     <br />
 
     <div id="map" style="width: 684px; height: 600px"></div>
