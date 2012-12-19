@@ -511,7 +511,7 @@ class Framework {
 		if (!$nren)
 			return;
 
-		$url_arg = "?mode=admin&show=text&anticsrf=".Framework::getAntiCSRF();
+		$url_arg = "?mode=admin&amp;show=text&amp;anticsrf=".Framework::getAntiCSRF();
 
 		if (!$nren->hasHelpText()) {
 			Framework::warning_output("Missing NREN help-text. <a href=\"stylist.php" .
