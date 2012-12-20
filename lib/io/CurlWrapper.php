@@ -1,4 +1,4 @@
- <?php
+<?php
 
 ini_set('mbstring.http_input', 'pass');
 ini_set('mbstring.http_output', 'pass');
