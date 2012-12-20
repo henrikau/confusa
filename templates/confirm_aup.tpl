@@ -45,7 +45,7 @@
  <div class="eh_toggle_container">
    {$privacy_notice_text}
  </div>
-
+</div>
 {/if}
 
 <div class="spacer"></div>
