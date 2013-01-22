@@ -11,6 +11,8 @@ final class CP_IdP_Select extends Content_Page
 	private $mapMode;
 	private $cidp;
 	private $discoPath;
+	private $SCOPE_PARAM ="IDPList[]";
+
 	function __construct()
 	{
 		parent::__construct("IdP Select", false, "disco");
