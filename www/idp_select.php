@@ -94,7 +94,7 @@ final class CP_IdP_Select extends Content_Page
 		}
 	}
 
-	private function forwardToDisco()
+	private function forwardToDisco($nren)
 	{
 		$scopedIDPList	= $nren->getIdPList();
 		$queryString	= "";
