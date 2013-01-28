@@ -166,9 +166,44 @@ class NRENAccount
 							  "Too many account-results returned from DB for NREN " .
 							  $this->nren->getID() .
 							  ". This could indicate that the tables are corrupt (!)");
+		} else {
+			/* no accounts - could be that we have elements in account_map but
+			 * not linked back (old, legacy databaseschema */
+			return $this->readDeprecatedSchema($this->nren->getID());
 		}
 		return false;
 	} /* end read() */
+
+	/**
+	 * try to grap the account_map_id from the old schema.
+	 */
+	private function readDeprecatedSchema($nren_id)
+	{
+		/* test if nren_id is in table */
+		if (MDB2Wrapper::testColumn('account_map', 'nren_id') === true) {
+			try {
+				$res = MDB2Wrapper::execute("SELECT count(*) as count FROM account_map WHERE nren_id = ?",
+											array('integer'),
+											array($nren_id));
+			} catch (Exception $e) {
+				/* doesn't really matter, this is best-effort only */
+				Logger::log_event(LOG_NOTICE, "Could not get nren_id from account_map, error: " . $e->getMessage());
+				return false;
+			}
+			$num =  $res[0]['count'] . "\n";
+			try {
+				$res = MDB2Wrapper::execute("SELECT * FROM account_map WHERE nren_id = ?",
+											array('integer'),
+											array($nren_id));
+			} catch (Exception $e) {
+				/* doesn't really matter, this is best-effort only */
+				Logger::log_event(LOG_NOTICE, "Could not get accounts from account_map, error: " . $e->getMessage());
+				return false;
+			}
+			$this->parseAccountData($res, 0);
+			return true;
+		}
+	} /* end readDeprecatedSchema() */
 
 	/**
 	 * save() store updated results to the database, encrypting the password
