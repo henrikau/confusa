@@ -134,10 +134,18 @@ class NRENAccount
 							  "Trying to read NREN-account whilst internal state is changed. Aborted.");
 			return false;
 		}
-
-		$query  = "SELECT am.account_map_id, am.login_name, am.password, am.ivector, am.ap_name ";
-		$query .= "FROM account_map am LEFT JOIN nrens n ON n.login_account = am.account_map_id ";
-		$query .= "WHERE n.nren_id=? AND n.login_account IS NOT NULL";
+		if (MDB2Wrapper::testColumn('nrens', 'login_name') &&
+			MDB2Wrapper::testColumn('nrens', 'password') &&
+			MDB2Wrapper::testColumn('nrens', 'ivector') &&
+			MDB2Wrapper::testColumn('nrens', 'ap_name')) {
+			$query = "SELECT login_name, password, ivector, ap_name FROM nrens WHERE nren_id=?";
+			Logger::log_event(LOG_DEBUG, "Using the new schema for account details");
+		} else {
+			$query  = "SELECT am.account_map_id, am.login_name, am.password, am.ivector, am.ap_name ";
+			$query .= "FROM account_map am LEFT JOIN nrens n ON n.login_account = am.account_map_id ";
+			$query .= "WHERE n.nren_id=? AND n.login_account IS NOT NULL";
+			Logger::log_event(LOG_ALERT, "Old database-format is used, it schema should be migrated and data should be moved");
+		}
 
 		/* FIXME:
 		 * add internal state if in error
@@ -159,18 +167,14 @@ class NRENAccount
 			return false;
 		}
 		if (count($res) == 1) {
-			$this->parseAccountData($res, 0);
-			return true;
-		} else if (count($res) > 1) {
-			Logger::log_event(LOG_ALERT,
-							  "Too many account-results returned from DB for NREN " .
-							  $this->nren->getID() .
-							  ". This could indicate that the tables are corrupt (!)");
-		} else {
-			/* no accounts - could be that we have elements in account_map but
-			 * not linked back (old, legacy databaseschema */
+			return $this->parseAccountData($res, 0);
+		} else if (count($res) == 0) {
 			return $this->readDeprecatedSchema($this->nren->getID());
 		}
+		Logger::log_event(LOG_ALERT,
+						  "Too many account-results returned from DB for NREN " .
+						  $this->nren->getID() .
+						  ". This could indicate that the tables are corrupt (!)");
 		return false;
 	} /* end read() */
 
@@ -200,8 +204,7 @@ class NRENAccount
 				Logger::log_event(LOG_NOTICE, "Could not get accounts from account_map, error: " . $e->getMessage());
 				return false;
 			}
-			$this->parseAccountData($res, 0);
-			return true;
+			return $this->parseAccountData($res, 0);
 		}
 	} /* end readDeprecatedSchema() */
 
@@ -267,14 +270,17 @@ class NRENAccount
 	{
 		$this->login_name	= $sql_res[$idx]['login_name'];
 		$this->ap_name		= $sql_res[$idx]['ap_name'];
-		$this->account_id	= $sql_res[$idx]['account_map_id'];
-		$this->password		= trim(base64_decode(mcrypt_decrypt(
-													 MCRYPT_RIJNDAEL_256,
-													 Config::get_config('capi_enc_pw'),
-													 base64_decode($sql_res[$idx]['password']),
-													 MCRYPT_MODE_CFB,
-													 base64_decode($sql_res[$idx]['ivector']))));
+		if (array_key_exists('account_map_id', $sql_res[$idx])) {
+			$this->account_id	= $sql_res[$idx]['account_map_id'];
+		}
 
-	}
+		$this->password	= trim(base64_decode(mcrypt_decrypt(
+												 MCRYPT_RIJNDAEL_256,
+												 Config::get_config('capi_enc_pw'),
+												 base64_decode($sql_res[$idx]['password']),
+												 MCRYPT_MODE_CFB,
+												 base64_decode($sql_res[$idx]['ivector']))));
+		return true;
+	} /* end parseAccountData() */
 }
 ?>
