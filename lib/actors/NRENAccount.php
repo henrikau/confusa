@@ -230,20 +230,27 @@ class NRENAccount
 											   base64_encode($this->password),
 											   MCRYPT_MODE_CFB,
 											   $iv));
-		if (isset($this->account_id)) {
+		if (MDB2Wrapper::testColumn('nrens', 'login_name') &&
+			MDB2Wrapper::testColumn('nrens', 'password') &&
+			MDB2Wrapper::testColumn('nrens', 'ivector') &&
+			MDB2Wrapper::testColumn('nrens', 'ap_name')) {
+			$sql = " UPDATE nrens SET login_name=?, password=?, ivector=?, ap_name=?";
+			$sql.= " WHERE nren_id = ?";
+			Logger::log_event(LOG_DEBUG, "Using the new database-schema for account-details");
+		}
+		else if (isset($this->account_id)) {
 			$sql    = "UPDATE account_map SET login_name=?, password=?, ivector=?, ap_name=?";
-			$sql   .= " WHERE account_map_id = ?";
-			$params = array('text', 'text', 'text', 'text', 'text');
-			$data   = array($this->login_name, $cryptpw, base64_encode($iv), $this->ap_name, $this->account_id);
-
+			$sql   .= " WHERE nren_id = ?";
 		} else {
 			$sql    = "INSERT INTO account_map (login_name, password, ivector, ap_name, nren_id) ";
 			$sql   .= "VALUES(?, ?, ?, ?, ?)";
-			$params = array('text', 'text', 'text', 'text', 'integer');
-			$data   = array($this->login_name, $cryptpw, base64_encode($iv), $this->ap_name, $this->nren->getID());
-			/* Possible BUG: if we try to save() twice in a row for a new
-			 * account, it will explode as it does not have the account_id */
 		}
+		$params = array('text', 'text', 'text', 'text', 'integer');
+		$data   = array($this->login_name,
+						$cryptpw,
+						base64_encode($iv),
+						$this->ap_name,
+						$this->nren->getID());
 
 		try {
 			MDB2Wrapper::update($sql, $params, $data);
@@ -258,8 +265,8 @@ class NRENAccount
 		} catch (DBStatementException $dse) {
 			$errorTag = PW::create();
 			Logger::log_event(LOG_ERR,
-			                  "Could not update the login-account with ID " .
-			                  $this->account_id . " to new value $login_name " . $dse->getMessage());
+			                  "Could not update the login-account for NREN " .
+			                  $this->nren->getID() . " to new value $login_name " . $dse->getMessage());
 			return false;
 		}
 		$this->changed = false;
