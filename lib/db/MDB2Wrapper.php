@@ -145,7 +145,7 @@ class MDB2Wrapper
 			 return False;
 		 $query = "SHOW COLUMNS FROM $table LIKE '$column'";
 		 try {
-			 $res = MDB2Wrapper::execute($query);
+			 $res = MDB2Wrapper::execute($query, NULL, NULL);
 			 return count($res) > 0;
 		 } catch (DBQueryException $dqe) {
 			 Logger::log_event(LOG_INFO, "Error when looking for $column in table $table\n");
