@@ -137,7 +137,7 @@ class NRENAccount
 
 		$query  = "SELECT am.account_map_id, am.login_name, am.password, am.ivector, am.ap_name ";
 		$query .= "FROM account_map am LEFT JOIN nrens n ON n.login_account = am.account_map_id ";
-		$query .= "WHERE n.nren_id=?";
+		$query .= "WHERE n.nren_id=? AND n.login_account IS NOT NULL";
 
 		/* FIXME:
 		 * add internal state if in error
