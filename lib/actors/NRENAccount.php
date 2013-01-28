@@ -158,17 +158,8 @@ class NRENAccount
 							  $this->nren->getID() .": ". $dse->getMessage());
 			return false;
 		}
-
 		if (count($res) == 1) {
-			$this->login_name	= $res[0]['login_name'];
-			$this->ap_name		= $res[0]['ap_name'];
-			$this->account_id	= $res[0]['account_map_id'];
-			$this->password		= trim(base64_decode(mcrypt_decrypt(
-														 MCRYPT_RIJNDAEL_256,
-														 Config::get_config('capi_enc_pw'),
-														 base64_decode($res[0]['password']),
-														 MCRYPT_MODE_CFB,
-														 base64_decode($res[0]['ivector']))));
+			$this->parseAccountData($res, 0);
 			return true;
 		} else if (count($res) > 1) {
 			Logger::log_event(LOG_ALERT,
@@ -237,5 +228,18 @@ class NRENAccount
 		return true;
 	} /* end save() */
 
+	private function parseAccountData($sql_res, $idx)
+	{
+		$this->login_name	= $sql_res[$idx]['login_name'];
+		$this->ap_name		= $sql_res[$idx]['ap_name'];
+		$this->account_id	= $sql_res[$idx]['account_map_id'];
+		$this->password		= trim(base64_decode(mcrypt_decrypt(
+													 MCRYPT_RIJNDAEL_256,
+													 Config::get_config('capi_enc_pw'),
+													 base64_decode($sql_res[$idx]['password']),
+													 MCRYPT_MODE_CFB,
+													 base64_decode($sql_res[$idx]['ivector']))));
+
+	}
 }
 ?>
