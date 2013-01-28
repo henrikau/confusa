@@ -471,13 +471,14 @@ class Framework {
 			} else if (isset($_GET) && array_key_exists('return', $_GET)) {
 				/* handle SSP redirect to idp_select */
 				$res = self::getCSRFRandToken(urldecode(urldecode($_GET['return'])));
+				Logger::log_event(LOG_WARNING, "Handling SSP redirect - ".$res['csrf'] . "\n");
 				if (is_array($res)) {
 					$facsrft = $res['full'];
 				}
 			}
 			if (!self::validateACSRFT($facsrft)) {
 				$msg =  "Got a GET/POST request without the correct anticsrf tag.";
-				$msg .= "Supplied: $facsrft";
+				$msg .= "Supplied: $facsrft (res: ".$res['full'] . ")";
 				if (array_key_exists('HTTP_REFERER', $_SERVER)) {
 					$msg .= " Referer was " . $_SERVER['HTTP_REFERER'];
 				}
