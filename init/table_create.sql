@@ -18,56 +18,6 @@
 -- This is re-enabled at the end of the file.
 SET FOREIGN_KEY_CHECKS = 0;
 
-
--- ---------------------------------------------------------
---
--- account_map	 - map an account to a set of username/password credentials.
---
--- The account contains two elements:
---
---	- username
---	- password
---
--- The password is stored in encrypted form, but the encryption should
--- take place in the PHP application, because of flaws in MySQL's
--- AES_ENCRYPT.
---
---   http://moncahier.canalblog.com/archives/2008/01/26/7700105.html
---
--- This is handled by the mcrypt-library, and the start-vector is stored
--- in the last key in the table:
---
---	- ivector
---
--- ---------------------------------------------------------
-CREATE TABLE IF NOT EXISTS account_map (
-    account_map_id INT PRIMARY KEY AUTO_INCREMENT,
-    -- the login-name for the associated sub-account,
-    login_name VARCHAR(128) NOT NULL,
-
-    -- the password with which the sub-account will be accessed.
-    -- encrypted at application layer
-    password TINYBLOB NOT NULL,
-
-    -- the initialization vector used for encryption the vector must be
-    -- random, but need not be confidential. The encryption key (or
-    -- passphrase) is stored in the config-file.
-    ivector TINYBLOB NOT NULL,
-    -- the alliance partner (AP name) by which Comodo identifies it's resellers
-    -- this is handed out by Terena in a NREN-specific manner
-    ap_name VARCHAR(30) NOT NULL,
-
-    -- NREN reference.
-    -- This is so that a NREN can have multiple accounts, and so we can
-    -- distinguish between the accounts.
-    -- It is important that the CA-accounts are *not* shared amongst the
-    -- NRENs, that would be very bad
-    nren_id INTEGER NOT NULL,
-
-    foreign key(nren_id) REFERENCES nrens(nren_id) ON DELETE CASCADE
-
-) engine=InnoDB;
-
 -- ---------------------------------------------------------
 --
 -- NRENS - National Research and Educational Network
@@ -92,8 +42,22 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- E.g 'NO' or 'US'
     country CHAR(2) NOT NULL,
 
-    -- if a remote signing CA is used, the ID of the subaccont there
-    login_account INT,
+    -- Note: there will be several instances out there with the field
+    -- 'login_account' in this table instead of the fields directly in this table.
+
+    -- the login-name for the associated sub-account,
+    login_name VARCHAR(128) NOT NULL,
+    -- the password with which the sub-account will be accessed.
+    -- encrypted at application layer
+    password TINYBLOB NOT NULL,
+    -- the initialization vector used for encryption the vector must be
+    -- random, but need not be confidential. The encryption key (or
+    -- passphrase) is stored in the config-file.
+    ivector TINYBLOB NOT NULL,
+    -- the alliance partner (AP name) by which Comodo identifies it's resellers
+    -- this is handed out by Terena in a NREN-specific manner
+    ap_name VARCHAR(30) NOT NULL,
+
     -- a customized help-text that the NREN may display to its consituency
     help TEXT,
     -- a customized about-message that the NREN may display to its constituency
