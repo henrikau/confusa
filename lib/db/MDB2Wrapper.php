@@ -127,6 +127,34 @@ class MDB2Wrapper
 	     MDB2Wrapper::$connCounter += 1;
      } /* end query */
 
+	 /**
+	  * MDB2Wrapper::testColumn()
+	  *
+	  * Test if a column is part of the schema.
+	  * In some settings, this is a useful feature, especially when the schema
+	  * changes over time.
+	  *
+	  * @param String $table name of table
+	  * @param String $column column to look for
+	  * @return Boolean
+	  * @access public
+	  */
+	 public static function testColumn($table = null, $column = null)
+	 {
+		 if (is_null($table) || is_null($column))
+			 return False;
+		 $query = "SHOW COLUMNS FROM $table LIKE '$column'";
+		 try {
+			 $res = MDB2Wrapper::execute($query);
+			 return count($res) > 0;
+		 } catch (DBQueryException $dqe) {
+			 Logger::log_event(LOG_INFO, "Error when looking for $column in table $table\n");
+		 } catch (DBStatementException $dse) {
+			 Logger::log_event(LOG_INFO, "Error when looking for $column in table $table\n");
+		 }
+		 return false;
+	 } /* end testColumn() */
+
      /**
       * MDB2Wrapper::create() create the connection (connect and initialize)
       *
