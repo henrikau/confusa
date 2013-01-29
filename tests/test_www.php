@@ -30,4 +30,17 @@ class TestWeb extends WebTestCase
 		$this->get("http://localhost/confusa/admin.php");
 		$this->assertHeader('X-Frame-Options', 'DENY');
 	}
+
+	function test_response_all()
+	{
+		$end=".php";
+		$f = scandir(dirname(dirname(__FILE__)) . "/www");
+		foreach ($f as $key => $file) {
+			if (strncmp(substr($file, -strlen($end)), $end, strlen($end)) == 0) {
+				$this->get("http://localhost/confusa/$file");
+				$this->assertResponse(200, "Failed getting 200 response from $file");
+			}
+		}
+
+	}
 }
