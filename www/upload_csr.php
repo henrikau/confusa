@@ -47,8 +47,16 @@ final class CP_Upload_CSR extends Content_Page
 		} else if (isset($_POST['user_csr'])) {
 			try {
 				$csr = CSRUPload::receivePastedCSR('user_csr');
-			} catch 
-			
+			} catch (ConfusaGenException $cge) {
+				$msg  = $this->translateTag('l10n_err_no_csr', 'processcsr');
+				Framework::error_output($msg . $cg-e>getMessage());
+				$this->csr = null;
+				return;
+			}
+		} else {
+			/* No CSR present, neither paste nor file, kindly bump user */
+			Framework::error_output($this->translateTag('l10n_err_no_csr', 'processcsr'));
+			return;
 		}
 
 		if (!$csr->isValid()) {

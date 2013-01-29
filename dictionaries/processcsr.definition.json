@@ -125,6 +125,9 @@
 	"l10n_warn_keypresent": {
 		"en":	"CSR with matching public-key already in the database. Cannot upload this CSR. Your options:<ul style=\"padding-top: 1em; padding-bottom: 1em; margin-left: 5em\"><li>Approve your old CSR (displayed below)</li><li>Delete your old CSR and try again</li><li>Go <a href=\"process_csr.php\">back</a> and provide a different CSR</li></ul>"
 	},
+	"l10n_err_no_csr": {
+		"en":	"There were errors when parsing the supplied CSR, in fact, it looks like you did not submit a CSR at all."
+	},
 	"l10n_err_csrproc": {
 		"en":	"There were errors encountered when processing the file.<br />Please create a new keypair and upload a new CSR to the server."
 	},
