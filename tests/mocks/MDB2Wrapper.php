@@ -10,9 +10,11 @@
 class MDB2Wrapper
 {
 	private static $mode = -1;
-
 	const NRENAccountError = 0;
 	const NRENAccountOK = 1;
+
+	private static $colExists = true;
+
 	public static function execute($query, $types, $data, $update = false)
 	{
 		switch (self::$mode) {
@@ -53,6 +55,13 @@ class MDB2Wrapper
 	private static function NRENAccountOK()
 	{
 		return "";
-	}	
+	}
+
+
+	public static function colExists($exists) { self::$colExists = $exists; }
+	public static function testColumn($table = null, $column = null)
+	{
+		return self::$colExists;
+	}
 }
 ?>
