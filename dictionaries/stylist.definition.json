@@ -191,6 +191,10 @@
 	"l10n_suc_updnotmail": {
 		"en":	"Notification mail template for your NREN successfully updated!"
 	},
+	"l10n_err_updnotmail_nowrite": {
+		"en":	"Could not write the custom notification template, please contact an IT-administrator."
+	},
+
 	"l10n_suc_updcss": {
 		"en":	"Custom CSS for your NREN successfully updated!"
 	},

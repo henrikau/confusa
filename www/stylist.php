@@ -561,8 +561,8 @@ class CP_Stylist extends Content_Page
 		try {
 			File_IO::writeToFile($template_path, $content, true, true);
 		} catch (FileException $fexp) {
-			Framework::error_output("Could not write the custom notification template! " .
-			                        "Please contact an IT-administrator.");
+			Framework::error_output($this->translateTag('l10n_err_updnotmail_nowrite', 'stylist'));
+			Logger::log_event(LOG_NOTICE, "Could not open file $template-path for writing. Server said: " . $fexp->getMessage());
 			return;
 		}
 
