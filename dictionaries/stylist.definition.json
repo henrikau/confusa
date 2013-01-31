@@ -228,5 +228,21 @@
 	},
 	"l10n_suc_portaltitle": {
 		"en":	"Changed the custom portal title for your NREN:"
+	},
+	"l10n_error_upload_logo_invalid": {
+		"en":	"Could not upload logo - invalid fileformat"
+	},
+	"l10n_error_upload_logo_unkown": {
+		"en":	"Could not upload logo, unknown error"
+	},
+	"l10n_error_upload_logo_position": {
+		"en":	"Could not upload logo to given position, invalid placement"
+	},
+
+	"l10n_success_delete_logo": {
+		"en":	"Removed NREN-logo"
+	},
+	"l10n_error_delete_logo": {
+		"en":	"Could not delete logo, perhaps server is misconfigured. Please check logs."
 	}
 }

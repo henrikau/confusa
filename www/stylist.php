@@ -103,15 +103,15 @@ class CP_Stylist extends Content_Page
 					/* only allow image uploads */
 					if (strpos($_FILES['nren_logo']['type'], 'image/') !== false) {
 						$this->uploadLogo('nren_logo', $position, $this->person->getNREN());
+					} else {
+						Framework::error_output($this->translateTag('l10n_error_upload_logo_invalid', 'stylist'));
 					}
 				}
 				break;
 			case 'delete_logo':
 				$position = $_POST['position'];
 				if (array_search($position, ConfusaConstants::$ALLOWED_LOGO_POSITIONS) === FALSE) {
-					Framework::error_output("The specified position " .
-					                        htmlentities($position) .
-					                        " is not a legal logo position!");
+						Framework::error_output($this->translateTag('l10n_error_upload_logo_position', 'stylist'));
 					return;
 				}
 
@@ -799,12 +799,11 @@ class CP_Stylist extends Content_Page
 		}
 
 		if ($result === FALSE) {
-			Framework::error_output("Could not delete NREN-logo with name " .
-			                        htmlentities($logoName) .
-			                        ". Maybe the server is misconfigured, " .
-			                        "please contact a site-administrator.");
+			Framework::error_output($this->translateTag('l10n_error_delete_logo', 'stylist'));
 			Logger::log_event(LOG_INFO, "[nadm] Error when trying to delete " .
 			                  "NREN logo $logoName, for NREN $nren.");
+		} else {
+			Framework::success_output($this->translateTag('l10n_success_delete_logo', 'stylist'));
 		}
 	} /* end function deleteLogo */
 }
