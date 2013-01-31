@@ -1,36 +1,36 @@
 <h3>{$heading_portal|escape}</h3>
 
 <ul>
-   <li><a href="admin.php"{$prot_title}>
+   <li><a href="admin.php?{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_admins|escape}{$prot_r}</a></li>
   <li>
     <a href="stylist.php?show=text&amp;{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_appearance|escape}{$prot_r}</a>
   </li>
   <li>
-    <a href="portal_config.php"{$prot_title}>{$prot_l}{$item_portal_config|escape}{$prot_r}</a>
+    <a href="portal_config.php?{$ganticsrf}"{$prot_title}>{$prot_l}{$item_portal_config|escape}{$prot_r}</a>
   </li>
 </ul>
 
 <h3>{$heading_nren|escape}</h3>
 
 <ul>
-  <li><a href="attributes.php"{$prot_title}>
+  <li><a href="attributes.php?{$ganticsrf}"{$prot_title}>
        {$prot_l}{$item_attributes|escape}{$prot_r}</a></li>
   {if $is_online === TRUE}
-  <li><a href="accountant.php"{$prot_title}>
+  <li><a href="accountant.php?{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_ca_account|escape}{$prot_r}</a></li>
   {/if}{* online *}
-  <li><a href="nren_subs_settings.php"{$prot_title}>
+  <li><a href="nren_subs_settings.php?{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_nren_settings|escape}{$prot_r}</a></li>
-  <li><a href="nren_admin.php"{$prot_title}>
+  <li><a href="nren_admin.php?{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_subscribers|escape}{$prot_r}</a></li>
 </ul>
 
 <h3>{$heading_certificates|escape}</h3>
 
   <ul>
-  <li><a href="revoke_certificate.php"{$prot_title}>
+  <li><a href="revoke_certificate.php?{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_revocation|escape}{$prot_r}</a></li>
   </ul>
 

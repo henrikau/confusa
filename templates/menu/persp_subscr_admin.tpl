@@ -1,25 +1,25 @@
 <h3>{$heading_portal|escape}</h3>
 
 <ul>
-	<li><a href="admin.php"{$prot_title}>
+	<li><a href="admin.php?{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_admins|escape}{$prot_r}</a></li>
 </ul>
 
 <h3>{$heading_subscriber|escape}</h3>
 
 <ul>
-	<li><a href="attributes.php"{$prot_title}>
+	<li><a href="attributes.php?{$ganticsrf}"{$prot_title}>
     {$prot_l}{$item_attributes|escape}{$prot_r}</a></li>
-	<li><a href="nren_subs_settings.php"{$prot_title}>
+	<li><a href="nren_subs_settings.php?{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_nren_settings|escape}{$prot_r}</a></li>
 </ul>
 
 <h3>{$heading_certificates|escape}</h3>
 
 <ul>
-	<li><a href="robot.php" {$prot_title}>
+	<li><a href="robot.php?{$ganticsrf}" {$prot_title}>
       {$prot_l}{$item_robot|escape}{$prot_r}</a></li>
-    <li><a href="revoke_certificate.php"{$prot_title}>
+    <li><a href="revoke_certificate.php?{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_revocation|escape}{$prot_r}</a></li>
 </ul>
 

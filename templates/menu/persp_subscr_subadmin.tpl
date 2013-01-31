@@ -1,14 +1,14 @@
 <h3>{$heading_portal|escape}</h3>
 
 <ul>
-	<li><a href="admin.php"{$prot_title}>
+	<li><a href="admin.php?{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_admins|escape}{$prot_r}</a></li>
 </ul>
 
 <h3>{$heading_certificates|escape}</h3>
 
 <ul>
-    <li><a href="revoke_certificate.php"{$prot_title}>
+    <li><a href="revoke_certificate.php?{$ganticsrf}"{$prot_title}>
       {$prot_l}{$item_revocation|escape}{$prot_r}</a></li>
 </ul>
 
