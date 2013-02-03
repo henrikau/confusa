@@ -29,8 +29,6 @@ function hasNewValues($nren_id)
 			!empty($res[0]['password'] ) && $res[0]['password'] !== "" &&
 			!empty($res[0]['ivector'] ) && $res[0]['ivector'] !== "" &&
 			!empty($res[0]['ap_name'] ) && $res[0]['ap_name'] !== "") {
-			echo "NREN " . $nren_id . " has values set:\n";
-			print_r($res);
 			return true;
 		}
 	}
@@ -43,7 +41,7 @@ function getAccountsForNREN($nren_id)
 	return MDB2Wrapper::execute($q, array('integer'), array($nren_id));
 }
 
-function migrateAccountMap($nren_id, $password, $ivector, $ap_name)
+function migrateAccountMap($nren_id, $username, $password, $ivector, $ap_name)
 {
 	if (hasNewValues($nren_id)) {
 		echo "It looks like NREN " . $nren_id . " " .
@@ -51,10 +49,10 @@ function migrateAccountMap($nren_id, $password, $ivector, $ap_name)
 			"clean the fields in the database before venturing forth.\n";
 	} else {
 		echo "Migrating NREN " . $nren_id . " to new schema.\n";
-		$u = "UPDATE nrens SET ap_name=?, password=?, ivector=? WHERE nren_id=?";
+		$u = "UPDATE nrens SET login_name=?, ap_name=?, password=?, ivector=? WHERE nren_id=?";
 		MDB2Wrapper::update($u,
-							array('text', 'text', 'text', 'integer'),
-							array($ap_name, $password, $ivector, $nren_id));
+							array('text', 'text', 'text', 'text', 'integer'),
+							array($username, $ap_name, $password, $ivector, $nren_id));
 	}
 }
 
@@ -72,9 +70,10 @@ foreach ($nrens as $idx => $nren) {
 			print_r($accounts);
 		}
 		migrateAccountMap($nren['nren_id'],
+						  $accounts[0]['login_name'],
 						  $accounts[0]['password'],
 						  $accounts[0]['ivector'],
-						  $accounts[0]['login_name']);
+						  $accounts[0]['ap_name']);
 	}
 }
 ?>
