@@ -5,24 +5,19 @@ require_once "MDB2Wrapper.php";
 
 /** NRENAccount
  *
-n * This class handles the account used for communication with (for now) Comodo
+ * This class handles the account used for communication with (for now) Comodo
  *
  * It will read and write to the database, only updating values that have
  * changed, and handle new entries.
  *
- * It will not allow more than one account pr. NREN.
+ * It will not allow more than one account pr. NREN, and the values are stored
+ * directly in the NREN table
  *
- * mysql> desc account_map;
- * +----------------+--------------+------+-----+---------+----------------+
- * | Field          | Type         | Null | Key | Default | Extra          |
- * +----------------+--------------+------+-----+---------+----------------+
- * | account_map_id | int(11)      | NO   | PRI | NULL    | auto_increment |
  * | login_name     | varchar(128) | NO   |     | NULL    |                |
  * | password       | tinyblob     | NO   |     | NULL    |                |
  * | ivector        | tinyblob     | NO   |     | NULL    |                |
  * | ap_name        | varchar(30)  | NO   |     | NULL    |                |
- * | nren_id        | int(11)      | NO   | MUL | NULL    |                |
- * +----------------+--------------+------+-----+---------+----------------+
+ *
  */
 class NRENAccount
 {
