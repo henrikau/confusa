@@ -1,8 +1,10 @@
 <?php
 require_once "include.inc";
+require_once "unit_tester.php";
+require_once "autorun.php";
 require_once "../lib/ca/CA.php";
 require_once "Person.php";		/* in mocks */
-
+require_once "NREN.php";
 $_SERVER['REMOTE_ADDR'] = "127.0.0.1";
 
 class ShallowCA extends CA

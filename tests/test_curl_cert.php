@@ -1,7 +1,11 @@
 <?php
 require_once "include.inc";
+require_once "unit_tester.php";
+require_once "autorun.php";
 require_once "../lib/io/CurlWrapper.php";
 require_once "../lib/ca/Certificate.php";
+require_once "exceptions.php";
+require_once "../lib/io/Input.php";
 
 class TestCurlCert extends UnitTestCase {
 

@@ -1,5 +1,8 @@
 <?php
 require_once "include.inc";
+require_once "unit_tester.php";
+require_once "autorun.php";
+require_once "Config.php";
 require_once "../lib/io/Input.php";
 
 class TestOfInput extends UnitTestCase {

@@ -1,7 +1,11 @@
 <?php
 require_once "include.inc";
+require_once "unit_tester.php";
+require_once "autorun.php";
 require_once "exceptions.php";
 require_once "Person.php";
+require_once "Logger.php";
+
 require_once "../lib/actors/NRENAccount.php";
 
 class TestNRENAccount extends UnitTestCase
