@@ -49,7 +49,13 @@ class CSR_PKCS10 extends CSR
 		}
 
 		foreach($sa as $key => $value) {
-			$res.="/$key=$value";
+			if ( is_array($value) ) {
+				foreach ( $value as $subvalue ) {
+					$res .= "/$key=$subvalue";
+				}
+			} else {
+				$res.="/$key=$value";
+			}
 		}
 		return $res;
 	}
