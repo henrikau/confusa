@@ -115,9 +115,7 @@ CREATE TABLE IF NOT EXISTS nrens (
     -- Message (and mode-switch) to allow an NREN-admin to place the
     -- portal (for the given NREN only) in maintenance-mode.
     maint_msg TEXT DEFAULT "",
-    maint_mode ENUM('y','n') DEFAULT 'n',
-
-    FOREIGN KEY(login_account) REFERENCES account_map(account_map_id) ON DELETE SET NULL
+    maint_mode ENUM('y','n') DEFAULT 'n'
 ) engine=InnoDB;
 
 
