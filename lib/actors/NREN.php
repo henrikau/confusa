@@ -773,7 +773,7 @@ class NREN
 			switch (count($res)) {
 			case 0:
 				if (Config::get_config('debug')) {
-					echo "no IdP with name (".$this->idp_name.") found in db!<br />\n";
+					Framework::error_output("No IdP with name (".$this->idp_name.") found in db!");
 				}
 				Logger::log_event(LOG_NOTICE, "Could not find NREN-map for idp " . $this->idp_name .
 						  ". Is the NREN bootstrapped properly?");
