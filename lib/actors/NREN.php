@@ -738,7 +738,6 @@ class NREN
 	 * | nren_id       | int(11)     | NO   | PRI | NULL    | auto_increment |
 	 * | name          | varchar(30) | YES  |     | NULL    |                |
 	 * | country       | char(2)     | NO   |     | NULL    |                |
-	 * | login_account | int(11)     | YES  | MUL | NULL    |                |
 	 * | about         | text        | YES  |     | NULL    |                |
 	 * | help          | text        | YES  |     | NULL    |                |
 	 * | lang          | varchar(5)  | NO   |     | NULL    |                |
@@ -761,9 +760,7 @@ class NREN
 	 */
 	private function decorateNREN()
 	{
-		/* $query  = "SELECT nren_id, name, login_account, contact_email, ". */
-		/* 	"contact_phone, cert_email, cert_phone, lang, url FROM nrens WHERE name = ?"; */
-		$query  = "SELECT	n.nren_id,		n.name,		n.login_account, ";
+		$query  = "SELECT	n.nren_id,		n.name, ";
 		$query .= "		n.contact_email,	n.contact_phone,n.cert_email, ";
 		$query .= "		n.cert_phone,		n.lang,		n.url, ";
 		$query .= "		n.country,	n.maint_mode,	idp.idp_url as idp_url, ";
