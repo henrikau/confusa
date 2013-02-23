@@ -18,6 +18,7 @@ if [ ! `whoami` == "root" ]; then
     echo "Need to be root to run this"
     exit
 fi
+cd $(dirname $0)
 
 MYSQL_ROOT="/usr/bin/mysql -uroot -h localhost $root_pw"
 if [ -f /root/mysql_root.pw ]; then
