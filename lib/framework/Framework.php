@@ -248,7 +248,16 @@ class Framework {
 			Framework::error_output($msg);
 			$this->renderError = true;
 		} catch (MapNotFoundException $mnfe) {
-			Framework::error_output($this->contentPage->translateMessageTag('fw_error_map_notfound'));
+			$msg = $this->contentPage->translateMessageTag('fw_error_map_notfound');
+
+			/* if user is admin */
+			if ($this->person->isNRENAdmin()) {
+				$msg .= "<br /><br />";
+				$msg .= "<a href=\"attributes.php?mode=admin&anticsrf=".Framework::getAntiCSRF()."\">";
+				$msg .= $this->contentPage->translateMessageTag('fw_error_map_updatemap');
+				$msg .= "</>\n";
+			}
+			Framework::error_output($msg);
 			$this->renderError = true;
 		} catch (ConfusaGenException $cge) {
 			Framework::error_output($this->contentPage->translateMessageTag('fw_error_auth') .
