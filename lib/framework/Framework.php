@@ -232,6 +232,12 @@ class Framework {
 		 * Header set X-Frame-Options "DENY"
 		 */
 		header('X-Frame-Options: DENY');
+		/*
+		 * Strict-Transport-Security (RFC 6797)
+		 * Once page has been accessed over HTTPS and this header was present,
+		 * confirmant browsers will force subsequent requests over HTTPS aswell.
+		 */
+		header('Strict-Transport-Security: max-age=31536000');
 
 		/* Set tpl object to content page */
 		$this->contentPage->setTpl($this->tpl);
