@@ -59,7 +59,8 @@ class CP_NREN_Admin extends Content_Page
 				$state	= Input::sanitizeOrgState($_POST['state']);
 			}
 			if (isset($_POST['db_name'])) {
-				$this->form_data['db_name'] = Input::sanitizeIdPName($_POST['db_name']);
+				$this->form_data['db_name'] = htmlentities($_POST['db_name']);
+
 				if ($this->form_data['db_name'] != $_POST['db_name']) {
 					$this->displayInvalidCharError($_POST['db_name'],
 												   $this->form_data['db_name'],
@@ -232,11 +233,13 @@ class CP_NREN_Admin extends Content_Page
 				$this->tpl->assign('subscriber_detail_id', $id);
 				break;
 			case 'add':
-				$db_name = Input::sanitizeIdPName($_POST['db_name']);
+				if (!isset($this->form_data['db_name']))
+					break;
 
 				$inheritUIDAttr = isset($_POST['inherit_uid_attr']);
 
-				$subscriber = new Subscriber($db_name, $this->person->getNREN());
+				$subscriber = new Subscriber($this->form_data['db_name'],
+											 $this->person->getNREN());
 				if ($subscriber->isValid()) {
 					Framework::error_output("Cannot create new, already existing.");
 					break;

@@ -58,7 +58,8 @@ class Subscriber
 
 		/* ugly hack to circumvent the missing constructor overloading of PHP5 */
 		$this->nren = $nren; /* NREN-object */
-		$this->idp_name = Input::sanitizeIdPName($idp_name);
+		$this->idp_name = htmlentities($idp_name);
+
 		if (isset($dn_name) && isset($org_state)) {
 			$this->setOrgName($dn_name);
 			$this->setState($org_state);
