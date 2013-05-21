@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS subscribers (
     subscriber_id INT PRIMARY KEY AUTO_INCREMENT,
     -- the name of the institution (e.g. KTH, CSC, Univ. of Oslo,...)
     name VARCHAR(256) UNIQUE NOT NULL,
-    -- the name that goes into the certificate subject DN (not that the
+    -- the name that goes into the certificate subject DN (note that the
     -- organization name DN component may fill a maximum of 64 characters
     -- minus 'O=' that is 62 characters
     dn_name VARCHAR(62) UNIQUE NOT NULL,
