@@ -99,16 +99,16 @@ function toggleUidAttrField()
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr>
 	<td class="attr">/O=</td>
-
+	<td>
 	{if $confusa_grid_restrictions === TRUE}
-	<td><input maxlength="62" type="text" name="dn_name" size="40" value="{$form_data.dn_name|escape}"/></td>
+	<input maxlength="62" type="text" name="dn_name" size="40" value="{$form_data.dn_name|escape}"/>
 	{else}
-	<td><input type="text" name="dn_name" size="40" value="{$form_data.dn_name|escape}"/></td>
+	<input type="text" name="dn_name" size="40" value="{$form_data.dn_name|escape}"/>
 	{/if}
 	{if isset($form_data.dn_name_invalid)}
 	<block class="invalid">*</block>
 	{/if}
-
+	</td>
       </tr>
       <tr><td><div class="spacer"></div></td><td></td></tr>
       <tr><td colspan="2"><hr class="table"/><br /></td></tr>
