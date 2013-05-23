@@ -128,7 +128,7 @@ class TestOfInput extends UnitTestCase {
 	function testTooLongSubscriberName()
 	{
 		/* CPS 3.1.3 eScience state that O= should not be longer than 64 char */
-		$toolong = "This name is way too long and should be truncated by Input::sanitizeIdPName";
+		$toolong = "This name is way too long and should be truncated by Input::sanitizeOrgName";
 		$sanitized = Input::sanitizeOrgName($toolong);
 		$this->assertNotEqual($sanitized,
 							  $toolong,

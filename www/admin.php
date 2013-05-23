@@ -54,7 +54,7 @@ class CP_Admin extends Content_Page
 					break;
 				case 'add_nren_admin':
 					$admin = Input::sanitizeEPPN($_POST['nren_admin']);
-					$idp = Input::sanitizeIdPName($_POST['idp']);
+					$idp = htmlentities($_POST['idp']);
 
 					if ($idp === '-') {
 						$this->addNRENAdmin($admin, NULL);

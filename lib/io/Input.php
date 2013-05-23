@@ -69,21 +69,6 @@ class Input
 	}
 
 	/**
-	 * Sanitize Confusa's internal representation of a subscriber-name. This
-	 * equals the value sent in the attribute identifying the subscriber
-	 * (eduPersonOrgDN, schacHomeOrganization).
-	 * No validation, just removal of "bad" characters
-	 *
-	 * @param $input string The unsanitized subscriber-db-name
-	 * @return string The sanitized subscriber-IdP-name
-	 */
-	static function sanitizeIdPName($input)
-	{
-		$output = preg_replace('/[^a-z0-9_=,:\/\s\.\-@]/i','', $input);
-		return $output;
-	}
-
-	/**
 	 * Sanitize a numeric ID (like the primary key in a DB)
 	 * @param $input string ID input
 	 * @return integer the input with all non-numeric components removed
