@@ -3,11 +3,11 @@
 	{* ***** subscriber-admin/subscriber-admin view ***** *}
 	{* *********************************************************************** *}
 	<legend>
- {$l10n_legend_subs_admins2} {$subscriber|escape}
+ {$l10n_legend_subs_admins2} {$subscriber->getOrgName()|truncate:30:"...":true}
 </legend>
 
 	<p class="info">
-	{$l10n_infotext_subs_adm4} '{$subscriber|escape}'.
+	{$l10n_infotext_subs_adm4} '{$subscriber->getOrgName()|escape}'.
 	{$l10n_infotext_selfmarker} {$l10n_infotext_subs_adm2}
 	</p>
 	<ul class="info">
@@ -129,11 +129,11 @@
 {* *********************************************************************** *}
 <fieldset>
 <legend>
-	{$l10n_legend_subss_admins} {$subscriber|escape}
+	{$l10n_legend_subss_admins} {$subscriber->getOrgName()|truncate:30:"...":true}
 </legend>
 
 <p class="info">
-{$l10n_infotext_subss_adm1} '{$subscriber|escape}'.
+{$l10n_infotext_subss_adm1} '{$subscriber->getOrgName()|escape}'.
 {$l10n_infotext_subss_adm2}
 </p>
 	<ul class="info">

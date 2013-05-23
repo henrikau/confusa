@@ -2,7 +2,7 @@
 <div class="expcont">
 	<div class="spacer"></div>
 	<fieldset class="infoblock">
-		<legend>{$l10n_legend_subs_admins2} {$subscriber|escape}</legend>
+		<legend>{$l10n_legend_subs_admins2} {$subscriber->getOrgName()|truncate:30:"...":true}</legend>
 		<p class="info">
 		{$l10n_infotext_subs_adm5}:
 		</p>
@@ -27,7 +27,7 @@
 	<div class="expcont">
 		<div class="spacer"></div>
 		<fieldset class="infoblock">
-			<legend>{$l10n_legend_subss_admins} {$subscriber|escape}</legend>
+			<legend>{$l10n_legend_subss_admins} {$subscriber->getOrgName()|truncate:30:"...":true}}</legend>
 			<p class="info">
 			{$l10n_infotext_subss_adm3}
 			</p>

@@ -179,7 +179,7 @@
 {* *********************************************************************** *}
 <fieldset>
 	<legend style="width: 100%; overflow: hidden">
-	{$l10n_legend_subs_admins} {$subscriber->getOrgName()|escape|truncate:30:"...":true}
+	{$l10n_legend_subs_admins} {$subscriber->getOrgName()|truncate:30:"...":true}
 	</legend>
 
 	<p class="info">
