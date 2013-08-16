@@ -307,7 +307,11 @@ class Input
 		 * text. Since it is undesired to directly insert newlines into the DB
 		 * convert them to <br /> tags. Direct HTML insertion has been dealt
 		 * with using htmlentities*/
-		$input = strtr(strip_tags($input), array("\n" => '<br />', "\r\n" =>'<br />'));
+
+        /* allow <br /> tags with strip_tags, otherwise the <br />'s you insert here will be stripped the next
+         * time the text is sanitized!
+         */
+		$input = strtr(strip_tags($input, '<br>'), array("\n" => '<br />', "\r\n" =>'<br />'));
 
 		/* The following is a *HACK*
 		 * However, since we want to use the mysql_real_escape_string,

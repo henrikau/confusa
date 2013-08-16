@@ -473,9 +473,13 @@ class Subscriber
 	 * @return	String|null
 	 * @access	public
 	 */
-	public function getComment()
+	public function getComment($br2nl = null)
 	{
 		if (isset($this->comment)) {
+            //change html <br /> tags to new lines for textarea input
+            if($br2nl) {
+                return str_replace('<br />', "\n", $this->comment);
+            }
 			return $this->comment;
 		}
 		return null;

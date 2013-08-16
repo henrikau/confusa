@@ -269,7 +269,7 @@
       <tr>
 	<td colspan="2">
 	  <textarea name="subscr_comment" rows="10" cols="60"
-	            title="{$l10n_title_comments}">{$subscriber->getComment()|escape}</textarea>
+	            title="{$l10n_title_comments}">{$subscriber->getComment(true)|escape}</textarea>
 	</td>
       </tr>
 
