@@ -134,14 +134,22 @@
 		function mayProceed() {
 			return $("textarea#csrBox").val();
 		}
+        //check for value on input. If this works, onpropertychange is unnessary.
+		$('#csrBox').attr('oninput', "$('#csrBox').attr('onpropertychange',''); checkCsrBox();");
+        //for IE, use onpropertychange, oninput isn't supported
+		$('#csrBox').attr('onpropertychange', 'checkCsrBox();');
 
-		$('#csrBox').change(function() {
+        function checkCsrBox() {
 			if (mayProceed()) {
 				$('#nextButton').attr("disabled", false);
 			} else {
 				$('#nextButton').attr("disabled", true);
 			}
-		});
+		}
+        //if both onpropertychange and oninput don't exist in the documentElement DOM, enable the next button
+        if(!('onpropertychange' in document.documentElement || 'oninput' in document.documentElement)) {
+            $('#nextButton').attr("disabled", false);
+        }
 	</script>
 	{/literal}
 {/if}
