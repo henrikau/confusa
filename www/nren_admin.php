@@ -59,10 +59,11 @@ class CP_NREN_Admin extends Content_Page
 				$state	= Input::sanitizeOrgState($_POST['state']);
 			}
 			if (isset($_POST['db_name'])) {
-				$this->form_data['db_name'] = htmlentities($_POST['db_name']);
+                $db_name_trim = trim($_POST['db_name']);
+                $this->form_data['db_name'] = htmlentities($db_name_trim);
 
-				if ($this->form_data['db_name'] != $_POST['db_name']) {
-					$this->displayInvalidCharError($_POST['db_name'],
+                if ($this->form_data['db_name'] != $db_name_trim) {
+                    $this->displayInvalidCharError($db_name_trim,
 												   $this->form_data['db_name'],
 												   'l10n_heading_attnm');
 					$this->form_data['db_name'] = "";
@@ -72,16 +73,17 @@ class CP_NREN_Admin extends Content_Page
 			} /* db_name */
 
 			if (isset($_POST['dn_name'])) {
-				/* personal certificates may have UTF-8 chars in the DN */
-				if (Config::get_config('cert_product') == PRD_PERSONAL) {
-					$this->form_data['dn_name'] = mysql_real_escape_string($_POST['dn_name']);
-				} else {
-					$this->form_data['dn_name'] = Input::sanitizeOrgName($_POST['dn_name']);
-				}
+                $dn_name_trim = trim($_POST['dn_name']);
+                /* personal certificates may have UTF-8 chars in the DN */
+                if (Config::get_config('cert_product') == PRD_PERSONAL) {
+                    $this->form_data['dn_name'] = mysql_real_escape_string($dn_name_trim);
+                } else {
+                    $this->form_data['dn_name'] = Input::sanitizeOrgName($dn_name_trim);
+                }
 
-				/* warn user if characters got sanitized away */
-				if ($this->form_data['dn_name'] != $_POST['dn_name']) {
-					$this->displayInvalidCharError($_POST['dn_name'],
+                /* warn user if characters got sanitized away */
+                if ($this->form_data['dn_name'] != $dn_name_trim) {
+                    $this->displayInvalidCharError($dn_name_trim,
 					                               $this->form_data['dn_name'],
 					                               'l10n_heading_dnoname');
 					$this->form_data['dn_name'] = "";
@@ -91,10 +93,11 @@ class CP_NREN_Admin extends Content_Page
 			} /* dn_name */
 
 			if(isset($_POST['subscr_email']) && $_POST['subscr_email'] != "") {
-				$this->form_data['subscr_email'] = Input::sanitizeEmail($_POST['subscr_email']);
+                $subscr_email_trim = trim($_POST['subscr_email']);
+                $this->form_data['subscr_email'] = Input::sanitizeEmail($subscr_email_trim);
 
-				if ($this->form_data['subscr_email'] != $_POST['subscr_email']) {
-					$this->displayInvalidCharError($_POST['subscr_email'],
+                if ($this->form_data['subscr_email'] != $subscr_email_trim) {
+                    $this->displayInvalidCharError($subscr_email_trim,
 					                               $this->form_data['subscr_email'],
 					                               'l10n_label_contactemail');
 					$this->form_data['subscr_email'] = "";
@@ -104,9 +107,10 @@ class CP_NREN_Admin extends Content_Page
 			} /* subscr_email */
 
 			if(isset($_POST['subscr_phone']) && $_POST['subscr_phone'] != "") {
-				$this->form_data['subscr_phone'] = Input::sanitizePhone($_POST['subscr_phone']);
-				if ($this->form_data['subscr_phone'] != $_POST['subscr_phone']) {
-					$this->displayInvalidCharError($_POST['subscr_phone'],
+                $subscr_phone_trim = trim($_POST['subscr_phone']);
+                $this->form_data['subscr_phone'] = Input::sanitizePhone($subscr_phone_trim);
+                if ($this->form_data['subscr_phone'] != $subscr_phone_trim) {
+                    $this->displayInvalidCharError($subscr_phone_trim,
 					                               $this->form_data['subscr_phone'],
 					                               'l10n_label_contactphone');
 					$this->form_data['subscr_phone'] = "";
@@ -116,10 +120,11 @@ class CP_NREN_Admin extends Content_Page
 			} /* subscr_phone */
 
 			if(isset($_POST['subscr_responsible_name']) && $_POST['subscr_responsible_name'] != "") {
-				$this->form_data['subscr_responsible_name'] = Input::sanitizePersonName($_POST['subscr_responsible_name']);
+                $subscr_responsible_name_trim = trim($_POST['subscr_responsible_name']);
+                $this->form_data['subscr_responsible_name'] = Input::sanitizePersonName($subscr_responsible_name_trim);
 
-				if ($this->form_data['subscr_responsible_name'] != $_POST['subscr_responsible_name']) {
-					$this->displayInvalidCharError($_POST['subscr_responsible_name'],
+                if ($this->form_data['subscr_responsible_name'] != $subscr_responsible_name_trim) {
+                    $this->displayInvalidCharError($subscr_responsible_name_trim,
 					                               $this->form_data['subscr_responsible_name'],
 					                               'l10n_heading_resppers');
 					$this->form_data['subscr_responsible_name'] = "";
@@ -129,10 +134,12 @@ class CP_NREN_Admin extends Content_Page
 			} /* subscr_responsible_name */
 
 			if(isset($_POST['subscr_responsible_email']) && $_POST['subscr_responsible_email'] != "") {
-				$this->form_data['subscr_responsible_email'] = Input::sanitizeEmail($_POST['subscr_responsible_email']);
+                $subscr_responsible_email_trim = trim($_POST['subscr_responsible_email']);
 
-				if ($this->form_data['subscr_responsible_email'] != $_POST['subscr_responsible_email']) {
-					$this->displayInvalidCharError($_POST['subscr_responsible_email'],
+                $this->form_data['subscr_responsible_email'] = Input::sanitizeEmail($subscr_responsible_email_trim);
+
+                if ($this->form_data['subscr_responsible_email'] != $subscr_responsible_email_trim) {
+                    $this->displayInvalidCharError($subscr_responsible_email_trim,
 					                               $this->form_data['subscr_responsible_email'],
 					                               'l10n_label_respemail');
 					$this->validationErrors = true;
@@ -140,14 +147,16 @@ class CP_NREN_Admin extends Content_Page
 			} /* subscr_responsible_email */
 
 			if(isset($_POST['subscr_comment']) && $_POST['subscr_comment'] != "") {
-				$this->form_data['subscr_comment'] = Input::sanitizeText($_POST['subscr_comment']);
+				$this->form_data['subscr_comment'] = Input::sanitizeText(trim($_POST['subscr_comment']));
 			}
 
 			if(isset($_POST['subscr_help_url']) && $_POST['subscr_help_url'] != "") {
-				$this->form_data['subscr_help_url'] = Input::sanitizeURL($_POST['subscr_help_url']);
+                $subscr_help_url_trim = trim($_POST['subscr_help_url']);
 
-				if ($this->form_data['subscr_help_url'] != $_POST['subscr_help_url']) {
-					$this->displayInvalidCharError($_POST['subscr_help_url'],
+                $this->form_data['subscr_help_url'] = Input::sanitizeURL($subscr_help_url_trim);
+
+                if ($this->form_data['subscr_help_url'] != $subscr_help_url_trim) {
+                    $this->displayInvalidCharError($subscr_help_url_trim,
 					                               $this->form_data['subscr_help_url'],
 					                               'l10n_label_helpdeskurl');
 					$this->form_data['subscr_help_url'] = "";
@@ -157,12 +166,14 @@ class CP_NREN_Admin extends Content_Page
 			} /* subscr_help_url */
 
 			if(isset($_POST['subscr_help_email']) && $_POST['subscr_help_email'] != "") {
-				$this->form_data['subscr_help_email'] = Input::sanitizeEmail($_POST['subscr_help_email']);
+                $subscr_help_email_trim = trim($_POST['subscr_help_email']);
 
-				if ($this->form_data['subscr_help_email'] != $_POST['subscr_help_email']) {
-					$this->form_data['subscr_help_email'] = "";
-					$this->form_data['subscr_help_email_invalid'] = true;
-					$this->displayInvalidCharError($_POST['subscr_help_email'],
+                $this->form_data['subscr_help_email'] = Input::sanitizeEmail($subscr_help_email_trim);
+
+                if ($this->form_data['subscr_help_email'] != $subscr_help_email_trim) {
+                    $this->form_data['subscr_help_email'] = "";
+                    $this->form_data['subscr_help_email_invalid'] = true;
+                    $this->displayInvalidCharError($subscr_help_email_trim,
 					                               $this->form_data['subscr_help_email'],
 					                               'l10n_label_helpdeskemail');
 					$this->validationErrors = true;
