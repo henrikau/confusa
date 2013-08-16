@@ -221,7 +221,7 @@
 			{$panticsrf}
 		</form>
 		</div>
-		<a href="#" onclick="uploadLogo('tl', '{$l10n_js_mlogotl}')">
+		<a href="#" onclick="uploadLogo('tl', '{$l10n_js_mlogotl|escape:'quotes'}')">
 			{if isset($logo_tl)}
 				<img class="logos" src="{$logo_tl}"
 				alt="{$l10n_title_editlogotl}" title="{$l10n_title_editlogotl}" />
@@ -248,7 +248,7 @@
 			{$panticsrf}
 		</form>
 		</div>
-		<a class="logos" href="#" onclick="uploadLogo('tc', '{$l10n_js_mlogotc}')">
+		<a class="logos" href="#" onclick="uploadLogo('tc', '{$l10n_js_mlogotc|escape:'quotes'}')">
 		{if isset($logo_tc)}
 
 			<img class="logos" src="{$logo_tc}"
@@ -275,7 +275,7 @@
 			{$panticsrf}
 		</form>
 		</div>
-		<a href="#" onclick="uploadLogo('tr', '{$l10n_js_mlogotr}')">
+		<a href="#" onclick="uploadLogo('tr', '{$l10n_js_mlogotr|escape:'quotes'}')">
 		{if isset($logo_tr)}
 			<img class="logos" src="{$logo_tr}"
 			alt="{$l10n_title_editlogotr}" title="{$l10n_title_editlogotr}" />
@@ -293,7 +293,7 @@
 			900 px
 		</p>
 
-		<a href="#" onclick="uploadLogo('bg', '{$l10n_js_mlogobg}')">
+		<a href="#" onclick="uploadLogo('bg', '{$l10n_js_mlogobg|escape:'quotes'}')">
 		{if isset($logo_bg)}
 			<img class="logos" src="{$logo_bg}"
 			alt="{$l10n_title_changelogobg}" title="{$l10n_title_changelogobg}" />
@@ -329,7 +329,7 @@
 			{$panticsrf}
 		</form>
 		</div>
-		<a href="#" onclick="uploadLogo('bl', '{$l10n_js_mlogobl}')">
+		<a href="#" onclick="uploadLogo('bl', '{$l10n_js_mlogobl|escape:'quotes'}')">
 		{if isset($logo_bl)}
 			<img class="logos" src="{$logo_bl}" alt="{$l10n_title_editlogobl}"
 			     title="{$l10n_title_editlogobl}" />
@@ -355,7 +355,7 @@
 			{$panticsrf}
 		</form>
 		</div>
-		<a href="#" onclick="uploadLogo('bc', '{$l10n_js_mlogobc}')">
+		<a href="#" onclick="uploadLogo('bc', '{$l10n_js_mlogobc|escape:'quotes'}')">
 		{if isset($logo_bc)}
 			<img class="logos" src="{$logo_bc}" alt="{$l10n_title_editlogobc}"
 			     title="{$l10n_title_editlogobc}" />
@@ -381,7 +381,7 @@
 			{$panticsrf}
 		</form>
 		</div>
-		<a href="#" onclick="uploadLogo('br', '{$l10n_js_mlogobr}')">
+		<a href="#" onclick="uploadLogo('br', '{$l10n_js_mlogobr|escape:'quotes'}')">
 		{if isset($logo_br)}
 			<img class="logos" src="{$logo_br}"
 			     alt="{$l10n_title_editlogobr}" title="{$l10n_title_editlogobr}" />
