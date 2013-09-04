@@ -11,7 +11,7 @@ require_once "autorun.php";
  * Download either (or both) archived containing compromised RSA-keys:
  * http://research.naumachiarius.com/download/inkey-OSSL-4096-X86-NOR-NEW-XXXX-REG.tar.gz
  *
- * Unzip to <confusa_dir>/tests/files
+ * Unzip to <confusa_dir>/tests/files/keys
  * Convert all files in this directory to PEM (will take a few minutes to complete):
  *
  * for i in $(ls); do \
@@ -81,7 +81,7 @@ class TestCSRUpload extends UnitTestCase
 
 	private function getCompromisedList($size = 5)
 	{
-		$dir = dirname(__FILE__) . "/files";
+		$dir = dirname(__FILE__) . "/files/keys";
 		if (!is_dir($dir)) {
 			echo "$dir not present, cannot retrieve list of compromised keys!";
 			return false;

@@ -36,7 +36,8 @@ function createIEVistaRequest(dn, keysize)
 		/* allow archival and plaintext export */
 		objPrivateKey.ExportPolicy = 0x1;
 		/* use "RSA-full" as the key algorithm */
-		objPrivateKey.ProviderType = "1";
+        /* ProviderType breaks cert generation in Win8/IE10, turned it off*/
+		//objPrivateKey.ProviderType = "1";
 		objRequest.InitializeFromPrivateKey(1, objPrivateKey, "");
 
 		// Comodo API does not support SHA-256 yet, specify SHA-1

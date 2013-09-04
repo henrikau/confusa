@@ -308,8 +308,8 @@ class Input
 		 * convert them to <br /> tags. Direct HTML insertion has been dealt
 		 * with using htmlentities*/
 
-        /* allow <br /> tags with strip_tags, otherwise the <br />'s you insert here will be stripped the next
-         * time the text is sanitized!
+        /* allow <br /> tags with strip_tags, otherwise the <br />'s you insert
+         * here will be stripped the next time the text is sanitized!
          */
 		$input = strtr(strip_tags($input, '<br>'), array("\n" => '<br />', "\r\n" =>'<br />'));
 
