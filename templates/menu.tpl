@@ -1,7 +1,7 @@
 {if ! $person->isAuth()}
 {assign var=prot_title_prefix value='title="'}
 {assign var=prot_title_suffix value='"'}
-{assign var=prot_title value=$prot_title_prefix$prot_title_text1$prot_title_suffix}
+{assign var=prot_title value=$prot_title_prefix+$prot_title_text1+$prot_title_suffix}
 {assign var=prot_l value="<i>"}
 {assign var=prot_r value="*</i>"}
 {else}

@@ -105,10 +105,12 @@ class Framework {
 
 		$this->person	= new Person();
 		$this->tpl	= new Smarty();
-		$this->tpl->template_dir= Config::get_config('install_path').'templates';
-		if (!is_dir($this->tpl->template_dir)) {
+
+		$this->tpl->setTemplateDir(Config::get_config('install_path').'templates');
+       // var_dump($this->tpl->getTemplateDir());
+		if (!is_dir($this->tpl->getTemplateDir()[0])) {
 			Logger::logEvent(LOG_ALERT, "Framework", "__construct()",
-			                  "Error: nonexistant templatedir: " . $this->tpl->template_dir);
+			                  "Error: nonexistant templatedir: " . $this->tpl->getTemplateDir()[0]);
 			exit(0);
 		}
 		if (!is_dir(ConfusaConstants::$SMARTY_TEMPLATES_C) ||
