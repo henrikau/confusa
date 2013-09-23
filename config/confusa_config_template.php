@@ -60,10 +60,11 @@ $confusa_config = array(
 	 *
 	 * or
 	 *
-	 * /usr/share/php/smarty/libs/ (debian)
+	 * /usr/share/php/smarty/libs/ (Debian < 7)
+	 * /usr/share/php/smarty3/ (Debian >= 7)
 	 *
 	 */
-	'smarty_path'		=> '/usr/share/php/smarty/',
+	'smarty_path'		=> '/usr/share/php/smarty3/',
 
 	/* for NREN landing page customization
 	 *
