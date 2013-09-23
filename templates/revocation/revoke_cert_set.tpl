@@ -10,11 +10,10 @@
 	<input type="hidden" name="revoke_operation" value="revoke_by_cn" />
 	<input type="hidden" name="common_name" value="{$owner}" />
 	{$panticsrf}
-        {html_radios	name="reason"
-	values="$nren_reasons"
-	output="$nren_reasons"
-	selected="$selected"
-	separator="<br />"}
+
+          {html_radios name='reason' values=$nren_reasons output=$nren_reasons
+          selected=$selected separator='<br />'}
+
 
       </td>
       <td style="width: 50px"></td>
