@@ -397,21 +397,21 @@ class Certificate extends CryptoElement
 	} /* End pubkeyDetails() */
 
 
-	protected function getEncoding($elem)
+	protected function getEncoding($elem, $start = null, $end = null)
 	{
 		$start = "CERTIFICATE-----";
 		$end   = "CERTIFICATE-----";
 		return parent::getEncoding($elem, $start, $end);
 	}
 
-	protected function der2pem($elem)
+	protected function der2pem($elem, $start = null, $end = null)
 	{
 		$start = "-----BEGIN CERTIFICATE-----\n";
 		$end   = "-----END CERTIFICATE-----\n";
 		return parent::der2pem($elem, $start, $end);
 	}
 
-	protected function pem2der($elem)
+	protected function pem2der($elem, $start = null, $end = null)
 	{
 		$start = "CERTIFICATE-----";
 		$end = "-----END";
