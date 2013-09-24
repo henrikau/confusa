@@ -40,7 +40,7 @@
 <hr style="width 90%" />
 <br />
 
-<h3>Info about you</h3>
+<h3>{$index_info_about_you}</h3>
 <p class="info">
   {$attribute_info1|escape}
   ({$nren->getName()|escape})

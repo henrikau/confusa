@@ -48,9 +48,9 @@
 		var inspectText = document.getElementById('inspectText' + key);
 
 		/* if there is text in the inspect area, collapse instead of inspect */
-		if (inspectText.innerHTML == "Collapse") {
+		if (inspectText.innerHTML == "{/literal}{$l10n_item_collapse}{literal}") {
 			inspectArea.innerHTML = "";
-			inspectText.innerHTML = "Inspect";
+			inspectText.innerHTML = "{/literal}{$l10n_item_inspect}{literal}";
 			return false;
 		}
 
@@ -64,7 +64,7 @@
 					if (certHTML.substring(0,8) == "Success:") {
 						certHTML=certHTML.substring(8,certHTML.length);
 						inspectArea.innerHTML = certHTML;
-						inspectText.innerHTML = "Collapse";
+						inspectText.innerHTML = "{/literal}{$l10n_item_collapse}{literal}";
 					} else {
 						/* force the user to login again */
 						window.location.reload();
