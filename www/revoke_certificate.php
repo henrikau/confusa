@@ -227,7 +227,7 @@ class CP_RevokeCertificate extends Content_Page
 	private function getNRENSubscribers($nren)
 	{
 		try {
-			$subscribers = $nren->getSubscriberList();
+			$subscribers = $nren->getSubscriberList('dn_name');
 		} catch(DBStatementException $dbse) {
 			Framework::error_output($this->translateMessageTag('rev_err_nrensubs1') .
 			                        htmlentities($dbse->getMessage()));

@@ -294,7 +294,7 @@ class CP_Admin extends Content_Page
 			try {
 				/* Get a list of subscribers (as
 				 * Subscriber-objects) */
-				$subscribers = $this->person->getNREN()->getSubscriberList();
+				$subscribers = $this->person->getNREN()->getSubscriberList('name');
 			} catch (DBQueryException $dbqe) {
 				Framework::error_output("Cannot retrieve subscriber from database!<br /> " .
 				                        "Probably wrong syntax for query, ask an admin to investigate." .

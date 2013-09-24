@@ -847,12 +847,13 @@ class NREN
 	 * @since Confusa v0.4-rc0
 	 * @access public
 	 */
-	public function getSubscriberList()
+	public function getSubscriberList($orderBy = 'subscriber_id')
 	{
 		$subscribers = null;
 		$query  = "SELECT subscriber_id, name, org_state, lang, subscr_email, ";
 		$query .= "subscr_phone, subscr_resp_name, subscr_resp_email, ";
-		$query .= "subscr_comment, dn_name FROM subscribers WHERE nren_id=?";
+		$query .= "subscr_comment, dn_name FROM subscribers WHERE nren_id=?
+		ORDER BY trim($orderBy)";
 
 		$res = MDB2Wrapper::execute($query,
 		                            array('integer'),
@@ -860,6 +861,7 @@ class NREN
 
 		if (count($res) > 0) {
 			foreach($res as $row) {
+
 				$subs = new Subscriber($row['name'],
 				                       $this->getName(),
 				                       $row['dn_name'],
