@@ -360,7 +360,7 @@ class CP_Admin extends Content_Page
 
 		/* Get all subscriber-admins */
 		$subscriber_admins = $this->getSubscriberAdmins($subscriber_id, SUBSCRIBER_ADMIN);
-		$this->tpl->assign('subscriber', $subscriber_db);
+		$this->tpl->assign('subscriber', $this->person->getSubscriber());
 		$this->tpl->assign('subscriber_admins', $subscriber_admins);
 
 		/* get a list of all subadmins */
