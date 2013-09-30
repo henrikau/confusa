@@ -3,7 +3,7 @@
 		"en": 	"Revoke certificates"
 	},
 	"l10n_text_uinfoall": {
-		"en":	"You can now revoke all your certificates. Do to this, you must first specify a reason, and then press 'Revoke all'."
+		"en":	"You can now revoke all your certificates. To do this, you must first specify a reason, and then press 'Revoke all'."
 	},
 	"l10n_text_uinfospec1": {
 		"en":	"If you want to revoke a specific certificate, you must go to"
