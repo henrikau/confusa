@@ -17,11 +17,7 @@
 
   <form method="post" action="">
     {$panticsrf}
-    {html_radios name='nren_maint_mode'
-	         values=$maint_mode_v
-                 output=$maint_mode_t
-	         selected=$maint_mode_selected
-                 separator='<br />'}
+    {html_radios name='nren_maint_mode' values=$maint_mode_v output=$maint_mode_t selected=$maint_mode_selected separator='<br />'}
 
     <br />
     <input type="submit" value="update" />

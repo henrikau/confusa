@@ -63,12 +63,7 @@
   <tr>
     <td style="width: 30px;"></td>
     <td>
-      {html_radios
-      name="subjAltName_email[]"
-      values=$person->getAllEmails()
-      output=$person->getAllEmails(true)
-      selected=$person->getEmail(0)
-      separator=" <br /> "}
+      {html_radios name="subjAltName_email[]" values=$person->getAllEmails() output=$person->getAllEmails(true) selected=$person->getEmail(0) separator=" <br /> "}
     </td>
     <td></td>
   </tr>
