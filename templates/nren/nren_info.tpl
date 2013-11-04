@@ -141,8 +141,7 @@
       <tr>
 	<td align="right" valign="top">{$l10n_label_deflang|escape}</td>
 	<td></td>
-	<td>{html_options name="language" selected=$current_language
-	  output=$languages values=$language_codes}
+	<td>{html_options name="language" selected=$current_language output=$languages values=$language_codes}
 	  <br />
 	  <span style="font-size: 0.8em; font-style: italic">
 	    {$l10n_infotext_nren_portal_language}
@@ -157,9 +156,8 @@
 	<td align="right" valign="top">{$l10n_label_certvalidity}</td>
 	<td></td>
 	<td>
-        {html_radios name='cert_validity' options=$validity_options
-        selected=$nren->getCertValidity separator='<br />'}
-	</td>
+        {html_radios name='cert_validity' options=$validity_options selected=$nren->getCertValidity separator='<br />'}
+        </td>
       </tr>
 
       <tr><td style="padding-top: 1em" colspan="3">
@@ -183,8 +181,7 @@
 	<td align="right" valign="top">{$l10n_label_encertmail|escape}</td>
 	<td></td>
 	<td>
-	  {html_radios  name = 'enable_email' options = $enable_options
-	  selected = $nren->getEnableEmail() separator = '<br />'}
+	  {html_radios name = 'enable_email' options=$enable_options selected=$nren->getEnableEmail() separator = '<br />'}
 	  <span style="font-size: 0.8em; font-style: italic">
 	    {$l10n_infotext_encertmail}
 	  </span>

@@ -53,8 +53,7 @@
 	<tr>
     <td align="right">{$l10n_label_deflang|escape}</td>
     <td></td>
-    <td>{html_options name="language" selected=$current_language
-    output=$languages values=$language_codes}</td>
+    <td>{html_options name="language" selected=$current_language output=$languages values=$language_codes}</td>
   </tr>
 
       <tr>
