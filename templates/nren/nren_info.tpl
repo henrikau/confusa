@@ -156,7 +156,7 @@
 	<td align="right" valign="top">{$l10n_label_certvalidity}</td>
 	<td></td>
 	<td>
-        {html_radios name='cert_validity' options=$validity_options selected=$nren->getCertValidity separator='<br />'}
+        {html_radios name='cert_validity' options=$validity_options selected=$nren->getCertValidity() separator='<br />'}
         </td>
       </tr>
 
