@@ -57,7 +57,7 @@ class Output
 	{
 		$userAgent=$_SERVER['HTTP_USER_AGENT'];
 
-		if (stripos($userAgent, "msie") !== FALSE) {
+		if (stripos($userAgent, "msie") !== FALSE || stripos($userAgent, "trident")) { //"Trident" added for IE11, no longer contains MSIE
 			if (stripos($userAgent, "windows NT 5.") !== FALSE) {
 				return "msie_pre_vista";
 			} else {
