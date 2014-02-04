@@ -1,5 +1,4 @@
 <?php
-declare(encoding = 'utf-8');
 require_once 'Person.php';
 require_once 'CA.php';
 require_once 'key_sign.php';

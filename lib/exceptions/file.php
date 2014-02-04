@@ -1,5 +1,4 @@
 <?php
-//declare(encoding = 'utf-8');
 require_once 'confusa_gen.php';
 
 /**
