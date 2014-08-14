@@ -350,7 +350,13 @@ class Input
 		 * to execute remote code
 		 */
 		$output = preg_replace('/(.)*(@)+(.)*/', '', $output);
-		return $output;
+        	$bad_chars = array("\"", "'", "(", "\\\\", "<", "&");
+
+	        $safe_chars = array("&quot;", "&apos;", "&lpar;", "&bsol;", "&lt;", "&amp;");
+
+        	$output = str_replace($bad_chars, $safe_chars, $output);
+
+	        return stripslashes($output);
 	}
 
 	/**
